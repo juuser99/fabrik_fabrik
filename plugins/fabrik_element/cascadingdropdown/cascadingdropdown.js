@@ -120,11 +120,21 @@ var FbCascadingdropdown = new Class({
 			this.spinner.hide();
 		}.bind(this),
 		onSuccess: function (json) {
-			var origvalue = this.options.def,
+			var origvalue = this.options.def !== '' ? this.options.def : this.options.value,
 			updateField,
 			c;
 			this.spinner.hide();
-			this.setValue(this.getValue());
+			
+			// Fudge for when loading cdd where the default value is supplied via the qs. 
+			var newValue = this.getValue();
+			var vs = this.getValues();
+			// Dropdown could just be a "please select" option with an empty value - if so then use default value
+			if (this.options.displayType === 'dropdown' && (vs.length === 0 || (vs.length === 1 && vs[0] === ''))) {
+				this.options.def = '';
+				newValue = origvalue;
+			}
+			
+			this.setValue(newValue);
 
 			json = JSON.decode(json);
 			if (this.options.editable) {
