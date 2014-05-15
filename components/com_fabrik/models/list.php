@@ -1914,6 +1914,7 @@ class FabrikFEModelList extends JModelForm
 		$icon = FabrikWorker::j3() ? '<i class="icon-list-view"></i> ' : '';
 		$url = $this->releatedDataURL($key, $val, $listid, $popUp);
 
+		$icon = '<i class="icon-list-view"></i> ';
 		if ($showRelated == 0 || ($showRelated == 2  && $count))
 		{
 			$trigger = $popUp ? 'data-fabrik-view="list"' : '';
