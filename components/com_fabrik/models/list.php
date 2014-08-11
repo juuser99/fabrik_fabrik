@@ -295,6 +295,13 @@ class FabrikFEModelList extends JModelForm
 	var $_pluginQueryGroupBy = array();
 
 	/**
+	 * List of group by statements added by list plugins
+	 *
+	 * @var array
+	 */
+	var $_pluginQuerySelect = array();
+
+	/**
 	 * Used in views for rendering
 	 *
 	 * @var array
@@ -575,6 +582,8 @@ class FabrikFEModelList extends JModelForm
 
 	public function render()
 	{
+		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager->runPlugins('onBeforeListRender', $this, 'list');
 		FabrikHelperHTML::debug($_POST, 'render:post');
 		$app = JFactory::getApplication();
 		$input = $app->input;
@@ -804,6 +813,7 @@ class FabrikFEModelList extends JModelForm
 		// Ajax call needs to recall this - not sure why
 		$this->setLimits();
 		$query = $this->_buildQuery();
+		//echo $query;exit;
 		JDEBUG ? $profiler->mark('query build end') : null;
 
 		$cache = FabrikWorker::getCache($this);
@@ -812,7 +822,12 @@ class FabrikFEModelList extends JModelForm
 		$this->_data = $results[1];
 		$this->groupTemplates = $results[2];
 		$nav = $this->getPagination($this->totalRecords, $this->limitStart, $this->limitLength);
-		$pluginManager->runPlugins('onLoadData', $this, 'list');
+
+		// Pass the query as an object property so it can be updated via reference
+		$args = new stdClass;
+		$args->data =& $this->_data;
+
+		$pluginManager->runPlugins('onLoadData', $this, 'list', $args);
 
 		return $this->_data;
 
@@ -2472,16 +2487,40 @@ class FabrikFEModelList extends JModelForm
 		 */
 		$calc_found_rows = $this->mergeJoinedData() ? '' : 'SQL_CALC_FOUND_ROWS';
 
+		/**
+		 * Distinct creates a temporary table which may slow down queries.
+		 * Added advanced option to toggle it on/off
+		 * http://fabrikar.com/forums/index.php?threads/bug-distinct.39160/#post-196739
+		 */
+		$distinct = $params->get('distinct', true) ? 'DISTINCT' : '';
+
 		// $$$rob added raw as an option to fix issue in saving calendar data
 		if (trim($table->db_primary_key) != '' && (in_array($this->outputFormat, array('raw', 'html', 'feed', 'pdf', 'phocapdf', 'csv', 'word', 'yql'))))
 		{
 			$sfields .= ', ';
 			$strPKey = $pk . ' AS ' . $db->quoteName('__pk_val') . "\n";
-			$query = 'SELECT ' . $calc_found_rows . ' DISTINCT ' . $sfields . $strPKey;
+			$query = 'SELECT ' . $calc_found_rows . ' ' . $distinct . ' ' . $sfields . $strPKey;
 		}
 		else
 		{
-			$query = 'SELECT ' . $calc_found_rows . ' DISTINCT ' . trim($sfields, ", \n") . "\n";
+			$query = 'SELECT ' . $calc_found_rows . ' ' . $distinct . ' ' . trim($sfields, ", \n") . "\n";
+		}
+
+		/*
+		 * $$$ hugh - added onBuildQuerySelect hook to support back porting the pivot list plugin.
+		 * Plugins for this hook should return a simple string to append to the field list.
+		 */
+		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager->runPlugins('onBuildQuerySelect', $this, 'list', $query);
+		if (!empty($this->_pluginQuerySelect))
+		{
+			foreach ($this->_pluginQuerySelect as $select)
+			{
+				if (is_string($select) && !empty($select))
+				{
+					$query .= ", " . $select;
+				}
+			}
 		}
 
 		$query .= ' FROM ' . $db->quoteName($table->db_table_name) . " \n";
@@ -2948,6 +2987,7 @@ class FabrikFEModelList extends JModelForm
 	function _buildQueryGroupBy($query = false)
 	{
 		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$pluginManager = FabrikWorker::getPluginManager();
 
 		foreach ($groups as $groupModel)
 		{
@@ -2964,12 +3004,33 @@ class FabrikFEModelList extends JModelForm
 			}
 		}
 
+		$pluginManager->runPlugins('onBuildQueryGroupBy', $this, 'list', $query);
+
+		if (!empty($this->_pluginQueryGroupBy))
+		{
+			if ($query === false)
+			{
+				return ' GROUP BY ' . implode(', ', $this->_pluginQueryGroupBy);
+			}
+			else
+			{
+				//$pluginManager->runPlugins('onBuildQueryGroupBy', $this, 'list', $query);
+				$query->group($this->_pluginQueryGroupBy);
+				return $query;
+			}
+		}
+
+
+		return $query === false ? '' : $query;
+
+		/*
 		if (!empty($this->_pluginQueryGroupBy))
 		{
 			return ' GROUP BY ' . implode(', ', $this->_pluginQueryGroupBy);
 		}
 
 		return '';
+		*/
 	}
 
 	/**
@@ -6622,10 +6683,12 @@ class FabrikFEModelList extends JModelForm
 			$groupHeadings[''] = '';
 		}
 
-		$args['tableHeadings'] = $aTableHeadings;
-		$args['groupHeadings'] = $groupHeadings;
-		$args['headingClass'] = $headingClass;
-		$args['cellClass'] = $cellClass;
+		$args['tableHeadings'] =& $aTableHeadings;
+		$args['groupHeadings'] =& $groupHeadings;
+		$args['headingClass'] =& $headingClass;
+		$args['cellClass'] =& $cellClass;
+		$args['data'] = $this->_data;
+
 		FabrikWorker::getPluginManager()->runPlugins('onGetPluginRowHeadings', $this, 'list', $args);
 
 		return array($aTableHeadings, $groupHeadings, $headingClass, $cellClass);

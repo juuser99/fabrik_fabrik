@@ -774,7 +774,8 @@ EOD;
 					}
 					else
 					{
-						if ($k === $obj)
+						// Loose comaprision for number == string
+						if ($k == $obj)
 						{
 							// Checkbox from db join
 							$extra .= $selectText;
@@ -1842,13 +1843,14 @@ EOD;
 	 * Get content item template
 	 *
 	 * @param   int  $contentTemplate  Joomla article id
+	 * @param	string	$part	which part, intro, full, or both
 	 *
 	 * @since   3.0.7
 	 *
 	 * @return  string  content item html
 	 */
 
-	public function getContentTemplate($contentTemplate)
+	public function getContentTemplate($contentTemplate, $part = 'both')
 	{
 		$app = JFactory::getApplication();
 
@@ -1867,7 +1869,20 @@ EOD;
 			$res = $articleModel->getItem($contentTemplate);
 		}
 
-		return $res->introtext . ' ' . $res->fulltext;
+		if ($part == 'intro')
+		{
+			$res = $res->introtext;
+		}
+		else if ($part == 'full')
+		{
+			$res = $res->fulltext;
+		}
+		else
+		{
+			$res = $res->introtext . ' ' . $res->fulltext;
+		}
+
+		return $res;
 	}
 
 	/**
