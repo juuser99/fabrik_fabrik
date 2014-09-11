@@ -465,6 +465,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	{
 		$params = $this->getParams();
 		$db = $this->getDb();
+		$w = new FabrikWorker;
 
 		// $$$ hugh - attempting to make sure we never do an uncontrained query for auto-complete
 		$displayType = $this->getDisplayType();
@@ -518,6 +519,9 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if (trim($eval) !== '')
 		{
+
+			$eval = $w->parseMessageForPlaceHolder($eval, $data, false);
+
 			foreach ($this->_optionVals[$sqlKey] as $key => &$opt)
 			{
 				// $$$ hugh - added allowing removing an option by returning false

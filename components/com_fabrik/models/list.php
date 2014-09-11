@@ -1926,6 +1926,7 @@ class FabrikFEModelList extends JModelForm
 
 		$title = $label;
 		$label = '<span class="fabrik_related_data_count">(' . $count . ')</span> ' . $label;
+		$icon = FabrikWorker::j3() ? '<i class="icon-list-view"></i> ' : '';
 		$url = $this->releatedDataURL($key, $val, $listid, $popUp);
 
 		$icon = '<i class="icon-list-view"></i> ';
@@ -2119,7 +2120,7 @@ class FabrikFEModelList extends JModelForm
 				*/
 				if (is_array($v))
 				{
-					$v = (JArrayHelper::getValue($v, $repeatCounter));
+					$v = JArrayHelper::getValue($v, $repeatCounter);
 				}
 				else
 				{
