@@ -11,9 +11,17 @@
 // No direct access
 defined('_JEXEC') or die;
 
+$pageClass = $this->params->get('pageclass_sfx', '');
+if ($pageClass !== '') :
+	echo '<div class="' . $pageClass . '">';
+endif;
+
 if ($this->tablePicker != '') : ?>
 	<div style="text-align:right"><?php echo JText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
 <?php
+endif;
+if ($this->params->get('show_page_heading')) :
+	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
 endif;
 if ($this->getModel()->getParams()->get('show-title', 1)) :?>
 	<h1><?php echo $this->table->label;?></h1>
@@ -118,4 +126,9 @@ endforeach;?>
 	</div>
 </div>
 </form>
-<?php echo $this->table->outro;?>
+<?php 
+echo $this->table->outro;
+if ($pageClass !== '') :
+	echo '</div>';
+endif;
+?>
