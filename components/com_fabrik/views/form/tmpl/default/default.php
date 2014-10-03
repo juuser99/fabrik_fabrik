@@ -46,7 +46,14 @@ To learn about all the different elements in a basic form see http://www.w3schoo
 If you have set to show the page title in the forms layout parameters, then the page title will show */
 
 $form = $this->form;
-
+$app = JFactory::getApplication()->getParams();
+$pageClass = $app->get('pageclass_sfx', '');
+if ($pageClass !== '') :
+	echo '<div class="' . $pageClass . '">';
+endif;
+if ($app->get('show_page_heading')) :
+	echo '<h1>' . $app->get('page_heading') . '</h1>';
+endif;
 if ($this->params->get('show_page_title', 1)) : ?>
 	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>"><?php echo $this->escape($this->params->get('page_title')); ?></div>
 <?php
@@ -145,5 +152,8 @@ if ($this->hasActions) :?>
 endif;
 echo $form->endTag;
 echo $form->outro;
+if ($pageClass !== '') :
+	echo '</div>';
+endif;
 echo $this->pluginend;
 echo FabrikHelperHTML::keepalive();
