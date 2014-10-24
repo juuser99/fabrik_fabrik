@@ -3651,6 +3651,7 @@ class FabrikFEModelForm extends FabModelForm
 						FabrikHelperHTML::debug($data, 'form:getData from session (form not in Mambot and no errors');
 					}
 				}
+
 				if (!$sessionLoaded)
 				{
 					/* Only try and get the row data if its an active record

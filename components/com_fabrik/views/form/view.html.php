@@ -37,6 +37,7 @@ class FabrikViewForm extends FabrikViewFormBase
 		{
 			$this->output();
 			$app = JFactory::getApplication();
+
 			if (!$app->isAdmin())
 			{
 				$this->state = $this->get('State');
@@ -45,6 +46,7 @@ class FabrikViewForm extends FabrikViewFormBase
 				$this->params = $this->state->get('params');
 				$row = $model->getData();
 				$w = new FabrikWorker;
+
 				if ($this->params->get('menu-meta_description'))
 				{
 					$desc = $w->parseMessageForPlaceHolder($this->params->get('menu-meta_description'), $row);
