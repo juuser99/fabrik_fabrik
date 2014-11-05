@@ -28,6 +28,6 @@ class FabrikTableFormsession extends JTable
 
 	public function __construct(&$db)
 	{
-		parent::__construct('#__{package}_form_sessions', 'id', $db);
+		parent::__construct('#__fabrik_form_sessions', 'id', $db);
 	}
 }

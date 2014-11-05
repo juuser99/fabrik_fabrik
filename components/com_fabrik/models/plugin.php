@@ -694,7 +694,7 @@ class FabrikPlugin extends JPlugin
 			if ($cid !== 0)
 			{
 				$query = $db->getQuery(true);
-				$query->select('id, label')->from('#__{package}_lists')->where('connection_id = ' . $cid)->order('label ASC');
+				$query->select('id, label')->from('#__fabrik_lists')->where('connection_id = ' . $cid)->order('label ASC');
 				$db->setQuery($query);
 				$rows = $db->loadObjectList();
 			}
@@ -772,7 +772,7 @@ class FabrikPlugin extends JPlugin
 						// If loading on a numeric list id get the list db table name
 						$jDb = FabrikWorker::getDbo(true);
 						$query = $jDb->getQuery(true);
-						$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . (int) $tid);
+						$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . (int) $tid);
 						$jDb->setQuery($query);
 						$tid = $jDb->loadResult();
 					}

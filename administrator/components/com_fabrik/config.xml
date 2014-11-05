@@ -2,6 +2,16 @@
 <config>
 	<fieldset label="COM_FABRIK_GLOBAL" name="global">
 
+		<field name="meta_storage"
+			type="radio"
+			class="radio btn-group"
+			default="db"
+			description="COM_FABRIK_FIELD_META_STORAGE_DESC"
+			label="COM_FABRIK_FIELD_META_STORAGE_LABEL">
+				<option value="json">JSON</option>
+				<option value="db">DB</option>	
+		</field>
+			
 		<field name="enable_big_selects"
 			class="radio btn-group"
 			type="radio"

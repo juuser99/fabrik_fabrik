@@ -14,6 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodellist.php';
 
+interface FabrikAdminModelFormsInterface
+{
+}
+
 /**
  * Fabrik Admin Form Model
  *
@@ -22,7 +26,7 @@ require_once 'fabmodellist.php';
  * @since       3.0
  */
 
-class FabrikAdminModelForms extends FabModelList
+abstract class FabrikAdminModelForms extends FabModelList implements FabrikAdminModelFormsInterface
 {
 	/**
 	 * Constructor.
@@ -57,7 +61,7 @@ class FabrikAdminModelForms extends FabModelList
 
 		// Select the required fields from the table.
 		$query->select($this->getState('list.select', 'DISTINCT f.id, f.*, l.id AS list_id, "" AS group_id'));
-		$query->from('#__{package}_forms AS f');
+		$query->from('#__fabrik_forms AS f');
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
@@ -83,9 +87,9 @@ class FabrikAdminModelForms extends FabModelList
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor');
 		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
-		$query->join('LEFT', '#__{package}_lists AS l ON l.form_id = f.id');
+		$query->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id');
 
-		$query->join('INNER', '#__{package}_formgroup AS fg ON fg.form_id = f.id');
+		$query->join('INNER', '#__fabrik_formgroup AS fg ON fg.form_id = f.id');
 
 		// Add the list ordering clause.
 		$orderCol = $this->state->get('list.ordering');

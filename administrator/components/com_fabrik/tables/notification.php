@@ -28,6 +28,6 @@ class FabrikTableFormGroup extends JTable
 
 	public function __construct(&$db)
 	{
-		parent::__construct('#__{package}_formgroup', 'id', $db);
+		parent::__construct('#__fabrik_formgroup', 'id', $db);
 	}
 }

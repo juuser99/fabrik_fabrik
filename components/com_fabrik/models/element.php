@@ -2036,7 +2036,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		// Copy js events
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__{package}_jsactions')->where('element_id = ' . (int) $id);
+		$query->select('id')->from('#__fabrik_jsactions')->where('element_id = ' . (int) $id);
 		$db->setQuery($query);
 		$actions = $db->loadColumn();
 
@@ -2821,7 +2821,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if (!isset($this->jsActions))
 		{
 			$query = $this->_db->getQuery();
-			$query->select('*')->from('#__{package}_jsactions')->where('element_id = ' . (int) $this->id);
+			$query->select('*')->from('#__fabrik_jsactions')->where('element_id = ' . (int) $this->id);
 			$this->_db->setQuery($query);
 			$this->jsActions = $this->_db->loadObjectList();
 		}
@@ -4450,7 +4450,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$id = (int) $this->getElement()->id;
-		$query->delete()->from('#__{package}_jsactions')->where('element_id =' . $id);
+		$query->delete()->from('#__fabrik_jsactions')->where('element_id =' . $id);
 		$db->setQuery($query);
 
 		try
@@ -5490,7 +5490,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * Can be overwritten in plugin classes
 	 * e.g. if changing from db join to field we need to remove the join
-	 * entry from the #__{package}_joins table
+	 * entry from the #__fabrik_joins table
 	 *
 	 * @param   object  &$row  that is going to be updated
 	 *
@@ -5533,12 +5533,12 @@ class PlgFabrik_Element extends FabrikPlugin
 		$element = $this->getElement();
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->delete('#__{package}_joins')->where('element_id = ' . $id);
+		$query->delete('#__fabrik_joins')->where('element_id = ' . $id);
 		$db->setQuery($query);
 		$db->execute();
 
 		$query->clear();
-		$query->select('j.id AS jid')->from('#__{package}_elements AS e')->join('INNER', ' #__{package}_joins AS j ON j.element_id = e.id')
+		$query->select('j.id AS jid')->from('#__fabrik_elements AS e')->join('INNER', ' #__fabrik_joins AS j ON j.element_id = e.id')
 		->where('e.parent_id = ' . $id);
 		$db->setQuery($query);
 		$join_ids = $db->loadColumn();
@@ -5546,7 +5546,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if (!empty($join_ids))
 		{
 			$query->clear();
-			$query->delete('#__{package}_joins')->where('id IN (' . implode(',', $join_ids) . ')');
+			$query->delete('#__fabrik_joins')->where('id IN (' . implode(',', $join_ids) . ')');
 			$db->setQuery($query);
 			$db->execute();
 		}
@@ -6028,7 +6028,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		$db = FabrikWorker::getDbo(true);
 		$element->params = $this->getParams()->toString();
 		$query = $db->getQuery(true);
-		$query->update('#__{package}_elements')->set('params = ' . $db->quote($element->params))->where('id = ' . (int) $element->id);
+		$query->update('#__fabrik_elements')->set('params = ' . $db->quote($element->params))->where('id = ' . (int) $element->id);
 		$db->setQuery($query);
 		$res = $db->execute();
 
@@ -6653,7 +6653,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__{package}_elements')->where('parent_id = ' . (int) $id);
+		$query->select('id')->from('#__fabrik_elements')->where('parent_id = ' . (int) $id);
 		$db->setQuery($query);
 		$kids = $db->loadObjectList();
 		$all_kids = array();
@@ -6786,14 +6786,14 @@ class PlgFabrik_Element extends FabrikPlugin
 		$query = $db->getQuery(true);
 
 		// Update linked lists id.
-		$query->update('#__{package}_joins')->set('table_key = ' . $db->quote($newName))
+		$query->update('#__fabrik_joins')->set('table_key = ' . $db->quote($newName))
 		->where('join_from_table = ' . $db->quote($item->db_table_name))->where('table_key = ' . $db->quote($oldName));
 		$db->setQuery($query);
 		$db->execute();
 
 		// Update join pk parameter
 		$query->clear();
-		$query->select('id')->from('#__{package}_joins')->where('table_join = ' . $db->quote($item->db_table_name));
+		$query->select('id')->from('#__fabrik_joins')->where('table_join = ' . $db->quote($item->db_table_name));
 		$db->setQuery($query);
 		$ids = $db->loadColumn();
 		$teskPk = $db->quoteName($item->db_table_name . '.' . $oldName);

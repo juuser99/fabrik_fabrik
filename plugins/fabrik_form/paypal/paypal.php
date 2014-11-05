@@ -532,7 +532,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		$db = FabrikWorker::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . (int) $params->get('paypal_shippingdata_table'));
+		$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . (int) $params->get('paypal_shippingdata_table'));
 		$db->setQuery($query);
 		$db_table_name = $db->loadResult();
 

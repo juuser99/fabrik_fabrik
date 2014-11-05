@@ -469,7 +469,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		if (!isset($this->_aJoins))
 		{
 			$query = $db->getQuery(true);
-			$query->select('*')->from('#__{package}_joins')->where('element_id = ' . (int) $this->id)->orderby('id');
+			$query->select('*')->from('#__fabrik_joins')->where('element_id = ' . (int) $this->id)->orderby('id');
 			$db->setQuery($query);
 			$this->_aJoins = $db->LoadObjectList();
 		}
@@ -491,10 +491,10 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	{
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('*, t.label AS tablelabel')->from('#__{package}_elements AS el')
-		->join('LEFT', '#__{package}_formgroup AS fg ON fg.group_id = el.group_id')
-		->join('LEFT', '#__{package}_forms AS f ON f.id = fg.form_id')
-		->join('LEFT', ' #__{package}_tables AS t ON t.form_id = f.id')
+		$query->select('*, t.label AS tablelabel')->from('#__fabrik_elements AS el')
+		->join('LEFT', '#__fabrik_formgroup AS fg ON fg.group_id = el.group_id')
+		->join('LEFT', '#__fabrik_forms AS f ON f.id = fg.form_id')
+		->join('LEFT', ' #__fabrik_tables AS t ON t.form_id = f.id')
 		->where('plugin = ' . $db->quote('databasejoin'))
 		->where('join_db_name = ' . $db->quote($table->db_table_name))
 		->where('join_conn_id = ' . (int) $table->connection_id);
@@ -1476,7 +1476,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		$db = $this->getDb();
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__{package}_lists')->where('form_id =' . $popupformid);
+		$query->select('id')->from('#__fabrik_lists')->where('form_id =' . $popupformid);
 		$db->setQuery($query);
 		$listid = $db->loadResult();
 
@@ -1732,8 +1732,8 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 			// Forms for potential add record pop up form
 			$query = $db->getQuery(true);
-			$query->select('f.id AS value, f.label AS text, l.id AS listid')->from('#__{package}_forms AS f')
-			->join('LEFT', '#__{package}_lists As l ON f.id = l.form_id')
+			$query->select('f.id AS value, f.label AS text, l.id AS listid')->from('#__fabrik_forms AS f')
+			->join('LEFT', '#__fabrik_lists As l ON f.id = l.form_id')
 			->where('f.published = 1 AND l.db_table_name = ' . $db->quote($params->get('join_db_name')))->order('f.label');
 			$db->setQuery($query);
 			$this->linkedForms = $db->loadObjectList('value');
@@ -2920,7 +2920,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 				$db = FabrikWorker::getDbo(true);
 				$query = $db->getQuery(true);
-				$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . (int) $id);
+				$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . (int) $id);
 				$db->setQuery($query);
 				$this->dbname = $db->loadResult();
 			}

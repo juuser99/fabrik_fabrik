@@ -32,7 +32,7 @@ class FabrikTableComment extends FabTable
 
 	public function __construct(&$db)
 	{
-		parent::__construct('#__{package}_comments', 'id', $db);
+		parent::__construct('#__fabrik_comments', 'id', $db);
 	}
 }
 
@@ -439,7 +439,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$formModel = $this->setFormModel();
 		$query = $db->getQuery(true);
 		$query->select('c.*');
-		$query->from('#__{package}_comments AS c');
+		$query->from('#__fabrik_comments AS c');
 		$this->inJDb = $formModel->getTableModel()->inJDb();
 
 		if ($this->inJDb)
@@ -683,7 +683,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$app = JFactory::getApplication();
 		$id = $app->input->getInt('comment_id');
 		$query = $db->getQuery(true);
-		$query->delete('#__{package}_comments')->where('id =' . $id);
+		$query->delete('#__fabrik_comments')->where('id =' . $id);
 		$db->setQuery($query);
 		$db->execute();
 		echo $id;
@@ -703,7 +703,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$id = $input->getInt('comment_id');
 		$comment = $db->quote($input->get('comment', '', 'string'));
 		$query = $db->getQuery(true);
-		$query->update('#__{package}_comments')->set('comment = ' . $comment)->where('id = ' . $id);
+		$query->update('#__fabrik_comments')->set('comment = ' . $comment)->where('id = ' . $id);
 		$db->setQuery($query);
 		$db->execute();
 	}
@@ -823,7 +823,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$ref = $db->quote($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowid);
 		$date = $db->quote(JFactory::getDate()->toSql());
 		$query = $db->getQuery(true);
-		$query->insert('#__{package}_notification_event')
+		$query->insert('#__fabrik_notification_event')
 		->set(array('event = ' . $event, 'user_id = ' . $user_id, 'reference = ' . $ref, 'date_time = ' . $date));
 		$db->setQuery($query);
 
@@ -862,7 +862,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$label = $db->quote($input->get('label', '', 'string'));
 		$ref = $db->quote($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowid);
 		$query = $db->getQuery(true);
-		$query->insert('#__{package}_notification')
+		$query->insert('#__fabrik_notification')
 		->set(array('reason = ' . $db->quote('commentor'), 'user_id = ' . $user_id, 'reference = ' . $ref, 'label = ' . $label));
 		$db->setQuery($query);
 
@@ -889,7 +889,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 				{
 					$fields = array('reason = ' . $db->quote('admin observing a comment'), 'user_id = ' . $row->id, 'reference = ' . $ref,
 							'label = ' . $label);
-					$query->insert('#__{package}_notification')->set($fields);
+					$query->insert('#__fabrik_notification')->set($fields);
 					$db->setQuery($query);
 
 					try

@@ -47,11 +47,11 @@ class JFormFieldSpecificordering extends JFormFieldList
 		// ONLY WORKS INSIDE ELEMENT :(
 		$db = FabrikWorker::getDbo();
 		$group_id = $this->form->getValue('group_id');
-		$query = "SELECT ordering AS value, name AS text" . "\n FROM #__{package}_elements " . "\n WHERE group_id = " . (int) $group_id
+		$query = "SELECT ordering AS value, name AS text" . "\n FROM #__fabrik_elements " . "\n WHERE group_id = " . (int) $group_id
 			. "\n AND published >= 0" . "\n ORDER BY ordering";
 		/**
 		 * $$$ rob - rather than trying to override the JHTML class lets
-		 * just swap {package} for the current package.
+		 * just swap fabrik for the current package.
 		 */
 		$query = FabrikWorker::getDbo(true)->replacePrefix($query);
 

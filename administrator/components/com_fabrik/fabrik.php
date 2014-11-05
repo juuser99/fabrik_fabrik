@@ -27,6 +27,10 @@ if (!defined('COM_FABRIK_FRONTEND'))
 	throw new RuntimeException(JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
 }
 
+// Load the json/db meta storage classes
+$modelpaths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/31', 'fabrikadminModel');
+$modelpaths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/35', 'fabrikadminModel');
+
 $app = JFactory::getApplication();
 $input = $app->input;
 
@@ -68,12 +72,14 @@ if (JString::strpos($cName, '.') != false)
 
 		// Add the model path
 		$modelpaths = JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
+
 	}
 }
 else
 {
 	$controller	= JControllerLegacy::getInstance('FabrikAdmin');
 }
+
 
 // Test that they've published some element plugins!
 $db = JFactory::getDbo();

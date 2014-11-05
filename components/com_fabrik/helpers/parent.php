@@ -1358,7 +1358,7 @@ class FabrikWorker
 	 * if it doesn't already exist.
 	 *
 	 * @param   bool   $loadJoomlaDb  Force (if true) the loading of the main J database,
-	 * needed in admin to connect to J db whilst still using fab db drivers "{package}" replacement text
+	 * needed in admin to connect to J db whilst still using fab db drivers "fabrik" replacement text
 	 *
 	 * @param   mixed  $cnnId         If null then loads the fabrik default connection, if an int then loads the specified connection by its id
 	 *

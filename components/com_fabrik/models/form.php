@@ -719,7 +719,7 @@ class FabrikFEModelForm extends FabModelForm
 		if (!empty($aElIds))
 		{
 			$query = $db->getQuery(true);
-			$query->select('*')->from('#__{package}_jsactions')->where('element_id IN (' . implode(',', $aElIds) . ')');
+			$query->select('*')->from('#__fabrik_jsactions')->where('element_id IN (' . implode(',', $aElIds) . ')');
 			$db->setQuery($query);
 			$res = $db->loadObjectList();
 		}
@@ -768,8 +768,8 @@ class FabrikFEModelForm extends FabModelForm
 			$params = $this->getParams();
 			$query = $db->getQuery(true);
 			$query->select(' *, fg.group_id AS group_id, RAND() AS rand_order')
-			->from('#__{package}_formgroup AS fg')
-			->join('INNER', '#__{package}_groups as g ON g.id = fg.group_id')
+			->from('#__fabrik_formgroup AS fg')
+			->join('INNER', '#__fabrik_groups as g ON g.id = fg.group_id')
 			->where('fg.form_id = ' . (int) $this->getId() . ' AND published = 1');
 
 			if ($params->get('randomise_groups') == 1)
@@ -840,8 +840,8 @@ class FabrikFEModelForm extends FabModelForm
 			if (is_object($listModel) && $listid !== 0)
 			{
 				$query = $db->getQuery(true);
-				$query->select('g.id, j.id AS joinid')->from('#__{package}_joins AS j')
-					->join('INNER', '#__{package}_groups AS g ON g.id = j.group_id')->where('list_id = ' . $listid . ' AND g.published = 1');
+				$query->select('g.id, j.id AS joinid')->from('#__fabrik_joins AS j')
+					->join('INNER', '#__fabrik_groups AS g ON g.id = j.group_id')->where('list_id = ' . $listid . ' AND g.published = 1');
 
 				// Added as otherwise you could potentially load a element joinid as a group join id. 3.1
 				$query->where('j.element_id = 0');
@@ -913,24 +913,24 @@ class FabrikFEModelForm extends FabModelForm
 		$query = $db->getQuery(true);
 		$query
 			->select(
-				'*, #__{package}_groups.params AS gparams, #__{package}_elements.id as element_id
-		, #__{package}_groups.name as group_name, RAND() AS rand_order')->from('#__{package}_formgroup')
-			->join('LEFT', '#__{package}_groups	ON #__{package}_formgroup.group_id = #__{package}_groups.id')
-			->join('LEFT', '#__{package}_elements ON #__{package}_groups.id = #__{package}_elements.group_id')
-			->where('#__{package}_formgroup.form_id = ' . (int) $this->getState('form.id'));
+				'*, #__fabrik_groups.params AS gparams, #__fabrik_elements.id as element_id
+		, #__fabrik_groups.name as group_name, RAND() AS rand_order')->from('#__fabrik_formgroup')
+			->join('LEFT', '#__fabrik_groups	ON #__fabrik_formgroup.group_id = #__fabrik_groups.id')
+			->join('LEFT', '#__fabrik_elements ON #__fabrik_groups.id = #__fabrik_elements.group_id')
+			->where('#__fabrik_formgroup.form_id = ' . (int) $this->getState('form.id'));
 
 		if ($excludeUnpublished)
 		{
-			$query->where('#__{package}_elements.published = 1');
+			$query->where('#__fabrik_elements.published = 1');
 		}
 
 		if ($params->get('randomise_groups') == 1)
 		{
-			$query->order('rand_order, #__{package}_elements.ordering');
+			$query->order('rand_order, #__fabrik_elements.ordering');
 		}
 		else
 		{
-			$query->order('#__{package}_formgroup.ordering, #__{package}_formgroup.group_id, #__{package}_elements.ordering');
+			$query->order('#__fabrik_formgroup.ordering, #__fabrik_formgroup.group_id, #__fabrik_elements.ordering');
 		}
 
 		$db->setQuery($query);
@@ -4905,7 +4905,7 @@ echo "form get errors";
 			else
 			{
 				$query = $db->getQuery(true);
-				$query->select('*')->from('#__{package}_lists')->where('db_table_name = ' . $db->quote($table));
+				$query->select('*')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($table));
 				$db->setQuery($query);
 			}
 

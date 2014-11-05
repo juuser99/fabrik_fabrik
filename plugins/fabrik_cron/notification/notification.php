@@ -53,9 +53,9 @@ class PlgFabrik_Cronnotification extends PlgFabrik_Cron
 		$query->select('n.*, e.event AS event, e.id AS event_id,
 		n.user_id AS observer_id, observer_user.name AS observer_name, observer_user.email AS observer_email,
 		e.user_id AS creator_id, creator_user.name AS creator_name, creator_user.email AS creator_email')
-		->from('#__{package}_notification AS n')
-		->join('LEFT', '#__{package}_notification_event AS e ON e.reference = n.reference')
-		->join('LEFT', '#__{package}_notification_event_sent AS s ON s.notification_event_id = e.id')
+		->from('#__fabrik_notification AS n')
+		->join('LEFT', '#__fabrik_notification_event AS e ON e.reference = n.reference')
+		->join('LEFT', '#__fabrik_notification_event_sent AS s ON s.notification_event_id = e.id')
 		->join('INNER', '#__users AS observer_user ON observer_user.id = n.user_id')
 		->join('INNER', '#__users AS creator_user ON creator_user.id = e.user_id')
 		->where('(s.sent <> 1 OR s.sent IS NULL)  AND  n.user_id <> e.user_id')
@@ -92,7 +92,7 @@ class PlgFabrik_Cronnotification extends PlgFabrik_Cron
 
 			$usermsgs[$row->observer_email][] = $msg;
 			$query->clear();
-			$query->insert('#__{package}_notification_event_sent')
+			$query->insert('#__fabrik_notification_event_sent')
 			->set(array('notification_event_id = ' . $row->event_id, 'user_id = ' . $row->observer_id, 'sent = 1'));
 			$sent[] = (string) $query;
 		}

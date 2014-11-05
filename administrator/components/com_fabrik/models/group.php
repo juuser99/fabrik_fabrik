@@ -14,6 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodeladmin.php';
 
+interface FabrikAdminModelGroupInterface
+{
+
+}
 /**
  * Fabrik Admin Group Model
  *
@@ -21,8 +25,7 @@ require_once 'fabmodeladmin.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminModelGroup extends FabModelAdmin
+abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdminModelGroupInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -98,22 +101,7 @@ class FabrikAdminModelGroup extends FabModelAdmin
 	 * @return  string
 	 */
 
-	public function swapFormToGroupIds($ids = array())
-	{
-		if (empty($ids))
-		{
-			return array();
-		}
-
-		JArrayHelper::toInteger($ids);
-		$db = FabrikWorker::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('group_id')->from('#__{package}_formgroup')->where('form_id IN (' . implode(',', $ids) . ')');
-		$db->setQuery($query);
-		$res = $db->loadColumn();
-
-		return $res;
-	}
+	public abstract function swapFormToGroupIds($ids = array());
 
 	/**
 	 * Does the group have a primary key element
@@ -258,32 +246,7 @@ class FabrikAdminModelGroup extends FabModelAdmin
 	 * @return void
 	 */
 
-	protected function makeFormGroup($data)
-	{
-		if ($data['form'] == '')
-		{
-			return;
-		}
-
-		$formid = (int) $data['form'];
-		$id = (int) $data['id'];
-		$item = FabTable::getInstance('FormGroup', 'FabrikTable');
-		$item->load(array('form_id' => $formid, 'group_id' => $id));
-
-		if ($item->id == '')
-		{
-			// Get max group order
-			$db = FabrikWorker::getDbo(true);
-			$query = $db->getQuery(true);
-			$query->select('MAX(ordering)')->from('#__{package}_formgroup')->where('form_id = ' . $formid);
-			$db->setQuery($query);
-			$next = (int) $db->loadResult() + 1;
-			$item->ordering = $next;
-			$item->form_id = $formid;
-			$item->group_id = $id;
-			$item->store();
-		}
-	}
+	protected abstract function makeFormGroup($data);
 
 	/**
 	 * A group has been set to be repeatable but is not part of a join
@@ -411,29 +374,7 @@ class FabrikAdminModelGroup extends FabModelAdmin
 	 *
 	 * @return boolean
 	 */
-	public function unMakeJoinedGroup(&$data)
-	{
-		if (empty($data['id']))
-		{
-			return false;
-		}
-
-		$db = FabrikWorker::getDbo(true);
-		$query = $db->getQuery(true);
-		$query->delete('#__{package}_joins')->where('group_id = ' . $data['id']);
-		$db->setQuery($query);
-		$return = $db->execute();
-
-		$query = $db->getQuery(true);
-		$query->select('id')->from('#__{package}_elements')->where('group_id  = ' . $data['id'] . ' AND name IN ("id", "parent_id")');
-		$db->setQuery($query);
-		$elids = $db->loadColumn();
-		$elementModel = JModelLegacy::getInstance('Element', 'FabrikModel');
-		$return = $elementModel->delete($elids);
-
-		// Kinda meaningless return, but ...
-		return $return;
-	}
+	public abstract function unMakeJoinedGroup(&$data);
 
 	/**
 	 * Method to delete one or more records.
@@ -477,18 +418,7 @@ class FabrikAdminModelGroup extends FabModelAdmin
 	 * @return  bool
 	 */
 
-	public function deleteElements($pks)
-	{
-		$db = FabrikWorker::getDbo(true);
-		JArrayHelper::toInteger($pks);
-		$query = $db->getQuery(true);
-		$query->select('id')->from('#__{package}_elements')->where('group_id IN (' . implode(',', $pks) . ')');
-		$db->setQuery($query);
-		$elids = $db->loadColumn();
-		$elementModel = JModelLegacy::getInstance('Element', 'FabrikAdminModel');
-
-		return $elementModel->delete($elids);
-	}
+	public abstract function deleteElements($pks);
 
 	/**
 	 * Delete formgroups
@@ -498,14 +428,5 @@ class FabrikAdminModelGroup extends FabModelAdmin
 	 * @return  bool
 	 */
 
-	public function deleteFormGroups($pks)
-	{
-		$db = FabrikWorker::getDbo(true);
-		JArrayHelper::toInteger($pks);
-		$query = $db->getQuery(true);
-		$query->delete('#__{package}_formgroup')->where('group_id IN (' . implode(',', $pks) . ')');
-		$db->setQuery($query);
-
-		return $db->execute();
-	}
+	public abstract function deleteFormGroups($pks);
 }

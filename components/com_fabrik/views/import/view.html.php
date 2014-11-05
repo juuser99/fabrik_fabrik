@@ -85,7 +85,7 @@ class FabrikViewImport extends JViewLegacy
 		{
 			$db = FabrikWorker::getDbo();
 			$query = $db->getQuery(true);
-			$query->select('label')->from('#__{package}_lists')->where('id = ' . $id);
+			$query->select('label')->from('#__fabrik_lists')->where('id = ' . $id);
 			$db->setQuery($query);
 			$this->listName = $db->loadResult();
 		}

@@ -47,7 +47,7 @@ class JFormFieldVisualizationlist extends JFormFieldList
 		$a = array(JHTML::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT')));
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id AS value, label AS text')->from('#__{package}_visualizations')->where('published = 1')->order('text');
+		$query->select('id AS value, label AS text')->from('#__fabrik_visualizations')->where('published = 1')->order('text');
 		$db->setQuery($query);
 		$elementstypes = $db->loadObjectList();
 		$elementstypes = array_merge($a, $elementstypes);

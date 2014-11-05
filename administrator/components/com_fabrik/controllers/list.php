@@ -49,12 +49,12 @@ class FabrikAdminControllerList extends FabControllerForm
 
 	public function edit($key = null, $urlVar = null)
 	{
-		$model = $this->getModel('connections');
+		/* $model = $this->getModel('connections');
 
 		if (count($model->activeConnections()) == 0)
 		{
 			throw new RuntimeException(FText::_('COM_FABRIK_ENUSRE_ONE_CONNECTION_PUBLISHED'));
-		}
+		} */
 
 		parent::edit($key, $urlVar);
 	}

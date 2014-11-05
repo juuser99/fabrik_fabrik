@@ -31,6 +31,6 @@ class FabrikTableFormGroup extends FabTable
 
 	public function __construct(&$db)
 	{
-		parent::__construct('#__{package}_formgroup', 'id', $db);
+		parent::__construct('#__fabrik_formgroup', 'id', $db);
 	}
 }

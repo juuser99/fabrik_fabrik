@@ -417,7 +417,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 			$select = '*, e.name AS name, e.id AS id, e.published AS published, e.label AS label,'
 			. 'e.plugin, e.params AS params, e.access AS access, e.ordering AS ordering';
 			$query->select($select);
-			$query->from('#__{package}_elements AS e');
+			$query->from('#__fabrik_elements AS e');
 			$query->join('INNER', '#__extensions AS p ON p.element = e.plugin');
 			$query->where('group_id IN (' . implode(',', $groupIds) . ')');
 			$query->where('p.folder = "fabrik_element"');

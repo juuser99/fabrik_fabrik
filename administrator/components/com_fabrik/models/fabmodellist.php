@@ -53,7 +53,7 @@ class FabModelList extends JModelList
 
 		// Select the required fields from the table.
 		$query->select('id AS value, label AS text');
-		$query->from('#__{package}_forms')->where('published <> -2');
+		$query->from('#__fabrik_forms')->where('published <> -2');
 		$query->order('label ASC');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
@@ -103,12 +103,12 @@ class FabModelList extends JModelList
 
 		// Select the required fields from the table.
 		$query->select('g.id AS value, g.name AS text');
-		$query->from('#__{package}_groups AS g');
+		$query->from('#__fabrik_groups AS g');
 		$query->where('published <> -2');
 
 		if ($formid !== '')
 		{
-			$query->join('INNER', '#__{package}_formgroup AS fg ON fg.group_id = g.id');
+			$query->join('INNER', '#__fabrik_formgroup AS fg ON fg.group_id = g.id');
 			$query->where('fg.form_id = ' . (int) $formid);
 		}
 

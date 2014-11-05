@@ -41,25 +41,23 @@ class FabrikAdminController extends JControllerLegacy
 	}
 
 	/**
-	 * Method to load and return a model object.
+	 * Method to get a model object, loading it if required.
+	 * 3.5 switch old 'save meta to db tables' model over to 'save meta to json file'
 	 *
-	 * @param   string  $name    The name of the model.
-	 * @param   string  $prefix  Optional model prefix.
-	 * @param   array   $config  Configuration array for the model. Optional.
+	 * @param   string  $name    The model name. Optional.
+	 * @param   string  $prefix  The class prefix. Optional.
+	 * @param   array   $config  Configuration array for model. Optional.
 	 *
-	 * @return	mixed	Model object on success; otherwise null failure.
+	 * @since   3.5
+	 *
+	 * @return  object  The model.
 	 */
-
-	protected function createModel($name, $prefix = '', $config = array())
+	public function getModel($name = '', $prefix = '', $config = array('ignore_request' => true))
 	{
-		/*
-		 * Use true so that we always use the Joomla db when in admin.
-		 * otherwise if alt cnn set to default that is loaded and the fabrik tables are not found
-		 */
-		$db = FabrikWorker::getDbo(true);
-		$config['dbo'] = $db;
-		$r = parent::createModel($name, $prefix, $config);
+		$config = JComponentHelper::getParams('com_fabrik');
+		$nameSuffix = $config->get('meta_storage', 'db');
+		$name .= $nameSuffix;
 
-		return $r;
+		return parent::getModel($name, $prefix, $config);
 	}
 }

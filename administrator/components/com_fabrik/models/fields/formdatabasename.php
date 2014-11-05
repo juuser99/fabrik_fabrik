@@ -48,7 +48,7 @@ class JFormFieldFormDatabaseName extends JFormFieldText
 			$db = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
 			$id = (int) $this->form->getValue('id');
-			$query->select('db_table_name')->from('#__{package}_lists')->where('form_id = ' . $id);
+			$query->select('db_table_name')->from('#__fabrik_lists')->where('form_id = ' . $id);
 			$db->setQuery($query);
 			$this->element['readonly'] == true;
 			$this->element['class'] = 'readonly';

@@ -30,6 +30,6 @@ class FabrikTableJsaction extends FabTable
 
 	public function __construct(&$db)
 	{
-		parent::__construct('#__{package}_jsactions', 'id', $db);
+		parent::__construct('#__fabrik_jsactions', 'id', $db);
 	}
 }

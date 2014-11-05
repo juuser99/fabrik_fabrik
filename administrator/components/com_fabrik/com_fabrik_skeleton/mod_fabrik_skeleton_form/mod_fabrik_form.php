@@ -15,7 +15,7 @@ $app = JFactory::getApplication();
 $input = $app->input;
 $option = $input->getCmd('option');
 
-// Set option and package to {package}
+// Set option and package to fabrik
 $input->set('option', 'com_{component_name}');
 $prevUserState = $app->getUserState('com_fabrik.package', 'fabrik');
 $app->setUserState('com_fabrik.package', '{component_name}');

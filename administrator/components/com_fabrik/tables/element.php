@@ -31,7 +31,7 @@ class FabrikTableElement extends FabTable
 
 	public function __construct(&$db)
 	{
-		parent::__construct('#__{package}_elements', 'id', $db);
+		parent::__construct('#__fabrik_elements', 'id', $db);
 	}
 
 	/**

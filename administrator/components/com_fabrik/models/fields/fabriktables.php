@@ -75,7 +75,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 		{
 			// We are not monitoring a connection drop down so load in all tables
 			$query = $db->getQuery(true);
-			$query->select('id AS value, label AS text')->from('#__{package}_lists')->where('published <> -2')->order('label ASC');
+			$query->select('id AS value, label AS text')->from('#__fabrik_lists')->where('published <> -2')->order('label ASC');
 			$db->setQuery($query);
 			$rows = $db->loadObjectList();
 		}

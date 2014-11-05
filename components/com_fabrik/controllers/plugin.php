@@ -116,7 +116,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 		}
 
 		$query = $db->getQuery();
-		$query->select('id, plugin')->from('#__{package}_cron');
+		$query->select('id, plugin')->from('#__fabrik_cron');
 
 		if (!empty($cid))
 		{
@@ -154,7 +154,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 		}
 
 		$query = $db->getQuery();
-		$query->update('#__{package}_cron')->set('lastrun=NOW()')->where('id IN (' . implode(',', $cid) . ')');
+		$query->update('#__fabrik_cron')->set('lastrun=NOW()')->where('id IN (' . implode(',', $cid) . ')');
 		$db->setQuery($query);
 		$db->execute();
 	}

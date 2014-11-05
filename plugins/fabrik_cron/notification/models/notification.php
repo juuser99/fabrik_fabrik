@@ -80,7 +80,7 @@ class FabrikModelNotification extends JModelLegacy
 		$user = JFactory::getUser();
 		$db = FabrikWorker::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('*')->from('#__{package}_notification')->where('user_id = ' . (int) $user->get('id'));
+		$query->select('*')->from('#__fabrik_notification')->where('user_id = ' . (int) $user->get('id'));
 		$db->setQuery($query);
 
 		return $db->loadObjectList();
@@ -107,7 +107,7 @@ class FabrikModelNotification extends JModelLegacy
 
 		$db = FabrikWorker::getDbo();
 		$query = $db->getQuery(true);
-		$query->delete('#__{package}_notification')->where('id IN (' . implode(',', $ids) . ')');
+		$query->delete('#__fabrik_notification')->where('id IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 		$db->execute();
 	}

@@ -587,7 +587,7 @@ class FabrikFEModelConnection extends JModelLegacy
 		if (!$this->defaultConnection)
 		{
 			// $$$ rob connections are pooled for all packages - each package should use
-			// jos_fabrik_connections and not jos_{package}_connections
+			// jos_fabrik_connections and not jos_fabrik_connections
 			$row = FabTable::getInstance('Connection', 'FabrikTable');
 			$row->load(array('default' => 1));
 			$this->decryptPw($row);

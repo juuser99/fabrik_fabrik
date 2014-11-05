@@ -119,12 +119,12 @@ class JFormFieldSwapList extends JFormFieldList
 	{
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('DISTINCT(group_id)')->from('#__{package}_formgroup');
+		$query->select('DISTINCT(group_id)')->from('#__fabrik_formgroup');
 		$db->setQuery($query);
 		$usedgroups = $db->loadColumn();
 		JArrayHelper::toInteger($usedgroups);
 		$query = $db->getQuery(true);
-		$query->select('id AS value, name AS text')->from('#__{package}_groups');
+		$query->select('id AS value, name AS text')->from('#__fabrik_groups');
 
 		if (!empty($usedgroups))
 		{
@@ -153,8 +153,8 @@ class JFormFieldSwapList extends JFormFieldList
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('fg.group_id AS value, g.name AS text');
-		$query->from('#__{package}_formgroup AS fg');
-		$query->join('LEFT', ' #__{package}_groups AS g ON fg.group_id = g.id');
+		$query->from('#__fabrik_formgroup AS fg');
+		$query->join('LEFT', ' #__fabrik_groups AS g ON fg.group_id = g.id');
 		$query->where('fg.form_id = ' . (int) $this->form->getValue('id'));
 		$query->where('g.name <> ""');
 		$query->order('fg.ordering');

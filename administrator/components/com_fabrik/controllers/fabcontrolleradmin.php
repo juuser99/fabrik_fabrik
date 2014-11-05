@@ -42,4 +42,25 @@ class FabControllerAdmin extends JControllerAdmin
 	{
 		parent::delete();
 	}
+
+	/**
+	 * Method to get a model object, loading it if required.
+	 * 3.5 switch old 'save meta to db tables' model over to 'save meta to json file'
+	 *
+	 * @param   string  $name    The model name. Optional.
+	 * @param   string  $prefix  The class prefix. Optional.
+	 * @param   array   $config  Configuration array for model. Optional.
+	 *
+	 * @since   3.5
+	 *
+	 * @return  object  The model.
+	 */
+	public function getModel($name = '', $prefix = '', $config = array('ignore_request' => true))
+	{
+		$config = JComponentHelper::getParams('com_fabrik');
+		$nameSuffix = $config->get('meta_storage', 'db');
+		$name .= $nameSuffix;
+
+		return parent::getModel($name, $prefix, $config);
+	}
 }

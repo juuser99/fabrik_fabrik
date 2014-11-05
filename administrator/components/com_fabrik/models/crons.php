@@ -57,7 +57,7 @@ class FabrikAdminModelCrons extends FabModelList
 
 		// Select the required fields from the table.
 		$query->select($this->getState('list.select', 'c.*'));
-		$query->from('#__{package}_cron AS c');
+		$query->from('#__fabrik_cron AS c');
 
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor');

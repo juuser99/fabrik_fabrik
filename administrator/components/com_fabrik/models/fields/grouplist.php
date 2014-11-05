@@ -56,10 +56,10 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 		$query = $db->getQuery(true);
 
 		$query->select('g.id AS value, g.name AS text, f.label AS form');
-		$query->from('#__{package}_groups AS g');
+		$query->from('#__fabrik_groups AS g');
 		$query->where('g.published <> -2')
-		->join('INNER', '#__{package}_formgroup AS fg ON fg.group_id = g.id')
-		->join('INNER', '#__{package}_forms AS f on fg.form_id = f.id');
+		->join('INNER', '#__fabrik_formgroup AS fg ON fg.group_id = g.id')
+		->join('INNER', '#__fabrik_forms AS f on fg.form_id = f.id');
 		$query->order('f.label, g.name');
 
 		// Get the options.

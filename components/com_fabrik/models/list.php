@@ -1321,7 +1321,7 @@ class FabrikFEModelList extends JModelForm
 
 		$action = $app->isAdmin() ? 'task' : 'view';
 		$query = $db->getQuery(true);
-		$query->select('id, label, db_table_name')->from('#__{package}_lists');
+		$query->select('id, label, db_table_name')->from('#__fabrik_lists');
 		$db->setQuery($query);
 		$aTableNames = $db->loadObjectList('label');
 		$cx = count($data);
@@ -4183,7 +4183,7 @@ class FabrikFEModelList extends JModelForm
 			$db = FabrikWorker::getDbo(true);
 			$id = (int) $this->getId();
 			$query = $db->getQuery(true);
-			$query->select('*')->from('#__{package}_joins')->where('list_id = ' . $id, 'OR');
+			$query->select('*')->from('#__fabrik_joins')->where('list_id = ' . $id, 'OR');
 
 			if (!empty($ids))
 			{
@@ -4219,7 +4219,7 @@ class FabrikFEModelList extends JModelForm
 			$db = FabrikWorker::getDbo(true);
 			$id = (int) $this->getId();
 			$query = $db->getQuery(true);
-			$query->select('*')->from('#__{package}_joins')->where('(element_id = 0 AND list_id = ' . $id . ')', 'OR');
+			$query->select('*')->from('#__fabrik_joins')->where('(element_id = 0 AND list_id = ' . $id . ')', 'OR');
 
 			if (!empty($ids))
 			{
@@ -4269,7 +4269,7 @@ class FabrikFEModelList extends JModelForm
 			$pks = $join->table_join;
 			$pks .= '.' . $pk[0]['colname'];
 			$join->params->set('pk', $fabrikDb->quoteName($pks));
-			$query->update('#__{package}_joins')->set('params = ' . $db->quote((string) $join->params))->where('id = ' . (int) $join->id);
+			$query->update('#__fabrik_joins')->set('params = ' . $db->quote((string) $join->params))->where('id = ' . (int) $join->id);
 			$db->setQuery($query);
 
 			try
@@ -5742,11 +5742,11 @@ class FabrikFEModelList extends JModelForm
 						el.name, el.plugin, l.label AS listlabel, l.id as list_id, \n
 						el.id AS element_id, el.label AS element_label, f.id AS form_id,
 						el.params AS element_params");
-				$query->from('#__{package}_elements AS el');
-				$query->join('LEFT', '#__{package}_formgroup AS fg ON fg.group_id = el.group_id');
-				$query->join('LEFT', '#__{package}_forms AS f ON f.id = fg.form_id');
-				$query->join('LEFT', '#__{package}_lists AS l ON l.form_id = f.id');
-				$query->join('LEFT', '#__{package}_groups AS g ON g.id = fg.group_id');
+				$query->from('#__fabrik_elements AS el');
+				$query->join('LEFT', '#__fabrik_formgroup AS fg ON fg.group_id = el.group_id');
+				$query->join('LEFT', '#__fabrik_forms AS f ON f.id = fg.form_id');
+				$query->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id');
+				$query->join('LEFT', '#__fabrik_groups AS g ON g.id = fg.group_id');
 				$query->where('el.published = 1 AND g.published = 1');
 				$query
 				->where(
@@ -8256,7 +8256,7 @@ class FabrikFEModelList extends JModelForm
 			// $$$ So ... see if we know about it, and if so, fake out the PK details
 			$db = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
-			$query->select('db_primary_key')->from('#__{package}_lists')->where('db_table_name = ' . $db->quote($table));
+			$query->select('db_primary_key')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($table));
 			$db->setQuery($query);
 			$join_pk = $db->loadResult();
 
@@ -10560,7 +10560,7 @@ class FabrikFEModelList extends JModelForm
 							{
 								// $$$ hugh - might be a view, so Hail Mary attempt to get PK
 								$query = $db->getQuery(true);
-								$query->select('db_primary_key')->from('#__{package}_lists')
+								$query->select('db_primary_key')->from('#__fabrik_lists')
 								->where('db_table_name = ' . $db->quote($join_table_name));
 								$db->setQuery($query);
 								$join_pk = $db->loadResult();

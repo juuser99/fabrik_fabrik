@@ -14,6 +14,11 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodeladmin.php';
 
+interface FabrikAdminModelFormListInterface
+{
+
+}
+
 /**
  * Fabrik Admin Form Model
  *
@@ -22,7 +27,7 @@ require_once 'fabmodeladmin.php';
  * @since       3.0
  */
 
-class FabrikAdminModelForm extends FabModelAdmin
+abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdminModelFormFormInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -314,7 +319,7 @@ class FabrikAdminModelForm extends FabModelAdmin
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		JArrayHelper::toInteger($currentGroups);
-		$query->delete('#__{package}_formgroup')->where('form_id = ' . (int) $formid);
+		$query->delete('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
 
 		if (!empty($currentGroups))
 		{
@@ -327,7 +332,7 @@ class FabrikAdminModelForm extends FabModelAdmin
 		!$db->execute();
 
 		// Get previously saved form groups
-		$query->clear()->select('id, group_id')->from('#__{package}_formgroup')->where('form_id = ' . (int) $formid);
+		$query->clear()->select('id, group_id')->from('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
 		$db->setQuery($query);
 		$fgids = $db->loadObjectList('group_id');
 		$orderid = 1;
@@ -342,12 +347,12 @@ class FabrikAdminModelForm extends FabModelAdmin
 
 				if (array_key_exists($group_id, $fgids))
 				{
-					$query->update('#__{package}_formgroup')
+					$query->update('#__fabrik_formgroup')
 					->set('ordering = ' . $orderid)->where('id =' . $fgids[$group_id]->id);
 				}
 				else
 				{
-					$query->insert('#__{package}_formgroup')
+					$query->insert('#__fabrik_formgroup')
 					->set(array('form_id =' . (int) $formid, 'group_id = ' . $group_id, 'ordering = ' . $orderid));
 				}
 
@@ -377,7 +382,7 @@ class FabrikAdminModelForm extends FabModelAdmin
 		JArrayHelper::toInteger($ids);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('form_id')->from('#__{package}_lists')->where('id IN (' . implode(',', $ids) . ')');
+		$query->select('form_id')->from('#__fabrik_lists')->where('id IN (' . implode(',', $ids) . ')');
 
 		return $db->setQuery($query)->loadColumn();
 	}
@@ -419,7 +424,7 @@ class FabrikAdminModelForm extends FabModelAdmin
 				 */
 				$db = FabrikWorker::getDbo(true);
 				$query = $db->getQuery(true);
-				$query->select('group_id')->from('#__{package}_formgroup AS fg')->join('LEFT', '#__{package}_groups AS g ON g.id = fg.group_id')
+				$query->select('group_id')->from('#__fabrik_formgroup AS fg')->join('LEFT', '#__fabrik_groups AS g ON g.id = fg.group_id')
 					->where('fg.form_id = ' . $formId . ' AND g.is_join != 1');
 				$db->setQuery($query);
 				$groupIds = $db->loadResultArray();

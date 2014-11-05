@@ -82,7 +82,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		$db = FabrikWorker::getDbo();
 		$ref = $this->getRef($formModel->getListModel()->getId());
 		$query = $db->getQuery(true);
-		$query->select('COUNT(id)')->from('#__{package}_notification')->where('user_id = ' . (int) $user->get('id') . ' AND reference = ' . $ref);
+		$query->select('COUNT(id)')->from('#__fabrik_notification')->where('user_id = ' . (int) $user->get('id') . ' AND reference = ' . $ref);
 		$db->setQuery($query);
 		$found = $db->loadResult();
 		$checked = $found ? 'checked="checked"' : '';
@@ -147,7 +147,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 			if ($add)
 			{
 				$fields[] = 'reason = ' . $db->quote($why);
-				$query->insert('#__{package}_notification')->set($fields);
+				$query->insert('#__fabrik_notification')->set($fields);
 				$db->setQuery($query);
 				$ok = true;
 
@@ -173,7 +173,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 			}
 			else
 			{
-				$query->delete('#__{package}_notification')->where($fields);
+				$query->delete('#__fabrik_notification')->where($fields);
 				echo FText::_('PLG_CRON_NOTIFICATION_REMOVED');
 				$db->setQuery($query);
 				$db->execute();
@@ -188,7 +188,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 			{
 				$query->clear('set');
 				$fields2 = array_merge($fields, array('user_id = ' . $userid));
-				$query->insert('#__{package}_notification')->set($fields2);
+				$query->insert('#__fabrik_notification')->set($fields2);
 				$db->setQuery($query);
 				$db->execute();
 			}
@@ -272,7 +272,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		if ($params->get('send_mode') == '0')
 		{
 			$fields[] = 'user_id = ' . (int) $userid;
-			$query->insert('#__{package}_notification_event')->set($fields);
+			$query->insert('#__fabrik_notification_event')->set($fields);
 			$db->setQuery($query);
 			$db->execute();
 		}
@@ -286,7 +286,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 			{
 				$query->clear('set');
 				$fields2 = array_merge($fields, array('user_id = ' . $userid));
-				$query->insert('#__{package}_notification_event')->set($fields2);
+				$query->insert('#__fabrik_notification_event')->set($fields2);
 				$db->setQuery($query);
 				$db->execute();
 			}

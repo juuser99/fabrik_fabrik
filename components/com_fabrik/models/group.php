@@ -329,7 +329,7 @@ class FabrikFEModelGroup extends FabModel
 		{
 			$db = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
-			$query->select('form_id')->from('#__{package}_formgroup')->where('group_id = ' . (int) $this->getId());
+			$query->select('form_id')->from('#__fabrik_formgroup')->where('group_id = ' . (int) $this->getId());
 			$db->setQuery($query);
 			$this->formsIamIn = $db->loadColumn();
 			$db->execute();

@@ -258,17 +258,17 @@ class FabrikFEModelJoin extends FabModel
 	{
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->delete(' #__{package}_elements')->where('group_id = ' . (int) $groupId);
+		$query->delete(' #__fabrik_elements')->where('group_id = ' . (int) $groupId);
 		$db->setQuery($query);
 		$db->execute();
 		$query->clear();
-		$query->delete(' #__{package}_groups')->where('id = ' . (int) $groupId);
+		$query->delete(' #__fabrik_groups')->where('id = ' . (int) $groupId);
 		$db->setQuery($query);
 		$db->execute();
 
 		// Delete all form group records
 		$query->clear();
-		$query->delete(' #__{package}_formgroup')->where('group_id = ' . (int) $groupId);
+		$query->delete(' #__fabrik_formgroup')->where('group_id = ' . (int) $groupId);
 		$db->setQuery($query);
 		$db->execute();
 		$this->getJoin()->delete();

@@ -50,7 +50,7 @@ window.addEvent('domready', function () {
 	if (($id !== 0)) :
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('label')->from('#__{package}_lists')->where('id = ' . $id);
+		$query->select('label')->from('#__fabrik_lists')->where('id = ' . $id);
 		$db->setQuery($query);
 		$list = $db->loadResult();
 	endif;

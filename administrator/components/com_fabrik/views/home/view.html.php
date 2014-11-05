@@ -45,13 +45,11 @@ class FabrikAdminViewHome extends JViewLegacy
 
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::script($srcs);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('*')->from('#__{package}_log')->where('message_type != ""')->order('timedate_created DESC');
+		$query->select('*')->from('#__fabrik_log')->where('message_type != ""')->order('timedate_created DESC');
 		$db->setQuery($query, 0, 10);
 		$this->logs = $db->loadObjectList();
 		$this->feed = $this->get('RSSFeed');

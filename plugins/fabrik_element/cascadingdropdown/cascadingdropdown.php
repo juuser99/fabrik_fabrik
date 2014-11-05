@@ -294,7 +294,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 				if ($listid !== 0)
 				{
 					$query = $db->getQuery(true);
-					$query->select('form_id')->from('#__{package}_lists')->where('id = ' . $listid);
+					$query->select('form_id')->from('#__fabrik_lists')->where('id = ' . $listid);
 					$db->setQuery($query);
 					$popupformid = $db->loadResult();
 					$url = 'index.php?option=com_fabrik&view=details&formid=' . $popupformid . '&listid=' . $listid . '&rowid=' . $defaultValue;
@@ -1035,7 +1035,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 			$db = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
-			$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . (int) $id);
+			$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . (int) $id);
 			$db->setQuery($query);
 			$this->dbname = $db->loadResult();
 		}

@@ -14,6 +14,11 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodeladmin.php';
 
+interface FabrikAdminModelVisualizationInterface
+{
+
+}
+
 /**
  * Fabrik Admin Visualization Model
  *
@@ -21,8 +26,7 @@ require_once 'fabmodeladmin.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminModelVisualization extends FabModelAdmin
+abstract class FabrikAdminModelVisualization extends FabModelAdmin implements FabrikAdminModelVisualizationInterface
 {
 	/**
 	 * The prefix to use with controller messages.

@@ -49,12 +49,12 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	 *
 	 * @since   12.2
 	 */
-	public function getModel($name = 'List', $prefix = 'FabrikAdminModel', $config = array())
+/* 	public function getModel($name = 'List', $prefix = 'FabrikAdminModel', $config = array())
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 
 		return $model;
-	}
+	} */
 
 	/**
 	 * Method to publish a list of items

@@ -610,7 +610,7 @@ if (!$j3)
 	{
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id, label')->from('#__{package}_lists')->where('published = 1')->order('label');
+		$query->select('id, label')->from('#__fabrik_lists')->where('published = 1')->order('label');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 

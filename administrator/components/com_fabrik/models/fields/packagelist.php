@@ -47,7 +47,7 @@ class JFormFieldPackageList extends JFormFieldList
 		$db = FabrikWorker::getDbo();
 		$query = $db->getQuery(true);
 		$query->select("id AS value, CONCAT(label, '(', version , ')') AS " . $db->quote('text'));
-		$query->from('#__{package}_packages');
+		$query->from('#__fabrik_packages');
 		$query->order('value DESC');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();

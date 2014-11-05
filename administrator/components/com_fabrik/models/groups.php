@@ -14,6 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodellist.php';
 
+interface FabrikAdminModelGroupsInterface
+{
+}
+
 /**
  * Fabrik Admin Groups Model
  *
@@ -22,7 +26,7 @@ require_once 'fabmodellist.php';
  * @since       3.0
  */
 
-class FabrikAdminModelGroups extends FabModelList
+abstract class FabrikAdminModelGroups extends FabModelList implements FabrikAdminModelGroupsInterface
 {
 	/**
 	 * Constructor.
@@ -57,13 +61,13 @@ class FabrikAdminModelGroups extends FabModelList
 
 		// Select the required fields from the table.
 		$query->select($this->getState('list.select', 'g.*'));
-		$query->from('#__{package}_groups AS g');
+		$query->from('#__fabrik_groups AS g');
 
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor, fg.form_id AS form_id, f.label AS flabel');
 		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
-		$query->join('LEFT', '#__{package}_formgroup AS fg ON g.id = fg.group_id');
-		$query->join('LEFT', '#__{package}_forms AS f ON fg.form_id = f.id');
+		$query->join('LEFT', '#__fabrik_formgroup AS fg ON g.id = fg.group_id');
+		$query->join('LEFT', '#__fabrik_forms AS f ON fg.form_id = f.id');
 
 		// Add the list ordering clause.
 		$orderCol = $this->state->get('list.ordering');
@@ -144,7 +148,7 @@ class FabrikAdminModelGroups extends FabModelList
 		$query = $db->getQuery(true);
 
 		$query->select('COUNT(id) AS count, group_id');
-		$query->from('#__{package}_elements');
+		$query->from('#__fabrik_elements');
 		$query->group('group_id');
 
 		$db->setQuery($query);

@@ -72,7 +72,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		JArrayHelper::toInteger($cid);
 		$cid = implode(',', $cid);
 		$query = $db->getQuery(true);
-		$query->select('*')->from('#__{package}_cron')->where('id IN (' . $cid . ')');
+		$query->select('*')->from('#__fabrik_cron')->where('id IN (' . $cid . ')');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 		$adminListModel = JModelLegacy::getInstance('List', 'FabrikAdminModel');

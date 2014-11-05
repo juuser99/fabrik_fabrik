@@ -45,8 +45,8 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 
 		$query = $db->getQuery(true);
 		$query->select('form_id')
-		->from($db->quoteName('#__{package}_formgroup') . ' AS fg')
-		->join('LEFT', '#__{package}_elements AS e ON e.group_id = fg.group_id')
+		->from($db->quoteName('#__fabrik_formgroup') . ' AS fg')
+		->join('LEFT', '#__fabrik_elements AS e ON e.group_id = fg.group_id')
 		->where('e.id = ' . $input->getInt('elementid'));
 		$db->setQuery($query);
 		$formId = $db->loadResult();

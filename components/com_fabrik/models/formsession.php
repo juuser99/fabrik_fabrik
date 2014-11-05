@@ -103,7 +103,7 @@ class FabrikFEModelFormsession extends FabModel
 	}
 
 	/**
-	 * Save the form data to #__{package}_form_session
+	 * Save the form data to #__fabrik_form_session
 	 *
 	 * @param   object  &$formModel  form model
 	 *

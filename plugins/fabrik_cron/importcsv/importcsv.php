@@ -67,7 +67,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 		// Get site's database
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__{package}_lists')->where('db_table_name = ' . $db->quote($tableName));
+		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($tableName));
 		$db->setQuery($query);
 		$id = $db->loadResult();
 

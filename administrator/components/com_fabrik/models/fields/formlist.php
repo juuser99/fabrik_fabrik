@@ -58,7 +58,7 @@ class JFormFieldFormList extends JFormFieldList
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id AS value, label AS ' . $db->quote('text') . ', published');
-		$query->from('#__{package}_forms');
+		$query->from('#__fabrik_forms');
 
 		if (!$this->element['showtrashed'])
 		{
@@ -106,7 +106,7 @@ class JFormFieldFormList extends JFormFieldList
 		{
 			$db = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
-			$query->select('form_id')->from('#__{package}_formgroup')->where('group_id = ' . (int) $this->form->getValue('id'));
+			$query->select('form_id')->from('#__fabrik_formgroup')->where('group_id = ' . (int) $this->form->getValue('id'));
 			$db->setQuery($query);
 			$this->value = $db->loadResult();
 			$this->form->setValue('form', null, $this->value);

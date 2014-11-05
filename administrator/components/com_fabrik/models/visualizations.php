@@ -14,6 +14,11 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodellist.php';
 
+interface FabrikAdminModelVisualizationsInterface
+{
+
+}
+
 /**
  * Fabrik Admin Visualizations Model
  *
@@ -22,7 +27,7 @@ require_once 'fabmodellist.php';
  * @since       3.0
  */
 
-class FabrikAdminModelVisualizations extends FabModelList
+abstract class FabrikAdminModelVisualizations extends FabModelList implements FabrikAdminModelVisualizationsInterface
 {
 	/**
 	 * Constructor.
@@ -59,7 +64,7 @@ class FabrikAdminModelVisualizations extends FabModelList
 
 		// Select the required fields from the table.
 		$query->select($this->getState('list.select', 'v.*'));
-		$query->from('#__{package}_visualizations AS v');
+		$query->from('#__fabrik_visualizations AS v');
 
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor');
