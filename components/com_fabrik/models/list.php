@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Storage\MySql as Storage;
+
 jimport('joomla.application.component.modelform');
 
 require_once COM_FABRIK_FRONTEND . '/helpers/pagination.php';
@@ -468,6 +470,10 @@ class FabrikFEModelList extends JModelForm
 		$this->packageId = (int) $input->getInt('packageId', $usersConfig->get('packageId'));
 		$this->setId($id);
 		$this->access = new stdClass;
+
+		$db = $this->getDb();
+		$storeCfg = array('db' => $db);
+		$this->storage = new Storage($storeCfg);
 	}
 
 	/**
@@ -4398,66 +4404,6 @@ class FabrikFEModelList extends JModelForm
 	}
 
 	/**
-	 * Gets the field names for the given table
-	 * $$$ hugh - copies this to backend model, so remember to modify that as well, if
-	 * you make changes to this one.  Better yet, make it a Helper func that requires
-	 * the $tbl arg, as that's the only thing that makes it list model specific.
-	 *
-	 * @param   string  $tbl  table name
-	 * @param   string  $key  field to key return array on
-	 *
-	 * @return  array	table fields
-	 */
-
-	public function getDBFields($tbl = null, $key = null)
-	{
-		if (is_null($tbl))
-		{
-			$table = $this->getTable();
-			$tbl = $table->db_table_name;
-		}
-
-		if ($tbl == '')
-		{
-			return array();
-		}
-
-		$sig = $tbl . $key;
-		$tbl = FabrikString::safeColName($tbl);
-
-		if (!isset($this->dbFields[$sig]))
-		{
-			$db = $this->getDb();
-			$tbl = FabrikString::safeColName($tbl);
-			$db->setQuery("DESCRIBE " . $tbl);
-
-			try
-			{
-				$this->dbFields[$sig] = $db->loadObjectList($key);
-			}
-			catch (RuntimeException $e)
-			{
-				// List may be in second connection but we might try to get #__user fields for join
-				$this->dbFields[$sig] = array();
-			}
-
-			foreach ($this->dbFields[$sig] as &$row)
-			{
-				/**
-				 * Boil the type down to just the base type, so "INT(11) UNSIGNED" becomes just "INT"
-				 * I'm sure there's other cases than just UNSIGNED I need to deal with, but for now that's
-				 * what I most care about, as this stuff is being written handle being more specific about
-				 * the elements the list PK can be selected from.
-				 */
-				$row->BaseType = strtoupper(preg_replace('#(\(\d+\))$#', '', $row->Type));
-				$row->BaseType = preg_replace('#(\s+SIGNED|\s+UNSIGNED)#', '', $row->BaseType);
-			}
-		}
-
-		return $this->dbFields[$sig];
-	}
-
-	/**
 	 * Called at the end of saving an element
 	 * if a new element it will run the sql to add to field,
 	 * if existing element and name changed will create query to be used later
@@ -4516,7 +4462,7 @@ class FabrikFEModelList extends JModelForm
 
 		// The element type AFTER saving
 		$objtype = $elementModel->getFieldDescription();
-		$dbdescriptions = $this->getDBFields($tableName, 'Field');
+		$dbdescriptions = $this->storage->getDBFields($tableName, 'Field');
 
 		if (!$this->canAlterFields() && !$this->canAddFields())
 		{
@@ -4711,7 +4657,7 @@ class FabrikFEModelList extends JModelForm
 		// $$$ rob base plugin needs to know group info for date fields in non-join repeat groups
 		$basePlugIn->setGroupModel($elementModel->getGroupModel());
 		$objtype = $elementModel->getFieldDescription();
-		$dbdescriptions = $this->getDBFields($tableName);
+		$dbdescriptions = $this->storage->getDBFields($tableName);
 
 		if (!$this->canAlterFields())
 		{
@@ -4877,58 +4823,14 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Tests if the table is in fact a view
 	 *
+	 * @deprecated use storage isView();
+	 *
 	 * @return  bool	true if table is a view
 	 */
 
 	public function isView()
 	{
-		$params = $this->getParams();
-		$isView = $params->get('isview', null);
-
-		if (!is_null($isView) && (int) $isView >= 0)
-		{
-			return $isView;
-		}
-
-		/* $$$ hugh - because querying INFORMATION_SCHEMA can be very slow (like minutes!) on
-		 * a shared host, I made a small change.  The edit table view now adds a hidden 'isview'
-		* param, defaulting to -1 on new tables.  So the following code should only ever execute
-		* one time, when a new table is saved.  Before this change, because 'isview' wasn't
-		* included on the edit view (because it's not a "real" user settable param), so didn't
-		* exist when we picked up the params from the submitted data, this code was running (twice!)
-		* every time a table was saved.
-		* http://fabrikar.com/forums/showthread.php?t=16622&page=6
-		*/
-
-		if (isset($this->isView))
-		{
-			return $this->isView;
-		}
-
-		$db = FabrikWorker::getDbo();
-		$table = $this->getTable();
-		$cn = $this->getConnection();
-
-		$c = $cn->getConnection();
-		$dbname = $c->database;
-
-		if ($table->db_table_name == '')
-		{
-			return;
-		}
-
-		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $db->quote($table->db_table_name)
-		. " AND table_type = 'view' AND table_schema = " . $db->quote($dbname);
-		$db->setQuery($sql);
-		$row = $db->loadObjectList();
-		$this->isView = empty($row) ? "0" : "1";
-
-		// Store and save param for following tests
-		$params->set('isview', $this->isView);
-		$table->params = (string) $params;
-		$table->store();
-
-		return $this->isView;
+		return $this->storage->isView();
 	}
 
 	/**
@@ -7571,7 +7473,7 @@ class FabrikFEModelList extends JModelForm
 			throw new ErrorException('Store row failed: ' . $q . "<br>" . $fabrikDb->getErrorMsg(), 500);
 		}
 		else
-		{				
+		{
 			// Clean the cache.
 			JFactory::getCache('com_' . $package)->clean();
 
@@ -7649,7 +7551,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		FabrikHelperHTML::debug($db->getQuery(), 'list model updateObject:');
-		
+
 		return true;
 	}
 
@@ -7713,7 +7615,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		FabrikHelperHTML::debug($db->getQuery(), 'list model insertObject:');
-		
+
 		return true;
 	}
 
@@ -7986,12 +7888,12 @@ class FabrikFEModelList extends JModelForm
 	{
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('cacheDoCalculations: start') : null;
-		
+
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$listModel->setId($listId);
 		$db = FabrikWorker::getDbo();
 		$formModel = $listModel->getFormModel();
-		
+
 		JDEBUG ? $profiler->mark('cacheDoCalculations, getGroupsHiarachy: start') : null;
 		$groups = $formModel->getGroupsHiarachy();
 
@@ -8220,57 +8122,14 @@ class FabrikFEModelList extends JModelForm
 	 *
 	 * @param   string  $table  Optional table name (used when getting pk to joined tables)
 	 *
+	 * @deprecated
+	 *
 	 * @return  mixed	If ok returns array(key, extra, type, name) otherwise
 	 */
 
 	public function getPrimaryKeyAndExtra($table = null)
 	{
-		$origColNames = $this->getDBFields($table);
-		$keys = array();
-		$origColNamesByName = array();
-
-		if (is_array($origColNames))
-		{
-			foreach ($origColNames as $origColName)
-			{
-				$colName = $origColName->Field;
-				$key = $origColName->Key;
-				$extra = $origColName->Extra;
-				$type = $origColName->Type;
-
-				if ($key == "PRI")
-				{
-					$keys[] = array("key" => $key, "extra" => $extra, "type" => $type, "colname" => $colName);
-				}
-				else
-				{
-					// $$$ hugh - if we never find a PRI, it may be a view, and we'll need this info in the Hail Mary.
-					$origColnamesByName[$colName] = $origColName;
-				}
-			}
-		}
-
-		if (empty($keys))
-		{
-			// $$$ hugh - might be a view, so Hail Mary attempt to find it in our lists
-			// $$$ So ... see if we know about it, and if so, fake out the PK details
-			$db = FabrikWorker::getDbo(true);
-			$query = $db->getQuery(true);
-			$query->select('db_primary_key')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($table));
-			$db->setQuery($query);
-			$join_pk = $db->loadResult();
-
-			if (!empty($join_pk))
-			{
-				$shortColName = FabrikString::shortColName($join_pk);
-				$key = $origColName->Key;
-				$extra = $origColName->Extra;
-				$type = $origColName->Type;
-				$keys[] = array('colname' => $shortColName, 'type' => $type, 'extra' => $extra, 'key' => $key);
-			}
-		}
-
-		return empty($keys) ? false : $keys;
+		return $this->storage->setTable($table)->getPrimarykeyAndDefault();
 	}
 
 	/**
@@ -8403,6 +8262,8 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Get the lists db table's indexes
 	 *
+	 * @deprecated use storage admin model instead
+	 *
 	 * @return array  list indexes
 	 */
 
@@ -8426,6 +8287,8 @@ class FabrikFEModelList extends JModelForm
 	 * different parts of fabrik)
 	 * @param   string  $type    index type
 	 * @param   int     $size    index length
+	 *
+	 * @deprecated use Storage admin model instead.
 	 *
 	 * @return void
 	 */
@@ -8497,6 +8360,8 @@ class FabrikFEModelList extends JModelForm
 	 * different parts of fabrik)
 	 * @param   string  $type    table name @since 29/03/2011
 	 * @param   string  $table   db table name
+	 *
+	 * @deprecated used admin Storage
 	 *
 	 * @return  string  index type
 	 */
@@ -8932,7 +8797,7 @@ class FabrikFEModelList extends JModelForm
 		$className = "inputbox")
 	{
 		$this->setConnectionId($cnnId);
-		$aFields = $this->getDBFields($tbl);
+		$aFields = $this->storage->getDBFields($tbl);
 		$fieldNames = array();
 
 		if ($incSelect != '')
@@ -9303,7 +9168,7 @@ class FabrikFEModelList extends JModelForm
 			$table = $this->getGenericTableName();
 		}
 
-		$fields = $this->getDBFields($table);
+		$fields = $this->storage->getDBFields($table);
 		$primaryKey = "";
 		$sql = "";
 		$table = FabrikString::safeColName($table);

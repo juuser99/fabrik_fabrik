@@ -269,15 +269,15 @@ class Fabimage
 		 * 
 		 * So ... just preserve original extension (if any) and append it to md5() of file name.
 		 */
-		
+
 		$ext = pathinfo($file, PATHINFO_EXTENSION);
 		$file = md5($file);
-		
+
 		if (!empty($ext))
 		{
 			$file .= '.' . $ext;
 		}
-		
+
 		$folder = JPATH_SITE . '/' . ltrim($path, '/');
 
 		// For SSL a user agent may need to be set.

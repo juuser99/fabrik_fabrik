@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Storage\MySql as Storage;
+
 require_once 'fabmodeladmin.php';
 
 interface FabrikAdminModelFormListInterface
@@ -73,28 +75,21 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	protected $dbFields = null;
 
 	/**
-	 * Returns a reference to the a Table object, always creating it.
+	 * Constructor.
 	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
+	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @return  JTable	A database object
-	 *
-	 * @since	1.6
+	 * @see     JModelLegacy
+	 * @since   12.2
 	 */
-
-	public function getTable($type = 'List', $prefix = 'FabrikTable', $config = array())
+	public function __construct($config = array())
 	{
-		$sig = $type . $prefix . implode('.', $config);
+		parent::__construct($config);
+		$feModel = $this->getFEModel();
+		$db = $feModel->getDb();
+		$storeCfg = array('db' => $db);
+		$this->storage = new Storage($storeCfg);
 
-		if (!array_key_exists($sig, $this->tables))
-		{
-			$config['dbo'] = FabrikWorker::getDbo(true);
-			$this->tables[$sig] = FabTable::getInstance($type, $prefix, $config);
-		}
-
-		return $this->tables[$sig];
 	}
 
 	/**
@@ -107,7 +102,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	 *
 	 * @since	1.6
 	 */
-
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
@@ -133,7 +127,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	 *
 	 * @since	1.6
 	 */
-
 	public function getConfirmDeleteForm($data = array(), $loadData = true)
 	{
 		// Get the form.
@@ -497,18 +490,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			$config['dbo'] = FabrikWorker::getDbo(true);
 			$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel', $config);
 			$this->formModel->setDbo($config['dbo']);
-
-			/**
-			 * $$$ rob commenting out as this loads up an empty form when saving a new list
-			 * $item = $this->getItem();
-			 * $this->formModel->setId($this->getState('list.form_id', $item->id));
-			 * $this->formModel->getForm();
-			 */
-
-			/**
-			 * $$$ rob isnt this wrong as normally the front end form models list model is the fe list model?
-			 * $this->formModel->setListModel($this);
-			 */
 		}
 
 		return $this->formModel;
@@ -580,44 +561,30 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	/**
 	 * Save the form
 	 *
-	 * @param   array  $data  the jform part of the request data
+	 * @param   array  $data  The jform part of the request data
 	 *
 	 * @return  bool
 	 */
-
 	public function save($data)
 	{
 		$this->populateState();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$user = JFactory::getUser();
-		$config = JFactory::getConfig();
 		$date = JFactory::getDate();
-		$row = $this->getTable();
+		$this->storage->table = JArrayHelper::getValue($data, 'db_table_name');
+		$row = $this->getTable('List', 'FabrikTable', array('view' => $this->storage->table));
 
 		$id = JArrayHelper::getValue($data, 'id');
 		$row->load($id);
 
 		$params = new JRegistry($row->params);
+		$this->storage->params = $params;
 
 		$this->setState('list.id', $id);
 		$this->setState('list.form_id', $row->form_id);
-		$feModel = $this->getFEModel();
-		$formModel = $this->getFormModel();
 
-		// Get original collation
-		$db = $feModel->getDb();
 
-		if (!empty($data['db_table_name']))
-		{
-			$db->setQuery('SHOW TABLE STATUS LIKE ' . $db->quote($data['db_table_name']));
-			$info = $db->loadObject();
-			$origCollation = is_object($info) ? $info->Collation : $params->get('collation', 'none');
-		}
-		else
-		{
-			$origCollation = $params->get('collation', 'none');
-		}
 
 		$row->bind($data);
 
@@ -626,7 +593,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 		$row->check();
 
-		$this->collation($feModel, $origCollation, $row);
+		$this->collation($row);
 		$isNew = true;
 
 		if ($row->id != 0)
@@ -652,14 +619,14 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			$newtable = FabrikString::clean($newtable);
 
 			// Check the entered database table doesnt already exist
-			if ($newtable != '' && $this->databaseTableExists($newtable))
+			if ($newtable != '' && $this->storage->tableExists($newtable))
 			{
 				throw new RuntimeException(FText::_('COM_FABRIK_DATABASE_TABLE_ALREADY_EXISTS'));
 
 				return false;
 			}
 
-			if (!$this->canCreateDbTable())
+			if (!$this->storage->canCreate())
 			{
 				throw new RuntimeException(FText::_('COM_FABRIK_INSUFFICIENT_RIGHTS_TO_CREATE_TABLE'));
 
@@ -667,7 +634,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			}
 
 			// Create fabrik form
-			$formModel = $this->createLinkedForm();
+			$this->createLinkedForm();
 			$row->form_id = $this->getState('list.form_id');
 
 			// Create fabrik group
@@ -699,13 +666,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			}
 		}
 
-		/*
-		 * // Not right - as it meant only isview parameter saved on new list. Something
-		 * to do with isView() also saviing list parameters.
-		 * $params = new JRegistry($row->params);
-		$params->set('isview', $feModel->isView());
-		$row->params = (string) $params;
-		*/
 		FabrikAdminHelper::prepareSaveDate($row->publish_down);
 		FabrikAdminHelper::prepareSaveDate($row->created);
 		FabrikAdminHelper::prepareSaveDate($row->publish_up);
@@ -713,7 +673,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 		if ($pk == '')
 		{
-			$pk = $feModel->getPrimaryKeyAndExtra($row->db_table_name);
+			$pk = $this->storage->getPrimaryKeyAndExtra();
 			$key = $pk[0]['colname'];
 			$extra = $pk[0]['extra'];
 
@@ -726,12 +686,9 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$pk = $row->db_primary_key;
 		$this->updateJoins($data);
 
-		// Needed to ensure pk field is not quoted
-		$feModel->setTable($row);
-
-		if (!$feModel->isView())
+		if (!$this->storage->isView())
 		{
-			$this->updatePrimaryKey($row->db_primary_key, $row->auto_inc);
+			$this->storage->updatePrimaryKey($row->db_primary_key, $row->auto_inc);
 		}
 
 		// Make an array of elments and a presumed index size, map is then used in creating indexes
@@ -771,19 +728,19 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			{
 				if (array_key_exists($orderBy, $map))
 				{
-					$feModel->addIndex($orderBy, 'tableorder', 'INDEX', $map[$orderBy]);
+					$this->storage->addIndex($orderBy, 'tableorder', 'INDEX', $map[$orderBy]);
 				}
 			}
 		}
 
 		if ($row->group_by !== '' && array_key_exists($row->group_by, $map))
 		{
-			$feModel->addIndex($row->group_by, 'groupby', 'INDEX', $map["$row->group_by"]);
+			$this->storage->addIndex($row->group_by, 'groupby', 'INDEX', $map["$row->group_by"]);
 		}
 
 		if (trim($params->get('group_by_order')) !== '')
 		{
-			$feModel->addIndex($params->get('group_by_order'), 'groupbyorder', 'INDEX', $map[$params->get('group_by_order')]);
+			$this->storage->addIndex($params->get('group_by_order'), 'groupbyorder', 'INDEX', $map[$params->get('group_by_order')]);
 		}
 
 		$afilterFields = (array) $params->get('filter-fields', array());
@@ -792,7 +749,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		{
 			if (array_key_exists($field, $map))
 			{
-				$feModel->addIndex($field, 'prefilter', 'INDEX', $map[$field]);
+				$this->storage->addIndex($field, 'prefilter', 'INDEX', $map[$field]);
 			}
 		}
 
@@ -818,31 +775,35 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	/**
 	 * Alter the db table's collation
 	 *
-	 * @param   object  $feModel        Front end list model
-	 * @param   string  $origCollation  Original collection name
-	 * @param   string  $row            New collation
+	 * @param   object  $row  Row being save
 	 *
 	 * @since   3.0.7
 	 *
 	 * @return boolean
 	 */
-	protected function collation($feModel, $origCollation, $row)
+	protected function collation($row)
 	{
+		$feModel = $this->getFEModel();
+
 		// Don't attempt to alter new table, or a view, or if we shouldn't alter the table
-		if ($row->id == 0 || $feModel->isView() || !$feModel->canAlterFields())
+		if ($row->id == 0 || $this->storage->isView() || !$feModel->canAlterFields())
 		{
 			return;
 		}
 
 		$params = new JRegistry($row->params);
-		$newCollation = $params->get('collation');
+		$origCollation = $params->get('collation', 'none');
+
+		if (!empty($this->storage->table))
+		{
+			$origCollation = $this->storage->getCollation($origCollation);
+		}
+
+		$newCollation = $params->get('collation', 'none');
 
 		if ($newCollation !== $origCollation)
 		{
-			$db = $feModel->getDb();
-			$item = $feModel->getTable();
-			$db->setQuery('ALTER TABLE ' . $item->db_table_name . ' COLLATE  ' . $newCollation);
-			$db->execute();
+			return $this->storage->setCollation($newCollation);
 		}
 
 		return true;
@@ -853,30 +814,19 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	 *
 	 * @param   string  $tableName  name of table (ovewrites form_id val to test)
 	 *
+	 * @deprecated
+	 *
 	 * @return  bool	false if no table found true if table found
 	 */
 
 	public function databaseTableExists($tableName = null)
 	{
-		if ($tableName === '')
+		if (!is_null($tableName))
 		{
-			return false;
+			$this->storage->table = tableName;
 		}
 
-		$table = $this->getTable();
-
-		if (is_null($tableName))
-		{
-			$tableName = $table->db_table_name;
-		}
-
-		$fabrikDatabase = $this->getDb();
-		$sql = 'SHOW TABLES LIKE ' . $fabrikDatabase->quote($tableName);
-		$fabrikDatabase->setQuery($sql);
-		$total = $fabrikDatabase->loadResult();
-		echo $fabrikDatabase->getError();
-
-		return ($total == '') ? false : true;
+		return $this->storage->tableExists(tableName);
 	}
 
 	/**
@@ -1052,7 +1002,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		 * but I don't think we know what the PK of the joined table is any other
 		 * way at this point.
 		 */
-		$pk = $this->getFEModel()->getPrimaryKeyAndExtra($join->table_join);
+		$pk = $this->storage->getPrimaryKeyAndExtra($join->table_join);
 
 		if ($pk !== false)
 		{
@@ -1107,7 +1057,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$elementTypes = $input->get('elementtype', array(), 'array');
 		$fields = $fabrikDb->getTableColumns($tableName, false);
 		$createdate = JFactory::getDate()->toSQL();
-		$key = $this->getFEModel()->getPrimaryKeyAndExtra($tableName);
+		$key = $this->storage->getPrimaryKeyAndExtra($tableName);
 		$ordering = 0;
 		/**
 		 * no existing fabrik table so we take a guess at the most
@@ -1274,7 +1224,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 	private function createLinkedForm($formid = 0)
 	{
-		$config = JFactory::getConfig();
 		$user = JFactory::getUser();
 		$this->getFormModel();
 
@@ -1372,17 +1321,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	}
 
 	/**
-	 * Test if the main J user can create mySQL tables
-	 *
-	 * @return  bool
-	 */
-
-	private function canCreateDbTable()
-	{
-		return true;
-	}
-
-	/**
 	 * Method to copy one or more records.
 	 *
 	 * @return  boolean	True if successful, false if an error occurs.
@@ -1476,314 +1414,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	protected abstract function copyJoins($fromid, $toid, $groupidmap);
 
 	/**
-	 * Replaces the table column names with a safer name - ie removes white
-	 * space and none alpha numeric characters
-	 *
-	 * @depreciated fabrik3.0
-	 *
-	 * @return  void
-	 */
-	private function makeSafeTableColumns()
-	{
-		// Going to test allowing non safe names - as they should be quoted when accessed
-		return;
-	}
-
-	/**
-	 * Adds a primary key to the database table
-	 *
-	 * @param   string  $fieldName      the column name to make into the primary key
-	 * @param   bool    $autoIncrement  is the column an auto incrementing number
-	 * @param   string  $type           column type definition (eg varchar(255))
-	 *
-	 * @return  void
-	 */
-	protected function updatePrimaryKey($fieldName, $autoIncrement, $type = 'int(11)')
-	{
-		$feModel = $this->getFEModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-
-		if (!$feModel->canAlterFields())
-		{
-			return;
-		}
-
-		$fabrikDatabase = $feModel->getDb();
-		$jform = $input->get('jform', array(), 'array');
-		$tableName = ($jform['db_table_name'] != '') ? $jform['db_table_name'] : $jform['_database_name'];
-		$tableName = preg_replace('#[^0-9a-zA-Z_]#', '_', $tableName);
-		$aPriKey = $feModel->getPrimaryKeyAndExtra($tableName);
-
-		if (!$aPriKey)
-		{
-			// No primary key set so we should set it
-			$this->addKey($fieldName, $autoIncrement, $type);
-		}
-		else
-		{
-			if (count($aPriKey) > 1)
-			{
-				// $$$ rob multi field pk - ignore for now
-
-				return;
-			}
-
-			$aPriKey = $aPriKey[0];
-			$shortKey = FabrikString::shortColName($fieldName);
-
-			// $shortKey = $feModel->_shortKey($fieldName, true); // added true for second arg so it strips quotes, as was never matching colname with quotes
-			if ($fieldName != $aPriKey['colname'] && $shortKey != $aPriKey['colname'])
-			{
-				// Primary key already exists so we should drop it
-				$this->dropKey($aPriKey);
-				$this->addKey($fieldName, $autoIncrement, $type);
-			}
-			else
-			{
-				// Update the key, it if we need to
-				$priInc = $aPriKey['extra'] == 'auto_increment' ? '1' : '0';
-
-				if ($priInc != $autoIncrement || $type != $aPriKey['type'])
-				{
-					$this->updateKey($fieldName, $autoIncrement, $type);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Internal function: add a key to the table
-	 *
-	 * @param   string  $fieldName      primary key column name
-	 * @param   bool    $autoIncrement  is the column auto incrementing
-	 * @param   string  $type           the primary keys column type (if autoincrement true then int(6) is always used as the type)
-	 *
-	 * @return  mixed  false / JError
-	 */
-
-	private function addKey($fieldName, $autoIncrement, $type = "INT(6)")
-	{
-		$db = $this->getFEModel()->getDb();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$type = $autoIncrement != true ? $type : 'INT(6)';
-		$jform = $input->get('jform', array(), 'array');
-		$tableName = ($jform['db_table_name'] != '') ? $jform['db_table_name'] : $jform['_database_name'];
-		$tableName = preg_replace('#[^0-9a-zA-Z_]#', '_', $tableName);
-		$tableName = FabrikString::safeColName($tableName);
-		$fieldName = FabrikString::shortColName($fieldName);
-
-		if ($fieldName === "")
-		{
-			return false;
-		}
-
-		$fieldName = $db->quoteName($fieldName);
-		$sql = 'ALTER TABLE ' . $tableName . ' ADD PRIMARY KEY (' . $fieldName . ')';
-
-		// Add a primary key
-		$db->setQuery($sql);
-
-		if (!$db->execute())
-		{
-			return JError::raiseWarning(500, $db->getErrorMsg());
-		}
-
-		if ($autoIncrement)
-		{
-			// Add the autoinc
-			$sql = 'ALTER TABLE ' . $tableName . ' CHANGE ' . $fieldName . ' ' . $fieldName . ' ' . $type . ' NOT NULL AUTO_INCREMENT';
-			$db->setQuery($sql);
-			$db->execute();
-		}
-
-		return true;
-	}
-
-	/**
-	 * Internal function: drop the table's key
-	 *
-	 * @param   array  $aPriKey  existing key data
-	 *
-	 * @return  bool true if key droped
-	 */
-
-	private function dropKey($aPriKey)
-	{
-		$db = $this->getFEModel()->getDb();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$jform = $input->get('jform', array(), 'array');
-		$tableName = FabrikString::safeColName($jform['db_table_name']);
-		$sql = 'ALTER TABLE ' . $tableName . ' CHANGE ' . FabrikString::safeColName($aPriKey['colname']) . ' '
-			. FabrikString::safeColName($aPriKey['colname']) . ' ' . $aPriKey['type'] . ' NOT NULL';
-
-		// Remove the autoinc
-		$db->setQuery($sql);
-
-		if (!$db->execute())
-		{
-			JError::raiseWarning(500, $db->getErrorMsg());
-
-			return false;
-		}
-
-		$sql = 'ALTER TABLE ' . $tableName . ' DROP PRIMARY KEY';
-
-		// Drop the primary key
-		$db->setQuery($sql);
-
-		if (!$db->execute())
-		{
-			JError::raiseWarning(500, 'alter table: ' . $db->getErrorMsg());
-
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Internal function: update an exisitng key in the table
-	 *
-	 * @param   string  $fieldName      primary key column name
-	 * @param   bool    $autoIncrement  is the column auto incrementing
-	 * @param   string  $type           the primary keys column type
-	 *
-	 * @return  void
-	 */
-
-	protected function updateKey($fieldName, $autoIncrement, $type = "INT(11)")
-	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$jform = $input->get('jform', array(), 'array');
-		$tableName = FabrikString::safeColName($jform['db_table_name']);
-		$db = $this->getFEModel()->getDb();
-
-		if (strstr($fieldName, '.'))
-		{
-			$fieldName = array_pop(explode(".", $fieldName));
-		}
-
-		$table = $this->getTable();
-		$table->load($this->getState('list.id'));
-		$sql = 'ALTER TABLE ' . $tableName . ' CHANGE ' . FabrikString::safeColName($fieldName) . ' ' . FabrikString::safeColName($fieldName) . ' '
-			. $type . ' NOT NULL';
-
-		// Update primary key
-		if ($autoIncrement)
-		{
-			$sql .= " AUTO_INCREMENT";
-		}
-
-		$db->setQuery($sql);
-
-		if (!$db->execute())
-		{
-			$this->setError('update key:' . $db->getErrorMsg());
-		}
-	}
-
-	/**
-	 * Translation has been turned off for the table so delete the content
-	 * element xml file
-	 *
-	 * @return  void
-	 */
-
-	private function removeJoomfishXML()
-	{
-		$file = JPATH_ADMINISTRATOR . '/components/com_joomfish/contentelements/fabrik-' . $this->getTable()->db_table_name . '.xml';
-
-		if (JFile::exists($file))
-		{
-			JFile::delete($file);
-		}
-	}
-
-	/**
-	 * Write out the Joomfish contentelement xml file for the tables elements
-	 *
-	 * @return  bool  true if written out ok
-	 */
-
-	private function makeJoomfishXML()
-	{
-		$config = JFactory::getConfig();
-		$db = FabrikWorker::getDbo(true);
-		$elements = $this->getElements();
-
-		// Get all database join elements and check if we need to create xml files for them
-		$table = $this->getTable();
-		$tableName = str_replace($config->get('dbprefix'), '', $table->db_table_name);
-		$params = $this->getParams();
-		$titleElement = $params->get('joomfish-title');
-		$str = '<?xml version="1.0" ?>
-<joomfish type="contentelement">
-  <name>Fabrik - ' . $table->label
-			. '</name>
-  <author>rob@pollen-8.co.uk</author>
-  <version>1.0 for Fabrik 2.0</version>
-  <description>Definition for Fabrik Table data - ' . $table->label . '</description>
-  <reference type="content">
-  	<table name="' . $tableName . '">';
-		$titleset = false;
-
-		foreach ($elements as $element)
-		{
-			if ($table->db_primary_key == FabrikString::safeColName($element->getFullName(false, false)))
-			{
-				// Primary key element
-				$type = 'referenceid';
-				$t = 0;
-			}
-			else
-			{
-				if (!$titleset && $titleElement == '')
-				{
-					$type = 'titletext';
-					$titleset = true;
-				}
-				else
-				{
-					if ($titleElement == $element->getFullName(false, false))
-					{
-						$type = 'titletext';
-						$titleset = true;
-					}
-					else
-					{
-						$type = $element->getJoomfishTranslationType();
-					}
-				}
-
-				$t = $element->getJoomfishTranslatable();
-			}
-
-			$opts = $element->getJoomfishOptions();
-			$el = $element->getElement();
-			$str .= "\n\t\t" . '<field type="' . $type . '" name="' . $el->name . '" translate="' . $t . '"';
-
-			foreach ($opts as $k => $v)
-			{
-				$str .= " $k=\"$v\"";
-			}
-
-			$str .= '>' . $el->label . '</field>';
-		}
-
-		$str .= '
-  	</table>
-  </reference>
-</joomfish>';
-
-		// File name HAS to be the same as the table name MINUS db extension
-		return JFile::write(JPATH_ADMINISTRATOR . '/components/com_joomfish/contentelements/' . $tableName . '.xml', $str);
-	}
-
-	/**
 	 * Method to delete one or more records.
 	 *
 	 * @param   array  &$pks  An array of record primary keys.
@@ -1792,14 +1422,11 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	 *
 	 * @since	1.6
 	 */
-
 	public function delete(&$pks)
 	{
 		// Initialise variables.
 		$dispatcher = JDispatcher::getInstance();
-		$user = JFactory::getUser();
 		$pks = (array) $pks;
-		$table = $this->getTable();
 		$app = JFactory::getApplication();
 
 		// Include the content plugins for the on delete events.
@@ -1812,7 +1439,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$drop = $jform['dropTablesFromDB'];
 
 		$feModel = $this->getFEModel();
-		$fabrikDatabase = $feModel->getDb();
 		$dbconfigprefix = $app->getCfg('dbprefix');
 
 		// Iterate the items to delete each one.
@@ -2262,58 +1888,4 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		}
 	}
 
-	/**
-	 * Gets the field names for the given table
-	 * $$$ hugh - added this to backend, as I need it in some places where we have
-	 * a backend list model, and until now only existed in the FE model.
-	 *
-	 * @param   string  $tbl       Table name
-	 * @param   string  $key       Field to key return array on
-	 * @param   bool    $basetype  Deprecated - not used
-	 *
-	 * @return  array  table fields
-	 */
-
-	public function getDBFields($tbl = null, $key = null, $basetype = false)
-	{
-		if (is_null($tbl))
-		{
-			$table = $this->getTable();
-			$tbl = $table->db_table_name;
-		}
-
-		if ($tbl == '')
-		{
-			return array();
-		}
-
-		$sig = $tbl . $key;
-		$tbl = FabrikString::safeColName($tbl);
-
-		if (!isset($this->dbFields[$sig]))
-		{
-			$db = $this->getDb();
-			$tbl = FabrikString::safeColName($tbl);
-			$db->setQuery("DESCRIBE " . $tbl);
-			$this->dbFields[$sig] = $db->loadObjectList($key);
-
-			/**
-			 * $$$ hugh - added BaseType, which strips (X) from things like INT(6) OR varchar(32)
-			 * Also converts it to UPPER, just to make things a little easier.
-			 */
-			foreach ($this->dbFields[$sig] as &$row)
-			{
-				/**
-				 * Boil the type down to just the base type, so "INT(11) UNSIGNED" becomes just "INT"
-				 * I'm sure there's other cases than just UNSIGNED I need to deal with, but for now that's
-				 * what I most care about, as this stuff is being written handle being more specific about
-				 * the elements the list PK can be selected from.
-				 */
-				$row->BaseType = strtoupper(preg_replace('#(\(\d+\))$#', '', $row->Type));
-				$row->BaseType = preg_replace('#(\s+SIGNED|\s+UNSIGNED)#', '', $row->BaseType);
-			}
-		}
-
-		return $this->dbFields[$sig];
-	}
 }

@@ -408,5 +408,29 @@ class FabrikAdminModelListJSON extends FabrikAdminModelList
 		return $keys;
 	}
 
+	/**
+	 * Returns a reference to the a Table object, always creating it.
+	 *
+	 * @param   string  $type    The table type to instantiate
+	 * @param   string  $prefix  A prefix for the table class name. Optional.
+	 * @param   array   $config  Configuration array for model. Optional.
+	 *
+	 * @return  JTable	A database object
+	 *
+	 * @since	1.6
+	 */
+	public function getTable($type = 'List', $prefix = 'FabrikTable', $config = array())
+	{
+		$sig = $type . $prefix . implode('.', $config);
+
+		if (!array_key_exists($sig, $this->tables))
+		{
+			$db = JFactory::getDbo();
+			$config['subview'] = strtolower($type);
+			$this->tables[$sig] = new FabrikView($db, $config);
+		}
+
+		return $this->tables[$sig];
+	}
 
 }

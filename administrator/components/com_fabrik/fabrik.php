@@ -92,6 +92,11 @@ if (count($db->loadResult()) === 0)
 	$app->enqueueMessage(JText::_('COM_FABRIK_PUBLISH_AT_LEAST_ONE_ELEMENT_PLUGIN'), 'notice');
 }
 
+
+// @TODO auto laod these.
+require JPATH_COMPONENT . '/models/storage.php';
+require JPATH_COMPONENT . '/models/view.php';
+
 // Execute the task.
 $controller->execute($input->get('task', 'home.display'));
 $controller->redirect();
