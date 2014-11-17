@@ -62,8 +62,8 @@ class FabrikAdminViewList extends JViewLegacy
 	{
 		// Initialise variables.
 		$model = $this->getModel();
-		$this->form = $this->get('Form');
-		$this->item = $this->get('Item');
+		$this->form = $model->getForm();
+		$this->item = $model->getItem();
 		$formModel = $this->get('FormModel');
 		$formModel->setId($this->item->form_id);
 		$this->state = $this->get('State');

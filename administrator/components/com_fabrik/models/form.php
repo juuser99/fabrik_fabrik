@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodeladmin.php';
 
-interface FabrikAdminModelFormListInterface
+interface FabrikAdminModelFormFormInterface
 {
 
 }
@@ -44,6 +44,20 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 	 * @var  string
 	 */
 	protected $pluginType = 'Form';
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JModelLegacy
+	 * @since   12.2
+	 */
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
+		$this->db = JArrayHelper::getValue($config, 'db', JFactory::getDbo());
+	}
 
 	/**
 	 * Returns a reference to the a Table object, always creating it.

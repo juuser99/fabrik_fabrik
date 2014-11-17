@@ -1,0 +1,1 @@
+ALTER TABLE  `#__fabrik_lists` ADD  `view` VARCHAR( 255 ) NOT NULL AFTER  `params`;

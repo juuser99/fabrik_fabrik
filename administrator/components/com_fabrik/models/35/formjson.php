@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/form.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/metaconverter.php';
 
 /**
  * Fabrik Admin Form Model
@@ -24,6 +25,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/form.php';
 
 class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 {
+	use metaConverter;
+
 	/**
 	 * The prefix to use with controller messages.
 	 *
@@ -502,5 +505,20 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 		}
 
 		return $res;
+	}
+
+	/**
+	 * Method to get a single record.
+	 *
+	 * @param   integer  $pk  The id of the primary key.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 */
+	public function getItem($pk = null)
+	{
+		$pk = !empty($pk) ? $pk : (int) $this->getState($this->getName() . '.id');
+		$view = $this->viewNameFromId($pk, '#__fabrik_lists');
+
+		return $this->getMetaItem($view);
 	}
 }

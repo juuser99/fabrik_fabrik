@@ -13,7 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/list.php';
-
+require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/metaconverter.php';
 /**
  * Fabrik Admin List Model
  *
@@ -24,6 +24,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/list.php';
 
 class FabrikAdminModelListJSON extends FabrikAdminModelList
 {
+	use metaConverter;
 	/**
 	 * Get the list's join objects
 	 *
@@ -431,6 +432,22 @@ class FabrikAdminModelListJSON extends FabrikAdminModelList
 		}
 
 		return $this->tables[$sig];
+	}
+
+	/**
+	 * Method to get a single record.
+	 *
+	 * @param   integer  $pk  The id of the primary key.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 */
+	public function getItem($pk = null)
+	{
+		$pk = !empty($pk) ? $pk : (int) $this->getState($this->getName() . '.id');
+		$view = $this->viewNameFromId($pk, '#__fabrik_lists');
+
+		$item = $this->getMetaItem($view);
+		$item = $this->convertList($item);
 	}
 
 }
