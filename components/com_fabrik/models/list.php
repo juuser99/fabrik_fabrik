@@ -618,7 +618,7 @@ class FabrikFEModelList extends JModelForm
 		$data = $this->getData();
 		JDEBUG ? $profiler->mark('got data') : null;
 
-		// Think we really have to do these as the calc isnt updated when the list is filtered
+		// Think we really have to do these as the calc isn't updated when the list is filtered
 		$this->doCalculations();
 		JDEBUG ? $profiler->mark('done calcs') : null;
 		$this->getCalculations();
@@ -666,13 +666,13 @@ class FabrikFEModelList extends JModelForm
 			$id = $this->getId();
 			$this->randomRecords = $input->get('fabrik_random', $this->randomRecords);
 
-			// $$$ rob dont make the key list.X as the registry doesnt seem to like keys with just '1' a
+			// $$$ rob don't make the key list.X as the registry doesn't seem to like keys with just '1' a
 			$context = 'com_' . $package . '.list' . $this->getRenderContext() . '.';
 			$limitStart = $this->randomRecords ? $this->getRandomLimitStart() : 0;
 
 			// Deal with the fact that you can have more than one list on a page so limitstart has to be  specfic per table
 
-			// If list is rendered as a content plugin dont set the limits in the session
+			// If list is rendered as a content plugin don't set the limits in the session
 			if ($app->scope == 'com_content')
 			{
 				$limitLength = $input->getInt('limit' . $id, $item->rows_per_page);
@@ -752,8 +752,8 @@ class FabrikFEModelList extends JModelForm
 
 	/**
 	 * Once we have a few table joins, our select statements are
-	 * getting big enough to hit default select length max in MySQL.  Added per-list
-	 * setting to enable_big_selects.
+	 * getting big enough to hit default select length max in MySQL.
+	 * Added per-list setting to enable_big_selects.
 	 *
 	 * 03/10/2012 - Should preserve any old list settings, but this is now set in the global config
 	 * We set it on the main J db in the system plugin setBigSelects() but should do here as well as we
@@ -762,7 +762,7 @@ class FabrikFEModelList extends JModelForm
 	 * 2012-10-19 - $$$ hugh - trouble with preserving old list settings is there is no way to change them, without
 	 * directly poking around in the params in the database.  Commenting out the per-list checking.
 	 *
-	 * @deprecated   now handled in FabrikHelper::getDbo(), as it needs to apply to all queruies, including internal / default connection ones.
+	 * @deprecated   now handled in FabrikHelper::getDbo(), as it needs to apply to all queries, including internal / default connection ones.
 	 * @since   3/16/2010
 	 *
 	 * @return  void
@@ -1059,7 +1059,7 @@ class FabrikFEModelList extends JModelForm
 
 			foreach ($data as &$row)
 			{
-				// $$$ rob if the id isnt published fall back to __pk_val
+				// $$$ rob if the id isn't published fall back to __pk_val
 				$translateRow = array_key_exists($longKey, $row) ? $res[$row->$longKey] : $res[$row->__pk_val];
 
 				foreach ($row as $key => $val)
@@ -2439,11 +2439,6 @@ class FabrikFEModelList extends JModelForm
 			if ($slugElement)
 			{
 				$slug = $slugElement->getSlugName($raw);
-			}
-
-			// Test slug is not ``.``
-			if (preg_match('/[A-Z|a-z][0-9]/', $slug))
-			{
 				$slug = FabrikString::safeColName($slug);
 				$fields[] = "CONCAT_WS(':', $pk, $slug) AS slug";
 			}
