@@ -2912,6 +2912,12 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if (!strstr($c, 'CONCAT'))
 		{
+			if (!strstr($c, '.'))
+			{
+				$join = $elementModel->getJoin();
+				$joinTable = $join->table_join_alias;
+				$c = $joinTable.'.'.$c
+			}
 			$c = FabrikString::safeColName($c);
 		}
 
@@ -2919,22 +2925,15 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if ($filterMethod == 1)
 		{
-			$join = $elementModel->getJoin();
-			$joinTable = $join->table_join_alias;			$opts = array();
-
-			if (!strstr($c, 'CONCAT'))
-			{
-				$opts['label'] = strstr($c, '.') ? $c : $joinTable . '.' . $c;
-			}
-			else
-			{
-				$opts['label'] = $c;
-			}
+			$opts = array();
+			$opts['label'] = $c;
 
 			return parent::cacheAutoCompleteOptions($elementModel, $search, $opts);
 		}
+
 		// $$$ hugh - added 'autocomplete_how', currently just "starts_with" or "contains"
 		// default to "contains" for backward compat.
+
 		if ($params->get('dbjoin_autocomplete_how', 'contains') == 'contains')
 		{
 			$elementModel->_autocomplete_where = $c . ' LIKE ' . $db->quote('%' . $search . '%');
