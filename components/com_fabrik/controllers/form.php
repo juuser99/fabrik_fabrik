@@ -190,18 +190,23 @@ class FabrikControllerForm extends JController
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
+
 		if ($input->get('format', '') == 'raw')
 		{
 			error_reporting(error_reporting() ^ (E_WARNING | E_NOTICE));
 		}
+
 		$model = $this->getModel('form', 'FabrikFEModel');
+		$document = JFactory::getDocument();
 		$viewName = $input->get('view', 'form');
-		$view = $this->getView($viewName, JFactory::getDocument()->getType());
+		$viewType = $document->getType();
+		$view = $this->getView($viewName, $viewType);
 
 		if (!JError::isError($model))
 		{
 			$view->setModel($model, true);
 		}
+
 		$model->setId($input->getInt('formid', 0));
 		$model->packageId = $input->getInt('packageId');
 		$this->isMambot = $input->get('isMambot', 0);
@@ -225,6 +230,7 @@ class FabrikControllerForm extends JController
 		}
 
 		$validated = $model->validate();
+
 		if (!$validated)
 		{
 			// If its in a module with ajax or in a package or inline edit
@@ -238,6 +244,7 @@ class FabrikControllerForm extends JController
 
 					// Only raise errors for fields that are present in the inline edit plugin
 					$toValidate = array_keys($input->get('toValidate', array(), 'array'));
+
 					foreach ($errs as $errorKey => $e)
 					{
 						if (in_array($errorKey, $toValidate) && count($e[0]) > 0)
@@ -246,6 +253,7 @@ class FabrikControllerForm extends JController
 							$eMsgs[] = count($e[0]) === 1 ? '<li>' . $e[0][0] . '</li>' : '<ul><li>' . implode('</li><li>', $e[0]) . '</ul>';
 						}
 					}
+
 					if (!empty($eMsgs))
 					{
 						$eMsgs = '<ul>' . implode('</li><li>', $eMsgs) . '</ul>';
@@ -262,6 +270,7 @@ class FabrikControllerForm extends JController
 					// Package / model
 					echo $model->getJsonErrors();
 				}
+
 				if (!$validated)
 				{
 					return;
@@ -270,6 +279,7 @@ class FabrikControllerForm extends JController
 			if (!$validated)
 			{
 				$this->savepage();
+
 				if ($this->isMambot)
 				{
 					$this->setRedirect($this->getRedirectURL($model, false));
@@ -285,14 +295,17 @@ class FabrikControllerForm extends JController
 					{
 						$input->set('rowid', -1);
 					}
+
 					// Meant that the form's data was in different format - so redirect to ensure that its showing the same data.
 					$input->set('task', '');
 					$view->display();
 				}
+
 				return;
 			}
 		}
 		// Reset errors as validate() now returns ok validations as empty arrays
+
 		$model->clearErrors();
 
 		try
@@ -304,10 +317,12 @@ class FabrikControllerForm extends JController
 			$model->_arErrors['process_error'] = true;
 			JError::raiseWarning(500, $e->getMessage());
 		}
+
 		if ($input->getInt('elid', 0) !== 0)
 		{
 			// Inline edit show the edited element - ignores validations for now
 			echo $model->inLineEditResult();
+
 			return;
 		}
 
@@ -316,6 +331,7 @@ class FabrikControllerForm extends JController
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
+
 			return;
 		}
 

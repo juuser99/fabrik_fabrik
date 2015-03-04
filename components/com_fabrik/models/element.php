@@ -1410,10 +1410,12 @@ class PlgFabrik_Element extends FabrikPlugin
 				{
 					// Repeat group NO join
 					$thisname = $name;
+
 					if (!array_key_exists($name, $data))
 					{
 						$thisname = $rawname;
 					}
+
 					if (array_key_exists($thisname, $data))
 					{
 						if (is_array($data[$thisname]))
@@ -1426,6 +1428,7 @@ class PlgFabrik_Element extends FabrikPlugin
 							// Occurs when getting from the db
 							$a = json_decode($data[$thisname]);
 						}
+
 						$value = JArrayHelper::getValue($a, $repeatCounter, $value);
 					}
 
@@ -1435,19 +1438,23 @@ class PlgFabrik_Element extends FabrikPlugin
 					$value = !is_array($data) ? $data : JArrayHelper::getValue($data, $name, JArrayHelper::getValue($data, $rawname, $value));
 				}
 			}
+
 			if (is_array($value) && !$this->isJoin())
 			{
 				$value = implode(',', $value);
 			}
+
 			if ($value === '' && !$groupModel->canRepeat())
 			{
 				// Query string for joined data
 				$value = JArrayHelper::getValue($data, $name);
 			}
+
 			if (is_array($value) && !$this->isJoin())
 			{
 				$value = implode(',', $value);
 			}
+
 			/*@TODO perhaps we should change this to $element->value and store $element->default as the actual default value
 			 *stops this getting called from form validation code as it messes up repeated/join group validations
 			 */
@@ -1455,8 +1462,10 @@ class PlgFabrik_Element extends FabrikPlugin
 			{
 				FabrikWorker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
 			}
+
 			$this->defaults[$key] = $value;
 		}
+
 		return $this->defaults[$key];
 	}
 

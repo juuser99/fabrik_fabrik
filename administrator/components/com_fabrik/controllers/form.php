@@ -99,36 +99,56 @@ class FabrikControllerForm extends JControllerForm
 	public function process()
 	{
 		$app = JFactory::getApplication();
+		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
+
+		if ($input->get('format', '') == 'raw')
+		{
+			error_reporting(error_reporting() ^ (E_WARNING | E_NOTICE));
+		}
 
 		$model = JModel::getInstance('Form', 'FabrikFEModel');
 		$document = JFactory::getDocument();
-		$viewName = JRequest::getVar('view', 'form', 'default', 'cmd');
+		$viewName = $input->get('view', 'form');
 		$viewType = $document->getType();
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$view = $this->getView($viewName, $viewType);
+
 		if (!JError::isError($model))
 		{
 			$view->setModel($model, true);
 		}
-		$model->setId(JRequest::getInt('formid', 0));
 
-		$this->isMambot = JRequest::getVar('_isMambot', 0);
-		$model->getForm();
-		$model->_rowId = JRequest::getVar('rowid', '');
+		$model->setId($input->getInt('formid', 0));
+		$model->packageId = $input->getInt('packageId');
+		$this->isMambot = $input->get('isMambot', 0);
+		$form = $model->getForm();
+		$model->_rowId = $input->get('rowid', '', 'string');
+
+		/**
+		 * $$$ hugh - need this in plugin manager to be able to treat a "Copy" form submission
+		 * as 'new' for purposes of running plugins.  Rob's comment in model process() seems to
+		 * indicate that origRowId was for this purposes, but it doesn't work, 'cos always has a value.
+		 */
+		if ($input->get('Copy', '') != '')
+		{
+			$model->copyingRow(true);
+		}
 
 		// Check for request forgeries
 		if ($model->spoofCheck())
 		{
-			JRequest::checkToken() or die('Invalid Token');
+			JSession::checkToken() or die('Invalid Token');
 		}
+
 		$validated = $model->validate();
+
 		if (!$validated)
 		{
 			// If its in a module with ajax or in a package or inline edit
-			if (JRequest::getCmd('fabrik_ajax'))
+			if ($input->get('fabrik_ajax'))
 			{
-				if (JRequest::getInt('elid') !== 0)
+				if ($input->getInt('elid', 0) !== 0)
 				{
 					// Inline edit
 					$eMsgs = array();
@@ -136,6 +156,7 @@ class FabrikControllerForm extends JControllerForm
 
 					// Only raise errors for fields that are present in the inline edit plugin
 					$toValidate = array_keys($input->get('toValidate', array(), 'array'));
+
 					foreach ($errs as $errorKey => $e)
 					{
 						if (in_array($errorKey, $toValidate) && count($e[0]) > 0)
@@ -144,6 +165,7 @@ class FabrikControllerForm extends JControllerForm
 							$eMsgs[] = count($e[0]) === 1 ? '<li>' . $e[0][0] . '</li>' : '<ul><li>' . implode('</li><li>', $e[0]) . '</ul>';
 						}
 					}
+
 					if (!empty($eMsgs))
 					{
 						$eMsgs = '<ul>' . implode('</li><li>', $eMsgs) . '</ul>';
@@ -157,20 +179,24 @@ class FabrikControllerForm extends JControllerForm
 				}
 				else
 				{
+					// Package / model
 					echo $model->getJsonErrors();
 				}
+
 				if (!$validated)
 				{
 					return;
 				}
 			}
+
 			if (!$validated)
 			{
 				$this->savepage();
 
 				if ($this->isMambot)
 				{
-					JRequest::setVar('fabrik_referrer', JArrayHelper::getValue($_SERVER, 'HTTP_REFERER', ''), 'post');
+					//JRequest::setVar('fabrik_referrer', JArrayHelper::getValue($_SERVER, 'HTTP_REFERER', ''), 'post');
+					$this->setRedirect($this->getRedirectURL($model, false));
 				}
 				else
 				{
@@ -179,12 +205,16 @@ class FabrikControllerForm extends JControllerForm
 					 * couldn't determine the exact set up that triggered this, but we need to reset the rowid to -1
 					 * if reshowing the form, otherwise it may not be editable, but rather show as a detailed view
 					 */
-					if (JRequest::getCmd('usekey') !== '')
+					if ($input->get('usekey', '') !== '')
 					{
-						JRequest::setVar('rowid', -1);
+						$input->set('rowid', -1);
 					}
+
+					// Meant that the form's data was in different format - so redirect to ensure that its showing the same data.
+					$input->set('task', '');
 					$view->display();
 				}
+
 				return;
 			}
 		}
@@ -192,12 +222,21 @@ class FabrikControllerForm extends JControllerForm
 		// Reset errors as validate() now returns ok validations as empty arrays
 		$model->clearErrors();
 
-		$model->process();
+		try
+		{
+			$model->process();
+		}
+		catch (Exception $e)
+		{
+			$model->_arErrors['process_error'] = true;
+			JError::raiseWarning(500, $e->getMessage());
+		}
 
-		if (JRequest::getInt('elid') !== 0)
+		if ($input->getInt('elid', 0) !== 0)
 		{
 			// Inline edit show the edited element - ignores validations for now
 			echo $model->inLineEditResult();
+
 			return;
 		}
 
@@ -206,10 +245,12 @@ class FabrikControllerForm extends JControllerForm
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
+
 			return;
 		}
 
 		$listModel = $model->getListModel();
+		$listModel->set('_table', null);
 		$tid = $listModel->getTable()->id;
 
 		$res = $model->getRedirectURL(true, $this->isMambot);
@@ -222,9 +263,11 @@ class FabrikControllerForm extends JControllerForm
 		{
 			$rowid = JRequest::getInt('rowid');
 			echo json_encode(array('msg' => $msg, 'rowid' => $rowid));
+
 			return;
 		}
-		if (JRequest::getVar('format') == 'raw')
+
+		if ($input->get('format') == 'raw')
 		{
 			$url = COM_FABRIK_LIVESITE . '/index.php?option=com_fabrik&view=list&format=raw&listid=' . $tid;
 			$this->setRedirect($url, $msg);

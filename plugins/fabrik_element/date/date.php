@@ -952,7 +952,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 			$value = JArrayHelper::getValue($value, 'date', JArrayHelper::getValue($value, 0));
 		}
 
-		if ($input->get('task') == 'form.process')
+		if ($input->get('task') == 'form.process' || $input->get('task') === 'process')
 		{
 			// Don't mess with posted value - can cause double offsets - instead do in _indStoareDBFormat();
 			return $value;
@@ -965,15 +965,18 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 				return $value;
 			}
 		}
+
 		// Don't offset if null date.
 		if ($value === $db->getNullDate())
 		{
 			return $value;
 		}
+
 		if ($alwaysToday && $formModel->isEditable())
 		{
 			$value = '';
 		}
+
 		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
 		$date = JFactory::getDate($value, $timeZone);
 
@@ -1454,7 +1457,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 
 				// Add wrapper div for list filter toggling
 				$return[] = '<div class="fabrik_filter_container">';
-				
+
 				// Set counter in input to create the correct field id when in advanced search.
 				if (!$normal)
 				{

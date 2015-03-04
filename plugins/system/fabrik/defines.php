@@ -19,6 +19,14 @@ if (!JFolder::exists(JPATH_SITE . '/components/com_fabrik/'))
 {
 	return;
 }
+
+// in some extremely corner cases it's possible DS may not be set up
+if (!defined('DS'))
+{
+	// Define a string constant shortcut for the DIRECTORY_SEPARATOR define
+	define('DS', DIRECTORY_SEPARATOR);
+}
+
 define("COM_FABRIK_BASE",  str_replace(DS . 'administrator', '', JPATH_BASE) . DS);
 define("COM_FABRIK_FRONTEND",  COM_FABRIK_BASE . 'components/com_fabrik');
 define("COM_FABRIK_LIVESITE", JURI::root());

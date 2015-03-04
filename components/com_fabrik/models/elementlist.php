@@ -923,6 +923,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		*  Seems that db join _getOptionVals() _autocomplete_where is getting run a couple of times with key and labels being passed in
 		*/
 		$valueKey = $repeatCounter . serialize($opts) . serialize($data);
+
 		if (!array_key_exists($valueKey, $this->defaults))
 		{
 			$value = '';

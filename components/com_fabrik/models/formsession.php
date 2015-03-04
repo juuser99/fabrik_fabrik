@@ -124,10 +124,12 @@ class FabrikFEModelFormsession extends FabModel
 		$querystring = JArrayHelper::getValue($fabrik_vars, 'querystring', array());
 
 		$formModel->addEncrytedVarsToArray($post);
+
 		if (array_key_exists('fabrik_vars', $post))
 		{
 			unset($post['fabrik_vars']);
 		}
+
 		$data = serialize($post);
 		$hash = $this->getHash();
 		$userid = $this->getUserId();
@@ -141,10 +143,12 @@ class FabrikFEModelFormsession extends FabModel
 		$row->referring_url = $input->server->get('HTTP_REFERER', '', 'string');
 		$row->data = $data;
 		$this->setCookie($hash);
+
 		if (!$row->store())
 		{
 			echo $row->getError();
 		}
+
 		// $$$ hugh - if we're saving the formdata in the session, we should set 'session.on'
 		// as per The New Way we're doing redirects, etc.
 		$session = JFactory::getSession();
