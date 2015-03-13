@@ -58,6 +58,16 @@
 				type="text"
 				size="4" />
 				
+			<field name="advanced_behavior"
+				type="radio"
+				default="0"
+				class="btn-group"
+				label="PLG_ELEMENT_DROPDOWN_ADVANCED_BEHAVIOR_LABEL"
+				description="PLG_ELEMENT_DROPDOWN_ADVANCED_BEHAVIOR_DESC" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+			
 		</fieldset>
 		
 		<fieldset name="plg-birthday-details" label="PLG_ELEMENT_BIRTHDAY_DETAILS">
@@ -101,6 +111,7 @@
 				label="PLG_ELEMENT_BIRTHDAY_LIST_DATE_FORMAT">
 					<option value="d.m.Y">01.03.1789</option>
 					<option value="m.d.Y">03/01/1789</option>
+					<option value="d m">PLG_ELEMENT_BIRTHDAY_DAY_MONTH</option>
 					<option value="D. month YYYY">PLG_ELEMENT_BIRTHDAY_D_MONTH_YYYY</option>
 					<option value="Month d, YYYY">PLG_ELEMENT_BIRTHDAY_MONTH_D_YYYY</option>
 			</field>
@@ -119,13 +130,23 @@
 
 			<field name="empty_is_null"
 				type="radio"
-				default="0"
+				default="1"
 				class="btn-group"
 				label="PLG_ELEMENT_BIRTHDAY_EMPTYISNULL"
 				description="PLG_ELEMENT_BIRTHDAY_EMPTYISNULLDESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 			</field>
+			
+			<field name="bd_tutorial" 
+				type="spacer" 
+				label="PLG_ELEMENT_BIRTHDAY_EXAMPLE" 
+				/>
+
+			<field name="bd_tutorial_desc" 
+				type="spacer"
+				label="PLG_ELEMENT_BIRTHDAY_EXAMPLEDESC" 
+				/>
 
 		</fieldset>
 		

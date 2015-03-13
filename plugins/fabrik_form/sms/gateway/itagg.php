@@ -32,17 +32,17 @@ class Itagg extends JObject
 	 * Send SMS
 	 *
 	 * @param   string  $message  sms message
+	 * @param   array   $opts     Options
 	 *
 	 * @return  void
 	 */
 
-	public function process($message)
+	public function process($message, $opts)
 	{
-		$params = $this->getParams();
-		$username = $params->get('sms-username');
-		$password = $params->get('sms-password');
-		$smsfrom = urlencode($params->get('sms-from'));
-		$smsto = $params->get('sms-to');
+		$username = FArrayHelper::getValue($opts, 'sms-username');
+		$password = FArrayHelper::getValue($opts, 'sms-password');
+		$smsfrom = FArrayHelper::getValue($opts, 'sms-from');
+		$smsto = FArrayHelper::getValue($opts, 'sms-to');
 		$smstos = explode(",", $smsto);
 		$message = urlencode($message);
 
@@ -92,16 +92,5 @@ class Itagg extends JObject
 
 			$res = FabrikSMS::doRequest('POST', $url, $vars);
 		}
-	}
-
-	/**
-	 * Get plugin params
-	 *
-	 * @return  object  params
-	 */
-
-	private function getParams()
-	{
-		return $this->params;
 	}
 }

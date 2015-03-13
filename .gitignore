@@ -8,6 +8,7 @@
 *.jpg
 .htaccess
 php.ini
+build/
 cache/*
 administrator/*
 !administrator/components/com_fabrik/
@@ -72,6 +73,7 @@ transfer/*
 /cache
 fabrik_build/output/
 fabrik_build/docs/
+fabrik_build/cli/
 /build_config_private.ini
 /images
 /includes
@@ -94,3 +96,4 @@ custom.css
 !contribution_license.txt
 !software_license.txt
 /ZendFramework-1.12.3
+/mobiquo

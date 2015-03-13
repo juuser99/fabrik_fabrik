@@ -434,13 +434,13 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 		for ($i = 0; $i < count($afilterFields); $i++)
 		{
-			$selJoin = JArrayHelper::getValue($afilterJoins, $i, 'and');
+			$selJoin = FArrayHelper::getValue($afilterJoins, $i, 'and');
 
 			// 2.0 upgraded sites had quoted filter names
 			$selFilter = str_replace('`', '', $afilterFields[$i]);
-			$grouped = JArrayHelper::getValue($aGrouped, $i, 0);
+			$grouped = FArrayHelper::getValue($aGrouped, $i, 0);
 			$selCondition = $afilterConditions[$i];
-			$filerEval = (int) JArrayHelper::getValue($afilterEval, $i, '1');
+			$filerEval = (int) FArrayHelper::getValue($afilterEval, $i, '1');
 
 			if ($selCondition == '&gt;')
 			{
@@ -452,7 +452,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 				$selCondition = '<';
 			}
 
-			$selValue = JArrayHelper::getValue($afilterValues, $i, '');
+			$selValue = FArrayHelper::getValue($afilterValues, $i, '');
 			$selAccess = $afilterAccess[$i];
 
 			// Alow for multiline js variables ?
@@ -545,7 +545,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			return false;
 		}
 
-		if (empty($data['_database_name']) && JArrayHelper::getValue($data, 'db_table_name') == '')
+		if (empty($data['_database_name']) && FArrayHelper::getValue($data, 'db_table_name') == '')
 		{
 			$this->setError(FText::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
 
@@ -575,7 +575,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$this->storage->table = JArrayHelper::getValue($data, 'db_table_name');
 		$row = $this->getTable('List', 'FabrikTable', array('view' => $this->storage->table));
 
-		$id = JArrayHelper::getValue($data, 'id');
+		$id = FArrayHelper::getValue($data, 'id');
 		$row->load($id);
 
 		$params = new JRegistry($row->params);
@@ -613,7 +613,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			$row->store();
 
 			$isNew = false;
-			$newtable = trim(JArrayHelper::getValue($data, '_database_name'));
+			$newtable = trim(FArrayHelper::getValue($data, '_database_name'));
 
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
 			$newtable = FabrikString::clean($newtable);
@@ -669,7 +669,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		FabrikAdminHelper::prepareSaveDate($row->publish_down);
 		FabrikAdminHelper::prepareSaveDate($row->created);
 		FabrikAdminHelper::prepareSaveDate($row->publish_up);
-		$pk = JArrayHelper::getValue($data, 'db_primary_key');
+		$pk = FArrayHelper::getValue($data, 'db_primary_key');
 
 		if ($pk == '')
 		{
@@ -851,17 +851,18 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$query->select('*')->from('#__fabrik_joins')->where('list_id = ' . (int) $this->getState('list.id') . ' AND element_id = 0');
 		$db->setQuery($query);
 		$aOldJoins = $db->loadObjectList();
+		$aJoinsToIndex = array();
 		$params = $data['params'];
 		$aOldJoinsToKeep = array();
 		$joinModel = JModelLegacy::getInstance('Join', 'FabrikFEModel');
-		$joinIds = JArrayHelper::getValue($params, 'join_id', array());
-		$joinTypes = JArrayHelper::getValue($params, 'join_type', array());
-		$joinTableFrom = JArrayHelper::getValue($params, 'join_from_table', array());
-		$joinTable = JArrayHelper::getValue($params, 'table_join', array());
-		$tableKey = JArrayHelper::getValue($params, 'table_key', array());
-		$joinTableKey = JArrayHelper::getValue($params, 'table_join_key', array());
-		$groupIds = JArrayHelper::getValue($params, 'group_id', array());
-		$repeats = JArrayHelper::getValue($params, 'join_repeat', array());
+		$joinIds = FArrayHelper::getValue($params, 'join_id', array());
+		$joinTypes = FArrayHelper::getValue($params, 'join_type', array());
+		$joinTableFrom = FArrayHelper::getValue($params, 'join_from_table', array());
+		$joinTable = FArrayHelper::getValue($params, 'table_join', array());
+		$tableKey = FArrayHelper::getValue($params, 'table_key', array());
+		$joinTableKey = FArrayHelper::getValue($params, 'table_join_key', array());
+		$groupIds = FArrayHelper::getValue($params, 'group_id', array());
+		$repeats = FArrayHelper::getValue($params, 'join_repeat', array());
 		$jc = count($joinTypes);
 
 		// Test for repeat elements to eusure their join isnt removed from here
@@ -881,31 +882,21 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		for ($i = 0; $i < $jc; $i++)
 		{
 			$existingJoin = false;
+			$thisJoin = false;
 
 			foreach ($aOldJoins as $oOldJoin)
 			{
 				if ($joinIds[$i] == $oOldJoin->id)
 				{
 					$existingJoin = true;
+					$joinsToIndex[] = $oOldJoin;
+					break;
 				}
 			}
-
-			// $$$rob make an index on the join element (fk)
-			$els = $this->getFEModel()->getElements();
-
-			foreach ($els as $el)
-			{
-				if ($el->getElement()->name == $tableKey[$i])
-				{
-					$size = JString::stristr($el->getFieldDescription(), 'int') ? '' : '10';
-				}
-			}
-
-			$this->getFEModel()->addIndex($tableKey[$i], 'join', 'INDEX', $size);
 
 			if (!$existingJoin)
 			{
-				$this->makeNewJoin($tableKey[$i], $joinTableKey[$i], $joinTypes[$i], $joinTable[$i], $joinTableFrom[$i], $repeats[$i][0]);
+				$joinsToIndex[] = $this->makeNewJoin($tableKey[$i], $joinTableKey[$i], $joinTypes[$i], $joinTable[$i], $joinTableFrom[$i], $repeats[$i][0]);
 			}
 			else
 			{
@@ -957,6 +948,25 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 				}
 			}
 		}
+		
+		// And finally, Esther ... index the join FK's
+		foreach ($joinsToIndex as $thisJoin)
+		{
+			$fields = $this->getDBFields($thisJoin->table_join, 'Field');
+			$fkField = FArrayHelper::getValue($fields, $thisJoin->table_join_key, false);
+			switch ($pkField->BaseType) {
+				case 'VARCHAR':
+					$fkSize = (int) $fkField->BaseLength < 10 ? $fkField->BaseLength : 10;
+					break;
+				case 'INT':
+				case 'DATETIME':
+				default:
+					$fkSize = '';
+					break;
+			}
+			$joinField = $thisJoin->table_join . '___' . $thisJoin->table_join_key;
+			$this->getFEModel()->addIndex($joinField, 'join_fk', 'INDEX', $fkSize);
+		}
 	}
 
 	/**
@@ -969,7 +979,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	 * @param   string  $joinTableFrom  join table
 	 * @param   bool    $isRepeat       is the group a repeat
 	 *
-	 * @return  void
+	 * @return  object  $join           returns new join object
 	 */
 
 	protected function makeNewJoin($tableKey, $joinTableKey, $joinType, $joinTable, $joinTableFrom, $isRepeat)
@@ -1007,7 +1017,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		if ($pk !== false)
 		{
 			// If it didn't return false, getPrimaryKeyAndExtra will have created and array with at least one key
-			$pk_col = JArrayHelper::getValue($pk[0], 'colname', '');
+			$pk_col = FArrayHelper::getValue($pk[0], 'colname', '');
 
 			if (!empty($pk_col))
 			{
@@ -1021,6 +1031,8 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$join->store();
 
 		$this->createLinkedElements($groupId, $joinTable);
+		
+		return $join;
 	}
 
 	/**
@@ -1074,7 +1086,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 			if (preg_match("/\((.*)\)/i", $type, $matches))
 			{
-				$maxLength = JArrayHelper::getValue($matches, 1, 255);
+				$maxLength = FArrayHelper::getValue($matches, 1, 255);
 				$maxLength = explode(',', $maxLength);
 
 				if (count($maxLength) > 1)
@@ -1091,7 +1103,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 			// Get the basic type
 			$type = explode(" ", $type);
-			$type = JArrayHelper::getValue($type, 0, '');
+			$type = FArrayHelper::getValue($type, 0, '');
 			$type = preg_replace("/\((.*)\)/i", '', $type);
 			$element = FabTable::getInstance('Element', 'FabrikTable');
 
@@ -1197,7 +1209,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			}
 
 			$element->params = json_encode($p);
-			$element->label = JArrayHelper::getValue($elementLabels, $ordering, str_replace("_", " ", $label));
+			$element->label = FArrayHelper::getValue($elementLabels, $ordering, str_replace("_", " ", $label));
 
 			$element->store();
 			$elementModel = $pluginManager->getPlugIn($element->plugin, 'element');
@@ -1793,13 +1805,14 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$fabrikDb = $this->getDb();
 		$columns = $fabrikDb->getTableColumns($tableName);
 		$existingfields = array_keys($columns);
+		$existingfields = array_map('strtolower', $existingfields);
 		$lastfield = empty($existingfields) ? '' : $existingfields[count($existingfields) - 1];
 		$sql = 'ALTER TABLE ' . $db->quoteName($tableName) . ' ';
 		$sqlAdd = array();
 
 		// $$$ hugh - looks like this is now an array in jform
 		$jform = $input->get('jform', array(), 'array');
-		$arGroups = JArrayHelper::getValue($jform, 'current_groups', array(), 'array');
+		$arGroups = FArrayHelper::getValue($jform, 'current_groups', array(), 'array');
 
 		if (empty($arGroups))
 		{
@@ -1833,7 +1846,19 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 				{
 					$objname = $obj->name;
 
-					if (!in_array($objname, $existingfields))
+					/*
+					 * Do the check in lowercase (we already strtowlower()'ed $existingfields up there ^^,
+					 * because MySQL field names are case insensitive, so if the element is called 'foo' and there
+					 * is a column called 'Foo', and we try and create 'foo' on the table ... it'll blow up.
+					 * 
+					 * However, leave the $objname unchanged, so if we do create a column for it, it uses the case
+					 * they specific in the element name - it's not up to us to force their column naming to all lower,
+					 * we just need to avoid clashes.
+					 * 
+					 * @TODO We might consider detecting and raising a warning about case inconsistencies?
+					 */
+					
+					if (!in_array(strtolower($objname), $existingfields))
 					{
 						// Make sure that the object is not already in the table
 						if (!in_array($objname, $arAddedObj))

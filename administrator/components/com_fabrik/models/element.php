@@ -249,10 +249,10 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		{
 			$o = new stdClass;
 			$o->plugin = $plugins[$i];
-			$o->published = JArrayHelper::getValue($published, $i, 1);
-			$o->show_icon = JArrayHelper::getValue($icons, $i, 1);
-			$o->validate_in = JArrayHelper::getValue($in, $i, 'both');
-			$o->validation_on = JArrayHelper::getValue($on, $i, 'both');
+			$o->published = FArrayHelper::getValue($published, $i, 1);
+			$o->show_icon = FArrayHelper::getValue($icons, $i, 1);
+			$o->validate_in = FArrayHelper::getValue($in, $i, 'both');
+			$o->validation_on = FArrayHelper::getValue($on, $i, 'both');
 			$return[] = $o;
 		}
 
@@ -505,7 +505,7 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		$params = $data['params'];
 		$data['name'] = FabrikString::iclean($data['name']);
 		$name = $data['name'];
-		$params['validations'] = JArrayHelper::getValue($data, 'validationrule', array());
+		$params['validations'] = FArrayHelper::getValue($data, 'validationrule', array());
 		$elementModel = $this->getElementPluginModel($data);
 		$elementModel->getElement()->bind($data);
 		$origId = $input->getInt('id');
@@ -601,7 +601,7 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		 * the fieldsets!  Well, that's the only way I could come up with doing it.  Hopefully Rob can come up with
 		 * a quicker and simpler way of doing this!
 		 */
-		$validations = JArrayHelper::getValue($params['validations'], 'plugin', array());
+		$validations = FArrayHelper::getValue($params['validations'], 'plugin', array());
 		$num_validations = count($validations);
 		$validation_plugins = $this->getValidations($elementModel, $validations);
 
@@ -842,7 +842,20 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		}
 
 		$ids = $this->getElementDescendents($row->id);
-		$ignore = array('_tbl', '_tbl_key', '_db', 'id', 'group_id', 'created', 'created_by', 'parent_id', 'ordering');
+		$ignore = array(
+			'_tbl',
+			'_tbl_key',
+			'_db',
+			'id',
+			'group_id',
+			'created',
+			'created_by',
+			'parent_id',
+			'ordering',
+			'published',
+			'checked_out_time',
+			'show_in_list_summary'
+		);
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 
 		foreach ($ids as $id)
@@ -960,12 +973,12 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		$db->setQuery($query);
 		$db->execute();
 		$jform = $input->get('jform', array(), 'array');
-		$eEvent = JArrayHelper::getValue($jform, 'js_e_event', array());
-		$eTrigger = JArrayHelper::getValue($jform, 'js_e_trigger', array());
-		$eCond = JArrayHelper::getValue($jform, 'js_e_condition', array());
-		$eVal = JArrayHelper::getValue($jform, 'js_e_value', array());
-		$ePublished = JArrayHelper::getValue($jform, 'js_published', array());
-		$action = (array) JArrayHelper::getValue($jform, 'action', array());
+		$eEvent = FArrayHelper::getValue($jform, 'js_e_event', array());
+		$eTrigger = FArrayHelper::getValue($jform, 'js_e_trigger', array());
+		$eCond = FArrayHelper::getValue($jform, 'js_e_condition', array());
+		$eVal = FArrayHelper::getValue($jform, 'js_e_value', array());
+		$ePublished = FArrayHelper::getValue($jform, 'js_published', array());
+		$action = (array) FArrayHelper::getValue($jform, 'action', array());
 
 		foreach ($action as $c => $jsAction)
 		{
@@ -1093,7 +1106,7 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		{
 			if ($rule->load((int) $id))
 			{
-				$name = JArrayHelper::getValue($names, $id, $rule->name);
+				$name = FArrayHelper::getValue($names, $id, $rule->name);
 				$data = JArrayHelper::fromObject($rule);
 				$elementModel = $this->getElementPluginModel($data);
 				$elementModel->getElement()->bind($data);
@@ -1132,6 +1145,7 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 
 		$row->name = str_replace('`', '', $row->name);
 		$listModel = $elementModel->getListModel();
+		$groupModel = $elementModel->getGroupModel();
 		$tableName = $this->getRepeatElementTableName($elementModel, $row);
 
 		// Create db table!
@@ -1155,15 +1169,44 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 			$jdb->execute();
 		}
 		// Create or update fabrik join
-		$data = array('list_id' => $listModel->getTable()->id, 'element_id' => $row->id, 'join_from_table' => $listModel->getTable()->db_table_name,
+		if ($groupModel->isJoin())
+		{
+			$joinFromTable = $groupModel->getJoinModel()->getJoin()->table_join;		
+		}
+		else
+		{
+			$joinFromTable = $listModel->getTable()->db_table_name;
+		}
+
+		$data = array('list_id' => $listModel->getTable()->id, 'element_id' => $row->id, 'join_from_table' => $joinFromTable,
 			'table_join' => $tableName, 'table_key' => $row->name, 'table_join_key' => 'parent_id', 'join_type' => 'left');
 		$join = $this->getTable('join');
 		$join->load(array('element_id' => $data['element_id']));
 		$opts = new stdClass;
 		$opts->type = 'repeatElement';
+		$opts->pk = FabrikString::safeQuoteName($tableName  . '.id');
 		$data['params'] = json_encode($opts);
 		$join->bind($data);
 		$join->store();
+		
+		$fieldName = $tableName . '___parent_id';
+		$listModel->addIndex($fieldName, 'parent_fk', 'INDEX', '');
+		
+		$fields = $listModel->getDBFields($tableName, 'Field');
+		$field = FArrayHelper::getValue($fields, $row->name, false);
+		switch ($field->BaseType) {
+			case 'VARCHAR':
+				$size = (int) $field->BaseLength < 10 ? $field->BaseLength : 10;
+				break;
+			case 'INT':
+			case 'DATETIME':
+			default:
+				$size = '';
+				break;
+		}
+		$fieldName = $tableName . '___' . $row->name;
+		$listModel->addIndex($fieldName, 'repeat_el', 'INDEX', $size);
+		
 	}
 
 	/**
@@ -1178,13 +1221,21 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 	protected function getRepeatElementTableName($elementModel, $row = null)
 	{
 		$listModel = $elementModel->getListModel();
+		$groupModel = $elementModel->getGroupModel();
 
 		if (is_null($row))
 		{
 			$row = $elementModel->getElement();
 		}
 
-		$origTableName = $listModel->getTable()->db_table_name;
+		if ($groupModel->isJoin())
+		{
+			$origTableName = $groupModel->getJoinModel()->getJoin()->table_join;		
+		}
+		else
+		{
+			$origTableName = $listModel->getTable()->db_table_name;
+		}
 
 		return $origTableName . '_repeat_' . str_replace('`', '', $row->name);
 	}

@@ -32,34 +32,23 @@ class Textopoly extends JObject
 	 * Send SMS
 	 *
 	 * @param   string  $message  sms message
+	 * @param   array   $opts     Options
 	 *
 	 * @return  void
 	 */
 
-	public function process($message = '')
+	public function process($message, $opts)
 	{
-		$params = $this->getParams();
-		$username = $params->get('sms-username');
-		$password = $params->get('sms-password');
-		$smsto = $params->get('sms-to');
-		$smsfrom  = $params->get('sms-from');
-		$smstos = explode(",", $smsto);
+		$username = FArrayHelper::getValue($opts, 'sms-username');
+		$password = FArrayHelper::getValue($opts, 'sms-password');
+		$smsfrom = FArrayHelper::getValue($opts, 'sms-from');
+		$smsto = FArrayHelper::getValue($opts, 'sms-to');
+		$smstos = explode(',', $smsto);
 
 		foreach ($smstos as $smsto)
 		{
 			$url = sprintf($this->url, $username, $password, $smsfrom, $smsto, $message);
 			$response = FabrikSMS::doRequest('GET', $url, '');
 		}
-	}
-
-	/**
-	 * Get plugin params
-	 *
-	 * @return  object  params
-	 */
-
-	private function getParams()
-	{
-		return $this->params;
 	}
 }

@@ -93,18 +93,30 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		}
 		else
 		{
-			$sshowsystemmsg[$this->renderOrder] = false;
-			$session->set($context . 'showsystemmsg', $sshowsystemmsg);
+			$msg = $this->data['thanks_message'];
 
-			$stitle[$this->renderOrder] = $form->label;
-			$session->set($context . 'title', $stitle);
+			// Redirect not working in admin.
+			if (!$app->isAdmin())
+			{
+				$sshowsystemmsg[$this->renderOrder] = false;
+				$session->set($context . 'showsystemmsg', $sshowsystemmsg);
 
-			$surl[$this->renderOrder] = 'index.php?option=com_' . $package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax';
-			$session->set($context . 'url', $surl);
+				$stitle[$this->renderOrder] = $form->label;
+				$session->set($context . 'title', $stitle);
+
+
+				$surl[$this->renderOrder] = 'index.php?option=com_' . $package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax';
+				$session->set($context . 'url', $surl);
+			}
 		}
 
 		$smsg[$this->renderOrder] = $this->data['thanks_message'];
-		$session->set($context . 'msg', $smsg);
+
+		// Don't display system message if thanks is empty
+		if (FArrayHelper::getValue($this->data, 'thanks_message', '') !== '')
+		{
+			$session->set($context . 'msg', $smsg);
+		}
 
 		return true;
 	}
@@ -309,7 +321,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			{
 				foreach ($val as $v)
 				{
-					$this->_appendQS($queryvars, "{$key}[value]", $v, $appendEmpty);
+					$this->_appendQS($queryvars, "{$key}[value][]", $v, $appendEmpty);
 				}
 			}
 		}

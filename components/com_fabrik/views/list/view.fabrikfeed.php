@@ -40,6 +40,8 @@ class FabrikViewList extends FabrikViewListBase
 		$user = JFactory::getUser();
 		$model = $this->getModel();
 		$model->setOutPutFormat('feed');
+		
+		$app->allowCache(true);
 
 		if (!parent::access($model))
 		{
@@ -74,7 +76,7 @@ class FabrikViewList extends FabrikViewListBase
 		$titleEl = $params->get('feed_title');
 		$dateEl = (int) $params->get('feed_date');
 
-		$imageEl = $formModel->getElement($imageEl, true);
+		//$imageEl = $formModel->getElement($imageEl, true);
 		$titleEl = $formModel->getElement($titleEl, true);
 		$dateEl = $formModel->getElement($dateEl, true);
 		$title = $titleEl === false ? '' : $titleEl->getFullName(true, false);
@@ -295,7 +297,7 @@ class FabrikViewList extends FabrikViewListBase
 				}
 
 
-				if (JArrayHelper::getValue($dbcolname, 'label') != '')
+				if (FArrayHelper::getValue($dbcolname, 'label') != '')
 				{
 					$str = $tstart . $str . "</table>";
 				}

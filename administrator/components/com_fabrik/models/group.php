@@ -199,11 +199,17 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 				{
 					$return = $this->makeJoinedGroup($data);
 				}
+				else
+				{
+					$this->checkFKIndex($data);
+				}
+				
 				// Update for the is_join change
 				if ($return)
 				{
 					$return = parent::save($data);
 				}
+				
 			}
 			else
 			{
@@ -249,6 +255,43 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	protected abstract function makeFormGroup($data);
 
 	/**
+	 * Check if an index exists on the parent_id for a repeat table.
+	 * We forgot to index the parent_id until 32/2015, which could have an ipact on getData()
+	 * query performance.  Only called from the save() method.
+	 * 
+	 * @param   array  $data  jform data
+
+	 */
+	
+	private function checkFKIndex($data)
+	{
+		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+		$groupModel->setId($data['id']);
+		$listModel = $groupModel->getListModel();
+		$item = FabTable::getInstance('Group', 'FabrikTable');
+		$item->load($data['id']);
+		$join = $this->getTable('join');
+		$join->load(array('id' => $item->join_id));
+		$fkFieldName = $join->table_join . '___' . $join->table_join_key;
+		$pkFieldName = $join->join_from_table . '___' . $join->table_key;
+		$formModel = $groupModel->getFormModel();
+		$pkElementModel = $formModel->getElement($pkFieldName);
+		$fields = $listModel->getDBFields($join->join_from_table, 'Field');
+		$pkField = FArrayHelper::getValue($fields, $join->table_key, false);
+		switch ($pkField->BaseType) {
+			case 'VARCHAR':
+				$pkSize = (int) $pkField->BaseLength < 10 ? $pkField->BaseLength : 10;
+				break;
+			case 'INT':
+			case 'DATETIME':
+			default:
+				$pkSize = '';
+				break;			
+		}
+		$listModel->addIndex($fkFieldName, 'parent_fk', 'INDEX', $pkSize);
+	}
+	
+	/**
 	 * A group has been set to be repeatable but is not part of a join
 	 * so we want to:
 	 * Create a new db table for the groups elements ( + check if its not already there)
@@ -282,7 +325,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 			if (!array_key_exists($fname, $names))
 			{
 				$str = FabrikString::safeColName($fname);
-				$field = JArrayHelper::getValue($fields, $fname);
+				$field = FArrayHelper::getValue($fields, $fname);
 
 				if (is_object($field))
 				{
@@ -362,8 +405,11 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 		$join->store();
 		$data['is_join'] = 1;
 
+		$listModel->addIndex($newTableName . '___parent_id', 'parent_fk', 'INDEX', '');
+		
 		return true;
 	}
+	
 
 	/**
 	 * Repeat has been turned off for a group, so we need to remove the join.

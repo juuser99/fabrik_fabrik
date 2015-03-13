@@ -147,6 +147,10 @@ var FbDatabasejoin = new Class({
 			selected = sel.contains(v) ? 'selected' : '';
 			opt = new Element('option', {'value': v, 'selected': selected}).set('text', l);
 			document.id(this.element.id).adopt(opt);
+			if (this.options.advanced)
+			{
+				jQuery("#" + this.element.id).trigger("liszt:updated");
+			}
 			break;
 		case 'auto-complete':
 			if (autoCompleteUpdate) {
@@ -548,11 +552,19 @@ var FbDatabasejoin = new Class({
 						this.element.options[0].selected = true;
 					}
 				} else {
-					this.element.getElements('input').each(function (i) {
-						if (i.get('value') === val) {
-							i.checked = true;
-						}
-					});
+					if (typeOf(val) === 'string') {
+						val = val === '' ? [] : JSON.decode(val);
+					}
+					this._getSubElements();
+					this.subElements.each(function (el) {
+						var chx = false;
+						val.each(function (v) {
+							if (v === el.value) {
+								chx = true;
+							}
+						}.bind(this));
+						el.checked = chx;
+					}.bind(this));
 				}
 			}
 		}

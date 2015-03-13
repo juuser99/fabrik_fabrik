@@ -25,16 +25,18 @@ var FbNotes = new Class({
 	},
 
 	setUp: function () {
-		this.element.getElement('.button').addEvent('click', function (e) {
-			this.submit(e);
-		}.bind(this));
-		this.field = this.element.getElement('.fabrikinput');
-		var msg = this.element.getElement('div');
-		msg.makeResizable({
-			'modifiers': {x: false, y: 'height'},
-			'handle': this.element.getElement('.noteHandle')
-		});
-		this.element.getElement('.noteHandle').setStyle('cursor', 'all-scroll');
+		if (this.options.rowid !== 0) {
+			this.element.getElement('.button').addEvent('click', function (e) {
+				this.submit(e);
+			}.bind(this));
+			this.field = this.element.getElement('.fabrikinput');
+			var msg = this.element.getElement('div');
+			msg.makeResizable({
+				'modifiers': {x: false, y: 'height'},
+				'handle': this.element.getElement('.noteHandle')
+			});
+			this.element.getElement('.noteHandle').setStyle('cursor', 'all-scroll');
+		}
 	},
 
 	submit: function (e) {
@@ -58,9 +60,17 @@ var FbNotes = new Class({
 				'data': data,
 				onSuccess: function (json) {
 					Fabrik.loader.stop(this.element);
-					var ul = this.element.getElement('ul');
-					var c = 'oddRow' + ul.getElements('li').length % 2;
-					new Element('li', {'class': c}).set('html', json.label).inject(ul);
+					if (this.options.j3) {
+						var rows = this.element.getElement('div');
+						var row = new Element('div', {'class': 'row-fluid'});
+						var inner_row = new Element('div', {'class': 'span12'}).set('html', json.label).inject(row);
+						inner_row.inject(rows);						
+					}
+					else {
+						var ul = this.element.getElement('ul');
+						var c = 'oddRow' + ul.getElements('li').length % 2;
+						new Element('li', {'class': c}).set('html', json.label).inject(ul);
+					}
 					this.field.value = '';
 				}.bind(this),
 				'onError': function (text) {

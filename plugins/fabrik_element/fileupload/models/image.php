@@ -100,13 +100,13 @@ class ImageRender
 			{
 				if (is_array($formModel->data))
 				{
-					$title = JArrayHelper::getValue($formModel->data, $title_name, '');
+					$title = FArrayHelper::getValue($formModel->data, $title_name, '');
 				}
 			}
 		}
 
 		$bits = FabrikWorker::JSONtoData($title, true);
-		$title = JArrayHelper::getValue($bits, $model->_repeatGroupCounter, $title);
+		$title = FArrayHelper::getValue($bits, $model->_repeatGroupCounter, $title);
 		$title = htmlspecialchars(strip_tags($title, ENT_NOQUOTES));
 		$element = $model->getElement();
 		$file = $model->getStorage()->getFileUrl($file);
@@ -153,7 +153,8 @@ class ImageRender
 						. 'px; vertical-align: middle;text-align: center;">';
 				}
 
-				$img = '<img class="fabrikLightBoxImage" src="' . $file . '" alt="' . $title . '" />';
+				$height_str = empty($height) ? "" : ' height="' . $height . 'px" ';
+				$img = '<img class="fabrikLightBoxImage" ' . $height_str . 'src="' . $file . '" alt="' . $title . '" />';
 
 				if ($params->get('make_link', true) && !$this->fullImageInRecord($params))
 				{

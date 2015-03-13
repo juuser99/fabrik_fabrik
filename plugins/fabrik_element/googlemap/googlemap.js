@@ -67,6 +67,7 @@ var FbGoogleMap = new Class({
 		'center': 0,
 		'reverse_geocode': false,
 		'use_radius': false,
+		'geocode_on_load': false,
 		'styles': []
 	},
 
@@ -105,7 +106,7 @@ var FbGoogleMap = new Class({
 						enableHighAccuracy: true
 					});
 				} else {
-					fconsole('Geo locaiton functionality not available');
+					fconsole('Geo location functionality not available');
 				}
 			}
 
@@ -142,7 +143,7 @@ var FbGoogleMap = new Class({
 		}
 		this.mapMade = true;
 
-		if (typeof(this.map) !== 'undefined') {
+		if (typeof(this.map) !== 'undefined' && this.map !== null) {
 			return;
 		}
 		if (typeOf(this.element) === 'null') {
@@ -327,9 +328,12 @@ var FbGoogleMap = new Class({
 			}
 		}
 		this.watchTab();
-		Fabrik.addEvent('fabrik.form.page.chage.end', function (form) {
+		Fabrik.addEvent('fabrik.form.page.change.end', function (form) {
 			this.redraw();
 		}.bind(this));
+		if (this.options.geocode && this.options.geocode_on_load) {
+			this.geoCode();
+		}
 	},
 
 	radiusUpdatePosition: function () {
@@ -626,14 +630,15 @@ var FbGoogleMap = new Class({
 		this.options.geocode_fields.each(function (field) {
 			var bits = field.split('_');
 			var i = bits.getLast();
-			if (i !== i.toInt()) {
+			if (typeOf(i.toInt()) === 'null') {
 				return bits.join('_');
 			}
-			i++;
-			bits.splice(bits.length - 1, 1, i);
+			bits.splice(bits.length - 1, 1, c);
 			f.push(bits.join('_'));
 		});
 		this.options.geocode_fields = f;
+		this.mapMade = false;
+		this.map = null;
 		this.makeMap();
 		this.parent(c);
 	},

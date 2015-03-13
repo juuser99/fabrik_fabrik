@@ -247,7 +247,7 @@ class FabrikHelperHTML
 		// Don't include in an Request.JSON call - for autofill form plugin
 		$headers = self::parseRequestHeaders();
 
-		if (JArrayHelper::getValue($headers, 'X-Request') === 'JSON')
+		if (FArrayHelper::getValue($headers, 'X-Request') === 'JSON')
 		{
 			return;
 		}
@@ -442,7 +442,7 @@ if (!$j3)
 		}
 		else
 		{
-			$image = '&nbsp;' . FText::_('JGLOBAL_PRINT');
+			$image = '&nbsp;' . FText::_('COM_FABRIK_PRINT');
 		}
 
 		if ($params->get('popup', 1))
@@ -471,10 +471,19 @@ if (!$j3)
 
 	public static function printURL($formModel)
 	{
+
+		/**
+		 * Comment this out for now, as it causes issues with multiple forms per page.
+		 * We could always create a $sig for it, but that would need the info from the form and
+		 * table models, which are probably the most 'expensive' aprt of this function anyway.
+		 */
+
+		/*
 		if (isset(self::$printURL))
 		{
 			return self::$printURL;
 		}
+		*/
 
 		$app = JFactory::getApplication();
 		$input = $app->input;
@@ -549,10 +558,18 @@ if (!$j3)
 
 	public static function emailURL($formModel)
 	{
+		/**
+		 * Comment this out for now, as it causes issues with multiple forms per page.
+		 * We could always create a $sig for it, but that would need the info from the form and
+		 * table models, which are probably the most 'expensive' aprt of this function anyway.
+		 */
+
+		/*
 		if (isset(self::$emailURL))
 		{
 			return self::$emailURL;
 		}
+		*/
 
 		$app = JFactory::getApplication();
 		$input = $app->input;
@@ -926,7 +943,8 @@ if (!$j3)
 			$document = JFactory::getDocument();
 			$version = new JVersion;
 			$jsAssetBaseURI = self::getJSAssetBaseURI();
-
+			$fbConfig = JComponentHelper::getParams('com_fabrik');
+			
 			// Only use template test for testing in 2.5 with my temp J bootstrap template.
 			$bootstrapped = in_array($app->getTemplate(), array('bootstrap', 'fabrik4')) || $version->RELEASE > 2.5;
 
@@ -943,6 +961,12 @@ if (!$j3)
 			// Require js test - list with no cal loading ajax form with cal
 			JHTML::_('behavior.calendar');
 
+			if ($fbConfig->get('advanced_behavior', '0') == '1')
+			{
+				JHtml::_('formbehavior.chosen', 'select.advancedSelect');
+			}
+
+				
 			if (self::inAjaxLoadedPage() && !$bootstrapped)
 			{
 				// $$$ rob 06/02/2012 recall ant so that Color.detach is available (needed for opening a window from within a window)
@@ -952,7 +976,8 @@ if (!$j3)
 
 			if (!self::inAjaxLoadedPage())
 			{
-				$document->addScript($jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js');
+				// Now adding in fabrik system plugin onAfterRender()
+				// $document->addScript($jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js');
 				JText::script('COM_FABRIK_LOADING');
 				$src[] = 'media/com_fabrik/js/fabrik' . $ext;
 				$src[] = 'media/com_fabrik/js/window' . $ext;
@@ -1474,6 +1499,32 @@ if (!$j3)
 	}
 
 	/**
+	 * Add script to session - will then be added (in head) via Fabrik System plugin
+	 *
+	 * @param   string  $js  JS code
+	 *
+	 * @return  void
+	 */
+	
+	protected static function addToSessionHeadScripts($js)
+	{
+		$key = 'fabrik.js.head.scripts';
+		$session = JFactory::getSession();
+	
+		if ($session->has($key))
+		{
+			$scripts = $session->get($key);
+		}
+		else
+		{
+			$scripts = array();
+		}
+	
+		$scripts[] = $js;
+		$session->set($key, $scripts);
+	}
+	
+	/**
 	 * Load the slimbox / media box css and js files
 	 *
 	 * @return  void
@@ -1768,7 +1819,7 @@ if (!$j3)
 		$json->url .= $app->isAdmin() ? '&task=plugin.pluginAjax' : '&view=plugin&task=pluginAjax';
 		$json->url .= '&g=element&element_id=' . $elementid
 			. '&formid=' . $formid . '&plugin=' . $plugin . '&method=autocomplete_options&package=' . $package;
-		$c = JArrayHelper::getValue($opts, 'onSelection');
+		$c = FArrayHelper::getValue($opts, 'onSelection');
 
 		if ($c != '')
 		{
@@ -1780,9 +1831,9 @@ if (!$j3)
 			$json->$k = $v;
 		}
 
-		$json->formRef = JArrayHelper::getValue($opts, 'formRef', 'form_' . $formid);
-		$json->container = JArrayHelper::getValue($opts, 'container', 'fabrikElementContainer');
-		$json->menuclass = JArrayHelper::getValue($opts, 'menuclass', 'auto-complete-container');
+		$json->formRef = FArrayHelper::getValue($opts, 'formRef', 'form_' . $formid);
+		$json->container = FArrayHelper::getValue($opts, 'container', 'fabrikElementContainer');
+		$json->menuclass = FArrayHelper::getValue($opts, 'menuclass', 'auto-complete-container');
 
 		return $json;
 	}
@@ -1967,15 +2018,15 @@ if (!$j3)
 			$properties = array('alt' => $properties);
 		}
 
-		$forceImage = JArrayHelper::getValue($opts, 'forceImage', false);
+		$forceImage = FArrayHelper::getValue($opts, 'forceImage', false);
 
 		if (FabrikWorker::j3() && $forceImage !== true)
 		{
 			unset($properties['alt']);
-			$class = JArrayHelper::getValue($properties, 'icon-class', '');
+			$class = FArrayHelper::getValue($properties, 'icon-class', '');
 			$class = 'icon-' . JFile::stripExt($file) . ($class ? ' ' . $class : '');
 			unset($properties['icon-class']);
-			$class .= ' ' . JArrayHelper::getValue($properties, 'class', '');
+			$class .= ' ' . FArrayHelper::getValue($properties, 'class', '');
 			unset($properties['class']);
 			$p = self::propertiesFromArray($properties);
 
@@ -2367,8 +2418,8 @@ if (!$j3)
 	{
 		$url = $_SERVER['REQUEST_URI'];
 		$bits = explode('?', $url);
-		$root = JArrayHelper::getValue($bits, 0, '', 'string');
-		$bits = JArrayHelper::getValue($bits, 1, '', 'string');
+		$root = FArrayHelper::getValue($bits, 0, '', 'string');
+		$bits = FArrayHelper::getValue($bits, 1, '', 'string');
 		$bits = explode("&", $bits);
 
 		for ($b = count($bits) - 1; $b >= 0; $b --)
@@ -2530,8 +2581,8 @@ if (!$j3)
 			$lbl = $href;
 		}
 
-		$smart_link = JArrayHelper::getValue($opts, 'smart_link', false);
-		$target = JArrayHelper::getValue($opts, 'target', false);
+		$smart_link = FArrayHelper::getValue($opts, 'smart_link', false);
+		$target = FArrayHelper::getValue($opts, 'target', false);
 
 		if ($smart_link || $target == 'mediabox')
 		{
@@ -2700,7 +2751,8 @@ if (!$j3)
 			$js[] = "  window.punycode = p;";
 			$js[] = "});";
 
-			$document->addScriptDeclaration(implode("\n", $js));
+			//$document->addScriptDeclaration(implode("\n", $js));
+			self::addToSessionHeadScripts(implode("\n", $js));
 		}
 
 		JHtml::_('script', 'system/validate.js', false, true);

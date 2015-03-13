@@ -66,6 +66,8 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->showPleaseSelect = $this->showPleaseSelect();
 		$opts->watch = $this->getWatchId($repeatCounter);
+		$watchElementModel = $this->getWatchElement();
+		$opts->watchChangeEvent = $watchElementModel->getChangeEvent();
 		$opts->displayType = $params->get('cdd_display_type', 'dropdown');
 		$opts->id = $this->getId();
 		$opts->listName = $this->getListModel()->getTable()->db_table_name;
@@ -77,9 +79,9 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 		// If returning from failed posted validation data can be in an array
 		$qsValue = $input->get($fullName, array(), 'array');
-		$qsValue = JArrayHelper::getValue($qsValue, 0, null);
+		$qsValue = FArrayHelper::getValue($qsValue, 0, null);
 		$qsWatchValue = $input->get($watchName, array(), 'array');
-		$qsWatchValue = JArrayHelper::getValue($qsWatchValue, 0, null);
+		$qsWatchValue = FArrayHelper::getValue($qsWatchValue, 0, null);
 		$useQsValue = $this->getFormModel()->hasErrors() && $this->isEditable() && $rowid === '' && !empty($qsValue) && !empty($qsWatchValue);
 		$opts->def = $useQsValue ? $qsValue : $this->getValue(array(), $repeatCounter);
 
@@ -94,6 +96,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$opts->watchInSameGroup = $watchGroup->id === $group->id;
 		$opts->editing = ($this->isEditable() && $rowid !== '');
 		$opts->showDesc = $params->get('cdd_desc_column', '') === '' ? false : true;
+		$opts->advanced = $this->getAdvancedSelectClass() != '';
 		$formId = $this->getFormModel()->getId();
 		$opts->autoCompleteOpts = $opts->displayType == 'auto-complete'
 				? FabrikHelperHTML::autoCompleteOptions($opts->id, $this->getElement()->id, $formId, 'cascadingdropdown') : null;
@@ -274,9 +277,10 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 					break;
 				default:
 				case 'dropdown':
-				// Jaanus: $maxwidth to avoid dropdowns become too large (when choosing options they would still be of their full length
+					// Jaanus: $maxwidth to avoid dropdowns become too large (when choosing options they would still be of their full length
 					$maxwidth = $params->get('max-width', '') === '' ? '' : ' style="max-width:' . $params->get('max-width') . ';"';
-					$attribs = 'class="' . $class . '" ' . $disabled . ' size="1"' . $maxwidth;
+					$advancedClass = $this->getAdvancedSelectClass();
+					$attribs = 'class="' . $class . ' ' . $advancedClass . '" ' . $disabled . ' size="1"' . $maxwidth;
 					$html[] = JHTML::_('select.genericlist', $tmp, $name, $attribs, 'value', 'text', $default, $id);
 					break;
 			}
@@ -727,7 +731,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$input = $app->input;
 		$sig = isset($this->autocomplete_where) ? $this->autocomplete_where . '.' . $incWhere : $incWhere;
 		$sig .= '.' . serialize($opts);
-		$repeatCounter = JArrayHelper::getValue($opts, 'repeatCounter', 0);
+		$repeatCounter = FArrayHelper::getValue($opts, 'repeatCounter', 0);
 		$db = FabrikWorker::getDbo();
 
 		if (isset($this->sql[$sig]))
@@ -760,7 +764,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 					if ($watchElement->isJoin())
 					{
 						$id = $watchElement->getFullName(true, false) . '_id';
-						$whereval = JArrayHelper::getValue($formModel->data, $id);
+						$whereval = FArrayHelper::getValue($formModel->data, $id);
 					}
 					else
 					{
@@ -769,7 +773,18 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 				}
 				else
 				{
-					$whereval = $watchElement->getValue($formModel->formData, $repeatCounter, $watchOpts);
+					/*
+					 * If we're running onAfterProcess, formData will have short names in it, which means getValue()
+					 * won't find the watch element, as it's looking for full names.  So if it exists, use formDataWithTableName.
+					 */
+					if (is_array($formModel->formDataWithTableName) && array_key_exists($watch, $formModel->formDataWithTableName))
+					{
+						$whereval = $watchElement->getValue($formModel->formDataWithTableName, $repeatCounter, $watchOpts);
+					}
+					else
+					{
+						$whereval = $watchElement->getValue($formModel->formData, $repeatCounter, $watchOpts);
+					}
 				}
 
 				// $$$ hugh - if not set, set to '' to avoid selecting entire table
@@ -824,10 +839,26 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			{
 				foreach ($whereval as &$v)
 				{
-					$v = $db->quote($v);
-				}
 
-				$where .= count($whereval) == 0 ? '1 = -1' : $wherekey . ' IN (' . implode(',', $whereval) . ')';
+					// Jaanus: Solving bug: imploded arrays when chbx in repeated group         
+					
+					if (is_array($v)) 
+					{
+						foreach ($v as &$vchild)
+						{
+							$vchild = FabrikString::safeQuote($vchild);
+						}
+						$v = implode(',', $v);
+					}
+					else
+					{
+						$v = FabrikString::safeQuote($v);
+					}
+				}
+      
+				// Jaanus: if count of where values is 0 or if there are no letters or numbers, only commas in imploded array
+				
+				$where .= count($whereval) == 0 || !preg_match('/\w/', implode(',', $whereval)) ? '4 = -4' : $wherekey . ' IN ' . '(' . str_replace(',,', ',\'\',', implode(',', $whereval)) . ')';
 			}
 			else
 			{

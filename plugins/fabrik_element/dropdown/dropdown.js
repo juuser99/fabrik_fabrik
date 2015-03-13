@@ -72,6 +72,10 @@ var FbDropdown = new Class({
 					if (this.mySlider) {
 						this.mySlider.toggle();
 					}
+					if (this.options.advanced)
+					{
+						jQuery("#" + this.element.id).trigger("liszt:updated");
+					}
 				}
 			}.bind(this));
 		}
@@ -83,6 +87,15 @@ var FbDropdown = new Class({
 		}
 		if (typeOf(this.element.get('value')) === 'null') {
 			return '';
+		}
+		if (this.options.multiple) {
+			var r = [];
+			this.element.getElements('option').each(function (opt) {
+				if (opt.selected) {
+					r.push(opt.value);
+				}
+			});
+			return r;
 		}
 		return this.element.get('value');
 	},

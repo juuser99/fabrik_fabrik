@@ -224,7 +224,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 
 		foreach ($listModels as $listModel)
 		{
-			$show = (bool) JArrayHelper::getValue($showFilters, $i, true);
+			$show = (bool) FArrayHelper::getValue($showFilters, $i, true);
 
 			if ($show)
 			{
@@ -456,7 +456,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 		{
 			// Set prefilter params
 			$listParams = $listModel->getParams();
-			$prefilter = JArrayHelper::getValue($prefilters, $c);
+			$prefilter = FArrayHelper::getValue($prefilters, $c);
 			$prefilter = JArrayHelper::fromObject(json_decode($prefilter));
 			$conditions = (array) $prefilter['filter-conditions'];
 
@@ -527,7 +527,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 	 * Get the js code to create instances of js list plugin classes
 	 * needed for radius search filter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function getPluginJsObjects()
@@ -539,14 +539,10 @@ class FabrikFEModelVisualization extends JModelLegacy
 		{
 			$src = $model->getPluginJsClasses($src);
 			$tmp = $model->getPluginJsObjects($this->getContainerId());
-
-			foreach ($tmp as $t)
-			{
-				$str[] = $t . ';';
-			}
+			$str = array_merge($str, $tmp);
 		}
 
-		return implode("\n", $str);
+		return $str;
 	}
 
 	/**

@@ -57,12 +57,15 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$params = $this->getParams();
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
+		$endis = $this->getSubOptionEnDis();
 		$multiple = $params->get('multiple', 0);
 		$multisize = $params->get('dropdown_multisize', 3);
 		$selected = (array) $this->getValue($data, $repeatCounter);
 		$errorCSS = $this->elementError != '' ? " elementErrorHighlight" : '';
 		$boostrapClass = $params->get('bootstrap_class', '');
-		$attribs = 'class="fabrikinput inputbox input ' . $errorCSS . ' ' . $boostrapClass . '"';
+		$advancedClass = $this->getAdvancedSelectClass();
+
+		$attribs = 'class="fabrikinput inputbox input ' . $advancedClass . ' ' . $errorCSS . ' ' . $boostrapClass . '"';
 
 		if ($multiple == "1")
 		{
@@ -81,11 +84,14 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 				$optgroup = true;
 			}
 
-			$tmpLabel = JArrayHelper::getValue($labels, $i);
-
+			$tmpLabel = FArrayHelper::getValue($labels, $i);
+			$disable = FArrayHelper::getValue($endis, $i);
+				
 			// For values like '1"'
 			$tmpval = htmlspecialchars($tmpval, ENT_QUOTES);
-			$opts[] = JHTML::_('select.option', $tmpval, $tmpLabel);
+			$opt = JHTML::_('select.option', $tmpval, $tmpLabel);
+			$opt->disable = $disable;
+			$opts[] = $opt;
 
 			if (in_array($tmpval, $selected))
 			{
@@ -161,18 +167,20 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 	public function elementJavascript($repeatCounter)
 	{
+		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
 		$data = $this->getFormModel()->data;
 		$arSelected = $this->getValue($data, $repeatCounter);
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
-		$params = $this->getParams();
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->allowadd = $params->get('allow_frontend_addtodropdown', false) ? true : false;
 		$opts->value = $arSelected;
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->data = (empty($values) && empty($labels)) ? array() : array_combine($values, $labels);
+		$opts->multiple = (bool) $params->get('multiple', '0') == '1';		
+		$opts->advanced = $this->getAdvancedSelectClass() != '';
 		JText::script('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL');
 
 		return array('FbDropdown', $id, $opts);

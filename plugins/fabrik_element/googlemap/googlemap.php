@@ -262,7 +262,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$opts->lat = (float) $o->coords[0];
 		$opts->lon = (float) $o->coords[1];
 		$opts->lat_dms = (float) $dms->coords[0];
-		$opts->rowid = (int) JArrayHelper::getValue($data, 'rowid');
+		$opts->rowid = (int) FArrayHelper::getValue($data, 'rowid');
 		$opts->lon_dms = (float) $dms->coords[1];
 		$opts->zoomlevel = (int) $o->zoomlevel;
 		$opts->control = $params->get('fb_gm_mapcontrol');
@@ -280,6 +280,14 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$opts->geocode = $params->get('fb_gm_geocode', '0');
 		$opts->geocode_event = $params->get('fb_gm_geocode_event', 'button');
 		$opts->geocode_fields = array();
+		// geocode_on_load, 0 = no, 1 = new, 2 = edit, 3 = always
+		$geocode_on_load = $params->get('fb_gm_geocode_on_load', '0');
+		$opts->geocode_on_load = $this->isEditable() && 
+				(
+					($geocode_on_load == 1 && $formModel->isNewRecord())
+					|| ($geocode_on_load == 2 && !$formModel->isNewRecord())
+					|| $geocode_on_load == 3
+				);
 		$opts->auto_center = (bool) $params->get('fb_gm_auto_center', false);
 		$opts->styles = FabGoogleMapHelper::styleJs($params);
 
@@ -814,7 +822,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$db = FabrikWorker::getDbo();
 		$listModel = $this->getlistModel();
 		$table = $listModel->getTable();
-		$fullElName = JArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->element->name);
+		$fullElName = FArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->element->name);
 		$dbtable = $db->quoteName($dbtable);
 		$str = $dbtable . '.' . $db->quoteName($this->element->name) . ' AS ' . $db->quoteName($fullElName);
 

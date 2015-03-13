@@ -49,6 +49,19 @@ class PlgFabrik_Form extends FabrikPlugin
 	{
 		return true;
 	}
+	
+	/**
+	 * Run from list model when deleting rows
+	 *
+	 * @param   array  &$groups  List data for deletion
+	 *
+	 * @return  bool
+	 */
+	
+	public function onAfterDeleteRowsForm(&$groups)
+	{
+		return true;
+	}
 
 	/**
 	 * Run right at the beginning of the form processing
@@ -190,7 +203,10 @@ class PlgFabrik_Form extends FabrikPlugin
 		JDEBUG ? $profiler->mark("getProcessData: start") : null;
 		
 		$model = $this->getModel();
+		
+		// see comments in getEmailData() about caching in $this vs $model
 		unset($this->emailData);
+		unset($model->emailData);
 		$d = isset($model->formDataWithTableName) ? $model->formDataWithTableName : array();
 		$this->data = array_merge($d, $this->getEmailData());
 
@@ -249,6 +265,11 @@ class PlgFabrik_Form extends FabrikPlugin
 		 * fabrikemail/fabrikreceipt
 		 * Now instead the pk value is taken from the tableModel->lastInsertId and inserted at the end of this method
 		 *$model->render();
+		 *
+		 * $$$ hugh - hmmmm problem with that is, there's quite a few things that need the rowid, if we're running
+		 * 'onAfterProcess' ... I think we need to have a seperate $model->isNewRow, or some such, which gets set at
+		 * the start of processing, and anything which needs to know if we're new vs edit uses that, rather than looking
+		 * for rowid / __pk_val, or whatever.
 		 */
 
 		$listModel = $model->getListModel();
@@ -304,7 +325,8 @@ class PlgFabrik_Form extends FabrikPlugin
 						{
 							$tmpElement = current($elementModels);
 							$smallerElHTMLName = $tmpElement->getFullName(true, false);
-							$repeatGroup = count($model->formDataWithTableName[$smallerElHTMLName]);
+							$tmpEl = FArrayHelper::getValue($model->formDataWithTableName, $smallerElHTMLName, array(), 'array');
+							$repeatGroup = count($tmpEl);
 						}
 					}
 				}
@@ -335,15 +357,16 @@ class PlgFabrik_Form extends FabrikPlugin
 					$elementModel->_inJoin = $groupModel->isJoin();
 					$elementModel->setEditable(false);
 
-					if ($elementModel->isJoin())
+					if ($groupModel->isJoin())
 					{
 						$join = $elementModel->getJoinModel()->getJoin();
 
 						if ($groupModel->canRepeat())
 						{
-							$raw = JArrayHelper::getValue($model->formDataWithTableName[$k], $c, '');
+							$raw = FArrayHelper::getValue($model->formDataWithTableName[$k], $c, '');
 							$this->emailData[$k . '_raw'][$c] = $raw;
 							$this->emailData[$k][$c] = $elementModel->getEmailValue($raw, $model->formDataWithTableName, $c);
+							continue;
 						}
 						else
 						{
@@ -355,12 +378,13 @@ class PlgFabrik_Form extends FabrikPlugin
 									$this->emailData[$k . '_raw'][$multiKey] = $multiData;
 									$this->emailData[$k][$multiKey] = $elementModel->getEmailValue($multiData, $model->formDataWithTableName, $multiData);
 								}
+								continue;
 							}
 						}
 					}
 					elseif (array_key_exists($key, $model->formDataWithTableName))
 					{
-						$rawval = JArrayHelper::getValue($model->formDataWithTableName, $k . '_raw', '');
+						$rawval = FArrayHelper::getValue($model->formDataWithTableName, $k . '_raw', '');
 
 						if ($rawval == '')
 						{

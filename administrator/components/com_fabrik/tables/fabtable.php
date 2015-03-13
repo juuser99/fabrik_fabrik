@@ -52,7 +52,7 @@ class FabTable extends JTable
 
 	public function batch($batch)
 	{
-		$batchParams = JArrayHelper::getValue($batch, 'params');
+		$batchParams = FArrayHelper::getValue($batch, 'params');
 		unset($batch['params']);
 		$query = $this->_db->getQuery(true);
 		$this->bind($batch);
@@ -66,5 +66,34 @@ class FabTable extends JTable
 		$this->params = json_encode($params);
 
 		return $this->store();
+	}
+
+	/**
+	 * Get the columns from database table.
+	 *
+	 * @return  mixed  An array of the field names, or false if an error occurs.
+	 *
+	 * @since   11.1
+	 * @throws  UnexpectedValueException
+	 */
+	public function getFields()
+	{
+		static $cache = array();
+
+		if (FArrayHelper::getValue($cache, $this->_tbl) === null)
+		{
+			// Lookup the fields for this table only once. PER TABLE NAME!
+			$name   = $this->_tbl;
+			$fields = $this->_db->getTableColumns($name, false);
+
+			if (empty($fields))
+			{
+				throw new UnexpectedValueException(sprintf('No columns found for %s table', $name));
+			}
+
+			$cache[$this->_tbl] = $fields;
+		}
+
+		return $cache[$this->_tbl];
 	}
 }

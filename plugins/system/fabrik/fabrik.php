@@ -74,6 +74,8 @@ class PlgSystemFabrik extends JPlugin
 			JLoader::import($base . '.layout.helper', JPATH_SITE . '/administrator', 'administrator.');
 		}
 
+		require_once JPATH_SITE . '/components/com_fabrik/helpers/file.php';
+
 		parent::__construct($subject, $config);
 	}
 
@@ -107,35 +109,35 @@ class PlgSystemFabrik extends JPlugin
 			if ($session->has('fabrik.js.scripts'))
 			{
 				$uri = $uri->toString(array('path', 'query'));
-	
+
 				/*
 				if ($_SERVER['REQUEST_METHOD'] === 'POST')
 				{
 					$uri .= serialize($_POST);
 				}
 				*/
-	
+
 				$file = md5($uri) . '.js';
 				$folder = JPATH_SITE . '/cache/com_fabrik/js/';
-				
+
 				/**
 				 * $$$ hugh - Added some belt and braces checking when creating the cache folder,
 				 * as some folk are reporting issues with file_put_contents() failing with "no such file or folder"
 				 * even when the permissions seem to be correct on the cache folder
 				 */
-				
+
 				$folder_exists = JFolder::exists($folder);
-				
+
 				if (!$folder_exists)
 				{
 					$folder_exists = JFolder::create($folder);
 				}
-	
+
 				if ($folder_exists === true)
 				{
 					// folder definitely now exists, go ahead and use caching
 					$cacheFile = $folder . $file;
-		
+
 					// Check for cached version
 					if (!JFile::exists($cacheFile))
 					{
@@ -156,12 +158,24 @@ class PlgSystemFabrik extends JPlugin
 			else
 			{
 				// No session fabrik.js.scripts key, so build
-				$script = self::buildJs();				
+				$script = self::buildJs();
 			}
 		}
 
-		self::clearJs();
+		//self::clearJs();
 
+		return $script;
+	}
+	
+	/**
+	 * Get Page JavaScript from either session or cached .js file
+	 *
+	 * @return string
+	 */
+	
+	public static function headJs()
+	{
+		$script = self::buildHeadJs();
 		return $script;
 	}
 
@@ -174,6 +188,7 @@ class PlgSystemFabrik extends JPlugin
 	{
 		$session = JFactory::getSession();
 		$session->clear('fabrik.js.scripts');
+		$session->clear('fabrik.js.head.scripts');
 		$session->clear('fabrik.js.config');
 		$session->clear('fabrik.js.shim');
 	}
@@ -206,6 +221,30 @@ class PlgSystemFabrik extends JPlugin
 	}
 
 	/**
+	 * Build Page <script> tag for insertion into DOM or for storing in cache
+	 *
+	 * @return string
+	 */
+	
+	public static function buildHeadJs()
+	{
+		$session = JFactory::getSession();
+		$js = $session->get('fabrik.js.head.scripts', array());
+		$js = implode("\n", $js);
+	
+		if ($js !== '')
+		{
+			$script = '<script type="text/javascript">' . "\n" . $js . "\n" . '</script>';
+		}
+		else
+		{
+			$script = '';
+		}
+	
+		return $script;
+	}
+	
+	/**
 	 * Insert require.js config an app ini script into body.
 	 *
 	 * @return  void
@@ -220,7 +259,20 @@ class PlgSystemFabrik extends JPlugin
 		}
 
 		$script = self::js();
+		$headScript = self::headJs();
+		self::clearJs();
+
 		$content = JResponse::getBody();
+
+		// Test inserting require.js as last
+		if (!FabrikHelperHTML::inAjaxLoadedPage())
+		{
+			$jsAssetBaseURI = FabrikHelperHTML::getJSAssetBaseURI();
+			$rjs = $jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js';
+			$rjs = '<script src="' . $rjs . '" type="text/javascript"></script>';
+			$content = FabrikString::replaceLast('</head>',  $rjs . "\n" . $headScript . "\n" . '</head>', $content);
+		}
+		// End test insert
 
 		if (!stristr($content, '</body>'))
 		{
