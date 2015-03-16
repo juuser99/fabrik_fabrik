@@ -86,6 +86,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	{
 		parent::__construct($config);
 		$feModel = $this->getFEModel();
+		print_r($config);exit;
 		$this->db = JArrayHelper::getValue($config, 'db', JFactory::getDbo());
 		$db = $feModel->getDb();
 		$storeCfg = array('db' => $db);

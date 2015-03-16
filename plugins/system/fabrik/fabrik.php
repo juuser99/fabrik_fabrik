@@ -75,6 +75,7 @@ class PlgSystemFabrik extends JPlugin
 		}
 
 		require_once JPATH_SITE . '/components/com_fabrik/helpers/file.php';
+		require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/storage.php';
 
 		parent::__construct($subject, $config);
 	}

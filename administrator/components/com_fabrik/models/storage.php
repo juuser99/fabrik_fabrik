@@ -10,12 +10,17 @@
  */
 namespace Fabrik\Storage;
 
+use GCore\Libs\DatabaseAdapters\Joomla;
+use Joomla\Utilities\ArrayHelper;
+use Joomla\Registry\Registry;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 
 /**
  * Fabrik Admin View Model.Handles storing a 'view' to a json file
+ * A view is a combination of list/form/details.
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
@@ -45,17 +50,28 @@ class MySql
 	 */
 	protected $indexes = null;
 
+	/**
+	 * @var Registry|null
+	 */
 	public $params;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   array    $config  An optional associative array of configuration settings.
+	 * @param   Registry $params  Registry - optional
 	 */
-	public function __construct($config = array())
+	public function __construct($config = array(), $params = null)
 	{
-		$this->db = \JArrayHelper::getValue($config, 'db', \JFactory::getDbo());
-		$this->table = \JArrayHelper::getValue($config, 'table');
+		if (is_null($params))
+		{
+			$params = new Registry;
+		}
+
+		$this->params = $params;
+
+		$this->db = ArrayHelper::getValue($config, 'db', \JFactory::getDbo());
+		$this->table = ArrayHelper::getValue($config, 'table');
 	}
 
 	/**
@@ -116,7 +132,7 @@ class MySql
 	 * Drop an index
 	 *
 	 * @param   string  $field   field name
-	 * @param   stirng  $prefix  index name prefix (allows you to differentiate between indexes created in
+	 * @param   string  $prefix  index name prefix (allows you to differentiate between indexes created in
 	 * different parts of fabrik)
 	 * @param   string  $type    table name @since 29/03/2011
 	 * @param   string  $table   db table name
@@ -304,35 +320,8 @@ class MySql
 			* every time a table was saved.
 			* http://fabrikar.com/forums/showthread.php?t=16622&page=6
 			*/
-return false;
-		if (isset($this->isView))
-		{
-			return $this->isView;
-		}
+		return false;
 
-		$table = $this->getTable();
-		$cn = $this->getConnection();
-
-		$c = $cn->getConnection();
-		$dbname = $c->database;
-
-		if ($table->db_table_name == '')
-		{
-			return;
-		}
-
-		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $this->db->q($this->table)
-		. " AND table_type = 'view' AND table_schema = " . $this->db->q($dbname);
-		$this->db->setQuery($sql);
-		$row = $this->db->loadObjectList();
-		$this->isView = empty($row) ? '0' : '1';
-
-		// Store and save param for following tests
-		$this->params->set('isview', $this->isView);
-		$table->params = (string) $this->params;
-		$table->store();
-
-		return $this->isView;
 	}
 
 	/**

@@ -93,8 +93,7 @@ if (count($db->loadResult()) === 0)
 }
 
 
-// @TODO auto laod these.
-require JPATH_COMPONENT . '/models/storage.php';
+// @TODO auto load these.
 require JPATH_COMPONENT . '/models/view.php';
 
 // Execute the task.
