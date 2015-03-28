@@ -2916,7 +2916,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			{
 				$join = $elementModel->getJoin();
 				$joinTable = $join->table_join_alias;
-				$c = $joinTable.'.'.$c
+				$c = $joinTable.'.'.$c;
 			}
 			$c = FabrikString::safeColName($c);
 		}
