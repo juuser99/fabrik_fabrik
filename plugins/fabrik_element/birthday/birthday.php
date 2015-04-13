@@ -266,22 +266,33 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 				$years[] = JHTML::_('select.option', $i);
 			}
 
-			$errorCSS = (isset($this->_elementError) && $this->_elementError != '') ? " elementErrorHighlight" : '';
+			$errorCSS = (isset($this->_elementError) && $this->_elementError != '') ? ' elementErrorHighlight' : '';
 			$advancedClass = $this->getAdvancedSelectClass();
 			
 			$attribs = 'class="input-small fabrikinput inputbox ' . $advancedClass . ' ' . $errorCSS . '"';
-			$str = array();
-			$str[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
 
-			// $name already suffixed with [] as element hasSubElements = true
-			$str[] = JHTML::_('select.genericlist', $days, preg_replace('#(\[\])$#', '[0]', $name), $attribs, 'value', 'text', $dayvalue, $id . '_0');
-			$str[] = $params->get('birthday_separatorlabel', FText::_('/')) . ' '
-				. JHTML::_('select.genericlist', $months, preg_replace('#(\[\])$#', '[1]', $name), $attribs, 'value', 'text', $monthvalue, $id . '_1');
-			$str[] = $params->get('birthday_separatorlabel', FText::_('/')) . ' '
-				. JHTML::_('select.genericlist', $years, preg_replace('#(\[\])$#', '[2]', $name), $attribs, 'value', 'text', $yearvalue, $id . '_2');
-			$str[] = '</div>';
+			$layout = $this->getLayout('form');
+			$layoutData = new stdClass;
+			$layoutData->id = $id;
+			$layoutData->separator = $params->get('birthday_separatorlabel', FText::_('/'));
+			$layoutData->attribs = $attribs;
+			$layoutData->day_name = preg_replace('#(\[\])$#', '[0]', $name);
+			$layoutData->day_id = $id . '_0';
+			$layoutData->day_options = $days;
+			$layoutData->day_value = $dayvalue;
 
-			return implode("\n", $str);
+			$layoutData->month_name = preg_replace('#(\[\])$#', '[1]', $name);
+			$layoutData->month_id = $id . '_1';
+			$layoutData->month_options = $months;
+			$layoutData->month_value = $monthvalue;
+
+			$layoutData->year_name = preg_replace('#(\[\])$#', '[2]', $name);
+			$layoutData->year_id = $id . '_2';
+			$layoutData->year_options = $years;
+			$layoutData->year_value = $yearvalue;
+
+
+			return $layout->render($layoutData);
 		}
 	}
 

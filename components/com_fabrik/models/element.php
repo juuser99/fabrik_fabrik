@@ -2418,6 +2418,8 @@ class PlgFabrik_Element extends FabrikPlugin
 				$repData[$k] = $val;
 			}
 
+			//$data['slug'] = str_replace(':', '-', $data['slug']);
+			//$data['slug'] = JApplication::stringURLSafe($data['slug']);
 			$customLink = $w->parseMessageForPlaceHolder($customLink, $data);
 			$customLink = $this->getListModel()->parseMessageForRowHolder($customLink, $data);
 
@@ -2524,6 +2526,8 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	/**
 	 * Helper method to build an input field
+	 *
+	 * @deprecated use JLayouts instead
 	 *
 	 * @param   string  $node      Input type default 'input'
 	 * @param   array   $bits      Input property => value
@@ -5900,7 +5904,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			if (!array_key_exists(0, $data))
 			{
-				// Occurs if we have created a list from an exisitng table whose data contains json objects (e.g. #__users.params)
+				// Occurs if we have created a list from an existing table whose data contains json objects (e.g. #__users.params)
 				$obj = JArrayHelper::toObject($data);
 				$data = array();
 				$data[0] = $obj;
@@ -5921,7 +5925,20 @@ class PlgFabrik_Element extends FabrikPlugin
 			$r = empty($data) ? '' : array_shift($data);
 		}
 
-		return $r;
+		$layout = $this->getLayout('list');
+		$data = array();
+		$data['text'] = $r;
+		$res = $layout->render($data);
+
+		// If no custom list layout found revert to the default list renderer
+		if ($res === '')
+		{
+			$basePath = COM_FABRIK_FRONTEND . '/layouts/';
+			$layout = new JLayoutFile('fabrik-element-list', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+			$res = $layout->render($data);
+		}
+
+		return $res;
 	}
 
 	/**
@@ -5986,40 +6003,17 @@ class PlgFabrik_Element extends FabrikPlugin
 			return;
 		}
 
-		$id = $this->getHTMLId($repeatCounter);
-		$valueid = $id . '_ddVal';
-		$labelid = $id . '_ddLabel';
-		$value = '<input class="inputbox text" id="' . $valueid . '" name="addPicklistValue" />';
-		$label = '<input class="inputbox text" id="' . $labelid . '" name="addPicklistLabel" />';
-		$str[] = '<a href="#" title="' . FText::_('COM_FABRIK_ADD') . '" class="btn btn-info toggle-addoption">';
-		$str[] = FabrikHelperHTML::image('plus.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_ADD')));
-		$str[] = '</a>';
-		$str[] = '<div style="clear:left">';
-		$str[] = '<div class="addoption"><div>' . FText::_('COM_FABRIK_ADD_A_NEW_OPTION_TO_THOSE_ABOVE') . '</div>';
+		$basePath = COM_FABRIK_BASE . '/components/com_fabrik/layouts/element';
+		$layout = new JLayoutFile('fabrik-element-addoptions', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+		$data = new stdClass;
+		$data->id = $this->getHTMLId($repeatCounter);
+		$data->add_image = FabrikHelperHTML::image('plus.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_ADD')));
+		$data->allowadd_onlylabel = $params->get('allowadd-onlylabel');
+		$data->savenewadditions = $params->get('savenewadditions');
+		$data->onlylabel = $onlylabel;
+		$data->hidden_field = $this->getHiddenField($data->id . '_additions', '', $data->id . '_additions');
 
-		if (!$params->get('allowadd-onlylabel') && $params->get('savenewadditions'))
-		{
-			// $$$ rob don't wrap in <dl> as the html is munged when rendered inside form tab template
-			$str[] = '<label for="' . $valueid . '">' . FText::_('COM_FABRIK_VALUE') . '</label>';
-			$str[] = $value;
-
-			if (!$onlylabel)
-			{
-				$str[] = '<label for="' . $labelid . '">' . FText::_('COM_FABRIK_LABEL') . '</label>';
-				$str[] = $label;
-			}
-		}
-		else
-		{
-			$str[] = $label;
-		}
-
-		$str[] = '<input class="button btn btn-success" type="button" id="' . $id . '_dd_add_entry" value="' . FText::_('COM_FABRIK_ADD') . '" />';
-		$str[] = $this->getHiddenField($id . "_additions", '', $id . "_additions");
-		$str[] = '</div>';
-		$str[] = '</div>';
-
-		return implode("\n", $str);
+		return $layout->render($data);
 	}
 
 	/**
@@ -6693,6 +6687,13 @@ class PlgFabrik_Element extends FabrikPlugin
 		// Swap dec and thousand seps back to Normal People Decimal Format!
 		$decimal_sep = $params->get('field_decimal_sep', '.');
 		$thousand_sep = $params->get('field_thousand_sep', ',');
+		
+		// Workaround for params not letting us save just a space!
+		if ($thousand_sep == '#32')
+		{
+			$thousand_sep = ' ';
+		}
+		
 		$val = str_replace($thousand_sep, '', $val);
 		$val = str_replace($decimal_sep, '.', $val);
 
@@ -7192,6 +7193,18 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		$this->defaults = null;
 	}
+	
+	/**
+	 * Clear default values, need to call this if we change an elements value in any of the formData
+	 * arrays during submisison process.
+	 *
+	 * @return  null
+	 */
+	
+	public function clearDefaults()
+	{
+		$this->defaults = null;
+	}
 
 	/**
 	 * Should the 'label' field be quoted.  Overridden by databasejoin and extended classes,
@@ -7535,6 +7548,25 @@ class PlgFabrik_Element extends FabrikPlugin
 		}
 		
 		return $advancedClass;
-		
+	}
+
+	/**
+	 * Get the element's JLayout file
+	 * Its actually an instance of FabrikLayoutFile which inverses the ordering added include paths.
+	 * In FabrikLayoutFile the addedPath takes precedence over the default paths, which makes more sense!
+	 *
+	 * @param   string  $type  form/details/list
+	 *
+	 * @return FabrikLayoutFile
+	 */
+	public function getLayout($type)
+	{
+		$name = get_class($this);
+		$name = strtolower(JString::str_ireplace('PlgFabrik_Element', '', $name));
+		$basePath = COM_FABRIK_BASE . '/plugins/fabrik_element/' . $name . '/layouts';
+		$layout = new FabrikLayoutFile('fabrik-element-' . $name. '-' . $type, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+
+		return $layout;
 	}
 }

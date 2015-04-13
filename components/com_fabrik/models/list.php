@@ -6333,7 +6333,7 @@ class FabrikFEModelList extends JModelForm
 					$firstFilter = $elementModel->getFilter(0, false);
 				}
 
-				$fieldNames[] = JHTML::_('select.option', $elName, strip_tags($element->label));
+				$fieldNames[] = JHTML::_('select.option', $elName, strip_tags(FText::_($element->label)));
 			}
 		}
 
@@ -10047,7 +10047,7 @@ class FabrikFEModelList extends JModelForm
 		$input = $app->input;
 		$Itemid = FabrikWorker::itemId();
 		$params = $this->getParams();
-		$addurl_url = $params->get('addurl', '');
+		$addurl_url = FabrikWorker::getMenuOrRequestVar('addurl', $params->get('addurl', ''), $this->isMambot);
 		$filters = $this->getRequestData();
 		$keys = FArrayHelper::getValue($filters, 'key', array());
 		$vals = FArrayHelper::getValue($filters, 'value', array());
@@ -11281,6 +11281,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function getGroupByHeadings()
 	{
+		$formModel = $this->getFormModel();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$base = JURI::getInstance();
@@ -11314,11 +11315,20 @@ class FabrikFEModelList extends JModelForm
 		{
 			if (!in_array($key, array('fabrik_select', 'fabrik_edit', 'fabrik_view', 'fabrik_delete', 'fabrik_actions')))
 			{
-				$thisurl = $url . 'group_by=' . $key;
-				$o = new stdClass;
-				$o->label = strip_tags($v);
-				$o->group_by = $key;
-				$a[$thisurl] = $o;
+				/**
+				 * $$$ hugh - other junk is showing up in $h, like 85___14-14-86_list_heading, or element
+				 * names ending in _form_heading.  May not be the most efficient method, but we need to
+				 * test if $key exists as an element, as well as the simple in_array() test above.
+				 */
+				
+				if ($formModel->hasElement($key, false, false))
+				{
+					$thisurl = $url . 'group_by=' . $key;
+					$o = new stdClass;
+					$o->label = strip_tags($v);
+					$o->group_by = $key;
+					$a[$thisurl] = $o;
+				}
 			}
 		}
 

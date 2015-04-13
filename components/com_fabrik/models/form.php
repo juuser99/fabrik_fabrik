@@ -284,6 +284,17 @@ class FabrikFEModelForm extends FabModelForm
 	 * @var array
 	 */
 	public $jsOpts = null;
+	
+	/**
+	 * Use this lastInsertId to store the main table's lastInsertId, so we can use this rather
+	 * than the list model lastInsertId, which could be for the last joined table rather than
+	 * the form's main table.
+	 * 
+	 * @since 3.3
+	 * 
+	 * @var mixed
+	 */
+	public $lastInsertId = null;
 
 	/**
 	 * Constructor
@@ -1587,7 +1598,7 @@ class FabrikFEModelForm extends FabModelForm
 
 		// Set here so element can call formModel::updateFormData()
 		$this->formData = $data;
-		$this->_fullFormData = $this->formData;
+		$this->fullFormData = $this->formData;
 		$session = JFactory::getSession();
 		$session->set('com_' . $package . '.form.data', $this->formData);
 
@@ -1920,6 +1931,7 @@ class FabrikFEModelForm extends FabModelForm
 		$listModel->setFormModel($this);
 		$item = $listModel->getTable();
 		$listModel->storeRow($data, $rowId);
+		$this->lastInsertId = $listModel->lastInsertId;
 		$usekey = $app->input->get('usekey', '');
 
 		if (!empty($usekey))
@@ -2857,6 +2869,18 @@ echo "form get errors";
 		return false;
 	}
 
+	/**
+	 * Get the last insert id, for situations where we need the 'rowid' for newly inserted forms,
+	 * and can't use getRowId() because it caches rowid as empty.  For example, in plugins running
+	 * onAfterProcess, like upsert.
+	 * 
+	 * Note that $this->lastInsertId is getting set in the 
+	 */
+	public function getInsertId()
+	{
+		return $this->lastInsertId;	
+	}
+	
 	/**
 	 * Are we creating a new record or editing an existing one?
 	 * Put here to ensure compat when we go from 3.0 where rowid = 0 = new, to row id '' = new
@@ -4120,22 +4144,28 @@ echo "form get errors";
 
 	protected function parseIntroOutroPlaceHolders($text)
 	{
-		$match = $this->isNewRecord() ? 'new' : 'edit';
-		$remove = $this->isNewRecord()  ? 'edit' : 'new';
-		$match = "/{" . $match . ":\s*.*?}/i";
-		$remove = "/{" . $remove . ":\s*.*?}/i";
-		$text = preg_replace_callback($match, array($this, '_getIntroOutro'), $text);
-		$text = preg_replace($remove, '', $text);
-		$text = str_replace('[', '{', $text);
-		$text = str_replace(']', '}', $text);
 
 		if (!$this->isEditable())
 		{
+			$remove = "/{new:\s*.*?}/i";
+			$text = preg_replace($remove, '', $text);
+			$remove = "/{edit:\s*.*?}/i";
+			$text = preg_replace($remove, '', $text);
 			$match = "/{details:\s*.*?}/i";
 			$text = preg_replace_callback($match, array($this, '_getIntroOutro'), $text);
+			$text = str_replace('[', '{', $text);
+			$text = str_replace(']', '}', $text);
 		}
 		else
 		{
+			$match = $this->isNewRecord() ? 'new' : 'edit';
+			$remove = $this->isNewRecord()  ? 'edit' : 'new';
+			$match = "/{" . $match . ":\s*.*?}/i";
+			$remove = "/{" . $remove . ":\s*.*?}/i";
+			$text = preg_replace_callback($match, array($this, '_getIntroOutro'), $text);
+			$text = preg_replace($remove, '', $text);
+			$text = str_replace('[', '{', $text);
+			$text = str_replace(']', '}', $text);
 			$text = preg_replace("/{details:\s*.*?}/i", '', $text);
 		}
 
@@ -4169,8 +4199,8 @@ echo "form get errors";
 	{
 		$m = explode(":", $match[0]);
 		array_shift($m);
-
-		return FabrikString::rtrimword(implode(":", $m), "}");
+		$m = implode(":", $m);
+		return FabrikString::rtrimword($m, "}");
 	}
 
 	/**

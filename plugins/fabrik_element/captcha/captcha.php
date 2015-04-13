@@ -221,6 +221,26 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 			return $ayah->getPublisherHTML();
 		}
+		elseif ($params->get('captcha-method') == 'nocaptcha')
+		{
+			/*
+			FabrikHelperHTML::addScriptDeclaration(
+				"var onloadCallback = function() {
+					grecaptcha.render('" . $id . "', {
+						'sitekey' : '" . $params->get('recaptcha_publickey') . "'
+					});
+				};"
+			);
+			*/
+			
+			$layout = $this->getLayout('nocaptcha');
+			$data = new stdClass;
+			$data->id = $id;
+			$data->name = $name;
+			$data->site_key = $params->get('recaptcha_publickey');			
+			
+			return $layout->render($data);			
+		}
 		else
 		{
 			if (!function_exists('imagettfbbox'))
@@ -261,19 +281,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$session->set('com_' . $package . '.element.captcha.bg_color', $bg_color);
 			$session->set('com_' . $package . '.element.captcha.font', $this->font);
 
-			// $$$ hugh - changed from static image path to using simple image.php script, to get round IE caching images
-
-			/* e-kinst
-			 *	It seems too dangerous to set all parameters here,
-			 *	because everybody can enlarge image size and set noise color to
-			 *	background color to OCR captcha values without problems
-			*/
-			$str[] = '<img src="' . COM_FABRIK_LIVESITE . 'plugins/fabrik_element/captcha/image.php?foo=' . rand() . '" alt="'
-			. FText::_('security image') . '" />';
-
-			$str[] = '<div class="captcha_input">';
-
-			$type = $params->get('password') == '1' ? "password" : "text";
+			$type = $params->get('password') == '1' ? 'password' : 'text';
 
 			if ($this->elementError != '')
 			{
@@ -285,11 +293,17 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 				$type = 'hidden';
 			}
 
-			$sizeInfo = ' size="' . $size . '"';
-			$str[] = '<input class="inputbox ' . $type . '" type="' . $type . '" name="' . $name . '" id="' . $id . '" ' . $sizeInfo . ' value="" />';
-			$str[] = '</div>';
+			$layout = $this->getLayout('form');
+			$data = new stdClass;
+			$data->id = $id;
+			$data->name = $name;
 
-			return implode("\n", $str);
+			// $$$ hugh - changed from static image path to using simple image.php script, to get round IE caching images
+			$data->url = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/captcha/image.php?foo=' . rand();
+			$data->type = $type;
+			$data->size = $size;
+
+			return $layout->render($data);
 		}
 	}
 
@@ -326,6 +340,27 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 				$resp = recaptcha_check_answer($privatekey, $_SERVER["REMOTE_ADDR"], $challenge, $response);
 
 				return ($resp->is_valid) ? true : false;
+			}
+
+			return false;
+		}
+		elseif ($params->get('captcha-method') == 'nocaptcha')
+		{
+			if ($input->get('g-recaptcha-response'))
+			{
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/ReCaptcha.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/RequestMethod.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/RequestMethod/Post.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/RequestParameters.php';
+				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/Response.php';
+				
+				$privatekey = $params->get('recaptcha_privatekey');
+				$nocaptcha = new \ReCaptcha\ReCaptcha($privatekey);
+				$response = $input->get('g-recaptcha-response');
+				$server = $input->server->get('REMOTE_ADDR');
+				$resp = $nocaptcha->verify($response, $server);
+
+				return $resp->isSuccess();
 			}
 
 			return false;

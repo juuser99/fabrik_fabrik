@@ -260,19 +260,24 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		$bits['class'] .= ' fabrikSubElement';
 		unset($bits['id']);
 
-		$html[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
-		$html[] = $this->buildInput('input', $bits);
+		$layout = $this->getLayout('form');
+		$layoutData = new stdClass;
+		$layoutData->id = $id;
+		$layoutData->name = $name;
+		$layoutData->linkAttributes = $bits;
+
 		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_URL');
 		$bits['name'] = $linkname;
 		$bits['value'] = FArrayHelper::getValue($value, 'link');
+
 		if (is_a($bits['value'], 'stdClass'))
 		{
 			$bits['value'] = $bits['value']->{0};
 		}
-		$html[] = $this->buildInput('input', $bits);
-		$html[] = '</div>';
 
-		return implode("\n", $html);
+		$layoutData->labelAttributes = $bits;
+
+		return $layout->render($layoutData);
 	}
 
 	/**
@@ -319,7 +324,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		* not sure if we really want to do it here, or only when rendering?
 		* $$$ hugh - quit normalizing links.
 		*/
-		$return = '';
 		$params = $this->getParams();
 
 		if (is_array($val))
@@ -346,8 +350,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 							$v['link'] = (string) $bitly->shorten($v['link']);
 						}
 					}
-					/*$return .= implode(GROUPSPLITTER2, $v);
-					$return .= GROUPSPLITTER;*/
 				}
 				else
 				{
@@ -372,8 +374,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			{
 				return $val;
 			}
-
-			$return = $val;
 		}
 
 		$return = json_encode($val);
