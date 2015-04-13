@@ -89,28 +89,10 @@ var FbThumbs =  new Class({
 						console.log(r.error);
 					} else {
 						if (r !== '') {
-							if (Fabrik.bootstrapped) {
-								var c = this.getContainer();
-								c.getElement('button.thumb-up .thumb-count').set('text', r[0]);
-								if (typeOf(c.getElement('button.thumb-down')) !== 'null') {
-									c.getElement('button.thumb-down .thumb-count').set('text', r[1]);
-								}
-							} else {
-								var count_thumbup = document.id('count_thumbup');
-								var count_thumbdown = document.id('count_thumbdown');
-								var thumbup = document.id('thumbup');
-								var thumbdown = document.id('thumbdown');
-								count_thumbup.set('html', r[0]);
-								count_thumbdown.set('html', r[1]);
-								// Well since the element can't be rendered in form view I guess this isn't really needed
-								this.getContainer().getElement('.' + this.field.id).value = r[0].toFloat() - r[1].toFloat();
-								if (r[0] === "1") {
-									thumbup.src = this.imagepath + "thumb_up_in.gif";
-									thumbdown.src = this.imagepath + "thumb_down_out.gif";
-								} else {
-									thumbup.src = this.imagepath + "thumb_up_out.gif";
-									thumbdown.src = this.imagepath + "thumb_down_in.gif";
-								}
+							var c = this.getContainer();
+							c.getElement('button.thumb-up .thumb-count').set('text', r[0]);
+							if (typeOf(c.getElement('button.thumb-down')) !== 'null') {
+								c.getElement('button.thumb-down .thumb-count').set('text', r[1]);
 							}
 						}
 					}

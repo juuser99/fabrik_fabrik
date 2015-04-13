@@ -929,24 +929,15 @@ EOD;
 	{
 		if (!self::$framework)
 		{
-			$app = JFactory::getApplication();
-			$document = JFactory::getDocument();
-			$version = new JVersion;
 			$jsAssetBaseURI = self::getJSAssetBaseURI();
 			$fbConfig = JComponentHelper::getParams('com_fabrik');
 			
-			// Only use template test for testing in 2.5 with my temp J bootstrap template.
-			$bootstrapped = in_array($app->getTemplate(), array('bootstrap', 'fabrik4')) || $version->RELEASE > 2.5;
-
 			$ext = self::isDebug() ? '.js' : '-min.js';
 			$src = array();
 			JHtml::_('behavior.framework', true);
 
 			// Ensure bootstrap js is loaded - as J template may not load it.
-			if ($version->RELEASE > 2.5)
-			{
-				JHtml::_('bootstrap.framework');
-			}
+			JHtml::_('bootstrap.framework');
 
 			// Require js test - list with no cal loading ajax form with cal
 			JHTML::_('behavior.calendar');
@@ -954,14 +945,6 @@ EOD;
 			if ($fbConfig->get('advanced_behavior', '0') == '1')
 			{
 				JHtml::_('formbehavior.chosen', 'select.advancedSelect');
-			}
-
-				
-			if (self::inAjaxLoadedPage() && !$bootstrapped)
-			{
-				// $$$ rob 06/02/2012 recall ant so that Color.detach is available (needed for opening a window from within a window)
-				JHtml::_('script', 'media/com_fabrik/js/lib/art.js');
-				JHtml::_('script', 'media/com_fabrik/js/lib/Event.mock.js');
 			}
 
 			if (!self::inAjaxLoadedPage())
@@ -976,31 +959,11 @@ EOD;
 
 				$liveSiteReq = array();
 				$liveSiteReq[] = 'media/com_fabrik/js/fabrik' . $ext;
-
-				if ($bootstrapped)
-				{
-					$liveSiteReq[] = 'media/com_fabrik/js/tipsBootStrapMock' . $ext;
-				}
-				else
-				{
-					$liveSiteReq[] = 'media/com_fabrik/js/tips' . $ext;
-				}
+				$liveSiteReq[] = 'media/com_fabrik/js/tipsBootStrapMock' . $ext;
 
 				$liveSiteSrc = array();
 				$liveSiteSrc[] = "\tFabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';";
-
 				$liveSiteSrc[] = "\tFabrik.debug = " . (self::isDebug() ? 'true;' : 'false;');
-
-				if ($bootstrapped)
-				{
-					$liveSiteSrc[] = "\tFabrik.bootstrapped = true;";
-				}
-				else
-				{
-					$liveSiteSrc[] = "\tFabrik.iconGen = new IconGenerator({scale: 0.5});";
-					$liveSiteSrc[] = "\tFabrik.bootstrapped = false;";
-				}
-
 				$liveSiteSrc[] = self::tipInt();
 				$liveSiteSrc = implode("\n", $liveSiteSrc);
 				self::script($liveSiteReq, $liveSiteSrc);
@@ -1173,13 +1136,7 @@ EOD;
 		$r->viz = 'plugins/fabrik_visualization';
 		$r->admin = 'administrator/components/com_fabrik/views';
 		$r->adminfields = 'administrator/components/com_fabrik/models/fields';
-
-		$version = new JVersion;
-
-		if ($version->RELEASE >= 3.2 && $version->DEV_LEVEL > 1)
-		{
-			$r->punycode =  'media/system/js/punycode';
-		}
+		$r->punycode =  'media/system/js/punycode';
 
 		return $r;
 	}
@@ -2656,28 +2613,22 @@ EOD;
 		// Include MooTools More framework
 		static::framework('more');
 
-		$document = JFactory::getDocument();
 		$debug = JFactory::getConfig()->get('debug');
-		$version = new JVersion;
 
-		if ($version->RELEASE >= 3.2 && $version->DEV_LEVEL > 1)
-		{
-			$file = $debug ? 'punycode-uncompressed' : 'punycode';
-			$path = JURI::root(). 'media/system/js/' . $file;
+		$file = $debug ? 'punycode-uncompressed' : 'punycode';
+		$path = JURI::root(). 'media/system/js/' . $file;
 
-			$js = array();
-			$js[] = "requirejs({";
-			$js[] = "   'paths': {";
-			$js[] = "     'punycode': '" . $path . "'";
-			$js[] = "   }";
-			$js[] = " },";
-			$js[] = "['punycode'], function (p) {";
-			$js[] = "  window.punycode = p;";
-			$js[] = "});";
+		$js = array();
+		$js[] = "requirejs({";
+		$js[] = "   'paths': {";
+		$js[] = "     'punycode': '" . $path . "'";
+		$js[] = "   }";
+		$js[] = " },";
+		$js[] = "['punycode'], function (p) {";
+		$js[] = "  window.punycode = p;";
+		$js[] = "});";
 
-			//$document->addScriptDeclaration(implode("\n", $js));
-			self::addToSessionHeadScripts(implode("\n", $js));
-		}
+		self::addToSessionHeadScripts(implode("\n", $js));
 
 		JHtml::_('script', 'system/validate.js', false, true);
 		static::$loaded[__METHOD__] = true;

@@ -16,16 +16,8 @@ $d = $displayData;
 			<div class="colourpicker_output img-rounded" style="width:15px;height:15px;float:left;margin-right:10px;"></div> 
 			<?php echo FText::_('PLG_FABRIK_COLOURPICKER_COLOUR');?>
 
-			<?php if ($d->j3)
-			{?>
 			<a class="pull-right" href="#"><i class="icon-cancel icon-remove-sign"></i></a>
 			<?php
-			}
-			else
-			{
-
-			echo  FabrikHelperHTML::image("close.gif", 'form', @$this->tmpl, array());
-			}
 
 			if ($d->showPicker) :?>
 			</div>

@@ -68,7 +68,6 @@ class JFormFieldSuboptions extends JFormField
 		}
 
 		$opts->id = $this->id;
-		$opts->j3 = $j3;
 		$opts = json_encode($opts);
 		$script[] = "window.addEvent('domready', function () {";
 		$script[] = "\tnew Suboptions('$this->name', $opts);";
@@ -76,10 +75,6 @@ class JFormFieldSuboptions extends JFormField
 		FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/suboptions.js', implode("\n", $script));
 		$html = array();
 
-		if (!$j3)
-		{
-			$html[] = '<div style="float:left;width:100%">';
-		}
 
 		$html[] = '<table class="table table-striped" style="width: 100%" id="' . $this->id . '">';
 		$html[] = '<thead>';
@@ -89,23 +84,12 @@ class JFormFieldSuboptions extends JFormField
 		$html[] = '<th style="width: 30%">' . FText::_('COM_FABRIK_LABEL') . '</th>';
 		$html[] = '<th style="width: 10%">' . FText::_('COM_FABRIK_DEFAULT') . '</th>';
 
-		if ($j3)
-		{
-			$html[] = '<th style="width: 20%"><a class="btn btn-success" href="#" data-button="addSuboption"><i class="icon-plus"></i> </a></th>';
-		}
+		$html[] = '<th style="width: 20%"><a class="btn btn-success" href="#" data-button="addSuboption"><i class="icon-plus"></i> </a></th>';
 
 		$html[] = '</tr>';
 		$html[] = '</thead>';
 		$html[] = '<tbody></tbody>';
 		$html[] = '</table>';
-
-		if (!$j3)
-		{
-			$html[] = '<ul id="sub_subElementBody" class="subelements">';
-			$html[] = '<li></li>';
-			$html[] = '</ul>';
-			$html[] = '<a class="addButton" href="#" id="addSuboption"><i class="icon-plus"></i> ' . FText::_('COM_FABRIK_ADD') . '</a></div>';
-		}
 
 		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
