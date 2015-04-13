@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 /**
  * List filter model
  *
@@ -406,7 +409,7 @@ class FabrikFEModelListfilter extends FabModel
 		$db->setQuery('SHOW VARIABLES LIKE \'ft_min_word_len\'');
 		$res = $db->loadObject();
 
-		if (!JString::strlen($s) >= $res->Value)
+		if (!String::strlen($s) >= $res->Value)
 		{
 			throw new UnexpectedValueException(FText::_('COM_FABRIK_NOTICE_SEARCH_STRING_TOO_SHORT'));
 		}
@@ -536,7 +539,7 @@ class FabrikFEModelListfilter extends FabModel
 		 * /forums/index.php?threads/many-to-many-relationship-show-all-related-items-as-list-on-the-joined-list-details.36697/
 		 * #post-184335
 		 */
-		$reg = JArrayHelper::fromObject($reg);
+		$reg = ArrayHelper::fromObject($reg);
 		$serachTypes = FArrayHelper::getValue($reg, 'search_type', array());
 
 		for ($i = 0; $i < count($serachTypes); $i++)
@@ -548,7 +551,7 @@ class FabrikFEModelListfilter extends FabModel
 		}
 
 		$reg['searchall'] = '';
-		$reg = JArrayHelper::toObject($reg);
+		$reg = ArrayHelper::toObject($reg);
 		$registry->set($context, $reg);
 		$reg = $registry->get($context, new stdClass);
 
@@ -662,7 +665,7 @@ class FabrikFEModelListfilter extends FabModel
 			{
 				$fieldDesc = $elementModel->getFieldDescription();
 
-				if (JString::stristr($fieldDesc, 'INT'))
+				if (String::stristr($fieldDesc, 'INT'))
 				{
 					if (is_numeric($search) && $condition == '=')
 					{
@@ -1034,7 +1037,7 @@ class FabrikFEModelListfilter extends FabModel
 			{
 				$fieldDesc = $elementModel->getFieldDescription();
 
-				if (JString::stristr($fieldDesc, 'INT'))
+				if (String::stristr($fieldDesc, 'INT'))
 				{
 					if (is_numeric($val) && $condition == '=')
 					{
@@ -1203,7 +1206,7 @@ class FabrikFEModelListfilter extends FabModel
 		if (!empty($request) && array_key_exists('key', $request))
 		{
 			$keyints = array_keys($request['key']);
-			$ajaxPost = JString::strtolower($input->server->get('HTTP_X_REQUESTED_WITH'));
+			$ajaxPost = String::strtolower($input->server->get('HTTP_X_REQUESTED_WITH'));
 			$this->listModel->ajaxPost = $ajaxPost;
 			$this->listModel->postValues = $values;
 
@@ -1333,7 +1336,7 @@ class FabrikFEModelListfilter extends FabModel
 				{
 					$fieldDesc = $elementModel->getFieldDescription();
 
-					if (JString::stristr($fieldDesc, 'INT'))
+					if (String::stristr($fieldDesc, 'INT'))
 					{
 						if (is_numeric($value) && $request['condition'][$i] == '=')
 						{
@@ -1347,7 +1350,7 @@ class FabrikFEModelListfilter extends FabModel
 				 * post filter query overwrites search all query, but uses add so = where id REGEX 'USA' AND country LIKE '%USA'
 				 * this code swaps the first
 				 */
-				$joinMode = JString::strtolower($request['join'][$i]) != 'where' ? $request['join'][$i] : 'AND';
+				$joinMode = String::strtolower($request['join'][$i]) != 'where' ? $request['join'][$i] : 'AND';
 
 				if (!empty($filters))
 				{
@@ -1426,7 +1429,7 @@ class FabrikFEModelListfilter extends FabModel
 		$item = $this->listModel->getTable();
 		$identifier = $app->input->get('listref', $this->listModel->getRenderContext());
 		$key = 'com_' . $package . '.list' . $identifier . '.filter';
-		$sessionfilters = JArrayHelper::fromObject($app->getUserState($key));
+		$sessionfilters = ArrayHelper::fromObject($app->getUserState($key));
 		$filterkeys = array_keys($filters);
 
 		if (!is_array($sessionfilters) || !array_key_exists('key', $sessionfilters))
@@ -1554,7 +1557,7 @@ class FabrikFEModelListfilter extends FabModel
 					{
 						$fieldDesc = $elementModel->getFieldDescription();
 
-						if (JString::stristr($fieldDesc, 'INT'))
+						if (String::stristr($fieldDesc, 'INT'))
 						{
 							if (is_numeric($search) && $condition == '=')
 							{

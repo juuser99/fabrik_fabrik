@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
@@ -86,7 +88,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 		if ($params->get('rating-mode') !== 'creator-rating')
 		{
 			$d = $this->getListModel()->getData();
-			$ids = JArrayHelper::getColumn($d, '__pk_val');
+			$ids = ArrayHelper::getColumn($d, '__pk_val');
 			list($data, $total) = $this->getRatingAverage($data, $listid, $formid, $row_id, $ids);
 		}
 
@@ -96,7 +98,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 		$data = FabrikWorker::JSONtoData($data, true);
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'list', false);
 		$colData = $this->getListModel()->getData();
-		$ids = JArrayHelper::getColumn($colData, '__pk_val');
+		$ids = ArrayHelper::getColumn($colData, '__pk_val');
 		$canRate = $this->canRate($row_id, $ids);
 
 		for ($i = 0; $i < count($data); $i++)
@@ -166,7 +168,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 			$listid = $list->id;
 			$formid = $list->form_id;
 			$d = $this->getListModel()->getData();
-			$ids = JArrayHelper::getColumn($d, '__pk_val');
+			$ids = ArrayHelper::getColumn($d, '__pk_val');
 			$row_id = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
 			list($avg, $total) = $this->getRatingAverage($data, $listid, $formid, $row_id, $ids);
 
@@ -195,7 +197,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 
 		if (!isset($this->avgs))
 		{
-			JArrayHelper::toInteger($ids);
+			ArrayHelper::toInteger($ids);
 			$db = FabrikWorker::getDbo(true);
 			$elementid = $this->getElement()->id;
 
@@ -238,7 +240,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 				$ids[] = $row_id;
 			}
 
-			JArrayHelper::toInteger($ids);
+			ArrayHelper::toInteger($ids);
 			$db = FabrikWorker::getDbo(true);
 			$elementid = $this->getElement()->id;
 			$query = $db->getQuery(true);

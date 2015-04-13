@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once 'fabcontrolleradmin.php';
 
 /**
@@ -69,7 +71,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('cid', array(), 'array');
-		JArrayHelper::toInteger($cid);
+		ArrayHelper::toInteger($cid);
 		$cid = implode(',', $cid);
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__fabrik_cron')->where('id IN (' . $cid . ')');

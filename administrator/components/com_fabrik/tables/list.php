@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
 /**
@@ -178,7 +180,7 @@ class FabrikTableList extends FabTable
 		}
 
 		$pk = (array) $pk;
-		JArrayHelper::toInteger($pk);
+		ArrayHelper::toInteger($pk);
 
 		if (empty($pk))
 		{

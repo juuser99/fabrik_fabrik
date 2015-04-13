@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -96,10 +98,10 @@ class FabrikFEModelElementValidator extends JModelLegacy
 
 				if ($isPublished)
 				{
-					$class = 'PlgFabrik_Validationrule' . JString::ucfirst($usedPlugin);
+					$class = 'PlgFabrik_Validationrule' . String::ucfirst($usedPlugin);
 					$conf = array();
-					$conf['name'] = JString::strtolower($usedPlugin);
-					$conf['type'] = JString::strtolower('fabrik_Validationrule');
+					$conf['name'] = String::strtolower($usedPlugin);
+					$conf['type'] = String::strtolower('fabrik_Validationrule');
 					$plugIn = new $class($dispatcher, $conf);
 					$oPlugin = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
 					$plugIn->elementModel = $this->elementModel;

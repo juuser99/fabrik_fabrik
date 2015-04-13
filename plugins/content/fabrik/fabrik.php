@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 jimport('joomla.plugin.plugin');
 
 /**
@@ -78,7 +80,7 @@ class PlgContentFabrik extends JPlugin
 		// Simple performance check to determine whether bot should process further
 		$botRegex = $fparams->get('botRegex') != '' ? $fparams->get('botRegex') : 'fabrik';
 
-		if (JString::strpos($row->text, $botRegex) === false)
+		if (String::strpos($row->text, $botRegex) === false)
 		{
 			return true;
 		}
@@ -107,8 +109,8 @@ class PlgContentFabrik extends JPlugin
 	protected function preplace($match)
 	{
 		$match = $match[0];
-		$match = JString::str_ireplace('<p>', '<div>', $match);
-		$match = JString::str_ireplace('</p>', '</div>', $match);
+		$match = String::str_ireplace('<p>', '<div>', $match);
+		$match = String::str_ireplace('</p>', '</div>', $match);
 
 		return $match;
 	}
@@ -212,7 +214,7 @@ class PlgContentFabrik extends JPlugin
 			switch ($m[0])
 			{
 				case 'view':
-					$viewName = JString::strtolower($m[1]);
+					$viewName = String::strtolower($m[1]);
 					break;
 				case 'id':
 				case 'formid':
@@ -394,7 +396,7 @@ class PlgContentFabrik extends JPlugin
 				$this->_setRequest($unused);
 				$row = $model->getRow($rowid, false, true);
 
-				if (substr($element, JString::strlen($element) - 4, JString::strlen($element)) !== '_raw')
+				if (substr($element, String::strlen($element) - 4, Jtring::strlen($element)) !== '_raw')
 				{
 					$element = $element . '_raw';
 				}

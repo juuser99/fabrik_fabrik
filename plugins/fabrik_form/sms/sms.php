@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -79,7 +81,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 			$gateway = $params->get('sms-gateway', 'kapow.php');
 			$input = new JFilterInput;
 			$gateway = $input->clean($gateway, 'CMD');
-			require_once JPATH_ROOT . '/plugins/fabrik_form/sms/gateway/' . JString::strtolower($gateway);
+			require_once JPATH_ROOT . '/plugins/fabrik_form/sms/gateway/' . String::strtolower($gateway);
 			$gateway = JFile::stripExt($gateway);
 			$this->gateway = new $gateway;
 			$this->gateway->params = $params;

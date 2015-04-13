@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 /**
  * Plugin element to render two fields to capture a link (url/label)
  *
@@ -68,7 +70,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			{
 				for ($i = 0; $i < count($data); $i++)
 				{
-					$data[$i] = JArrayHelper::fromObject($data[$i]);
+					$data[$i] = ArrayHelper::fromObject($data[$i]);
 					$data[$i] = $this->_renderListData($data[$i], $thisRow);
 				}
 			}
@@ -110,7 +112,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 			$href = trim($data['link']);
 			$lbl = trim($data['label']);
-			$href = $w->parseMessageForPlaceHolder(urldecode($href), JArrayHelper::fromObject($thisRow));
+			$href = $w->parseMessageForPlaceHolder(urldecode($href), ArrayHelper::fromObject($thisRow));
 
 			if (JString::strtolower($href) == 'http://' || JString::strtolower($href) == 'https://')
 			{
@@ -151,7 +153,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			}
 
 			$w = new FabrikWorker;
-			$aRow = JArrayHelper::fromObject($thisRow);
+			$aRow = ArrayHelper::fromObject($thisRow);
 			$link = $listModel->parseMessageForRowHolder($link, $aRow);
 
 			return $link;
@@ -211,7 +213,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				 */
 				if (array_key_exists(0, $value) && is_object($value[0]))
 				{
-					$value = JArrayHelper::fromObject($value[0]);
+					$value = ArrayHelper::fromObject($value[0]);
 				}
 				elseif (array_key_exists(0, $value))
 				{

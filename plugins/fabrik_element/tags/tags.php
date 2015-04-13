@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
 
 /**
@@ -157,7 +159,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 			$pk = $db->quoteName($join->table_join_alias . '.' . $join->table_key);
 			$name = $this->getFullName(true, false) . '_raw';
 			$tagIds = FArrayHelper::getValue($data, $name, array());
-			JArrayHelper::toInteger($tagIds);
+			ArrayHelper::toInteger($tagIds);
 			$where = empty($tagIds) ? '6 = -6' : $pk . ' IN (' . implode(', ', $tagIds) . ')';
 		}
 		else
@@ -382,16 +384,16 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 
 		$name = $this->getFullName(true, false);
 		$idname = $name . '_id';
-		$rawname = $name . '_raw';
-		$ids = array();
+
 		if (is_object($thisRow->$idname))
 		{
-			$ids = JArrayHelper::fromObject($thisRow->$idname);
+			$ids = ArrayHelper::fromObject($thisRow->$idname);
 		}
 		else
 		{
 			$ids = explode(GROUPSPLITTER, $thisRow->$idname);
 		}
+
 		$merged = array_combine($ids, $data);
 		$baseUrl = $this->tagUrl();
 		$icon = $this->tagIcon();

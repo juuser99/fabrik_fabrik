@@ -13,6 +13,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Storage\MySql as Storage;
+use Joomla\Utilities\ArrayHelper;
+use Joomla\String\String;
 
 require_once 'fabmodeladmin.php';
 
@@ -87,7 +89,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		parent::__construct($config);
 		$feModel = $this->getFEModel();
 		print_r($config);exit;
-		$this->db = JArrayHelper::getValue($config, 'db', JFactory::getDbo());
+		$this->db = ArrayHelper::getValue($config, 'db', JFactory::getDbo());
 		$db = $feModel->getDb();
 		$storeCfg = array('db' => $db);
 		$this->storage = new Storage($storeCfg);
@@ -176,7 +178,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	public function publish(&$pks, $value = 1)
 	{
 		// Initialise variables.
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$user = JFactory::getUser();
 		$table = $this->getTable();
 		$pks = (array) $pks;
@@ -538,6 +540,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 	public function validate($form, $data, $group = null)
 	{
+		$app = JFactory::getApplication();
 		$params = $data['params'];
 		$data = parent::validate($form, $data, $group);
 
@@ -548,7 +551,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 		if (empty($data['_database_name']) && FArrayHelper::getValue($data, 'db_table_name') == '')
 		{
-			$this->setError(FText::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
+			$app->enqueueMessage(FText::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
 
 			return false;
 		}
@@ -573,7 +576,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		$input = $app->input;
 		$user = JFactory::getUser();
 		$date = JFactory::getDate();
-		$this->storage->table = JArrayHelper::getValue($data, 'db_table_name');
+		$this->storage->table = ArrayHelper::getValue($data, 'db_table_name');
 		$row = $this->getTable('List', 'FabrikTable', array('view' => $this->storage->table));
 
 		$id = FArrayHelper::getValue($data, 'id');
@@ -584,8 +587,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 		$this->setState('list.id', $id);
 		$this->setState('list.form_id', $row->form_id);
-
-
 
 		$row->bind($data);
 
@@ -680,7 +681,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 			// Store without quoteNames as thats db specific
 			$row->db_primary_key = $row->db_primary_key == '' ? $row->db_table_name . "." . $key : $row->db_primary_key;
-			$row->auto_inc = JString::stristr($extra, 'auto_increment') ? true : false;
+			$row->auto_inc = String::stristr($extra, 'auto_increment') ? true : false;
 		}
 
 		$row->store();
@@ -705,11 +706,11 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 				// Int and DATETIME elements cant have a index size attrib
 				$coltype = $element->getFieldDescription();
 
-				if (JString::stristr($coltype, 'int'))
+				if (String::stristr($coltype, 'int'))
 				{
 					$size = '';
 				}
-				elseif (JString::stristr($coltype, 'datetime'))
+				elseif (String::stristr($coltype, 'datetime'))
 				{
 					$size = '';
 				}
@@ -1116,7 +1117,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			else
 			{
 				// If the field is the primary key and it's an INT type set the plugin to be the fabrik internal id
-				if ($key[0]['colname'] == $label && JString::strtolower(substr($key[0]['type'], 0, 3)) === 'int')
+				if ($key[0]['colname'] == $label && String::strtolower(substr($key[0]['type'], 0, 3)) === 'int')
 				{
 					$plugin = 'internalid';
 				}
@@ -1153,7 +1154,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 				}
 				// Then alter if defined in Fabrik global config
 				// Jaanus: but first check if there are any pk field and if yes then create as internalid
-				$defType = JString::strtolower(substr($key[0]['type'], 0, 3));
+				$defType = String::strtolower(substr($key[0]['type'], 0, 3));
 				$plugin = ($key[0]['colname'] == $label && $defType === 'int') ? 'internalid' : $fbConfig->get($type, $plugin);
 			}
 
@@ -1465,7 +1466,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 				if ($drop)
 				{
-					if (strncasecmp($table->db_table_name, $dbconfigprefix, JString::strlen($dbconfigprefix)) == 0)
+					if (strncasecmp($table->db_table_name, $dbconfigprefix, String::strlen($dbconfigprefix)) == 0)
 					{
 						$app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table->db_table_name, $dbconfigprefix), 'notice');
 					}
@@ -1598,7 +1599,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 			}
 			else
 			{
-				switch (JString::strtolower($type))
+				switch (String::strtolower($type))
 				{
 					case 'integer':
 						$objtype = 'INT';

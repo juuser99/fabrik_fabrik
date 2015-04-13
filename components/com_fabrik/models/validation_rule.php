@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
@@ -22,7 +24,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
  * @since    3.0
  */
 
-class PlgFabrik_Validationrule extends FabrikPlugin
+class PlgFabrik_ValidationRule extends FabrikPlugin
 {
 	/**
 	 * Plugin name
@@ -309,11 +311,11 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 
 		if ($this->allowEmpty())
 		{
-			return FText::_('PLG_VALIDATIONRULE_' . JString::strtoupper($this->pluginName) . '_ALLOWEMPTY_LABEL');
+			return FText::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_ALLOWEMPTY_LABEL');
 		}
 		else
 		{
-			return FText::_('PLG_VALIDATIONRULE_' . JString::strtoupper($this->pluginName) . '_LABEL');
+			return FText::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_LABEL');
 		}
 	}
 

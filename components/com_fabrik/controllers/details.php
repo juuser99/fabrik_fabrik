@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.controller');
 
 /**
@@ -121,6 +123,7 @@ class FabrikControllerDetails extends JControllerLegacy
 	{
 		@set_time_limit(300);
 		$app = JFactory::getApplication();
+		$session = JFactory::getSession();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 		$document = JFactory::getDocument();
@@ -362,7 +365,7 @@ class FabrikControllerDetails extends JControllerLegacy
 				if ($this->isMambot)
 				{
 					// Return to the same page
-					$url = JArrayHelper::getvalue($_SERVER, 'HTTP_REFERER', 'index.php');
+					$url = ArrayHelper::getvalue($_SERVER, 'HTTP_REFERER', 'index.php');
 				}
 				else
 				{

@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once 'fabmodeladmin.php';
 
 /**
@@ -121,7 +123,7 @@ class FabrikAdminModelCron extends FabModelAdmin
 		{
 			$plugin = $pluginManager->getPlugIn($plugin, 'Cron');
 			$mode = FabrikWorker::j3() ? 'nav-tabs' : '';
-			$str = $plugin->onRenderAdminSettings(JArrayHelper::fromObject($item), null, $mode);
+			$str = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, $mode);
 		}
 
 		return $str;

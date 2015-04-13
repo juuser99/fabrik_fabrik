@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 require_once 'fabrikmodelform.php';
 require_once COM_FABRIK_FRONTEND . '/helpers/element.php';
@@ -3211,7 +3214,7 @@ echo "form get errors";
 
 					// $$$rob ensure "<tags>text</tags>" that are entered into plain text areas are shown correctly
 					JFilterOutput::objectHTMLSafe($data);
-					$data = JArrayHelper::fromObject($data);
+					$data = ArrayHelper::fromObject($data);
 					FabrikHelperHTML::debug($data, 'form:getData from POST (form not in Mambot and errors)');
 				}
 			}
@@ -3296,7 +3299,7 @@ echo "form get errors";
 									$this->rowId = isset($row->__pk_val) ? $row->__pk_val : $this->rowId;
 								}
 
-								$row = empty($row) ? array() : JArrayHelper::fromObject($row);
+								$row = empty($row) ? array() : ArrayHelper::fromObject($row);
 								$request = $clean_request;
 								$request = array_merge($row, $request);
 								$data[] = FArrayHelper::toObject($request);
@@ -3551,7 +3554,7 @@ echo "form get errors";
 		}
 
 		// Remove the additional rows - they should have been merged into [0] above. if no [0] then use main array
-		$data = JArrayHelper::fromObject(FArrayHelper::getValue($data, 0, $data));
+		$data = ArrayHelper::fromObject(FArrayHelper::getValue($data, 0, $data));
 	}
 
 	/**
@@ -3710,11 +3713,11 @@ echo "form get errors";
 		if (strstr($sql, 'WHERE'))
 		{
 			// Do it this way as queries may contain subqueries which we want to keep the where
-			$firstword = JString::substr($where, 0, 5);
+			$firstword = String::substr($where, 0, 5);
 
 			if ($firstword == 'WHERE')
 			{
-				$where = JString::substr_replace($where, 'AND', 0, 5);
+				$where = String::substr_replace($where, 'AND', 0, 5);
 			}
 		}
 		// Set rowId to -2 to indicate random record
@@ -4232,7 +4235,7 @@ echo "form get errors";
 			return str_replace("{Add/Edit}", '', $label);
 		}
 
-		if (JString::stristr($label, "{Add/Edit}"))
+		if (String::stristr($label, "{Add/Edit}"))
 		{
 			$replace = $this->isNewRecord() ? FText::_('COM_FABRIK_ADD') : FText::_('COM_FABRIK_EDIT');
 			$label = str_replace("{Add/Edit}", $replace, $label);

@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
 
@@ -205,7 +208,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	{
 		$element = $this->getElement();
 		$db = JFactory::getDbo();
-		$condition = JString::strtoupper($condition);
+		$condition = String::strtoupper($condition);
 		$this->encryptFieldName($key);
 		$glue = 'OR';
 
@@ -351,7 +354,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 			if ($params->get('filter_groupby') != -1)
 			{
-				JArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
+				ArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
 			}
 
 			if (!in_array('', $values) && !in_array($element->filter_type, array('checkbox', 'multiselect')))

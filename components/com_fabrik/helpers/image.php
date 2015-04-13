@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 /**
  * Image manipulation class
  *
@@ -345,7 +347,7 @@ class FabimageGD extends Fabimage
 	public function imageFromFile($file)
 	{
 		$img = false;
-		$ext = JString::strtolower(end(explode('.', $file)));
+		$ext = String::strtolower(end(explode('.', $file)));
 
 		if ($ext == 'jpg' || $ext == 'jpeg')
 		{
@@ -385,7 +387,7 @@ class FabimageGD extends Fabimage
 
 	protected function imageCreateFrom($source)
 	{
-		$ext = JString::strtolower(JFile::getExt($source));
+		$ext = String::strtolower(JFile::getExt($source));
 
 		switch ($ext)
 		{
@@ -415,7 +417,7 @@ class FabimageGD extends Fabimage
 
 	public function imageToFile($destCropFile, $image)
 	{
-		$ext = JString::strtolower(JFile::getExt($destCropFile));
+		$ext = String::strtolower(JFile::getExt($destCropFile));
 		ob_start();
 
 		switch ($ext)
@@ -529,7 +531,7 @@ class FabimageGD extends Fabimage
 			return $img;
 		}
 
-		$ext = JString::strtolower(end(explode('.', $origFile)));
+		$ext = String::strtolower(end(explode('.', $origFile)));
 
 		// If an image was successfully loaded, test the image for size
 		if ($img)
@@ -867,7 +869,7 @@ class FabimageIM extends Fabimage
 			// $$$ hugh - testing making thumbs for PDF's, so need a little tweak here
 			$originfo = pathinfo($origFile);
 
-			if (JString::strtolower($originfo['extension']) != 'pdf')
+			if (String::strtolower($originfo['extension']) != 'pdf')
 			{
 				return;
 			}
@@ -885,7 +887,7 @@ class FabimageIM extends Fabimage
 
 			$originfo = pathinfo($origFile);
 
-			if (JString::strtolower($originfo['extension']) == 'pdf')
+			if (String::strtolower($originfo['extension']) == 'pdf')
 			{
 				$pdf_thumb_type = 'png';
 
@@ -896,7 +898,7 @@ class FabimageIM extends Fabimage
 				// just have used the sourcefile extension for the thumb file.
 				$destinfo = pathinfo($destFile);
 
-				if (JString::strtolower($destinfo['extension']) == 'pdf')
+				if (String::strtolower($destinfo['extension']) == 'pdf')
 				{
 					// Rebuild $destFile with valid image extension
 					// NOTE - changed $destFile arg to pass by reference OOOPS can't do that!

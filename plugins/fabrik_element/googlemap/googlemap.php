@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/googlemap.php';
 
@@ -67,7 +69,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		{
 			if ($params->get('fb_gm_staticmap_tableview'))
 			{
-				$d = $this->_staticMap($d, $w, $h, $z, $i, true, JArrayHelper::fromObject($thisRow));
+				$d = $this->_staticMap($d, $w, $h, $z, $i, true, ArrayHelper::fromObject($thisRow));
 			}
 
 			if ($params->get('icon_folder') == '1')

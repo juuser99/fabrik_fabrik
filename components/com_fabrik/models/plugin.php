@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -1029,7 +1031,7 @@ class FabrikPlugin extends JPlugin
 		if (!is_null($formModel))
 		{
 			$origData = $formModel->getOrigData();
-			$origData = JArrayHelper::fromObject($origData[0]);
+			$origData = ArrayHelper::fromObject($origData[0]);
 		}
 		else
 		{

@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -74,7 +76,7 @@ class FabrikViewImport extends JViewLegacy
 
 		// From list of lists checkbox selection
 		$cid = $input->get('cid', array(0), 'array');
-		JArrayHelper::toInteger($cid);
+		ArrayHelper::toInteger($cid);
 
 		if ($id === 0)
 		{

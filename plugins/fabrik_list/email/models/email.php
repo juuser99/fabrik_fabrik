@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
 /**
@@ -326,7 +328,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			$ids = (array) $input->get($key, array(), 'array');
 		}
 
-		JArrayHelper::toInteger($ids);
+		ArrayHelper::toInteger($ids);
 
 		if (empty($ids))
 		{

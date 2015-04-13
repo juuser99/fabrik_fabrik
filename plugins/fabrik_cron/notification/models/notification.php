@@ -10,6 +10,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -57,7 +60,7 @@ class FabrikModelNotification extends JModelLegacy
 			{
 				$key = explode('___', $key);
 				$key = array_pop($key);
-				$k = JString::strtolower($key);
+				$k = String::strtolower($key);
 
 				if ($k == 'title')
 				{
@@ -98,7 +101,7 @@ class FabrikModelNotification extends JModelLegacy
 		JSessoin::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$ids = $app->input->get('cid', array());
-		JArrayHelper::toInteger($ids);
+		ArrayHelper::toInteger($ids);
 
 		if (empty($ids))
 		{

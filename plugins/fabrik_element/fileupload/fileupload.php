@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
 
 define("FU_DOWNLOAD_SCRIPT_NONE", '0');
@@ -725,7 +728,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	{
 		// $render loaded in required file.
 		$render = null;
-		$ext = JString::strtolower(JFile::getExt($file));
+		$ext = String::strtolower(JFile::getExt($file));
 
 		if (JFile::exists(JPATH_ROOT . '/plugins/fabrik_element/fileupload/element/custom/' . $ext . '.php'))
 		{
@@ -1069,8 +1072,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			return true;
 		}
 
-		$curr_f_ext = JString::strtolower(JFile::getExt($myFileName));
-		array_walk($aFileTypes, create_function('&$v', '$v = JString::strtolower($v);'));
+		$curr_f_ext = String::strtolower(JFile::getExt($myFileName));
+		array_walk($aFileTypes, create_function('&$v', '$v = String::strtolower($v);'));
 
 		return in_array($curr_f_ext, $aFileTypes);
 	}
@@ -1649,7 +1652,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			if (!is_null($olddaata))
 			{
 				$name = $this->getFullName(true, false);
-				$aoldData = JArrayHelper::fromObject($olddaata);
+				$aoldData = ArrayHelper::fromObject($olddaata);
 				$r = FArrayHelper::getValue($aoldData, $name, '') === '' ? true : false;
 
 				if (!$r)
@@ -1718,7 +1721,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 				else
 				{
 					$files = $input->files->get($name, array(), 'raw');
-					$file = JArrayHelper::getValue($files, 'name', '');
+					$file = ArrayHelper::getValue($files, 'name', '');
 
 					return $file == '' ? true : false;
 				}
@@ -1893,7 +1896,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$params = $this->getParams();
 			$storageType = JFilterInput::getInstance()->clean($params->get('fileupload_storage_type', 'filesystemstorage'), 'CMD');
 			require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptors/' . $storageType . '.php';
-			$storageClass = JString::ucfirst($storageType);
+			$storageClass = String::ucfirst($storageType);
 			$this->storage = new $storageClass($params);
 		}
 
@@ -2143,7 +2146,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 						$value != ''
 						&& (
 							$storage->exists(COM_FABRIK_BASE . $value)
-							|| JString::substr($value, 0, 4) == 'http')
+							|| String::substr($value, 0, 4) == 'http')
 						)
 					)
 				{
@@ -2680,7 +2683,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	protected function _return_bytes($val)
 	{
 		$val = trim($val);
-		$last = JString::strtolower(substr($val, -1));
+		$last = String::strtolower(substr($val, -1));
 
 		if ($last == 'g')
 		{

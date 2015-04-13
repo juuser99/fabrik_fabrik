@@ -17,6 +17,8 @@
    
  */
 
+use Joomla\String\String;
+
 class FusionCharts{
 
 	var $chartType;               # Chart Friendly Name
@@ -436,7 +438,7 @@ class FusionCharts{
 	   $tempParam .= $this->ConvertParamToXMLAttribute($strParam);
 	   
 	   $colorParam="";
-	   $pos = JString::strpos(strtolower($tempParam), " color");
+	   $pos = String::strpos(strtolower($tempParam), " color");
 	   if ($pos === false) {
 	     $colorParam=" color='" . $this->getColor($this->datasetCounter-1) . "'";
 	   }

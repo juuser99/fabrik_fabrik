@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
@@ -145,7 +147,7 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 					}
 
 					$location = str_replace('\\', '/', $location);
-					$location = JString::ltrim($location, '/');
+					$location = String::ltrim($location, '/');
 					$location = COM_FABRIK_LIVESITE . $location;
 					$retstr .= "		<track>\n";
 					$retstr .= "			<location>" . $location . "</location>\n";
@@ -163,7 +165,7 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 						if (!empty($image))
 						{
 							$image = str_replace('\\', '/', $image);
-							$image = JString::ltrim($image, '/');
+							$image = String::ltrim($image, '/');
 							$image = COM_FABRIK_LIVESITE . $image;
 							$retstr .= "			<image>" . $image . "</image>\n";
 						}
@@ -217,7 +219,7 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 					}
 
 					$location = str_replace('\\', '/', $location);
-					$location = JString::ltrim($location, '/');
+					$location = String::ltrim($location, '/');
 					$location = COM_FABRIK_LIVESITE . $location;
 					$retstr .= "		<item>\n";
 					$retstr .= '			<media:content url="' . $location . '" />' . "\n";
@@ -235,7 +237,7 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 						if (!empty($image))
 						{
 							$image = str_replace('\\', '/', $image);
-							$image = JString::ltrim($image, '/');
+							$image = String::ltrim($image, '/');
 							$image = COM_FABRIK_LIVESITE . $image;
 							$retstr .= '			<media:thumbnail url="' . $image . '" />' . "\n";
 						}

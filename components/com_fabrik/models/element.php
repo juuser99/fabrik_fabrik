@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
 
@@ -355,7 +358,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		if (is_object($row))
 		{
-			$row = JArrayHelper::fromObject($row);
+			$row = ArrayHelper::fromObject($row);
 		}
 
 		$this->element->bind($row);
@@ -1479,7 +1482,7 @@ class PlgFabrik_Element extends FabrikPlugin
 				// Weird bug where stdClass with key 0, when cast to (array) you couldn't access values[0]
 				if (is_object($values))
 				{
-					$values = JArrayHelper::fromObject($values);
+					$values = ArrayHelper::fromObject($values);
 				}
 
 				if (!is_array($values))
@@ -1723,7 +1726,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		if (is_object($data))
 		{
-			$data = JArrayHelper::fromObject($data);
+			$data = ArrayHelper::fromObject($data);
 		}
 
 		$rollOver = $this->tipHtml($data, $mode);
@@ -3864,10 +3867,10 @@ class PlgFabrik_Element extends FabrikPlugin
 		// Apply element where/order by statements to the filter (e.g. dbjoins 'Joins where and/or order by statement')
 		$elementWhere = $this->buildQueryWhere(array(), true, null, array('mode' => 'filter'));
 
-		if (JString::stristr($sql, 'WHERE ') && JString::stristr($elementWhere, 'WHERE '))
+		if (String::stristr($sql, 'WHERE ') && String::stristr($elementWhere, 'WHERE '))
 		{
 			// $$$ hugh - only replace the WHERE with AND if it's the first word, so we don't munge sub-queries
-			// $elementWhere = JString::str_ireplace('WHERE ', 'AND ', $elementWhere);
+			// $elementWhere = String::str_ireplace('WHERE ', 'AND ', $elementWhere);
 			$elementWhere = preg_replace("#^(\s*)(WHERE)(.*)#i", "$1AND$3", $elementWhere);
 		}
 
@@ -4234,7 +4237,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	public function getFilterValue($value, $condition, $eval)
 	{
-		$condition = JString::strtolower($condition);
+		$condition = String::strtolower($condition);
 		$this->escapeQueryValue($condition, $value);
 		$db = FabrikWorker::getDbo();
 
@@ -4331,8 +4334,8 @@ class PlgFabrik_Element extends FabrikPlugin
 			if ($eval == FABRKFILTER_NOQUOTES)
 			{
 				// $$$ hugh - darn, this is stripping the ' of the end of things like "select & from foo where bar = '123'"
-				$value = JString::ltrim($value, "'");
-				$value = JString::rtrim($value, "'");
+				$value = String::ltrim($value, "'");
+				$value = String::rtrim($value, "'");
 			}
 
 			if ($condition == '=' && $value == "'_null_'")
@@ -4452,10 +4455,9 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	public function getDefaultFilterCondition()
 	{
-		$params = $this->getParams();
 		$fieldDesc = $this->getFieldDescription();
 
-		if (JString::stristr($fieldDesc, 'INT') || $this->getElement()->filter_exact_match == 1)
+		if (String::stristr($fieldDesc, 'INT') || $this->getElement()->filter_exact_match == 1)
 		{
 			return '=';
 		}
@@ -5905,7 +5907,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			if (!array_key_exists(0, $data))
 			{
 				// Occurs if we have created a list from an existing table whose data contains json objects (e.g. #__users.params)
-				$obj = JArrayHelper::toObject($data);
+				$obj = ArrayHelper::toObject($data);
 				$data = array();
 				$data[0] = $obj;
 			}
@@ -6564,7 +6566,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 				if ($where != '')
 				{
-					$where = JString::substr($where, 5, JString::strlen($where) - 5);
+					$where = String::substr($where, 5, String::strlen($where) - 5);
 
 					if (!in_array($where, $whereArray))
 					{
@@ -7562,7 +7564,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function getLayout($type)
 	{
 		$name = get_class($this);
-		$name = strtolower(JString::str_ireplace('PlgFabrik_Element', '', $name));
+		$name = strtolower(String::str_ireplace('PlgFabrik_Element', '', $name));
 		$basePath = COM_FABRIK_BASE . '/plugins/fabrik_element/' . $name . '/layouts';
 		$layout = new FabrikLayoutFile('fabrik-element-' . $name. '-' . $type, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');

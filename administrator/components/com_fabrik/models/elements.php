@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once 'fabmodellist.php';
 
 interface FabrikAdminModelElementsInterface
@@ -152,7 +154,7 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 
 	public function batch($ids, $batch)
 	{
-		JArrayHelper::toInteger($ids);
+		ArrayHelper::toInteger($ids);
 
 		foreach ($ids as $id)
 		{
@@ -171,7 +173,7 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 	 */
 	public function canUnpublish($ids)
 	{
-		JArrayHelper::toInteger($ids);
+		ArrayHelper::toInteger($ids);
 		$blocked = array();
 		$allowed = array();
 

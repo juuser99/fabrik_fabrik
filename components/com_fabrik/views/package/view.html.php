@@ -9,6 +9,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -51,7 +53,7 @@ class FabrikViewPackage extends JViewLegacy
 			$item->component_name = 'fabrik';
 		}
 
-		$opts = JArrayHelper::getvalue($canvas, 'options', array());
+		$opts = ArrayHelper::getvalue($canvas, 'options', array());
 		$tabs = FArrayHelper::getValue($canvas, 'tabs', array('Page 1'));
 		$tabs = json_encode($tabs);
 		$d = new stdClass;

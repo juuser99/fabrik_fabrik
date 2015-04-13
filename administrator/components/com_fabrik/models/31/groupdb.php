@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/group.php';
 
 /**
@@ -39,7 +41,7 @@ class FabrikAdminModelGroupDB extends FabrikAdminModelGroup
 			return array();
 		}
 
-		JArrayHelper::toInteger($ids);
+		ArrayHelper::toInteger($ids);
 		$db = FabrikWorker::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('group_id')->from('#__fabrik_formgroup')->where('form_id IN (' . implode(',', $ids) . ')');
@@ -127,7 +129,7 @@ class FabrikAdminModelGroupDB extends FabrikAdminModelGroup
 	public function deleteElements($pks)
 	{
 		$db = FabrikWorker::getDbo(true);
-		JArrayHelper::toInteger($pks);
+		ArrayHelper::toInteger($pks);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__fabrik_elements')->where('group_id IN (' . implode(',', $pks) . ')');
 		$db->setQuery($query);
@@ -148,7 +150,7 @@ class FabrikAdminModelGroupDB extends FabrikAdminModelGroup
 	public function deleteFormGroups($pks)
 	{
 		$db = FabrikWorker::getDbo(true);
-		JArrayHelper::toInteger($pks);
+		ArrayHelper::toInteger($pks);
 		$query = $db->getQuery(true);
 		$query->delete('#__fabrik_formgroup')->where('group_id IN (' . implode(',', $pks) . ')');
 		$db->setQuery($query);

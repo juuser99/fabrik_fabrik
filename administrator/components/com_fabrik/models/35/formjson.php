@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/form.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/metaconverter.php';
 
@@ -138,9 +140,9 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$jform = $input->get('jform', array(), 'array');
-		$data['params']['plugins'] = (array) JArrayHelper::getValue($jform, 'plugin');
-		$data['params']['plugin_locations'] = (array) JArrayHelper::getValue($jform, 'plugin_locations');
-		$data['params']['plugin_events'] = (array) JArrayHelper::getValue($jform, 'plugin_events');
+		$data['params']['plugins'] = (array) ArrayHelper::getValue($jform, 'plugin');
+		$data['params']['plugin_locations'] = (array) ArrayHelper::getValue($jform, 'plugin_locations');
+		$data['params']['plugin_events'] = (array) ArrayHelper::getValue($jform, 'plugin_events');
 
 		/**
 		 * Move back into the main data array some values we are rendering as
@@ -153,7 +155,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 			$data[$opt] = $data['params'][$opt];
 		}
 
-		$tmpName = JArrayHelper::getValue($data, 'db_table_name');
+		$tmpName = ArrayHelper::getValue($data, 'db_table_name');
 		unset($data['db_table_name']);
 		$return = parent::save($data);
 
@@ -187,7 +189,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 		$formid = $this->getState($this->getName() . '.id');
 		$isnew = $this->getState($this->getName() . '.new');
 		$db = FabrikWorker::getDbo(true);
-		$currentGroups = (array) JArrayHelper::getValue($data, 'current_groups');
+		$currentGroups = (array) ArrayHelper::getValue($data, 'current_groups');
 
 		if (empty($currentGroups) && !$isnew)
 		{
@@ -202,7 +204,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 		// If new and record in db and group selected then we want to get those groups elements to create fields for in the db table
 		if ($isnew && $record_in_database)
 		{
-			$groups = JArrayHelper::getValue($data, 'current_groups');
+			$groups = ArrayHelper::getValue($data, 'current_groups');
 
 			if (!empty($groups))
 			{
@@ -316,7 +318,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 		$formid = $this->getState($this->getName() . '.id');
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		JArrayHelper::toInteger($currentGroups);
+		ArrayHelper::toInteger($currentGroups);
 		$query->delete('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
 
 		if (!empty($currentGroups))
@@ -377,7 +379,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 			return array();
 		}
 
-		JArrayHelper::toInteger($ids);
+		ArrayHelper::toInteger($ids);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('form_id')->from('#__fabrik_lists')->where('id IN (' . implode(',', $ids) . ')');

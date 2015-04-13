@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
 /**
@@ -262,7 +264,7 @@ class FabrikViewList extends FabrikViewListBase
 						if (strstr($rsscontent, $rsstag))
 						{
 							$found = true;
-							$rsstag = JString::substr($rsstag, 1, JString::strlen($rsstag) - 2);
+							$rsstag = String::substr($rsstag, 1, String::strlen($rsstag) - 2);
 
 							if (!strstr($document->_namespace, $namespace))
 							{

@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -128,7 +131,7 @@ class FabrikFEModelCSVExport
 		{
 			foreach ($group as $row)
 			{
-				$a = JArrayHelper::fromObject($row);
+				$a = ArrayHelper::fromObject($row);
 
 				if ($exportFormat == 1)
 				{
@@ -139,7 +142,7 @@ class FabrikFEModelCSVExport
 				{
 					foreach ($a as $key => $val)
 					{
-						if (substr($key, JString::strlen($key) - 4, JString::strlen($key)) == '_raw')
+						if (substr($key, String::strlen($key) - 4, String::strlen($key)) == '_raw')
 						{
 							unset($a[$key]);
 						}
@@ -150,7 +153,7 @@ class FabrikFEModelCSVExport
 				{
 					foreach ($a as $key => $val)
 					{
-						if (substr($key, JString::strlen($key) - 4, JString::strlen($key)) != '_raw')
+						if (substr($key, String::strlen($key) - 4, String::strlen($key)) != '_raw')
 						{
 							unset($a[$key]);
 						}
@@ -409,7 +412,7 @@ class FabrikFEModelCSVExport
 
 					foreach ($a as $akey => $aval)
 					{
-						if ($akey == JString::substr($key, 0, JString::strlen($key) - 4) && $x != 0)
+						if ($akey == String::substr($key, 0, String::strlen($key) - 4) && $x != 0)
 						{
 							$found = true;
 							break;
@@ -579,7 +582,7 @@ class FabrikFEModelCSVExport
 							$n .= '_raw';
 						}
 
-						if ($incData && JString::substr($n, JString::strlen($n) - 4, JString::strlen($n)) !== '_raw')
+						if ($incData && String::substr($n, String::strlen($n) - 4, String::strlen($n)) !== '_raw')
 						{
 							if (!in_array($n, $h))
 							{
@@ -592,7 +595,7 @@ class FabrikFEModelCSVExport
 							}
 						}
 
-						if ($incRaw && JString::substr($n, JString::strlen($n) - 4, strlen($n)) == '_raw')
+						if ($incRaw && String::substr($n, String::strlen($n) - 4, strlen($n)) == '_raw')
 						{
 							if (!in_array($n, $h))
 							{
@@ -610,7 +613,7 @@ class FabrikFEModelCSVExport
 
 			if (!$found)
 			{
-				if (!(JString::substr($heading, JString::strlen($heading) - 4, JString::strlen($heading)) == '_raw' && !$incRaw))
+				if (!(String::substr($heading, String::strlen($heading) - 4, String::strlen($heading)) == '_raw' && !$incRaw))
 				{
 					// Stop id getting added to tables when exported with full element name key
 					if ($hformat != 1 && $heading != $shortkey)

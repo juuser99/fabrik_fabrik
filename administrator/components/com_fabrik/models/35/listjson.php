@@ -12,6 +12,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/list.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/metaconverter.php';
 /**
@@ -95,7 +98,7 @@ class FabrikAdminModelListJSON extends FabrikAdminModelList
 		if ($tableName === '')
 		{
 			$jform = $input->get('jform', array(), 'array');
-			$tableName = JArrayHelper::getValue($jform, 'db_table_name');
+			$tableName = ArrayHelper::getValue($jform, 'db_table_name');
 		}
 
 		$pluginManager = FabrikWorker::getPluginManager();
@@ -199,7 +202,7 @@ class FabrikAdminModelListJSON extends FabrikAdminModelList
 				// not any similarly named elements from joined tables (like 'id')
 				if ($el->getElement()->name == $join->table_key)
 				{
-					$size = JString::stristr($el->getFieldDescription(), 'int') ? '' : '10';
+					$size = String::stristr($el->getFieldDescription(), 'int') ? '' : '10';
 				}
 			}
 
@@ -370,7 +373,7 @@ class FabrikAdminModelListJSON extends FabrikAdminModelList
 
 				if ($objname != "" && !is_null($objtype))
 				{
-					if (JString::stristr($objtype, 'not null'))
+					if (String::stristr($objtype, 'not null'))
 					{
 						$lines[] = $fabrikDb->quoteName($objname) . " $objtype";
 					}

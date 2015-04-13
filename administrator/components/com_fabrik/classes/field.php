@@ -10,6 +10,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 /**
  * Abstract Form Field class for the Joomla Platform.
  *
@@ -225,15 +227,15 @@ abstract class JFormField
 		// Detect the field type if not set
 		if (!isset($this->type))
 		{
-			$parts = JString::splitCamelCase(get_class($this));
+			$parts = JStringNormalise::fromCamelCase(get_class($this));
 
 			if ($parts[0] == 'J')
 			{
-				$this->type = JString::ucfirst($parts[count($parts) - 1], '_');
+				$this->type = String::ucfirst($parts[count($parts) - 1], '_');
 			}
 			else
 			{
-				$this->type = JString::ucfirst($parts[0], '_') . JString::ucfirst($parts[count($parts) - 1], '_');
+				$this->type = String::ucfirst($parts[0], '_') . String::ucfirst($parts[count($parts) - 1], '_');
 			}
 		}
 	}

@@ -299,7 +299,7 @@ class getid3_cue extends getid3_handler
 	function parseTrack($line, $track_on)
 	{
 		$line = substr($line, strpos($line, ' ') + 1);
-		$track = JString::ltrim(substr($line, 0, strpos($line, ' ')), '0');
+		$track = String::ltrim(substr($line, 0, strpos($line, ' ')), '0');
 
 		//find the data type.
 		$datatype = strtolower(substr($line, strpos($line, ' ') + 1));
@@ -309,4 +309,3 @@ class getid3_cue extends getid3_handler
 
 }
 
-?>

@@ -76,8 +76,6 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 
 	protected function buttonLabel()
 	{
-		$s = JString::strtoupper($this->buttonPrefix);
-
 		return FText::_('PLG_LIST_ARTICLE_UPDATE_ARTICLE');
 	}
 
@@ -92,7 +90,6 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	public function process($opts = array())
 	{
 		$model = $this->getModel();
-		$params = $this->getParams();
 		$input = JFactory::getApplication()->input;
 		$ids = $input->get('ids', array(), 'array');
 		$origRowId = $input->get('rowid');

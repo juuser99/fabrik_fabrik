@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -465,7 +468,7 @@ class FabrikFEModelExport
 		$table = $listModel->getTable();
 		header('Content-Type: text/plain');
 		header('Content-Disposition: attachment; filename="' . $table->label . '-export.csv"');
-		$aTable = JArrayHelper::fromObject($table);
+		$aTable = ArrayHelper::fromObject($table);
 		$fabrikDb = &$listModel->getDb();
 		$table = $table->db_table_name;
 		$sql = "SELECT * FROM $table";
@@ -482,7 +485,7 @@ class FabrikFEModelExport
 
 		if (is_array($formdata))
 		{
-			$firstrow = JArrayHelper::fromObject($formdata[0][0]);
+			$firstrow = ArrayHelper::fromObject($formdata[0][0]);
 
 			if (is_array($firstrow))
 			{
@@ -494,7 +497,7 @@ class FabrikFEModelExport
 				foreach ($group as $row)
 				{
 					echo "\n";
-					echo implode(",", array_map(array($this, "_quote"), array_values(JArrayHelper::fromObject($row))));
+					echo implode(",", array_map(array($this, "_quote"), array_values(ArrayHelper::fromObject($row))));
 				}
 			}
 		}
@@ -591,7 +594,7 @@ class FabrikFEModelExport
 				$buffer = fread($file, $chunksize);
 				print($buffer);
 				flush();
-				$this->bytes_send += JString::strlen($buffer);
+				$this->bytes_send += String::strlen($buffer);
 			}
 
 			fclose($file);

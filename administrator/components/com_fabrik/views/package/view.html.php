@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -84,16 +86,16 @@ class FabrikAdminViewPackage extends JViewLegacy
 		}
 
 		$this->addToolbar();
-		$canvas = JArrayHelper::getValue($this->item->params, 'canvas', array());
+		$canvas = ArrayHelper::getValue($this->item->params, 'canvas', array());
 		$blocks = new stdClass;
-		$b = JArrayHelper::getValue($canvas, 'blocks', array());
-		$blocks->form = JArrayHelper::getValue($b, 'form', array());
-		$blocks->list = JArrayHelper::getValue($b, 'list', array());
-		$blocks->visualization = JArrayHelper::getValue($b, 'visualization', array());
+		$b = ArrayHelper::getValue($canvas, 'blocks', array());
+		$blocks->form = ArrayHelper::getValue($b, 'form', array());
+		$blocks->list = ArrayHelper::getValue($b, 'list', array());
+		$blocks->visualization = ArrayHelper::getValue($b, 'visualization', array());
 
-		$opts = JArrayHelper::getvalue($canvas, 'options', array());
+		$opts = ArrayHelper::getvalue($canvas, 'options', array());
 		$d = new stdClass;
-		$layout = JArrayHelper::getValue($canvas, 'layout', $d);
+		$layout = ArrayHelper::getValue($canvas, 'layout', $d);
 		$document = JFactory::getDocument();
 
 		$opts = new stdClass;

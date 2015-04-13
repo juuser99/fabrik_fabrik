@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -775,7 +777,7 @@ class FabrikViewFormBase extends JViewLegacy
 		$Itemid = FabrikWorker::itemId();
 		$model = $this->getModel();
 		$listModel = $model->getListModel();
-		$row = JArrayHelper::toObject($model->data);
+		$row = ArrayHelper::toObject($model->data);
 		$canDelete = $listModel->canDelete($row);
 		$params = $model->getParams();
 		$task = 'form.process';

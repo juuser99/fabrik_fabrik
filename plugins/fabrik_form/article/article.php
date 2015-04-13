@@ -9,6 +9,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -221,7 +224,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	{
 		// Sanitize the ids.
 		$pks = (array) $pks;
-		JArrayHelper::toInteger($pks);
+		ArrayHelper::toInteger($pks);
 		$db = JFactory::getDbo();
 
 		if (empty($pks))
@@ -500,8 +503,8 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 		while ($table->load(array('alias' => $alias, 'catid' => $catid)))
 		{
-			$title = JString::increment($title);
-			$alias = JString::increment($alias, 'dash');
+			$title = String::increment($title);
+			$alias = String::increment($alias, 'dash');
 		}
 
 		$data['title'] = $title;
@@ -593,7 +596,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 						if (is_object($store))
 						{
-							$store = JArrayHelper::fromObject($store);
+							$store = ArrayHelper::fromObject($store);
 
 							foreach ($store as $catid => $articleId)
 							{

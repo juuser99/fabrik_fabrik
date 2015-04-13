@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -149,7 +151,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		else
 		{
 			$db = FabrikWorker::getDbo();
-			JArrayHelper::toInteger($ids);
+			ArrayHelper::toInteger($ids);
 			$query = $db->getQuery(true);
 			$query->select($db->quoteName($download_file))
 			->from($db->quoteName($download_table))

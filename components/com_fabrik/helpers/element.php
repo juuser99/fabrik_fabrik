@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 /**
  * Element Helper class
  *
@@ -85,7 +88,7 @@ class FabrikHelperElement
 		$listModel = $model->getListModel();
 		$listid = $listModel->getId();
 		$key = 'com_fabrik.list' . $listid . '_com_fabrik_' . $listid . '.filter';
-		$filters = JArrayHelper::fromObject($app->getUserState($key));
+		$filters = ArrayHelper::fromObject($app->getUserState($key));
 		$elementIds = (array) FArrayHelper::getValue($filters, 'elementid', array());
 		$index = array_search($elementId, $elementIds);
 		$value = $filters['value'][$index];
@@ -126,7 +129,7 @@ class FabrikHelperElement
 	public static function findElementFromJoinKeys($model, $key)
 	{
 		// Search on fullname fullname_id and fullname___params
-		$lookups = array($key, substr($key, 0, JString::strlen($key) - 3), substr($key, 0, JString::strlen($key) - 9));
+		$lookups = array($key, substr($key, 0, String::strlen($key) - 3), substr($key, 0, String::strlen($key) - 9));
 
 		foreach ($lookups as $lookup)
 		{

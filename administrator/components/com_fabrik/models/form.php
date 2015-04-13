@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once 'fabmodeladmin.php';
 
 interface FabrikAdminModelFormFormInterface
@@ -56,7 +58,7 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$this->db = JArrayHelper::getValue($config, 'db', JFactory::getDbo());
+		$this->db = ArrayHelper::getValue($config, 'db', JFactory::getDbo());
 	}
 
 	/**
@@ -332,7 +334,7 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 		$formid = $this->getState($this->getName() . '.id');
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		JArrayHelper::toInteger($currentGroups);
+		ArrayHelper::toInteger($currentGroups);
 		$query->delete('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
 
 		if (!empty($currentGroups))
@@ -393,7 +395,7 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 			return array();
 		}
 
-		JArrayHelper::toInteger($ids);
+		ArrayHelper::toInteger($ids);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('form_id')->from('#__fabrik_lists')->where('id IN (' . implode(',', $ids) . ')');

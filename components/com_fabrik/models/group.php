@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -1044,7 +1047,7 @@ class FabrikFEModelGroup extends FabModel
 
 		$label = $input->getString('group' . $group->id . '_label', $groupTable->label);
 
-		if (JString::stristr($label, "{Add/Edit}"))
+		if (String::stristr($label, "{Add/Edit}"))
 		{
 			$replace = $formModel->isNewRecord() ? FText::_('COM_FABRIK_ADD') : FText::_('COM_FABRIK_EDIT');
 			$label = str_replace("{Add/Edit}", $replace, $label);
@@ -1574,7 +1577,7 @@ class FabrikFEModelGroup extends FabModel
 
 			if (is_object($d))
 			{
-				$d = JArrayHelper::fromObject($d);
+				$d = ArrayHelper::fromObject($d);
 			}
 
 			$repeatGroup = count($d);

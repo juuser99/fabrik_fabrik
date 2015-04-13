@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -92,7 +94,7 @@ class PlgFabrik_List extends FabrikPlugin
 
 	protected function buttonLabel()
 	{
-		$s = JString::strtoupper($this->buttonPrefix);
+		$s = String::strtoupper($this->buttonPrefix);
 
 		return FText::_('PLG_LIST_' . $s . '_' . $s);
 	}
@@ -270,7 +272,7 @@ class PlgFabrik_List extends FabrikPlugin
 
 	public function onGetFilterKey()
 	{
-		$this->filterKey = JString::strtolower(str_ireplace('PlgFabrik_List', '', get_class($this)));
+		$this->filterKey = String::strtolower(str_ireplace('PlgFabrik_List', '', get_class($this)));
 
 		return $this->filterKey;
 	}

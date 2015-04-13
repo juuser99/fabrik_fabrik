@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+
+use Joomla\String\String;
+
 /**
  * String helpers
  *
@@ -19,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
  * @since       3.0
  */
 
-class FabrikString extends JString
+class FabrikString extends String
 {
 	/**
 	 * UTF-8 aware - replace the first word
@@ -45,11 +48,11 @@ class FabrikString extends JString
 		}
 		else
 		{
-			$pos = JString::strpos($str, $word);
+			$pos = String::strpos($str, $word);
 
 			if ($pos === 0)
 			{
-				$str = JString::substr($str, JString::strlen($word));
+				$str = String::substr($str, String::strlen($word));
 			}
 		}
 
@@ -67,12 +70,12 @@ class FabrikString extends JString
 
 	public static function rtrimword(&$str, $word = false)
 	{
-		$l = JString::strlen($word);
-		$end = JString::substr($str, -$l);
+		$l = String::strlen($word);
+		$end = String::substr($str, -$l);
 
 		if ($end === $word)
 		{
-			return JString::substr($str, 0, JString::strlen($str) - $l);
+			return String::substr($str, 0, String::strlen($str) - $l);
 		}
 		else
 		{
@@ -96,7 +99,7 @@ class FabrikString extends JString
 
 		if ($pos === 0)
 		{
-			$str = JString::substr($str, JString::strlen($word));
+			$str = String::substr($str, String::strlen($word));
 		}
 
 		return $str;
@@ -206,9 +209,9 @@ class FabrikString extends JString
 		$label = strip_tags($label);
 		preg_replace('/<[a-z][a-z0-9]*[^<>]*>/', '', $label);
 
-		if (JString::strlen($label) > 50)
+		if (String::strlen($label) > 50)
 		{
-			$label = JString::substr($label, 0, 47) . '...';
+			$label = String::substr($label, 0, 47) . '...';
 		}
 
 		$label = trim($label);
@@ -287,7 +290,7 @@ class FabrikString extends JString
 		// Replace umlauts
 		$out = '';
 
-		for ($i = 0; $i < JString::strlen($str); $i++)
+		for ($i = 0; $i < String::strlen($str); $i++)
 		{
 			$ch = ord($str{$i});
 
@@ -361,7 +364,7 @@ class FabrikString extends JString
 
 	public static function clean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
 	{
-		return JString::strtolower(self::iclean($str, $fromEnc, $toEnc));
+		return String::strtolower(self::iclean($str, $fromEnc, $toEnc));
 	}
 
 	/**

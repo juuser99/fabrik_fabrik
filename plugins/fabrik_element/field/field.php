@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -49,7 +52,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 			if ($params->get('password') == "1")
 			{
-				$d = str_pad('', JString::strlen($d), '*');
+				$d = str_pad('', String::strlen($d), '*');
 			}
 
 			$this->_guessLinkType($d, $thisRow, 0);
@@ -152,7 +155,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 				if ($params->get('password') == "1")
 				{
-					$value = str_pad('', JString::strlen($value), '*');
+					$value = str_pad('', String::strlen($value), '*');
 				}
 
 				$value = $this->getReadOnlyOutput($value, $value);
@@ -232,11 +235,11 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			$opts = $this->linkOpts();
 			$title = $params->get('link_title', '');
 
-			if (FabrikWorker::isEmail($value) || JString::stristr($value, 'http'))
+			if (FabrikWorker::isEmail($value) || String::stristr($value, 'http'))
 			{
 				$guessed = true;
 			}
-			elseif (JString::stristr($value, 'www.'))
+			elseif (String::stristr($value, 'www.'))
 			{
 				$value = 'http://' . $value;
 				$guessed = true;
@@ -590,7 +593,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	{
 		if (is_object($thisRow))
 		{
-			$thisRow = JArrayHelper::fromObject($thisRow);
+			$thisRow = ArrayHelper::fromObject($thisRow);
 		}
 
 		$app = JFactory::getApplication();

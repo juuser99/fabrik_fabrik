@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/lists.php';
 
 /**
@@ -132,7 +134,7 @@ class FabrikAdminModelListsJSON extends FabrikAdminModelLists
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('cid', array(), 'array');
-		JArrayHelper::toInteger($cid);
+		ArrayHelper::toInteger($cid);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('db_table_name')->from('#__fabrik_lists')->where('id IN(' . implode(',', $cid) . ')');

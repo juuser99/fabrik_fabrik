@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
@@ -215,7 +218,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 	public function getFilters()
 	{
 		$params = $this->getParams();
-		$name = JString::strtolower(str_replace('fabrikModel', '', get_class($this)));
+		$name = String::strtolower(str_replace('fabrikModel', '', get_class($this)));
 		$filters = array();
 		$showFilters = $params->get($name . '_show_filters', array());
 		$listModels = $this->getlistModels();
@@ -457,7 +460,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 			// Set prefilter params
 			$listParams = $listModel->getParams();
 			$prefilter = FArrayHelper::getValue($prefilters, $c);
-			$prefilter = JArrayHelper::fromObject(json_decode($prefilter));
+			$prefilter = ArrayHelper::fromObject(json_decode($prefilter));
 			$conditions = (array) $prefilter['filter-conditions'];
 
 			if (!empty($conditions))

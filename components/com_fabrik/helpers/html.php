@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.filesystem.file');
 
 if (!defined('COM_FABRIK_FRONTEND'))
@@ -668,7 +671,7 @@ if (!$j3)
 
 		if (self::cssAsAsset())
 		{
-			$attribs = json_encode(JArrayHelper::toObject($attribs));
+			$attribs = json_encode(ArrayHelper::toObject($attribs));
 
 			// Send an inline script back which will inject the css file into the doc head
 			// Note your ajax call must have 'evalScripts':true set in its properties
@@ -1409,7 +1412,7 @@ if (!$j3)
 		// Replace with minified files if found
 		foreach ($files as &$file)
 		{
-			if (!(JString::stristr($file, 'http://') || JString::stristr($file, 'https://')))
+			if (!(String::stristr($file, 'http://') || String::stristr($file, 'https://')))
 			{
 				if (JFile::exists(COM_FABRIK_BASE . $file))
 				{
@@ -1438,7 +1441,7 @@ if (!$j3)
 
 			if (!$pathMatched)
 			{
-				if (!(JString::stristr($file, 'http://') || JString::stristr($file, 'https://')))
+				if (!(String::stristr($file, 'http://') || String::stristr($file, 'https://')))
 				{
 					$file = COM_FABRIK_LIVESITE . $file;
 				}
@@ -1977,7 +1980,7 @@ if (!$j3)
 
 	public static function getImagePath($file, $type = 'form', $tmpl = '')
 	{
-		$file = JString::ltrim($file, DIRECTORY_SEPARATOR);
+		$file = String::ltrim($file, DIRECTORY_SEPARATOR);
 		$paths = self::addPath('', 'image', $type, true);
 		$src = '';
 
@@ -2557,7 +2560,7 @@ if (!$j3)
 
 	public static function a($href, $lbl = '', $opts = array())
 	{
-		if (empty($href) || JString::strtolower($href) == 'http://' || JString::strtolower($href) == 'https://')
+		if (empty($href) || String::strtolower($href) == 'http://' || String::strtolower($href) == 'https://')
 		{
 			// Don't return empty links
 			return '';
@@ -2690,7 +2693,7 @@ if (!$j3)
 
 			if ($ret['type'] == 'mediabox')
 			{
-				$ext = JString::strtolower(JFile::getExt($link));
+				$ext = String::strtolower(JFile::getExt($link));
 
 				switch ($ext)
 				{

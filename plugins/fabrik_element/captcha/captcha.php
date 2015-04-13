@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\String;
+
 require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.11/recaptchalib.php';
 
 /**
@@ -56,7 +58,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		while ($i < $characters)
 		{
-			$code .= JString::substr($possible, mt_rand(0, JString::strlen($possible) - 1), 1);
+			$code .= String::substr($possible, mt_rand(0, String::strlen($possible) - 1), 1);
 			$i++;
 		}
 
@@ -188,7 +190,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 			// $$$tom added lang & theme options
 			$theme = $params->get('recaptcha_theme', 'red');
-			$lang = JString::strtolower($params->get('recaptcha_lang', 'en'));
+			$lang = String::strtolower($params->get('recaptcha_lang', 'en'));
 			$error = null;
 
 			if ($user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
@@ -493,7 +495,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		for ($i = 0; $i < 3; $i++)
 		{
-			if (JString::strlen($rgb[$i]) == 1)
+			if (String::strlen($rgb[$i]) == 1)
 			{
 				$rgb[$i] .= $rgb[$i];
 			}
