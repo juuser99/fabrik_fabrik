@@ -31,10 +31,9 @@ class FabrikViewApprovals extends JViewLegacy
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
-	public function display($tpl = 'default')
+	public function display($tpl = 'bootstrap')
 	{
 		$model = $this->getModel();
-		$j3 = FabrikWorker::j3();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
@@ -54,7 +53,6 @@ class FabrikViewApprovals extends JViewLegacy
 		$this->containerId = $this->get('ContainerId');
 		$this->calName = $this->get('VizName');
 		$this->params = $model->getParams();
-		$tpl = $j3 ? 'bootstrap' : $tpl;
 		$this->_setPath('template', JPATH_SITE . '/plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tpl);
 
 		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tpl . '/template.css');

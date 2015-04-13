@@ -31,11 +31,10 @@ class FabrikViewSlideshow extends JViewLegacy
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
-	public function display($tpl = 'default')
+	public function display($tpl = 'bootstrap')
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$srcs = FabrikHelperHTML::framework();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
@@ -50,7 +49,6 @@ class FabrikViewSlideshow extends JViewLegacy
 		}
 
 		$this->js = $this->get('JS');
-		$viewName = $this->getName();
 		$params = $model->getParams();
 		$this->params = $params;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
@@ -91,9 +89,6 @@ class FabrikViewSlideshow extends JViewLegacy
 		FabrikHelperHTML::iniRequireJs($model->getShim());
 		FabrikHelperHTML::script($srcs, $this->js);
 
-		//FabrikHelperHTML::slimbox();
-		
-		$tpl = $j3 ? 'bootstrap' : 'default';
 		$tpl = $params->get('slideshow_viz_layout', $tpl);
 		$tmplpath = $model->pathBase . 'slideshow/views/slideshow/tmpl/' . $tpl;
 		$this->_setPath('template', $tmplpath);

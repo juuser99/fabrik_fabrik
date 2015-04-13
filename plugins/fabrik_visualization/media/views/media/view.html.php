@@ -31,11 +31,10 @@ class FabrikViewMedia extends JViewLegacy
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
-	public function display($tpl = 'default')
+	public function display($tpl = 'bootstrap')
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
@@ -61,16 +60,13 @@ class FabrikViewMedia extends JViewLegacy
 			return false;
 		}
 
-		$media = $model->getRow();
 		$this->media = $model->getMedia();
 		$this->params = $params;
-		$viewName = $this->getName();
 		$this->containerId = $model->getContainerId();
 		$this->showFilters = $model->showFilters();
 		$this->filterFormURL = $model->getFilterFormURL();
 		$this->filters = $this->get('Filters');
 		$this->params = $model->getParams();
-		$tpl = $j3 ? 'bootstrap' : 'default';
 		$tpl = $params->get('media_layout', $tpl);
 		$tplpath = JPATH_ROOT . '/plugins/fabrik_visualization/media/views/media/tmpl/' . $tpl;
 		$this->_setPath('template', $tplpath);

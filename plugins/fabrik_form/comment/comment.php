@@ -174,7 +174,6 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/thumbs/images/', 'image', 'form', false);
 		$opts->formid = $this->formModel->getId();
-		$opts->j3 = FabrikWorker::j3();
 		$opts->listid = $this->formModel->getListModel()->getTable()->id;
 		$opts = json_encode($opts);
 
@@ -565,7 +564,6 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$user = JFactory::getUser();
-		$j3 = FabrikWorker::j3();
 		$name = (int) $comment->annonymous == 0 ? $comment->name : FText::_('PLG_FORM_COMMENT_ANONYMOUS_SHORT');
 		$data = array();
 		$data[] = '<div class="metadata muted">';
@@ -591,7 +589,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 			for ($i = 0; $i < $r; $i++)
 			{
-				$data[] = $j3 ? '<i class="icon-star"></i> ' : '<img src="' . $insrc . '" alt="star" />';
+				$data[] = '<i class="icon-star"></i> ';
 			}
 
 			$data[] = '</div>';

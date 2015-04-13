@@ -249,7 +249,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		FabrikHelperHTML::mcl();
-		$j3 = FabrikWorker::j3();
 
 		$element = $this->getElement();
 		$paramsKey = $this->getFullName(true, false);
@@ -424,8 +423,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$opts->cropheight = (int) $params->get('fileupload_crop_height');
 		$opts->ajax_max = (int) $params->get('ajax_max', 4);
 		$opts->dragdrop = true;
-		$icon = $j3 ? 'picture' : 'image.png';
-		$resize = $j3 ? 'expand-2' : 'resize.png';
+		$icon = 'picture';
+		$resize = 'expand-2';
 		$opts->previewButton = FabrikHelperHTML::image($icon, 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
 		$opts->resizeButton = FabrikHelperHTML::image($resize, 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
 		$opts->files = $oFiles;
@@ -2416,7 +2415,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$data->canvasSupport = FabrikHelperHTML::canvasSupport();
 		$data->dropBoxStyle = $dropBoxStyle;
 		$data->field = implode("\n", $str);
-		$data->j3 = FabrikWorker::j3();
 		$pstr = (array) $layout->render($data);
 
 		return $pstr;

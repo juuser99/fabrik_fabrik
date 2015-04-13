@@ -525,15 +525,14 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$listRef = $model->getRenderContext();
 		$prefix = 'fabrik___update_col[list_' . $listRef . '][';
 		$elements = '<select class="inputbox key" size="1" name="' . $prefix . 'key][]">' . implode("\n", $options) . '</select>';
-		$j3 = FabrikWorker::j3();
-		$addImg = $j3 ? 'plus.png' : 'add.png';
-		$removeImg = $j3 ? 'remove.png' : 'del.png';
+		$addImg ='plus.png';
+		$removeImg = 'remove.png';
 		$add = '<a class="btn add button btn-primary" href="#">
 			' . FabrikHelperHTML::image($addImg, 'list', $model->getTmpl()) . '</a>';
 		$del = '<a class="btn button delete" href="#">' . FabrikHelperHTML::image($removeImg, 'list', $model->getTmpl()) . '</a>';
 		$html[] = '<form id="update_col' . $listRef . '">';
 
-		$class = $j3 ? 'table table-striped' : 'fabrikList';
+		$class = 'table table-striped';
 		$html[] = '<table class="' . $class . '" style="width:100%">';
 		$html[] = '<thead>';
 		$html[] = '<tr><th>' . FText::_('COM_FABRIK_ELEMENT') . '</th><th>' . FText::_('COM_FABRIK_VALUE') . '</th><th>' . $add . '</th><tr>';

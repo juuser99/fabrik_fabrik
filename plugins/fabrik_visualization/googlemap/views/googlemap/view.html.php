@@ -31,14 +31,12 @@ class FabrikViewGooglemap extends JViewLegacy
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
-	public function display($tpl = 'default')
+	public function display($tpl = 'bootstrap')
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::slimbox();
-		$document = JFactory::getDocument();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel();
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
@@ -55,13 +53,10 @@ class FabrikViewGooglemap extends JViewLegacy
 		$this->txt = $model->getText();
 		$params = $model->getParams();
 		$this->params = $params;
-		$tpl = $j3 ? 'bootstrap' : 'default';
 		$tpl = $params->get('fb_gm_layout', $tpl);
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl;
 		$srcs[] = 'media/com_fabrik/js/list-plugin.js';
 		$srcs[] = 'media/com_fabrik/js/listfilter.js';
-
-		$uri = JURI::getInstance();
 
 		if ($params->get('fb_gm_center') == 'userslocation')
 		{

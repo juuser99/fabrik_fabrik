@@ -203,7 +203,6 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		parent::onLoadJavascriptInstance($args);
 		$model = $this->getModel();
 		$params = $this->getParams();
-		$j3 = FabrikWorker::j3();
 		list($srcs, $els, $shim) = $this->loadElementJS();
 		$opts = $this->getElementJSOptions();
 		$opts->elements = $els;

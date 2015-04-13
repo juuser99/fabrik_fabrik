@@ -31,11 +31,10 @@ class FabrikViewCoverflow extends JViewLegacy
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
-	public function display($tpl = 'default')
+	public function display($tpl = 'bootstrap')
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$srcs = FabrikHelperHTML::framework();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel();

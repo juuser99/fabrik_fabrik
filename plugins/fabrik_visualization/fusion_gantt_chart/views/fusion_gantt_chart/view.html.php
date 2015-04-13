@@ -31,7 +31,7 @@ class FabrikViewFusion_Gantt_Chart extends JViewLegacy
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
-	public function display($tpl = 'default')
+	public function display($tpl = 'bootstrap')
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
@@ -66,14 +66,12 @@ class FabrikViewFusion_Gantt_Chart extends JViewLegacy
 
 		$params = $model->getParams();
 		$this->params = $params;
-		$viewName = $this->getName();
 		$pluginManager = FabrikWorker::getPluginManager();
 		$plugin = $pluginManager->getPlugIn('fusion_gantt_chart', 'visualization');
 		$this->containerId = $this->get('ContainerId');
 		$this->filters = $this->get('Filters');
 		$this->showFilters = $model->showFilters();
 		$this->filterFormURL = $this->get('FilterFormURL');
-		$tpl = FabrikWorker::j3() ? 'bootstrap' : 'default';
 		$tpl = $params->get('fusion_gantt_chart_layout', $tpl);
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/fusion_gantt_chart/views/fusion_gantt_chart/tmpl/' . $tpl;
 		$this->_setPath('template', $tmplpath);
@@ -85,7 +83,6 @@ class FabrikViewFusion_Gantt_Chart extends JViewLegacy
 		$js .= "\n" . "Fabrik.addBlock('$ref', $ref);";
 		$js .= $model->getFilterJs();
 		FabrikHelperHTML::iniRequireJs($model->getShim());
-		//FabrikHelperHTML::addScriptDeclaration($srcs, $js);
 		FabrikHelperHTML::script($srcs, $js);
 
 		echo parent::display();

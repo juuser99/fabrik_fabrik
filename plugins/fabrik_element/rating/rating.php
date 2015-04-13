@@ -576,15 +576,6 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 
 		$opts = new stdClass;
 
-		if (!FabrikWorker::j3())
-		{
-			$ext = $params->get('rating-pngorgif', '.png');
-			$opts->insrc = FabrikHelperHTML::image("star.png", 'form', @$this->tmpl, array(), true);
-			$opts->outsrc = FabrikHelperHTML::image("star-empty.png", 'form', @$this->tmpl, array(), true);
-			$opts->clearoutsrc = $clearsrc = FabrikHelperHTML::image("remove-sign-out.png", 'form', @$this->tmpl, array(), true);
-			$opts->clearinsrc = $clearsrc = FabrikHelperHTML::image("remove-sign.png", 'form', @$this->tmpl, array(), true);
-		}
-
 		$opts->row_id = $row_id;
 		$opts->elid = $this->getElement()->id;
 		$opts->userid = (int) $user->get('id');
@@ -619,12 +610,6 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 		$imagepath = JUri::root() . '/plugins/fabrik_element/rating/images/';
 		$opts->imagepath = $imagepath;
 		$opts->elid = $this->getElement()->id;
-
-		if (!FabrikWorker::j3())
-		{
-			$opts->insrc = FabrikHelperHTML::image("star.png", 'list', @$this->tmpl, array(), true);
-			$opts->outsrc = FabrikHelperHTML::image("star-empty.png", 'list', @$this->tmpl, array(), true);
-		}
 
 		$opts->canRate = $params->get('rating-mode') == 'creator-rating' ? true : $this->canRate();
 		$opts->ajaxloader = FabrikHelperHTML::image("ajax-loader.gif", 'list', @$this->tmpl, array(), true);

@@ -73,7 +73,6 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$params = $this->getParams();
 		$imagepath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
 		$data = FabrikWorker::JSONtoData($data, true);
@@ -119,30 +118,19 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 			$downActiveClass = $myThumb === 'down' ? ' btn-danger' : '';
 			$commentdata = 'data-fabrik-thumb-rowid="' . $row_id . '"';
 
-			if ($j3)
+			$str[] = '<div class="btn-group">';
+			$str[] = '<button ' . $commentdata . ' data-fabrik-thumb-formid="' . $formid
+			 . '" data-fabrik-thumb="up" class="btn btn-small thumb-up' . $upActiveClass . '">';
+			$str[] = '<span class="icon-thumbs-up"></span> <span class="thumb-count">' . $countUp . '</span></button>';
+
+			if ($params->get('show_down', 1))
 			{
-				$str[] = '<div class="btn-group">';
 				$str[] = '<button ' . $commentdata . ' data-fabrik-thumb-formid="' . $formid
-				 . '" data-fabrik-thumb="up" class="btn btn-small thumb-up' . $upActiveClass . '">';
-				$str[] = '<span class="icon-thumbs-up"></span> <span class="thumb-count">' . $countUp . '</span></button>';
-
-				if ($params->get('show_down', 1))
-				{
-					$str[] = '<button ' . $commentdata . ' data-fabrik-thumb-formid="' . $formid
-					. '" data-fabrik-thumb="down" class="btn btn-small thumb-down' . $downActiveClass . '">';
-					$str[] = '<span class="icon-thumbs-down"></span> <span class="thumb-count">' . $countDown . '</span></button>';
-				}
-
-				$str[] = '</div>';
+				. '" data-fabrik-thumb="down" class="btn btn-small thumb-down' . $downActiveClass . '">';
+				$str[] = '<span class="icon-thumbs-down"></span> <span class="thumb-count">' . $countDown . '</span></button>';
 			}
-			else
-			{
-				$str[] = '<span style="color:#32d723;" id="count_thumbup' . $row_id . '">' . $countUp . '</span>';
-				$str[] = '<img src="' . $imagepath . $imagefileup . '" style="padding:0px 5px 0 1px;" alt="UP" class="thumbup" id="thumbup' . $row_id . '"/>';
-				$str[] = '<span style="color:#f82516;" id="count_thumbdown' . $row_id . '">' . $countDown . '</span>';
-				$attribs = '" style="padding:0px 5px 0 1px;" alt="DOWN" class="thumbdown"';
-				$str[] = '<img src="' . $imagepath . $imagefiledown . $attribs . ' id="thumbdown' . $row_id . '"/>';
-			}
+
+			$str[] = '</div>';
 
 			$data[$i] = implode("\n", $str);
 		}
@@ -271,7 +259,6 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 		$input = $app->input;
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
-		$j3 = FabrikWorker::j3();
 
 		if ($input->get('view') == 'form' && ((bool) $params->get('rate_in_from', false) === false || $this->getFormModel()->isNewRecord()))
 		{
@@ -313,10 +300,8 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 		$count = $this->_renderListData(FArrayHelper::getValue($data, $id2), $thisRow);
 		$count = FabrikWorker::JSONtoData($count, true);
 
-
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
-		$layoutData->j3 = $j3;
 		$layoutData->name = $name;
 		$layoutData->id = $id;
 		$layoutData->commentdata = 'data-fabrik-thumb-rowid="' . $row_id . '"';

@@ -31,11 +31,10 @@ class FabrikViewTimeline extends JViewLegacy
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
-	public function display($tpl = 'default')
+	public function display($tpl = 'bootstrap')
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$srcs = FabrikHelperHTML::framework();
 
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
@@ -62,7 +61,6 @@ class FabrikViewTimeline extends JViewLegacy
 		$this->params = $params;
 		$this->width = $params->get('timeline_width', '700');
 		$this->height = $params->get('timeline_height', '300');
-		$tpl = $j3 ? 'bootstrap' : 'default';
 		$tpl = $params->get('timeline_layout', $tpl);
 		$tmplpath = '/plugins/fabrik_visualization/timeline/views/timeline/tmpl/' . $tpl;
 		$this->_setPath('template', JPATH_ROOT . $tmplpath);

@@ -758,30 +758,22 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 	public function calendar($value, $name, $id, $format = '%Y-%m-%d', $attribs = null, $repeatCounter = 0)
 	{
 		FabrikHelperHTML::loadcalendar();
-		$j3 = FabrikWorker::j3();
 
 		if (is_array($attribs))
 		{
 			$attribs = ArrayHelper::toString($attribs);
 		}
 
-		$paths = FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
-		$opts = $j3 ? array('alt' => 'calendar') : array('alt' => 'calendar', 'class' => 'calendarbutton', 'id' => $id . '_cal_img');
+		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
+		$opts = array('alt' => 'calendar');
 		$img = FabrikHelperHTML::image('calendar.png', 'form', @$this->tmpl, $opts);
 		$html = array();
 
-		if ($j3)
-		{
-			$img = '<button id ="' . $id . '_cal_img" class="btn calendarbutton">' . $img . '</button>';
-			$html[] = '<div class="input-append">';
-		}
+		$img = '<button id ="' . $id . '_cal_img" class="btn calendarbutton">' . $img . '</button>';
+		$html[] = '<div class="input-append">';
 
 		$html[] = '<input type="text" name="' . $name . '" id="' . $id . '" value="' . $value . '" ' . $attribs . ' />' . $img;
-
-		if ($j3)
-		{
-			$html[] = '</div>';
-		}
+		$html[] = '</div>';
 
 		return implode("\n", $html);
 	}
