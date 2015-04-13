@@ -47,25 +47,19 @@ var Suboptions = new Class({
 	},
 
 	watchButtons: function () {
-		if (this.options.j3) {
-			this.element.addEvent('click:relay(a[data-button="addSuboption"])', function (e) {
-				e.preventDefault();
-				this.addSubElement();
-			}.bind(this));
+		this.element.addEvent('click:relay(a[data-button="addSuboption"])', function (e) {
+			e.preventDefault();
+			this.addSubElement();
+		}.bind(this));
 
-			this.element.addEvent('click:relay(a[data-button="deleteSuboption"])', function (e, target) {
-				e.preventDefault();
-				var trs = this.element.getElements('tbody tr');
-				if (trs.length > 1) {
-					target.getParent('tr').dispose();
-				}
-			}.bind(this));
-			var x = this.element.getElements('a[data-button="addSuboption"]');
-		} else {
-			document.id('addSuboption').addEvent('click', function (e) {
-				this.addOption(e);
-			}.bind(this));
-		}
+		this.element.addEvent('click:relay(a[data-button="deleteSuboption"])', function (e, target) {
+			e.preventDefault();
+			var trs = this.element.getElements('tbody tr');
+			if (trs.length > 1) {
+				target.getParent('tr').dispose();
+			}
+		}.bind(this));
+		var x = this.element.getElements('a[data-button="addSuboption"]');
 	},
 
 	addOption: function (e) {
@@ -142,49 +136,12 @@ var Suboptions = new Class({
 	},
 
 	addSubElement: function (sValue, sText, sCurChecked) {
-		if (this.options.j3) {
-			return this.addJ3SubElement(sValue, sText, sCurChecked);
-		}
-		sValue = sValue ? sValue : '';
-		sText = sText ? sText : '';
-		var chx = this._chx(sValue, sCurChecked);
-		var delButton = this._deleteButton();
-		delButton.getElement('a').id = 'sub_delete_' + this.counter;
-		var li = new Element('li', {id: 'sub_content_' + this.counter}).adopt([
-			new Element('table',  {width: '100%'}).adopt([
-				new Element('tbody').adopt([
-					new Element('tr').adopt([
-						new Element('td', {'rowspan': 2, 'class': 'handle subhandle'}),
-						new Element('td', {width: '30%'}).adopt(this._valueField(sValue)),
-						new Element('td', {width: '30%'}).adopt(this._labelField(sText)),
-						new Element('td', {width: '10%'}).set('html', chx),
-						delButton
-					])
-				])
-			])
-		]);
-		var oldLi = document.id('sub_subElementBody').getElement('li');
-		if (typeOf(oldLi) !== 'null' && oldLi.innerHTML === '') {
-			li.replaces(oldLi);
-		} else {
-			li.inject(document.id('sub_subElementBody'));
-		}
-		document.id('sub_delete_' + this.counter).addEvent('click', function (e) {
-			this.removeSubElement(e);
-		}.bind(this));
-
-		if (!this.sortable) {
-			this.sortable = new Sortables('sub_subElementBody', {'handle': '.subhandle'});
-		} else {
-			this.sortable.addItems(li);
-		}
-		this.counter++;
+		return this.addJ3SubElement(sValue, sText, sCurChecked);
 	},
 
 	onSave: function () {
 		var values = [],
 		ret = true,
-		intial_selection = [],
 		evalPop = document.id('jform_params_dropdown_populate'),
 		evalAdded = false;
 		if (typeOf(evalPop) !== 'null' && evalPop.get('value') !== '') {

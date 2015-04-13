@@ -92,14 +92,9 @@ Fabrik.Window = new Class({
 			this.close(e);
 		}.bind(this);
 		var del;
-		if (Fabrik.bootstrapped) {
-			del = new Element('a', {'href': '#', 'class': 'closeFabWin', 'events': {'click': delClick}});
-			del.adopt(new Element('i.icon-cancel.icon-remove-sign'));
-		} else {
-			del = new Element('a', {'href': '#', 'class': 'close', 'events': {'click': delClick}});
-			var art = Fabrik.iconGen.create(icon.cross);
-			art.inject(del);
-		}
+		del = new Element('a', {'href': '#', 'class': 'closeFabWin', 'events': {'click': delClick}});
+		del.adopt(new Element('i.icon-cancel.icon-remove-sign'));
+
 		return del;
 	},
 
@@ -114,7 +109,7 @@ Fabrik.Window = new Class({
 		var d = {'width': w + 'px', 'height': h + 'px'};
 		this.window.setStyles(d);
 		
-		if (!(Fabrik.bootstrapped && this.modal)) {
+		if (!this.modal) {
 			var yy = window.getSize().y / 2 + window.getScroll().y - (h / 2);
 			d.top = typeOf(this.options.offset_y) !== 'null' ? window.getScroll().y + this.options.offset_y : yy;
 			
@@ -179,38 +174,16 @@ Fabrik.Window = new Class({
 		var hclass = 'handlelabel';
 		if (!this.modal) {
 			hclass += ' draggable';
-			var bClss = Fabrik.bootstrapped ? 'bottomBar BootStrapped' : 'bottomBar';
 			draggerC = new Element('div', {'class': 'bottomBar modal-footer'});
 			dragger = new Element('div', {'class': 'dragger'});
-			if (Fabrik.bootstrapped) {
-				resizeIcon = new Element('i.icon-expand');
-			} else {
-				resizeIcon = Fabrik.iconGen.create(icon.resize, {
-					scale: 0.8,
-					rotate: 0,
-					shadow: {
-						color: '#fff',
-						translate: {x: 0, y: 1}
-					},
-					fill: {
-						color: ['#999', '#666']
-					}
-				});
-			}
+			resizeIcon = new Element('i.icon-expand');
+
 			resizeIcon.inject(dragger);
 			draggerC.adopt(dragger);
 		}
 
-		if (Fabrik.bootstrapped) {
-			expandIcon = new Element('i.icon-out-2.icon-fullscreen');
-			label = new Element('h3', {'class': hclass}).set('text', this.options.title);
-
-		} else {
-			expandIcon = Fabrik.iconGen.create(icon.expand, {scale: 0.4, fill: {
-				color: ['#666666', '#999999']
-			}});
-			label = new Element('span', {'class': hclass}).set('text', this.options.title);
-		}
+		expandIcon = new Element('i.icon-out-2.icon-fullscreen');
+		label = new Element('h3', {'class': hclass}).set('text', this.options.title);
 
 		handleParts.push(label);
 		if (this.options.expandable && this.modal === false) {
@@ -295,7 +268,7 @@ Fabrik.Window = new Class({
 	},
 
 	handleClass: function () {
-		return Fabrik.bootstrapped ? 'modal-header' : 'handle';
+		return 'modal-header';
 	},
 
 	loadContent: function () {

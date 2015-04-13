@@ -40,12 +40,9 @@ class FabrikViewNotification extends JViewLegacy
 		$model->loadLang();
 		$this->rows = $model->getUserNotifications();
 		$this->id = $model->getId();
-		$j3 = FabrikWorker::j3();
-		$viewName = $this->getName();
-		$tpl = $j3 ? 'bootstrap' : 'default';
-		$tmplpath = JPATH_ROOT . '/plugins/fabrik_cron/notification/views/notification/tmpl/' . $tpl;
+		$tmplpath = JPATH_ROOT . '/plugins/fabrik_cron/notification/views/notification/tmpl/bootstrap';
 		$this->_setPath('template', $tmplpath);
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_cron/notification/views/notification/tmpl/' . $tpl . '/template.css');
+		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_cron/notification/views/notification/tmpl/bootstrap/template.css');
 		echo parent::display();
 	}
 }

@@ -257,8 +257,6 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 	public function render($data, $repeatCounter = 0)
 	{
 		$app = JFactory::getApplication();
-		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$this->offsetDate = '';
 		FabrikHelperHTML::loadcalendar();
 		$name = $this->getHTMLName($repeatCounter);
@@ -345,30 +343,23 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 
 	protected function timeButton($timeElName, $time, &$str)
 	{
-		$j3 = FabrikWorker::j3();
 		$params = $this->getParams();
 		$timeformat = $params->get('date_time_format', 'H:i');
 		$class = 'inputbox fabrikinput timeField input ' . $params->get('bootstrap_time_class', 'input-mini');
 		$readonly = $params->get('date_allow_typing_in_field', true) == false ? ' readonly="readonly" ' : '';
 
-		if ($j3)
-		{
-			$str[] = '<div class="input-append">';
-		}
+		$str[] = '<div class="input-append">';
 
 		$timelength = String::strlen($timeformat);
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/date/images/', 'image', 'form', false);
 		$str[] = '<input type="text" class="' . $class . '" ' . $readonly . ' size="' . $timelength . '" value="' . $time . '" name="'
 				. $timeElName . '" />';
 		$opts = array('alt' => FText::_('PLG_ELEMENT_DATE_TIME'), 'class' => 'timeButton');
-		$file = FabrikWorker::j3() ? 'clock.png' : 'time.png';
+		$file = 'clock.png';
 		$img = '<button class="btn timeButton">' . FabrikHelperHTML::image($file, 'form', @$this->tmpl, $opts) . '</button>';
 		$str[] = $img;
 
-		if ($j3)
-		{
-			$str[] = '</div>';
-		}
+		$str[] = '</div>';
 	}
 
 	/**

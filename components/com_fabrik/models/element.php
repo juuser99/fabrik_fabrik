@@ -1613,9 +1613,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			return '';
 		}
 
-		$params = $this->getParams();
 		$str = '';
-		$j3 = FabrikWorker::j3();
 
 		if ($this->canView() || $this->canUse())
 		{
@@ -1652,7 +1650,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			$labelText = FText::_($element->label);
 
 			$labelText = $labelText == '' ? '&nbsp;' : $labelText;
-			$l = $j3 ? '' : $labelText;
+			$l = '';
 			$iconOpts = array('icon-class' => 'small');
 
 			if ($rollOver)
@@ -1665,7 +1663,7 @@ class PlgFabrik_Element extends FabrikPlugin
 				$l .= $this->validator->labelIcons();
 			}
 
-			$l .= $j3 ? $labelText : '';
+			$l .= $labelText;
 			$model = $this->getFormModel();
 			$str .= $l;
 
@@ -1701,7 +1699,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			$err = '<span>' . $err . '</span>';
 			$usersConfig = JComponentHelper::getParams('com_fabrik');
-			$icon = FabrikWorker::j3() ? $usersConfig->get('error_icon', 'exclamation-sign') . '.png' : 'alert.png';
+			$icon = $usersConfig->get('error_icon', 'exclamation-sign') . '.png';
 			$str .= '<a href="#" class="fabrikTip" title="' . $err . '" opts="{notice:true}">' . FabrikHelperHTML::image($icon, 'form', $tmpl)
 			. '</a>';
 		}

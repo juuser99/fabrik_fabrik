@@ -59,8 +59,7 @@ class FabrikViewVisualization extends JViewLegacy
 		$plugin->$pluginTask($this);
 		$this->plugin = $plugin;
 		$viewName = $this->getName();
-		$jTmplFolder = FabrikWorker::j3() ? 'tmpl' : 'tmpl25';
-		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->_name . '/' . $jTmplFolder . '/' . $tmpl);
+		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->_name . '/tmpl/' . $tmpl);
 
 		$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/visualization/' . $plugin->_name . '/' . $tmpl);

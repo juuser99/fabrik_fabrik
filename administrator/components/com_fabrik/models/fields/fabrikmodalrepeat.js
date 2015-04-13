@@ -129,7 +129,7 @@ var FabrikModalRepeat = new Class({
 			var size = this.el[key].getDimensions(true);
 			var wsize = win.getDimensions(true);
 			win.setStyles({'width': size.x + 'px'});
-			if (typeof(Fabrik) !== 'undefined' && !Fabrik.bootstrapped) {
+			if (typeof(Fabrik) !== 'undefined') {
 				var y = setup ? wsize.y : size.y + 30;
 				win.setStyle('height', y + 'px');
 			}
@@ -199,9 +199,6 @@ var FabrikModalRepeat = new Class({
 	},
 
 	resetChosen: function (clone) {
-		if (!this.options.j3) {
-			return;
-		}
 		if (jQuery && typeOf(jQuery('select').chosen) !== 'null') {
 
 			// Chosen reset

@@ -164,7 +164,6 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 		$data->name = $this->getHTMLName($repeatCounter);;
 		$data->value = $value;
 		$data->editable = $this->isEditable();
-		$data->j3 = FabrikWorker::j3();
 		$data->showPicker = (bool) $params->get('show_picker', 1);
 
 		return $layout->render($data);

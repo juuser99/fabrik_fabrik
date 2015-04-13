@@ -167,9 +167,8 @@ class FabrikViewFormBase extends JViewLegacy
 		JDEBUG ? $profiler->mark('form view: after getRelatedTables()') : null;
 		$this->setMessage();
 
-		$jTmplFolder = FabrikWorker::j3() ? 'tmpl' : 'tmpl25';
 		$folder = $model->isEditable() ? 'form' : 'details';
-		$this->addTemplatePath($this->_basePath . '/' . $folder . '/' . $jTmplFolder . '/' . $tmpl);
+		$this->addTemplatePath($this->_basePath . '/' . $folder . '/tmpl/' . $tmpl);
 
 		$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/'. $folder. '/'.  $tmpl);
@@ -192,7 +191,6 @@ class FabrikViewFormBase extends JViewLegacy
 	public function output()
 	{
 		$app = JFactory::getApplication();
-		$input = $app->input;
 		$w = new FabrikWorker;
 		$text = $this->loadTemplate();
 		$model = $this->getModel();
@@ -651,7 +649,7 @@ class FabrikViewFormBase extends JViewLegacy
 		// 3.0 needed for ajax requests
 		$opts->listid = (int) $this->get('ListModel')->getId();
 
-		$errorIcon = FabrikWorker::j3() ? $fbConfig->get('error_icon', 'exclamation-sign') . '.png' : 'alert.png';
+		$errorIcon = $fbConfig->get('error_icon', 'exclamation-sign') . '.png';
 		$this->errorIcon = FabrikHelperHTML::image($errorIcon, 'form', $this->tmpl);
 
 		$imgs = new stdClass;

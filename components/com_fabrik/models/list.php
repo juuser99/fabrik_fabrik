@@ -847,12 +847,10 @@ class FabrikFEModelList extends JModelForm
 
 		$profiler = JProfiler::getInstance('Application');
 		$pluginManager = FabrikWorker::getPluginManager();
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$pluginManager->runPlugins('onPreLoadData', $this, 'list');
 
 		// Needs to be off for FOUND_ROWS() to work
 		ini_set('mysql.trace_mode', 'off');
-		$fabrikDb = $this->getDb();
 		JDEBUG ? $profiler->mark('query build start') : null;
 
 		// Ajax call needs to recall this - not sure why
@@ -865,6 +863,7 @@ class FabrikFEModelList extends JModelForm
 		}
 		catch (Exception $e)
 		{
+			$item = $listModel->getTable();
 			$msg = 'Fabrik has generated an incorrect query for the list ' . $item->label . ': <br /><br /><pre>' . $e->getMessage() . '</pre>';
 			throw new RuntimeException($msg, 500);
 		}
@@ -1305,7 +1304,6 @@ class FabrikFEModelList extends JModelForm
 
 	protected function addSelectBoxAndLinks(&$data)
 	{
-		$j3 = FabrikWorker::j3();
 		$db = FabrikWorker::getDbo(true);
 		$params = $this->getParams();
 		$buttonAction = $this->actionMethod();
@@ -1412,8 +1410,8 @@ class FabrikFEModelList extends JModelForm
 				$editLabel = $this->editLabel($data[$groupKey][$i]);
 				$editText = $buttonAction == 'dropdown' ? $editLabel : '<span class="hidden">' . $editLabel . '</span>';
 
-				$btnClass = ($j3 && $buttonAction != 'dropdown') ? 'btn ' : '';
-				$class = $j3 ? $btnClass . 'fabrik_edit fabrik__rowlink' : 'btn fabrik__rowlink';
+				$btnClass = ($buttonAction != 'dropdown') ? 'btn ' : '';
+				$class = $btnClass . 'fabrik_edit fabrik__rowlink';
 				$dataList = 'list_' . $this->getRenderContext();
 				$loadMethod = $this->getLoadMethod('editurl');
 				$img = FabrikHelperHTML::image('edit.png', 'list', '', array('alt' => $editLabel));
@@ -1423,7 +1421,7 @@ class FabrikFEModelList extends JModelForm
 
 				$viewLabel = $this->viewLabel($data[$groupKey][$i]);
 				$viewText = $buttonAction == 'dropdown' ? $viewLabel : '<span class="hidden">' . $viewLabel . '</span>';
-				$class = $j3 ? $btnClass . 'fabrik_view fabrik__rowlink' : 'btn fabrik__rowlink';
+				$class = $btnClass . 'fabrik_view fabrik__rowlink';
 
 				$loadMethod = $this->getLoadMethod('detailurl');
 				$img = FabrikHelperHTML::image('search.png', 'list', '', array('alt' => $viewLabel));
@@ -1439,10 +1437,10 @@ class FabrikFEModelList extends JModelForm
 				{
 					if ($canEdit == 1)
 					{
-						if ($params->get('editlink') || ($actionMethod == 'floating' || $j3))
+						if ($params->get('editlink') || ($actionMethod == 'floating'))
 						{
 							$row->fabrik_edit = $editLink;
-							$row->fabrik_actions['fabrik_edit'] = $j3 ? $row->fabrik_edit : '<li class="fabrik_edit">' . $row->fabrik_edit . '</li>';
+							$row->fabrik_actions['fabrik_edit'] = $row->fabrik_edit;
 						}
 
 						$row->fabrik_edit_url = $edit_link;
@@ -1450,7 +1448,7 @@ class FabrikFEModelList extends JModelForm
 						if ($this->canViewDetails() && $this->floatingDetailLink())
 						{
 							$row->fabrik_view = $viewLink;
-							$row->fabrik_actions['fabrik_view'] = $j3 ? $row->fabrik_view : '<li class="fabrik_view">' . $row->fabrik_view . '</li>';
+							$row->fabrik_actions['fabrik_view'] = $row->fabrik_view;
 						}
 					}
 					else
@@ -1461,7 +1459,7 @@ class FabrikFEModelList extends JModelForm
 							{
 								$viewLinkAdded = true;
 								$row->fabrik_view = $viewLink;
-								$row->fabrik_actions['fabrik_view'] = $j3 ? $row->fabrik_view : '<li class="fabrik_view">' . $row->fabrik_view . '</li>';
+								$row->fabrik_actions['fabrik_view'] = $row->fabrik_view;
 							}
 						}
 						else
@@ -1476,14 +1474,14 @@ class FabrikFEModelList extends JModelForm
 					$link = $this->viewDetailsLink($row, 'details');
 					$row->fabrik_view_url = $link;
 					$row->fabrik_view = $viewLink;
-					$row->fabrik_actions['fabrik_view'] = $j3 ? $row->fabrik_view : '<li class="fabrik_view">' . $row->fabrik_view . '</li>';
+					$row->fabrik_actions['fabrik_view'] = $row->fabrik_view;
 				}
 
 				if ($this->canDelete($row))
 				{
 					if ($buttonAction == 'dropdown')
 					{
-						$row->fabrik_actions['delete_divider'] = $j3 ? '' : '<li class="divider"></li>';
+						$row->fabrik_actions['delete_divider'] = '';
 					}
 
 					$row->fabrik_actions['fabrik_delete'] = $this->deleteButton();
@@ -1590,7 +1588,7 @@ class FabrikFEModelList extends JModelForm
 				{
 					if ($buttonAction == 'dropdown')
 					{
-						$row->fabrik_actions[] = $j3 ? '' : '<li class="divider"></li>';
+						$row->fabrik_actions[] = '';
 					}
 				}
 
@@ -1598,7 +1596,7 @@ class FabrikFEModelList extends JModelForm
 				{
 					if (trim($b) !== '')
 					{
-						$row->fabrik_actions[] = $j3 ? $b : '<li>' . $b . '</li>';
+						$row->fabrik_actions[] = $b;
 					}
 				}
 
@@ -1609,15 +1607,8 @@ class FabrikFEModelList extends JModelForm
 						$this->rowActionCount = count($row->fabrik_actions);
 					}
 
-					if ($j3)
-					{
-						$displayData['items'] = $row->fabrik_actions;
-						$row->fabrik_actions = $layout->render($displayData);
-					}
-					else
-					{
-						$row->fabrik_actions = '<ul class="fabrik_action">' . implode("\n", $row->fabrik_actions) . '</ul>';
-					}
+					$displayData['items'] = $row->fabrik_actions;
+					$row->fabrik_actions = $layout->render($displayData);
 				}
 				else
 				{
@@ -1650,21 +1641,11 @@ class FabrikFEModelList extends JModelForm
 	 *
 	 * If in Fabrik 3.1 return true (just use the default acl to control the link)
 	 *
-	 * If in Fabrik 3.0 return true if detail link option on and action method is floating
-	 *
 	 * @return boolean
 	 */
 	protected function floatingDetailLink()
 	{
-		if (FabrikWorker::j3())
-		{
-			return true;
-		}
-
-		$params = $this->getParams();
-		$actionMethod = $this->actionMethod();
-
-		return $params->get('detaillink') == '1' || $actionMethod == 'floating';
+		return true;
 	}
 
 	/**
@@ -1681,7 +1662,6 @@ class FabrikFEModelList extends JModelForm
 	public function actionMethod()
 	{
 		$params = $this->getParams();
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
 
 		if ($params->get('actionMethod', 'default') == 'default')
 		{
@@ -1689,8 +1669,8 @@ class FabrikFEModelList extends JModelForm
 			$fbConfig = JComponentHelper::getParams('com_fabrik');
 			$globalDefault = $fbConfig->get('actionMethod', 'floating');
 
-			// Floating depreacted in J3
-			if (FabrikWorker::j3() && $globalDefault === 'floating')
+			// Floating deprecated in J3
+			if ($globalDefault === 'floating')
 			{
 				return 'inline';
 			}
@@ -1701,8 +1681,8 @@ class FabrikFEModelList extends JModelForm
 		{
 			$default = $params->get('actionMethod', 'floating');
 		}
-		// Floating depreacted in J3
-		if (FabrikWorker::j3() && $default === 'floating')
+		// Floating deprecated in J3
+		if ($default === 'floating')
 		{
 			return 'inline';
 		}
@@ -1723,20 +1703,18 @@ class FabrikFEModelList extends JModelForm
 
 	protected function deleteButton($tpl = '', $heading = false)
 	{
-		$params = $this->getParams();
 		$label = FText::_('COM_FABRIK_DELETE');
 		$buttonAction = $this->actionMethod();
 		$tpl = $this->getTmpl();
-		$j3 = FabrikWorker::j3();
 		$text = $buttonAction == 'dropdown' ? $label : '<span class="hidden">' . $label . '</span>';
-		$btnClass = ($j3 && $buttonAction != 'dropdown') ? 'btn ' : '';
-		$iconClass = $j3 ? 'icon-remove' : 'icon-minus';
-		$label = $j3 ? ' ' . FText::_('COM_FABRIK_DELETE') : '<span>' . FText::_('COM_FABRIK_DELETE') . '</span>';
+		$btnClass = $buttonAction != 'dropdown' ? 'btn ' : '';
+		$iconClass = 'icon-remove';
+		$label = ' ' . FText::_('COM_FABRIK_DELETE');
 		$btn = '<a href="#" class="' . $btnClass . 'delete" data-listRef="list_' . $this->getRenderContext()
 				. '" title="' . FText::_('COM_FABRIK_DELETE') . '">'
 				. FabrikHelperHTML::image('delete.png', 'list', $tpl, array('alt' => $label, 'icon-class' => $iconClass)) . ' ' . $text . '</a>';
 
-		return $j3 ? $btn : '<li class="fabrik_delete">' . $btn . '</li>';
+		return $btn;
 	}
 
 	/**
@@ -6108,7 +6086,7 @@ class FabrikFEModelList extends JModelForm
 			$v = $this->getFilterModel()->getSearchAllValue('html');
 			$o = new stdClass;
 			$searchLabel = $params->get('search-all-label', FText::_('COM_FABRIK_SEARCH'));
-			$class = FabrikWorker::j3() ? 'fabrik_filter search-query input-medium' : 'fabrik_filter';
+			$class = 'fabrik_filter search-query input-medium';
 			$o->filter = '<input type="search" size="20" placeholder="' . $searchLabel . '" value="' . $v
 			. '" class="' . $class . '" name="' . $requestKey . '" />';
 
@@ -6944,36 +6922,22 @@ class FabrikFEModelList extends JModelForm
 
 			$return = $pluginManager->runPlugins('button', $this, 'list', array('heading' => true));
 			$res = $pluginManager->data;
+			$headingButtons = array_merge($headingButtons, $res);
 
-			if (FabrikWorker::j3())
+			if (empty($headingButtons))
 			{
-				$headingButtons = array_merge($headingButtons, $res);
-
-				if (empty($headingButtons))
-				{
-					$aTableHeadings['fabrik_actions'] = '';
-				}
-				else
-				{
-					if ($this->actionMethod() == 'dropdown')
-					{
-						$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapDropDown($headingButtons);
-					}
-					else
-					{
-						$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapButtonGroup($headingButtons);
-					}
-				}
+				$aTableHeadings['fabrik_actions'] = '';
 			}
 			else
 			{
-				foreach ($res as &$r)
+				if ($this->actionMethod() == 'dropdown')
 				{
-					$r = $this->actionMethod() == 'dropdown' ? '<li>' . $r . '</li>' : $r;
+					$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapDropDown($headingButtons);
 				}
-
-				$headingButtons = array_merge($headingButtons, $res);
-				$aTableHeadings['fabrik_actions'] = empty($headingButtons) ? '' : '<ul class="fabrik_action">' . implode("\n", $headingButtons) . '</ul>';
+				else
+				{
+					$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapButtonGroup($headingButtons);
+				}
 			}
 
 			$headingClass['fabrik_actions'] = array('class' => 'fabrik_ordercell fabrik_actions', 'style' => '');
@@ -11059,9 +11023,9 @@ class FabrikFEModelList extends JModelForm
 				}
 			}
 
-			if ($this->tmpl == '' || (!FabrikWorker::j3() && $this->tmpl === 'bootstrap'))
+			if ($this->tmpl == '')
 			{
-				$this->tmpl = FabrikWorker::j3() ? 'bootstrap' : 'default';
+				$this->tmpl = 'bootstrap';
 			}
 
 			if ($app->scope !== 'mod_fabrik_list')
@@ -11079,20 +11043,12 @@ class FabrikFEModelList extends JModelForm
 			}
 
 			// Migration test
-			if (FabrikWorker::j3())
-			{
-				$modFolder = JPATH_SITE . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $this->tmpl;
-				$componentFolder = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $this->tmpl;
-			}
-			else
-			{
-				$modFolder = JPATH_SITE . '/templates/' . $app->getTemplate() . '/themes/' . $this->tmpl;
-				$componentFolder = JPATH_SITE . '/components/com_fabrik/views/list/tmpl25/' . $this->tmpl;
-			}
+			$modFolder = JPATH_SITE . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $this->tmpl;
+			$componentFolder = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $this->tmpl;
 
 			if (!JFolder::exists($componentFolder) && !JFolder::exists($modFolder))
 			{
-				$this->tmpl = FabrikWorker::j3() ? 'bootstrap' : 'default';
+				$this->tmpl = 'bootstrap';
 			}
 		}
 
@@ -11153,7 +11109,6 @@ class FabrikFEModelList extends JModelForm
 	{
 		$tmpl = $this->getTmpl();
 		$app = JFactory::getApplication();
-		$jTmplFolder = FabrikWorker::j3() ? 'tmpl' : 'tmpl25';
 
 		// Check for a form template file (code moved from view)
 		if ($tmpl != '')
@@ -11166,7 +11121,7 @@ class FabrikFEModelList extends JModelForm
 
 			if (!FabrikHelperHTML::stylesheetFromPath($overRide))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/' . $jTmplFolder . '/' . $tmpl . '/template_css.php' . $qs);
+				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/template_css.php' . $qs);
 			}
 			/* $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
 			 * custom.css - for backward compat with existing 2.x custom.css
@@ -11174,12 +11129,12 @@ class FabrikFEModelList extends JModelForm
 			*/
 			if (!FabrikHelperHTML::stylesheetFromPath('templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom.css' . $qs))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/' . $jTmplFolder . '/' . $tmpl . '/custom.css');
+				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/custom.css');
 			}
 
 			if (!FabrikHelperHTML::stylesheetFromPath('templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom_css.php' . $qs))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/' . $jTmplFolder . '/' . $tmpl . '/custom_css.php' . $qs);
+				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/custom_css.php' . $qs);
 			}
 		}
 	}

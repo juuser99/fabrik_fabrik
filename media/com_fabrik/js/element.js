@@ -77,14 +77,9 @@ var FbElement =  new Class({
 	attachedToForm: function ()
 	{
 		this.setElement();
-		if (Fabrik.bootstrapped) {
-			this.alertImage = new Element('i.' + this.form.options.images.alert);
-			this.successImage = new Element('i.icon-checkmark', {'styles': {'color': 'green'}});			
-		} else {
-			this.alertImage = new Asset.image(this.form.options.images.alert);
-			this.alertImage.setStyle('cursor', 'pointer');
-			this.successImage = new Asset.image(this.form.options.images.action_check);
-		}
+		this.alertImage = new Element('i.' + this.form.options.images.alert);
+		this.successImage = new Element('i.icon-checkmark', {'styles': {'color': 'green'}});
+
 		
 		if (this.form.options.images.ajax_loader.contains('<i')) {
 			this.loadingImage = new Element('span').set('html', this.form.options.images.ajax_loader);
@@ -461,17 +456,7 @@ var FbElement =  new Class({
 		switch (classname) {
 		case 'fabrikError':
 			Fabrik.loader.stop(this.element);
-			if (Fabrik.bootstrapped) {
-				this.addTipMsg(msg);
-			} else {
-				a = new Element('a', {'href': '#', 'title': msg, 'events': {
-					'click': function (e) {
-						e.stop();
-					}
-				}}).adopt(this.alertImage);
-				
-				Fabrik.tips.attach(a);
-			}
+			this.addTipMsg(msg);
 			errorElements[0].adopt(a);
 			
 			container.removeClass('success').removeClass('info').addClass('error');
@@ -486,18 +471,9 @@ var FbElement =  new Class({
 			break;
 		case 'fabrikSuccess':
 			container.addClass('success').removeClass('info').removeClass('error');
-			if (Fabrik.bootstrapped) {
-				Fabrik.loader.stop(this.element);
-				this.removeTipMsg();
-			} else {
-				
-				errorElements[0].adopt(this.successImage);
-				var delFn = function () {
-					errorElements[0].addClass('fabrikHide');
-					container.removeClass('success');
-				};
-				delFn.delay(700);
-			}
+			Fabrik.loader.stop(this.element);
+			this.removeTipMsg();
+
 			break;
 		case 'fabrikValidating':
 			container.removeClass('success').addClass('info').removeClass('error');
@@ -701,11 +677,6 @@ var FbElement =  new Class({
 	doTab: function (event) {
 		(function () {
 			this.redraw();
-			if (!Fabrik.bootstrapped) {
-				this.options.tab_dt.removeEvent('click', function (e) {
-					this.doTab(e);
-				}.bind(this));
-			}
 		}.bind(this)).delay(500);
 	},
 	
@@ -714,30 +685,15 @@ var FbElement =  new Class({
 	 * when the tab is clicked
 	 */
 	watchTab: function () {
-		var c = Fabrik.bootstrapped ? '.tab-pane' : '.current',
+		var c = '.tab-pane',
 		a, tab_dl;
 		var tab_div = this.element.getParent(c);
 		if (tab_div) {
-			if (Fabrik.bootstrapped) {
-				a = document.getElement('a[href=#' + tab_div.id + ']');
-				tab_dl = a.getParent('ul.nav');
-				tab_dl.addEvent('click:relay(a)', function (event, target) {
-					this.doTab(event);
-				}.bind(this));
-			} else {
-				tab_dl = tab_div.getPrevious('.tabs');
-				if (tab_dl) {
-					this.options.tab_dd = this.element.getParent('.fabrikGroup');
-					if (this.options.tab_dd.style.getPropertyValue('display') === 'none') {
-						this.options.tab_dt = tab_dl.getElementById('group' + this.groupid + '_tab');
-						if (this.options.tab_dt) {
-							this.options.tab_dt.addEvent('click', function (e) {
-								this.doTab(e);
-							}.bind(this));
-						}
-					}
-				}
-			}
+			a = document.getElement('a[href=#' + tab_div.id + ']');
+			tab_dl = a.getParent('ul.nav');
+			tab_dl.addEvent('click:relay(a)', function (event, target) {
+				this.doTab(event);
+			}.bind(this));
 		}
 	}
 });

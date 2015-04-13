@@ -131,8 +131,7 @@ abstract class FabrikAdminModelVisualization extends FabModelAdmin implements Fa
 		else
 		{
 			$plugin = $pluginManager->getPlugIn($plugin, 'Visualization');
-			$mode = FabrikWorker::j3() ? 'nav-tabs' : '';
-			$str = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, $mode);
+			$str = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
 		}
 
 		return $str;

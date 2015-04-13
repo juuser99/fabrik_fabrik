@@ -967,8 +967,8 @@ var FbForm = new Class({
 	},
 
 	showMainError: function (msg) {
-		// If we are in j3 and ajax validations are on - don't show main error as it makes the form 'jumpy'
-		if (Fabrik.bootstrapped && this.options.ajaxValidation) {
+		// If ajax validations are on - don't show main error as it makes the form 'jumpy'
+		if (this.options.ajaxValidation) {
 			return;
 		}
 		var mainEr = this.form.getElement('.fabrikMainError');

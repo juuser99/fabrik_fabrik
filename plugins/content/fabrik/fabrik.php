@@ -200,7 +200,6 @@ class PlgContentFabrik extends JPlugin
 		$rowid = '';
 		$usekey = '';
 		$limit = false;
-		$defaultLayout = FabrikWorker::j3() ? 'bootstrap' : 'default';
 		$session = JFactory::getSession();
 		$usersConfig->set('rowid', 0);
 
@@ -912,8 +911,7 @@ class PlgContentFabrik extends JPlugin
 		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
 		// $$$rob looks like including the view does something to the layout variable
-		$defaultLayout = FabrikWorker::j3() ? 'bootstrap' : 'default';
-		$layout = $input->get('layout', $defaultLayout);
+		$layout = $input->get('layout', 'bootstrap');
 		require_once COM_FABRIK_FRONTEND . '/views/' . $view . '/view.html.php';
 
 		if (!is_null($layout))

@@ -397,19 +397,11 @@ class FabrikPlugin extends JPlugin
 			}
 
 			$form->repeat = $repeat;
-			$j3 = FabrikWorker::j3();
 
 			if ($repeat)
 			{
-				if ($j3)
-				{
-					$str[] = '<a class="btn" href="#" data-button="addButton"><i class="icon-plus"></i> ' . FText::_('COM_FABRIK_ADD') . '</a>';
-					$str[] = '<a class="btn" href="#" data-button="deleteButton"><i class="icon-minus"></i> ' . FText::_('COM_FABRIK_REMOVE') . '</a>';
-				}
-				else
-				{
-					$str[] = '<a class="addButton" href="#" data-button="addButton"><i class="icon-plus"></i> ' . FText::_('COM_FABRIK_ADD') . '</a>';
-				}
+				$str[] = '<a class="btn" href="#" data-button="addButton"><i class="icon-plus"></i> ' . FText::_('COM_FABRIK_ADD') . '</a>';
+				$str[] = '<a class="btn" href="#" data-button="deleteButton"><i class="icon-minus"></i> ' . FText::_('COM_FABRIK_REMOVE') . '</a>';
 			}
 
 			for ($r = 0; $r < $repeatDataMax; $r++)

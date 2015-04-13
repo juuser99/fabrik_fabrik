@@ -165,7 +165,6 @@ class FabrikFEModelElementValidator extends JModelLegacy
 
 	public function getIcon($c = null)
 	{
-		$j3 = FabrikWorker::j3();
 		$validations = $this->findAll();
 
 		if (!$this->showIcon())
@@ -175,16 +174,13 @@ class FabrikFEModelElementValidator extends JModelLegacy
 
 		if (!empty($validations))
 		{
-			if ($j3)
+			if (is_null($c))
 			{
-				if (is_null($c))
-				{
-					return $validations[0]->iconImage();
-				}
-				else
-				{
-					return $validations[$c]->iconImage();
-				}
+				return $validations[0]->iconImage();
+			}
+			else
+			{
+				return $validations[$c]->iconImage();
 			}
 		}
 
@@ -195,7 +191,7 @@ class FabrikFEModelElementValidator extends JModelLegacy
 			return $internal;
 		}
 
-		return $j3 ? 'star.png' : 'notempty.png';
+		return 'star.png';
 	}
 
 	/**

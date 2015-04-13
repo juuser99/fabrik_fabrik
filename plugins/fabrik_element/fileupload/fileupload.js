@@ -230,18 +230,6 @@ var FbFileUpload = new Class({
 	},
 
 	addDropArea: function () {
-		if (!Fabrik.bootstraped) {
-			return;
-		}
-		var dropTxt = this.container.getElement('tr.plupload_droptext'), tr;
-		if (typeOf(dropTxt) !== 'null') {
-			dropTxt.show();
-		} else {
-			tr = new Element('tr.plupload_droptext').set('html', '<td colspan="4"><i class="icon-move"></i> ' + Joomla.JText
-					._('PLG_ELEMENT_FILEUPLOAD_DRAG_FILES_HERE') + ' </td>');
-			this.container.getElement('tbody').adopt(tr);
-		}
-		this.container.getElement('thead').hide();
 	},
 
 	removeDropArea: function () {
@@ -288,11 +276,8 @@ var FbFileUpload = new Class({
 		this.pluploadContainer = c.getElement('.plupload_container');
 		this.pluploadFallback = c.getElement('.plupload_fallback');
 		this.droplist = c.getElement('.plupload_filelist');
-		if (Fabrik.bootstrapped) {
-			this.startbutton = c.getElement('*[data-action=plupload_start]');
-		} else {
-			this.startbutton = c.getElement('.plupload_start');
-		}
+		this.startbutton = c.getElement('*[data-action=plupload_start]');
+
 		var plupopts = {
 			runtimes: this.options.ajax_runtime,
 			browse_button: this.element.id + '_browseButton',
@@ -333,11 +318,9 @@ var FbFileUpload = new Class({
 		// (2) ON FILES ADDED ACTION
 		this.uploader.bind('FilesAdded', function (up, files) {
 			this.removeDropArea();
-			var rElement = Fabrik.bootstrapped ? 'tr' : 'li';
+			var rElement = 'tr';
 			this.lastAddedFiles = files;
-			if (Fabrik.bootstrapped) {
-				this.container.getElement('thead').show();
-			}
+			this.container.getElement('thead').show();
 			var count = this.droplist.getElements(rElement).length;
 			this.startbutton.removeClass('disabled');
 			files.each(function (file, idx) {
@@ -379,15 +362,12 @@ var FbFileUpload = new Class({
 		this.uploader.bind('UploadProgress', function (up, file) {
 			var f = document.id(file.id);
 			if (typeOf(f) !== 'null') {
-				if (Fabrik.bootstrapped) {
-					var bar = document.id(file.id).getElement('.plupload_file_status .bar');
-					bar.setStyle('width', file.percent + '%');
-					if (file.percent === 100) {
-						bar.addClass('bar-success');
-					}
-				} else {
-					document.id(file.id).getElement('.plupload_file_status').set('text', file.percent + '%');
+				var bar = document.id(file.id).getElement('.plupload_file_status .bar');
+				bar.setStyle('width', file.percent + '%');
+				if (file.percent === 100) {
+					bar.addClass('bar-success');
 				}
+
 			}
 		});
 
@@ -479,33 +459,14 @@ var FbFileUpload = new Class({
 	 */
 	imageCells: function (file, title, a) {
 		var del = this.deleteImgButton(), filename, status;
-		if (Fabrik.bootstrapped) {
-			var icon = new Element('td.span1.plupload_resize').adopt(a);
-			var progress = '<div class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div>';
+		var icon = new Element('td.span1.plupload_resize').adopt(a);
+		var progress = '<div class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div>';
 
-			status = new Element('td.span5.plupload_file_status', {}).set('html', progress);
+		status = new Element('td.span5.plupload_file_status', {}).set('html', progress);
 
-			filename = new Element('td.span6.plupload_file_name', {}).adopt(title);
+		filename = new Element('td.span6.plupload_file_name', {}).adopt(title);
 
-			return [filename, icon, status, del];
-		} else {
-			filename = new Element('div', {
-				'class': 'plupload_file_name'
-			}).adopt([title, new Element('div', {
-				'class': 'plupload_resize',
-				style: 'display:none'
-			}).adopt(a)]);
-			status = new Element('div', {
-				'class': 'plupload_file_status'
-			}).set('text', '0%');
-			var size = new Element('div', {
-				'class': 'plupload_file_size'
-			}).set('text', file.size);
-
-			return [filename, del, status, size, new Element('div', {
-				'class': 'plupload_clearer'
-			})];
-		}
+		return [filename, icon, status, del];
 	},
 
 	/**
@@ -513,60 +474,34 @@ var FbFileUpload = new Class({
 	 */
 
 	editImgButton: function () {
-		if (Fabrik.bootstrapped) {
-			return new Element('a.editImage', {
-				'href': '#',
-				styles: {
-					'display': 'none'
-				},
-				alt: Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_RESIZE'),
-				events: {
-					'click': function (e) {
-						this.pluploadResize(e);
-					}.bind(this)
-				}
-			});
-		} else {
-			return new Element('a', {
-				'href': '#',
-				alt: Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_RESIZE'),
-				events: {
-					'click': function (e) {
-						this.pluploadResize(e);
-					}.bind(this)
-				}
-			});
-		}
+		return new Element('a.editImage', {
+			'href': '#',
+			styles: {
+				'display': 'none'
+			},
+			alt: Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_RESIZE'),
+			events: {
+				'click': function (e) {
+					this.pluploadResize(e);
+				}.bind(this)
+			}
+		});
 	},
 
 	/**
 	 * Create delete image button
 	 */
 	deleteImgButton: function () {
-		if (Fabrik.bootstrapped) {
-			return new Element('td.span1.plupload_file_action', {}).adopt(new Element('a', {
-				'href': '#',
-				'class': 'icon-delete',
-				events: {
-					'click': function (e) {
-						e.stop();
-						this.pluploadRemoveFile(e);
-					}.bind(this)
-				}
-			}));
-		} else {
-			return new Element('div', {
-				'class': 'plupload_file_action'
-			}).adopt(new Element('a', {
-				'href': '#',
-				'style': 'display:block',
-				events: {
-					'click': function (e) {
-						this.pluploadRemoveFile(e);
-					}.bind(this)
-				}
-			}));
-		}
+		return new Element('td.span1.plupload_file_action', {}).adopt(new Element('a', {
+			'href': '#',
+			'class': 'icon-delete',
+			events: {
+				'click': function (e) {
+					e.stop();
+					this.pluploadRemoveFile(e);
+				}.bind(this)
+			}
+		}));
 	},
 
 	isImage: function (file) {

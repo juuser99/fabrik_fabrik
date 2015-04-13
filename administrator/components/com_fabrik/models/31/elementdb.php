@@ -276,7 +276,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 		$opts->parentid = (int) $item->parent_id;
 		$opts->jsevents = $this->getJsEvents();
 		$opts->id = (int) $item->id;
-		$opts->deleteButton = FabrikWorker::j3() ? '<a class="btn btn-danger"><i class="icon-delete"></i> ' : '<a class="removeButton">';
+		$opts->deleteButton = '<a class="btn btn-danger"><i class="icon-delete"></i> ';
 		$opts->deleteButton .= FText::_('COM_FABRIK_DELETE') . '</a>';
 		$opts = json_encode($opts);
 		JText::script('COM_FABRIK_PLEASE_SELECT');
@@ -328,8 +328,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 		else
 		{
 			$plugin = $pluginManager->getPlugIn($plugin, 'Element');
-			$mode = FabrikWorker::j3() ? 'nav-tabs' : '';
-			$str = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, $mode);
+			$str = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
 		}
 
 		return $str;

@@ -340,7 +340,6 @@ EOD;
 		$document = JFactory::getDocument();
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$form = $formModel->getForm();
 		$document->setTitle($form->label);
 		$document->addStyleSheet('templates/' . $template . '/css/template_css.css');
@@ -372,17 +371,11 @@ EOD;
 			<td colspan="2">
 			<input type="submit" name="submit" class="button btn btn-primary"
 				value="<?php echo FText::_('COM_FABRIK_SEND_EMAIL'); ?>" />
-<?php
 
-if (!$j3)
-{
-?>
 			<input type="button" name="cancel"
 				value="<?php echo FText::_('COM_FABRIK_CANCEL'); ?>" class="button btn"
 				onclick="window.close();" /></td>
-				<?php
-}
-			?>
+
 		</tr>
 	</table>
 	<input name="referrer"
@@ -407,17 +400,12 @@ if (!$j3)
 	{
 		$config = JFactory::getConfig();
 		$document = JFactory::getDocument();
-		$j3 = FabrikWorker::j3();
 		$document->setTitle($config->get('sitename'));
-
-		if (!$j3)
-		{
 		?>
 <a href='javascript:window.close();'> <span class="small"><?php echo FText::_('COM_FABRIK_CLOSE_WINDOW'); ?>
 </span>
 </a>
 <?php
-		}
 	}
 
 	/**
@@ -536,8 +524,7 @@ if (!$j3)
 
 			if ($params->get('icons', true))
 			{
-				$j2img = JHtml::_('image', 'system/emailButton.png', FText::_('JGLOBAL_EMAIL'), null, true);
-				$image = FabrikWorker::j3() ? '<i class="icon-envelope"></i> ' : $j2img;
+				$image = '<i class="icon-envelope"></i> ';
 			}
 			else
 			{
@@ -1096,7 +1083,6 @@ if (!$j3)
 		$framework = array();
 		$deps = new stdClass;
 		$deps->deps = array();
-		$j3 = FabrikWorker::j3();
 		$ext = self::isDebug() ? '' : '-min';
 
 		$requirejsBaseURI = self::getJSAssetBaseURI();
@@ -1128,27 +1114,10 @@ if (!$j3)
 			$newShim[$k] = $s;
 		}
 
-		$navigator = JBrowser::getInstance();
-
-		if ($navigator->getBrowser() == 'msie' && !$j3)
-		{
-			$deps->deps[] = 'fab/lib/flexiejs/flexie' . $ext;
-		}
-
 		$deps->deps[] = 'fab/mootools-ext' . $ext;
 		$deps->deps[] = 'fab/lib/Event.mock';
 
-		if ($j3)
-		{
-			$deps->deps[] = 'fab/tipsBootStrapMock' . $ext;
-		}
-		else
-		{
-			$deps->deps[] = 'fab/lib/art';
-			$deps->deps[] = 'fab/tips' . $ext;
-			$deps->deps[] = 'fab/icons' . $ext;
-			$deps->deps[] = 'fab/icongen' . $ext;
-		}
+		$deps->deps[] = 'fab/tipsBootStrapMock' . $ext;
 
 		$deps->deps[] = 'fab/encoder' . $ext;
 		$framework['fab/fabrik' . $ext] = $deps;
@@ -1448,23 +1417,6 @@ if (!$j3)
 			}
 		}
 
-		// Need to load element for ajax popup forms in IE.
-		$needed = array();
-
-		if (!FabrikWorker::j3())
-		{
-			$needed[] = self::isDebug() ? 'fab/icongen' : 'fab/icongen-min';
-			$needed[] = self::isDebug() ? 'fab/icons' : 'fab/icons-min';
-		}
-
-		foreach ($needed as $need)
-		{
-			if (!in_array($need, $files))
-			{
-				array_unshift($files, $need);
-			}
-		}
-
 		$files = array_unique($files);
 		$files = "['" . implode("', '", $files) . "']";
 		$require[] = 'requirejs(' . ($files) . ', function () {';
@@ -1560,16 +1512,8 @@ if (!$j3)
 			}
 			else
 			{
-				if (FabrikWorker::j3())
-				{
-					JHTML::stylesheet('components/com_fabrik/libs/slimbox2/css/slimbox2.css');
-					self::script('components/com_fabrik/libs/slimbox2/js/slimbox2.js');
-				}
-				else
-				{
-					JHTML::stylesheet('components/com_fabrik/libs/slimbox1.64/css/slimbox.css');
-					self::script('components/com_fabrik/libs/slimbox1.64/js/slimbox.js');
-				}
+				JHTML::stylesheet('components/com_fabrik/libs/slimbox2/css/slimbox2.css');
+				self::script('components/com_fabrik/libs/slimbox2/js/slimbox2.js');
 			}
 
 			self::$modal = true;
@@ -1779,7 +1723,7 @@ if (!$j3)
 		JText::script('COM_FABRIK_NO_RECORDS');
 		JText::script('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR');
 		$class = $plugin === 'cascadingdropdown' ? 'FabCddAutocomplete' : 'FbAutocomplete';
-		$jsFile = FabrikWorker::j3() ? 'autocomplete-bootstrap' : 'autocomplete';
+		$jsFile = 'autocomplete-bootstrap';
 		$needed = array();
 		$needed[] = self::isDebug() ? 'fab/fabrik' : 'fab/fabrik-min';
 		$needed[] = self::isDebug() ? 'fab/' . $jsFile : 'fab/' . $jsFile . '-min';
@@ -2023,7 +1967,7 @@ if (!$j3)
 
 		$forceImage = FArrayHelper::getValue($opts, 'forceImage', false);
 
-		if (FabrikWorker::j3() && $forceImage !== true)
+		if ($forceImage !== true)
 		{
 			unset($properties['alt']);
 			$class = FArrayHelper::getValue($properties, 'icon-class', '');
@@ -2125,7 +2069,7 @@ if (!$j3)
 
 			// For values like '1"'
 			$value = htmlspecialchars($values[$i], ENT_QUOTES);
-			$inputClass = FabrikWorker::j3() ? '' : $type;
+			$inputClass = '';
 
 			if (array_key_exists('input', $classes))
 			{
@@ -2135,7 +2079,7 @@ if (!$j3)
 			$chx = '<input type="' . $type . '" class="fabrikinput ' . $inputClass . '" name="' . $thisname . '" value="' . $value . '" ';
 			$sel = in_array($values[$i], $selected);
 			$chx .= $sel ? ' checked="checked" />' : ' />';
-			$labelClass = FabrikWorker::j3() && !$buttonGroup ? $type : '';
+			$labelClass = !$buttonGroup ? $type : '';
 
 			$item[] = '<label class="fabrikgrid_' . $value . ' ' . $labelClass . '">';
 			$item[] = $elementBeforeLabel == '1' ? $chx . $label : $label . $chx;
@@ -2165,10 +2109,7 @@ if (!$j3)
 	public static function grid($values, $labels, $selected, $name, $type = 'checkbox',
 		$elementBeforeLabel = true, $optionsPerRow = 4, $classes = array(), $buttonGroup = false)
 	{
-		if (FabrikWorker::j3())
-		{
-			$elementBeforeLabel = true;
-		}
+		$elementBeforeLabel = true;
 
 		$items = self::gridItems($values, $labels, $selected, $name, $type, $elementBeforeLabel, $classes, $buttonGroup);
 
@@ -2189,22 +2130,7 @@ if (!$j3)
 		}
 		else
 		{
-			if (FabrikWorker::j3())
-			{
-				$grid = self::bootstrapGrid($items, $optionsPerRow, 'fabrikgrid_' . $type);
-			}
-			else
-			{
-				$grid[] = '<ul>';
-
-				foreach ($items as $i => $s)
-				{
-					$clear = ($i % $optionsPerRow == 0) ? 'clear:left;' : '';
-					$grid[] = '<li style="' . $clear . 'float:left;width:' . $w . '%;padding:0;margin:0;">' . $s . '</li>';
-				}
-
-				$grid[] = '</ul>';
-			}
+			$grid = self::bootstrapGrid($items, $optionsPerRow, 'fabrikgrid_' . $type);
 		}
 
 		return $grid;

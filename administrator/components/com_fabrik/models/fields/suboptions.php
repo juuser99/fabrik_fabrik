@@ -52,19 +52,11 @@ class JFormFieldSuboptions extends JFormField
 		$default->sub_labels = array();
 		$default->sub_initial_selection = array();
 		$opts = $this->value == '' ? $default : ArrayHelper::toObject($this->value);
-		$j3 = FabrikWorker::j3();
 
-		if ($j3)
-		{
-			$delButton  = '<div class="btn-group">';
-			$delButton .= '<a class="btn btn-success" href="#" data-button="addSuboption"><i class="icon-plus"></i> </a>';
-			$delButton .= '<a class="btn btn-danger" href="#" data-button="deleteSuboption"><i class="icon-minus"></i> </a>';
-			$delButton .= '</div>';
-		}
-		else
-		{
-			$delButton = '<a class="removeButton" href="#"><i class="icon-minus"></i> ' . FText::_('COM_FABRIK_DELETE') . '</a>';
-		}
+		$delButton  = '<div class="btn-group">';
+		$delButton .= '<a class="btn btn-success" href="#" data-button="addSuboption"><i class="icon-plus"></i> </a>';
+		$delButton .= '<a class="btn btn-danger" href="#" data-button="deleteSuboption"><i class="icon-minus"></i> </a>';
+		$delButton .= '</div>';
 
 		if (is_array($opts))
 		{

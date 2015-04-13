@@ -58,13 +58,7 @@ var FbList = new Class({
 		this.result = true; //used with plugins to determine if list actions should be performed
 		this.plugins = [];
 		this.list = document.id('list_' + this.options.listRef);
-		if (this.options.j3 === false) {
-			this.actionManager = new FbListActions(this, {
-				'method': this.options.actionMethod,
-				'floatPos': this.options.floatPos
-			});
-		}
-		
+
 		if (this.options.toggleCols) {
 			this.toggleCols = new FbListToggle(this.form);
 		}
@@ -174,8 +168,7 @@ var FbList = new Class({
 			minimizable: false,
 			width: 360,
 			height: 120,
-			content: '',
-			bootstrap: this.options.j3
+			content: ''
 		};
 		if (this.options.view === 'csv') {
 			
@@ -582,28 +575,13 @@ var FbList = new Class({
 				// Swap images - if list doing ajax nav then we need to do this
 				if (this.options.singleOrdering) {
 					document.id(this.options.form).getElements('.fabrikorder, .fabrikorder-asc, .fabrikorder-desc').each(function (otherH) {
-						if (Fabrik.bootstrapped) {
-							var otherIcon = otherH.getElement('*[class^="icon"]');
-							otherIcon.className = 'icon-menu-2';
-						} else {
-							var i = otherH.getElement('img');
-							if (i) {
-								i.src = i.src.replace('ordernone.png', '').replace('orderasc.png', '').replace('orderdesc.png', '');
-								i.src += 'ordernone.png';
-							}
-						}
+						var otherIcon = otherH.getElement('*[class^="icon"]');
+						otherIcon.className = 'icon-menu-2';
 					});
 				}
 				
-				if (Fabrik.bootstrapped) {
-					icon.className = bsClass;
-				} else {
-					if (i) {
-						i.src = i.src.replace('ordernone.png', '').replace('orderasc.png', '').replace('orderdesc.png', '');
-						i.src += img;
-					}
-				}
-				
+				icon.className = bsClass;
+
 				this.fabrikNavOrder(elementId, orderdir);
 				e.stop();
 			}.bind(this));
@@ -1297,8 +1275,7 @@ var FbGroupedToggler = new Class({
 	
 	options: {
 		collapseOthers: false,
-		startCollapsed: false,
-		bootstrap: false
+		startCollapsed: false
 	},
 	
 	initialize: function (container, options) {
@@ -1323,7 +1300,7 @@ var FbGroupedToggler = new Class({
 				this.collapse();
 			}
 			h = e.target.getParent('.fabrik_groupheading');
-			img = this.options.bootstrap ? h.getElement('i') : h.getElement('img');
+			img = h.getElement('i');
 			state = img.retrieve('showgroup', true);
 			
 			if (h.getNext() && h.getNext().hasClass('fabrik_groupdata')) {
@@ -1341,26 +1318,18 @@ var FbGroupedToggler = new Class({
 	},
 	
 	setIcon: function (img, state) {
-		if (this.options.bootstrap) {
-			if (!state) {
-				img.removeClass('icon-arrow-right');
-				img.addClass('icon-arrow-down');
-			} else {
-				img.addClass('icon-arrow-right');
-				img.removeClass('icon-arrow-down');
-			}
+		if (!state) {
+			img.removeClass('icon-arrow-right');
+			img.addClass('icon-arrow-down');
 		} else {
-			if (state) {
-				img.src = img.src.replace('orderasc', 'orderneutral');
-			} else {
-				img.src = img.src.replace('orderneutral', 'orderasc');
-			}
+			img.addClass('icon-arrow-right');
+			img.removeClass('icon-arrow-down');
 		}
 	},
 	
 	collapse: function () {
 		this.container.getElements('.fabrik_groupdata').hide();
-		var selector = this.options.bootstrap ? 'i' : 'img';
+		var selector = 'i';
 		var i = this.container.getElements('.fabrik_groupheading a ' + selector);
 		if (i.length === 0) {
 			i = this.container.getElements('.fabrik_groupheading ' + selector);

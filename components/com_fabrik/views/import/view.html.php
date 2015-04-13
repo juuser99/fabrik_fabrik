@@ -50,8 +50,7 @@ class FabrikViewImport extends JViewLegacy
 			throw new RuntimeException('Naughty naughty!', 400);
 		}
 
-		$layout = FabrikWorker::j3() ? 'bootstrap' : 'default';
-		$this->setLayout($layout);
+		$this->setLayout('bootstrap');
 		$this->fieldsets = $this->setFieldSets();
 		parent::display($tpl);
 

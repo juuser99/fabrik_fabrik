@@ -34,17 +34,10 @@ var FbRatingList = new Class({
 					this.origRating[tr.id] = star.getParent('.fabrik_element').getElement('.ratingMessage').innerHTML.toInt();
 					stars.each(function (ii) {
 						if (this._getRating(star) >= this._getRating(ii)) {
-							if (Fabrik.bootstrapped) {
-								ii.removeClass('icon-star-empty').addClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
+							ii.removeClass('icon-star-empty').addClass('icon-star');
+
 						} else {
-							if (Fabrik.bootstrapped) {
-								ii.addClass('icon-star-empty').removeClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
+							ii.addClass('icon-star-empty').removeClass('icon-star');
 						}
 					}.bind(this));
 					star.getParent('.fabrik_element').getElement('.ratingMessage').innerHTML = star.get('data-fabrik-rating');
@@ -53,17 +46,9 @@ var FbRatingList = new Class({
 				star.addEvent('mouseout', function (e) {
 					stars.each(function (ii) {
 						if (this.origRating[tr.id] >= this._getRating(ii)) {
-							if (Fabrik.bootstrapped) {
-								ii.removeClass('icon-star-empty').addClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
+							ii.removeClass('icon-star-empty').addClass('icon-star');
 						} else {
-							if (Fabrik.bootstrapped) {
-								ii.addClass('icon-star-empty').removeClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
+							ii.addClass('icon-star-empty').removeClass('icon-star');
 						}
 					}.bind(this));
 					star.getParent('.fabrik_element').getElement('.ratingMessage').innerHTML = this.origRating[tr.id];
@@ -119,20 +104,12 @@ var FbRatingList = new Class({
 				this.rating = r;
 				ratingmsg.set('html', this.rating);
 				Fabrik.loader.stop(ratingmsg);
-				var tag = Fabrik.bootstrapped ? 'i' : 'img';
+				var tag ='i';
 				star.getParent('.fabrik_element').getElements(tag).each(function (i, x) {
 					if (x < r) {
-						if (Fabrik.bootstrapped) {
-							i.removeClass('icon-star-empty').addClass('icon-star');
-						} else {
-							i.src = this.options.insrc;
-						}
+						i.removeClass('icon-star-empty').addClass('icon-star');
 					} else {
-						if (Fabrik.bootstrapped) {
-							i.addClass('icon-star-empty').removeClass('icon-star');
-						} else {
-							i.src = this.options.insrc;
-						}
+						i.addClass('icon-star-empty').removeClass('icon-star');
 					}
 				}.bind(this));
 				document.id('starRatingCover').destroy();

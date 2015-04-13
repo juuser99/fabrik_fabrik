@@ -489,8 +489,7 @@ class FabrikFEModelForm extends FabModelForm
 		$params = $this->getParams();
 		$item = $this->getForm();
 		$tmpl = '';
-		$default = FabrikWorker::j3() ? 'bootstrap' : 'default';
-		$jTmplFolder = FabrikWorker::j3() ? 'tmpl' : 'tmpl25';
+		$default = 'bootstrap';
 		$document = JFactory::getDocument();
 
 		if ($document->getType() === 'pdf')
@@ -527,7 +526,7 @@ class FabrikFEModelForm extends FabModelForm
 		// Test it exists - otherwise revert to baseTmpl tmpl
 		$folder = $this->isEditable() ? 'form' : 'details';
 
-		if (!JFolder::exists(JPATH_SITE . '/components/com_fabrik/views/' . $folder . '/' . $jTmplFolder . '/' . $tmpl))
+		if (!JFolder::exists(JPATH_SITE . '/components/com_fabrik/views/' . $folder . '/tmpl/' . $tmpl))
 		{
 			$tmpl = $baseTmpl;
 		}
@@ -548,7 +547,6 @@ class FabrikFEModelForm extends FabModelForm
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$jTmplFolder = FabrikWorker::j3() ? 'tmpl' : 'tmpl25';
 		$tmpl = $this->getTmpl();
 		$v = $this->isEditable() ? 'form' : 'details';
 
@@ -578,7 +576,7 @@ class FabrikFEModelForm extends FabModelForm
 
 			if (!FabrikHelperHTML::stylesheetFromPath($tmplPath))
 			{
-				$ok = FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/' . $jTmplFolder . '/' . $tmpl . '/template_css.php' . $qs);
+				$ok = FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/template_css.php' . $qs);
 			}
 
 			/* $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
@@ -588,14 +586,14 @@ class FabrikFEModelForm extends FabModelForm
 
 			if (!FabrikHelperHTML::stylesheetFromPath('templates/' . $app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom.css' . $qs))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/' . $jTmplFolder . '/' . $tmpl . '/custom.css' . $qs);
+				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/custom.css' . $qs);
 			}
 
 			$path = 'templates/' . $app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom_css.php' . $qs;
 
 			if (!FabrikHelperHTML::stylesheetFromPath($path))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/' . $jTmplFolder . '/' . $tmpl . '/custom_css.php' . $qs);
+				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/custom_css.php' . $qs);
 			}
 		}
 

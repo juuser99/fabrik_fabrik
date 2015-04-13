@@ -39,17 +39,9 @@ var FbRating = new Class({
 			i.addEvent('mouseover', function (e) {
 				this.stars.each(function (ii) {
 					if (this._getRating(i) >= this._getRating(ii)) {
-						if (Fabrik.bootstrapped) {
-							ii.removeClass('icon-star-empty').addClass('icon-star');
-						} else {
-							ii.src = this.options.insrc;
-						}
+						ii.removeClass('icon-star-empty').addClass('icon-star');
 					} else {
-						if (Fabrik.bootstrapped) {
-							ii.addClass('icon-star-empty').removeClass('icon-star');
-						} else {
-							ii.src = this.options.insrc;
-						}
+						ii.addClass('icon-star-empty').removeClass('icon-star');
 					}
 				}.bind(this));
 				this.ratingMessage.innerHTML = i.get('data-rating');
@@ -59,11 +51,7 @@ var FbRating = new Class({
 		this.stars.each(function (i) {
 			i.addEvent('mouseout', function (e) {
 				this.stars.each(function (ii) {
-					if (Fabrik.bootstrapped) {
-						ii.removeClass('icon-star').addClass('icon-star-empty');
-					} else {
-						ii.src = this.options.outsrc;
-					}
+					ii.removeClass('icon-star').addClass('icon-star-empty');
 				}.bind(this));
 			}.bind(this));
 		}.bind(this));
@@ -91,11 +79,6 @@ var FbRating = new Class({
 
 		if (typeOf(clearButton) !== 'null') {
 			clearButton.addEvent('mouseover', function (e) {
-				if (Fabrik.bootstrapped) {
-
-				} else {
-					e.target.src = this.options.clearinsrc;
-				}
 				this.ratingMessage.set('html', Joomla.JText._('PLG_ELEMENT_RATING_NO_RATING'));
 			}.bind(this));
 
@@ -109,16 +92,9 @@ var FbRating = new Class({
 				this.rating = -1;
 				this.field.value = '';
 				this.stars.each(function (ii) {
-					if (Fabrik.bootstrapped) {
-						ii.removeClass('icon-star').addClass('icon-star-empty');
-					} else {
-						ii.src = this.options.outsrc;
-					}
+					ii.removeClass('icon-star').addClass('icon-star-empty');
 				}.bind(this));
-				if (!Fabrik.bootstrapped) {
-					this.getClearButton().src = this.options.clearinsrc;
-				}
-
+				this.getClearButton().src = this.options.clearinsrc;
 				this.doAjax();
 			}.bind(this));
 		}
@@ -168,15 +144,10 @@ var FbRating = new Class({
 		}
 		this.stars.each(function (ii) {
 			var starScore = this._getRating(ii);
-			if (Fabrik.bootstrapped) {
-				if (starScore <= this.rating) {
-					ii.removeClass('icon-star-empty').addClass('icon-star');
-				} else {
-					ii.removeClass('icon-star').addClass('icon-star-empty');
-				}
-
+			if (starScore <= this.rating) {
+				ii.removeClass('icon-star-empty').addClass('icon-star');
 			} else {
-				ii.src = starScore <= this.rating ? this.options.insrc : this.options.outsrc;
+				ii.removeClass('icon-star').addClass('icon-star-empty');
 			}
 		}.bind(this));
 		var clearButton = this.getClearButton();
