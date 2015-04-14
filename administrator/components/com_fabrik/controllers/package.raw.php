@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -12,7 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controllerform');
+require_once 'fabcontrollerform.php';
 
 /**
  * Raw Package controller class.
@@ -21,13 +21,12 @@ jimport('joomla.application.component.controllerform');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminControllerPackage extends JControllerForm
+class FabrikAdminControllerPackage extends FabControllerForm
 {
 	/**
 	 * The prefix to use with controller messages.
 	 *
-	 * @var	string
+	 * @var    string
 	 */
 	protected $text_prefix = 'COM_FABRIK_PACKAGE';
 
@@ -39,18 +38,12 @@ class FabrikAdminControllerPackage extends JControllerForm
 
 	public function dolist()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$db = FabrikWorker::getDbo(true);
-		$query = $db->getQuery(true);
-		$list = $input->get('list', 'form');
+		$input    = $this->app->input;
+		$db       = FabrikWorker::getDbo(true);
+		$query    = $db->getQuery(true);
+		$list     = $input->get('list', 'form');
 		$selected = $input->get('selected');
 		$query->select('id, label')->from('#__fabrik_' . $list . 's');
-
-		if ($selected != '')
-		{
-			// $query->where('id NOT IN ('.$selected.')');
-		}
 
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();

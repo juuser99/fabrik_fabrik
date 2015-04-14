@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -12,7 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controllerform');
+require_once 'fabcontrollerform.php';
 
 /**
  * Cron controller class.
@@ -21,13 +21,12 @@ jimport('joomla.application.component.controllerform');
  * @subpackage  Fabrik
  * @since       1.6
  */
-
-class FabrikAdminControllerCron extends JControllerForm
+class FabrikAdminControllerCron extends FabControllerForm
 {
 	/**
 	 * The prefix to use with controller messages.
 	 *
-	 * @var	string
+	 * @var    string
 	 */
 	protected $text_prefix = 'COM_FABRIK_CRON';
 
@@ -36,13 +35,11 @@ class FabrikAdminControllerCron extends JControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function getPluginHTML()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input  = $this->app->input;
 		$plugin = $input->getCmd('plugin');
-		$model = $this->getModel();
+		$model  = $this->getModel();
 		$model->getForm();
 		echo $model->getPluginHTML($plugin);
 	}

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.0
  */
@@ -14,7 +14,13 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 
+jimport('joomla.application.component.modeladmin');
+
 require_once 'fabmodeladmin.php';
+
+interface FabrikAdminModelConnectionInterface
+{
+}
 
 /**
  * Admin Connection Model
@@ -23,8 +29,7 @@ require_once 'fabmodeladmin.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminModelConnection extends FabModelAdmin
+abstract class FabrikAdminModelConnection extends FabModelAdmin implements FabrikAdminModelConnectionInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -108,11 +113,11 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	{
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->update('#__fabrik_connections')->set($db->quoteName('default') . ' = 0');
+		$query->update('#__fabrik_connections')->set($db->qn('default') . ' = 0');
 		$db->setQuery($query);
 		$db->execute();
 		$query->clear();
-		$query->update('#__fabrik_connections')->set($db->quoteName('default') . ' = 1')->where('id = ' . (int) $id);
+		$query->update('#__fabrik_connections')->set($db->qn('default') . ' = 1')->where('id = ' . (int) $id);
 		$db->setQuery($query);
 		$db->execute();
 

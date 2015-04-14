@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -58,51 +58,6 @@ abstract class FabrikAdminModelVisualizations extends FabModelList implements Fa
 
 	protected function getListQuery()
 	{
-		// Initialise variables.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		// Select the required fields from the table.
-		$query->select($this->getState('list.select', 'v.*'));
-		$query->from('#__fabrik_visualizations AS v');
-
-		// Join over the users for the checked out user.
-		$query->select('u.name AS editor');
-		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
-
-		// Filter by published state
-		$published = $this->getState('filter.published');
-
-		if (is_numeric($published))
-		{
-			$query->where('v.published = ' . (int) $published);
-		}
-		elseif ($published === '')
-		{
-			$query->where('(v.published IN (0, 1))');
-		}
-
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			$search = $db->quote('%' . $db->escape($search, true) . '%');
-			$query->where('(v.label LIKE ' . $search . ')');
-		}
-
-		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
-
-		if ($orderCol == 'ordering' || $orderCol == 'category_title')
-		{
-			$orderCol = 'category_title ' . $orderDirn . ', ordering';
-		}
-
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
-
-		return $query;
 	}
 
 	/**

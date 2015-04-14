@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -12,7 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controllerform');
+require_once 'fabcontrollerform.php';
 
 /**
  * Details controller class.
@@ -21,13 +21,12 @@ jimport('joomla.application.component.controllerform');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminControllerDetails extends JControllerForm
+class FabrikAdminControllerDetails extends FabControllerForm
 {
 	/**
 	 * The prefix to use with controller messages.
 	 *
-	 * @var	 string
+	 * @var     string
 	 */
 	protected $text_prefix = 'COM_FABRIK_FORM';
 
@@ -36,20 +35,18 @@ class FabrikAdminControllerDetails extends JControllerForm
 	 *
 	 * @return  void
 	 */
-
 	public function view()
 	{
 		$document = JFactory::getDocument();
-		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$model    = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$input    = $this->app->input;
 		$input->set('tmpl', 'component');
 		$input->set('view', 'details');
 		$viewType = $document->getType();
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
-		$viewLayout	= $input->get('layout', 'default');
+		$viewLayout = $input->get('layout', 'default');
 		$this->name = 'Fabrik';
-		$view = $this->getView('Form', $viewType, '');
+		$view       = $this->getView('Form', $viewType, '');
 		$view->setModel($model, true);
 
 		// Set the layout

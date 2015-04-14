@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -14,7 +14,13 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 
+jimport('joomla.application.component.modeladmin');
+
 require_once 'fabmodeladmin.php';
+
+interface FabrikAdminModelCronInterface
+{
+}
 
 /**
  * Cron Admin Model
@@ -23,8 +29,7 @@ require_once 'fabmodeladmin.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminModelCron extends FabModelAdmin
+abstract class FabrikAdminModelCron extends FabModelAdmin implements FabrikAdminModelCronInterface
 {
 	/**
 	 * The prefix to use with controller messages.

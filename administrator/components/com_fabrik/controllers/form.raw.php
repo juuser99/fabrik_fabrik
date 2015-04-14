@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -12,7 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controllerform');
+require_once 'fabcontrollerform.php';
 
 /**
  * Raw Form controller class.
@@ -22,7 +22,7 @@ jimport('joomla.application.component.controllerform');
  * @since       3.0
  */
 
-class FabrikAdminControllerForm extends JControllerForm
+class FabrikAdminControllerForm extends FabControllerForm
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -58,11 +58,8 @@ class FabrikAdminControllerForm extends JControllerForm
 
 	public function process()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$viewName = $input->get('view', 'form');
 		$viewType = $document->getType();
 
@@ -217,8 +214,7 @@ class FabrikAdminControllerForm extends JControllerForm
 
 	protected function makeRedirect($model, $msg = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		if (is_null($msg))
 		{
@@ -246,8 +242,7 @@ class FabrikAdminControllerForm extends JControllerForm
 
 	public function ajax_validate()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$model = $this->getModel('form', 'FabrikFEModel');
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();

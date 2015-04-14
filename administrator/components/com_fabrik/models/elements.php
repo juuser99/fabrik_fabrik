@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -172,7 +172,6 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 	{
 		ArrayHelper::toInteger($ids);
 		$blocked = array();
-		$allowed = array();
 
 		foreach ($ids as $id)
 		{

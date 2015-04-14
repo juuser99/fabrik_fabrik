@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -37,8 +37,7 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 
 	public function pluginAjax()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$plugin = $input->get('plugin', '');
 		$method = $input->get('method', '');
 		$group = $input->get('g', 'element');
@@ -73,9 +72,7 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 	{
 		$db = FabrikWorker::getDbo();
 		require_once COM_FABRIK_FRONTEND . '/user_ajax.php';
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$method = $input->get('method', '');
+		$method = $this->app->input->get('method', '');
 		$userAjax = new userAjax($db);
 
 		if (method_exists($userAjax, $method))
