@@ -124,7 +124,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.element.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.element.data', array());
 
 		if (empty($data))
 		{
@@ -307,9 +307,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 
 	public function getPluginHTML($plugin = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$str = '';
+		$input = $this->app->input;
 		$item = $this->getItem();
 
 		if (is_null($plugin))
@@ -363,8 +361,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 	public function validate($form, $data, $group = null)
 	{
 		$ok = parent::validate($form, $data);
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// Standard jform validation failed so we shouldn't test further as we can't be sure of the data
 		if (!$ok)
@@ -498,8 +495,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 
 		jimport('joomla.utilities.date');
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$new = $data['id'] == 0 ? true : false;
 		$params = $data['params'];
 		$data['name'] = FabrikString::iclean($data['name']);
@@ -656,44 +652,43 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 		if ($update && $input->get('task') !== 'save2copy')
 		{
 			$origplugin = $input->get('plugin_orig');
-			$config = JFactory::getConfig();
-			$prefix = $config->get('dbprefix');
+			$prefix = $this->config->get('dbprefix');
 			$tablename = $listModel->getTable()->db_table_name;
 			$hasprefix = (strstr($tablename, $prefix) === false) ? false : true;
 			$tablename = str_replace($prefix, '#__', $tablename);
 
 			if (in_array($tablename, $this->core))
 			{
-				$app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
+				$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
 			}
 			else
 			{
 				if ($hasprefix)
 				{
-					$app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
+					$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
 				}
 			}
 
-			$app->setUserState('com_fabrik.confirmUpdate', 1);
+			$this->app->setUserState('com_fabrik.confirmUpdate', 1);
 
-			$app->setUserState('com_fabrik.plugin_orig', $origplugin);
-			$app->setUserState('com_fabrik.q', $q);
-			$app->setUserState('com_fabrik.newdesc', $newdesc);
-			$app->setUserState('com_fabrik.origDesc', $origDesc);
+			$this->app->setUserState('com_fabrik.plugin_orig', $origplugin);
+			$this->app->setUserState('com_fabrik.q', $q);
+			$this->app->setUserState('com_fabrik.newdesc', $newdesc);
+			$this->app->setUserState('com_fabrik.origDesc', $origDesc);
 
-			$app->setUserState('com_fabrik.origplugin', $origplugin);
-			$app->setUserState('com_fabrik.oldname', $oldName);
-			$app->setUserState('com_fabrik.newname', $data['name']);
-			$app->setUserState('com_fabrik.origtask', $input->get('task'));
-			$app->setUserState('com_fabrik.plugin', $data['plugin']);
+			$this->app->setUserState('com_fabrik.origplugin', $origplugin);
+			$this->app->setUserState('com_fabrik.oldname', $oldName);
+			$this->app->setUserState('com_fabrik.newname', $data['name']);
+			$this->app->setUserState('com_fabrik.origtask', $input->get('task'));
+			$this->app->setUserState('com_fabrik.plugin', $data['plugin']);
 			$task = $input->get('task');
 			$url = 'index.php?option=com_fabrik&view=element&layout=confirmupdate&id=' . (int) $origId . '&origplugin=' . $origplugin . '&origtask='
 				. $task . '&plugin=' . $row->plugin;
-			$app->setUserState('com_fabrik.redirect', $url);
+			$this->app->setUserState('com_fabrik.redirect', $url);
 		}
 		else
 		{
-			$app->setUserState('com_fabrik.confirmUpdate', 0);
+			$this->app->setUserState('com_fabrik.confirmUpdate', 0);
 		}
 
 		if ((int) $listModel->getTable()->id !== 0)
@@ -948,8 +943,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 		 * updated to apply js changes to descendants as well.  NOTE that this means
 		 * all descendants (i.e. children of children, etc.), not just direct children.
 		 */
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this_id = $this->getState($this->getName() . '.id');
 		$ids = $this->getElementDescendents($this_id);
 		$ids[] = $this_id;
@@ -1033,10 +1027,9 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 	public function delete(&$pks)
 	{
 		// Initialize variables
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$elementIds = $app->input->get('elementIds', array(), 'array');
+		$elementIds = $this->app->input->get('elementIds', array(), 'array');
 
 		foreach ($elementIds as $id)
 		{
@@ -1081,8 +1074,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 
 	public function copy()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		ArrayHelper::toInteger($cid);
 		$names = $input->get('name', array(), 'array');

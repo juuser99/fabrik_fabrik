@@ -87,8 +87,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		JSession::checkToken() or die(FText::_('JINVALID_TOKEN'));
 
 		// Get items to publish from the request.
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$data = array('showInListView' => 1, 'hideFromListView' => 0);
 		$task = $this->getTask();
@@ -96,7 +95,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 
 		if (empty($cid))
 		{
-			JError::raiseWarning(500, FText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+			$this->app->enqueueMessage(FText::_($this->text_prefix . '_NO_ITEM_SELECTED'), 'notice');
 		}
 		else
 		{
@@ -109,20 +108,20 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 			// Publish the items.
 			if (!$model->addToListView($cid, $value))
 			{
-				JError::raiseWarning(500, $model->getError());
+				$this->app->enqueueMessage($model->getError(), 'error');
 			}
 			else
 			{
 				if ($value == 1)
 				{
-					$ntext = $this->text_prefix . '_N_ITEMS_ADDED_TO_LIST_VIEW';
+					$text = $this->text_prefix . '_N_ITEMS_ADDED_TO_LIST_VIEW';
 				}
 				else
 				{
-					$ntext = $this->text_prefix . '_N_ITEMS_REMOVED_FROM_LIST_VIEW';
+					$text = $this->text_prefix . '_N_ITEMS_REMOVED_FROM_LIST_VIEW';
 				}
 
-				$this->setMessage(JText::plural($ntext, count($cid)));
+				$this->setMessage(JText::plural($text, count($cid)));
 			}
 		}
 
@@ -199,8 +198,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	public function batch()
 	{
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$model = $this->getModel('Elements');
 		$cid = $input->get('cid', array(), 'array');
 		$opts = $input->get('batch', array(), 'array');
@@ -237,7 +235,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		}
 
 		// Close the application
-		JFactory::getApplication()->close();
+		$this->app->close();
 	}
 
 	/**
@@ -248,8 +246,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 
 	public function publish()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$model = $this->getModel('Elements');
 		$task = $this->getTask();

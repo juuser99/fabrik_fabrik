@@ -131,8 +131,7 @@ class FabrikAdminModelListsJSON extends FabrikAdminModelLists
 
 	public function getDbTableNames()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		ArrayHelper::toInteger($cid);
 		$db = FabrikWorker::getDbo(true);

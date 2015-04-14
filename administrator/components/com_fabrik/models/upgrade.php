@@ -53,7 +53,6 @@ class FabrikModelUpgrade extends FabModelAdmin
 	protected function backUp()
 	{
 		$db = JFactory::getDbo(true);
-		$app = JFactory::getApplication();
 		$query = $db->getQuery(true);
 		$query->select('db_table_name, connection_id')->from('#__fabrik_tables');
 		$db->setQuery($query);
@@ -83,7 +82,7 @@ class FabrikModelUpgrade extends FabModelAdmin
 			// Test table exists
 			if (!in_array($item->db_table_name, $cnnTables[$item->connection_id]))
 			{
-				$app->enqueueMessage('backup: table not found: ' . $item->db_table_name, 'notice');
+				$this->app->enqueueMessage('backup: table not found: ' . $item->db_table_name, 'notice');
 				continue;
 			}
 			// Create the bkup table (this method will also correctly copy table indexes
@@ -106,7 +105,7 @@ class FabrikModelUpgrade extends FabModelAdmin
 	{
 		if (!$this->shouldUpgrade())
 		{
-			JFactory::getApplication()->enqueueMessage('Already updated');
+			$this->app->enqueueMessage('Already updated');
 			return;
 		}
 		
@@ -154,9 +153,9 @@ class FabrikModelUpgrade extends FabModelAdmin
 
 							$subOpts = new stdClass;
 
-							$subOts->sub_values = explode('|', $row->sub_values);
-							$subOts->sub_labels = explode('|', $row->sub_labels);
-							$subOts->sub_initial_selection = explode('|', $row->sub_intial_selection);
+							$subOpts->sub_values = explode('|', $row->sub_values);
+							$subOpts->sub_labels = explode('|', $row->sub_labels);
+							$subOpts->sub_initial_selection = explode('|', $row->sub_intial_selection);
 							$p->sub_options = $subOpts;
 							break;
 						case '#__fabrik_tables':
@@ -179,7 +178,7 @@ class FabrikModelUpgrade extends FabModelAdmin
 		}
 		// Get the upgrade script
 		$sql = file_get_contents(JPATH_SITE . '/administrator/components/com_fabrik/sql/updates/mysql/2.x-3.0.sql');
-		$prefix = JFactory::getApplication()->getCfg('dbprefix');
+		$prefix = $this->app->get('dbprefix');
 		$sql = str_replace('#__', $prefix, $sql);
 		$sql = explode("\n", $sql);
 
@@ -206,9 +205,8 @@ class FabrikModelUpgrade extends FabModelAdmin
 			$db->setQuery("ALTER TABLE " . $prefix . "fabrik_ratings CHANGE `tableid` `listid` INT( 6 ) NOT NULL");
 			$db->execute();
 		}
-		
-		JFactory::getApplication()->enqueueMessage('Upgraded OK!');
-		
+
+		$this->app->enqueueMessage('Upgraded OK!');
 	}
 
 	/**

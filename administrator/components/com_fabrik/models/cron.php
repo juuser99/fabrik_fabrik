@@ -81,7 +81,7 @@ class FabrikAdminModelCron extends FabModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.cron.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.cron.data', array());
 
 		if (empty($data))
 		{

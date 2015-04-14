@@ -88,6 +88,7 @@ class FabrikAdminModelFormsDB extends FabrikAdminModelForms
 		$query->join('INNER', '#__fabrik_formgroup AS fg ON fg.form_id = f.id');
 
 		// Add the list ordering clause.
+
 		$orderCol = $this->state->get('list.ordering');
 		$orderDirn = $this->state->get('list.direction');
 
@@ -96,7 +97,10 @@ class FabrikAdminModelFormsDB extends FabrikAdminModelForms
 			$orderCol = 'category_title ' . $orderDirn . ', ordering';
 		}
 
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		if (!is_null($orderCol))
+		{
+			$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		}
 
 		return $query;
 	}
@@ -131,17 +135,14 @@ class FabrikAdminModelFormsDB extends FabrikAdminModelForms
 
 	protected function populateState($ordering = null, $direction = null)
 	{
-		// Initialise variables.
-		$app = JFactory::getApplication('administrator');
-
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_fabrik');
 		$this->setState('params', $params);
 
-		$published = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
-		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
 		// List state information.

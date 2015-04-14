@@ -33,7 +33,7 @@ class FabrikAdminControllerConnection extends FabControllerForm
 	protected $text_prefix = 'COM_FABRIK_CONNECTION';
 
 	/**
-	 * Trys to connection to the database
+	 * Tries to connection to the database
 	 *
 	 * @return string connection message
 	 */
@@ -41,8 +41,7 @@ class FabrikAdminControllerConnection extends FabControllerForm
 	public function test()
 	{
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$cid = array((int) $cid[0]);
 		$link = 'index.php?option=com_fabrik&view=connections';
@@ -54,7 +53,7 @@ class FabrikAdminControllerConnection extends FabControllerForm
 
 			if ($model->testConnection() == false)
 			{
-				JError::raiseWarning(500, FText::_('COM_FABRIK_UNABLE_TO_CONNECT'));
+				$this->app->enqueueMessage(FText::_('COM_FABRIK_UNABLE_TO_CONNECT'), 'error');
 				$this->setRedirect($link);
 
 				return;

@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.controlleradmin');
 
 /**
@@ -29,15 +31,35 @@ class FabControllerAdmin extends JControllerAdmin
 	 *
 	 * @var string
 	 */
-
 	public $option = 'com_fabrik';
+
+	/**
+	 * JApplication object
+	 *
+	 * @var JApplicationCms
+	 */
+	protected $app;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JControllerLegacy
+	 */
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
+
+		// DI inject the app
+		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
+	}
 
 	/**
 	 * Actually delete the requested items forms etc.
 	 *
 	 * @return null
 	 */
-
 	public function dodelete()
 	{
 		parent::delete();

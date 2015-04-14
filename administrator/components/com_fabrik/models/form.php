@@ -48,20 +48,6 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 	protected $pluginType = 'Form';
 
 	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     JModelLegacy
-	 * @since   12.2
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
-		$this->db = ArrayHelper::getValue($config, 'db', JFactory::getDbo());
-	}
-
-	/**
 	 * Returns a reference to the a Table object, always creating it.
 	 *
 	 * @param   string  $type    The table type to instantiate
@@ -117,7 +103,7 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.form.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.form.data', array());
 
 		if (empty($data))
 		{
@@ -153,8 +139,7 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
 		$data['params']['plugins'] = (array) FArrayHelper::getValue($jform, 'plugin');
 		$data['params']['plugin_locations'] = (array) FArrayHelper::getValue($jform, 'plugin_locations');
@@ -309,12 +294,12 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 				$item->created_by = $data['created_by'];
 				$item->access = 1;
 				$item->params = $listModel->getDefaultParams();
-				$res = $item->store();
+				$item->store();
 			}
 			else
 			{
 				// Update existing table (seems to need to reload here to ensure that _table is set
-				$item = $listModel->loadFromFormId($formid);
+				$listModel->loadFromFormId($formid);
 				$listModel->ammendTable();
 			}
 		}
@@ -345,7 +330,7 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 		$db->setQuery($query);
 
 		// Delete the old form groups
-		!$db->execute();
+		$db->execute();
 
 		// Get previously saved form groups
 		$query->clear()->select('id, group_id')->from('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
@@ -411,8 +396,7 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 
 	public function updateDatabase()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$formId = $cid[0];
 		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');

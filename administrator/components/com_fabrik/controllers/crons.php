@@ -68,8 +68,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		$mailer = JFactory::getMailer();
 		$config = JFactory::getConfig();
 		$db = FabrikWorker::getDbo(true);
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		ArrayHelper::toInteger($cid);
 		$cid = implode(',', $cid);
@@ -95,7 +94,6 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 			$table = FabTable::getInstance('cron', 'FabrikTable');
 			$table->load($row->id);
 			$plugin->setRow($table);
-			$params = $plugin->getParams();
 			$thisListModel = clone ($listModel);
 			$thisAdminListModel = clone ($adminListModel);
 			$tid = (int) $rowParams->table;
@@ -108,7 +106,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 				if ($plugin->requiresTableData())
 				{
 					$thisListModel->setLimits(0, 0);
-					$nav = $thisListModel->getPagination(0, 0, 0);
+					$thisListModel->getPagination(0, 0, 0);
 					$data = $thisListModel->getData();
 					$log->message .= "\n" . $thisListModel->buildQuery();
 				}

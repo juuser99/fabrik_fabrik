@@ -34,7 +34,6 @@ class FabrikAdminController extends JControllerLegacy
 
 	public function display($cachable = false, $urlparams = false)
 	{
-		$app = JFactory::getApplication();
 		$this->default_view = 'home';
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		parent::display();
@@ -46,16 +45,23 @@ class FabrikAdminController extends JControllerLegacy
 	 *
 	 * @param   string  $name    The model name. Optional.
 	 * @param   string  $prefix  The class prefix. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
+	 * @param   array   $config  Configuration array for model. Optional. (was defaulting to 'ignore_request' => false
+	 *                            but that meant list order bys not being picked up.
 	 *
 	 * @since   3.5
 	 *
 	 * @return  object  The model.
 	 */
-	public function getModel($name = '', $prefix = '', $config = array('ignore_request' => true))
+	public function getModel($name = '', $prefix = '', $config = array())
 	{
-		$config = JComponentHelper::getParams('com_fabrik');
-		$nameSuffix = $config->get('meta_storage', 'db');
+		$jConfig = JComponentHelper::getParams('com_fabrik');
+		$nameSuffix = $jConfig->get('meta_storage', 'db');
+
+		if (empty($name))
+		{
+			$name = $this->getName();
+		}
+
 		$name .= $nameSuffix;
 
 		return parent::getModel($name, $prefix, $config);

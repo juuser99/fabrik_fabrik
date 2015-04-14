@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.modellist');
 
 /**
@@ -33,8 +35,12 @@ class FabModelList extends JModelList
 
 	public function __construct($config = array())
 	{
+
 		$config['dbo'] = FabrikWorker::getDbo(true);
 		parent::__construct($config);
+		// DI
+		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
+
 	}
 
 	/**
@@ -152,10 +158,8 @@ class FabModelList extends JModelList
 
 	protected function populateState($ordering = null, $direction = null)
 	{
-		$app = JFactory::getApplication('administrator');
-
 		// Load the package state
-		$package = $app->getUserStateFromRequest('com_fabrik.package', 'package', '');
+		$package = $this->app->getUserStateFromRequest('com_fabrik.package', 'package', '');
 		$this->setState('com_fabrik.package', $package);
 
 		// List state information.

@@ -84,8 +84,7 @@ class FabrikAdminControllerConnections extends FabControllerAdmin
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die(FText::_('JINVALID_TOKEN'));
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// Get items to publish from the request.
 		$cid = $input->get('cid', array(), 'array');
@@ -100,7 +99,7 @@ class FabrikAdminControllerConnections extends FabControllerAdmin
 
 		if (empty($cid))
 		{
-			JError::raiseWarning(500, FText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+			$this->app->enqueueMessage(FText::_($this->text_prefix . '_NO_ITEM_SELECTED'), 'notice');
 		}
 		else
 		{
@@ -114,7 +113,7 @@ class FabrikAdminControllerConnections extends FabControllerAdmin
 				// Publish the items.
 				if (!$model->setDefault($cid, $value))
 				{
-					JError::raiseWarning(500, $model->getError());
+					$this->app->enqueueMessage($model->getError(), 'error');
 				}
 				else
 				{

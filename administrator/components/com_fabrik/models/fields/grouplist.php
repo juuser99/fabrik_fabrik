@@ -46,12 +46,10 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 	{
 		if ($this->value == '')
 		{
-			$app = JFactory::getApplication();
-			$this->value = $app->getUserStateFromRequest('com_fabrik.elements.filter.group', 'filter_groupId', $this->value);
+			$this->value = $this->app->getUserStateFromRequest('com_fabrik.elements.filter.group', 'filter_groupId', $this->value);
 		}
 
 		// Initialize variables.
-		$options = array();
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 
@@ -82,12 +80,6 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 			}
 
 			$groups[$option->form][] = $option;
-		}
-
-		// Check for a database error.
-		if ($db->getErrorNum())
-		{
-			JError::raiseWarning(500, $db->getErrorMsg());
 		}
 
 		return $groups;

@@ -48,16 +48,9 @@ class JFormFieldFormList extends JFormFieldList
 
 	protected function getOptions()
 	{
-		$app = JFactory::getApplication();
-
-		if ($this->element['package'])
-		{
-			$package = $app->setUserState('com_fabrik.package', $this->element['package']);
-		}
-
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id AS value, label AS ' . $db->quote('text') . ', published');
+		$query->select('id AS value, label AS ' . $db->q('text') . ', published');
 		$query->from('#__fabrik_forms');
 
 		if (!$this->element['showtrashed'])
@@ -98,8 +91,7 @@ class JFormFieldFormList extends JFormFieldList
 
 	protected function getInput()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$option = $input->get('option');
 
 		if (!in_array($option, array('com_modules', 'com_menus', 'com_advancedmodules')))

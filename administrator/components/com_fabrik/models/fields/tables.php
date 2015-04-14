@@ -85,8 +85,6 @@ class JFormFieldTables extends JFormFieldList
 
 	protected function getInput()
 	{
-		$app = JFactory::getApplication();
-		$format = $app->input->get('format', 'html');
 		$connectionDd = $this->element['observe'];
 
 		if ((int) $this->form->getValue('id') != 0 && $this->element['readonlyonedit'])
@@ -95,7 +93,6 @@ class JFormFieldTables extends JFormFieldList
 		}
 
 		$c = FabrikAdminElementHelper::getRepeatCounter($this);
-		$readOnlyOnEdit = $this->element['readonlyonedit'];
 
 		if ($connectionDd != '')
 		{

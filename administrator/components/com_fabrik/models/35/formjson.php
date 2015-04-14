@@ -101,7 +101,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.form.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.form.data', array());
 
 		if (empty($data))
 		{
@@ -137,8 +137,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
 		$data['params']['plugins'] = (array) ArrayHelper::getValue($jform, 'plugin');
 		$data['params']['plugin_locations'] = (array) ArrayHelper::getValue($jform, 'plugin_locations');
@@ -395,8 +394,7 @@ class FabrikAdminModelFormJSON extends FabrikAdminModelForm
 
 	public function updateDatabase()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$formId = $cid[0];
 		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');

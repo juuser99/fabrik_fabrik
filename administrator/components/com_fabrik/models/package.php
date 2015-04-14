@@ -205,7 +205,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.package.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.package.data', array());
 
 		if (empty($data))
 		{
@@ -225,14 +225,12 @@ class FabrikAdminModelPackage extends FabModelAdmin
 
 	public function save($data)
 	{
-		$canvas = $data['params']['canvas'];
 		$o = new stdClass;
 		$o->blocks = new stdClass;
 		$o->blocks->list = array();
 		$o->blocks->form = array();
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$blocks = $input->get('blocks', array(), 'array');
 
 		foreach ($blocks as $type => $values)
@@ -731,7 +729,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 
 				if ($data === false)
 				{
-					JFactory::getApplication()->enqueueMessage('could not read ' . $fpath, 'notice');
+					$this->app->enqueueMessage('could not read ' . $fpath, 'notice');
 				}
 
 				$files[] = array('name' => $zippath, 'data' => $data);
@@ -832,7 +830,6 @@ class FabrikAdminModelPackage extends FabModelAdmin
 	protected function makeInstallSQL($row)
 	{
 		$sql = '';
-		$config = JFactory::getConfig();
 		$db = FabrikWorker::getDbo(true);
 
 		// Create the sql for the cloned fabrik meta data tables
@@ -842,7 +839,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 			$tbl = $db->loadRow();
 
 			$tbl = str_replace('_fabrik_', '_' . $row->component_name . '_', $tbl[1]);
-			$tbl = str_replace($config->get('dbprefix'), '#__', $tbl);
+			$tbl = str_replace($this->config->get('dbprefix'), '#__', $tbl);
 			$sql .= str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $tbl) . ";\n\n";
 
 			$table = str_replace(array('_fabrik_', '{package}'), array('_' . $row->component_name . '_', $row->component_name), $table);
@@ -860,7 +857,6 @@ class FabrikAdminModelPackage extends FabModelAdmin
 		$lookups = $this->getInstallItems($row);
 		$lids = $lookups->list;
 		ArrayHelper::toInteger($lids);
-		$plugins = array();
 
 		foreach ($lids as $lid)
 		{

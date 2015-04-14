@@ -90,10 +90,7 @@ class FabrikAdminModelListJSON extends FabrikAdminModelList
 	protected function createLinkedElements($groupId, $tableName = '')
 	{
 		$db = FabrikWorker::getDbo(true);
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$createdate = JFactory::getDate();
-		$createdate = $createdate->toSql();
+		$input = $this->app->input;
 
 		if ($tableName === '')
 		{
@@ -303,8 +300,7 @@ class FabrikAdminModelListJSON extends FabrikAdminModelList
 		}
 
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName($dbTableName) . ' (';
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
 
 		if ($jform['id'] == 0 && array_key_exists('current_groups', $jform))

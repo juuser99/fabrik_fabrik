@@ -151,9 +151,8 @@ class FabrikAdminModelHome extends FabModelAdmin
 		$defaulDb = $cnn->getDb();
 		$db = FabrikWorker::getDbo(true);
 		$group = $this->getTable('Group');
-		$config = JFactory::getConfig();
 
-		$dbTableName = $config->get('dbprefix') . "fb_contact_sample";
+		$dbTableName = $this->config->get('dbprefix') . "fb_contact_sample";
 		echo "<div style='text-align:left;border:1px dotted #cccccc;padding:10px;'>" . "<h3>Installing data...</h3><ol>";
 
 		$group->name = "Contact Details";

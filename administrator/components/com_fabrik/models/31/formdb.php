@@ -98,7 +98,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.form.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.form.data', array());
 
 		if (empty($data))
 		{
@@ -134,8 +134,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
 		$data['params']['plugins'] = (array) ArrayHelper::getValue($jform, 'plugin');
 		$data['params']['plugin_locations'] = (array) ArrayHelper::getValue($jform, 'plugin_locations');
@@ -183,23 +182,22 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 	public function saveFormGroups($data)
 	{
 		// These are set in parent::save() and contain the updated form id and if the form is a new form
-		$formid = $this->getState($this->getName() . '.id');
-		$isnew = $this->getState($this->getName() . '.new');
+		$formId = $this->getState($this->getName() . '.id');
+		$isNew = $this->getState($this->getName() . '.new');
 		$db = FabrikWorker::getDbo(true);
 		$currentGroups = (array) ArrayHelper::getValue($data, 'current_groups');
 
-		if (empty($currentGroups) && !$isnew)
+		if (empty($currentGroups) && !$isNew)
 		{
-			throw new Exception(FText::_('COM_FABRIK_ERR_ONE_GROUP_MUST_BE_SELECTED'));
+			$this->app->enqueueMessage(FText::_('COM_FABRIK_ERR_ONE_GROUP_MUST_BE_SELECTED'), 'notice');
 		}
 
 		$record_in_database = $data['record_in_database'];
 		$createGroup = $data['_createGroup'];
-		$form = $this->getForm();
 		$fields = array('id' => 'internalid', 'date_time' => 'date');
 
 		// If new and record in db and group selected then we want to get those groups elements to create fields for in the db table
-		if ($isnew && $record_in_database)
+		if ($isNew && $record_in_database)
 		{
 			$groups = ArrayHelper::getValue($data, 'current_groups');
 
@@ -231,9 +229,9 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 		if ($record_in_database == '1')
 		{
 			$listModel = JModelLegacy::getInstance('List', 'FabrikAdminModel');
-			$item = $listModel->loadFromFormId($formid);
+			$item = $listModel->loadFromFormId($formId);
 
-			if ($isnew)
+			if ($isNew)
 			{
 				$dbTableName = $data['db_table_name'] !== '' ? $data['db_table_name'] : $data['label'];
 
@@ -266,19 +264,19 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 
 				if ($listModel->databaseTableExists($dbTableName))
 				{
-					return JError::raiseWarning(500, FText::_("COM_FABRIK_DB_TABLE_ALREADY_EXISTS"));
+					$this->app->enqueueMessage(FText::_('COM_FABRIK_DB_TABLE_ALREADY_EXISTS'), 'error');
 				}
 
-				$listModel->set('form.id', $formid);
+				$listModel->set('form.id', $formId);
 				$listModel->createDBTable($dbTableName, $fields);
 			}
 
-			if (!$dbTableExists || $isnew)
+			if (!$dbTableExists || $isNew)
 			{
 				$connection = FabrikWorker::getConnection(-1);
 				$item->id = null;
 				$item->label = $data['label'];
-				$item->form_id = $formid;
+				$item->form_id = $formId;
 				$item->connection_id = $connection->getConnection()->id;
 				$item->db_table_name = $dbTableName;
 
@@ -290,12 +288,12 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 				$item->created_by = $data['created_by'];
 				$item->access = 1;
 				$item->params = $listModel->getDefaultParams();
-				$res = $item->store();
+				$item->store();
 			}
 			else
 			{
 				// Update existing table (seems to need to reload here to ensure that _table is set
-				$item = $listModel->loadFromFormId($formid);
+				$listModel->loadFromFormId($formId);
 				$listModel->ammendTable();
 			}
 		}
@@ -312,11 +310,11 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 
 	protected function _makeFormGroups($data, $currentGroups)
 	{
-		$formid = $this->getState($this->getName() . '.id');
+		$formId = $this->getState($this->getName() . '.id');
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		ArrayHelper::toInteger($currentGroups);
-		$query->delete('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
+		$query->delete('#__fabrik_formgroup')->where('form_id = ' . (int) $formId);
 
 		if (!empty($currentGroups))
 		{
@@ -329,7 +327,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 		!$db->execute();
 
 		// Get previously saved form groups
-		$query->clear()->select('id, group_id')->from('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
+		$query->clear()->select('id, group_id')->from('#__fabrik_formgroup')->where('form_id = ' . (int) $formId);
 		$db->setQuery($query);
 		$fgids = $db->loadObjectList('group_id');
 		$orderid = 1;
@@ -350,7 +348,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 				else
 				{
 					$query->insert('#__fabrik_formgroup')
-					->set(array('form_id =' . (int) $formid, 'group_id = ' . $group_id, 'ordering = ' . $orderid));
+					->set(array('form_id =' . (int) $formId, 'group_id = ' . $group_id, 'ordering = ' . $orderid));
 				}
 
 				$db->setQuery($query);
@@ -392,8 +390,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 
 	public function updateDatabase()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$formId = $cid[0];
 		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
@@ -407,9 +404,9 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 			$listModel = JModelLegacy::getInstance('List', 'FabrikAdminModel');
 			$listModel->loadFromFormId($formId);
 			$listModel->setFormModel($model);
-			$dbExisits = $listModel->databaseTableExists();
+			$dbExists = $listModel->databaseTableExists();
 
-			if (!$dbExisits)
+			if (!$dbExists)
 			{
 				/* $$$ hugh - if we're recreating a table for an existing form, we need to pass the field
 				 * list to createDBTable(), otherwise all we get is id and date_time.  Not sure if this

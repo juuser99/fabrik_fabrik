@@ -82,14 +82,11 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
 	 * @see     JModelLegacy
-	 * @since   12.2
 	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 		$feModel = $this->getFEModel();
-		print_r($config);exit;
-		$this->db = ArrayHelper::getValue($config, 'db', JFactory::getDbo());
 		$db = $feModel->getDb();
 		$storeCfg = array('db' => $db);
 		$this->storage = new Storage($storeCfg);
@@ -154,7 +151,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.list.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.list.data', array());
 
 		if (empty($data))
 		{
@@ -538,7 +535,6 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 	public function validate($form, $data, $group = null)
 	{
-		$app = JFactory::getApplication();
 		$params = $data['params'];
 		$data = parent::validate($form, $data, $group);
 
@@ -549,7 +545,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 
 		if (empty($data['_database_name']) && FArrayHelper::getValue($data, 'db_table_name') == '')
 		{
-			$app->enqueueMessage(FText::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
+			$this->app->enqueueMessage(FText::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
 
 			return false;
 		}
@@ -570,8 +566,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	public function save($data)
 	{
 		$this->populateState();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$user = JFactory::getUser();
 		$date = JFactory::getDate();
 		$this->storage->table = ArrayHelper::getValue($data, 'db_table_name');
@@ -1059,9 +1054,8 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	protected function makeElementsFromFields($groupId, $tableName)
 	{
 		$fabrikDb = $this->getFEModel()->getDb();
-		$dispatcher = JDispatcher::getInstance();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$dispatcher = JEventDispatcher::getInstance();
+		$input = $this->app->input;
 		$elementModel = new PlgFabrik_Element($dispatcher);
 		$pluginManager = FabrikWorker::getPluginManager();
 		$user = JFactory::getUser();
@@ -1344,8 +1338,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	{
 		$db = FabrikWorker::getDbo(true);
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$pks = $input->get('cid', array(), 'array');
 		$names = $input->get('names', array(), 'array');
 
@@ -1437,21 +1430,19 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	public function delete(&$pks)
 	{
 		// Initialise variables.
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$pks = (array) $pks;
-		$app = JFactory::getApplication();
 
 		// Include the content plugins for the on delete events.
 		JPluginHelper::importPlugin('content');
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
 		$deleteDepth = $jform['recordsDeleteDepth'];
 		$drop = $jform['dropTablesFromDB'];
 
 		$feModel = $this->getFEModel();
-		$dbconfigprefix = $app->getCfg('dbprefix');
+		$dbconfigprefix = $this->app->get('dbprefix');
 
 		// Iterate the items to delete each one.
 		foreach ($pks as $i => $pk)
@@ -1466,17 +1457,17 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 				{
 					if (strncasecmp($table->db_table_name, $dbconfigprefix, String::strlen($dbconfigprefix)) == 0)
 					{
-						$app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table->db_table_name, $dbconfigprefix), 'notice');
+						$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table->db_table_name, $dbconfigprefix), 'notice');
 					}
 					else
 					{
 						$feModel->drop();
-						$app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_DROPPED', $table->db_table_name));
+						$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_DROPPED', $table->db_table_name));
 					}
 				}
 				else
 				{
-					$app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED', $table->db_table_name));
+					$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED', $table->db_table_name));
 				}
 
 				if ($this->canDelete($table))
@@ -1794,10 +1785,8 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 	public function ammendTable()
 	{
 		$db = FabrikWorker::getDbo(true);
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$query = $db->getQuery(true);
-		$user = JFactory::getUser();
 		$table = $this->table;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$ammend = false;

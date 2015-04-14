@@ -56,8 +56,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 	public function view()
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$viewType = $document->getType();
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
@@ -86,10 +85,10 @@ class FabrikAdminControllerForm extends FabControllerForm
 			$user = JFactory::getUser();
 			$uri = JURI::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
-			$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_fabrik', 'view');
 			ob_start();
-			$cache->get($view, 'display', $cacheid);
+			$cache->get($view, 'display', $cacheId);
 			$contents = ob_get_contents();
 			ob_end_clean();
 			$token = JSession::getFormToken();
@@ -110,8 +109,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 	public function process()
 	{
 		$this->name = 'Fabrik';
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$document = JFactory::getDocument();
 		$viewName = $input->get('view', 'form');
 		$viewType = $document->getType();
@@ -207,9 +205,8 @@ class FabrikAdminControllerForm extends FabControllerForm
 	 */
 	protected function handleError($view, $model)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
 		$validated = false;
 
 		// If its in a module with ajax or in a package or inline edit
@@ -290,8 +287,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 
 	protected function savepage()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$model = $this->getModel('Formsession', 'FabrikFEModel');
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
 		$formModel->setId($input->getInt('formid'));
@@ -310,8 +306,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 
 	protected function makeRedirect(&$model, $msg = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		if (is_null($msg))
 		{
@@ -343,8 +338,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$ids = array($input->get('rowid', 0, 'string'));
 
@@ -370,9 +364,8 @@ class FabrikAdminControllerForm extends FabControllerForm
 			}
 
 			$ref = str_replace("limitstart$listid=$limitstart", "limitstart$listid=$newlimitstart", $ref);
-			$app = JFactory::getApplication();
 			$context = 'com_fabrik.list.' . $model->getRenderContext() . '.';
-			$app->setUserState($context . 'limitstart', $newlimitstart);
+			$this->app->setUserState($context . 'limitstart', $newlimitstart);
 		}
 
 		if ($input->get('format') == 'raw')
@@ -384,8 +377,8 @@ class FabrikAdminControllerForm extends FabControllerForm
 		else
 		{
 			$msg = $ok ? count($ids) . ' ' . FText::_('COM_FABRIK_RECORDS_DELETED') : '';
-			$app->enqueueMessage($msg);
-			$app->redirect($ref);
+			$this->app->enqueueMessage($msg);
+			$this->app->redirect($ref);
 		}
 	}
 }

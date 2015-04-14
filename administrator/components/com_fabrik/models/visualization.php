@@ -90,7 +90,7 @@ abstract class FabrikAdminModelVisualization extends FabModelAdmin implements Fa
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.visualization.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.visualization.data', array());
 
 		if (empty($data))
 		{
@@ -111,8 +111,7 @@ abstract class FabrikAdminModelVisualization extends FabModelAdmin implements Fa
 
 	public function getPluginHTML($plugin = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$item = $this->getItem();
 
 		if (is_null($plugin))

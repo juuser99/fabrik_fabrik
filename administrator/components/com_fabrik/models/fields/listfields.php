@@ -55,8 +55,8 @@ class JFormFieldListfields extends JFormFieldList
 			$this->results = array();
 		}
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$this->app = JFactory::getApplication();
+		$input = $this->app->input;
 		$controller = $input->get('view', $input->get('task'));
 		$formModel = false;
 		$aEls = array();
@@ -128,7 +128,7 @@ class JFormFieldListfields extends JFormFieldList
 					if (!in_array($controller, array('item', 'module')))
 					{
 						// Seems to work anyway in the admin module page - so lets not raise notice
-						$app->enqueueMessage('Model not set in listfields field ' . $this->id, 'notice');
+						$this->app->enqueueMessage('Model not set in listfields field ' . $this->id, 'notice');
 					}
 
 					return;
@@ -319,8 +319,7 @@ class JFormFieldListfields extends JFormFieldList
 
 	protected function loadFromGroupId($groupId)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$controller = $input->get('view', $input->get('task'));
 		$valueformat = (string) FArrayHelper::getValue($this->element, 'valueformat', 'id');
 		$onlylistfields = (int) FArrayHelper::getValue($this->element, 'onlylistfields', 0);

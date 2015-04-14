@@ -77,33 +77,30 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 
 	protected function populateState($ordering = null, $direction = null)
 	{
-		// Initialise variables.
-		$app = JFactory::getApplication('administrator');
-
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_fabrik');
 		$this->setState('params', $params);
 
-		$published = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
-		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
 		// Load the form state
-		$form = $app->getUserStateFromRequest($this->context . '.filter.form', 'filter_form', '');
+		$form = $this->app->getUserStateFromRequest($this->context . '.filter.form', 'filter_form', '');
 		$this->setState('filter.form', $form);
 
 		// Load the group state
-		$group = $app->getUserStateFromRequest($this->context . '.filter.group', 'filter_group', '');
+		$group = $this->app->getUserStateFromRequest($this->context . '.filter.group', 'filter_group', '');
 		$this->setState('filter.group', $group);
 
 		// Load the show in list state
-		$showinlist = $app->getUserStateFromRequest($this->context . '.filter.showinlist', 'filter_showinlist', '');
+		$showinlist = $this->app->getUserStateFromRequest($this->context . '.filter.showinlist', 'filter_showinlist', '');
 		$this->setState('filter.showinlist', $showinlist);
 
 		// Load the plug-in state
-		$plugin = $app->getUserStateFromRequest($this->context . '.filter.plugin', 'filter_plugin', '');
+		$plugin = $this->app->getUserStateFromRequest($this->context . '.filter.plugin', 'filter_plugin', '');
 		$this->setState('filter.plugin', $plugin);
 
 		// List state information.
@@ -190,8 +187,7 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 
 		if (!empty($blocked))
 		{
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(FText::_('COM_FABRIK_CANT_UNPUBLISHED_PK_ELEMENT'), 'warning');
+			$this->app->enqueueMessage(FText::_('COM_FABRIK_CANT_UNPUBLISHED_PK_ELEMENT'), 'warning');
 		}
 
 		return array_diff($ids, $blocked);

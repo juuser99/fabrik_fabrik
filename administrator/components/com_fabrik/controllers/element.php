@@ -43,14 +43,13 @@ class FabrikAdminControllerElement extends FabControllerForm
 
 	public function setRedirect($url, $msg = null, $type = null)
 	{
-		$app = JFactory::getApplication();
-		$confirmUpdate = $app->getUserState('com_fabrik.confirmUpdate');
+		$confirmUpdate = $this->app->getUserState('com_fabrik.confirmUpdate');
 
 		// @TODO override the redirect url if confirm update is needed and task appropriate
 		if ($confirmUpdate == true)
 		{
 			// Odd nes where redirect url was blank - caused blank pages when editing an element
-			$testUrl = $app->getUserState('com_fabrik.redirect', '');
+			$testUrl = $this->app->getUserState('com_fabrik.redirect', '');
 
 			if ($testUrl !== '')
 			{
@@ -84,8 +83,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 
 	protected function getRedirectToItemAppend($recordId = null, $urlVar = 'id')
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$append = parent::getRedirectToItemAppend($recordId, $urlVar);
 		$gid = $input->getInt('filter_groupId', 0);
 
@@ -107,8 +105,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$model = $pluginManager->getPlugIn('field', 'element');
 		$id = $input->getInt('id');
@@ -121,7 +118,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 
 		if (!$db->execute())
 		{
-			JError::raiseWarning(E_WARNING, $db->stderr(true));
+			$this->app->enqueueMessage($db->stderr(true), 'notice');
 			$msg = '';
 		}
 		else
@@ -149,8 +146,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 	{
 		JSession::checkToken() or die('Invalid Token');
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$model = $pluginManager->getPlugIn('field', 'element');
 		$model->setId($input->getInt('id'));
 		$element = $model->getElement();
@@ -179,11 +175,10 @@ class FabrikAdminControllerElement extends FabControllerForm
 	public function save($key = null, $urlVar = null)
 	{
 		$ok = parent::save();
-		$app = JFactory::getApplication();
 
-		if (!is_null($app->getUserState('com_fabrik.redirect')))
+		if (!is_null($this->app->getUserState('com_fabrik.redirect')))
 		{
-			$this->setRedirect($app->getUserState('com_fabrik.redirect'));
+			$this->setRedirect($this->app->getUserState('com_fabrik.redirect'));
 			$app->setUserState('com_fabrik.redirect', null);
 		}
 
@@ -200,8 +195,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 
 	public function parentredirect()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
 		$id = (int) FArrayHelper::getValue($jform, 'id', 0);
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');

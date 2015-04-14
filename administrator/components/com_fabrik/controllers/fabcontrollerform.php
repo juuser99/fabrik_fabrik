@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.controllerform');
 
 /**
@@ -32,28 +34,48 @@ class FabControllerForm extends JControllerForm
 	protected $option = 'com_fabrik';
 
 	/**
+	 * JApplication object
+	 *
+	 * @var JApplicationCms
+	 */
+	protected $app;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JControllerLegacy
+	 */
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
+
+		// DI inject the app
+		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
+	}
+
+	/**
 	 * Copy items
 	 *
 	 * @return  null
 	 */
-
 	public function copy()
 	{
 		$model = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 
 		if (empty($cid))
 		{
-			JError::raiseWarning(500, FText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+			$this->app->enqueueMessage(FText::_($this->text_prefix . '_NO_ITEM_SELECTED'), 'notice');
 		}
 		else
 		{
 			if ($model->copy())
 			{
-				$ntext = $this->text_prefix . '_N_ITEMS_COPIED';
-				$this->setMessage(JText::plural($ntext, count($cid)));
+				$text = $this->text_prefix . '_N_ITEMS_COPIED';
+				$this->setMessage(JText::plural($text, count($cid)));
 			}
 		}
 

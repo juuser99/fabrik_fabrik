@@ -93,7 +93,7 @@ class FabrikAdminModelImport extends FabModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.import.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.import.data', array());
 
 		if (empty($data))
 		{

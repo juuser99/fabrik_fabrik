@@ -51,12 +51,12 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	 *
 	 * @since   12.2
 	 */
-/* 	public function getModel($name = 'List', $prefix = 'FabrikAdminModel', $config = array())
+ 	public function getModel($name = 'List', $prefix = 'FabrikAdminModel', $config = array())
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 
 		return $model;
-	} */
+	}
 
 	/**
 	 * Method to publish a list of items
@@ -66,8 +66,7 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 
 	public function publish()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$data = array('publish' => 1, 'unpublish' => 0, 'archive' => 2, 'trash' => -2, 'report' => -3);
 		$task = $this->getTask();
@@ -75,7 +74,7 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 
 		if (empty($cid))
 		{
-			JError::raiseWarning(500, FText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+			$this->app->enqueueMessage(FText::_($this->text_prefix . '_NO_ITEM_SELECTED'), 'notice');
 		}
 		else
 		{
@@ -85,11 +84,9 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 			$formids = $model->swapListToFormIds($cid);
 
 			// Publish the items.
-			$formKeys = array();
-
 			if (!$model->publish($formids, $value))
 			{
-				JError::raiseWarning(500, $model->getError());
+				$this->app->enqueueMessage($model->getError(), 'error');
 			}
 			else
 			{
@@ -104,7 +101,7 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 					{
 						if ($groupModel->publish($groupids, $value) === false)
 						{
-							JError::raiseWarning(500, $groupModel->getError());
+							$this->app->enqueueMessage($groupModel->getError(), 'error');
 						}
 						else
 						{
@@ -114,7 +111,7 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 
 							if (!$elementModel->publish($elementIds, $value))
 							{
-								JError::raiseWarning(500, $elementModel->getError());
+								$this->app->enqueueMessage($elementModel->getError(), 'error');
 							}
 						}
 					}

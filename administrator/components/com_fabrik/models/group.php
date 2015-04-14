@@ -82,7 +82,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.group.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.group.data', array());
 
 		if (empty($data))
 		{
@@ -177,7 +177,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 			if (($data['params']['repeat_group_button'] == 1))
 			{
 				$data['params']['repeat_group_button'] = 0;
-				JFactory::getApplication()->enqueueMessage('You can not set the group containing the list primary key to be repeatable', 'notice');
+				$this->app->enqueueMessage('You can not set the group containing the list primary key to be repeatable', 'notice');
 			}
 		}
 

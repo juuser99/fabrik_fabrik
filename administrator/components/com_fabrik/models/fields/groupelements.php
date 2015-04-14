@@ -39,8 +39,7 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 
 	protected function getGroups()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$db = FabrikWorker::getDbo(true);
 
 		$query = $db->getQuery(true);

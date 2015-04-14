@@ -53,8 +53,6 @@ class JFormFieldFabrikTables extends JFormFieldList
 
 	protected function getOptions()
 	{
-		$app = JFactory::getApplication();
-
 		if (!isset($fabriktables))
 		{
 			$fabriktables = array();
@@ -66,7 +64,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 
 		if ($this->element['package'])
 		{
-			$package = $app->setUserState('com_fabrik.package', $this->element['package']);
+			$package = $this->app->setUserState('com_fabrik.package', $this->element['package']);
 		}
 
 		$fullName = $this->name;

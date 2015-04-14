@@ -42,9 +42,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 	protected function getInput()
 	{
 		// Initialize variables.
-		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
-		$options = array();
 		JHTML::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
 		$subForm = new JForm($this->name, array('control' => 'jform'));
 		$xml = $this->element->children()->asXML();
@@ -56,8 +54,8 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		/**
 		 * f3 hack
 		 */
-
-		$input = $app->input;
+		$this->app = JFactory::getApplication();
+		$input = $this->app->input;
 		$view = $input->get('view', 'list');
 
 		switch ($view)
@@ -120,7 +118,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$css = '#' . $fieldSetId . ' { display: none; }';
 		$document->addStyleDeclaration($css);
 
-		$path = 'templates/' . $app->getTemplate() . '/images/menu/';
+		$path = 'templates/' . $this->app->getTemplate() . '/images/menu/';
 
 		$str[] = '<div id="' . $modalid . '" style="display:none">';
 		$str[] = '<table class="adminlist ' . $this->element['class'] . ' table table-striped">';

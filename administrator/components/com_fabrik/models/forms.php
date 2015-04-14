@@ -80,7 +80,7 @@ abstract class FabrikAdminModelForms extends FabModelList implements FabrikAdmin
 
 		if (!empty($search))
 		{
-			$search = $db->quote('%' . $db->escape($search, true) . '%');
+			$search = $db->q('%' . $db->escape($search, true) . '%');
 			$query->where('(f.label LIKE ' . $search . ')');
 		}
 
@@ -135,17 +135,14 @@ abstract class FabrikAdminModelForms extends FabModelList implements FabrikAdmin
 
 	protected function populateState($ordering = null, $direction = null)
 	{
-		// Initialise variables.
-		$app = JFactory::getApplication('administrator');
-
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_fabrik');
 		$this->setState('params', $params);
 
-		$published = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
-		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
 		// List state information.

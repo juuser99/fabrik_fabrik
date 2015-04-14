@@ -86,7 +86,7 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.connection.data', array());
+		$data = $this->app->getUserState('com_fabrik.edit.connection.data', array());
 
 		if (empty($data))
 		{
@@ -130,20 +130,18 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	public function checkDefault(&$item)
 	{
 		$table = $this->getTable();
-		$app = JFactory::getApplication();
 
 		if ($item->id == 1)
 		{
-			$app->enqueueMessage(FText::_('COM_FABRIK_ORIGINAL_CONNECTION'));
+			$this->app->enqueueMessage(FText::_('COM_FABRIK_ORIGINAL_CONNECTION'));
 
 			if (!$this->matchesDefault($item))
 			{
-				$config = JFactory::getConfig();
-				$item->host = $config->get('host');
-				$item->user = $config->get('user');
-				$item->password = $config->get('password');
-				$item->database = $config->get('db');
-				JError::raiseWarning(E_WARNING, FText::_('COM_FABRIK_YOU_MUST_SAVE_THIS_CNN'));
+				$item->host = $this->config->get('host');
+				$item->user = $this->config->get('user');
+				$item->password = $this->config->get('password');
+				$item->database = $this->config->get('db');
+				$this->app->enqueueMessage(FText::_('COM_FABRIK_YOU_MUST_SAVE_THIS_CNN'), 'notice');
 			}
 		}
 	}
@@ -158,12 +156,12 @@ class FabrikAdminModelConnection extends FabModelAdmin
 
 	protected function matchesDefault($item)
 	{
-		$config = JFactory::getConfig();
+		$password = $this->config->get('password');
 		$crypt = FabrikWorker::getCrypt();
-		$pwMatch = $config->get('password') == $item->password || $crypt->encrypt($config->get('password')) == $item->password;
+		$pwMatch = $password == $item->password || $crypt->encrypt($password) == $item->password;
 
-		return $config->get('host') == $item->host && $config->get('user') == $item->user && $pwMatch
-			&& $config->get('db') == $item->database;
+		return $this->config->get('host') == $item->host && $this->config->get('user') == $item->user && $pwMatch
+			&& $this->config->get('db') == $item->database;
 	}
 
 	/**
@@ -186,9 +184,6 @@ class FabrikAdminModelConnection extends FabModelAdmin
 		$params->encryptedPw = true;
 		$data['params'] = json_encode($params);
 		$data['password'] = $crypt->encrypt($data['password']);
-		// $$$ hugh TESTING REMOVE!!!!
-		// $$$ Felikat - Not sure what you were testing but it broke stuff!
-		// unset($data['password']);
 
 		$options = $model->getConnectionOptions(ArrayHelper::toObject($data));
 		$db = $model->getDriverInstance($options);

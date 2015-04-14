@@ -154,7 +154,7 @@ class FabrikAdminHelper
 
 			// Each group the user is in could have different filtering properties.
 			$filterData = $filters->$groupId;
-			$filterType = tring::strtoupper($filterData->filter_type);
+			$filterType = String::strtoupper($filterData->filter_type);
 
 			if ($filterType == 'NH')
 			{
@@ -169,7 +169,7 @@ class FabrikAdminHelper
 			else
 			{
 				// Black or white list.
-				// Preprocess the tags and attributes.
+				// Pre-process the tags and attributes.
 				$tags = explode(',', $filterData->filter_tags);
 				$attributes = explode(',', $filterData->filter_attributes);
 				$tempTags = array();

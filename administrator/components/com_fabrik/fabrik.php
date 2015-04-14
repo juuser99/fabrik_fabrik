@@ -16,7 +16,7 @@ use Joomla\String\String;
 // Access check.
 if (!JFactory::getUser()->authorise('core.manage', 'com_fabrik'))
 {
-	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
 // Load front end language file as well
@@ -30,8 +30,8 @@ if (!defined('COM_FABRIK_FRONTEND'))
 }
 
 // Load the json/db meta storage classes
-$modelpaths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/31', 'fabrikadminModel');
-$modelpaths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/35', 'fabrikadminModel');
+$modelPaths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/31', 'fabrikadminModel');
+$modelPaths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/35', 'fabrikadminModel');
 
 $app = JFactory::getApplication();
 $input = $app->input;
@@ -40,6 +40,7 @@ $input = $app->input;
 jimport('joomla.application.component.controller');
 jimport('joomla.filesystem.file');
 
+// @todo - move this into a base view class
 if ($input->get('format', 'html') === 'html')
 {
 	FabrikHelperHTML::framework();
@@ -66,15 +67,14 @@ if (String::strpos($cName, '.') != false)
 		require_once $path;
 		$controller = $type . $name;
 
-		$classname = 'FabrikController' . String::ucfirst($controller);
-		$controller = new $classname;
+		$className = 'FabrikController' . String::ucfirst($controller);
+		$controller = new $className;
 
 		// Add in plugin view
 		$controller->addViewPath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/views');
 
 		// Add the model path
-		$modelpaths = JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
-
+		$modelPaths = JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
 	}
 }
 else
@@ -82,8 +82,8 @@ else
 	$controller	= JControllerLegacy::getInstance('FabrikAdmin');
 }
 
-
 // Test that they've published some element plugins!
+// @todo move this into a helper
 $db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $query->select('COUNT(extension_id)')->from('#__extensions')->where('enabled = 1 AND folder = "fabrik_element"');

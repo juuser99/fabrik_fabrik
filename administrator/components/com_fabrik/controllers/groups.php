@@ -49,7 +49,8 @@ class FabrikAdminControllerGroups extends FabControllerAdmin
 
 	public function &getModel($name = 'Group', $prefix = 'FabrikAdminModel')
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		//$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		$model = parent::getModel($name, $prefix, array('ignore_request' => false));
 
 		return $model;
 	}

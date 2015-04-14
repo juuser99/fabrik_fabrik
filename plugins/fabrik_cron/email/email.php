@@ -58,8 +58,8 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		$to = explode(',', $params->get('to'));
 
 		$w = new FabrikWorker;
-		$MailFrom = $app->getCfg('mailfrom');
-		$FromName = $app->getCfg('fromname');
+		$MailFrom = $app->get('mailfrom');
+		$FromName = $app->get('fromname');
 		$subject = $params->get('subject', 'Fabrik cron job');
 		$eval = $params->get('cronemail-eval');
 		$condition = $params->get('cronemail_condition', '');
@@ -84,35 +84,35 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 
 					$row = ArrayHelper::fromObject($row);
 
-					foreach ($to as $thisto)
+					foreach ($to as $thisTo)
 					{
-						$thisto = $w->parseMessageForPlaceHolder($thisto, $row);
+						$thisTo = $w->parseMessageForPlaceHolder($thisTo, $row);
 
-						if (FabrikWorker::isEmail($thisto))
+						if (FabrikWorker::isEmail($thisTo))
 						{
-							$thismsg = $w->parseMessageForPlaceHolder($msg, $row);
+							$thisMsg = $w->parseMessageForPlaceHolder($msg, $row);
 
 							if ($eval)
 							{
-								$thismsg = eval($thismsg);
+								$thisMsg = eval($thisMsg);
 							}
 
-							$thissubject = $w->parseMessageForPlaceHolder($subject, $row);
+							$thisSubject = $w->parseMessageForPlaceHolder($subject, $row);
 							$mail = JFactory::getMailer();
-							$res = $mail->sendMail($MailFrom, $FromName, $thisto, $thissubject, $thismsg, true);
+							$res = $mail->sendMail($MailFrom, $FromName, $thisTo, $thisSubject, $thisMsg, true);
 
 							if (!$res)
 							{
-								$this->log .= "\n failed sending to $thisto";
+								$this->log .= "\n failed sending to $thisTo";
 							}
 							else
 							{
-								$this->log .= "\n sent to $thisto";
+								$this->log .= "\n sent to $thisTo";
 							}
 						}
 						else
 						{
-							$this->log .= "\n $thisto is not an email address";
+							$this->log .= "\n $thisTo is not an email address";
 						}
 					}
 
@@ -129,7 +129,6 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
-			$connection = $params->get('connection');
 			$field = $params->get('cronemail-updatefield');
 			$value = $params->get('cronemail-updatefield-value');
 
