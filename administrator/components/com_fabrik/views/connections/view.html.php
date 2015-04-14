@@ -55,11 +55,10 @@ class FabrikAdminViewConnections extends JViewLegacy
 	public function display($tpl = null)
 	{
 		// Initialise variables.
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state = $this->get('State');
+		$model = $this->getModel();
+		$this->items = $model->getItems();
+		$this->pagination = $model->getPagination();
+		$this->state = $model->getState();
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -69,7 +68,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 
 		FabrikAdminHelper::setViewLayout($this);
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
+		FabrikAdminHelper::addSubmenu($this->getName());
 
 		$this->sidebar = JHtmlSidebar::render();
 

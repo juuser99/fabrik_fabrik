@@ -71,7 +71,7 @@ class FabrikAdminViewGroups extends JViewLegacy
 
 		FabrikAdminHelper::setViewLayout($this);
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
+		FabrikAdminHelper::addSubmenu($this->getName());
 
 		$this->sidebar = JHtmlSidebar::render();
 

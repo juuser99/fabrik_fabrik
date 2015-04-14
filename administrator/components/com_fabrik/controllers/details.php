@@ -58,6 +58,6 @@ class FabrikAdminControllerDetails extends JControllerForm
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
 
 		$view->display();
-		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
+		FabrikAdminHelper::addSubmenu($this->getName());
 	}
 }

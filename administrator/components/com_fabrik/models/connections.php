@@ -14,6 +14,12 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.modellist');
 
+require_once 'fabmodellist.php';
+
+interface FabrikAdminModeConnectionsInterface
+{
+}
+
 /**
  * Fabrik Admin Connections Model
  *
@@ -22,14 +28,13 @@ jimport('joomla.application.component.modellist');
  * @since       3.0
  */
 
-class FabrikAdminModelConnections extends JModelList
+abstract class FabrikAdminModelConnections extends FabModelList implements  FabrikAdminModeConnectionsInterface
 {
 	/**
 	 * Constructor.
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 */
-
 	public function __construct($config = array())
 	{
 		if (empty($config['filter_fields']))

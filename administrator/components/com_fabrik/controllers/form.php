@@ -97,7 +97,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 			echo preg_replace($search, $replacement, $contents);
 		}
 
-		FabrikAdminHelper::addSubmenu($input->get('view', 'lists', 'word'));
+		FabrikAdminHelper::addSubmenu($this->getName());
 	}
 
 	/**

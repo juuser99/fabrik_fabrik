@@ -159,7 +159,7 @@ class FabrikAdminControllerList extends FabControllerForm
 			$cache->get($view, 'display', $cacheid);
 		}
 
-		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
+		FabrikAdminHelper::addSubmenu($this->getName());
 	}
 
 	/**
