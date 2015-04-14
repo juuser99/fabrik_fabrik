@@ -27,7 +27,6 @@ interface FabrikAdminModeConnectionsInterface
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 abstract class FabrikAdminModelConnections extends FabModelList implements  FabrikAdminModeConnectionsInterface
 {
 	/**

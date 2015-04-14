@@ -12,7 +12,13 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+jimport('joomla.application.component.modellist');
+
 require_once 'fabmodellist.php';
+
+interface FabrikAdminModeCronsInterface
+{
+}
 
 /**
  * Crons Admin Model
@@ -21,8 +27,7 @@ require_once 'fabmodellist.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminModelCrons extends FabModelList
+abstract class FabrikAdminModelCrons extends FabModelList implements  FabrikAdminModeCronsInterface
 {
 	/**
 	 * Constructor.
