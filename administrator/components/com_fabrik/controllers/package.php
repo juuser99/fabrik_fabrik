@@ -39,9 +39,7 @@ class FabrikAdminControllerPackage extends FabControllerForm
 	 */
 	public function export()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$cid = $input->get('cid', array(), 'array');
+		$cid = $this->input->get('cid', array(), 'array');
 		$model = $this->getModel();
 		$model->export($cid);
 		$ntext = $this->text_prefix . '_N_ITEMS_EXPORTED';
@@ -57,11 +55,9 @@ class FabrikAdminControllerPackage extends FabControllerForm
 	public function view()
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$viewType = $document->getType();
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
-		$viewLayout = $input->get('layout', 'default');
+		$viewLayout = $this->input->get('layout', 'default');
 		$view = $this->getView('form', $viewType, '');
 		$view->isMambot = $this->isMambot;
 

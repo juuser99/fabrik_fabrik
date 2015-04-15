@@ -53,7 +53,7 @@ class FabrikControllerPlugin extends FabrikController
 		 * didn't fix the issue.  But leaving these two lines, as I think this might be necessary
 		 * at some point, to get the methods into the dispatcher?
 		 *
-		 * $dispatcher = JDispatcher::getInstance();
+		 * $dispatcher = JEventDispatcher::getInstance();
 		 * if (!JPluginHelper::importPlugin('fabrik_'.$group, $plugin, true, $dispatcher))
 		 */
 		if (!JPluginHelper::importPlugin('fabrik_' . $group, $plugin))

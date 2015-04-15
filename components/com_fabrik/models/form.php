@@ -794,7 +794,6 @@ class FabrikFEModelForm extends FabModelForm
 			}
 
 			$db->setQuery($query);
-			echo $query->dump();
 			$groups = $db->loadObjectList('group_id');
 			$this->_publishedformGroups = $this->mergeGroupsWithJoins($groups);
 		}

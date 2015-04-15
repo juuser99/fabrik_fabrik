@@ -78,26 +78,26 @@ class FabrikAdminControllerList extends FabControllerForm
 		JSession::checkToken() or die('Invalid Token');
 		$input  = $this->app->input;
 		$model  = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$listid = $input->getInt('listid');
-		$model->setId($listid);
+		$listId = $input->getInt('listid');
+		$model->setId($listId);
 		$ids        = $input->get('ids', array(), 'array');
-		$limitstart = $input->getInt('limitstart' . $listid);
-		$length     = $input->getInt('limit' . $listid);
-		$oldtotal   = $model->getTotalRecords();
+		$limitStart = $input->getInt('limitstart' . $listId);
+		$length     = $input->getInt('limit' . $listId);
+		$oldTotal   = $model->getTotalRecords();
 		$model->deleteRows($ids);
-		$total = $oldtotal - count($ids);
+		$total = $oldTotal - count($ids);
 
-		if ($total >= $limitstart)
+		if ($total >= $limitStart)
 		{
-			$newlimitstart = $limitstart - $length;
+			$newLimitStart = $limitStart - $length;
 
-			if ($newlimitstart < 0)
+			if ($newLimitStart < 0)
 			{
-				$newlimitstart = 0;
+				$newLimitStart = 0;
 			}
 
 			$context = 'com_fabrik.list' . $model->getRenderContext() . '.list.';
-			this->$app->setUserState($context . 'limitstart' . $listid, $newlimitstart);
+			$this->app->setUserState($context . 'limitstart' . $listId, $newLimitStart);
 		}
 
 		$input->set('view', 'list');

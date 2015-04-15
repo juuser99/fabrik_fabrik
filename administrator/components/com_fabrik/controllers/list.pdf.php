@@ -37,11 +37,9 @@ class FabrikAdminControllerList extends FabControllerForm
 
 	public function view()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$cid = $input->get('cid', array(0), 'array');
+		$cid = $this->input->get('cid', array(0), 'array');
 		$cid = $cid[0];
-		$cid = $input->getInt('listid', $cid);
+		$cid = $this->input->getInt('listid', $cid);
 
 		// Grab the model and set its id
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
@@ -50,7 +48,7 @@ class FabrikAdminControllerList extends FabControllerForm
 
 		// Use the front end list renderer
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
-		$viewLayout	= $input->get('layout', 'default');
+		$viewLayout	= $this->input->get('layout', 'default');
 		$view = $this->getView($this->view_item, $viewType, 'FabrikView');
 		$view->setModel($model, true);
 

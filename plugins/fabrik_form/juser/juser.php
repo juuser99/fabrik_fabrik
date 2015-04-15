@@ -328,7 +328,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		 * but to still store any joined rows
 		 */
 		$ftable = str_replace('#__', $app->getCfg('dbprefix'), $formModel->getlistModel()->getTable()->db_table_name);
-		$jos_users = $app->getCfg('dbprefix') . 'users';
+		$jos_users = $app->get('dbprefix') . 'users';
 
 		if ($ftable == $jos_users)
 		{
@@ -760,7 +760,6 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		
 		if (!$isNew)
 		{
-
 			if ($params->get('juser_field_usertype') != '')
 			{
 				foreach ($groupIds as $groupId)

@@ -53,6 +53,7 @@ class FabControllerForm extends JControllerForm
 
 		// DI inject the app
 		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
+		$this->input = $this->app->input;
 	}
 
 	/**
@@ -95,7 +96,6 @@ class FabControllerForm extends JControllerForm
 	 *
 	 * @return  boolean  True if access level check and checkout passes, false otherwise.
 	 */
-
 	public function edit($key = null, $urlVar = null)
 	{
 		$this->option = 'com_fabrik';
@@ -110,12 +110,13 @@ class FabControllerForm extends JControllerForm
 	 * @param   string  $name    The model name. Optional.
 	 * @param   string  $prefix  The class prefix. Optional.
 	 * @param   array   $config  Configuration array for model. Optional.
+	 *                           was array('ignore_request' => true) - testing removing it
 	 *
 	 * @since   3.5
 	 *
 	 * @return  object  The model.
 	 */
-	public function getModel($name = '', $prefix = '', $config = array('ignore_request' => true))
+	public function getModel($name = '', $prefix = '', $config = array())
 	{
 		if (empty($name))
 		{

@@ -106,7 +106,7 @@ class FabrikAdminModelListDB extends FabrikAdminModelList
 		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($tableName));
 		$db->setQuery($query);
 		$id = $db->loadResult();
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$elementModel = new PlgFabrik_Element($dispatcher);
 
 		if ($id)

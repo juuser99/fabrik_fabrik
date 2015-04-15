@@ -86,7 +86,7 @@ class FabrikFEModelElementValidator extends JModelLegacy
 		$pluginManager->getPlugInGroup('validationrule');
 		$c = 0;
 		$this->validations = array();
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
 		$i = 0;
 

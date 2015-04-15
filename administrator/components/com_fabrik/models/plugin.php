@@ -12,6 +12,18 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once 'fabmodeladmin.php';
+
+interface FabrikAdminModelPluginInterface
+{
+	/**
+	 * Render the initial plugin options, such as the plugin selector, and whether its rendered in front/back/both etc
+	 *
+	 * @return  string
+	 */
+	public function top();
+}
+
 /**
  * Fabrik Admin Plugin Model
  * Used for loading via ajax form plugins
@@ -20,18 +32,16 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       3.0.6
  */
-
-class FabrikAdminModelPlugin extends JModelLegacy
+abstract class FabrikAdminModelPlugin extends FabModelAdmin implements FabrikAdminModelPluginInterface
 {
 	/**
 	 * Render the plugins fields
 	 *
 	 * @return string
 	 */
-
 	public function render()
 	{
-		$input = $this->app->input;
+		$input = $this->input;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$plugin = $pluginManager->getPlugIn($this->getState('plugin'), $this->getState('type'));
 		$feModel = $this->getPluginModel();
@@ -47,63 +57,10 @@ class FabrikAdminModelPlugin extends JModelLegacy
 	}
 
 	/**
-	 * Get the plugins data to bind to the form
-	 *
-	 * @return  array
-	 */
-
-	protected function getData()
-	{
-		$type = $this->getState('type');
-		$data = array();
-
-		if ($type === 'validationrule')
-		{
-			$item = FabTable::getInstance('Element', 'FabrikTable');
-			$item->load($this->getState('id'));
-		}
-		elseif ($type === 'elementjavascript')
-		{
-			$item = FabTable::getInstance('Jsaction', 'FabrikTable');
-			$item->load($this->getState('id'));
-			$data = $item->getProperties();
-		}
-		else
-		{
-			$feModel = $this->getPluginModel();
-			$item = $feModel->getTable();
-		}
-
-		$data = $data + (array) json_decode($item->params);
-		$data['plugin'] = $this->getState('plugin');
-		$data['params'] = (array) FArrayHelper::getValue($data, 'params', array());
-		$data['params']['plugins'] = $this->getState('plugin');
-
-		$data['validationrule']['plugin'] = $this->getState('plugin');
-		$data['validationrule']['plugin_published'] = $this->getState('plugin_published');
-		$data['validationrule']['show_icon'] = $this->getState('show_icon');
-		$data['validationrule']['validate_in'] = $this->getState('validate_in');
-		$data['validationrule']['validation_on'] = $this->getState('validation_on');
-
-		$c = $this->getState('c') + 1;
-
-		// Add plugin published state, locations and events
-		$state = (array) FArrayHelper::getValue($data, 'plugin_state');
-		$locations = (array) FArrayHelper::getValue($data, 'plugin_locations');
-		$events = (array) FArrayHelper::getValue($data, 'plugin_events');
-		$data['params']['plugin_state'] = FArrayHelper::getValue($state, $c, 1);
-		$data['plugin_locations'] = FArrayHelper::getValue($locations, $c);
-		$data['plugin_events'] = FArrayHelper::getValue($events, $c);
-
-		return $data;
-	}
-
-	/**
 	 * Get the plugin model
 	 *
 	 * @return  object
 	 */
-
 	protected function getPluginModel()
 	{
 		$feModel = null;
@@ -125,50 +82,28 @@ class FabrikAdminModelPlugin extends JModelLegacy
 	}
 
 	/**
-	 * Render the initial plugin options, such as the plugin selector, and whether its rendered in front/back/both etc
+	 * Method to get the record form.
 	 *
-	 * @return  string
+	 * @param   array  $data      Data for the form.
+	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  mixed  A JForm object on success, false on failure
+	 *
 	 */
-
-	public function top()
+	public function getForm($data = array(), $loadData = true)
 	{
-		$data = $this->getData();
-		$c = $this->getState('c') + 1;
-		$str = array();
-		$str[] = '<div class="pane-slider content pane-down accordion-inner">';
-		$str[] = '<fieldset class="form-horizontal pluginContainer" id="formAction_' . $c . '"><ul>';
-		$formName = 'com_fabrik.' . $this->getState('type') . '-plugin';
-		$topForm = new JForm($formName, array('control' => 'jform'));
-		$topForm->repeatCounter = $c;
-		$xmlFile = JPATH_SITE . '/administrator/components/com_fabrik/models/forms/' . $this->getState('type') . '-plugin.xml';
+		echo "here";exit;
+		// Get the form.
+		$form = $this->loadForm('com_fabrik.plugin', 'plugin', array('control' => 'jform', 'load_data' => $loadData));
 
-		// Add the plugin specific fields to the form.
-		$topForm->loadFile($xmlFile, false);
-
-		$topForm->bind($data);
-
-		// Filter the forms fieldsets for those starting with the correct $searchName prefix
-		foreach ($topForm->getFieldsets() as $fieldset)
+		if (empty($form))
 		{
-			if ($fieldset->label != '')
-			{
-				$str[] = '<legend>' . $fieldset->label . '</legend>';
-			}
-
-			foreach ($topForm->getFieldset($fieldset->name) as $field)
-			{
-					$str[] = '<div class="control-group"><div class="control-label">' . $field->label;
-					$str[] = '</div><div class="controls">' . $field->input . '</div></div>';
-			}
+			echo "here";exit;
+			return false;
 		}
 
-		$str[] = '</ul>';
-		$str[] = '<div class="pluginOpts" style="clear:left"></div>';
-		$str[] = '<div class="form-actions"><a href="#" class="btn btn-danger" data-button="removeButton">';
-		$str[] = '<i class="icon-delete"></i> ' . FText::_('COM_FABRIK_DELETE') . '</a></div>';
-		$str[] = '</fieldset>';
-		$str[] = '</div>';
+		$form->model = $this;
 
-		return implode("\n", $str);
+		return $form;
 	}
 }

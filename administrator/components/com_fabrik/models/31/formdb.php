@@ -69,9 +69,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 	 *
 	 * @return  mixed  A JForm object on success, false on failure
 	 *
-	 * @since	1.6
 	 */
-
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
@@ -91,10 +89,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 	 * Method to get the data that should be injected in the form.
 	 *
 	 * @return  mixed	The data for the form.
-	 *
-	 * @since	1.6
 	 */
-
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
@@ -131,7 +126,6 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 	 *
 	 * @return  bool
 	 */
-
 	public function save($data)
 	{
 		$input = $this->app->input;
@@ -139,7 +133,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 		$data['params']['plugins'] = (array) ArrayHelper::getValue($jform, 'plugin');
 		$data['params']['plugin_locations'] = (array) ArrayHelper::getValue($jform, 'plugin_locations');
 		$data['params']['plugin_events'] = (array) ArrayHelper::getValue($jform, 'plugin_events');
-
+echo "<pre>";print_r($data);exit;
 		/**
 		 * Move back into the main data array some values we are rendering as
 		 * params (did that for ease of rendering admin output)
@@ -178,7 +172,6 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 	 * @return  bool  True if you should display the form list, False if you're
 	 * redirected elsewhere
 	 */
-
 	public function saveFormGroups($data)
 	{
 		// These are set in parent::save() and contain the updated form id and if the form is a new form

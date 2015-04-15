@@ -84,7 +84,6 @@ class FabrikAdminModelFormsDB extends FabrikAdminModelForms
 		$query->select('u.name AS editor');
 		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
 		$query->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id');
-
 		$query->join('INNER', '#__fabrik_formgroup AS fg ON fg.form_id = f.id');
 
 		// Add the list ordering clause.
@@ -101,7 +100,7 @@ class FabrikAdminModelFormsDB extends FabrikAdminModelForms
 		{
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		}
-
+echo $query->dump();
 		return $query;
 	}
 

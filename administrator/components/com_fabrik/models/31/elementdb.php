@@ -158,7 +158,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 	public function addToListView(&$pks, $value = 1)
 	{
 		// Initialise variables.
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$user = JFactory::getUser();
 		$item = $this->getTable();
 		$pks = (array) $pks;
@@ -175,7 +175,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 				{
 					// Prune items that you can't change.
 					unset($pks[$i]);
-					JError::raiseWarning(403, FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+					throw new RuntimeException(FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
 				}
 			}
 		}
@@ -266,10 +266,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 
 	public function getJs()
 	{
-		$plugins = $this->getPlugins();
 		$item = $this->getItem();
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-
 		$opts = new stdClass;
 		$opts->plugin = $item->plugin;
 		$opts->parentid = (int) $item->parent_id;
@@ -561,16 +558,16 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 			$data['parent_id'] = 0;
 		}
 
-		$datenow = new JDate;
+		$dateNow = new JDate;
 
 		if ($row->id != 0)
 		{
-			$data['modified'] = $datenow->toSql();
+			$data['modified'] = $dateNow->toSql();
 			$data['modified_by'] = $user->get('id');
 		}
 		else
 		{
-			$data['created'] = $datenow->toSql();
+			$data['created'] = $dateNow->toSql();
 			$data['created_by'] = $user->get('id');
 			$data['created_by_alias'] = $user->get('username');
 		}
@@ -1026,7 +1023,6 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 	public function delete(&$pks)
 	{
 		// Initialize variables
-		$input = $this->app->input;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$elementIds = $this->app->input->get('elementIds', array(), 'array');
 
@@ -1282,7 +1278,7 @@ class FabrikAdminModelElementDB extends FabrikAdminModelElement
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
 
 		foreach ($usedPlugins as $usedPlugin)

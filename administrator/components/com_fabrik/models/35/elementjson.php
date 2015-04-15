@@ -158,7 +158,7 @@ class FabrikAdminModelElementJSON extends FabrikAdminModelElement
 	public function addToListView(&$pks, $value = 1)
 	{
 		// Initialise variables.
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$user = JFactory::getUser();
 		$item = $this->getTable();
 		$pks = (array) $pks;
@@ -1282,7 +1282,7 @@ class FabrikAdminModelElementJSON extends FabrikAdminModelElement
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
 
 		foreach ($usedPlugins as $usedPlugin)

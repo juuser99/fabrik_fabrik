@@ -43,7 +43,7 @@ class FabrikAdminViewPlugin extends JViewLegacy
 
 			return;
 		}
-
+echo "render";exit;
 		echo $model->render();
 	}
 

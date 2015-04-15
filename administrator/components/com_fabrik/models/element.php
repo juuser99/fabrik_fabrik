@@ -161,7 +161,7 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 	public function addToListView(&$pks, $value = 1)
 	{
 		// Initialise variables.
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$user = JFactory::getUser();
 		$item = $this->getTable();
 		$pks = (array) $pks;
@@ -1336,7 +1336,7 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
 
 		foreach ($usedPlugins as $usedPlugin)

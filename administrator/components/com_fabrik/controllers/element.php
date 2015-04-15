@@ -105,16 +105,16 @@ class FabrikAdminControllerElement extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$input = $this->app->input;
+		$input = $this->input;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$model = $pluginManager->getPlugIn('field', 'element');
 		$id = $input->getInt('id');
 		$model->setId($id);
 		$db = $model->getListModel()->getDb();
-		$oldName = str_replace('`', '', $app->getUserState('com_fabrik.oldname'));
-		$newName = $app->getUserState('com_fabrik.newname');
+		$oldName = str_replace('`', '', $this->app->getUserState('com_fabrik.oldname'));
+		$newName = $this->app->getUserState('com_fabrik.newname');
 		$model->updateJoinedPks($oldName, $newName);
-		$db->setQuery($app->getUserState('com_fabrik.q'));
+		$db->setQuery($this->app->getUserState('com_fabrik.q'));
 
 		if (!$db->execute())
 		{
@@ -179,7 +179,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 		if (!is_null($this->app->getUserState('com_fabrik.redirect')))
 		{
 			$this->setRedirect($this->app->getUserState('com_fabrik.redirect'));
-			$app->setUserState('com_fabrik.redirect', null);
+			$this->app->setUserState('com_fabrik.redirect', null);
 		}
 
 		return $ok;
