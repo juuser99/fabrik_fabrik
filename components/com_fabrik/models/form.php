@@ -794,6 +794,7 @@ class FabrikFEModelForm extends FabModelForm
 			}
 
 			$db->setQuery($query);
+			echo $query->dump();
 			$groups = $db->loadObjectList('group_id');
 			$this->_publishedformGroups = $this->mergeGroupsWithJoins($groups);
 		}
@@ -2402,7 +2403,6 @@ class FabrikFEModelForm extends FabModelForm
 		}
 
 		FabrikHelperHTML::debug($this->errors, 'form:errors');
-		//echo "<pre>";print_r($this->errors);exit;
 		$this->setErrors($this->errors);
 
 		return $ok;
@@ -2718,12 +2718,10 @@ echo "form get errors";
 		{
 			$element = $elementModel->getElement();
 
-			if (FArrayHelper::getValue($opts, 'includePublised', true) && $element->published == 0)
+			if (!(FArrayHelper::getValue($opts, 'includePublised', true) && $element->published == 0))
 			{
-				continue;
+				$aEls[] = (int) $element->id;
 			}
-
-			$aEls[] = (int) $element->id;
 		}
 	}
 
@@ -3753,7 +3751,6 @@ echo "form get errors";
 	 *
 	 * @return  bool  true if found, false if not found
 	 */
-
 	public function hasElement($searchName, $checkInt = false, $checkShort = true)
 	{
 		$groups = $this->getGroupsHiarachy();

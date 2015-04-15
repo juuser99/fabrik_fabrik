@@ -276,7 +276,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 		$pkFieldName = $join->join_from_table . '___' . $join->table_key;
 		$formModel = $groupModel->getFormModel();
 		$pkElementModel = $formModel->getElement($pkFieldName);
-		$fields = $listModel->getDBFields($join->join_from_table, 'Field');
+		$fields = $listModel->storage->getDBFields($join->join_from_table, 'Field');
 		$pkField = FArrayHelper::getValue($fields, $join->table_key, false);
 		switch ($pkField->BaseType) {
 			case 'VARCHAR':
@@ -311,7 +311,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 		$list = $listModel->getTable();
 		$elements = (array) $groupModel->getMyElements();
 		$names = array();
-		$fields = $listModel->getDBFields(null, 'Field');
+		$fields = $listModel->storage->getDBFields(null, 'Field');
 		$names['id'] = "id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY";
 		$names['parent_id'] = "parent_id INT(11)";
 

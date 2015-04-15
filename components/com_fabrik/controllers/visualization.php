@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
 
@@ -23,8 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
  * @subpackage  Fabrik
  * @since       1.5
  */
-
-class FabrikControllerVisualization extends JControllerLegacy
+class FabrikControllerVisualization extends FabrikController
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -43,12 +42,9 @@ class FabrikControllerVisualization extends JControllerLegacy
 	 *
 	 * @since   12.2
 	 */
-
 	public function display($cachable = false, $urlparams = array())
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$viewName = str_replace('FabrikControllerVisualization', '', get_class($this));
 
 		if ($viewName == '')
@@ -74,7 +70,7 @@ class FabrikControllerVisualization extends JControllerLegacy
 		$view->error = $this->getError();
 
 		// F3 cache with raw view gives error
-		if (in_array($input->get('format'), array('raw', 'csv')))
+		if (in_array($this->input->get('format'), array('raw', 'csv')))
 		{
 			$view->display();
 		}
@@ -84,7 +80,7 @@ class FabrikControllerVisualization extends JControllerLegacy
 			$user = JFactory::getUser();
 			$uri = JURI::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
-			$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+			$cacheid = serialize(array($uri, $this->input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_fabrik', 'view');
 			$cache->get($view, 'display', $cacheid);
 		}
@@ -101,8 +97,7 @@ class FabrikControllerVisualization extends JControllerLegacy
 	protected function getViewName()
 	{
 		$viz = FabTable::getInstance('Visualization', 'FabrikTable');
-		$app = JFactory::getApplication();
-		$viz->load($app->input->getInt('id'));
+		$viz->load($this->input->getInt('id'));
 		$viewName = $viz->plugin;
 		$this->addViewPath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/views');
 		JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/models');

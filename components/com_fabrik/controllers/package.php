@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 /**
  * Fabrik package controller
@@ -20,7 +20,7 @@ jimport('joomla.application.component.controller');
  * @since    3.0
  */
 
-class FabrikControllerPackage extends JControllerLegacy
+class FabrikControllerPackage extends FabrikController
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -41,8 +41,7 @@ class FabrikControllerPackage extends JControllerLegacy
 	public function display($cachable = false, $urlparams = false)
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$viewName = $input->get('view', 'package');
 
 		$viewType = $document->getType();

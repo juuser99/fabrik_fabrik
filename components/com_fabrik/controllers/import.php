@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 /**
  * Fabrik Import Controller
@@ -20,7 +20,7 @@ jimport('joomla.application.component.controller');
  * @since    3.0
  */
 
-class FabrikControllerImport extends JControllerLegacy
+class FabrikControllerImport extends FabrikController
 {
 	/**
 	 * Display the view
@@ -33,8 +33,7 @@ class FabrikControllerImport extends JControllerLegacy
 
 	public function display($cachable = false, $urlparams = array())
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$this->getModel('Importcsv', 'FabrikFEModel')->clearSession();
 		$this->listid = $input->getInt('listid', 0);
 		$listModel = $this->getModel('list', 'FabrikFEModel');
@@ -60,8 +59,7 @@ class FabrikControllerImport extends JControllerLegacy
 
 	public function doimport()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$model = $this->getModel('Importcsv', 'FabrikFEModel');
 		$listModel = $model->getListModel();
 
@@ -90,7 +88,7 @@ class FabrikControllerImport extends JControllerLegacy
 		if (!empty($model->newHeadings))
 		{
 			// As opposed to admin you can't alter table structure with a CSV import from the front end
-			$app->enqueueMessage($model->makeError(), 'notice');
+			$this->app->enqueueMessage($model->makeError(), 'notice');
 			$this->setRedirect('index.php?option=com_fabrik&view=import&filetype=csv&listid=' . $id . '&Itemid=' . $Itemid);
 		}
 		else

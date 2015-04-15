@@ -11,8 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
-
+require 'controller.php';
 
 /**
  * Cron Controller
@@ -23,7 +22,7 @@ jimport('joomla.application.component.controller');
  * @since       3.0.7
  */
 
-class FabrikControllerCron extends JControllerLegacy
+class FabrikControllerCron extends FabrikController
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -108,8 +107,7 @@ class FabrikControllerCron extends JControllerLegacy
 	{
 		if (!isset($this->viewName))
 		{
-			$app = JFactory::getApplication();
-			$input = $app->input;
+			$input = $this->input;
 			$item = FabTable::getInstance('Cron', 'FabrikTable');
 			$item->load($input->getInt('id'));
 			$this->viewName = $item->plugin;

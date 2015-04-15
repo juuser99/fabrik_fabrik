@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 /**
  * Fabrik Email Form Controller
@@ -22,7 +22,7 @@ jimport('joomla.application.component.controller');
  * @since       1.5
  */
 
-class FabrikControllerEmailform extends JControllerLegacy
+class FabrikControllerEmailform extends FabrikController
 {
 	/**
 	 * Display the view
@@ -36,8 +36,7 @@ class FabrikControllerEmailform extends JControllerLegacy
 	public function display($cachable = false, $urlparams = array())
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$viewName = $input->get('view', 'emailform');
 		$modelName = 'form';
 

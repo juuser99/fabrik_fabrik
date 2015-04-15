@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 /**
  * Fabrik List Controller
@@ -21,8 +21,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-
-class FabrikControllerList extends JControllerLegacy
+class FabrikControllerList extends FabrikController
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -34,21 +33,21 @@ class FabrikControllerList extends JControllerLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   object  $model      list model
-	 * @param   array   $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+	 * @param   object $model     list model
+	 * @param   array  $urlparams An array of safe url parameters and their variable types, for valid values see {@link
+	 *                            JFilterInput::clean()}.
 	 *
 	 * @return  null
 	 */
 
 	public function display($model = false, $urlparams = false)
 	{
-		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$viewName = $input->get('view', 'list');
+		$document  = JFactory::getDocument();
+		$input     = $this->input;
+		$viewName  = $input->get('view', 'list');
 		$modelName = $viewName;
-		$layout = $input->getWord('layout', 'default');
-		$viewType = $document->getType();
+		$layout    = $input->getWord('layout', 'default');
+		$viewType  = $document->getType();
 
 		if ($viewType == 'pdf')
 		{
@@ -78,18 +77,19 @@ class FabrikControllerList extends JControllerLegacy
 		 * cache ID for guests.  We can't use their IP, as it could be two different machines behind a NAT'ing firewall.
 		 */
 		if ($model->getParams()->get('list_disable_caching', '0') === '1'
-			|| in_array($input->get('format'), array('raw', 'csv', 'pdf', 'json', 'fabrikfeed')))
+			|| in_array($input->get('format'), array('raw', 'csv', 'pdf', 'json', 'fabrikfeed'))
+		)
 		{
 			$view->display();
 		}
 		else
 		{
 			// Build unique cache id on url, post and user id
-			$user = JFactory::getUser();
-			$uri = JURI::getInstance();
-			$uri = $uri->toString(array('path', 'query'));
+			$user    = JFactory::getUser();
+			$uri     = JURI::getInstance();
+			$uri     = $uri->toString(array('path', 'query'));
 			$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
-			$cache = JFactory::getCache('com_fabrik', 'view');
+			$cache   = JFactory::getCache('com_fabrik', 'view');
 			$cache->get($view, 'display', $cacheid);
 		}
 	}
@@ -102,10 +102,9 @@ class FabrikControllerList extends JControllerLegacy
 
 	public function order()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input     = $this->input;
 		$modelName = $input->get('view', 'list');
-		$model = $this->getModel($modelName, 'FabrikFEModel');
+		$model     = $this->getModel($modelName, 'FabrikFEModel');
 		$model->setId($input->getInt('listid'));
 		$model->setOrderByAndDir();
 
@@ -123,20 +122,19 @@ class FabrikControllerList extends JControllerLegacy
 
 	public function clearfilter()
 	{
-		$app = JFactory::getApplication();
-		$app->enqueueMessage(FText::_('COM_FABRIK_FILTERS_CLEARED'));
+		$this->app->enqueueMessage(FText::_('COM_FABRIK_FILTERS_CLEARED'));
 		/**
 		 * $$$ rob 28/12/20111 changed from clearfilters as clearfilters removes jpluginfilters (filters
 		 * set by content plugin which we want to remain sticky. Otherwise list clear button removes the
 		 * content plugin filters
-		 * $app->input->set('resetfilters', 1);
+		 * $this->app->input->set('resetfilters', 1);
 		 */
 
 		/**
 		 * $$$ rob 07/02/2012 if reset filters set in the menu options then filters not cleared
 		 * so instead use replacefilters which doesn't look at the menu item parameters.
 		 */
-		$app->input->set('replacefilters', 1);
+		$this->input->set('replacefilters', 1);
 		$this->filter();
 	}
 
@@ -148,11 +146,9 @@ class FabrikControllerList extends JControllerLegacy
 
 	public function filter()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$modelName = $input->get('view', 'list');
-		$model = $this->getModel($modelName, 'FabrikFEModel');
-		$model->setId($input->getInt('listid'));
+		$modelName = $this->input->get('view', 'list');
+		$model     = $this->getModel($modelName, 'FabrikFEModel');
+		$model->setId($this->input->getInt('listid'));
 		FabrikHelperHTML::debug('', 'list model: getRequestData');
 		$request = $model->getRequestData();
 		$model->storeRequestData($request);
@@ -171,29 +167,27 @@ class FabrikControllerList extends JControllerLegacy
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
-		$model = $this->getModel('list', 'FabrikFEModel');
-		$ids = $input->get('ids', array(), 'array');
-		$listid = $input->getInt('listid');
+		$package    = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$input      = $this->input;
+		$model      = $this->getModel('list', 'FabrikFEModel');
+		$ids        = $input->get('ids', array(), 'array');
+		$listid     = $input->getInt('listid');
 		$limitstart = $input->getInt('limitstart' . $listid);
-		$length = $input->getInt('limit' . $listid);
+		$length     = $input->getInt('limit' . $listid);
 
 		$model->setId($listid);
 		$oldtotal = $model->getTotalRecords();
 
 		try
 		{
-			$ok = $model->deleteRows($ids);
-			$msg = $ok ? count($ids) . ' ' . FText::_('COM_FABRIK_RECORDS_DELETED') : '';
+			$ok      = $model->deleteRows($ids);
+			$msg     = $ok ? count($ids) . ' ' . FText::_('COM_FABRIK_RECORDS_DELETED') : '';
 			$msgType = 'message';
-		}
-		catch (Exception $e)
+		} catch (Exception $e)
 		{
-			$msg = $e->getMessage();
+			$msg     = $e->getMessage();
 			$msgType = 'error';
-			$ids = array();
+			$ids     = array();
 		}
 
 		$total = $oldtotal - count($ids);
@@ -215,9 +209,9 @@ class FabrikControllerList extends JControllerLegacy
 				$newlimitstart = 0;
 			}
 
-			$ref = str_replace('limitstart' . $listid . '=  . $limitstart', 'limitstart' . $listid . '=' . $newlimitstart, $ref);
+			$ref     = str_replace('limitstart' . $listid . '=  . $limitstart', 'limitstart' . $listid . '=' . $newlimitstart, $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
-			$app->setUserState($context . 'limitstart', $newlimitstart);
+			$this->app->setUserState($context . 'limitstart', $newlimitstart);
 		}
 
 		if ($input->get('format') == 'raw')
@@ -228,8 +222,8 @@ class FabrikControllerList extends JControllerLegacy
 		else
 		{
 			// @TODO: test this
-			$app->enqueueMessage($msg, $msgType);
-			$app->redirect($ref);
+			$this->app->enqueueMessage($msg, $msgType);
+			$this->app->redirect($ref);
 		}
 	}
 
@@ -254,12 +248,11 @@ class FabrikControllerList extends JControllerLegacy
 
 	public function doPlugin()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
-		$cid = $input->get('cid', array(0), 'array');
-		$cid = $cid[0];
-		$model = $this->getModel('list', 'FabrikFEModel');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$input   = $this->input;
+		$cid     = $input->get('cid', array(0), 'array');
+		$cid     = $cid[0];
+		$model   = $this->getModel('list', 'FabrikFEModel');
 		$model->setId($input->getInt('listid', $cid));
 		/**
 		 * $$$ rob need to ask the model to get its data here as if the plugin calls $model->getData
@@ -285,12 +278,12 @@ class FabrikControllerList extends JControllerLegacy
 			{
 				foreach ($msgs as $msg)
 				{
-					$app->enqueueMessage($msg);
+					$this->app->enqueueMessage($msg);
 				}
 			}
 		}
 		// 3.0 use redirect rather than calling view() as that gave an sql error (joins seemed not to be loaded for the list)
-		$format = $input->get('format', 'html');
+		$format     = $input->get('format', 'html');
 		$defaultRef = 'index.php?option=com_' . $package . '&view=list&listid=' . $model->getId() . '&format=' . $format;
 
 		if ($format !== 'raw')
@@ -308,7 +301,7 @@ class FabrikControllerList extends JControllerLegacy
 			$ref = $defaultRef;
 		}
 
-		$app->redirect($ref);
+		$this->app->redirect($ref);
 	}
 
 	/**
@@ -319,9 +312,7 @@ class FabrikControllerList extends JControllerLegacy
 
 	public function elementFilter()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$id = $input->getInt('id');
+		$id    = $this->input->getInt('id');
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$model->setId($id);
 		echo $model->getAdvancedElementFilter();

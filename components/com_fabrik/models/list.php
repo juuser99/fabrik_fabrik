@@ -863,7 +863,7 @@ class FabrikFEModelList extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$item = $listModel->getTable();
+			$item = $this->getTable();
 			$msg = 'Fabrik has generated an incorrect query for the list ' . $item->label . ': <br /><br /><pre>' . $e->getMessage() . '</pre>';
 			throw new RuntimeException($msg, 500);
 		}
@@ -2657,7 +2657,6 @@ class FabrikFEModelList extends JModelForm
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$input = $app->input;
 		$formModel = $this->getFormModel();
 		$table = $this->getTable();
@@ -2751,6 +2750,7 @@ class FabrikFEModelList extends JModelForm
 			{
 				$orderbys = json_decode($table->order_by, true);
 			}
+
 			// $$$ not sure why, but sometimes $orderbys is NULL at this point.
 			if (!isset($orderbys))
 			{
@@ -2761,6 +2761,7 @@ class FabrikFEModelList extends JModelForm
 			{
 				if (is_numeric($orderby))
 				{
+
 					$elementModel = $formModel->getElement($orderby, true);
 					$orderby = $elementModel ? $elementModel->getOrderByName() : $orderby;
 				}

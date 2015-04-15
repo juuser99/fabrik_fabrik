@@ -228,7 +228,7 @@ class FabrikAdminModelFormDB extends FabrikAdminModelForm
 
 		if ($record_in_database == '1')
 		{
-			$listModel = JModelLegacy::getInstance('List', 'FabrikAdminModel');
+			$listModel = JModelLegacy::getInstance('ListDb', 'FabrikAdminModel');
 			$item = $listModel->loadFromFormId($formId);
 
 			if ($isNew)

@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 /**
  * Fabrik Plugin Controller
@@ -23,7 +23,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-class FabrikControllerPlugin extends JControllerLegacy
+class FabrikControllerPlugin extends FabrikController
 {
 	/**
 	 * Means that any method in Fabrik 2, e.e. 'ajax_upload' should
@@ -35,11 +35,9 @@ class FabrikControllerPlugin extends JControllerLegacy
 	 *
 	 * @return  null
 	 */
-
 	public function pluginAjax()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$plugin = $input->get('plugin', '');
 		$method = $input->get('method', '');
 		$group = $input->get('g', 'element');
@@ -53,7 +51,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 			return;
 		}
 
-		$dispatcher = JDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 
 		if (substr($method, 0, 2) !== 'on')
 		{
@@ -73,8 +71,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 	{
 		$db = FabrikWorker::getDbo();
 		require_once COM_FABRIK_FRONTEND . '/user_ajax.php';
-		$app = JFactory::getApplication();
-		$method = $app->input->get('method', '');
+		$method = $this->input->get('method', '');
 		$userAjax = new userAjax($db);
 
 		if (method_exists($userAjax, $method))
@@ -94,8 +91,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 	public function doCron(&$pluginManager)
 	{
 		$db = FabrikWorker::getDbo();
-		$app = JFactory::getApplication();
-		$cid = $app->input->get('element_id', array(), 'array');
+		$cid = $this->input->get('element_id', array(), 'array');
 		$query = $db->getQuery(true);
 		$query->select('id, plugin')->from('#__fabrik_cron');
 

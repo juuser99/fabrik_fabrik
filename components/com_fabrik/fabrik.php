@@ -29,7 +29,7 @@ if (JDEBUG)
 	JLog::addLogger(array('text_file' => 'fabrik.log.php'));
 }
 
-require_once JPATH_COMPONENT . '/controller.php';
+//require_once JPATH_COMPONENT . '/controller.php';
 $app = JFactory::getApplication();
 $input = $app->input;
 

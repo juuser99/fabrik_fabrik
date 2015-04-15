@@ -947,7 +947,7 @@ abstract class FabrikAdminModelList extends FabModelAdmin implements FabrikAdmin
 		// And finally, Esther ... index the join FK's
 		foreach ($joinsToIndex as $thisJoin)
 		{
-			$fields = $this->getDBFields($thisJoin->table_join, 'Field');
+			$fields = $this->storage->getDBFields($thisJoin->table_join, 'Field');
 			$fkField = FArrayHelper::getValue($fields, $thisJoin->table_join_key, false);
 			switch ($pkField->BaseType) {
 				case 'VARCHAR':

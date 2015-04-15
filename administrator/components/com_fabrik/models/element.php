@@ -1185,7 +1185,7 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		$fieldName = $tableName . '___parent_id';
 		$listModel->addIndex($fieldName, 'parent_fk', 'INDEX', '');
 		
-		$fields = $listModel->getDBFields($tableName, 'Field');
+		$fields = $listModel->storage->getDBFields($tableName, 'Field');
 		$field = FArrayHelper::getValue($fields, $row->name, false);
 		switch ($field->BaseType) {
 			case 'VARCHAR':

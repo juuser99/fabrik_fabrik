@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 /**
  * Fabrik Element Controller
@@ -20,8 +20,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-
-class FabrikControllerElement extends JControllerLegacy
+class FabrikControllerElement extends FabrikController
 {
 	/**
 	 * Is the view rendered from the J content plugin
@@ -53,11 +52,8 @@ class FabrikControllerElement extends JControllerLegacy
 	public function display()
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input    = $this->input;
 		$viewName = $input->get('view', 'element', 'cmd');
-		$modelName = $viewName;
-
 		$viewType = $document->getType();
 
 		// Set the default view name from the Request
@@ -82,14 +78,12 @@ class FabrikControllerElement extends JControllerLegacy
 
 	public function save()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$listModel = $this->getModel('list', 'FabrikFEModel');
-		$listModel->setId($input->getInt('listid'));
-		$rowId = $input->get('rowid');
-		$key = $input->get('element');
-		$key = array_pop(explode('___', $key));
-		$value = $input->get('value');
+		$listModel->setId($this->input->getInt('listid'));
+		$rowId = $this->input->get('rowid');
+		$key   = $this->input->get('element');
+		$key   = array_pop(explode('___', $key));
+		$value = $this->input->get('value');
 		$listModel->storeCell($rowId, $key, $value);
 		$this->mode = 'readonly';
 		$this->display();

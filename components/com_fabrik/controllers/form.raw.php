@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+require 'controller.php';
 
 /**
  * Fabrik Raw From Controller
@@ -24,7 +24,7 @@ jimport('joomla.application.component.controller');
  * for Fabrik 2 !
  */
 
-class FabrikControllerForm extends JControllerLegacy
+class FabrikControllerForm extends FabrikController
 {
 	/**
 	 * Is the view rendered from the J content plugin
@@ -41,11 +41,10 @@ class FabrikControllerForm extends JControllerLegacy
 
 	public function display()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$session = JFactory::getSession();
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$viewName = $input->get('view', 'form');
 		$modelName = $viewName;
 
@@ -80,7 +79,6 @@ class FabrikControllerForm extends JControllerLegacy
 
 		// Display the view
 		$view->error = $this->getError();
-		$user = JFactory::getUser();
 
 		// Only allow cached pages for users not logged in.
 		return $view->display();
@@ -105,11 +103,10 @@ class FabrikControllerForm extends JControllerLegacy
 
 	public function process()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$session = JFactory::getSession();
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$viewName = $input->get('view', 'form');
 		$viewType = $document->getType();
 		$view = $this->getView($viewName, $viewType);
@@ -224,8 +221,8 @@ class FabrikControllerForm extends JControllerLegacy
 
 	protected function makeRedirect(&$model, $msg = null)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formId = $input->getInt('formid');
 		$listId = $input->getInt('listid');
 		$rowId = $input->getString('rowid', '', 'string');
@@ -235,7 +232,7 @@ class FabrikControllerForm extends JControllerLegacy
 			$msg = FText::_('COM_FABRIK_RECORD_ADDED_UPDATED');
 		}
 
-		if ($app->isAdmin())
+		if ($this->app->isAdmin())
 		{
 			// Admin option is always com_fabrik
 			if (array_key_exists('apply', $model->formData))
@@ -272,7 +269,7 @@ class FabrikControllerForm extends JControllerLegacy
 
 				if ($url == '')
 				{
-					$url = 'index.php?option=com_' . $option . '&Itemid=' . $Itemid;
+					$url = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid;
 				}
 			}
 
