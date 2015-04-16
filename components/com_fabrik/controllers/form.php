@@ -585,8 +585,7 @@ class FabrikControllerForm extends FabrikController
 
 		if ($input->get('format') == 'raw')
 		{
-			$input->set('view', 'list');
-			$this->display();
+			$app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listid . '&format=raw');
 		}
 		else
 		{

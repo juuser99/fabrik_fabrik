@@ -68,6 +68,7 @@ class JFormFieldSuboptions extends JFormField
 		}
 
 		$opts->id = $this->id;
+		$opts->defaultMax = (int) $this->getAttribute('default_max', 0);
 		$opts = json_encode($opts);
 		$script[] = "window.addEvent('domready', function () {";
 		$script[] = "\tnew Suboptions('$this->name', $opts);";

@@ -2408,7 +2408,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		}
 
 		$params = $this->getParams();
-		$customLink = $params->get('custom_link');
+		$customLink = $params->get('custom_link', '');
 
 		if ($customLink !== '' && $this->getElement()->link_to_detail == '1' && $params->get('custom_link_indetails', true))
 		{
@@ -5926,8 +5926,8 @@ class PlgFabrik_Element extends FabrikPlugin
 		}
 
 		$layout = $this->getLayout('list');
-		$data = array();
-		$data['text'] = $r;
+		$data = new stdClass;
+		$data->text = $r;
 		$res = $layout->render($data);
 
 		// If no custom list layout found revert to the default list renderer
@@ -7469,23 +7469,28 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			$formData = $this->getFormModel()->formDataWithTableName;
 			$parentId = $formData[$k];
-			$query->delete($join->table_join)->where('parent_id = ' . $db->quote($parentId));
-			$db->setQuery($query);
-			$db->execute();
-		}
-
-		foreach ($idsToKeep as $parentId => $ids)
-		{
-			$query->clear();
-			$query->delete($join->table_join)->where('parent_id = ' . $parentId);
-
-			if (!empty($ids))
+			if (!empty($parentId))
 			{
-				$query->where('id NOT IN ( ' . implode($ids, ',') . ')');
+				$query->delete($join->table_join)->where('parent_id = ' . $db->quote($parentId));
+				$db->setQuery($query);
+				$db->execute();
 			}
-
-			$db->setQuery($query);
-			$db->execute();
+		}
+		else
+		{
+			foreach ($idsToKeep as $parentId => $ids)
+			{
+				$query->clear();
+				$query->delete($join->table_join)->where('parent_id = ' . $parentId);
+	
+				if (!empty($ids))
+				{
+					$query->where('id NOT IN ( ' . implode($ids, ',') . ')');
+				}
+	
+				$db->setQuery($query);
+				$db->execute();
+			}
 		}
 	}
 
@@ -7534,17 +7539,15 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$params = $this->getParams();
-		
 		$advancedClass = '';
+		$globalAdvanced = (int) $fbConfig->get('advanced_behavior', '0');
 
-		if ($fbConfig->get('advanced_behavior', '0') == '1')
+		if ($globalAdvanced !== 0)
 		{
-
 			if (!$this->getGroup()->canRepeat())
 			{
-				$advancedClass = $params->get('advanced_behavior', '0') == '1'  ? 'advancedSelect' : '';
+				$advancedClass = $params->get('advanced_behavior', '0') == '1' || $globalAdvanced === 2  ? 'advancedSelect' : '';
 			}
-			
 		}
 		
 		return $advancedClass;

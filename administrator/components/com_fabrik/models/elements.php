@@ -45,7 +45,7 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array('e.id', 'e.name', 'e.label', 'e.show_in_list_summary', 'e.published', 'e.ordering', 'g.label',
-				'e.plugin');
+				'e.plugin', 'g.name');
 		}
 
 		parent::__construct($config);

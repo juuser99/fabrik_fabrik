@@ -243,7 +243,6 @@ class FabrikHelperHTML
 	public static function windows($selector = '', $params = array())
 	{
 		$app = JFactory::getApplication();
-		$document = JFactory::getDocument();
 		$input = $app->input;
 		$script = '';
 
@@ -420,10 +419,6 @@ EOD;
 
 	public static function printIcon($formModel, $params, $rowid = '')
 	{
-		$app = JFactory::getApplication();
-		$config = JFactory::getConfig();
-		$form = $formModel->getForm();
-		$table = $formModel->getTable();
 		$status = "status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=400,height=350,directories=no,location=no";
 		$link = self::printURL($formModel);
 
@@ -947,10 +942,17 @@ EOD;
 				JHtml::_('formbehavior.chosen', 'select.advancedSelect');
 			}
 
+				
+			if (self::inAjaxLoadedPage() && !$bootstrapped)
+			{
+				// $$$ rob 06/02/2012 recall ant so that Color.detach is available (needed for opening a window from within a window)
+				JHtml::_('script', 'media/com_fabrik/js/lib/art.js');
+				JHtml::_('script', 'media/com_fabrik/js/lib/Event.mock.js');
+			}
+
 			if (!self::inAjaxLoadedPage())
 			{
-				// Now adding in fabrik system plugin onAfterRender()
-				// $document->addScript($jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js');
+				// Require.js now added in fabrik system plugin onAfterRender()
 				JText::script('COM_FABRIK_LOADING');
 				$src[] = 'media/com_fabrik/js/fabrik' . $ext;
 				$src[] = 'media/com_fabrik/js/window' . $ext;
@@ -976,7 +978,8 @@ EOD;
 	}
 
 	/**
-	 * Build JS to initiate tips
+	 * Build JS to initiate tips, and observer application state changes,
+	 * reloading the tips if needed.
 	 *
 	 * @return  string
 	 */
@@ -994,6 +997,12 @@ EOD;
 		$tipJs[] = "\t\tFabrik.tips.hideAll();";
 		$tipJs[] = "\t});";
 		$tipJs[] = "\tFabrik.addEvent('fabrik.list.inlineedit.setData', function () {";
+		$tipJs[] = "\t\tFabrik.tips.attach('.fabrikTip');";
+		$tipJs[] = "\t});";
+
+		// Reload tips if a form is loaded (e.g. a list view with ajax links on which loads a form in a popup)
+		// see: https://github.com/Fabrik/fabrik/issues/1394
+		$tipJs[] = "\tFabrik.addEvent('fabrik.form.loaded', function () {";
 		$tipJs[] = "\t\tFabrik.tips.attach('.fabrikTip');";
 		$tipJs[] = "\t});";
 
@@ -2120,15 +2129,15 @@ EOD;
 				$grid[] = '</div><!-- grid close row -->';
 			}
 
-			if ($newLine && $columns > 1)
+			if ($newLine)
 			{
 				$grid[] = '<div class="row-fluid">';
 			}
 
-			$grid[] = $columns != 1 ? '<div class="' . $spanClass . ' span' . $span . '">' . $s . '</div>' : $s;
+			$grid[] = '<div class="' . $spanClass . ' span' . $span . '">' . $s . '</div>' ;
 		}
 
-		if ($i + 1 % $columns !== 0 && $columns > 1)
+		if ($i + 1 % $columns !== 0)
 		{
 			// Close opened and unfinished row.
 			$grid[] = '</div><!-- grid close end row -->';
