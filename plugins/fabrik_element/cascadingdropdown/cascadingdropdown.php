@@ -128,7 +128,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$app = JFactory::getApplication();
 		$join = $this->getJoin();
 		$db = $this->getDb();
-		if (($params->get('cascadingdropdown_label_concat') != '') && $app->input->get('overide_join_val_column_concat') != 1)
+		if (($params->get('cascadingdropdown_label_concat') != '') && $app->input->get('override_join_val_column_concat') != 1)
 		{
 			$val = str_replace("{thistable}", $join->table_join_alias, $params->get('cascadingdropdown_label_concat'));
 			return 'CONCAT_WS(\'\', ' . $val . ')';

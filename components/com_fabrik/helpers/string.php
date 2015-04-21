@@ -4,12 +4,12 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
+// No direct access
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * String helpers
@@ -21,7 +21,6 @@ defined('_JEXEC') or die();
 
 class FabrikString extends JString
 {
-
 	/**
 	 * UTF-8 aware - replace the first word
 	 *
@@ -38,6 +37,7 @@ class FabrikString extends JString
 		{
 			return $str;
 		}
+
 		if ($whitespace)
 		{
 			$word = preg_quote($word, '#');
@@ -46,11 +46,13 @@ class FabrikString extends JString
 		else
 		{
 			$pos = JString::strpos($str, $word);
+
 			if ($pos === 0)
 			{
 				$str = JString::substr($str, JString::strlen($word));
 			}
 		}
+
 		return $str;
 	}
 
@@ -67,6 +69,7 @@ class FabrikString extends JString
 	{
 		$l = JString::strlen($word);
 		$end = JString::substr($str, -$l);
+
 		if ($end === $word)
 		{
 			return JString::substr($str, 0, JString::strlen($str) - $l);
@@ -79,7 +82,7 @@ class FabrikString extends JString
 
 	/**
 	 * UTF-8 aware - remove the first word
-	 * CASE INSENSETIVE
+	 * CASE INSENSITIVE
 	 *
 	 * @param   string  $str   The string to be trimmed
 	 * @param   string  $word  The word to trim
@@ -90,16 +93,18 @@ class FabrikString extends JString
 	public static function ltrimiword($str, $word = false)
 	{
 		$pos = stripos($str, $word);
+
 		if ($pos === 0)
 		{
 			$str = JString::substr($str, JString::strlen($word));
 		}
+
 		return $str;
 	}
 
 	/**
-	 * Formats a string to return a safe db col name - eg
-	 * table.field is returned as `table`.field`
+	 * Formats a string to return a safe db col name e.g.
+	 * table.field is returned as `table`.`field`
 	 * table is return as `table`
 	 *
 	 * @param   string  $col  Col name to format
@@ -112,27 +117,34 @@ class FabrikString extends JString
 		$db = FabrikWorker::getDbo();
 		$col = str_replace('`', '', $col);
 		$splitter = '';
+
 		if (strstr($col, '___'))
 		{
 			$splitter = '___';
 		}
+
 		if (strstr($col, '.'))
 		{
 			$splitter = '.';
 		}
+
 		if ($splitter == '')
 		{
 			return $db->quoteName($col);
 		}
+
 		if (strstr($col, $splitter))
 		{
 			$col = explode($splitter, $col);
+
 			foreach ($col as &$c)
 			{
 				$c = $db->quoteName($c);
 			}
+
 			return implode('.', $col);
 		}
+
 		return $col;
 	}
 
@@ -149,6 +161,7 @@ class FabrikString extends JString
 	{
 		$col = str_replace(array("`.`", "."), '___', $col);
 		$col = str_replace("`", "", $col);
+
 		return $col;
 	}
 
@@ -173,7 +186,9 @@ class FabrikString extends JString
 			$bits = explode('___', $col);
 			$col = array_pop($bits);
 		}
+
 		$col = str_replace("`", "", $col);
+
 		return $col;
 	}
 
@@ -190,16 +205,19 @@ class FabrikString extends JString
 	{
 		$label = strip_tags($label);
 		preg_replace('/<[a-z][a-z0-9]*[^<>]*>/', '', $label);
+
 		if (JString::strlen($label) > 50)
 		{
 			$label = JString::substr($label, 0, 47) . '...';
 		}
+
 		$label = trim($label);
+
 		return $label;
 	}
 
 	/**
-	 * Santize db fields names, can't just do regex on A-Z as languages like Chinese should be allowed
+	 * Sanitize db fields names, can't just do regex on A-Z as languages like Chinese should be allowed
 	 *
 	 * @param   string  $str  Field name
 	 *
@@ -217,6 +235,7 @@ class FabrikString extends JString
 		{
 			$name = str_replace(array(' ', '.', '-'), '', $str);
 		}
+
 		return $name;
 	}
 
@@ -239,9 +258,11 @@ class FabrikString extends JString
 	{
 		// Replace umlauts
 		$out = '';
+
 		for ($i = 0; $i < JString::strlen($str); $i++)
 		{
 			$ch = ord($str{$i});
+
 			switch ($ch)
 			{
 				case 195:
@@ -274,18 +295,23 @@ class FabrikString extends JString
 					$out .= chr($ch);
 			}
 		}
+
 		$str = $out;
+
 		if (function_exists('iconv'))
 		{
-			/* $$$ rob added @ incase its farsi which creates a notice:
+			/* $$$ rob added @ in case its farsi which creates a notice:
 			 * https://github.com/Fabrik/fabrik/issues/72
 			 */
 
 			// Replace accented characters with ascii equivalent e.g. é => e
 			$str1 = (@iconv($fromEnc, $toEnc, $str));
-			if($str1) {
+
+			if ($str1)
+			{
 				$str = $str1;
 			}
+
 			$str = (str_replace("'", '', $str));
 		}
 		// Compress internal whitespace and replace with _
@@ -333,14 +359,18 @@ class FabrikString extends JString
 		{
 			$summary[] = " ...";
 		}
+
 		$summary = implode(' ', $summary);
+
 		if ($showTip && count($text) > $wordCount)
 		{
 			FabrikHelperHTML::tips();
+
 			if ($title !== '')
 			{
 				$title .= "::";
 			}
+
 			$tip = htmlspecialchars('<div class="truncate_text">' . $title . $orig . '</div>');
 			$jOpts = new stdClass;
 			$jOpts->notice = true;
@@ -348,6 +378,7 @@ class FabrikString extends JString
 			$jOpts = json_encode($jOpts);
 			$summary = '<span class="fabrikTip" opts=\'' . $jOpts . '\' title="' . $tip . '">' . $summary . '</span>';
 		}
+
 		return $summary;
 	}
 
@@ -363,6 +394,7 @@ class FabrikString extends JString
 	public static function removeQSVar($url, $key)
 	{
 		$pair = explode('?', $url);
+
 		if (count($pair) === 2)
 		{
 			$url = $pair[0];
@@ -373,24 +405,29 @@ class FabrikString extends JString
 			$url = '';
 			$bits = JArrayHelper::getValue($pair, 0);
 		}
+
 		$glue = strstr($bits, '&amp;') ? '&amp;' : '&';
 		$bits = explode($glue, $bits);
 		$a = array();
+
 		foreach ($bits as $bit)
 		{
 			if (strstr($bit, '='))
 			{
 				list($thisKey, $val) = explode('=', $bit);
+
 				if ($thisKey !== $key)
 				{
 					$a[] = $bit;
 				}
 			}
 		}
+
 		if (!empty($a))
 		{
 			$url .= '?' . implode($glue, $a);
 		}
+
 		return $url;
 	}
 
@@ -407,9 +444,11 @@ class FabrikString extends JString
 		if (strstr($url, '?'))
 		{
 			list($site, $qs) = explode('?', $url);
+
 			if (!empty($qs))
 			{
 				$new_qs = array();
+
 				foreach (explode('&', $qs) as $arg)
 				{
 					$bits = explode('=', $arg);
@@ -417,15 +456,18 @@ class FabrikString extends JString
 					$val = JArrayHelper::getValue($bits, 1, '');
 					$new_qs[] = $key . "=" . urlencode($val);
 				}
+
 				$url = $site . "?" . implode("&", $new_qs);
 			}
 		}
+
 		if (strstr($url, '{'))
 		{
 			/* $$$ hugh special case for some Google URL's that use encoded JSON objects in the path part of the URL
 			 * so we need to re-encode {, }, " and :.  Except of course for the : in http(s):.
 			 */
 			list($http, $rest) = explode(':', $url, 2);
+
 			if (!empty($rest))
 			{
 				$patterns = array('#\{#', '#\}#', '#"#', '#\\\\#', '#:#');
@@ -434,6 +476,7 @@ class FabrikString extends JString
 				$url = $http . ':' . $rest;
 			}
 		}
+
 		return $url;
 	}
 
@@ -486,6 +529,7 @@ class FabrikString extends JString
 		$o = new stdClass;
 		$o->coords = array('', '');
 		$o->zoomlevel = (int) $zoomlevel;
+
 		if (strstr($v, ","))
 		{
 			$ar = explode(":", $v);
@@ -503,6 +547,7 @@ class FabrikString extends JString
 		$o->lat = $o->coords[0];
 		$o->long = $o->coords[1];
 		$o->zoom = $o->zoomlevel;
+
 		return $o;
 	}
 
@@ -628,4 +673,197 @@ class FabrikString extends JString
 		return $value;
 	}
 
+	/**
+	 * Covert HEX colour to RGB colour
+	 *
+	 * @param   string  $hex  HEX colour string
+	 *
+	 * @return   string  RGB string
+	 */
+
+	public static function hex2rgb($hex)
+	{
+		$hex = str_replace('#', '', $hex);
+
+		if (strlen($hex) === 3)
+		{
+			$r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
+			$g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
+			$b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
+		}
+		else
+		{
+			$r = hexdec(substr($hex, 0, 2));
+			$g = hexdec(substr($hex, 2, 2));
+			$b = hexdec(substr($hex, 4, 2));
+		}
+
+		return $r . ',' . $g . ',' . $b;
+	}
+
+	/**
+	 * Translator JText wrapper - removes tags and compares raw text
+	 * so "<p>STRING_TO_TRANSLATE</p>" is translated even if wrapped in a <p> tag.
+	 *
+	 * @param   string  $text  Text to translate
+	 *
+	 * @return  string
+	 */
+
+	public static function translate($text)
+	{
+		$plain = strip_tags($text);
+		$translated = FText::_($plain);
+
+		if ($translated !== $plain)
+		{
+			$text = str_replace($plain, $translated, $text);
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Is the string a CONCAT statemenet?
+	 *
+	 * @param   string  $text  Text to test
+	 *
+	 * @return  bool
+	 */
+
+	public static function isConcat($text)
+	{
+		return preg_match('/^\s*(CONCAT|CONCAT_WS)\b/i', preg_quote($text));
+	}
+
+	/**
+	 * Strip whitespace (or only spaces) from a string
+	 *
+	 * @param   string  $text         Text to strip
+	 * @param   bool    $only_spaces  If true, only strip spaces (not tabs, etc), default is false
+	 *
+	 * @return string
+	 */
+
+	public static function stripSpace($text, $only_spaces = false)
+	{
+		if ($only_spaces)
+		{
+			return str_replace(' ', '', $text);
+		}
+		else
+		{
+			return preg_replace('#\s+#', '', $text);
+		}
+	}
+
+	/**
+	 * See if date string is a valid date in MySQL format.
+	 *
+	 * NOTE - I could have sworn we had a function somewhere to do this, but I can't find it!
+	 * Needed it in the main system plugin, for handling J! search plugin dates, as J!
+	 * will pitch a fatal error if we pass it an invalid date string.  So if there is
+	 * already a way of doing this, feel free to dump this func and modify the system plugin
+	 * in onDoContentSearch().
+	 *
+	 * @param  bool  $time_optional   if set to true, the time part is optional
+	 *
+	 * @return  bool
+	 */
+	public static function isMySQLDate($date, $time_optional = false)
+	{
+		$date_re = '(((\d{4})(-)(0[13578]|10|12)(-)(0[1-9]|[12][0-9]|3[01]))|((\d{4})(-)(0[469]|1??1)(-)([0][1-9]|[12][0-9]|30))|';
+		$date_re .= '((\d{4})(-)(02)(-)(0[1-9]|1[0-9]|2[0-8]))|(([02468]??[048]00)(-)(02)(-)(29))|(([13579][26]00)(-)(02)(-)(29))|';
+		$date_re .= '(([0-9][0-9][0][48])(-)(0??2)(-)(29))|(([0-9][0-9][2468][048])(-)(02)(-)(29))|(([0-9][0-9][13579][26])(-)(02??)(-)(29)))';
+		$time_re = '(\s([0-1][0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9]))';
+
+		if ($time_optional)
+		{
+			return preg_match("#^" . $date_re . "$#", $date) || preg_match("#^" . $date_re . $time_re . "$#", $date);
+		}
+		else
+		{
+			return preg_match("#^" . $date_re . $time_re . "$#", $date);
+		}
+	}
+
+	/**
+	 * Replace last occurance of a string
+	 *
+	 * @param   string  $search   Text to search for
+	 * @param   string  $replace  Text to replace the search string
+	 * @param   string  $subject  The text to search in
+	 *
+	 * @return  string
+	 */
+	public static function replaceLast($search, $replace, $subject)
+	{
+		$pos = strripos($subject, $search);
+
+		if ($pos !== false)
+		{
+			$subject = substr_replace($subject, $replace, $pos, strlen($search));
+		}
+
+		return $subject;
+	}
+}
+
+/**
+ *
+ * $$$ hugh JText::_() does funky stuff to strings with commas in them, like
+ * truncating everything after the first comma, if what follows the first comma
+ * is all "upper case".  But it tests for that using non MB safe code, so any non
+ * ASCII strings (like Greek text) with a comma in them get truncated at the comma.
+ * Corner case or what!  But we need to work round this behavior.
+ *
+ * So ... here's a wrapper for JText::_().
+ */
+
+class FText extends JText
+{
+	/**
+	 * Translates a string into the current language.
+	 *
+	 * Examples:
+	 * <script>alert(Joomla.JText._('<?php echo FText::_("JDEFAULT", array("script"=>true));?>'));</script>
+	 * will generate an alert message containing 'Default'
+	 * <?php echo FText::_("JDEFAULT");?> it will generate a 'Default' string
+	 *
+	 * @param   string   $string                The string to translate.
+	 * @param   mixed    $jsSafe                Boolean: Make the result javascript safe.
+	 * @param   boolean  $interpretBackSlashes  To interpret backslashes (\\=\, \n=carriage return, \t=tabulation)
+	 * @param   boolean  $script                To indicate that the string will be push in the javascript language store
+	 *
+	 * @return  string  The translated string or the key is $script is true
+	 *
+	 * @since   11.1
+	 */
+	public static function _($string, $jsSafe = false, $interpretBackSlashes = true, $script = false)
+	{
+		/**
+		 * In JText::_(), it does the following tests to see if everything following a comma is all upp
+		 * case, and if it is, it does Funky Stuff to it.  We ned to avoid that behavior.  So us this
+		 * logic, and if it's true, return the string untouched.  We could just check for a comma and not
+		 * process anything with commas (unikely to be a translatable phrase), but unless this test adds
+		 * too much overhead, might as well do the whole J! test sequence.
+		 */
+
+		if (!(strpos($string, ',') === false))
+		{
+			$test = substr($string, strpos($string, ','));
+
+			if (strtoupper($test) === $test)
+			{
+				/**
+				 * This is where JText::_() would do Funky Stuff, chopping off everything after
+				 * the first comma.  So we'll just return the input string untouched.
+				 */
+				return $string;
+			}
+		}
+
+		// if we got this far, hand it to JText::_() as normal
+		return parent::_($string, $jsSafe, $interpretBackSlashes, $script);
+	}
 }

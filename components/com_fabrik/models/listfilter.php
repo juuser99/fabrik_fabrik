@@ -110,7 +110,7 @@ class FabrikFEModelListfilter extends FabModel
 
 		// $$$ rob clears all list filters, and does NOT apply any
 		// other filters to the table, even if in querystring
-		if ($input->getInt('clearfilters') === 1 && $this->activeTable())
+		if ($input->getInt('clearfilters', 0) === 1 && $this->activeTable())
 		{
 			$this->clearFilters();
 			$this->request = array();
@@ -415,7 +415,7 @@ class FabrikFEModelListfilter extends FabModel
 
 		if (!JString::strlen($s) >= $res->Value)
 		{
-			throw new UnexpectedValueException(JText::_('COM_FABRIK_NOTICE_SEARCH_STRING_TOO_SHORT'));
+			throw new UnexpectedValueException(FText::_('COM_FABRIK_NOTICE_SEARCH_STRING_TOO_SHORT'));
 		}
 
 		return true;
@@ -481,7 +481,7 @@ class FabrikFEModelListfilter extends FabModel
 			$search = '+(a* b* c* d* e* f* g* h* i* j* k* l* m* n* o* p* q* r* s* t* u* v* w* x* y* z*) ' . $search;
 		}
 
-		$input->set('overide_join_val_column_concat', 1);
+		$input->set('override_join_val_column_concat', 1);
 		$names = $this->listModel->getSearchAllFields();
 
 		if (empty($names))
@@ -489,7 +489,7 @@ class FabrikFEModelListfilter extends FabModel
 			return;
 		}
 
-		$input->set('overide_join_val_column_concat', 0);
+		$input->set('override_join_val_column_concat', 0);
 		$names = implode(", ", $names);
 		$filters['value'][9999] = $search;
 		$filters['condition'][9999] = 'AGAINST';
@@ -636,17 +636,6 @@ class FabrikFEModelListfilter extends FabModel
 		$condition = 'REGEXP';
 		$orig_search = $search;
 		$searchable = false;
-		/*
-		 * Have other filters been added: (e.g. search all in qs and other qs filter)
-		 * http://fabrikar.com/forums/index.php?threads/fabrik_list_filter_all-with-another-param-not-works.36275/
-		 * if yes, then the first added search all filter should set join = AND and grouped_to_previous = 0 so qs of:
-		 *
-		 * &element_test___textarea=test&fabrik_list_filter_all_4_com_fabrik_4=rob@pollen-8.co.uk
-		 *
-		 * will give (correct) sql of:
-		 *
-		 * WHERE ( `element_test`.`textarea` REGEXP LOWER('test') AND ( LOWER(`element_test`.`textarea`) REGEXP LOWER('rob@pollen\\\-8\\\.co\\\.uk') OR LOWER(`element_test`.`calc`) REGEXP LOWER('rob@pollen\\\-8\\\.co\\\.uk') ) )
-		 */
 
 		$searchTypes = array_unique(JArrayHelper::getValue($filters, 'search_type', array()));
 		unset($searchTypes['searchall']);
@@ -718,6 +707,7 @@ class FabrikFEModelListfilter extends FabModel
 
 			if ($key !== false)
 			{
+				$filters['orig_condition'][$key] = $condition;
 				$filters['value'][$key] = $newsearch;
 				$filters['condition'][$key] = $condition;
 				$filters['join'][$key] = $existingFilters && $i === 0 ? 'AND' : 'OR';
@@ -745,6 +735,7 @@ class FabrikFEModelListfilter extends FabModel
 			}
 			else
 			{
+				$filters['orig_condition'][] = $condition;
 				$filters['value'][] = $newsearch;
 				$filters['condition'][] = $condition;
 				$filters['join'][] = $existingFilters && $i === 0 ? 'AND' : 'OR';
@@ -759,7 +750,7 @@ class FabrikFEModelListfilter extends FabModel
 				$filters['required'][] = 0;
 				$filters['access'][] = $access;
 				/**
-				 * $$$ rob having grouped_to_previous as 1 was barfing this list view for bea, when doing a search all:
+				 * $$$ rob having grouped_to_previous as 1 was barfing this list view for beate, when doing a search all:
 				 * http://test.xx-factory.de/index.php?option=com_fabrik&view=list&listid=31&calculations=0&Itemid=16&resetfilters=0
 				 */
 				// $filters['grouped_to_previous'][] = 0;//1;
@@ -782,7 +773,7 @@ class FabrikFEModelListfilter extends FabModel
 
 		if (!$searchable)
 		{
-			$app->enqueueMessage(JText::_('COM_FABRIK_NOTICE_SEARCH_ALL_BUT_NO_ELEMENTS'));
+			$app->enqueueMessage(FText::_('COM_FABRIK_NOTICE_SEARCH_ALL_BUT_NO_ELEMENTS'));
 		}
 	}
 
@@ -952,7 +943,7 @@ class FabrikFEModelListfilter extends FabModel
 							$filters['required'][] = $elparams->get('filter_required');
 							$filters['access'][] = $elparams->get('filter_access');
 							$filters['grouped_to_previous'][] = $grouped;
-							$filters['label'][] = $elparams->get('alt_list_heading') == '' ? $element->label : $elparams->get('alt_list_heading');
+							$filters['label'][] = $elementModel->getListHeading();
 							$filters['raw'][] = false;
 						}
 						else
@@ -971,7 +962,7 @@ class FabrikFEModelListfilter extends FabModel
 							$filters['required'][$index] = $elparams->get('filter_required');
 							$filters['access'][$index] = $elparams->get('filter_access');
 							$filters['grouped_to_previous'][$index] = $grouped;
-							$filters['label'][$index] = $elparams->get('alt_list_heading') == '' ? $element->label : $elparams->get('alt_list_heading');
+							$filters['label'][$index] = $elementModel->getListHeading();
 							$filters['raw'][$index] = false;
 						}
 
@@ -1146,6 +1137,7 @@ class FabrikFEModelListfilter extends FabModel
 			|| in_array($k2, $stickyFilters) ? 'jpluginfilters' : 'querystring';
 		$filters['value'][] = $value;
 		$filters['condition'][] = urldecode($condition);
+		$filters['orig_condition'][] = urldecode($condition);
 		$filters['join'][] = $join;
 		$filters['no-filter-setup'][] = ($element->filter_type == '') ? 1 : 0;
 		$filters['hidden'][] = ($element->filter_type == '') ? 1 : 0;
@@ -1562,8 +1554,11 @@ class FabrikFEModelListfilter extends FabModel
 					$condition = array_key_exists($i, $sessionfilters['condition']) ? $sessionfilters['condition'][$i]
 						: $elementModel->getDefaultFilterCondition();
 
-					$origCondition = array_key_exists('orig_condition', $sessionfilters) && array_key_exists($i, $sessionfilters['orig_condition']) ? $sessionfilters['orig_condition'][$i]
-						: $elementModel->getDefaultFilterCondition();
+					/*$origCondition = array_key_exists('orig_condition', $sessionfilters) && array_key_exists($i, $sessionfilters['orig_condition']) ? $sessionfilters['orig_condition'][$i]
+						: $elementModel->getDefaultFilterCondition();*/
+					$origFound = array_key_exists('orig_condition', $sessionfilters) && array_key_exists($i, $sessionfilters['orig_condition']);
+					$origCondition = $origFound ? $sessionfilters['orig_condition'][$i] : $elementModel->getDefaultFilterCondition();
+
 					$raw = array_key_exists($i, $sessionfilters['raw']) ? $sessionfilters['raw'][$i] : 0;
 					$eval = array_key_exists($i, $sessionfilters['eval']) ? $sessionfilters['eval'][$i] : FABRIKFILTER_TEXT;
 
