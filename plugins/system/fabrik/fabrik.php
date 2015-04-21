@@ -189,7 +189,9 @@ class PlgSystemFabrik extends JPlugin
 		foreach ($ids as $id)
 		{
 			// Unset enough stuff in the table model to allow for correct query to be run
-			$listModel->reset();
+			//$listModel->reset();
+			$listModel = JModel::getInstance('list', 'FabrikFEModel');
+
 
 			// $$$ geros - http://fabrikar.com/forums/showthread.php?t=21134&page=2
 			$key = 'com_' . $package . '.list' . $id . '.filter.searchall';
