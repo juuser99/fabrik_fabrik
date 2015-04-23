@@ -205,7 +205,6 @@ class FabrikAdminControllerForm extends FabControllerForm
 	 */
 	protected function handleError($view, $model)
 	{
-		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $this->app->input;
 		$validated = false;
 

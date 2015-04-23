@@ -1573,8 +1573,10 @@ class FabrikFEModelList extends JModelForm
 		$tpl = $this->getTmpl();
 		$align = $params->get('checkboxLocation', 'end') == 'end' ? 'right' : 'left';
 		$displayData = array('align' => $align);
-		$basePath = COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tpl . '/layouts/';
-		$layout = new JLayoutFile('listactions.' . $buttonAction, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+		$basePath = COM_FABRIK_FRONTEND . '/components/com_fabrik/layouts';
+		$layout = new FabrikLayoutFile('listactions.' . $buttonAction, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+		$layout->addIncludePaths(COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tpl . '/layouts/');
 
 		foreach ($data as $groupKey => $group)
 		{
@@ -6937,7 +6939,15 @@ class FabrikFEModelList extends JModelForm
 				}
 				else
 				{
-					$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapButtonGroup($headingButtons);
+					if ($this->actionMethod() == 'dropdown')
+					{
+						$align = $params->get('checkboxLocation', 'end') == 'end' ? 'right' : 'left';
+						$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapDropDown($headingButtons, $align);
+					}
+					else
+					{
+						$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapButtonGroup($headingButtons);
+					}
 				}
 			}
 

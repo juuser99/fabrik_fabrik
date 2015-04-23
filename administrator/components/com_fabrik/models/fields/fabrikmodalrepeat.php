@@ -114,13 +114,13 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$modalid = 'attrib-' . $this->id . '_modal';
 
 		// As JForm will render child fieldsets we have to hide it via CSS
-		$fieldSetId = str_replace('jform_params_', '', $modalid);
+		$fieldSetId = str_replace('jform_params_', '', $modalId);
 		$css = '#' . $fieldSetId . ' { display: none; }';
 		$document->addStyleDeclaration($css);
 
 		$path = 'templates/' . $this->app->getTemplate() . '/images/menu/';
 
-		$str[] = '<div id="' . $modalid . '" style="display:none">';
+		$str[] = '<div id="' . $modalId . '" style="display:none">';
 		$str[] = '<table class="adminlist ' . $this->element['class'] . ' table table-striped">';
 		$str[] = '<thead><tr class="row0">';
 		$names = array();
@@ -153,16 +153,16 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$str[] = '</table>';
 		$str[] = '</div>';
 		$form = implode("\n", $str);
-		static $modalrepeat;
+		static $modalRepeat;
 
-		if (!isset($modalrepeat))
+		if (!isset($modalRepeat))
 		{
-			$modalrepeat = array();
+			$modalRepeat = array();
 		}
 
-		if (!array_key_exists($modalid, $modalrepeat))
+		if (!array_key_exists($modalId, $modalRepeat))
 		{
-			$modalrepeat[$modalid] = array();
+			$modalRepeat[$modalId] = array();
 		}
 
 		if (!isset($this->form->repeatCounter))
@@ -170,16 +170,16 @@ class JFormFieldFabrikModalrepeat extends JFormField
 			$this->form->repeatCounter = 0;
 		}
 
-		if (!array_key_exists($this->form->repeatCounter, $modalrepeat[$modalid]))
+		if (!array_key_exists($this->form->repeatCounter, $modalRepeat[$modalId]))
 		{
 			// If loaded as js template then we don't want to repeat this again. (fabrik)
 			$names = json_encode($names);
-			$pane = str_replace('jform_params_', '', $modalid) . '-options';
+			$pane = str_replace('jform_params_', '', $modalId) . '-options';
 
-			$modalrepeat[$modalid][$this->form->repeatCounter] = true;
+			$modalRepeat[$modalId][$this->form->repeatCounter] = true;
 			$opts = new stdClass;
 			$opts = json_encode($opts);
-			$script = str_replace('-', '', $modalid) . " = new FabrikModalRepeat('$modalid', $names, '$this->id', $opts);";
+			$script = str_replace('-', '', $modalId) . " = new FabrikModalRepeat('$modalId', $names, '$this->id', $opts);";
 			$option = $input->get('option');
 
 			if ($option === 'com_fabrik')
