@@ -10811,15 +10811,17 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Update a series of rows with a key = val , works across joined tables
 	 *
-	 * @param   array   $ids     Pk values to update
-	 * @param   string  $col     Key to update should be in format 'table.element'
-	 * @param   string  $val     Val to set to
-	 * @param   string  $update  Optional update statement, overides $col = $val
+	 * @param   array   $ids         Pk values to update
+	 * @param   string  $col         Key to update should be in format 'table.element'
+	 * @param   string  $val         Val to set to
+	 * @param   string  $update      Optional update statement, overides $col = null
+	 * @param   mixed   $$joinPkVal  If deleteing a joined record, this value can specify which joined row to update
+	 *                               if left blank then all rows are updated.
 	 *
 	 * @return  void
 	 */
 
-	public function updateRows($ids, $col, $val, $update = '')
+	public function updateRows($ids, $col, $val, $update = '', $joinPkVal = null)
 	{
 		if (empty($col) && empty($update))
 		{
@@ -10840,8 +10842,8 @@ class FabrikFEModelList extends JModelForm
 		$table = $this->getTable();
 
 		$update = $update == '' ? $col . ' = ' . $db->quote($val) : $update;
-		$colbits = explode('.', $col);
-		$tbl = array_shift($colbits);
+		$colBits = explode('.', $col);
+		$tbl = array_shift($colBits);
 
 		$joinFound = false;
 		ArrayHelper::toInteger($ids);
@@ -10852,13 +10854,14 @@ class FabrikFEModelList extends JModelForm
 		// If the update element is in a join replace the key and table name with the join table's name and key
 		foreach ($joins as $join)
 		{
-			if ((int)$join->list_id != 0 && $join->table_join == $tbl)
+			if ((int) $join->list_id != 0 && $join->table_join == $tbl)
 			{
 				$joinFound = true;
 				$db->setQuery('DESCRIBE ' . $tbl);
 				$fields = $db->loadObjectList('Key');
-				$k = $tbl . '___' . $fields['PRI']->Field;
-				$dbk = $tbl . '.' . $fields['PRI']->Field;
+				$joinPkField = $fields['PRI']->Field;
+				$k = $tbl . '___' . $joinPkField;
+				$dbk = $db->qn($tbl . '.' . $joinPkField);
 				$db_table_name = $tbl;
 				$ids = array();
 
@@ -10870,7 +10873,7 @@ class FabrikFEModelList extends JModelForm
 
 						if ($v != '')
 						{
-							$ids[] = $v;
+							$ids[] = $db->q($v);
 						}
 					}
 				}
@@ -10879,7 +10882,16 @@ class FabrikFEModelList extends JModelForm
 				{
 					$query = $db->getQuery(true);
 					$ids = implode(',', $ids);
-					$query->update($db_table_name)->set($update)->where($dbk . ' IN (' . $ids . ')');
+					$query->update($db_table_name)->set($update);
+
+					if (!is_null($joinPkVal))
+					{
+						$query->where($dbk . ' = ' . $db->q($joinPkVal));
+					} else
+					{
+						$query->where($dbk . ' IN (' . $ids . ')');
+					}
+					
 					$db->setQuery($query);
 					$db->execute();
 				}
