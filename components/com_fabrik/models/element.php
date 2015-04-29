@@ -3300,7 +3300,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 *
 	 * @since 3.0.7
 	 *
-	 * @return  string  Checkbox filter HTML
+	 * @return  string  Checkbox filter JLayout HTML
 	 */
 
 	protected function checkboxFilter($rows, $default, $v)
@@ -3316,7 +3316,23 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		$default = (array) $default;
 
-		return implode("\n", FabrikHelperHTML::grid($values, $labels, $default, $v, 'checkbox', false, 1, array('input' => array('fabrik_filter'))));
+		$layout = $this->getLayout('list-filter-checkbox');
+		$displayData = new stdClass;
+		$displayData->values = $values;
+		$displayData->labels = $labels;
+		$displayData->default = $default;
+		$displayData->name = $v;
+		$res = $layout->render($displayData);
+
+		// If no custom list layout found revert to the default list-filter-checkbox renderer
+		if ($res === '')
+		{
+			$basePath = COM_FABRIK_FRONTEND . '/layouts/';
+			$layout = new JLayoutFile('fabrik-list-filter-checkbox', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+			$res = $layout->render($displayData);
+		}
+
+		return $res;
 	}
 
 	/**
@@ -3339,15 +3355,21 @@ class PlgFabrik_Element extends FabrikPlugin
 		$class = $this->filterClass();
 		$attribs = 'class="' . $class . '" size="1" ';
 		$default = (array) $default;
+		
+		if (count($default) === 1)
+		{
+			$default[1] = '';
+		}
+		
 		$def0 = array_key_exists('value', $default) ? $default['value'][0] : $default[0];
 		$def1 = array_key_exists('value', $default) ? $default['value'][1] : $default[1];
 
 		if ($type === 'list')
 		{
-			$return[] = FText::_('COM_FABRIK_BETWEEN');
+			$return[] = '<span class="fabrikFilterRangeLabel">' . FText::_('COM_FABRIK_BETWEEN') . '</span>';
 			$return[] = JHTML::_('select.genericlist', $rows, $v . '[0]', $attribs, 'value', 'text', $def0, $element->name . '_filter_range_0');
-
-			$return[] = '<br /> ' . FText::_('COM_FABRIK_AND') . ' ';
+			$return[] = '<br />';
+			$return[] = '<span class="fabrikFilterRangeLabel">' . FText::_('COM_FABRIK_AND') . '</span>';
 			$return[] = JHTML::_('select.genericlist', $rows, $v . '[1]', $attribs, 'value', 'text', $def1, $element->name . '_filter_range_1');
 		}
 		else
@@ -3357,8 +3379,8 @@ class PlgFabrik_Element extends FabrikPlugin
 		}
 	}
 
-	/**
-	 * Build the HTML for the auto-complete filter
+	/**-
+	 * Build the HTML ////for the auto-complete filter
 	 *
 	 * @param   string  $default     Label
 	 * @param   string  $v           Field name
@@ -3368,7 +3390,6 @@ class PlgFabrik_Element extends FabrikPlugin
 	 *
 	 * @return  array  HTML bits
 	 */
-
 	protected function autoCompleteFilter($default, $v, $labelValue = null, $normal = true)
 	{
 		if (is_null($labelValue))
@@ -7045,6 +7066,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		$table = $this->list->getTable(true);
 		$table->form_id = $formId;
 		$element = $this->getElement(true);
+		$this->setEditable($this->canUse('form'));
 	}
 
 	/**
@@ -7584,7 +7606,9 @@ class PlgFabrik_Element extends FabrikPlugin
 		$name = strtolower(String::str_ireplace('PlgFabrik_Element', '', $name));
 		$basePath = COM_FABRIK_BASE . '/plugins/fabrik_element/' . $name . '/layouts';
 		$layout = new FabrikLayoutFile('fabrik-element-' . $name. '-' . $type, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+		$layout->addIncludePaths(JPATH_SITE . '/layouts');
 		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts/com_fabrik');
 
 		return $layout;
 	}
