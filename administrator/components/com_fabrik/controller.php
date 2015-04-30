@@ -103,7 +103,6 @@ class Controller extends \JControllerBase
 			case 'checkout':
 				$model->set('id', $id);
 				$model->checkout();
-				echo $listUrl;exit;
 				$this->app->redirect($listUrl);
 				break;
 			case 'trash':

@@ -218,7 +218,7 @@ class Home extends \JModelBase
 		$list->label = "Contact Us Data";
 		$list->introduction = "This table stores the data submitted in the contact us form";
 		$list->form_id = $formId;
-		$list->connection_id = $cnn->getConnection()->id;
+		$list->connection_id = $cnn->getItem()->id;
 		$list->db_table_name = $dbTableName;
 
 		// Store without name quotes as that's db specific
@@ -276,8 +276,8 @@ class Home extends \JModelBase
 
 	public function dropData()
 	{
-		$connModel = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-		$connModel->setId($item->connection_id);
+		$connModel = new Connection;
+		$connModel->set('id', $item->connection_id);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select("connection_id, db_table_name")->from('#__fabrik_lists');

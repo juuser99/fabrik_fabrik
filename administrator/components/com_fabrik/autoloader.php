@@ -36,9 +36,20 @@ class AutoLoader
 			return;
 		}
 
-		$class = str_replace('Fabrik\Admin\\', '', $class);
-		$file = str_replace('\\', '/', strtolower($class));
-		$file = strtolower($file . '.php');
+		if (strstr($class, '\Admin'))
+		{
+			// Loading an admin model
+			$class = str_replace('Fabrik\Admin\\', '', $class);
+			$file = str_replace('\\', '/', strtolower($class));
+			$file = JPATH_ADMINISTRATOR . '/components/com_fabrik/' .strtolower($file . '.php');
+		}
+		else
+		{
+			// Front end model.
+			$class = str_replace('Fabrik\\', '', $class);
+			$file = str_replace('\\', '/', strtolower($class));
+			$file = JPATH_SITE . '/components/com_fabrik/' . strtolower($file . '.php');
+		}
 
 		require $file;
 	}

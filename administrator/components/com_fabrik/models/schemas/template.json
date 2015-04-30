@@ -4,7 +4,7 @@
   "list" : {
     "db_table_name": "",
     "access": 0,
-    "connection_id" : 1,
+    "connection_id" : 0,
     "db_table_name": "",
     "access": false
   },

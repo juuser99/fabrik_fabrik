@@ -64,7 +64,7 @@ class PluginAjax extends Controller
 		{
 			$method = 'on' . String::ucfirst($method);
 		}
-echo $method;exit;
+
 		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger($method);
 

@@ -666,10 +666,11 @@ class FabrikPlugin extends JPlugin
 		}
 		else
 		{
-			if ($cid !== 0)
+			if ($cid !== -1)
 			{
-				$cnn = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-				$cnn->setId($cid);
+				$cnn = new Fabrik\Admin\Models\Connection;
+
+				$cnn->set('id', $cid);
 				$db = $cnn->getDb();
 				$db->setQuery("SHOW TABLES");
 				$rows = (array) $db->loadColumn();
@@ -721,8 +722,8 @@ class FabrikPlugin extends JPlugin
 			{
 				// Show all db columns
 				$cid = $input->get('cid', -1);
-				$cnn = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-				$cnn->setId($cid);
+				$cnn = new Fabrik\Admin\Models\Connection;
+				$cnn->set('id', $cid);
 				$db = $cnn->getDb();
 
 				if ($tid != '')

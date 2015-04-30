@@ -12,12 +12,12 @@
 namespace Fabrik\Admin\Models;
 
 // No direct access
-use GCore\Libs\Arr;
-use Joomla\Utilities\ArrayHelper;
-
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.modellist');
+use \JFactory as JFactory;
+use Joomla\Utilities\ArrayHelper;
+use \FabrikWorker as FabrikWorker;
+use \JDatabaseDriver as JDatabaseDriver;
 
 interface ConnectionsInterface
 {
@@ -32,6 +32,27 @@ interface ConnectionsInterface
  */
 class Connections extends Base implements ConnectionsInterface
 {
+	/**
+	 * Containing db connections
+	 *
+	 * @var array
+	 */
+	protected static $dbs = array();
+
+	/**
+	 * Default connection object
+	 *
+	 * @var stdClass
+	 */
+	protected $defaultConnection = null;
+
+	/**
+	 * Current connection object
+	 *
+	 * @var stdClass
+	 */
+	protected $connection = null;
+
 	/**
 	 * Session state context prefix
 	 *
@@ -54,6 +75,10 @@ class Connections extends Base implements ConnectionsInterface
 		{
 			$this->state->set('filter_fields', array('c.id'));
 		}
+
+		$this->app    = $this->state->get('app', JFactory::getApplication());
+		$this->config = $this->state->get('config', JFactory::getConfig());
+		$this->input  = $this->state->get('input', JFactory::getApplication()->input);
 	}
 
 	/**
@@ -63,7 +88,7 @@ class Connections extends Base implements ConnectionsInterface
 	 */
 	protected function joomlaConnection()
 	{
-		$config               = \JFactory::getConfig();
+		$config               = $this->config;
 		$default              = new \stdClass;
 		$default->default     = true;
 		$default->description = 'Joomla Db';
@@ -97,7 +122,7 @@ class Connections extends Base implements ConnectionsInterface
 		$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/connections.json');
 		$json = json_decode($json);
 
-		$uri  = $_SERVER['SERVER_ADDR'];
+		$uri = $_SERVER['SERVER_ADDR'];
 
 		if (!isset($json->$uri))
 		{
@@ -117,6 +142,134 @@ class Connections extends Base implements ConnectionsInterface
 		}
 
 		return $this->items;
+	}
+
+	/**
+	 * Get the JDatabase for the current connection.
+	 *
+	 * @return mixed
+	 * @throws RuntimeException
+	 */
+	public function getDb()
+	{
+		if (!isset(self::$dbs))
+		{
+			self::$dbs = array();
+		}
+
+		$error = false;
+		$cn    = $this->getItem();
+
+		if (!array_key_exists($cn->id, self::$dbs))
+		{
+			if ($this->isJdb())
+			{
+				$db = FabrikWorker::getDbo(true);
+			}
+			else
+			{
+				$options = ArrayHelper::fromObject($cn);
+				$db      = JDatabaseDriver::getInstance($options);
+			}
+
+			try
+			{
+				$db->connect();
+			} catch (\RuntimeException $e)
+			{
+				$error = true;
+			}
+
+			self::$dbs[$cn->id] = $db;
+
+			if ($error)
+			{
+				/**
+				 * $$$Rob - not sure why this is happening on badmintonrochelais.com (mySQL 4.0.24) but it seems like
+				 * you can only use one connection on the site? As JDatabase::getInstance() forces a new connection if its options
+				 * signature is not found, then fabrik's default connection won't be created, hence defaulting to that one
+				 */
+				if ($cn->default == 1 && $this->input->get('task') !== 'test')
+				{
+					self::$dbs[$cn->id] = FabrikWorker::getDbo();
+
+					// $$$rob remove the error from the error stack
+					// if we don't do this the form is not rendered
+					\JError::getError(true);
+				}
+				else
+				{
+					if (!$this->app->isAdmin())
+					{
+						throw new RuntimeException('Could not connection to database', E_ERROR);
+					}
+					else
+					{
+						// $$$ rob - unset the connection as caching it will mean that changes we make to the incorrect connection in admin, will not result
+						// in the test connection link informing the user that the changed connection properties are now correct
+						if ($this->input->get('task') == 'test')
+						{
+							$this->connection = null;
+							$level            = E_NOTICE;
+						}
+						else
+						{
+							$level = E_ERROR;
+						}
+
+						throw new \RuntimeException('Could not connection to database cid = ' . $cn->id, $level);
+					}
+				}
+			}
+		}
+
+		return self::$dbs[$cn->id];
+	}
+
+	/**
+	 * Get the tables names in the loaded connection
+	 *
+	 * @param   bool $addBlank add an empty record to the beginning of the list
+	 *
+	 * @return array tables
+	 */
+	public function getThisTables($addBlank = false)
+	{
+		$fabrikDb = $this->getDb();
+		$tables   = $fabrikDb->getTableList();
+
+		if (is_array($tables))
+		{
+			if ($addBlank)
+			{
+				$tables = array_merge(array(""), $tables);
+			}
+
+			return $tables;
+		}
+		else
+		{
+			return array();
+		}
+	}
+
+	/**
+	 * Test if the connection is exactly the same as Joomla's db connection as
+	 * defined in configuration.php
+	 *
+	 * @since  3.0.8
+	 *
+	 * @return boolean  True if the same
+	 */
+	public function isJdb()
+	{
+		$conf     = $this->config;
+		$host     = $conf->get('host');
+		$user     = $conf->get('user');
+		$database = $conf->get('db');
+		$cn       = $this->getItem();
+
+		return $cn->host === $host && $cn->database === $database && $cn->user = $user;
 	}
 
 	/**
@@ -247,8 +400,14 @@ class Connections extends Base implements ConnectionsInterface
 
 		if (empty($test))
 		{
-			$id             = $this->get('id');
-			$items          = $this->getItems();
+			$id    = $this->get('id');
+			$items = $this->getItems();
+
+			if (!array_key_exists($id, $items))
+			{
+				return $this->itemSchema();
+			}
+
 			$items[$id]->id = $id;
 			$data           = $items[$id];
 		}
@@ -267,14 +426,14 @@ class Connections extends Base implements ConnectionsInterface
 	public function setDefault($default, $ids = array())
 	{
 		$items = $this->getItems();
-		$id = ArrayHelper::getValue($ids, 0);
+		$id    = ArrayHelper::getValue($ids, 0);
 
 		if ($default === true)
 		{
 			foreach ($items as $key => $item)
 			{
 				$item->default = (string) $key === (string) $id ? true : false;
-				$item->id = $key;
+				$item->id      = $key;
 				$this->save($item);
 			}
 		}
@@ -286,6 +445,58 @@ class Connections extends Base implements ConnectionsInterface
 				$items[$id]->id      = $id;
 				$this->save($items[$id]);
 			}
+		}
+	}
+
+	/**
+	 * Load the default connection
+	 *
+	 * @return  object  default connection
+	 */
+
+	public function &loadDefaultConnection()
+	{
+		if (!$this->defaultConnection)
+		{
+			$items = $this->getItems();
+
+			$items = array_filter($items, function ($item)
+			{
+				return $item->default == 1;
+			});
+
+			$item = array_shift($items);
+			$this->decryptPw($item);
+			$this->defaultConnection = $item;
+		}
+
+		$this->connection = $this->defaultConnection;
+
+		return $this->defaultConnection;
+	}
+
+	/**
+	 * Decrypt once a connection password - if its params->encryptedPw option is true
+	 *
+	 * @param   JTable &$cnn Connection
+	 *
+	 * @since   3.1rc1
+	 *
+	 * @return  void
+	 */
+	protected function decryptPw(&$cnn)
+	{
+		if (isset($cnn->decrypted) && $cnn->decrypted)
+		{
+			return;
+		}
+		$crypt  = FabrikWorker::getCrypt();
+		$params = $cnn->params;
+
+		if (is_object($params) && $params->encryptedPw == true)
+		{
+			$cnn->password  = $crypt->decrypt($cnn->password);
+			$cnn->decrypted = true;
 		}
 	}
 

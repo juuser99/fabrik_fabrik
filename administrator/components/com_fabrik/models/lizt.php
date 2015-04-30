@@ -287,9 +287,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 	protected function getCnn()
 	{
 		$item      = $this->getItem();
-		$connModel = \JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-		$connModel->setId($item->list->connection_id);
-		$connModel->getConnection($item->list->connection_id);
+		$connModel = new Connection;
+		$connModel->set('id', $item->list->connection_id);
+		$connModel->getItem($item->list->connection_id);
 
 		return $connModel;
 	}

@@ -45,12 +45,12 @@ class Plugin extends Controller
 	 */
 	public function execute()
 	{
+		// @todo move userAjax and doCron into their own controllers.
 		list($viewName, $layoutName) = $this->viewLayout();
-echo $viewName . " ||| "  . $layoutName;exit;
+
 		switch ($layoutName)
 		{
 			case 'pluginAjax':
-				echo "exe";exit;
 				break;
 			default:
 				parent::execute();
@@ -58,41 +58,7 @@ echo $viewName . " ||| "  . $layoutName;exit;
 		}
 
 	}
-	/**
-	 * Ajax action called from element
-	 * 11/07/2011 - I've updated things so that any plugin ajax call uses 'view=plugin' rather than controller=plugin
-	 * this means that the controller used is now plugin.php and not plugin.raw.php
-	 *
-	 * @return  void
-	 */
 
-	public function pluginAjax()
-	{
-		echo "plugin ajax";exit;
-		$input = $this->input;
-		$plugin = $input->get('plugin', '');
-		$method = $input->get('method', '');
-		$group = $input->get('g', 'element');
-
-		if (!JPluginHelper::importPlugin('fabrik_' . $group, $plugin))
-		{
-			$o = new stdClass;
-			$o->err = 'unable to import plugin fabrik_' . $group . ' ' . $plugin;
-			echo json_encode($o);
-
-			return;
-		}
-
-		if (substr($method, 0, 2) !== 'on')
-		{
-			$method = 'on' . String::ucfirst($method);
-		}
-
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger($method);
-
-		return;
-	}
 
 	/**
 	 * Custom user ajax class handling as per F1.0.x

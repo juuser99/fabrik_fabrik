@@ -1027,8 +1027,8 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		}
 		else
 		{
-			$this->cn = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-			$this->cn->setId($id);
+			$this->cn = new Fabrik\Admin\Models\Connection;
+			$this->cn->set('id', $id);
 		}
 
 		return $this->cn->getConnection();

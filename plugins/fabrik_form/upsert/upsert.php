@@ -106,8 +106,8 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		{
 			$params = $this->getParams();
 			$cid = $params->get('connection_id');
-			$connectionModel = JModelLegacy::getInstance('connection', 'FabrikFEModel');
-			$connectionModel->setId($cid);
+			$connectionModel = new Fabrik\Admin\Models\Connection;
+			$connectionModel->set('id', $cid);
 			$this->upsert_db = $connectionModel->getDb();
 		}
 
@@ -225,8 +225,8 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$cid = $params->get('connection_id');
-		$connectionModel = JModelLegacy::getInstance('connection', 'FabrikFEModel');
-		$connectionModel->setId($cid);
+		$connectionModel = new Fabrik\Admin\Models\Connection;
+		$connectionModel->set('id', $cid);
 		$db = $connectionModel->getDb();
 		$query = $db->getQuery(true);
 		$query->select('COUNT(*) AS total')->from($table)->where($field . ' = ' . $value);

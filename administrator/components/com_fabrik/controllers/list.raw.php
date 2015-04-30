@@ -39,9 +39,9 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		$input = $this->app->input;
 		$conn  = $input->getInt('conn', 1);
-		$oCnn  = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-		$oCnn->setId($conn);
-		$oCnn->getConnection();
+		$oCnn  = new Fabrik\Admin\Models\Connection;
+		$oCnn->set('id', $conn);
+		$oCnn->getItem();
 		$db         = $oCnn->getDb();
 		$table      = $input->get('table', '');
 		$fieldNames = array();

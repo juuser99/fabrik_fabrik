@@ -1460,13 +1460,16 @@ class FabrikWorker
 
 		if (!array_key_exists($sig, self::$database))
 		{
-			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 			$conf = JFactory::getConfig();
 
 			if (!$loadJoomlaDb)
 			{
-				$cnModel = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-				$cn = $cnModel->getConnection($cnnId);
+
+				$cnModel = new Fabrik\Admin\Models\Connection;
+				echo "id = $cnnId";
+				$cnModel->set('id', $cnnId);
+				$cn = $cnModel->getItem();
+				echo "<pre>";print_r($cn);exit;
 				$host = $cn->host;
 				$user = $cn->user;
 				$password = $cn->password;
@@ -1484,13 +1487,11 @@ class FabrikWorker
 			$driver = $conf->get('dbtype');
 
 			// Test for swapping db table names
-			$driver .= '_fab';
-			$debug = $conf->get('debug');
-			$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,
+			$options = array('driver' =>
+				$driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,
 				'prefix' => $dbprefix);
 
-			$version = new JVersion;
-			self::$database[$sig] = $version->RELEASE > 2.5 ? JDatabaseDriver::getInstance($options) : JDatabase::getInstance($options);
+			self::$database[$sig] = JDatabaseDriver::getInstance($options);
 
 			/*
 			 *  $$$ hugh - testing doing bigSelects stuff here
@@ -1558,17 +1559,17 @@ class FabrikWorker
 
 		if (!array_key_exists($connId, self::$connection))
 		{
-			$connectionModel = JModelLegacy::getInstance('connection', 'FabrikFEModel');
-			$connectionModel->setId($connId);
+			$connectionModel = new Fabrik\Admin\Models\Connection;
+			$connectionModel->set('id', $connId);
 
 			if ($connId === -1)
 			{
 				// -1 for creating new table
 				$connectionModel->loadDefaultConnection();
-				$connectionModel->setId($connectionModel->getConnection()->id);
+				$connectionModel->set('id', $connectionModel->getItem()->id);
 			}
 
-			$connection = $connectionModel->getConnection();
+			$connectionModel->getItem();
 			self::$connection[$connId] = $connectionModel;
 		}
 

@@ -37,7 +37,6 @@ class Connection extends \JControllerBase
 	 */
 	public function execute()
 	{
-		echo "here";exit;
 	}
 	/**
 	 * The prefix to use with controller messages.
@@ -62,8 +61,8 @@ class Connection extends \JControllerBase
 
 		foreach ($cid as $id)
 		{
-			$model = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-			$model->setId($id);
+			$model = Connection;
+			$model->set('id', $id);
 
 			if ($model->testConnection() == false)
 			{

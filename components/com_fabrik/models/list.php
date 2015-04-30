@@ -3795,7 +3795,11 @@ class FabrikFEModelList extends JModelForm
 
 	public function &getDb()
 	{
-		return FabrikWorker::getConnection($this->getTable())->getDb();
+
+		// @todo - getTable needs to be converted to just getting the json object
+		$cnn = FabrikWorker::getConnection($this->getTable());
+
+		return $cnn->getDb();
 	}
 
 	/**
