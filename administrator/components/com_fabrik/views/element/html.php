@@ -28,7 +28,7 @@ use \JText as JText;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Html extends \JViewHtml
+class Html extends \Fabrik\Admin\Views\Html
 {
 	/**
 	 * Form

@@ -36,18 +36,6 @@ if (!defined('COM_FABRIK_FRONTEND'))
 $app   = \JFactory::getApplication();
 $input = $app->input;
 
-// Include dependencies
-//jimport('joomla.application.component.controller');
-jimport('joomla.filesystem.file');
-
-// @todo - move this into a base view class
-if ($input->get('format', 'html') === 'html')
-{
-	\FabrikHelperHTML::framework();
-}
-
-\JHTML::stylesheet('administrator/components/com_fabrik/headings.css');
-
 // Check for plugin views (e.g. list email plugin's "email form"
 $cName = $input->getCmd('controller');
 
@@ -75,7 +63,7 @@ if (String::strpos($cName, '.') != false)
 		$controller->addViewPath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/views');
 
 		// Add the model path
-		$modelPaths = JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
+		JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
 	}
 }
 else

@@ -27,7 +27,7 @@ use \stdClass as stdClass;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Html extends \JViewHtml
+class Html extends \Fabrik\Admin\Views\Html
 {
 	/**
 	 * List form

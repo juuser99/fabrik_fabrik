@@ -25,4 +25,9 @@ require_once JPATH_BASE . '/includes/toolbar.php';
 define('JPATH_COMPONENT',JOOMLA_ADMIN_PATH.'/components/com_fabrik');
 define('JPATH_COMPONENT_ADMINISTRATOR',JPATH_COMPONENT);
 
+define('COM_FABRIK_FRONTEND', JOOMLA_PATH . '/components/com_fabrik');
+
+require_once COM_FABRIK_FRONTEND . '/models/plugin.php';
+require_once COM_FABRIK_FRONTEND . '/helpers/string.php';
+require_once JPATH_LIBRARIES . '/legacy/model/legacy.php';
 include BASEPATH.'/controller.php';

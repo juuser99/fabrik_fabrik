@@ -26,7 +26,7 @@ use \FabrikAdminHelper as FabrikAdminHelper;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Html extends \JViewHtml
+class Html extends \Fabrik\Admin\Views\Html
 {
 	/**
 	 * Form items
