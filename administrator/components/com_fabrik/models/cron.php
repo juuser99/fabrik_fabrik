@@ -16,11 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 
-jimport('joomla.application.component.modeladmin');
-
-require_once 'fabmodeladmin.php';
-
-interface FabrikAdminModelCronInterface
+interface CronInterface
 {
 }
 
@@ -29,9 +25,9 @@ interface FabrikAdminModelCronInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-abstract class FabrikAdminModelCron extends FabModelAdmin implements FabrikAdminModelCronInterface
+class Cron extends Base implements CronInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -39,23 +35,6 @@ abstract class FabrikAdminModelCron extends FabModelAdmin implements FabrikAdmin
 	 * @var  string
 	 */
 	protected $text_prefix = 'COM_FABRIK_CRON';
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable  A database object
-	 */
-
-	public function getTable($type = 'Cron', $prefix = 'FabrikTable', $config = array())
-	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
-
-		return FabTable::getInstance($type, $prefix, $config);
-	}
 
 	/**
 	 * Get html form fields for a plugin (filled with
@@ -128,10 +107,10 @@ abstract class FabrikAdminModelCron extends FabModelAdmin implements FabrikAdmin
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */
 
-	public function validate($form, $data, $group = null)
+	public function validate($data)
 	{
 		$params = $data['params'];
-		$ok = parent::validate($form, $data);
+		$ok = parent::validate($data);
 
 		// Standard jform validation failed so we shouldn't test further as we can't be sure of the data
 

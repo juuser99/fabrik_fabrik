@@ -106,7 +106,7 @@ class Base extends \JModelBase
 
 		if (empty($test))
 		{
-			$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/template.json');
+			$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/template.json');
 			$data = json_decode($json);
 		}
 
