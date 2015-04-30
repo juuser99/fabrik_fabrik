@@ -45,6 +45,18 @@ class Connection extends Connections implements ConnectionInterface
 	protected $text_prefix = 'COM_FABRIK_CONNECTION';
 
 	/**
+	 * Constructor.
+	 *
+	 * @param   Registry $state Optional configuration settings.
+	 *
+	 * @since    3.5
+	 */
+	public function __construct(Registry $state = null)
+	{
+		parent::__construct($state);
+		$this->config = $this->state->get('config', \JFactory::getConfig());
+	}
+	/**
 	 * Check if connection is the default and if so reset its values to those of the J db connection
 	 *
 	 * @param   object &$item connection item
@@ -53,7 +65,7 @@ class Connection extends Connections implements ConnectionInterface
 	 */
 	public function checkDefault(&$item)
 	{
-		if ($item->id == 1)
+		if ($item->id == 0)
 		{
 			$this->app->enqueueMessage(FText::_('COM_FABRIK_ORIGINAL_CONNECTION'));
 

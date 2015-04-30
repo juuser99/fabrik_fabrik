@@ -23,12 +23,12 @@
             "user": "root",
             "password": "",
             "published": 1,
-            "checked_out": "",
-            "default": "1",
+            "checked_out": "102",
+            "default": false,
             "params": {
                 "encryptedPw": true
             },
-            "checked_out_time": ""
+            "checked_out_time": "2015-04-30 08:54:12"
         },
         {
             "description": "test",
@@ -37,11 +37,12 @@
             "user": "test",
             "password": "",
             "published": 0,
-            "checked_out": "0",
+            "checked_out": "102",
             "default": true,
             "params": {
                 "encryptedPw": true
-            }
+            },
+            "checked_out_time": "2015-04-30 08:54:41"
         }
     ]
 }

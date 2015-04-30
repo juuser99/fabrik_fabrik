@@ -12,6 +12,7 @@
 namespace Fabrik\Admin\Models;
 
 // No direct access
+use GCore\Libs\Arr;
 use Joomla\Utilities\ArrayHelper;
 
 defined('_JEXEC') or die('Restricted access');
@@ -195,15 +196,16 @@ class Connections extends Base implements ConnectionsInterface
 		{
 			$part =& $json->$uri;
 
-			if ($id <> '')
-			{
-				// Update
-				$part[$id] = $data;
-			}
-			else
+			if ($id === '')
 			{
 				// Insert
 				$part[] = $data;
+
+			}
+			else
+			{
+				// Update
+				$part[$id] = $data;
 			}
 		}
 
@@ -256,18 +258,33 @@ class Connections extends Base implements ConnectionsInterface
 	/**
 	 * Set the default connection
 	 *
-	 * @param $default
-	 * @param $ids
+	 * @param   bool  $default
+	 * @param   array $ids
+	 *
+	 * @return  void
 	 */
-	public function setDefault($default, $ids)
+	public function setDefault($default, $ids = array())
 	{
 		$items = $this->getItems();
+		$id = ArrayHelper::getValue($ids, 0);
 
-		foreach ($ids as $id)
+		if ($default === true)
 		{
-			$items[$id]->default = $default;
-			$items[$id]->id      = $id;
-			$this->save($items[$id]);
+			foreach ($items as $key => $item)
+			{
+				$item->default = (string) $key === (string) $id ? true : false;
+				$item->id = $key;
+				$this->save($item);
+			}
+		}
+		else
+		{
+			foreach ($ids as $id)
+			{
+				$items[$id]->default = $default;
+				$items[$id]->id      = $id;
+				$this->save($items[$id]);
+			}
 		}
 	}
 
