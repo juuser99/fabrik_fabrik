@@ -135,7 +135,7 @@ var FbDateTime = new Class({
 				var data = {
 					'option': 'com_fabrik',
 					'format': 'raw',
-					'task': 'plugin.pluginAjax',
+					'view': 'pluginAjax',
 					'plugin': 'date',
 					'method': 'ajax_getAllowedDates',
 					'element_id': this.options.id,

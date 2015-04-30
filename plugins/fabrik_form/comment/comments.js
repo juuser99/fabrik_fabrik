@@ -34,7 +34,7 @@ var FabrikComment = new Class({
 			'data': {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'comment',
 				'method': 'deleteComment',
 				'g': 'form',
@@ -51,7 +51,7 @@ var FabrikComment = new Class({
 			'data': {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'comment',
 				'method': 'updateComment',
 				'g': 'form',
@@ -100,7 +100,7 @@ var FabrikComment = new Class({
 			'data': {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'comment',
 				'method': 'addComment',
 				'g': 'form',
@@ -311,7 +311,7 @@ var FabrikComment = new Class({
 						'data': {
 							'option': 'com_fabrik',
 							'format': 'raw',
-							'task': 'plugin.pluginAjax',
+							'view': 'pluginAjax',
 							'plugin': 'comment',
 							'method': 'getEmail',
 							'commentid': commentid,

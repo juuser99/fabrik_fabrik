@@ -227,7 +227,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		// Otherwise get authorization url from user to use their own account
 
 		// $this->row not set ?! so this callback url was giving notices
-		$callback = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&task=plugin.pluginAjax&plugin=twitter&g=form&method=tweet&formid='
+		$callback = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&view=pluginAjax&plugin=twitter&g=form&method=tweet&formid='
 			. $formModel->getId();
 		$callback .= '&renderOrder=' . $this->renderOrder;
 
@@ -421,7 +421,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		$consumer_secret = $consumer_secret[$counter];
 
 		$callback = COM_FABRIK_LIVESITE
-			. 'index.php?option=com_' . $package . '&task=plugin.pluginAjax&plugin=twitter&tmpl=component&g=form&method=updateAdmin&formid='
+			. 'index.php?option=com_' . $package . '&view=pluginAjax&plugin=twitter&tmpl=component&g=form&method=updateAdmin&formid='
 			. $formModel->getId();
 		$callback .= "&repeatCounter=" . $input->getInt('repeatCounter');
 

@@ -160,7 +160,7 @@ var Autofill = new Class({
 			'data': {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'autofill',
 				'method': 'ajax_getAutoFill',
 				'g': 'form',

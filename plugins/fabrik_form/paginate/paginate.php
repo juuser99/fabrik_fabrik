@@ -210,7 +210,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$model->rowId = $rowid;
 		$ids = $this->getNavIds();
 		$url = COM_FABRIK_LIVESITE
-			. 'index.php?option=com_' . $package . '&format=raw&controller=plugin&g=form&task=pluginAjax&plugin=paginate&method=xRecord&formid=' . $formid
+			. 'index.php?option=com_' . $package . '&format=raw&g=form&view=pluginAjax&plugin=paginate&method=xRecord&formid=' . $formid
 			. '&rowid=' . $rowid;
 		$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&view=' . $mode . '&formid=' . $formid . '&rowid=' . $rowid . '&format=raw';
 		$ch = curl_init();

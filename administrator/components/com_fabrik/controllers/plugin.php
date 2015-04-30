@@ -9,24 +9,21 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 
-jimport('joomla.application.component.controller');
-
-require_once 'fabcontrollerform.php';
-
 /**
  * Fabrik Admin Plugin Controller
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    3.5
  */
-
-class FabrikAdminControllerPlugin extends FabControllerForm
+class Plugin extends Controller
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered)
@@ -35,6 +32,32 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 	 */
 	public $cacheId = 0;
 
+	/**
+	 * Execute the controller.
+	 *
+	 * @return  boolean  True if controller finished execution, false if the controller did not
+	 *                   finish execution. A controller might return false if some precondition for
+	 *                   the controller to run has not been satisfied.
+	 *
+	 * @since   12.1
+	 * @throws  LogicException
+	 * @throws  RuntimeException
+	 */
+	public function execute()
+	{
+		list($viewName, $layoutName) = $this->viewLayout();
+echo $viewName . " ||| "  . $layoutName;exit;
+		switch ($layoutName)
+		{
+			case 'pluginAjax':
+				echo "exe";exit;
+				break;
+			default:
+				parent::execute();
+				break;
+		}
+
+	}
 	/**
 	 * Ajax action called from element
 	 * 11/07/2011 - I've updated things so that any plugin ajax call uses 'view=plugin' rather than controller=plugin
@@ -45,6 +68,7 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 
 	public function pluginAjax()
 	{
+		echo "plugin ajax";exit;
 		$input = $this->input;
 		$plugin = $input->get('plugin', '');
 		$method = $input->get('method', '');

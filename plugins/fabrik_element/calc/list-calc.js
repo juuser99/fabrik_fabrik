@@ -26,7 +26,7 @@ var FbCalcList = new Class({
 		var data = {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+			'task': 'plugin.pluginAjax',
 				'plugin': 'calc',
 				'g': 'element',
 				'listid': this.options.listid,

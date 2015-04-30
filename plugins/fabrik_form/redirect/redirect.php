@@ -105,7 +105,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 				$session->set($context . 'title', $stitle);
 
 
-				$surl[$this->renderOrder] = 'index.php?option=com_' . $package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax';
+				$surl[$this->renderOrder] = 'index.php?option=com_' . $package . '&view=pluginAjax&g=form&plugin=redirect&method=displayThanks';
 				$session->set($context . 'url', $surl);
 			}
 		}

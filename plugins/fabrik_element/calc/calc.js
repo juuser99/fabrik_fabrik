@@ -91,7 +91,7 @@ var FbCalc = new Class({
 		var data = {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'calc',
 				'method': 'ajax_calc',
 				'element_id': this.options.id,

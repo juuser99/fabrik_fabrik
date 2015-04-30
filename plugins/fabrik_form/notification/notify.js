@@ -19,7 +19,7 @@ var Notify = new Class({
 			notify = document.id(el).checked ? 1 : 0;
 			Fabrik.loader.start(target, Joomla.JText._('COM_FABRIK_LOADING'));
 			var myAjax = new Request({
-				url: 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=notification&method=toggleNotification',
+				url: 'index.php?option=com_fabrik&view=pluginAjax&plugin=notification&method=toggleNotification',
 				data: {
 					g: 'form',
 					format: 'raw',

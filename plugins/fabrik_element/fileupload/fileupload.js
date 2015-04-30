@@ -123,7 +123,7 @@ var FbFileUpload = new Class({
 						data: {
 							'option': 'com_fabrik',
 							'format': 'raw',
-							'task': 'plugin.pluginAjax',
+							'view': 'pluginAjax',
 							'plugin': 'fileupload',
 							'method': 'ajax_clearFileReference',
 							'element_id': this.options.id,
@@ -285,7 +285,7 @@ var FbFileUpload = new Class({
 			browse_button: this.element.id + '_browseButton',
 			container: this.element.id + '_container',
 			drop_element: this.element.id + '_dropList_container',
-			url: 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=fileupload&method=ajax_upload&element_id=' + this.options.elid,
+			url: 'index.php?option=com_fabrik&format=raw&view=pluginAjax&plugin=fileupload&method=ajax_upload&element_id=' + this.options.elid,
 			max_file_size: this.options.max_file_size + 'kb',
 			unique_names: false,
 			flash_swf_url: this.options.ajax_flash_path,
@@ -541,7 +541,7 @@ var FbFileUpload = new Class({
 			data: {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'fileupload',
 				'method': 'ajax_deleteFile',
 				'element_id': this.options.id,

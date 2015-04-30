@@ -60,7 +60,7 @@ var tablesElement = new Class({
 		}
 		var cid = this.cnn.get('value');
 		// $$$ rob 09/09/2011 changed to call admin page, seems better to not cross call between admin and front end for this
-		//var url = this.options.livesite + 'index.php?option=com_fabrik&format=raw&view=plugin&task=pluginAjax&g=element&plugin=field&method=ajax_tables&cid=' + cid;
+		//var url = this.options.livesite + 'index.php?option=com_fabrik&format=raw&view=pluginAjax&g=element&plugin=field&method=ajax_tables&cid=' + cid;
 		var url = 'index.php';
 		// $$$ hugh - changed this to 'get' method, because some servers barf (Length Required) if
 		// we send it a POST with no postbody.
@@ -69,7 +69,7 @@ var tablesElement = new Class({
 			data: {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'g': 'element',
 				'plugin': 'field',
 				'method': 'ajax_tables',

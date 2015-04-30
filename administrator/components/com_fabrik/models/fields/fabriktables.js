@@ -83,7 +83,7 @@ var fabriktablesElement = new Class({
 			data: {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'g': 'element',
 				'plugin': 'field',
 				'method': 'ajax_tables',
@@ -157,12 +157,12 @@ var fabriktablesElement = new Class({
 
 				var cid = this.cnn.get('value');
 				this.elementLists.set(key, '');
-				//var url = this.options.livesite + 'index.php?option=com_fabrik&format=raw&view=plugin&task=pluginAjax&g=visualization&plugin=chart&method=ajax_fields&k=2&t=' + table + '&cid=' + cid;
+				//var url = this.options.livesite + 'index.php?option=com_fabrik&format=raw&view=pluginAjax&g=visualization&plugin=chart&method=ajax_fields&k=2&t=' + table + '&cid=' + cid;
 
 				var ajaxopts = {
 					'option': 'com_fabrik',
 					'format': 'raw',
-					'task': 'plugin.pluginAjax',
+					'view': 'pluginAjax',
 					'g': 'element',
 					'plugin': 'field',
 					'method': 'ajax_fields',

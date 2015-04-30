@@ -275,7 +275,7 @@ var FbDatabasejoin = new Class({
 		var data = {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'databasejoin',
 				'method': 'ajax_getOptions',
 				'element_id': this.options.id,

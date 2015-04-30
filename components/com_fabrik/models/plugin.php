@@ -633,24 +633,13 @@ class FabrikPlugin extends JPlugin
 	}
 
 	/**
-	 * J1.6 plugin wrapper for ajax_tables
-	 *
-	 * @return  void
-	 */
-
-	public function onAjax_tables()
-	{
-		$this->ajax_tables();
-	}
-
-	/**
 	 * Ajax function to return a string of table drop down options
 	 * based on cid variable in query string
 	 *
 	 * @return  void
 	 */
 
-	public function ajax_tables()
+	public function onAjax_tables()
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;

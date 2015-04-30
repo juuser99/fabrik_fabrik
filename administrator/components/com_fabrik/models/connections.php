@@ -96,6 +96,7 @@ class Connections extends Base implements ConnectionsInterface
 
 		$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/connections.json');
 		$json = json_decode($json);
+
 		$uri  = $_SERVER['SERVER_ADDR'];
 
 		if (!isset($json->$uri))

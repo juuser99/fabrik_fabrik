@@ -150,7 +150,7 @@ var ListFieldsElement = new Class({
 			return;
 		}
 		clearInterval(this.periodical);
-		var url = 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=element&plugin=field&method=ajax_fields&showall=' + this.options.showAll + '&cid=' + cid + '&t=' + tid;
+		var url = 'index.php?option=com_fabrik&format=raw&view=pluginAjax&g=element&plugin=field&method=ajax_fields&showall=' + this.options.showAll + '&cid=' + cid + '&t=' + tid;
 		var myAjax = new Request({
 			url: url,
 			method: 'get',

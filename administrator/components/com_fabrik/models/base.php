@@ -83,7 +83,7 @@ class Base extends \JModelBase
 
 			foreach ($filters as $field => $value)
 			{
-				if ($field <> 'search' && $value <> '*')
+				if ($field <> 'search' && $value <> '*' && $value <> '')
 				{
 					if ($item->$field <> $value)
 					{

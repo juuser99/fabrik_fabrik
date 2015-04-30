@@ -79,6 +79,7 @@ class Connections extends Controller
 				break;
 			default:
 				parent::execute();
+				break;
 		}
 	}
 

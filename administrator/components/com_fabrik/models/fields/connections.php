@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
+use Fabrik\Admin\Models\Connections;
+
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -41,18 +43,15 @@ class JFormFieldConnections extends JFormFieldList
 	 */
 	protected function getOptions()
 	{
-		// Initialize variables.
-		$db    = FabrikWorker::getDbo(true);
-		$query = $db->getQuery(true);
+		$model       = new Connections;
+		$connections = $model->getItems();
+		$options     = array();
 
-		$query->select('id AS value, description AS text, ' . $db->quoteName('default'));
-		$query->from('#__fabrik_connections AS c');
-		$query->where('published = 1');
-		$query->order('host');
+		foreach ($connections as $id => $connection)
+		{
+			$options[] = (object) array('value' => $id, 'text' => $connection->description, 'default' => '');
+		}
 
-		// Get the options.
-		$db->setQuery($query);
-		$options      = $db->loadObjectList();
 		$sel          = JHtml::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT'));
 		$sel->default = false;
 		array_unshift($options, $sel);

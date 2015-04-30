@@ -639,7 +639,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		
 		$elementid = $this->getId();
 		$src = COM_FABRIK_LIVESITE
-		. 'index.php?option=com_' . $package . '&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
+		. 'index.php?option=com_' . $package . '&amp;view=pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
 				. 'format=raw&amp;element_id=' . $elementid . '&amp;formid=' . $formid . '&amp;rowid=' . $rowid . '&amp;repeatcount=0';
 
 		$layout = $this->getLayout('qr');

@@ -97,7 +97,7 @@ var FbCascadingdropdown = new Class({
 		var data = {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'cascadingdropdown',
 				'method': 'ajax_getOptions',
 				'element_id': this.options.id,

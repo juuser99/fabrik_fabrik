@@ -110,7 +110,7 @@ var FbRating = new Class({
 			var data = {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'plugin': 'rating',
 				'method': 'ajax_rate',
 				'g': 'element',

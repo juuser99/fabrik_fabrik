@@ -776,7 +776,7 @@ var FbFileElement = new Class({
 		var data = {'dir': dir,
 			'option': 'com_fabrik',
 			'format': 'raw',
-			'task': 'plugin.pluginAjax',
+			'view': 'pluginAjax',
 			'plugin': 'fileupload',
 			'method': 'ajax_getFolders',
 			'element_id': this.options.id

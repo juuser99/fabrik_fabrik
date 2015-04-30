@@ -16,7 +16,7 @@ FabRecordSet = new Class({
 		this.pkfield = f.getElement('input[name=rowid]');
 		var formId = this.form.id;
 		this.view = this.form.options.editable === true ? 'form':'details';
-		this.url = this.options.liveSite + 'index.php?option=com_fabrik&format=raw&view=plugin&g=form&task=pluginAjax&plugin=paginate&method=xRecord&formid=' + formId + '&mode=' + this.options.view + '&rowid=';
+		this.url = this.options.liveSite + 'index.php?option=com_fabrik&format=raw&view=pluginAjax&g=form&plugin=paginate&method=xRecord&formid=' + formId + '&mode=' + this.options.view + '&rowid=';
 		this.watchButtons();
 	},
 

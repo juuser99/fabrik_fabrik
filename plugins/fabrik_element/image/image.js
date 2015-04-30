@@ -74,7 +74,7 @@ var FbImage = new Class({
 			'data' : {
 				'option': 'com_fabrik',
 				'format': 'raw',
-				'task': 'plugin.pluginAjax',
+				'view': 'pluginAjax',
 				'g': 'element',
 				'plugin': 'image',
 				'method': 'ajax_files',

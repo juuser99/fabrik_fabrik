@@ -86,7 +86,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 				$elementId = $this->getId();
 
 				$layoutData->link = COM_FABRIK_LIVESITE
-					. 'index.php?option=com_' . $package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
+					. 'index.php?option=com_' . $package . '&amp;view=pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
 					. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 				$layout = new JLayoutFile('fabrik-element-digsig-details-pdf', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
@@ -146,7 +146,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		$elementid = $this->getId();
 
 		$link = COM_FABRIK_LIVESITE
-			. 'index.php?option=com_' . $package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
+			. 'index.php?option=com_' . $package . '&amp;view=pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
 			. 'format=raw&amp;element_id=' . $elementid . '&amp;formid=' . $formid . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 		$layoutData         = new stdClass;

@@ -79,7 +79,7 @@ var FbListOrder = new Class({
 					'data': {
 						'option': 'com_fabrik',
 						'format': 'raw',
-						'task': 'plugin.pluginAjax',
+						'view': 'pluginAjax',
 						'plugin': 'order',
 						'g': 'list',
 						'listref': this.options.ref,
