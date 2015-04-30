@@ -32,6 +32,13 @@ interface ConnectionsInterface
 class Connections extends Base implements ConnectionsInterface
 {
 	/**
+	 * Session state context prefix
+	 *
+	 * @var string
+	 */
+	protected $context = 'fabrik.connections';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   Registry $state Optional configuration settings.
@@ -96,18 +103,18 @@ class Connections extends Base implements ConnectionsInterface
 			$json->$uri = array($this->joomlaConnection());
 		}
 
-		$this->items = $json->$uri;
+		$this->items = $this->filterItems($json->$uri);
 
 		foreach ($this->items as &$item)
 		{
 			if ($item->checked_out !== '')
 			{
-				$user = \JFactory::getUser($item->checked_out);
+				$user         = \JFactory::getUser($item->checked_out);
 				$item->editor = $user->get('name');
 			}
 		}
 
-		return $json->$uri;
+		return $this->items;
 	}
 
 	/**
@@ -122,15 +129,15 @@ class Connections extends Base implements ConnectionsInterface
 	 *
 	 * @return  void
 	 */
-	protected function populateState($ordering = null, $direction = null)
+	protected function populateState($ordering = '', $direction = '')
 	{
 		// Load the parameters.
-		$params = JComponentHelper::getParams('com_fabrik');
-		$this->setState('params', $params);
+		/*$params = JComponentHelper::getParams('com_fabrik');
+		$this->setState('params', $params);*/
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
+		$this->set('filter.published', $published);
 		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
+		$this->set('filter.search', $search);
 
 		// List state information.
 		parent::populateState('name', 'asc');
@@ -145,7 +152,9 @@ class Connections extends Base implements ConnectionsInterface
 	public function activeConnections()
 	{
 		// @todo
-		echo "todo - return active connections";exit;
+		echo "todo - return active connections";
+		exit;
+
 		/*$db = $this->getDbo();
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__fabrik_connections')->where('published = 1');
@@ -168,6 +177,8 @@ class Connections extends Base implements ConnectionsInterface
 			$data = ArrayHelper::fromObject($data);
 		}
 
+		unset($data['passwordConf']);
+		unset($data['editor']);
 		$path = JPATH_COMPONENT_ADMINISTRATOR . '/models/connections.json';
 		$json = file_get_contents($path);
 		$json = json_decode($json);
@@ -182,8 +193,18 @@ class Connections extends Base implements ConnectionsInterface
 		}
 		else
 		{
-			$part      =& $json->$uri;
-			$part[$id] = $data;
+			$part =& $json->$uri;
+
+			if ($id <> '')
+			{
+				// Update
+				$part[$id] = $data;
+			}
+			else
+			{
+				// Insert
+				$part[] = $data;
+			}
 		}
 
 		$output = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
@@ -194,12 +215,30 @@ class Connections extends Base implements ConnectionsInterface
 	}
 
 	/**
+	 * Load a schema file which defines a new item
+	 *
+	 * @return object
+	 */
+	protected function itemSchema()
+	{
+		$path = JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/connection.json';
+		$json = file_get_contents($path);
+
+		return json_decode($json);
+	}
+
+	/**
 	 * Get an item
 	 *
 	 * @return stdClass
 	 */
 	public function getItem()
 	{
+		if ($this->get('id', '') === '')
+		{
+			return $this->itemSchema();
+		}
+
 		$data = $this->app->getUserState('com_fabrik.edit.' . $this->name . '.data', array());
 		$test = (array) $data;
 
@@ -227,7 +266,7 @@ class Connections extends Base implements ConnectionsInterface
 		foreach ($ids as $id)
 		{
 			$items[$id]->default = $default;
-			$items[$id]->id = $id;
+			$items[$id]->id      = $id;
 			$this->save($items[$id]);
 		}
 	}

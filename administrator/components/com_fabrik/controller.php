@@ -68,8 +68,9 @@ class Controller extends \JControllerBase
 		switch ($layoutName)
 		{
 			case 'add':
-			case 'edit':
 				$layoutName = 'edit';
+				break;
+			case 'edit':
 				$model->set('id', $id);
 				$model->checkout();
 				break;
@@ -159,10 +160,11 @@ class Controller extends \JControllerBase
 	protected function save($model)
 	{
 		$data = $this->input->post->get('jform', array(), 'array');
-		$model->prepare($data);
 
 		if ($model->validate($data))
 		{
+			$model->prepare($data);
+
 			return $model->save($data);
 		}
 		else

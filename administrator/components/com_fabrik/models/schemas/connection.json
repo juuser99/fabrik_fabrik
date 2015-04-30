@@ -1,0 +1,17 @@
+{
+  "id": "",
+  "description": "",
+  "host": "",
+  "database": "",
+  "user": "",
+  "password": "",
+  "passwordConf": "",
+  "published": 1,
+  "checked_out": "",
+  "default": 0,
+  "params": {
+    "encryptedPw": true
+  },
+  "checked_out_time": "",
+  "editor": ""
+}

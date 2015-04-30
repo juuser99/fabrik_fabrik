@@ -1,0 +1,47 @@
+{
+    "http://live.com": [
+        {
+            "description": "default",
+            "default": true,
+            "driver": "mysqli",
+            "host": "localhost",
+            "user": "root",
+            "password": "",
+            "port": "",
+            "socket": "",
+            "database": "fabrik31x",
+            "prefix": "jos_",
+            "published": true,
+            "checked_out": false
+        }
+    ],
+    "127.0.0.1": [
+        {
+            "description": "Default JDB!",
+            "host": "localhost",
+            "database": "fabrik31x",
+            "user": "root",
+            "password": "",
+            "published": 1,
+            "checked_out": "",
+            "default": "1",
+            "params": {
+                "encryptedPw": true
+            },
+            "checked_out_time": ""
+        },
+        {
+            "description": "test",
+            "host": "test",
+            "database": "test",
+            "user": "test",
+            "password": "",
+            "published": 0,
+            "checked_out": "0",
+            "default": true,
+            "params": {
+                "encryptedPw": true
+            }
+        }
+    ]
+}

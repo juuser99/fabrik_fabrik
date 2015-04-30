@@ -1,0 +1,16 @@
+{
+  "id": 0,
+  "checked_out": false,
+  "list" : {
+    "connection_id" : 1,
+    "db_table_name": "",
+    "access": false
+  },
+  "form": {
+  },
+  "params": {
+
+  },
+  "plugin": "",
+  "parent_id": ""
+}

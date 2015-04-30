@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<updates>
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.6</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.6.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+
+
+
+
+
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.6.1</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.6.1.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+
+
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.6.2</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.6.2.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+
+
+
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.6.3</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.6.3.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.1a</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.1a.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="3.1"/>
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.7.1</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.7.1.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.7</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.7.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.8</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.8.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0a</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0a.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+<update>
+		<name>Fabrik list: list_example</name>
+		<description>Fabrik list: list_example</description>
+		<element>plg_list_list_example</element>
+		<type>plugin</type>
+		<folder>fabrik_list</folder>
+		<version>3.0.9</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_list_list_example_3.0.9.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+
+</updates>

@@ -51,7 +51,6 @@ class Connection extends Connections implements ConnectionInterface
 	 *
 	 * @return  null
 	 */
-
 	public function checkDefault(&$item)
 	{
 		if ($item->id == 1)
@@ -76,7 +75,6 @@ class Connection extends Connections implements ConnectionInterface
 	 *
 	 * @return  bool  matches or not
 	 */
-
 	protected function matchesDefault($item)
 	{
 		$password = $this->config->get('password');
@@ -88,7 +86,7 @@ class Connection extends Connections implements ConnectionInterface
 	}
 
 	/**
-	 * Prepare the data for saving. Run before validation
+	 * Prepare the data for saving. Run after validation
 	 *
 	 * @param  array $data
 	 *
@@ -115,7 +113,6 @@ class Connection extends Connections implements ConnectionInterface
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */
-
 	public function validate($data)
 	{
 		if ($data['password'] !== $data['passwordConf'])
@@ -153,5 +150,4 @@ class Connection extends Connections implements ConnectionInterface
 
 		return $ok;
 	}
-
 }

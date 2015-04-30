@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<updates>
+	
+
+
+
+<update>
+		<name>Fabrik element: mytristate</name>
+		<description>Fabrik element: mytristate</description>
+		<element>plg_element_mytristate</element>
+		<type>plugin</type>
+		<folder>fabrik_element</folder>
+		<version>3.0.7</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_element_mytristate_3.0.7.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http::/fabrikar.com</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+</updates>
