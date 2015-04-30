@@ -18,6 +18,7 @@ use \JFactory as JFactory;
 use \FabrikAdminHelper as FabrikAdminHelper;
 use \FText as FText;
 use \JToolBarHelper as JToolBarHelper;
+use \stdClass as stdClass;
 
 /**
  * View to edit a cron.
@@ -51,6 +52,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 	/**
 	 * Plugin HTML
+	 *
 	 * @var string
 	 */
 	protected $pluginFields;
@@ -63,28 +65,28 @@ class Html extends \Fabrik\Admin\Views\Html
 
 	public function render()
 	{
-		$this->form = $this->model->getForm();
-		$this->item = $this->model->getItem();
-		$this->state = $this->model->getState();
+		$this->form         = $this->model->getForm();
+		$this->item         = $this->model->getItem();
+		$this->state        = $this->model->getState();
 		$this->pluginFields = $this->model->getPluginHTML();
 
 		$this->addToolbar();
 
-		$srcs = FabrikHelperHTML::framework();
+		$srcs   = FabrikHelperHTML::framework();
 		$srcs[] = 'media/com_fabrik/js/fabrik.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/cron/admincron.js';
 
-		$shim = array();
-		$dep = new stdClass;
-		$dep->deps = array('admin/pluginmanager');
+		$shim                         = array();
+		$dep                          = new stdClass;
+		$dep->deps                    = array('admin/pluginmanager');
 		$shim['admin/cron/admincron'] = $dep;
 
-		$opts = new stdClass;
+		$opts         = new stdClass;
 		$opts->plugin = $this->item->plugin;
 
-		$js = array();
+		$js   = array();
 		$js[] = "\twindow.addEvent('domready', function () {";
 		$js[] = "\t\tFabrik.controller = new CronAdmin(" . json_encode($opts) . ");";
 		$js[] = "\t})";
@@ -102,15 +104,15 @@ class Html extends \Fabrik\Admin\Views\Html
 
 	protected function addToolbar()
 	{
-		$app = JFactory::getApplication();
+		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
-		$user = JFactory::getUser();
-		$userId = $user->get('id');
-		$isNew = ($this->item->id == 0);
-		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_CRON_NEW') : FText::_('COM_FABRIK_MANAGER_CRON_EDIT') . ' "' . $this->item->label . '"';
+		$user       = JFactory::getUser();
+		$userId     = $user->get('id');
+		$isNew      = ($this->item->id == 0);
+		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
+		$canDo      = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$title      = $isNew ? FText::_('COM_FABRIK_MANAGER_CRON_NEW') : FText::_('COM_FABRIK_MANAGER_CRON_EDIT') . ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'cron.png');
 
 		if ($isNew)

@@ -49,8 +49,13 @@ class Base extends \JModelBase
 		parent::__construct($state);
 		$this->app  = $this->state->get('app', \JFactory::getApplication());
 		$this->user = $this->state->get('user', \JFactory::getUser());
-		$path       = explode('\\', get_class($this));
-		$this->name = strtolower(array_pop($path));
+
+		if ($this->name === '')
+		{
+			$path       = explode('\\', get_class($this));
+			$this->name = strtolower(array_pop($path));
+		}
+
 		$this->populateState();
 	}
 
@@ -142,6 +147,11 @@ class Base extends \JModelBase
 		return true;
 	}
 
+	/**
+	 * Get the models active/selected plug-ins
+	 *
+	 * @return array
+	 */
 	public function getPlugins()
 	{
 		$item = $this->getItem();
@@ -312,8 +322,6 @@ class Base extends \JModelBase
 	 */
 	public function checkin()
 	{
-		echo "check in";
-		exit;
 		$item                   = $this->getItem();
 		$item->checked_out      = '';
 		$item->checked_out_time = '';

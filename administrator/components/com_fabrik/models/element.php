@@ -27,8 +27,6 @@ use \JText as JText;
 
 jimport('joomla.application.component.modeladmin');
 
-require_once 'fabmodeladmin.php';
-
 interface ModelElementFormInterface
 {
 }
@@ -284,21 +282,15 @@ class Element extends Base implements ModelElementFormInterface
 	}
 
 	/**
-	 * Method to validate the form data.
+	 * Validate the form
 	 *
-	 * @param   JForm   $form   The form to validate against.
 	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @see     JFormRule
-	 * @see     JFilterInput
-	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 * @return mixed  false or data
 	 */
-
-	public function validate($form, $data, $group = null)
+	public function validate($data)
 	{
-		$ok = parent::validate($form, $data);
+		$ok = parent::validate($data);
 		$input = $this->app->input;
 
 		// Standard jform validation failed so we shouldn't test further as we can't be sure of the data

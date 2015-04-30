@@ -241,18 +241,17 @@ class Form extends Base implements ModelFormFormInterface
 	}
 
 	/**
-	 * Method to validate the form data.
+	 * Validate the form
 	 *
-	 * @param   object  $form   The form to validate against.
 	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @return  mixed	Array of filtered data if valid, false otherwise.
+	 * @return mixed  false or data
 	 */
-	public function validate($form, $data, $group = null)
+
+	public function validate($data)
 	{
 		$params = $data['params'];
-		$ok = parent::validate($form, $data);
+		$ok = parent::validate($data);
 
 		// Standard jform validation failed so we shouldn't test further as we can't be sure of the data
 		if (!$ok)

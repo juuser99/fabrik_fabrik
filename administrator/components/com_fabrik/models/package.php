@@ -15,8 +15,6 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 
-require_once 'fabmodeladmin.php';
-
 /**
  * Fabrik Admin Package Model
  *

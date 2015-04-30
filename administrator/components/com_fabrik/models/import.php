@@ -12,8 +12,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabmodeladmin.php';
-
 /**
  * Fabrik Admin Import Model
  *

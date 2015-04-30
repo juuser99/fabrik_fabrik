@@ -26,8 +26,6 @@ use \JHTML as JHTML;
 use \FabrikWorker as FabrikWorker;
 use \JFactory as JFactory;
 
-require_once 'fabmodeladmin.php';
-
 interface ModelFormLiztInterface
 {
 
@@ -42,6 +40,7 @@ interface ModelFormLiztInterface
  */
 class Lizt extends Base implements ModelFormLiztInterface
 {
+	protected $name = 'list';
 	/**
 	 * The prefix to use with controller messages.
 	 *
@@ -119,6 +118,16 @@ class Lizt extends Base implements ModelFormLiztInterface
 		return $form;
 	}
 
+	public function publish($ids = array())
+	{
+		return $this->_publish($ids, true);
+	}
+
+	public function unpublish($ids = array())
+	{
+		return $this->_publish($ids, false);
+	}
+
 	/**
 	 * Method to change the published state of one or more records.
 	 *
@@ -129,8 +138,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 *
 	 * @since	1.6
 	 */
-
-	public function publish(&$pks, $value = 1)
+	protected function _publish(&$pks, $value = 1)
 	{
 		// Initialise variables.
 		$dispatcher = JEventDispatcher::getInstance();
@@ -484,17 +492,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 	/**
 	 * Validate the form
 	 *
-	 * @param   object  $form   The form to validate against.
 	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
 	 *
 	 * @return mixed  false or data
 	 */
-
-	public function validate($form, $data, $group = null)
+	public function validate($data)
 	{
 		$params = $data['params'];
-		$data = parent::validate($form, $data, $group);
+		$data = parent::validate($data);
 
 		if (!$data)
 		{

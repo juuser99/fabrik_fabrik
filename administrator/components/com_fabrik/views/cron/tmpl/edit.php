@@ -21,8 +21,8 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 
-	Joomla.submitbutton = function(task) {
-		if (task !== 'element.cancel'  && !Fabrik.controller.canSaveForm()) {
+	Joomla.submitbutton = function (task) {
+		if (task !== 'element.cancel' && !Fabrik.controller.canSaveForm()) {
 			alert('Please wait - still loading');
 			return false;
 		}
@@ -35,32 +35,67 @@ JHtml::_('behavior.keepalive');
 	}
 </script>
 <form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
-	<div class="width-100 fltlft">
-	<?php foreach ($this->form->getFieldsets() as $fieldset) {?>
-		<fieldset class="adminform">
-			<legend><?php echo $fieldset->label;?></legend>
-			<ul class="adminformlist">
-			<?php foreach ($this->form->getFieldset($fieldset->name) as $field) : ?>
-				<li>
-					<?php if (!$field->hidden): ?>
-						<?php echo $field->label; ?>
-					<?php endif; ?>
-					<?php echo $field->input; ?>
-				</li>
-			<?php endforeach; ?>
-			</ul>
 
-		</fieldset>
-<?php }?>
-<fieldset class="adminform">
-			<legend><?php echo FText::_('COM_FABRIK_OPTIONS');?></legend>
-			<div id="plugin-container">
-				<?php echo $this->pluginFields;?>
-			</div>
-		</fieldset>
+	<div class="row-fluid">
+		<div class="span6">
+			<fieldset class="form-horizontal">
+				<legend>
+					<?php echo FText::_('COM_FABRIK_DETAILS'); ?>
+				</legend>
+				<?php
+				foreach ($this->form->getFieldset('details') as $key => $this->field) :
+					if ($key !== 'jform_plugin')
+					{
+						require '_control_group.php';
+					}
+					else
+					{
+						// Defer the plug-in field to the end
+						$pluginField = $this->field;
+					}
+				endforeach;
+				foreach ($this->form->getFieldset('connection') as $this->field) :
+					require '_control_group.php';
+				endforeach;
+				$this->field = $pluginField;
+				require '_control_group.php';
+				?>
+			</fieldset>
 
+		</div>
+
+		<div class="span6">
+
+			<fieldset class="form-horizontal">
+				<legend>
+					<?php echo FText::_('COM_FABRIK_RUN'); ?>
+				</legend>
+				<?php foreach ($this->form->getFieldset('run') as $this->field) :
+					require '_control_group.php';
+				endforeach;
+				?>
+			</fieldset>
+
+			<fieldset class="form-horizontal">
+				<legend>
+					<?php echo FText::_('COM_FABRIK_LOG'); ?>
+				</legend>
+				<?php foreach ($this->form->getFieldset('log') as $this->field) :
+					require '_control_group.php';
+				endforeach;
+				?>
+			</fieldset>
+		</div>
 	</div>
-
+	<div class="row-fluid">
+		<div class="span12">
+			<fieldset class="form-horizontal">
+				<div id="plugin-container">
+					<?php echo $this->pluginFields; ?>
+				</div>
+			</fieldset>
+		</div>
+	</div>
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

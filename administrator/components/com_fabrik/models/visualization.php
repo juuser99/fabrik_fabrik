@@ -20,8 +20,6 @@ use \JModelLegacy as JModelLegacy;
 use \FText as FText;
 
 
-require_once 'fabmodeladmin.php';
-
 interface ModelVisualizationInterface
 {
 
@@ -77,26 +75,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 		}
 
 		return $str;
-	}
-
-	/**
-	 * Method to validate the form data.
-	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
-	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
-	 *
-	 * @see     JFormRule
-	 * @see     JFilterInput
-	 */
-
-	public function validate($form, $data, $group = null)
-	{
-		parent::validate($form, $data);
-
-		return $data;
 	}
 
 	/**

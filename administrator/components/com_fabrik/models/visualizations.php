@@ -14,8 +14,6 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabmodellist.php';
-
 interface ModelVisualizationsInterface
 {
 

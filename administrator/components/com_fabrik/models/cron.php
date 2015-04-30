@@ -18,6 +18,7 @@ use Joomla\Utilities\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
 use \JModelLegacy as JModelLegacy;
 use \FabrikString as FabrikString;
+use \FText as FText;
 
 interface CronInterface
 {
@@ -109,7 +110,6 @@ class Cron extends Base implements CronInterface
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */
-
 	public function validate($data)
 	{
 		$params = $data['params'];
