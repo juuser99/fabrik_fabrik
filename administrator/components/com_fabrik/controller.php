@@ -58,6 +58,7 @@ class Controller extends \JControllerBase
 
 		$viewClass  = 'Fabrik\Admin\Views\\' . ucfirst($viewName) . '\\' . ucfirst($viewFormat);
 		$modelClass = 'Fabrik\Admin\Models\\' . ucfirst($viewName);
+		//echo "viewClass = $viewClass, modelClass = $modelClass";exit;
 		$model      = new $modelClass;
 		$view       = new $viewClass($model, $paths);
 
@@ -122,6 +123,11 @@ class Controller extends \JControllerBase
 
 	protected function listUrl($viewName)
 	{
+		if ($viewName === 'lizt')
+		{
+			$viewName = 'list';
+		}
+
 		$inflector  = Inflector::getInstance();
 
 		return 'index.php?option=com_fabrik&view=' . $inflector->toPlural($viewName);

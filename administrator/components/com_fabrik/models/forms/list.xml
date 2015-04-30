@@ -48,7 +48,7 @@
 
 		<field name="introduction"
 			type="editor"
-			filter="FabrikAdminHelper::filterText"
+			filter="Fabrik::filterText"
 			rows="3" cols="30"
 			label="COM_FABRIK_FIELD_INTRODUCTION_LABEL"
 			description="COM_FABRIK_FIELD_INTRODUCTION_DESC"
@@ -203,7 +203,7 @@
 
 			<field name="outro"
 				type="editor"
-				filter="FabrikAdminHelper::filterText"
+				filter="Fabrik::filterText"
 				rows="3" cols="30"
 				label="COM_FABRIK_FIELD_OUTRO_LABEL"
 				description="COM_FABRIK_FIELD_OUTRO_DESC"

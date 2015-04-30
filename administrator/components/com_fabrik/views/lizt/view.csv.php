@@ -11,8 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
-
 /**
  * View to make ajax json object reporting csv file creation progress.
  *

@@ -27,8 +27,8 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Html Extends \JViewHtml{
-
+class Html Extends \JViewHtml
+{
 	/**
 	 * Method to instantiate the view.
 	 *

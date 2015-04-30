@@ -115,7 +115,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		@$subForm->setFields($children);
 
 		$str = array();
-		$modalid = 'attrib-' . $this->id . '_modal';
+		$modalId = 'attrib-' . $this->id . '_modal';
 
 		// As JForm will render child fieldsets we have to hide it via CSS
 		$fieldSetId = str_replace('jform_params_', '', $modalId);
@@ -200,7 +200,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 					$context = 'COM_MODULES';
 				}
 
-				$j3pane = $context . '_' . str_replace('jform_params_', '', $modalid) . '_FIELDSET_LABEL';
+				$j3pane = $context . '_' . str_replace('jform_params_', '', $modalId) . '_FIELDSET_LABEL';
 				$j3pane = strtoupper(str_replace('attrib-', '', $j3pane));
 
 				$script = "window.addEvent('domready', function() {
@@ -222,7 +222,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 
 		$icon = $this->element['icon'] ? '<i class="icon-' . $this->element['icon'] . '"></i> ' : '';
 		$icon .= FText::_('JLIB_FORM_BUTTON_SELECT');
-		$str[] = '<button class="btn" id="' . $modalid . '_button" data-modal="' . $modalid . '">' . $icon . '</button>';
+		$str[] = '<button class="btn" id="' . $modalId . '_button" data-modal="' . $modalId . '">' . $icon . '</button>';
 		$str[] = '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" />';
 
 		FabrikHelperHTML::framework();

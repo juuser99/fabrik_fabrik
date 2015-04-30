@@ -1,6 +1,6 @@
 <?php
 /**
- * Fabrik Component Helper
+ * Fabrik Admin Component Helper
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
@@ -9,66 +9,103 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use \JFactory as JFactory;
+use \JHtmlSidebar as JHtmlSidebar;
+use \FText as FText;
 
 /**
- * Fabrik Component Helper
+ * Fabrik Admin Component Helper
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       1.5
+ * @since       3.5
  */
-class FabrikAdminHelper
+class Fabrik
 {
+	/**
+	 * Test that they've published some element plugins!
+	 *
+	 * @throws \Exception
+	 * @throws \RuntimeException
+	 */
+	public static function testPublishedPlugins()
+	{
+		// Access check.
+		if (!JFactory::getUser()->authorise('core.manage', 'com_fabrik'))
+		{
+			throw new \Exception(JText::_('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// Test if the system plugin is installed and published
+		if (!defined('COM_FABRIK_FRONTEND'))
+		{
+			throw new \RuntimeException(JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
+		}
+
+		$db    = JFactory::getDbo();
+		$app   = JFactory::getApplication();
+		$query = $db->getQuery(true);
+		$query->select('COUNT(extension_id)')->from('#__extensions')->where('enabled = 1 AND folder = "fabrik_element"');
+		$db->setQuery($query);
+
+		if (count($db->loadResult()) === 0)
+		{
+			$app->enqueueMessage(JText::_('COM_FABRIK_PUBLISH_AT_LEAST_ONE_ELEMENT_PLUGIN'), 'notice');
+		}
+	}
+
 	/**
 	 * Prepare the date for saving
 	 * DATES SHOULD BE SAVED AS UTC
 	 *
-	 * @param   string  &$strdate  publish down date
+	 * @param   string &$strDate publish down date
 	 *
 	 * @return  null
 	 */
 
-	public static function prepareSaveDate(&$strdate)
+	public static function prepareSaveDate(&$strDate)
 	{
 		$config = JFactory::getConfig();
-		$tzoffset = $config->get('offset');
-		$db = FabrikWorker::getDbo(true);
+		$offset = $config->get('offset');
+		$db     = FabrikWorker::getDbo(true);
 
 		// Handle never unpublish date
-		if (trim($strdate) == FText::_('Never') || trim($strdate) == '' || trim($strdate) == $db->getNullDate())
+		if (trim($strDate) == FText::_('Never') || trim($strDate) == '' || trim($strDate) == $db->getNullDate())
 		{
-			$strdate = $db->getNullDate();
+			$strDate = $db->getNullDate();
 		}
 		else
 		{
-			if (String::strlen(trim($strdate)) <= 10)
+			if (String::strlen(trim($strDate)) <= 10)
 			{
-				$strdate .= ' 00:00:00';
+				$strDate .= ' 00:00:00';
 			}
 
-			$date = JFactory::getDate($strdate, $tzoffset);
-			$strdate = $date->toSql();
+			$date    = JFactory::getDate($strDate, $offset);
+			$strDate = $date->toSql();
 		}
 	}
 
 	/**
 	 * Gets a list of the actions that can be performed.
 	 *
-	 * @param   int  $categoryId  The category ID.
+	 * @param   int $categoryId The category ID.
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 *
-	 * @return	JObject
+	 * @return    JObject
 	 */
 
 	public static function getActions($categoryId = 0)
 	{
-		$user = JFactory::getUser();
-		$result = new JObject;
+		$user   = JFactory::getUser();
+		$result = new \JObject;
 
 		if (empty($categoryId))
 		{
@@ -92,11 +129,11 @@ class FabrikAdminHelper
 	/**
 	 * Configure the Linkbar.
 	 *
-	 * @param   string  $vName  The name of the active view.
+	 * @param   string $vName The name of the active view.
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 *
-	 * @return	void
+	 * @return    void
 	 */
 
 	public static function addSubmenu($vName)
@@ -116,7 +153,7 @@ class FabrikAdminHelper
 	/**
 	 * Applies the content tag filters to arbitrary text as per settings for current user group
 	 *
-	 * @param   string  $text  The string to filter
+	 * @param   string $text The string to filter
 	 *
 	 * @return  string  The filtered string
 	 */
@@ -125,21 +162,21 @@ class FabrikAdminHelper
 	{
 		// Filter settings
 		jimport('joomla.application.component.helper');
-		$config = JComponentHelper::getParams('com_config');
-		$user = JFactory::getUser();
+		$config     = JComponentHelper::getParams('com_config');
+		$user       = JFactory::getUser();
 		$userGroups = JAccess::getGroupsByUser($user->get('id'));
 
 		$filters = $config->get('filters');
 
-		$blackListTags = array();
+		$blackListTags       = array();
 		$blackListAttributes = array();
 
-		$whiteListTags = array();
+		$whiteListTags       = array();
 		$whiteListAttributes = array();
 
-		$noHtml = false;
-		$whiteList = false;
-		$blackList = false;
+		$noHtml     = false;
+		$whiteList  = false;
+		$blackList  = false;
 		$unfiltered = false;
 
 		// Cycle through each of the user groups the user is in.
@@ -170,9 +207,9 @@ class FabrikAdminHelper
 			{
 				// Black or white list.
 				// Pre-process the tags and attributes.
-				$tags = explode(',', $filterData->filter_tags);
-				$attributes = explode(',', $filterData->filter_attributes);
-				$tempTags = array();
+				$tags           = explode(',', $filterData->filter_tags);
+				$attributes     = explode(',', $filterData->filter_attributes);
+				$tempTags       = array();
 				$tempAttributes = array();
 
 				foreach ($tags as $tag)
@@ -199,23 +236,23 @@ class FabrikAdminHelper
 				// Each list is cumulative.
 				if ($filterType == 'BL')
 				{
-					$blackList = true;
-					$blackListTags = array_merge($blackListTags, $tempTags);
+					$blackList           = true;
+					$blackListTags       = array_merge($blackListTags, $tempTags);
 					$blackListAttributes = array_merge($blackListAttributes, $tempAttributes);
 				}
 				elseif ($filterType == 'WL')
 				{
-					$whiteList = true;
-					$whiteListTags = array_merge($whiteListTags, $tempTags);
+					$whiteList           = true;
+					$whiteListTags       = array_merge($whiteListTags, $tempTags);
 					$whiteListAttributes = array_merge($whiteListAttributes, $tempAttributes);
 				}
 			}
 		}
 
 		// Remove duplicates before processing (because the black list uses both sets of arrays).
-		$blackListTags = array_unique($blackListTags);
+		$blackListTags       = array_unique($blackListTags);
 		$blackListAttributes = array_unique($blackListAttributes);
-		$whiteListTags = array_unique($whiteListTags);
+		$whiteListTags       = array_unique($whiteListTags);
 		$whiteListAttributes = array_unique($whiteListAttributes);
 
 		// Unfiltered assumes first priority.
@@ -229,8 +266,8 @@ class FabrikAdminHelper
 			if ($blackList)
 			{
 				// Remove the white-listed attributes from the black-list.
-				$tags = array_diff($blackListTags, $whiteListTags);
-				$attrs = array_diff($blackListAttributes, $whiteListAttributes);
+				$tags   = array_diff($blackListTags, $whiteListTags);
+				$attrs  = array_diff($blackListAttributes, $whiteListAttributes);
 				$filter = JFilterInput::getInstance($tags, $attrs, 1, 1);
 			}
 			// White lists take third precedence.

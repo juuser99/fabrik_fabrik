@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Fabrik\Admin\Helpers\Fabrik;
 
 /**
  * View to edit a form.
@@ -200,7 +200,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		$userId = $user->get('id');
 		$isNew = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_FORM_NEW') : FText::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'form.png');
 

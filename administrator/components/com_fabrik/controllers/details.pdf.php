@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Helpers\Fabrik;
+
 require_once 'fabcontrollerform.php';
 
 /**
@@ -56,6 +58,6 @@ class FabrikAdminControllerDetails extends FabControllerForm
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
 
 		$view->display();
-		FabrikAdminHelper::addSubmenu($this->getName());
+		Fabrik::addSubmenu($this->getName());
 	}
 }

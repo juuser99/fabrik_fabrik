@@ -17,7 +17,7 @@ use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
-use \FabrikAdminHelper as FabrikAdminHelper;
+use Fabrik\Admin\Helpers\Fabrik;
 use \FabrikHelperHTML as FabrikHelperHTML;
 
 /**
@@ -66,7 +66,7 @@ class Html extends \Fabrik\Admin\Views\Html
 				return;
 				break;
 			case 'import':
-				$this->import($tpl);
+				$this->import();
 
 				return;
 				break;
@@ -78,8 +78,10 @@ class Html extends \Fabrik\Admin\Views\Html
 		//$this->packageOptions = $this->get('PackageOptions');
 
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu('lists');
+		Fabrik::addSubmenu('lists');
 		//$this->table_groups = $this->get('TableGroups');
+
+		$this->sidebar = JHtmlSidebar::render();
 
 		FabrikHelperHTML::iniRequireJS();
 		return parent::render();
@@ -93,7 +95,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo = \FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
 
 		if ($canDo->get('core.create'))

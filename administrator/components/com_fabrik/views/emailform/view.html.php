@@ -13,8 +13,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 
-jimport('joomla.application.component.view');
-
 /**
  * View when emailing a form to a user
  *

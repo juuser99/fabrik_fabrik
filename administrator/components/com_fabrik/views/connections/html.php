@@ -17,7 +17,7 @@ use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
-use \FabrikAdminHelper as FabrikAdminHelper;
+use Fabrik\Admin\Helpers\Fabrik;
 use \JFactory as JFactory;
 use \FabrikHelperHTML as FabrikHelperHTML;
 
@@ -65,7 +65,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->state = $this->model->getState();
 
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu('connections');
+		Fabrik::addSubmenu('connections');
 
 		$this->sidebar = JHtmlSidebar::render();
 
@@ -85,7 +85,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo	= FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo	= Fabrik::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_CONNECTIONS'), 'connections.png');
 
 		if ($canDo->get('core.create'))

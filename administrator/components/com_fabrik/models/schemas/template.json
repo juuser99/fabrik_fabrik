@@ -2,6 +2,8 @@
   "id": 0,
   "checked_out": false,
   "list" : {
+    "db_table_name": "",
+    "access": 0,
     "connection_id" : 1,
     "db_table_name": "",
     "access": false
@@ -11,6 +13,7 @@
   "params": {
 
   },
+
   "plugin": "",
   "parent_id": ""
 }

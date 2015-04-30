@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Helpers\AdminElement;
+
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -92,7 +94,7 @@ class JFormFieldTables extends JFormFieldList
 			return '<input type="text" value="' . $this->value . '" class="readonly" name="' . $this->name . '" readonly="true" />';
 		}
 
-		$c = FabrikAdminElementHelper::getRepeatCounter($this);
+		$c = AdminElement::getRepeatCounter($this);
 
 		if ($connectionDd != '')
 		{

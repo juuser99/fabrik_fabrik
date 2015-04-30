@@ -12,7 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabcontrollerform.php';
+use Fabrik\Admin\Helpers\Fabrik;
 
 /**
  * Admin List controller class.
@@ -150,7 +150,7 @@ class FabrikAdminControllerList extends FabControllerForm
 			$cache->get($view, 'display', $cacheid);
 		}
 
-		FabrikAdminHelper::addSubmenu($this->getName());
+		Helper::addSubmenu($this->getName());
 	}
 
 	/**

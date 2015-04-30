@@ -12,9 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controllerform');
-
-require_once 'fabcontrollerform.php';
+use Fabrik\Admin\Helpers\Fabrik;
 
 /**
  * Form controller class.
@@ -97,7 +95,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 			echo preg_replace($search, $replacement, $contents);
 		}
 
-		FabrikAdminHelper::addSubmenu($this->getName());
+		Fabrik::addSubmenu($this->getName());
 	}
 
 	/**

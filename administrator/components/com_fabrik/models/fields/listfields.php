@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Helpers\AdminElement;
+
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -61,7 +63,6 @@ class JFormFieldListfields extends JFormFieldList
 		$formModel = false;
 		$aEls = array();
 		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
-		$c = (int) FabrikAdminElementHelper::getRepeatCounter($this);
 		$connection = $this->element['connection'];
 		/*
 		 * 27/08/2011 - changed from default table-element to id - for juser form plugin - might cause havoc
@@ -358,8 +359,8 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$connection        = $this->getAttribute('connection');
 		$repeat            = FabrikWorker::toBoolean($this->getAttribute('repeat', false), false);
-		$repeat            = FabrikAdminElementHelper::getRepeat($this) || $repeat;
-		$c                 = (int) FabrikAdminElementHelper::getRepeatCounter($this);
+		$repeat            = AdminElement::getRepeat($this) || $repeat;
+		$c                 = (int) AdminElement::getRepeatCounter($this);
 		$mode              = $this->getAttribute('mode');
 		$connectionDd      = $repeat ? $connection . '-' . $c : $connection;
 		$highlightPk       = FabrikWorker::toBoolean($this->getAttribute('highlightpk', false), false);

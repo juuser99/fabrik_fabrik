@@ -25,6 +25,7 @@ use \stdClass as stdClass;
 use \JHTML as JHTML;
 use \FabrikWorker as FabrikWorker;
 use \JFactory as JFactory;
+use Fabrik\Admin\Helpers\Fabrik;
 
 interface ModelFormLiztInterface
 {
@@ -89,7 +90,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 */
 	public function getItem()
 	{
-		$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/template.json');
+		$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/template.json');
 		$item = json_decode($json);
 
 		return $item;
@@ -286,8 +287,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 	{
 		$item = $this->getItem();
 		$connModel = \JModelLegacy::getInstance('Connection', 'FabrikFEModel');
-		$connModel->setId($item->connection_id);
-		$connModel->getConnection($item->connection_id);
+		$connModel->setId($item->list->connection_id);
+		$connModel->getConnection($item->list->connection_id);
 
 		return $connModel;
 	}
@@ -333,7 +334,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$joinTypeOpts[] = array('left', FText::_('LEFT JOIN'));
 		$joinTypeOpts[] = array('right', FText::_('RIGHT JOIN'));
 		$activetableOpts[] = "";
-		$activetableOpts[] = $item->db_table_name;
+		$activetableOpts[] = $item->list->db_table_name;
 
 		$joins = $this->getJoins();
 
@@ -355,7 +356,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$filterOpts = new stdClass;
 		$filterOpts->filterJoinDd = $this->getFilterJoinDd(false, 'jform[params][filter-join][]');
 		$filterOpts->filterCondDd = $this->getFilterConditionDd(false, 'jform[params][filter-conditions][]', 2);
-		$filterOpts->filterAccess = JHtml::_('access.level', 'jform[params][filter-access][]', $item->access, 'class="input-small"');
+		$filterOpts->filterAccess = JHtml::_('access.level', 'jform[params][filter-access][]', $item->list->access, 'class="input-small"');
 		$filterOpts->filterAccess = str_replace(array("\n", "\r"), '', $filterOpts->filterAccess);
 		$filterOpts = json_encode($filterOpts);
 
@@ -624,9 +625,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		FabrikAdminHelper::prepareSaveDate($row->publish_down);
-		FabrikAdminHelper::prepareSaveDate($row->created);
-		FabrikAdminHelper::prepareSaveDate($row->publish_up);
+		Fabrik::prepareSaveDate($row->publish_down);
+		Fabrik::prepareSaveDate($row->created);
+		Fabrik::prepareSaveDate($row->publish_up);
 		$pk = FArrayHelper::getValue($data, 'db_primary_key');
 
 		if ($pk == '')

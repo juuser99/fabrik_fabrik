@@ -41,6 +41,23 @@ class Cron extends Base implements CronInterface
 	protected $text_prefix = 'COM_FABRIK_CRON';
 
 	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string $ordering  An optional ordering field.
+	 * @param   string $direction An optional direction (asc|desc).
+	 *
+	 * @since    1.6
+	 *
+	 * @return  void
+	 */
+	protected function populateState($ordering = '', $direction = '')
+	{
+		parent::populateState($ordering, $direction);
+		$this->state->set('plugin', $this->app->input->get('plugin', ''));
+	}
+	/**
 	 * Get html form fields for a plugin (filled with
 	 * current element's plugin data
 	 *
@@ -55,7 +72,7 @@ class Cron extends Base implements CronInterface
 
 		if (is_null($plugin))
 		{
-			$plugin = $item->plugin;
+			$plugin = $item->plugin ? $item->plugin : $this->state->get('plugin');
 		}
 
 		JPluginHelper::importPlugin('fabrik_cron');
@@ -101,12 +118,7 @@ class Cron extends Base implements CronInterface
 	/**
 	 * Method to validate the form data.
 	 *
-	 * @param   JForm   $form   The form to validate against.
 	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
-	 *
-	 * @see     JFormRule
-	 * @see     JFilterInput
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
 	 */

@@ -1,6 +1,6 @@
 <?php
 
-use Fabrik\Admin\Models;
+use Fabrik\Admin\Views\Lizt;
 
 /**
  * Created by PhpStorm.
@@ -8,7 +8,7 @@ use Fabrik\Admin\Models;
  * Date: 30/04/2015
  * Time: 11:20
  */
-class fabriktest extends PHPUnit_Framework_TestCase
+class ListEditTest extends PHPUnit_Framework_TestCase
 {
 	protected function setUp()
 	{
@@ -20,11 +20,13 @@ class fabriktest extends PHPUnit_Framework_TestCase
 		JFactory::getApplication()->input->post->set(JSession::getFormToken(),'1');
 	}
 
-	public function testGetItem ()
+	public function testRenderEdit ()
 	{
-		$model = new Fabrik\Admin\Models\Base;
-		$item = $model->getItem();
-		$this->assertObjectHasAttribute('list', $item, 'item does not have list property');
-		$this->assertObjectHasAttribute('form', $item, 'item does not have form property');
+		require JPATH_COMPONENT_ADMINISTRATOR . '/views/lizt/html.php';
+		require JPATH_COMPONENT_ADMINISTRATOR . '/models/lizt.php';
+		$model = new Fabrik\Admin\Models\Lizt;
+		$view = new Fabrik\Admin\Views\Lizt\Html($model);
+		$html = $view->render();
+		$this->assertInternalType('string', $html);
 	}
 }

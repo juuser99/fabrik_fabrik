@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \JFactory as JFactory;
-use \FabrikAdminHelper as FabrikAdminHelper;
+use Fabrik\Admin\Helpers\Fabrik;
 use \FText as FText;
 use \JToolBarHelper as JToolBarHelper;
 use \stdClass as stdClass;
@@ -113,7 +113,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$isNew = ($this->item->id == 0);
 		$userId = $user->get('id');
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_VISUALIZATION_NEW') : FText::_('COM_FABRIK_MANAGER_VISUALIZATION_EDIT');
 		$title .= $isNew ? '' : ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'visualization.png');

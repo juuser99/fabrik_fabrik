@@ -204,6 +204,21 @@ class PlgSystemFabrik extends JPlugin
 		$p = JPATH_SITE . '/plugins/system/fabrik/';
 		$defines = JFile::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
 		require_once $defines;
+
+		$app = JFactory::getApplication();
+		$input = $app->input;
+
+		if ($app->isAdmin())
+		{
+			// Load in front end model path
+			if ($input->get('option') !== 'com_acymailing')
+			{
+				JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
+			}
+
+			require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/fabrik.php';
+		}
+
 		$this->setBigSelects();
 	}
 

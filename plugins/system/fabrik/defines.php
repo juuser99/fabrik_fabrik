@@ -36,15 +36,15 @@ define("COM_FABRIK_EXCEL_CSV_DELIMITER", ";");
 /** @var string separator used in repeat elements/groups IS USED IN F3 */
 define("GROUPSPLITTER", "//..*..//");
 
-$app = JFactory::getApplication();
-$input = $app->input;
+/*$app = JFactory::getApplication();
+$input = $app->input;*/
 
 // Override JHTML -needed for framework override
-$version = new JVersion;
-JHTML::addIncludePath(JPATH_SITE . '/components/com_fabrik/jhelpers/' . $version->RELEASE . '/');
+//$version = new JVersion;
+//JHTML::addIncludePath(JPATH_SITE . '/components/com_fabrik/jhelpers/' . $version->RELEASE . '/');
 
 // Register the element class with the loader
-JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik/element.php');
+//JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik/element.php');
 
 /**
  * Moved these to the plugin constructor, fixing a compat issue with Kunena, see comments there.
@@ -64,13 +64,4 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin.php';
 require_once COM_FABRIK_FRONTEND . '/models/element.php';
 require_once COM_FABRIK_FRONTEND . '/models/elementlist.php';
 
-if ($app->isAdmin())
-{
-	// Load in front end model path
-	if ($input->get('option') !== 'com_acymailing')
-	{
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
-	}
 
-	require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/fabrik.php';
-}

@@ -13,7 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
-
+use Fabrik\Admin\Helpers\AdminElement;
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -62,7 +62,7 @@ class JFormFieldListfields extends JFormFieldList
 		$formModel = false;
 		$aEls = array();
 		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
-		$c = (int) FabrikAdminElementHelper::getRepeatCounter($this);
+		$c = (int) AdminElement::getRepeatCounter($this);
 		$connection = $this->element['connection'];
 		/*
 		 * 27/08/2011 - changed from default table-element to id - for juser form plugin - might cause havoc
@@ -87,7 +87,7 @@ class JFormFieldListfields extends JFormFieldList
 				break;
 			case 'visualization':
 			case 'element':
-				$repeat = FabrikAdminElementHelper::getRepeat($this) || $this->element['repeat'];
+				$repeat = AdminElement::getRepeat($this) || $this->element['repeat'];
 
 				// @TODO this seems like we could re-factor it to use the formModel class as per the table and form switches below?
 				// $connectionDd = ($c === false) ? $connection : $connection . '-' . $c;
@@ -250,8 +250,8 @@ class JFormFieldListfields extends JFormFieldList
 	private function js($res = array())
 	{
 		$connection = $this->element['connection'];
-		$repeat = FabrikAdminElementHelper::getRepeat($this) || $this->element['repeat'];
-		$c = (int) FabrikAdminElementHelper::getRepeatCounter($this);
+		$repeat = AdminElement::getRepeat($this) || $this->element['repeat'];
+		$c = (int) AdminElement::getRepeatCounter($this);
 		$mode = (string) ArrayHelper::getValue($this->element, 'mode', false);
 		$connectionDd = $repeat ? $connection . '-' . $c : $connection;
 		$highlightpk = (bool) ArrayHelper::getValue($this->element, 'highlightpk', false);

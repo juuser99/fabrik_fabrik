@@ -942,14 +942,6 @@ EOD;
 				JHtml::_('formbehavior.chosen', 'select.advancedSelect');
 			}
 
-				
-			if (self::inAjaxLoadedPage() && !$bootstrapped)
-			{
-				// $$$ rob 06/02/2012 recall ant so that Color.detach is available (needed for opening a window from within a window)
-				JHtml::_('script', 'media/com_fabrik/js/lib/art.js');
-				JHtml::_('script', 'media/com_fabrik/js/lib/Event.mock.js');
-			}
-
 			if (!self::inAjaxLoadedPage())
 			{
 				// Require.js now added in fabrik system plugin onAfterRender()
@@ -973,7 +965,6 @@ EOD;
 
 			self::$framework = $src;
 		}
-
 		return self::$framework;
 	}
 

@@ -9,17 +9,17 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-interface FabrikAdminModelPluginInterface
+use \JModelLegacy as JModelLegacy;
+use \FArrayHelper as FArrayHelper;
+
+
+interface PluginInterface
 {
-	/**
-	 * Render the initial plugin options, such as the plugin selector, and whether its rendered in front/back/both etc
-	 *
-	 * @return  string
-	 */
-	public function top();
 }
 
 /**
@@ -30,7 +30,7 @@ interface FabrikAdminModelPluginInterface
  * @subpackage  Fabrik
  * @since       3.0.6
  */
-abstract class FabrikAdminModelPlugin extends FabModelAdmin implements FabrikAdminModelPluginInterface
+class Plugin extends Base implements PluginInterface
 {
 	/**
 	 * Render the plugins fields
@@ -39,19 +39,67 @@ abstract class FabrikAdminModelPlugin extends FabModelAdmin implements FabrikAdm
 	 */
 	public function render()
 	{
-		$input = $this->input;
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$plugin = $pluginManager->getPlugIn($this->getState('plugin'), $this->getState('type'));
-		$feModel = $this->getPluginModel();
+		$input                     = $this->app->input;
+		$pluginManager             = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$plugin                    = $pluginManager->getPlugIn($this->get('plugin'), $this->get('type'));
+		$feModel                   = $this->getPluginModel();
 		$plugin->getJForm()->model = $feModel;
 
 		$data = $this->getData();
-		$input->set('view', $this->getState('type'));
+		$input->set('view', $this->get('type'));
 
-		$str = $plugin->onRenderAdminSettings($data, $this->getState('c'), 'nav-tabs');
+		$str = $plugin->onRenderAdminSettings($data, $this->get('c'), 'nav-tabs');
 		$input->set('view', 'plugin');
 
 		return $str;
+	}
+
+	/**
+	 * Get the plugins data to bind to the form
+	 *
+	 * @return  array
+	 */
+	public function getData()
+	{
+		$type = $this->get('type');
+		$data = array();
+		if ($type === 'validationrule')
+		{
+			$item = FabTable::getInstance('Element', 'FabrikTable');
+			$item->load($this->get('id'));
+		}
+		elseif ($type === 'elementjavascript')
+		{
+			$item = FabTable::getInstance('Jsaction', 'FabrikTable');
+			$item->load($this->get('id'));
+			$data = $item->getProperties();
+		}
+		else
+		{
+			$feModel = $this->getPluginModel();
+			$item    = $feModel->getTable();
+		}
+		$data                                       = $data + (array) json_decode($item->params);
+		$data['plugin']                             = $this->get('plugin');
+		$data['params']                             = (array) FArrayHelper::getValue($data, 'params', array());
+		$data['params']['plugins']                  = $this->get('plugin');
+		$data['validationrule']['plugin']           = $this->get('plugin');
+		$data['validationrule']['plugin_published'] = $this->get('plugin_published');
+		$data['validationrule']['show_icon']        = $this->get('show_icon');
+		$data['validationrule']['validate_in']      = $this->get('validate_in');
+		$data['validationrule']['validation_on']    = $this->get('validation_on');
+		$c                                          = $this->get('c') + 1;
+		// Add plugin published state, locations, descriptions and events
+		$state                          = (array) FArrayHelper::getValue($data, 'plugin_state');
+		$locations                      = (array) FArrayHelper::getValue($data, 'plugin_locations');
+		$events                         = (array) FArrayHelper::getValue($data, 'plugin_events');
+		$descriptions                   = (array) FArrayHelper::getValue($data, 'plugin_description');
+		$data['params']['plugin_state'] = FArrayHelper::getValue($state, $c, 1);
+		$data['plugin_locations']       = FArrayHelper::getValue($locations, $c);
+		$data['plugin_events']          = FArrayHelper::getValue($events, $c);
+		$data['plugin_description']     = FArrayHelper::getValue($descriptions, $c);
+
+		return $data;
 	}
 
 	/**
@@ -62,7 +110,7 @@ abstract class FabrikAdminModelPlugin extends FabModelAdmin implements FabrikAdm
 	protected function getPluginModel()
 	{
 		$feModel = null;
-		$type = $this->getState('type');
+		$type    = $this->get('type');
 
 		if ($type === 'elementjavascript')
 		{
@@ -73,7 +121,7 @@ abstract class FabrikAdminModelPlugin extends FabModelAdmin implements FabrikAdm
 		{
 			// Set the parent model e.g. form/list
 			$feModel = JModelLegacy::getInstance($type, 'FabrikFEModel');
-			$feModel->setId($this->getState('id'));
+			$feModel->setId($this->get('id'));
 		}
 
 		return $feModel;

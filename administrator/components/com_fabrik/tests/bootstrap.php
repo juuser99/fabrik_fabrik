@@ -25,9 +25,16 @@ require_once JPATH_BASE . '/includes/toolbar.php';
 define('JPATH_COMPONENT',JOOMLA_ADMIN_PATH.'/components/com_fabrik');
 define('JPATH_COMPONENT_ADMINISTRATOR',JPATH_COMPONENT);
 
-define('COM_FABRIK_FRONTEND', JOOMLA_PATH . '/components/com_fabrik');
+require_once JPATH_COMPONENT_ADMINISTRATOR . '/views/html.php';
+
+require JPATH_SITE . '/plugins/system/fabrik/defines.php';
+require JPATH_COMPONENT_ADMINISTRATOR . '/models/base.php';
+require JPATH_COMPONENT_ADMINISTRATOR . '/helpers/element.php';
+require JPATH_COMPONENT_ADMINISTRATOR . '/helpers/fabrik.php';
 
 require_once COM_FABRIK_FRONTEND . '/models/plugin.php';
 require_once COM_FABRIK_FRONTEND . '/helpers/string.php';
+require_once COM_FABRIK_FRONTEND . '/helpers/html.php';
 require_once JPATH_LIBRARIES . '/legacy/model/legacy.php';
+
 include BASEPATH.'/controller.php';

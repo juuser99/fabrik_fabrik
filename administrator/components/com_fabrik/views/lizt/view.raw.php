@@ -13,8 +13,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 
-jimport('joomla.application.component.view');
-
 /**
  * View to edit a list.
  *

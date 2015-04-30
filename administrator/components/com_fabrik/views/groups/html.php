@@ -17,6 +17,7 @@ use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
+use Fabrik\Admin\Helpers\Fabrik;
 /**
  * View class for a list of groups.
  *
@@ -63,7 +64,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		//$this->packageOptions = $this->get('PackageOptions');
 
 		$this->addToolbar();
-		\FabrikAdminHelper::addSubmenu('groups');
+		Fabrik::addSubmenu('groups');
 
 		$this->sidebar = JHtmlSidebar::render();
 
@@ -83,7 +84,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo = \FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_GROUPS'), 'groups.png');
 
 		if ($canDo->get('core.create'))

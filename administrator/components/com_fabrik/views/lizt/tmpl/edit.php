@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin List Edit Tmpl
+ * Admin Lizt Edit Tmpl
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
@@ -22,13 +22,14 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 
 	Joomla.submitbutton = function(task) {
-		if (task !== 'list.cancel'  && !Fabrik.controller.canSaveForm()) {
+		if (task !== 'lizt.cancel'  && !Fabrik.controller.canSaveForm()) {
 			alert('Please wait - still loading');
 			return false;
 		}
-		if (task == 'list.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
+		if (task == 'lizt.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
 			<?php echo $this->form->getField('introduction')->save(); ?>
 			window.fireEvent('form.save');
+			debugger;
 			Joomla.submitform(task, document.getElementById('adminForm'));
 		} else {
 			alert('<?php echo $this->escape(FText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');

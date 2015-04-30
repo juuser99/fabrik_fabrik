@@ -14,31 +14,21 @@ namespace Fabrik\Admin;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Admin\Helpers\Fabrik;
+use \JFactory as JFactory;
 
 require_once 'autoloader.php';
 
-// Access check.
-if (!\JFactory::getUser()->authorise('core.manage', 'com_fabrik'))
-{
-	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-}
-
 // Load front end language file as well
-$lang = \JFactory::getLanguage();
+$lang = JFactory::getLanguage();
 $lang->load('com_fabrik', JPATH_SITE . '/components/com_fabrik');
 
-// Test if the system plugin is installed and published
-if (!defined('COM_FABRIK_FRONTEND'))
-{
-	throw new RuntimeException(JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
-}
+Fabrik::testPublishedPlugins();
 
-$app   = \JFactory::getApplication();
-$input = $app->input;
-
-// Check for plugin views (e.g. list email plugin's "email form"
+$input = JFactory::getApplication()->input;
 $cName = $input->getCmd('controller');
 
+// Check for plugin views (e.g. list email plugin's "email form"
 if (String::strpos($cName, '.') != false)
 {
 	// @todo - recheck this for 3.5
@@ -68,24 +58,12 @@ if (String::strpos($cName, '.') != false)
 }
 else
 {
-	// Test if we have a custom controller - if not load the main controller.
+	// Do we have a custom controller - if not load the main controller.
 	$view                = String::ucfirst($input->get('view', 'Controller'));
 	$base                = 'Fabrik\Admin\Controllers';
 	$baseControllerClass = $base . '\\Controller';
 	$controllerClass     = $base . '\\' . $view;
 	$controller          = class_exists($controllerClass) ? new $controllerClass : new $baseControllerClass;
-}
-
-// Test that they've published some element plugins!
-// @todo move this into a helper
-$db    = \JFactory::getDbo();
-$query = $db->getQuery(true);
-$query->select('COUNT(extension_id)')->from('#__extensions')->where('enabled = 1 AND folder = "fabrik_element"');
-$db->setQuery($query);
-
-if (count($db->loadResult()) === 0)
-{
-	$app->enqueueMessage(JText::_('COM_FABRIK_PUBLISH_AT_LEAST_ONE_ELEMENT_PLUGIN'), 'notice');
 }
 
 // Execute the controller.

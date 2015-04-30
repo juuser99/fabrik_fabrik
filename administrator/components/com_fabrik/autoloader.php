@@ -35,6 +35,7 @@ class AutoLoader
 		{
 			return;
 		}
+
 		$class = str_replace('Fabrik\Admin\\', '', $class);
 		$file = str_replace('\\', '/', strtolower($class));
 		$file = strtolower($file . '.php');
@@ -49,10 +50,12 @@ class AutoLoader
 	 */
 	private function view($class)
 	{
+
 		if (!strstr(strtolower($class), 'views'))
 		{
 			return;
 		}
+
 		$class = str_replace('Fabrik\Admin\\', '', $class);
 		$file = str_replace('\\', '/', strtolower($class));
 		$file = strtolower($file . '.php');
@@ -71,7 +74,7 @@ class AutoLoader
 		{
 			return;
 		}
-//echo $class;exit;
+
 		$class = str_replace('Fabrik\Admin\\', '', $class);
 		$file = str_replace('\\', '/', strtolower($class));
 		$file = strtolower($file . '.php');

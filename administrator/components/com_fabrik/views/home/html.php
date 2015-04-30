@@ -17,7 +17,7 @@ use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \FabrikWorker as FabrikWorker;
-use \FabrikAdminHelper as FabrikAdminHelper;
+use Fabrik\Admin\Helpers\Fabrik;
 
 /**
  * Fabrik Admin Home Page View
@@ -59,7 +59,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->feed = $this->model->getRSSFeed();
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu('home');
+		Fabrik::addSubmenu('home');
 
 		$this->sidebar = JHtmlSidebar::render();
 
@@ -75,7 +75,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo = FabrikAdminHelper::getActions();
+		$canDo = Fabrik::getActions();
 
 		if ($canDo->get('core.admin'))
 		{
