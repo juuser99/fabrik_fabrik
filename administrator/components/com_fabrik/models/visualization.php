@@ -9,14 +9,20 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use \JPluginHelper as JPluginHelper;
+use \JModelLegacy as JModelLegacy;
+use \FText as FText;
+
 
 require_once 'fabmodeladmin.php';
 
-interface FabrikAdminModelVisualizationInterface
+interface ModelVisualizationInterface
 {
 
 }
@@ -26,9 +32,9 @@ interface FabrikAdminModelVisualizationInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-abstract class FabrikAdminModelVisualization extends FabModelAdmin implements FabrikAdminModelVisualizationInterface
+class Visualization extends Base implements ModelVisualizationInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -36,69 +42,6 @@ abstract class FabrikAdminModelVisualization extends FabModelAdmin implements Fa
 	 * @var  string
 	 */
 	protected $text_prefix = 'COM_FABRIK_VISUALIZATION';
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable	A database object
-	 */
-
-	public function getTable($type = 'Visualization', $prefix = 'FabrikTable', $config = array())
-	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
-
-		return FabTable::getInstance($type, $prefix, $config);
-	}
-
-	/**
-	 * Method to get the record form.
-	 *
-	 * @param   array  $data      Data for the form.
-	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  mixed  A JForm object on success, false on failure
-	 *
-	 * @since	1.6
-	 */
-
-	public function getForm($data = array(), $loadData = true)
-	{
-		// Get the form.
-		$form = $this->loadForm('com_fabrik.visualization', 'visualization', array('control' => 'jform', 'load_data' => $loadData));
-
-		if (empty($form))
-		{
-			return false;
-		}
-
-		$form->model = $this;
-
-		return $form;
-	}
-
-	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed	The data for the form.
-	 *
-	 * @since	1.6
-	 */
-	protected function loadFormData()
-	{
-		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_fabrik.edit.visualization.data', array());
-
-		if (empty($data))
-		{
-			$data = $this->getItem();
-		}
-
-		return $data;
-	}
 
 	/**
 	 * get html form fields for a plugin (filled with
@@ -111,7 +54,7 @@ abstract class FabrikAdminModelVisualization extends FabModelAdmin implements Fa
 
 	public function getPluginHTML($plugin = null)
 	{
-		$input = $this->app->input;
+		//$input = $this->app->input;
 		$item = $this->getItem();
 
 		if (is_null($plugin))
@@ -119,7 +62,7 @@ abstract class FabrikAdminModelVisualization extends FabModelAdmin implements Fa
 			$plugin = $item->plugin;
 		}
 
-		$input->set('view', 'visualization');
+		//$input->set('view', 'visualization');
 		JPluginHelper::importPlugin('fabrik_visualization', $plugin);
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 

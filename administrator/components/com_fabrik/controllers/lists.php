@@ -7,29 +7,31 @@
  * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
+ *
+ * @deprecated - use main controller
+ * @todo - refactor publish/delete into their own controllers.
  */
+
+namespace Fabrik\Admin\Controllers;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 
-require_once 'fabcontrolleradmin.php';
-
 /**
- * Lists list controller class.
+ * Lists controller class.
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class FabrikAdminControllerLists extends FabControllerAdmin
+class Lists extends \JControllerBase
 {
 	/**
 	 * The prefix to use with controller messages.
 	 *
-	 * @var	string
+	 * @var    string
 	 */
 	protected $text_prefix = 'COM_FABRIK_LISTS';
 
@@ -41,22 +43,61 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	protected $view_item = 'lists';
 
 	/**
+	 * Execute the controller.
+	 *
+	 * @return  boolean  True if controller finished execution, false if the controller did not
+	 *                   finish execution. A controller might return false if some precondition for
+	 *                   the controller to run has not been satisfied.
+	 *
+	 * @since   12.1
+	 * @throws  LogicException
+	 * @throws  RuntimeException
+	 */
+	public function execute()
+	{
+		// Get the application
+		$app = $this->getApplication();
+
+		// Get the document object.
+		$document = \JFactory::getDocument();
+
+		$viewName   = $app->input->getWord('view', 'lists');
+		$viewFormat = $document->getType();
+		$layoutName = $app->input->getWord('layout', 'bootstrap');
+		$app->input->set('view', $viewName);
+
+		// Register the layout paths for the view
+		$paths = new \SplPriorityQueue;
+		$paths->insert(JPATH_COMPONENT . '/views/' . $viewName . '/tmpl', 'normal');
+
+		$viewClass  = 'Fabrik\Admin\Views\\' . ucfirst($viewName) . '\\' . ucfirst($viewFormat);
+		$modelClass = 'Fabrik\Admin\Models\\' . ucfirst($viewName);
+
+		$view = new $viewClass(new $modelClass, $paths);
+		$view->setLayout($layoutName);
+		// Render our view.
+		echo $view->render();
+
+		return true;
+	}
+
+	/**
 	 * Method to get a model object, loading it if required.
 	 *
-	 * @param   string  $name    The model name. Optional.
-	 * @param   string  $prefix  The class prefix. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
+	 * @param   string $name   The model name. Optional.
+	 * @param   string $prefix The class prefix. Optional.
+	 * @param   array  $config Configuration array for model. Optional.
 	 *
 	 * @return  object  The model.
 	 *
 	 * @since   12.2
 	 */
- 	public function getModel($name = 'List', $prefix = 'FabrikAdminModel', $config = array())
+	/*public function getModel($name = 'List', $prefix = 'FabrikAdminModel', $config = array())
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 
 		return $model;
-	}
+	}*/
 
 	/**
 	 * Method to publish a list of items
@@ -67,9 +108,9 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	public function publish()
 	{
 		$input = $this->app->input;
-		$cid = $input->get('cid', array(), 'array');
-		$data = array('publish' => 1, 'unpublish' => 0, 'archive' => 2, 'trash' => -2, 'report' => -3);
-		$task = $this->getTask();
+		$cid   = $input->get('cid', array(), 'array');
+		$data  = array('publish' => 1, 'unpublish' => 0, 'archive' => 2, 'trash' => -2, 'report' => -3);
+		$task  = $this->getTask();
 		$value = FArrayHelper::getValue($data, $task, 0, 'int');
 
 		if (empty($cid))
@@ -80,7 +121,7 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 		{
 			// Make sure the item ids are integers
 			ArrayHelper::toInteger($cid);
-			$model = $this->getModel('Form', 'FabrikAdminModel');
+			$model   = $this->getModel('Form', 'FabrikAdminModel');
 			$formids = $model->swapListToFormIds($cid);
 
 			// Publish the items.
@@ -107,7 +148,7 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 						{
 							// Publish the elements
 							$elementModel = $this->getModel('Element');
-							$elementIds = $elementModel->swapGroupToElementIds($groupids);
+							$elementIds   = $elementModel->swapGroupToElementIds($groupids);
 
 							if (!$elementModel->publish($elementIds, $value))
 							{
@@ -133,8 +174,8 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 	public function delete()
 	{
 		$listsModel = $this->getModel('lists');
-		$viewType = JFactory::getDocument()->getType();
-		$view = $this->getView($this->view_item, $viewType);
+		$viewType   = JFactory::getDocument()->getType();
+		$view       = $this->getView($this->view_item, $viewType);
 		$view->setLayout('confirmdelete');
 
 		if ($model = $this->getModel())

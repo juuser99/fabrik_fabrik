@@ -9,22 +9,22 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
-
-require_once 'fabcontrolleradmin.php';
 
 /**
  * Elements list controller class.
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
 
-class FabrikAdminControllerElements extends FabControllerAdmin
+class Elements extends \JControllerBase
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -41,6 +41,45 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	protected $view_item = 'elements';
 
 	/**
+	 * Execute the controller.
+	 *
+	 * @return  boolean  True if controller finished execution, false if the controller did not
+	 *                   finish execution. A controller might return false if some precondition for
+	 *                   the controller to run has not been satisfied.
+	 *
+	 * @since   12.1
+	 * @throws  LogicException
+	 * @throws  RuntimeException
+	 */
+	public function execute()
+	{
+		// Get the application
+		$app = $this->getApplication();
+
+		// Get the document object.
+		$document = \JFactory::getDocument();
+
+		$viewName   = $app->input->getWord('view', 'lists');
+		$viewFormat = $document->getType();
+		$layoutName = $app->input->getWord('layout', 'bootstrap');
+		$app->input->set('view', $viewName);
+
+		// Register the layout paths for the view
+		$paths = new \SplPriorityQueue;
+		$paths->insert(JPATH_COMPONENT . '/views/' . $viewName . '/tmpl', 'normal');
+
+		$viewClass  = 'Fabrik\Admin\Views\\' . ucfirst($viewName) . '\\' . ucfirst($viewFormat);
+		$modelClass = 'Fabrik\Admin\Models\\' . ucfirst($viewName);
+
+		$view = new $viewClass(new $modelClass, $paths);
+		$view->setLayout($layoutName);
+		// Render our view.
+		echo $view->render();
+
+		return true;
+	}
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
@@ -49,12 +88,12 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @since	1.6
 	 */
 
-	public function __construct($config = array())
+	/*public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$this->registerTask('showInListView', 'toggleInList');
-		$this->registerTask('hideFromListView', 'toggleInList');
-	}
+		//$this->registerTask('showInListView', 'toggleInList');
+		//$this->registerTask('hideFromListView', 'toggleInList');
+	}*/
 
 	/**
 	 * Proxy for getModel.
@@ -66,14 +105,14 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @return  J model
 	 */
 
-	public function getModel($name = 'Element', $prefix = 'FabrikAdminModel', $config = array())
+	/*public function getModel($name = 'Element', $prefix = 'FabrikAdminModel', $config = array())
 	{
 		$config = array();
 		$config['ignore_request'] = true;
 		$model = parent::getModel($name, $prefix, $config);
 
 		return $model;
-	}
+	}*/
 
 	/**
 	 * Set selected elements to be shown/not shown in list
@@ -81,7 +120,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @return null
 	 */
 
-	public function toggleInList()
+	/*public function toggleInList()
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die(FText::_('JINVALID_TOKEN'));
@@ -126,7 +165,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		}
 
 		$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
-	}
+	}*/
 
 	/**
 	 * Set up page asking about what to delete
@@ -136,7 +175,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @return null
 	 */
 
-	public function delete()
+	/*public function delete()
 	{
 		$viewType = JFactory::getDocument()->getType();
 		$view = $this->getView($this->view_item, $viewType);
@@ -151,7 +190,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		// Used to load in the confirm form fields
 		$view->setModel($this->getModel('list'));
 		$view->display();
-	}
+	}*/
 
 	/**
 	 * Cancel delete element
@@ -159,10 +198,10 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @return  null
 	 */
 
-	public function cancel()
+	/*public function cancel()
 	{
 		$this->setRedirect('index.php?option=com_fabrik&view=elements');
-	}
+	}*/
 
 	/**
 	 * Set up the page to ask for which group to copy the element to
@@ -170,7 +209,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @return  null
 	 */
 
-	public function copySelectGroup()
+	/*public function copySelectGroup()
 	{
 		JSession::checkToken() or die('Invalid Token');
 		$viewType = JFactory::getDocument()->getType();
@@ -185,7 +224,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		// Used to load in the confirm form fields
 		$view->setModel($this->getModel('list'));
 		$view->display();
-	}
+	}*/
 
 	/**
 	 * Batch process elements, setting acl levels
@@ -195,7 +234,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @return  void
 	 */
 
-	public function batch()
+	/*public function batch()
 	{
 		JSession::checkToken() or die('Invalid Token');
 		$input = $this->app->input;
@@ -204,7 +243,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		$opts = $input->get('batch', array(), 'array');
 		$model->batch($cid, $opts);
 		$this->setRedirect('index.php?option=com_fabrik&view=elements', FText::_('COM_FABRIK_MSG_BATCH_DONE'));
-	}
+	}*/
 
 	/**
 	 * Method to save the submitted ordering values for records via AJAX.
@@ -214,7 +253,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @since   3.1rc1
 	 */
 
-	public function saveOrderAjax()
+	/*public function saveOrderAjax()
 	{
 		$pks = $this->input->post->get('cid', array(), 'array');
 		$order = $this->input->post->get('order', array(), 'array');
@@ -236,7 +275,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 
 		// Close the application
 		$this->app->close();
-	}
+	}*/
 
 	/**
 	 * Method to publish a list of items
@@ -244,7 +283,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 * @return  null
 	 */
 
-	public function publish()
+	/*public function publish()
 	{
 		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
@@ -265,5 +304,5 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		{
 			parent::publish();
 		}
-	}
+	}*/
 }

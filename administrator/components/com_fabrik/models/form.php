@@ -9,14 +9,16 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use \JForm as JForm;
 
-require_once 'fabmodeladmin.php';
 
-interface FabrikAdminModelFormFormInterface
+interface ModelFormFormInterface
 {
 	/**
 	 * Save the form
@@ -47,10 +49,9 @@ interface FabrikAdminModelFormFormInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdminModelFormFormInterface
+class Form extends Base implements ModelFormFormInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -68,63 +69,13 @@ abstract class FabrikAdminModelForm extends FabModelAdmin implements FabrikAdmin
 	 */
 	protected $pluginType = 'Form';
 
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable	A database object
-	 *
-	 * @since	1.6
-	 */
-	public function getTable($type = 'Form', $prefix = 'FabrikTable', $config = array())
-	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
 
-		return FabTable::getInstance($type, $prefix, $config);
+	public function save($data){
+		echo "todo save";
 	}
-
-	/**
-	 * Method to get the record form.
-	 *
-	 * @param   array  $data      Data for the form.
-	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  mixed  A JForm object on success, false on failure
-	 */
-	public function getForm($data = array(), $loadData = true)
+	public function saveFormGroups($data)
 	{
-		// Get the form.
-		$form = $this->loadForm('com_fabrik.form', 'form', array('control' => 'jform', 'load_data' => $loadData));
-
-		if (empty($form))
-		{
-			return false;
-		}
-
-		$form->model = $this;
-
-		return $form;
-	}
-
-	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed	The data for the form.
-	 */
-	protected function loadFormData()
-	{
-		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_fabrik.edit.form.data', array());
-
-		if (empty($data))
-		{
-			$data = $this->getItem();
-		}
-
-		return $data;
+		echo "todo save form groups";exit;
 	}
 
 	/**

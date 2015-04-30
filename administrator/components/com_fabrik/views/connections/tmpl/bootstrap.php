@@ -90,17 +90,17 @@ $listDirn	= $this->state->get('list.direction');
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
 			$ordering	= ($listOrder == 'ordering');
-			$link = JRoute::_('index.php?option=com_fabrik&task=connection.edit&id='.(int) $item->id);
+			$link = JRoute::_('index.php?option=com_fabrik&task=connection.edit&id='.(int) $i);
 			$canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
 			$canChange	= true;
 			?>
 
 			<tr class="row<?php echo $i % 2; ?>">
 				<td>
-					<?php echo $item->id; ?>
+					<?php echo $i; ?>
 				</td>
 				<td class="center">
-					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
+					<?php echo JHtml::_('grid.id', $i, $i); ?>
 				</td>
 				<td>
 					<?php if ($item->checked_out) : ?>

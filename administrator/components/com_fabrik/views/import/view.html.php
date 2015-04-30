@@ -35,7 +35,6 @@ class FabrikAdminViewImport extends JViewLegacy
 	{
 		$this->form = $this->get('Form');
 		$this->addToolBar();
-		FabrikAdminHelper::setViewLayout($this);
 		parent::display($tpl);
 	}
 

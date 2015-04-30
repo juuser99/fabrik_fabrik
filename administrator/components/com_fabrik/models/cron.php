@@ -9,6 +9,8 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -53,47 +55,6 @@ abstract class FabrikAdminModelCron extends FabModelAdmin implements FabrikAdmin
 		$config['dbo'] = FabrikWorker::getDbo(true);
 
 		return FabTable::getInstance($type, $prefix, $config);
-	}
-
-	/**
-	 * Method to get the record form.
-	 *
-	 * @param   array  $data      Data for the form.
-	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  mixed  A JForm object on success, false on failure
-	 */
-
-	public function getForm($data = array(), $loadData = true)
-	{
-		// Get the form.
-		$form = $this->loadForm('com_fabrik.cron', 'cron', array('control' => 'jform', 'load_data' => $loadData));
-
-		if (empty($form))
-		{
-			return false;
-		}
-
-		return $form;
-	}
-
-	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed  The data for the form.
-	 */
-
-	protected function loadFormData()
-	{
-		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_fabrik.edit.cron.data', array());
-
-		if (empty($data))
-		{
-			$data = $this->getItem();
-		}
-
-		return $data;
 	}
 
 	/**

@@ -9,14 +9,17 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use \JComponentHelper as JComponentHelper;
+use \JHtml as JHtml;
+use \FText as FText;
 
-require_once 'fabmodellist.php';
-
-interface FabrikAdminModelElementsInterface
+interface ModelElementsInterface
 {
 }
 
@@ -25,41 +28,46 @@ interface FabrikAdminModelElementsInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-abstract class FabrikAdminModelElements extends FabModelList implements  FabrikAdminModelElementsInterface
+class Elements extends \JModelBase implements ModelElementsInterface
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   Registry  $state  Optional configuration settings.
 	 *
-	 * @see		JController
-	 *
-	 * @since	1.6
+	 * @since	3.5
 	 */
-
-	public function __construct($config = array())
+	public function __construct(Registry $state = null)
 	{
-		if (empty($config['filter_fields']))
-		{
-			$config['filter_fields'] = array('e.id', 'e.name', 'e.label', 'e.show_in_list_summary', 'e.published', 'e.ordering', 'g.label',
-				'e.plugin', 'g.name');
-		}
+		parent::__construct($state);
 
-		parent::__construct($config);
+		if (!$this->state->exists('filter_fields'))
+		{
+			$this->state->set('filter_fields', array('e.id', 'e.name', 'e.label', 'e.show_in_list_summary', 'e.published', 'e.ordering', 'g.label',
+				'e.plugin', 'g.name'));
+		}
 	}
 
-	/**
-	 * Build an SQL query to load the list data.
-	 *
-	 * @return  JDatabaseQuery
-	 *
-	 * @since	1.6
-	 */
-	protected function getListQuery()
+	public function getItems()
 	{
+		return array();
+	}
+
+	public function getPagination()
+	{
+		return new \JPagination(0, 0, 0);
+	}
+
+	public function getFormOptions()
+	{
+		return array();
+	}
+
+	public function getGroupOptions()
+	{
+		return array();
 	}
 
 	/**
@@ -74,7 +82,6 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 	 *
 	 * @return  null
 	 */
-
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Load the parameters.
@@ -126,8 +133,8 @@ abstract class FabrikAdminModelElements extends FabModelList implements  FabrikA
 
 	public function getPluginOptions()
 	{
-		$db = FabrikWorker::getDbo(true);
-		$user = JFactory::getUser();
+		$db = \FabrikWorker::getDbo(true);
+		$user = \JFactory::getUser();
 		$levels = implode(',', $user->getAuthorisedViewLevels());
 		$query = $db->getQuery(true);
 		$query->select('element AS value, element AS text')->from('#__extensions')->where('enabled >= 1')->where('type =' . $db->quote('plugin'))

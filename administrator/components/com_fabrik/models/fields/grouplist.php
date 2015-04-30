@@ -44,6 +44,7 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 
 	protected function getGroups()
 	{
+		$this->app = JFactory::getApplication();
 		if ($this->value == '')
 		{
 			$this->value = $this->app->getUserStateFromRequest('com_fabrik.elements.filter.group', 'filter_groupId', $this->value);

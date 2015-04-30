@@ -9,17 +9,27 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
+use \JPluginHelper as JPluginHelper;
+use \JModelLegacy as JModelLegacy;
+use \FText as FText;
+use \stdClass as stdClass;
+use \FArrayHelper as FArrayHelper;
+use \FabrikWorker as FabrikWorker;
+use \JText as JText;
+
 
 jimport('joomla.application.component.modeladmin');
 
 require_once 'fabmodeladmin.php';
 
-interface FabrikAdminModelElementInterface
+interface ModelElementFormInterface
 {
 }
 
@@ -28,9 +38,9 @@ interface FabrikAdminModelElementInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAdminModelElementInterface
+class Element extends Base implements ModelElementFormInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -63,80 +73,6 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 		'#__usergroups', '#__users', '#__viewlevels', '#__weblinks');
 
 	/**
-	 * Constructor.
-	 * Ensure that we use the fabrik db model for the dbo
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 */
-
-	public function __construct($config = array())
-	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
-
-		parent::__construct($config);
-	}
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable  A database object
-	 */
-
-	public function getTable($type = 'Element', $prefix = 'FabrikTable', $config = array())
-	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
-
-		return FabTable::getInstance($type, $prefix, $config);
-	}
-
-	/**
-	 * Method to get the record form.
-	 *
-	 * @param   array  $data      Data for the form.
-	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  mixed  A JForm object on success, false on failure
-	 */
-
-	public function getForm($data = array(), $loadData = true)
-	{
-		// Get the form.
-		$form = $this->loadForm('com_fabrik.element', 'element', array('control' => 'jform', 'load_data' => $loadData));
-
-		if (empty($form))
-		{
-			return false;
-		}
-
-		$form->model = $this;
-
-		return $form;
-	}
-
-	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed   The data for the form.
-	 */
-
-	protected function loadFormData()
-	{
-		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_fabrik.edit.element.data', array());
-
-		if (empty($data))
-		{
-			$data = $this->getItem();
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Get elements
 	 *
 	 * @deprecated since 3.1b2
@@ -150,10 +86,10 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 	}
 
 	/**
-	 * Toggle adding / removing the elment from the list view
+	 * Toggle adding / removing the element from the list view
 	 *
 	 * @param   array  &$pks   primary keys
-	 * @param   var    $value  add (1) or remove (0) from list view
+	 * @param   int    $value  add (1) or remove (0) from list view
 	 *
 	 * @return  bool
 	 */
@@ -309,15 +245,15 @@ abstract class FabrikAdminModelElement extends FabModelAdmin implements FabrikAd
 
 	public function getPluginHTML($plugin = null)
 	{
-		$input = $this->app->input;
+	//	$input = $this->app->input;
 		$item = $this->getItem();
 
 		if (is_null($plugin))
 		{
-			$plugin = $item->plugin;
+			$plugin = isset($item->plugin) ? $item->plugin : '';
 		}
-
-		$input->set('view', 'element');
+// Should not be setting input directly in a model - poor design
+		//$input->set('view', 'element');
 		JPluginHelper::importPlugin('fabrik_element', $plugin);
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 

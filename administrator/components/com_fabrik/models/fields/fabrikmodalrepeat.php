@@ -80,6 +80,10 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		}
 		else
 		{
+			// Tmp hack for admin list editv view
+			if ($view == 'lizt') {
+				$view = 'list';
+			}
 			$feModel = JModelLegacy::getInstance($view, 'FabrikFEModel');
 			$feModel->setId($id);
 		}

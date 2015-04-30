@@ -62,5 +62,8 @@
 				<option value="-2">JTRASHED</option>
 		</field>
 
+		<field name="checked_out" type="hidden" default="0" />
+		<field name="default" type="hidden" default="1" />
+
 	</fieldset>
 </form>

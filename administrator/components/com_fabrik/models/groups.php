@@ -9,12 +9,12 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabmodellist.php';
-
-interface FabrikAdminModelGroupsInterface
+interface ModelGroupsInterface
 {
 }
 
@@ -23,161 +23,35 @@ interface FabrikAdminModelGroupsInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-abstract class FabrikAdminModelGroups extends FabModelList implements FabrikAdminModelGroupsInterface
+class Groups extends \JModelBase implements ModelGroupsInterface
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   Registry  $state  Optional configuration settings.
 	 *
-	 * @see		JController
-	 * @since	1.6
+	 * @since	3.5
 	 */
-
-	public function __construct($config = array())
+	public function __construct(Registry $state = null)
 	{
-		if (empty($config['filter_fields']))
-		{
-			$config['filter_fields'] = array('g.id', 'g.name', 'g.label', 'f.label', 'g.published');
-		}
+		parent::__construct($state);
 
-		parent::__construct($config);
+		if (!$this->state->exists('filter_fields'))
+		{
+			$this->state->set('filter_fields', array('g.id', 'g.name', 'g.label', 'f.label', 'g.published'));
+		}
 	}
 
-	/**
-	 * Build an SQL query to load the list data.
-	 *
-	 * @return  JDatabaseQuery
-	 */
-
-	protected function getListQuery()
+	public function getItems()
 	{
-		// Initialise variables.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		// Select the required fields from the table.
-		$query->select($this->getState('list.select', 'g.*'));
-		$query->from('#__fabrik_groups AS g');
-
-		// Join over the users for the checked out user.
-		$query->select('u.name AS editor, fg.form_id AS form_id, f.label AS flabel');
-		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
-		$query->join('LEFT', '#__fabrik_formgroup AS fg ON g.id = fg.group_id');
-		$query->join('LEFT', '#__fabrik_forms AS f ON fg.form_id = f.id');
-
-		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
-
-		if ($orderCol == 'ordering' || $orderCol == 'category_title')
-		{
-			$orderCol = 'category_title ' . $orderDirn . ', ordering';
-		}
-
-		// Filter by published state
-		$published = $this->getState('filter.published');
-
-		if (is_numeric($published))
-		{
-			$query->where('g.published = ' . (int) $published);
-		}
-		elseif ($published === '')
-		{
-			$query->where('(g.published IN (0, 1))');
-		}
-
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			$search = $db->quote('%' . $db->escape($search, true) . '%');
-			$query->where('(g.name LIKE ' . $search . ' OR g.label LIKE ' . $search . ')');
-		}
-
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
-
-		$this->filterByFormQuery($query, 'fg');
-
-		return $query;
+		return array();
 	}
 
-	/**
-	 * Returns an object list
-	 *
-	 * @param   string  $query       The query
-	 * @param   int     $limitstart  Offset
-	 * @param   int     $limit       The number of records
-	 *
-	 * @return  array
-	 */
-
-	protected function _getList($query, $limitstart = 0, $limit = 0)
+	public function getPagination()
 	{
-		$db = $this->getDbo();
-
-		// Filter by published state
-		$published = $this->getState('filter.published');
-
-		if (is_numeric($published))
-		{
-			$query->where('g.published = ' . (int) $published);
-		}
-		elseif ($published === '')
-		{
-			$query->where('(g.published IN (0, 1))');
-		}
-
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			$search = $db->quote('%' . $db->escape($search, true) . '%');
-			$query->where('(g.name LIKE ' . $search . ' OR g.label LIKE ' . $search . ')');
-		}
-
-		$this->_db->setQuery($query, $limitstart, $limit);
-		$result = $this->_db->loadObjectList();
-
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('COUNT(id) AS count, group_id');
-		$query->from('#__fabrik_elements');
-		$query->group('group_id');
-
-		$db->setQuery($query);
-		$elementcount = $db->loadObjectList('group_id');
-
-		for ($i = 0; $i < count($result); $i++)
-		{
-			$k = $result[$i]->id;
-			$result[$i]->_elementCount = @$elementcount[$k]->count;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   type    $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable	A database object
-	 */
-
-	public function getTable($type = 'Group', $prefix = 'FabrikTable', $config = array())
-	{
-		$config['dbo'] = FabrikWorker::getDbo();
-
-		return FabTable::getInstance($type, $prefix, $config);
+		return new \JPagination(0, 0, 0);
 	}
 
 	/**

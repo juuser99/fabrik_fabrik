@@ -9,14 +9,17 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.modellist');
+use Joomla\Utilities\ArrayHelper;
+use \JComponentHelper as JComponentHelper;
+use \JHtml as JHtml;
+use \FText as FText;
 
-require_once 'fabmodellist.php';
-
-interface FabrikAdminModeCronsInterface
+interface ModelCronsInterface
 {
 }
 
@@ -27,52 +30,33 @@ interface FabrikAdminModeCronsInterface
  * @subpackage  Fabrik
  * @since       3.0
  */
-abstract class FabrikAdminModelCrons extends FabModelList implements  FabrikAdminModeCronsInterface
+class Crons extends \JModelBase implements ModelCronsInterface
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   Registry  $state  Optional configuration settings.
 	 *
-	 * @see		JController
-	 * @since	1.6
+	 * @since	3.5
 	 */
-
-	public function __construct($config = array())
+	public function __construct(Registry $state = null)
 	{
-		if (empty($config['filter_fields']))
+		parent::__construct($state);
+
+		if (!$this->state->exists('filter_fields'))
 		{
-			$config['filter_fields'] = array('c.id', 'c.label', 'p.published');
+			$this->state->set('filter_fields', array('c.id', 'c.label', 'p.published'));
 		}
-
-		parent::__construct($config);
 	}
 
-	/**
-	 * Build an SQL query to load the list data.
-	 *
-	 * @return  JDatabaseQuery
-	 */
-
-	protected function getListQuery()
+	public function getItems()
 	{
+		return array();
 	}
 
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable  A database object
-	 */
-
-	public function getTable($type = 'Cron', $prefix = 'FabrikTable', $config = array())
+	public function getPagination()
 	{
-		$config['dbo'] = FabrikWorker::getDbo();
-
-		return FabTable::getInstance($type, $prefix, $config);
+		return new \JPagination(0, 0, 0);
 	}
 
 	/**

@@ -9,12 +9,14 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabmodellist.php';
+use Joomla\Registry\Registry;
 
-interface FabrikAdminModelListsInterface
+interface ModelListsInterface
 {
 }
 
@@ -23,28 +25,36 @@ interface FabrikAdminModelListsInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
 
-abstract class FabrikAdminModelLists extends FabModelList implements FabrikAdminModelListsInterface
+class Lists extends \JModelBase implements ModelListsInterface
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   Registry  $state  Optional configuration settings.
 	 *
-	 * @see		JController
-	 * @since	1.6
+	 * @since	3.5
 	 */
-
-	public function __construct($config = array())
+	public function __construct(Registry $state = null)
 	{
-		if (empty($config['filter_fields']))
-		{
-			$config['filter_fields'] = array('l.id', 'label', 'db_table_name', 'published');
-		}
+		parent::__construct($state);
 
-		parent::__construct($config);
+		if (!$this->state->exists('filter_fields'))
+		{
+			$this->state->set('filter_fields', array('l.id', 'label', 'db_table_name', 'published'));
+		}
+	}
+
+	public function getItems()
+	{
+		return array();
+	}
+
+	public function getPagination()
+	{
+		return new \JPagination(0, 0, 0);
 	}
 
 	/**
@@ -79,7 +89,10 @@ abstract class FabrikAdminModelLists extends FabModelList implements FabrikAdmin
 	 * @return  array  groups
 	 */
 
-	public abstract function getTableGroups();
+	public function getTableGroups()
+	{
+
+	}
 
 	/**
 	 * Method to auto-populate the model state.
@@ -118,5 +131,9 @@ abstract class FabrikAdminModelLists extends FabModelList implements FabrikAdmin
 	 * @return  array  database table names
 	 */
 
-	public abstract function getDbTableNames();
+	public function getDbTableNames()
+	{
+
+	}
+
 }

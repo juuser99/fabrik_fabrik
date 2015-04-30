@@ -81,29 +81,4 @@ abstract class FabrikAdminModelPlugin extends FabModelAdmin implements FabrikAdm
 		return $feModel;
 	}
 
-	/**
-	 * Method to get the record form.
-	 *
-	 * @param   array  $data      Data for the form.
-	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  mixed  A JForm object on success, false on failure
-	 *
-	 */
-	public function getForm($data = array(), $loadData = true)
-	{
-		echo "here";exit;
-		// Get the form.
-		$form = $this->loadForm('com_fabrik.plugin', 'plugin', array('control' => 'jform', 'load_data' => $loadData));
-
-		if (empty($form))
-		{
-			echo "here";exit;
-			return false;
-		}
-
-		$form->model = $this;
-
-		return $form;
-	}
 }

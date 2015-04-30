@@ -9,14 +9,16 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
+use Joomla\Utilities\ArrayHelper;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.modellist');
 
-require_once 'fabmodellist.php';
-
-interface FabrikAdminModeConnectionsInterface
+interface ConnectionsInterface
 {
 }
 
@@ -25,94 +27,87 @@ interface FabrikAdminModeConnectionsInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-abstract class FabrikAdminModelConnections extends FabModelList implements  FabrikAdminModeConnectionsInterface
+class Connections extends Base implements ConnectionsInterface
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   Registry $state Optional configuration settings.
+	 *
+	 * @since    3.5
 	 */
-	public function __construct($config = array())
+	public function __construct(Registry $state = null)
 	{
-		if (empty($config['filter_fields']))
-		{
-			$config['filter_fields'] = array('c.id');
-		}
+		parent::__construct($state);
 
-		parent::__construct($config);
+		if (!$this->state->exists('filter_fields'))
+		{
+			$this->state->set('filter_fields', array('c.id'));
+		}
 	}
 
 	/**
-	 * Build an SQL query to load the list data.
+	 * Create an object describing the default Joomla Db connection
 	 *
-	 * @return  JDatabaseQuery
+	 * @return \stdClass
 	 */
-
-	protected function getListQuery()
+	protected function joomlaConnection()
 	{
-		// Initialise variables.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$config               = \JFactory::getConfig();
+		$default              = new \stdClass;
+		$default->default     = true;
+		$default->description = 'Joomla Db';
+		$default->driver      = $config->get('dbtype');
+		$default->host        = $config->get('host');
+		$default->user        = $config->get('user');
+		$default->password    = $config->get('password');
+		$default->port        = '';
+		$default->socket      = '';
+		$default->database    = $config->get('db');
+		$default->prefix      = $config->get('dbprefix');
+		$default->published   = true;
+		$default->checked_out = false;
 
-		// Select the required fields from the table.
-		$query->select($this->getState('list.select', 'c.*'));
-		$query->from('#__fabrik_connections AS c');
-
-		$published = $this->getState('filter.published');
-
-		if (is_numeric($published))
-		{
-			$query->where('c.published = ' . (int) $published);
-		}
-		elseif ($published === '')
-		{
-			$query->where('(c.published IN (0, 1))');
-		}
-
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			$search = $db->quote('%' . $db->escape($search, true) . '%');
-			$query->where('(c.host LIKE ' . $search . ' OR c.database OR c.description LIKE ' . $search . ')');
-		}
-
-		// Join over the users for the checked out user.
-		$query->select('u.name AS editor');
-		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
-
-		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
-
-		if ($orderCol == 'ordering' || $orderCol == 'category_title')
-		{
-			$orderCol = 'category_title ' . $orderDirn . ', ordering';
-		}
-
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
-
-		return $query;
+		return $default;
 	}
 
 	/**
-	 * Returns a reference to the a Table object, always creating it.
+	 * Get the list of connections for this server address.
+	 * Connections stored in models/connections.json.
 	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable  A database object
+	 * @return array
 	 */
-
-	public function getTable($type = 'Connection', $prefix = 'FabrikTable', $config = array())
+	public function getItems()
 	{
-		$config['dbo'] = FabrikWorker::getDbo();
+		if (isset($this->items))
+		{
+			return $this->items;
+		}
 
-		return FabTable::getInstance($type, $prefix, $config);
+		$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/connections.json');
+		$json = json_decode($json);
+		$uri  = $_SERVER['SERVER_ADDR'];
+
+		if (!isset($json->$uri))
+		{
+			$json->$uri = array();
+			$json->$uri = array($this->joomlaConnection());
+		}
+
+		$this->items = $json->$uri;
+
+		foreach ($this->items as &$item)
+		{
+			if ($item->checked_out !== '')
+			{
+				$user = \JFactory::getUser($item->checked_out);
+				$item->editor = $user->get('name');
+			}
+		}
+
+		return $json->$uri;
 	}
 
 	/**
@@ -120,14 +115,13 @@ abstract class FabrikAdminModelConnections extends FabModelList implements  Fabr
 	 *
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @param   string  $ordering   An optional ordering field.
-	 * @param   string  $direction  An optional direction (asc|desc).
+	 * @param   string $ordering  An optional ordering field.
+	 * @param   string $direction An optional direction (asc|desc).
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 *
 	 * @return  void
 	 */
-
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Load the parameters.
@@ -150,11 +144,92 @@ abstract class FabrikAdminModelConnections extends FabModelList implements  Fabr
 
 	public function activeConnections()
 	{
-		$db = $this->getDbo();
+		// @todo
+		echo "todo - return active connections";exit;
+		/*$db = $this->getDbo();
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__fabrik_connections')->where('published = 1');
-		$items = $this->_getList($query);
+		$items = $this->_getList($query);*/
 
 		return $items;
 	}
+
+	/**
+	 * Save the connection
+	 *
+	 * @param   array $data Connection data
+	 *
+	 * @return bool
+	 */
+	public function save($data)
+	{
+		if (is_object($data))
+		{
+			$data = ArrayHelper::fromObject($data);
+		}
+
+		$path = JPATH_COMPONENT_ADMINISTRATOR . '/models/connections.json';
+		$json = file_get_contents($path);
+		$json = json_decode($json);
+		$uri  = $_SERVER['SERVER_ADDR'];
+		$id   = $data['id'];
+		unset($data['id']);
+
+		if (!isset($json->$uri))
+		{
+
+			$json->$uri = array($id => $data);
+		}
+		else
+		{
+			$part      =& $json->$uri;
+			$part[$id] = $data;
+		}
+
+		$output = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+		\JFile::write($path, $output);
+
+		return parent::save($data);
+	}
+
+	/**
+	 * Get an item
+	 *
+	 * @return stdClass
+	 */
+	public function getItem()
+	{
+		$data = $this->app->getUserState('com_fabrik.edit.' . $this->name . '.data', array());
+		$test = (array) $data;
+
+		if (empty($test))
+		{
+			$id             = $this->get('id');
+			$items          = $this->getItems();
+			$items[$id]->id = $id;
+			$data           = $items[$id];
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Set the default connection
+	 *
+	 * @param $default
+	 * @param $ids
+	 */
+	public function setDefault($default, $ids)
+	{
+		$items = $this->getItems();
+
+		foreach ($ids as $id)
+		{
+			$items[$id]->default = $default;
+			$items[$id]->id = $id;
+			$this->save($items[$id]);
+		}
+	}
+
 }

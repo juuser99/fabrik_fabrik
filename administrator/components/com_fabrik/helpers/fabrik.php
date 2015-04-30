@@ -249,25 +249,4 @@ class FabrikAdminHelper
 
 		return $text;
 	}
-
-	/**
-	 * Set the layout based on Joomla version
-	 * Allows for loading of new bootstrap admin templates in J3.0+
-	 *
-	 * @param   JView  &$view  current view to setLayout for
-	 *
-	 * @return  void
-	 */
-
-	public static function setViewLayout(&$view)
-	{
-		$v = new JVersion;
-
-		if ($v->RELEASE > 2.5)
-		{
-			// If rendering a list inside a form and viewing in admin - there were layout name conflicts (so renamed bootstrap to admin_bootstrap)
-			$layout = $view->getName() === 'list' ? 'admin_bootstrap' : 'bootstrap';
-			$view->setLayout($layout);
-		}
-	}
 }

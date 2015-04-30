@@ -115,7 +115,6 @@ class FabrikAdminViewPackage extends JViewLegacy
 		$this->selFormOpts = $model->getSelFormOpts();
 		$this->selListOpts = $model->getSelListOpts();
 
-		FabrikAdminHelper::setViewLayout($this);
 		parent::display($tpl);
 	}
 

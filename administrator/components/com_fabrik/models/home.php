@@ -9,20 +9,23 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabmodeladmin.php';
+use \JSimplepieFactory as JSimplepieFactory;
+use \FText as FText;
+use \FabrikString as FabrikString;
 
 /**
  * Fabrik Admin Home Model
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikAdminModelHome extends FabModelAdmin
+class Home extends \JModelBase
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -51,13 +54,10 @@ class FabrikAdminModelHome extends FabModelAdmin
 	/**
 	 * Method to get the record form.
 	 *
-	 * @param   array  $data      Data for the form.
-	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
-	 *
 	 * @return  mixed	A JForm object on success, false on failure
 	 */
 
-	public function getForm($data = array(), $loadData = true)
+	public function getForm()
 	{
 		return false;
 	}
@@ -73,21 +73,8 @@ class FabrikAdminModelHome extends FabModelAdmin
 		//  Get RSS parsed object - Turn off error reporting as SimplePie creates strict error notices.
 		$origError = error_reporting();
 		error_reporting(0);
-		$version = new JVersion;
 
-		if ($version->RELEASE == 2.5)
-		{
-			//  get RSS parsed object
-			$options = array();
-			$options['rssUrl'] = 'http://feeds.feedburner.com/fabrik';
-			$options['cache_time'] = 86400;
-
-			$rssDoc = JFactory::getXMLparser('RSS', $options);
-		}
-		else
-		{
-			$rssDoc = JSimplepieFactory::getFeedParser('http://feeds.feedburner.com/fabrik', 86400);
-		}
+		$rssDoc = JSimplepieFactory::getFeedParser('http://feeds.feedburner.com/fabrik', 86400);
 
 		if ($rssDoc == false)
 		{

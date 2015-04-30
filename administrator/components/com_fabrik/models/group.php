@@ -9,12 +9,12 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabmodeladmin.php';
-
-interface FabrikAdminModelGroupInterface
+interface ModelGroupInterface
 {
 
 }
@@ -23,9 +23,9 @@ interface FabrikAdminModelGroupInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdminModelGroupInterface
+class Group extends Base implements ModelGroupInterface
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -52,47 +52,6 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	}
 
 	/**
-	 * Method to get the record form.
-	 *
-	 * @param   array  $data      Data for the form.
-	 * @param   bool   $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  mixed	A JForm object on success, false on failure
-	 */
-
-	public function getForm($data = array(), $loadData = true)
-	{
-		// Get the form.
-		$form = $this->loadForm('com_fabrik.group', 'group', array('control' => 'jform', 'load_data' => $loadData));
-
-		if (empty($form))
-		{
-			return false;
-		}
-
-		return $form;
-	}
-
-	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed	The data for the form.
-	 */
-
-	protected function loadFormData()
-	{
-		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_fabrik.edit.group.data', array());
-
-		if (empty($data))
-		{
-			$data = $this->getItem();
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Take an array of forms ids and return the corresponding group ids
 	 * used in list publish code
 	 *
@@ -101,7 +60,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	 * @return  string
 	 */
 
-	public abstract function swapFormToGroupIds($ids = array());
+	public function swapFormToGroupIds($ids = array()){}
 
 	/**
 	 * Does the group have a primary key element
@@ -252,7 +211,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	 * @return void
 	 */
 
-	protected abstract function makeFormGroup($data);
+	protected function makeFormGroup($data){}
 
 	/**
 	 * Check if an index exists on the parent_id for a repeat table.
@@ -420,7 +379,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	 *
 	 * @return boolean
 	 */
-	public abstract function unMakeJoinedGroup(&$data);
+	public function unMakeJoinedGroup(&$data){}
 
 	/**
 	 * Method to delete one or more records.
@@ -464,7 +423,7 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	 * @return  bool
 	 */
 
-	public abstract function deleteElements($pks);
+	public function deleteElements($pks){}
 
 	/**
 	 * Delete formgroups
@@ -474,5 +433,5 @@ abstract class FabrikAdminModelGroup extends FabModelAdmin implements FabrikAdmi
 	 * @return  bool
 	 */
 
-	public abstract function deleteFormGroups($pks);
+	public function deleteFormGroups($pks){}
 }

@@ -9,12 +9,14 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodellist.php';
 
-interface FabrikAdminModelVisualizationsInterface
+interface ModelVisualizationsInterface
 {
 
 }
@@ -24,40 +26,35 @@ interface FabrikAdminModelVisualizationsInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-abstract class FabrikAdminModelVisualizations extends FabModelList implements FabrikAdminModelVisualizationsInterface
+class Visualizations extends \JModelBase implements ModelVisualizationsInterface
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   Registry  $state  Optional configuration settings.
 	 *
-	 * @see		JController
-	 * @since	1.6
+	 * @since	3.5
 	 */
-
-	public function __construct($config = array())
+	public function __construct(Registry $state = null)
 	{
-		if (empty($config['filter_fields']))
-		{
-			$config['filter_fields'] = array('v.id', 'v.label', 'v.plugin', 'v.published');
-		}
+		parent::__construct($state);
 
-		parent::__construct($config);
+		if (!$this->state->exists('filter_fields'))
+		{
+			$this->state->set('filter_fields', array('v.id', 'v.label', 'v.plugin', 'v.published'));
+		}
 	}
 
-	/**
-	 * Build an SQL query to load the list data.
-	 *
-	 * @return  JDatabaseQuery
-	 *
-	 * @since	1.6
-	 */
-
-	protected function getListQuery()
+	public function getItems()
 	{
+		return array();
+	}
+
+	public function getPagination()
+	{
+		return new \JPagination(0, 0, 0);
 	}
 
 	/**
@@ -72,12 +69,12 @@ abstract class FabrikAdminModelVisualizations extends FabModelList implements Fa
 	 * @since	1.6
 	 */
 
-	public function getTable($type = 'Visualization', $prefix = 'FabrikTable', $config = array())
+	/*public function getTable($type = 'Visualization', $prefix = 'FabrikTable', $config = array())
 	{
 		$config['dbo'] = FabrikWorker::getDbo();
 
 		return FabTable::getInstance($type, $prefix, $config);
-	}
+	}*/
 
 	/**
 	 * Method to auto-populate the model state.

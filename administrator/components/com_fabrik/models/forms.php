@@ -9,12 +9,12 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once 'fabmodellist.php';
-
-interface FabrikAdminModelFormsInterface
+interface ModelFormsInterface
 {
 }
 
@@ -23,103 +23,35 @@ interface FabrikAdminModelFormsInterface
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-abstract class FabrikAdminModelForms extends FabModelList implements FabrikAdminModelFormsInterface
+class Forms extends \JModelBase implements ModelFormsInterface
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   Registry  $state  Optional configuration settings.
 	 *
-	 * @see		JController
-	 * @since	1.6
+	 * @since	3.5
 	 */
-
-	public function __construct($config = array())
+	public function __construct(Registry $state = null)
 	{
-		if (empty($config['filter_fields']))
-		{
-			$config['filter_fields'] = array('f.id', 'f.label', 'f.published');
-		}
+		parent::__construct($state);
 
-		parent::__construct($config);
+		if (!$this->state->exists('filter_fields'))
+		{
+			$this->state->set('filter_fields', array('f.id', 'f.label', 'f.published'));
+		}
 	}
 
-	/**
-	 * Build an SQL query to load the list data.
-	 *
-	 * @return  JDatabaseQuery
-	 */
-
-	protected function getListQuery()
+	public function getItems()
 	{
-		// Initialise variables.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		// Select the required fields from the table.
-		$query->select($this->getState('list.select', 'DISTINCT f.id, f.*, l.id AS list_id, "" AS group_id'));
-		$query->from('#__fabrik_forms AS f');
-
-		// Filter by published state
-		$published = $this->getState('filter.published');
-
-		if (is_numeric($published))
-		{
-			$query->where('f.published = ' . (int) $published);
-		}
-		elseif ($published === '')
-		{
-			$query->where('(f.published IN (0, 1))');
-		}
-
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			$search = $db->q('%' . $db->escape($search, true) . '%');
-			$query->where('(f.label LIKE ' . $search . ')');
-		}
-
-		// Join over the users for the checked out user.
-		$query->select('u.name AS editor');
-		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
-		$query->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id');
-
-		$query->join('INNER', '#__fabrik_formgroup AS fg ON fg.form_id = f.id');
-
-		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
-
-		if ($orderCol == 'ordering' || $orderCol == 'category_title')
-		{
-			$orderCol = 'category_title ' . $orderDirn . ', ordering';
-		}
-
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
-
-		return $query;
+		return array();
 	}
 
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  JTable	A database object
-	 */
-
-	public function getTable($type = 'Form', $prefix = 'FabrikTable', $config = array())
+	public function getPagination()
 	{
-		$config['dbo'] = FabrikWorker::getDbo();
-
-		return FabTable::getInstance($type, $prefix, $config);
+		return new \JPagination(0, 0, 0);
 	}
 
 	/**
@@ -132,11 +64,10 @@ abstract class FabrikAdminModelForms extends FabModelList implements FabrikAdmin
 	 *
 	 * @return  void
 	 */
-
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Load the parameters.
-		$params = JComponentHelper::getParams('com_fabrik');
+		$params = \JComponentHelper::getParams('com_fabrik');
 		$this->setState('params', $params);
 
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');

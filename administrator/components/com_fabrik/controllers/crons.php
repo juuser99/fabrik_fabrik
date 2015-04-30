@@ -9,22 +9,21 @@
  * @since       3.0
  */
 
+namespace Fabrik\Admin\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
-
-require_once 'fabcontrolleradmin.php';
 
 /**
  * Cron list controller class.
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikAdminControllerCrons extends FabControllerAdmin
+class Crons extends \JControllerBase
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -41,20 +40,42 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 	protected $view_item = 'crons';
 
 	/**
-	 * Proxy for getModel.
+	 * Execute the controller.
 	 *
-	 * @param   string  $name    model name
-	 * @param   string  $prefix  model prefix
-	 * @param   array   $config  Configuration array for model. Optional.
+	 * @return  boolean  True if controller finished execution, false if the controller did not
+	 *                   finish execution. A controller might return false if some precondition for
+	 *                   the controller to run has not been satisfied.
 	 *
-	 * @return  J model
+	 * @since   12.1
+	 * @throws  LogicException
+	 * @throws  RuntimeException
 	 */
-
-	public function getModel($name = 'Cron', $prefix = 'FabrikAdminModel', $config = array())
+	public function execute()
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		// Get the application
+		$app = $this->getApplication();
 
-		return $model;
+		// Get the document object.
+		$document = \JFactory::getDocument();
+
+		$viewName   = $app->input->getWord('view', 'lists');
+		$viewFormat = $document->getType();
+		$layoutName = $app->input->getWord('layout', 'bootstrap');
+		$app->input->set('view', $viewName);
+
+		// Register the layout paths for the view
+		$paths = new \SplPriorityQueue;
+		$paths->insert(JPATH_COMPONENT . '/views/' . $viewName . '/tmpl', 'normal');
+
+		$viewClass  = 'Fabrik\Admin\Views\\' . ucfirst($viewName) . '\\' . ucfirst($viewFormat);
+		$modelClass = 'Fabrik\Admin\Models\\' . ucfirst($viewName);
+
+		$view = new $viewClass(new $modelClass, $paths);
+		$view->setLayout($layoutName);
+		// Render our view.
+		echo $view->render();
+
+		return true;
 	}
 
 	/**
@@ -63,7 +84,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 	 * @return  void
 	 */
 
-	public function run()
+	/*public function run()
 	{
 		$mailer = JFactory::getMailer();
 		$config = JFactory::getConfig();
@@ -137,5 +158,5 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		}
 
 		$this->setRedirect('index.php?option=com_fabrik&view=crons', $c . ' records updated');
-	}
+	}*/
 }
