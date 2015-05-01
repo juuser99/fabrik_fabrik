@@ -112,11 +112,12 @@ class UploaderHelper extends \JObject
 	 * Make a recursive folder structure
 	 *
 	 * @param   string  $folderPath  Path to folder - e.g. /images/stories
-	 * @param   hex     $mode        Folder permissions
+	 * @param   int     $mode        Folder permissions
+	 *
+	 * @throws RuntimeException
 	 *
 	 * @return  void
 	 */
-
 	public function _makeRecursiveFolders($folderPath, $mode = 0755)
 	{
 		if (!JFolder::exists($folderPath))

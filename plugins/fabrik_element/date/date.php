@@ -327,6 +327,25 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->date_table_format = 'Y-m-d';
+		$o->date_form_format = 'Y-m-d H:i:s';
+		$o->date_showtime = 0;
+		$o->date_time_format = 'H:i';
+		$o->date_defaulttotoday = 1;
+		$o->date_firstday = 0;
+
+		return $o;
+	}
+
+
+	/**
 	 * Render time button
 	 *
 	 * @param   string  $timeElName  Element name

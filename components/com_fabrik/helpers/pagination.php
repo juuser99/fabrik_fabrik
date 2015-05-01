@@ -370,8 +370,6 @@ class Pagination extends \JPagination
 
 	protected function _buildDataObject()
 	{
-		$app = JFactory::getApplication();
-
 		// Initialize variables
 		$data = new stdClass;
 		$this->url = preg_replace("/limitstart{$this->id}=(.*)?(&|)/", '', $this->url);

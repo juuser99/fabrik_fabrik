@@ -246,6 +246,19 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->use_wysiwyg = 0;
+
+		return $o;
+	}
+
+	/**
 	 * Draws the html form element
 	 *
 	 * @param   array  $data           To pre-populate element with

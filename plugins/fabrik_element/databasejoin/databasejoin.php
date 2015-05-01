@@ -1097,6 +1097,20 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->database_join_display_type = 'dropdown';
+		$o->join_conn_id = -1;
+
+		return $o;
+	}
+
+	/**
 	 * Get the FULL element name or concat statement used currently in sum calculations
 	 *
 	 * @return  string

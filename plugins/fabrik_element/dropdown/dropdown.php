@@ -45,6 +45,19 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->allow_frontend_addtodropdown = 0;
+
+		return $o;
+	}
+
+	/**
 	 * Draws the html form element
 	 *
 	 * @param   array  $data           to pre-populate element with

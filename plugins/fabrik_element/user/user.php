@@ -1112,6 +1112,20 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->my_table_data = 'id';
+		$o->update_on_edit = 0;
+
+		return $o;
+	}
+
+	/**
 	 * Get an array of element html ids and their corresponding
 	 * js events which trigger a validation.
 	 * Examples of where this would be overwritten include timedate element with time field enabled

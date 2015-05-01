@@ -39,6 +39,19 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	protected $fieldDesc = 'TEXT';
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->link_target = '_self';
+
+		return $o;
+	}
+
+	/**
 	 * Shows the data formatted for the list view
 	 *
 	 * @param   string    $data      elements data
@@ -46,7 +59,6 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$listModel = $this->getlistModel();

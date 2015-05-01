@@ -890,6 +890,21 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->sub_default_value = '';
+		$o->sub_default_label = '';
+		$o->options_per_row = 4;
+
+		return $o;
+	}
+
+	/**
 	 * Get classes to assign to the label
 	 *
 	 * @return  array

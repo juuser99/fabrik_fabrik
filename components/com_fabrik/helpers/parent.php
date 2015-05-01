@@ -1996,9 +1996,8 @@ class Worker
 	 *
 	 * @throws Exception
 	 *
-	 * @return  array  key field name, value default value
+	 * @return  stdClass
 	 */
-
 	public static function formDefaults($form)
 	{
 		/*$template = file_get_contents(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/schemas/templates.json');

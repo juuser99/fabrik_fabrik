@@ -68,6 +68,25 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->database_join_display_type = 'dropdown';
+		$o->text_format = 'text';
+		$o->integer_length = 6;
+		$o->decimal_length = 2;
+		$o->guess_linktype = 0;
+		$o->maxlength = 255;
+
+		return $o;
+	}
+
+
+	/**
 	 * Prepares the element data for CSV export
 	 *
 	 * @param   string  $data      Element data

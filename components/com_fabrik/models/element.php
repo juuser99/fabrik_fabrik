@@ -6144,7 +6144,8 @@ class PlgFabrik_Element extends FabrikPlugin
 		$user = JFactory::getUser();
 		$now = JFactory::getDate()->toSql();
 		$this->setId(0);
-		$item = $this->getElement();
+		//$item = $this->getElement();
+		$item = new stdClass;
 		$item->plugin = $this->_name;
 		$item->params = $this->getDefaultAttribs();
 		$item->created = $now;
@@ -6160,60 +6161,18 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * Get a json encoded string of the element default parameters
 	 *
-	 * @return  string
+	 * @return  stdClass
 	 */
-
 	public function getDefaultAttribs()
 	{
 		$o = new stdClass;
 		$o->rollover = '';
 		$o->comment = '';
-		$o->sub_default_value = '';
-		$o->sub_default_label = '';
 		$o->element_before_label = 1;
-		$o->allow_frontend_addtocheckbox = 0;
-		$o->database_join_display_type = 'dropdown';
-		$o->joinType = 'simple';
-		$o->join_conn_id = -1;
-		$o->date_table_format = 'Y-m-d';
-		$o->date_form_format = 'Y-m-d H:i:s';
-		$o->date_showtime = 0;
-		$o->date_time_format = 'H:i';
-		$o->date_defaulttotoday = 1;
-		$o->date_firstday = 0;
 		$o->multiple = 0;
-		$o->allow_frontend_addtodropdown = 0;
-		$o->password = 0;
-		$o->maxlength = 255;
-		$o->text_format = 'text';
-		$o->integer_length = 6;
-		$o->decimal_length = 2;
-		$o->guess_linktype = 0;
 		$o->disable = 0;
 		$o->readonly = 0;
-		$o->ul_max_file_size = 16000;
-		$o->ul_email_file = 0;
-		$o->ul_file_increment = 0;
-		$o->upload_allow_folderselect = 1;
-		$o->fu_fancy_upload = 0;
-		$o->upload_delete_image = 1;
-		$o->make_link = 0;
-		$o->fu_show_image_in_table = 0;
-		$o->image_library = 'gd2';
-		$o->make_thumbnail = 0;
-		$o->imagepath = '/';
-		$o->selectImage_root_folder = '/';
-		$o->image_front_end_select = 0;
-		$o->show_image_in_table = 0;
-		$o->image_float = 'none';
-		$o->link_target = '_self';
-		$o->radio_element_before_label = 0;
-		$o->options_per_row = 4;
 		$o->ck_options_per_row = 4;
-		$o->allow_frontend_addtoradio = 0;
-		$o->use_wysiwyg = 0;
-		$o->my_table_data = 'id';
-		$o->update_on_edit = 0;
 		$o->view_access = 1;
 		$o->show_in_rss_feed = 0;
 		$o->show_label_in_rss_feed = 0;
@@ -6231,7 +6190,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		$o->count_on = 0;
 		$o->count_access = 0;
 
-		return json_encode($o);
+		return $o;
 	}
 
 	/**

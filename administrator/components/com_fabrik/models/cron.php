@@ -14,12 +14,11 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
 use \JModelLegacy as JModelLegacy;
 use \FabrikString as FabrikString;
 use \FText as FText;
-use Fabrik\Helpers\ArrayHelper;
 
 interface CronInterface
 {

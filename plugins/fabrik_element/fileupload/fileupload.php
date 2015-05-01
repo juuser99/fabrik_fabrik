@@ -472,6 +472,29 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->ul_max_file_size = 16000;
+		$o->ul_email_file = 0;
+		$o->ul_file_increment = 0;
+		$o->upload_delete_image = 1;
+		$o->fu_fancy_upload = 0;
+		$o->upload_allow_folderselect = 1;
+		$o->image_library = 'gd2';
+		$o->make_thumbnail = 0;
+		$o->fu_show_image_in_table = 0;
+		$o->show_image_in_table = 0;
+		$o->make_link = 0;
+
+		return $o;
+	}
+
+	/**
 	 * Can the plug-in crop. Based on parameters and browser check (IE8 or less has no canvas support)
 	 *
 	 * @since   3.0.9

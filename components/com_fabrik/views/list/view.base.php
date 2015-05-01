@@ -699,7 +699,7 @@ class FabrikViewListBase extends JViewLegacy
 				{
 					if ($k != 'calc')
 					{
-						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
+						$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
 					}
 				}
 			}
@@ -722,7 +722,7 @@ class FabrikViewListBase extends JViewLegacy
 				{
 					if ($k != 'calc')
 					{
-						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
+						$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
 					}
 				}
 			}
@@ -736,7 +736,7 @@ class FabrikViewListBase extends JViewLegacy
 				{
 					if ($k != 'calc')
 					{
-						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
+						$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
 					}
 				}
 			}
@@ -759,7 +759,7 @@ class FabrikViewListBase extends JViewLegacy
 				{
 					if ($k != 'calc')
 					{
-						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
+						$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
 					}
 				}
 			}
@@ -782,7 +782,7 @@ class FabrikViewListBase extends JViewLegacy
 				{
 					if ($k != 'calc')
 					{
-						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
+						$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ':</span> ' . $v->value . '<br />';
 					}
 				}
 			}

@@ -347,7 +347,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	 * Before the record is stored, this plugin will see if it should process
 	 * and if so store the form data in the session.
 	 *
-	 * NOTE: if your Fabrik list saves directly to #__users then you CAN NOT add additonal fields to the list,
+	 * NOTE: if your Fabrik list saves directly to #__users then you CAN NOT add additional fields to the list,
 	 * instead add to a joined list to contain 'profile' information.
 	 *
 	 * @return  bool  should the form model continue to save
@@ -355,6 +355,8 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 	public function onBeforeStore()
 	{
+		$app = \JFactory::getApplication();
+		$input = $app->input;
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$config = JFactory::getConfig();
@@ -516,18 +518,17 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		$this->trimNamePassword($user, $data);
 
-			if (($useractivation == '1' || $useractivation == '2') && !$bypassActivation)
-			{
-				jimport('joomla.user.helper');
-				$data['activation'] = JApplication::getHash(JUserHelper::genRandomPassword());
-				$data['block'] = 1;
-			}
-			// If Auto login is activated, we need to set activation and block to 0
-			if ($autoLogin)
-			{
-				$data['activation'] = 0;
-				$data['block'] = 0;
-			}
+		if (($userActivation == '1' || $userActivation == '2') && !$bypassActivation)
+		{
+			jimport('joomla.user.helper');
+			$data['activation'] = JApplication::getHash(JUserHelper::genRandomPassword());
+			$data['block'] = 1;
+		}
+		// If Auto login is activated, we need to set activation and block to 0
+		if ($autoLogin)
+		{
+			$data['activation'] = 0;
+			$data['block'] = 0;
 		}
 
 		// Check that username is not greater than 150 characters
@@ -535,7 +536,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if (strlen($username) > 150)
 		{
-			$username = JString::substr($username, 0, 150);
+			$username = String::substr($username, 0, 150);
 			$user->set('username', $username);
 		}
 

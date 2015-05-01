@@ -314,7 +314,7 @@ class ArrayHelper extends \JArrayHelper
 	 * globally replaced all use of ArrayHelper::getValue() with ArrayHelper::getValue().  This code is just a
 	 * copy of the J! code, it just doesn't specify "array $array".
 	 * 
-	 * @param   array   &$array   A named array
+	 * @param   array|object   &$array   A named array
 	 * @param   string  $name     The key to search for
 	 * @param   mixed   $default  The default value to give if no key found
 	 * @param   string  $type     Return type for the variable (INT, FLOAT, STRING, WORD, BOOLEAN, ARRAY)

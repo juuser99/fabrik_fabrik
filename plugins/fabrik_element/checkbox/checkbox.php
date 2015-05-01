@@ -101,6 +101,19 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->allow_frontend_addtocheckbox = 0;
+
+		return $o;
+	}
+
+	/**
 	 * Get the class to manage the form element
 	 * to ensure that the file is loaded only once
 	 *

@@ -174,7 +174,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				{
 					// Prune items that you can't change.
 					unset($pks[$i]);
-					JError::raiseWarning(403, FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+					$this->app->enqueueMessage(FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'), 'warning');
 				}
 			}
 		}
@@ -542,7 +542,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * @return bool
 	 * @throws RuntimeException
 	 */
-	public function save($data)
+	public function save($post)
 	{
 
 		$this->populateState();
@@ -550,13 +550,13 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$user  = JFactory::getUser();
 		$date  = JFactory::getDate();
 
-		$data = ArrayHelper::toObject($data);
-		//$params                = new JRegistry($row->params);
+		$data       = new stdClass;
+		$data->list = ArrayHelper::toObject($post);
+		$data->view = $data->list->view;
+		unset($data->list->view);
 
-		//$this->set('list.form_id', $row->form_id);
-
-		$data->order_by  = $input->get('order_by', array(), 'array');
-		$data->order_dir = $input->get('order_dir', array(), 'array');
+		$data->list->order_by  = $input->get('order_by', array(), 'array');
+		$data->list->order_dir = $input->get('order_dir', array(), 'array');
 
 		$this->collation($data);
 
@@ -565,20 +565,20 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		if (!$isNew)
 		{
-			$dateNow           = JFactory::getDate();
-			$data->modified    = $dateNow->toSql();
-			$data->modified_by = $user->get('id');
+			$dateNow                 = JFactory::getDate();
+			$data->list->modified    = $dateNow->toSql();
+			$data->list->modified_by = $user->get('id');
 		}
 
 		if ($isNew)
 		{
-			if ($data->created == '')
+			if ($data->list->created == '')
 			{
-				$data->created = $date->toSql();
+				$data->list->created = $date->toSql();
 			}
 
 			//$isNew    = false;
-			$newTable = trim($data->_database_name);
+			$newTable = trim($data->list->_database_name);
 
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
 			$newTable = FabrikString::clean($newTable);
@@ -602,11 +602,13 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$data->form = $this->createLinkedForm($data);
 
 			// Create fabrik group
-			$groupData        = Worker::formDefaults('group');
-			$groupData->name  = $data->label;
-			$groupData->label = $data->label;
+			$groupData         = Worker::formDefaults('group');
+			$groupData->name   = $data->list->label;
+			$groupData->label  = $data->list->label;
+			$groupData->fields = array();
 
-			$data->group = $this->createLinkedGroup($groupData, false);
+			$data->groups   = array();
+			$data->groups[] = $this->createLinkedGroup($groupData, false);
 
 			if ($newTable == '')
 			{
@@ -620,17 +622,22 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$data->auto_inc      = 1;
 
 				$dbOpts            = array();
-				$params            = new JRegistry($data->params);
+				$params            = new JRegistry($data->list->params);
 				$dbOpts['COLLATE'] = $params->get('collation', '');
-				
-				$fields = (array) $this->get('defaultfields', array('id' => 'internalid', 'date_time' => 'date'));
-				$res               = $this->createDBTable($newTable, $fields, $dbOpts);
-				echo "<pre>";
-				print_r($data);
-				exit;
+
+				$fields = array('id' => array('plugin' => 'internalid'), 'date_time' => array('plugin' => 'date'));
+				$fields = (array) $this->get('defaultfields', $fields);
+
+				foreach ($fields as $name => $fieldData)
+				{
+					$data->groups[0]->fields[] = $this->makeElement($name, $fieldData);
+				}
+
+				$res = $this->createDBTable($newTable, $fields, $dbOpts);
+
 				if (is_array($res))
 				{
-					$row->db_primary_key = $newTable . '.' . $res[0];
+					$data->list->db_primary_key = $newTable . '.' . $res[0];
 				}
 			}
 		}
@@ -830,7 +837,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$joinTable       = ArrayHelper::getValue($params, 'table_join', array());
 		$tableKey        = ArrayHelper::getValue($params, 'table_key', array());
 		$joinTableKey    = ArrayHelper::getValue($params, 'table_join_key', array());
-		$groupIds        = ArrayHelper::getValue($params, 'group_id', array());
 		$repeats         = ArrayHelper::getValue($params, 'join_repeat', array());
 		$jc              = count($joinTypes);
 
@@ -901,7 +907,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				}
 			}
 		}
-		// Remove non exisiting joins
+		// Remove non existing joins
 		if (is_array($aOldJoins))
 		{
 			foreach ($aOldJoins as $oOldJoin)
@@ -1157,7 +1163,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 			$element->height   = '6';
 			$element->ordering = $ordering;
-			$p                 = json_decode($elementModel->getDefaultAttribs());
+			$p                 = $elementModel->getDefaultAttribs();
 
 			if (in_array($type, array('int', 'tinyint', 'smallint', 'mediumint', 'bigint')) && $plugin == 'field')
 			{
@@ -1240,14 +1246,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 			$form = Worker::formDefaults('form');
 
-			$form->label               = $view->label;
+			$form->label               = $view->list->label;
 			$form->record_in_database  = 1;
 			$form->created             = $createDate;
 			$form->created_by          = $user->get('id');
 			$form->created_by_alias    = $user->get('username');
 			$form->error               = FText::_('COM_FABRIK_FORM_ERROR_MSG_TEXT');
 			$form->submit_button_label = FText::_('COM_FABRIK_SAVE');
-			$form->published           = $view->published;
+			$form->published           = $view->list->published;
 			$form->form_template       = 'bootstrap';
 			$form->view_only_template  = 'bootstrap';
 		}
@@ -1293,6 +1299,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	/**
 	 * Method to copy one or more records.
+	 *
+	 * @FIXME    for json views
 	 *
 	 * @return  boolean    True if successful, false if an error occurs.
 	 *
@@ -1532,7 +1540,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 *
 	 * @return bool
 	 */
-
 	public function dbTableFromXML($key, $name, $xml)
 	{
 		$row  = $xml[0];
@@ -1581,12 +1588,11 @@ class Lizt extends Base implements ModelFormLiztInterface
 		}
 
 		$db    = $this->_db;
-		$query = $db->getQuery();
 		$query = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName($name) . ' (';
 
 		foreach ($data as $fname => $objType)
 		{
-			$query .= $db->quoteName($fname) . " $objType, \n";
+			$query .= $db->qn($fname) . " $objType, \n";
 		}
 
 		$query .= ' primary key (' . $key . '))';
@@ -1594,7 +1600,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$db->setQuery($query);
 		$db->execute();
 
-		// Get a list of existinig ids
+		// Get a list of existing ids
 		$query = $db->getQuery(true);
 		$query->select($key)->from($name);
 		$db->setQuery($query);
@@ -1630,11 +1636,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 *
 	 * @param   int $formId form id
 	 *
+	 * @throws \Exception
+	 *
 	 * @return  object  JTable
 	 */
 
 	public function loadFromFormId($formId)
 	{
+		throw new \Exception ('Admin load from form id called but ids no longer used');
 		$item = $this->getTable();
 
 		/**
@@ -1657,7 +1666,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 *
 	 * @return  object database
 	 */
-
 	public function &getDb()
 	{
 		$listId = $this->getState('list.id');
@@ -1678,9 +1686,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function createDBTable($name = null, $fields = array('id' => 'internalid', 'date_time' => 'date'), $opts = array())
 	{
-
-
-		$this->storage->createTable($name, $fields, $opts);
+		return $this->storage->createTable($name, $fields, $opts);
 	}
 
 	/**
@@ -1689,9 +1695,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * @param   string $name Element name
 	 * @param   array  $data Properties
 	 *
-	 * @return mixed false if failed, otherwise element plugin
+	 * @return mixed false if failed, otherwise element plugin public properties
 	 */
-
 	public function makeElement($name, $data)
 	{
 		$pluginManager = Worker::getPluginManager();
@@ -1700,16 +1705,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$item->id      = null;
 		$item->name    = $name;
 		$item->label   = str_replace('_', ' ', $name);
-		$item->bind($data);
 
-		if (!$item->store())
-		{
-			JError::raiseWarning(500, $item->getError());
-
-			return false;
-		}
-
-		return $element;
+		return $item;
 	}
 
 	/**

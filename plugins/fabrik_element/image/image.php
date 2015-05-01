@@ -351,6 +351,23 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		return $layout->render($layoutData);
 	}
 
+	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->link_target = '_self';
+		$o->image_float = 'none';
+		$o->image_front_end_select = 0;
+		$o->selectImage_root_folder = '/';
+		$o->imagepath = '/';
+
+		return $o;
+	}
+
 	protected function getPath($value, $data, $repeatCounter)
 	{
 		$rootFolder = $this->rootFolder($value);

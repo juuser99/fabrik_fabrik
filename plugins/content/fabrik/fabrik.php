@@ -859,11 +859,8 @@ class PlgContentFabrik extends JPlugin
 
 				$controller = $this->controllers['list'][$id];
 				break;
-			case 'package':
-				$controller = new FabrikControllerPackage;
-				break;
 			default:
-				$controller = new FabrikController;
+				$controller = new FabrikControllerForm;
 				break;
 		}
 

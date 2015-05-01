@@ -45,6 +45,20 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 	}
 
 	/**
+	 * Get a json encoded string of the element default parameters
+	 *
+	 * @return  stdClass
+	 */
+	public function getDefaultAttribs()
+	{
+		$o = parent::getDefaultAttribs();
+		$o->radio_element_before_label = 0;
+		$o->allow_frontend_addtoradio = 0;
+
+		return $o;
+	}
+
+	/**
 	 * Turn form value into email formatted value
 	 *
 	 * @param   mixed  $value          element value
