@@ -9,6 +9,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -104,10 +107,10 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 
 		if (!empty($fk))
 		{
-			$fkVal = FArrayHelper::getValue(
+			$fkVal = ArrayHelper::getValue(
 					$formModel->data,
 					FabrikString::safeColNameToArrayKey($fk),
-					FArrayHelper::getValue(
+					ArrayHelper::getValue(
 							$formModel->data,
 							FabrikString::safeColNameToArrayKey($fk) . '_raw',
 							''
@@ -194,7 +197,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 			$add_sql = $params->get('limit_add_sql', '');
 			if (!empty($add_sql))
 			{
-				$w = new FabrikWorker;
+				$w = new Worker;
 				$add_sql = $w->parseMessageForPlaceHolder($add_sql);
 				$db->setQuery($add_sql);
 				$db->execute();

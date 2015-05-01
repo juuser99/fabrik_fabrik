@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -38,9 +40,8 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 	{
 		$app = JFactory::getApplication();
 		$params = $this->getParams();
-		$config = JFactory::getConfig();
 		$document = JFactory::getDocument();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$document->addScript("http://api.simile-widgets.org/runway/1.0/runway-api.js");
 		$c = 0;
@@ -48,7 +49,6 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 		$titles = (array) $params->get('coverflow_title');
 		$subtitles = (array) $params->get('coverflow_subtitle');
 
-		$config = JFactory::getConfig();
 		$listids = (array) $params->get('coverflow_table');
 		$eventdata = array();
 
@@ -66,7 +66,7 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 			if ($listModel->canView() || $listModel->canEdit())
 			{
 				$elements = $listModel->getElements();
-				$imageElement = FArrayHelper::getValue($elements, FabrikString::safeColName($image));
+				$imageElement = ArrayHelper::getValue($elements, FabrikString::safeColName($image));
 				$action = $app->isAdmin() ? "task" : "view";
 				$nextview = $listModel->canEdit() ? "form" : "details";
 

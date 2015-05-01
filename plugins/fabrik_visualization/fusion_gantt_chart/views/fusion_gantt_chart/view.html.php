@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -66,7 +68,7 @@ class FabrikViewFusion_Gantt_Chart extends JViewLegacy
 
 		$params = $model->getParams();
 		$this->params = $params;
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$plugin = $pluginManager->getPlugIn('fusion_gantt_chart', 'visualization');
 		$this->containerId = $this->get('ContainerId');
 		$this->filters = $this->get('Filters');

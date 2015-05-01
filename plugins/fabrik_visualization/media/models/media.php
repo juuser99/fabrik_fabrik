@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -37,7 +38,7 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$params = $this->getParams();
 		$w = $params->get('media_width');
 		$h = $params->get('media_height');
@@ -111,7 +112,7 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 		 */
 		$context = 'com_' . $package . '.list' . $listModel->getRenderContext() . '.';
 		$item = $listModel->getTable();
-		$rowsPerPage = FabrikWorker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page);
+		$rowsPerPage = Worker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page);
 		$orig_limitstart = $app->getUserState('limitstart', 0);
 		$orig_limitlength = $app->getUserState('limitlength', $rowsPerPage);
 		$app->setUserState($context . 'limitstart', 0);

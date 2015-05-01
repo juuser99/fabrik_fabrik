@@ -19,7 +19,7 @@ use Joomla\Utilities\ArrayHelper;
 use \JModelLegacy as JModelLegacy;
 use \FText as FText;
 use \stdClass as stdClass;
-use \FabrikWorker as FabrikWorker;
+use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
 
 jimport('joomla.application.component.modeladmin');
@@ -90,7 +90,7 @@ class Connection extends Connections implements ConnectionInterface
 	protected function matchesDefault($item)
 	{
 		$password = $this->config->get('password');
-		$crypt    = FabrikWorker::getCrypt();
+		$crypt    = Worker::getCrypt();
 		$pwMatch  = $password == $item->password || $crypt->encrypt($password) == $item->password;
 
 		return $this->config->get('host') == $item->host && $this->config->get('user') == $item->user && $pwMatch
@@ -106,7 +106,7 @@ class Connection extends Connections implements ConnectionInterface
 	 */
 	public function prepare(&$data)
 	{
-		$crypt               = FabrikWorker::getCrypt();
+		$crypt               = Worker::getCrypt();
 		$params              = new stdClass;
 		$params->encryptedPw = true;
 		$data['params']      = $params;

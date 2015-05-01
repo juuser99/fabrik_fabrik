@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.form.formfield');
 
 /**
@@ -75,7 +77,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 
 		if ($view === 'element')
 		{
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = Worker::getPluginManager();
 			$feModel = $pluginManager->getPluginFromId($id);
 		}
 		else
@@ -199,9 +201,6 @@ class JFormFieldFabrikModalrepeat extends JFormField
 				{
 					$context = 'COM_MODULES';
 				}
-
-				$j3pane = $context . '_' . str_replace('jform_params_', '', $modalId) . '_FIELDSET_LABEL';
-				$j3pane = strtoupper(str_replace('attrib-', '', $j3pane));
 
 				$script = "window.addEvent('domready', function() {
 				" . $script . "

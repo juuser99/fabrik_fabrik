@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -81,7 +82,7 @@ class FabrikModelNotification extends JModelLegacy
 	protected function getRows()
 	{
 		$user = JFactory::getUser();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__fabrik_notification')->where('user_id = ' . (int) $user->get('id'));
 		$db->setQuery($query);
@@ -108,7 +109,7 @@ class FabrikModelNotification extends JModelLegacy
 			return;
 		}
 
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$query = $db->getQuery(true);
 		$query->delete('#__fabrik_notification')->where('id IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);

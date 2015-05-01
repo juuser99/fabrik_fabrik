@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
@@ -99,7 +100,7 @@ class JFormFieldSwapList extends JFormFieldList
 
 	public function getGroupList()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('DISTINCT(group_id)')->from('#__fabrik_formgroup');
 		$db->setQuery($query);
@@ -131,7 +132,7 @@ class JFormFieldSwapList extends JFormFieldList
 
 	public function getCurrentGroupList()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('fg.group_id AS value, g.name AS text');
 		$query->from('#__fabrik_formgroup AS fg');

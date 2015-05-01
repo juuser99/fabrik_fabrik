@@ -12,6 +12,7 @@
 // Don't allow direct linking
 defined('JPATH_BASE') or die('Direct Access to this location is not allowed.');
 
+use Fabrik\Helpers\Worker;
 /**
  * Joomfish translation class
  *
@@ -19,7 +20,6 @@ defined('JPATH_BASE') or die('Direct Access to this location is not allowed.');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class TranslationFabrikGroupFilter extends translationFilter
 {
 	/**
@@ -42,7 +42,7 @@ class TranslationFabrikGroupFilter extends translationFilter
 	 */
 	public function _createfilterHTML()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 
 		if (!$this->filterField)
 		{

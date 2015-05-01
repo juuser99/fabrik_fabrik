@@ -13,7 +13,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Admin Package Model
@@ -54,7 +55,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 
 	public function getTable($type = 'Package', $prefix = 'FabrikTable', $config = array())
 	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
+		$config['dbo'] = Worker::getDbo(true);
 
 		return FabTable::getInstance($type, $prefix, $config);
 	}
@@ -317,7 +318,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 
 			$plugins = $this->findPlugins($row);
 			$this->zipPlugins($row, $plugins);
-			$filenames = FArrayHelper::extract($plugins, 'fullfile');
+			$filenames = ArrayHelper::extract($plugins, 'fullfile');
 
 			$filenames[] = $componentZipPath;
 
@@ -477,7 +478,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 		$lookups = $this->getInstallItems($row);
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$lists = $lookups->list;
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 
 		if (isset($lookups->visualization))
@@ -616,7 +617,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 
 	protected function rowsToInsert($table, $rows, &$return)
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 
 		foreach ($rows as $row)
 		{
@@ -783,7 +784,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 	protected function makeInstallSQL($row)
 	{
 		$sql = '';
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 
 		// Create the sql for the cloned fabrik meta data tables
 		foreach ($this->tables as $table)

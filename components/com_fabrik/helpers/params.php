@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 /*
  * DEPRECIATED?
 could well be that we don't use this now???????????
@@ -194,7 +196,7 @@ class FabrikParams extends JForm
 
 		if ($outputFormat == 'array' && !is_null($counter))
 		{
-			$value = FArrayHelper::getValue($value, $counter, '');
+			$value = ArrayHelper::getValue($value, $counter, '');
 		}
 
 		// Value must be a string

@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
@@ -81,11 +84,11 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 		{
 			// $$$ the array thing needs fixing, for now just grab 0
 			$formdata = $elementModel->getForm()->formData;
-			$v = FArrayHelper::getValue($formdata, $otherFullName . '_raw', FArrayHelper::getValue($formdata, $otherFullName, ''));
+			$v = ArrayHelper::getValue($formdata, $otherFullName . '_raw', ArrayHelper::getValue($formdata, $otherFullName, ''));
 
 			if (is_array($v))
 			{
-				$v = FArrayHelper::getValue($v, 0, '');
+				$v = ArrayHelper::getValue($v, 0, '');
 			}
 
 			$query->where($db->quoteName($otherfield) . ' = ' . $db->quote($v));
@@ -119,7 +122,7 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 		$params = $this->getParams();
 		$otherfield = $params->get('areuniquevalues-otherfield');
 
-		return FabrikWorker::getPluginManager()->getElementPlugin($otherfield);
+		return Worker::getPluginManager()->getElementPlugin($otherfield);
 	}
 
 	/**

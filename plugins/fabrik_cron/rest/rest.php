@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
@@ -120,7 +122,7 @@ class PlgFabrik_CronRest extends PlgFabrik_Cron
 			return;
 		}
 
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 
 		// See if we have a list that already points to the table
 		$query = $db->getQuery(true);

@@ -102,7 +102,7 @@ class Connections extends Controller
 		$cid = $input->get('cid', array(), 'array');
 		$data = array('setDefault' => 1, 'unsetDefault' => 0);
 		$task = $this->getTask();
-		$value = FArrayHelper::getValue($data, $task, 0, 'int');
+		$value = ArrayHelper::getValue($data, $task, 0, 'int');
 
 		if ($value == 0)
 		{

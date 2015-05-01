@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -86,7 +88,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 
 		$cc = null;
 		$bcc = null;
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		// $$$ hugh - test stripslashes(), should be safe enough.
 		$message = stripslashes($message);
@@ -108,7 +110,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 		if ($ftp_eval_filename)
 		{
 			$ftp_filename = @eval($ftp_filename);
-			FabrikWorker::logEval($email_to_eval, 'Caught exception on eval in ftp filename eval : %s');
+			Worker::logEval($ftp_eval_filename, 'Caught exception on eval in ftp filename eval : %s');
 		}
 
 		if (empty($ftp_filename))
@@ -288,7 +290,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 		$config = JFactory::getConfig();
 		$ignore = $this->getDontEmailKeys();
 		$message = "";
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$formModel = $this->getModel();
 		$groupModels = $formModel->getGroupsHiarachy();
 
@@ -307,7 +309,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 				{
 					$val = '';
 
-					if (is_array(FArrayHelper::getValue($data, $key)))
+					if (is_array(ArrayHelper::getValue($data, $key)))
 					{
 						// Repeat group data
 						foreach ($data[$key] as $k => $v)
@@ -322,7 +324,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 					}
 					else
 					{
-						$val = FArrayHelper::getValue($data, $key);
+						$val = ArrayHelper::getValue($data, $key);
 					}
 
 					$val = FabrikString::rtrimword($val, "<br />");

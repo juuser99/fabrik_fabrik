@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -21,7 +23,7 @@ use Joomla\String\String;
  * @since       3.0
  */
 
-class FabrikUploader extends JObject
+class UploaderHelper extends \JObject
 {
 	/**
 	 * Form model

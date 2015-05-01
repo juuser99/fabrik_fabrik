@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\ArrayHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -113,7 +114,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$rows = $db->loadColumn();
 		$keys = array_flip($rows);
 		$o = new stdClass;
-		$o->index = FArrayHelper::getValue($keys, $formModel->getRowId(), 0);
+		$o->index = ArrayHelper::getValue($keys, $formModel->getRowId(), 0);
 		$o->first = $rows[0];
 		$o->lastKey = count($rows) - 1;
 		$o->last = $rows[$o->lastKey];

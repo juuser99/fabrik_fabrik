@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -138,7 +139,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 			$this->setListIds();
 
 			// Needed to load the language file!
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = Worker::getPluginManager();
 			$plugin = $pluginManager->getPlugIn($this->_row->plugin, 'visualization');
 		}
 
@@ -227,7 +228,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 
 		foreach ($listModels as $listModel)
 		{
-			$show = (bool) FArrayHelper::getValue($showFilters, $i, true);
+			$show = (bool) ArrayHelper::getValue($showFilters, $i, true);
 
 			if ($show)
 			{
@@ -459,7 +460,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 		{
 			// Set prefilter params
 			$listParams = $listModel->getParams();
-			$prefilter = FArrayHelper::getValue($prefilters, $c);
+			$prefilter = ArrayHelper::getValue($prefilters, $c);
 			$prefilter = ArrayHelper::fromObject(json_decode($prefilter));
 			$conditions = (array) $prefilter['filter-conditions'];
 

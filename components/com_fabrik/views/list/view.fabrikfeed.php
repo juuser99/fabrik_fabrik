@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
@@ -38,7 +40,7 @@ class FabrikViewList extends FabrikViewListBase
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$user = JFactory::getUser();
 		$model = $this->getModel();
 		$model->setOutPutFormat('feed');
@@ -156,7 +158,7 @@ class FabrikViewList extends FabrikViewListBase
 			}
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$rows = $model->getData();
 
 		$document->title = htmlentities($w->parseMessageForPlaceHolder($table->label, $_REQUEST), ENT_COMPAT, 'UTF-8');
@@ -231,7 +233,7 @@ class FabrikViewList extends FabrikViewListBase
 							{
 								$enclosure_type = '';
 
-								if ($enclosure_type = FabrikWorker::getPodcastMimeType($enclosure_file))
+								if ($enclosure_type = Worker::getPodcastMimeType($enclosure_file))
 								{
 									$enclosure_size = $this->get_filesize($enclosure_file, $remote_file);
 									$enclosures[] = array(
@@ -299,7 +301,7 @@ class FabrikViewList extends FabrikViewListBase
 				}
 
 
-				if (FArrayHelper::getValue($dbcolname, 'label') != '')
+				if (ArrayHelper::getValue($dbcolname, 'label') != '')
 				{
 					$str = $tstart . $str . "</table>";
 				}

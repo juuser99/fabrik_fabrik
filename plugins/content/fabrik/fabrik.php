@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.plugin.plugin');
 
@@ -129,7 +131,7 @@ class PlgContentFabrik extends JPlugin
 
 		// $$$ hugh - see if we can remove formatting added by WYSIWYG editors
 		$match = strip_tags($match);
-		$w = new FabrikWorker;
+	$w = new Worker;
 		$match = preg_replace('/\s+/', ' ', $match);
 		/* $$$ hugh - only replace []'s in value, not key, so we handle
 		 * ranged filters and 'complex' filters
@@ -208,7 +210,7 @@ class PlgContentFabrik extends JPlugin
 			$m = explode("=", $m);
 
 			// $$$ hugh - deal with %20 as space in arguments
-			$m[1] = urldecode(FArrayHelper::getValue($m, 1));
+			$m[1] = urldecode(ArrayHelper::getValue($m, 1));
 
 			switch ($m[0])
 			{
@@ -558,12 +560,12 @@ class PlgContentFabrik extends JPlugin
 				 *
 				 * $$$ hugh - nasty little hack to reduce 'emptyish' array, 'cos if no 'elements' in the request, the following ends up setting
 				 * returning an array with a single empty string.  This ends up meaning that we render a list with no
-				 * elements in it.  We've run across this before, so we have a FArrayHelper:;emptyish() to detect it.
+				 * elements in it.  We've run across this before, so we have a ArrayHelper:;emptyish() to detect it.
 				 */
 
 				$show_in_list = explode('|', $input->getString('elements', ''));
 
-				if (FArrayHelper::emptyIsh($show_in_list, true))
+				if (ArrayHelper::emptyIsh($show_in_list, true))
 				{
 					$show_in_list = array();
 				}
@@ -804,7 +806,7 @@ class PlgContentFabrik extends JPlugin
 
 		if (!array_key_exists($id, $this->pluginVizName))
 		{
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('plugin')->from('#__{package}_visualizations')->where('id = ' . (int) $id);
 			$db->setQuery($query);
@@ -886,7 +888,7 @@ class PlgContentFabrik extends JPlugin
 			$view = 'form';
 		}
 		
-		if (!FabrikWorker::isViewType($view))
+		if (!Worker::isViewType($view))
 		{
 			throw new RuntimeException('Please specify a valid view type in your fabrik {} code: ' . $view, 500);
 		}

@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
@@ -286,7 +287,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 					$condition2 = $condition == '=' ? 'LIKE' : 'NOT LIKE';
 					$glue = $condition == '=' ? 'OR' : 'AND';
-					$db = FabrikWorker::getDbo();
+					$db = Worker::getDbo();
 					$str = "($key $condition $value " . " $glue $key $condition2 " . $db->quote('["' . $originalValue . '"%') . " $glue $key $condition2 "
 					. $db->quote('%"' . $originalValue . '"%') . " $glue $key $condition2 " . $db->quote('%"' . $originalValue . '"]') . ")";
 					break;
@@ -545,7 +546,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	{
 		$app = JFactory::getApplication();
 		$listModel = $elementModel->getListModel();
-		$label = FArrayHelper::getValue($opts, 'label', '');
+		$label = ArrayHelper::getValue($opts, 'label', '');
 		$rows = $elementModel->filterValueList(true, '', $label);
 		$v = $app->input->get('value', '', 'string');
 
@@ -622,7 +623,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 		if (isset($thisRow->$raw))
 		{
-			$rawData = FabrikWorker::JSONtoData($thisRow->$raw, true);
+			$rawData = Worker::JSONtoData($thisRow->$raw, true);
 
 			foreach ($rawData as &$val)
 			{
@@ -638,7 +639,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		}
 
 		// Repeat group data
-		$gdata = FabrikWorker::JSONtoData($data, true);
+		$gdata = Worker::JSONtoData($data, true);
 		$this->listPreformat($gdata, $thisRow);
 		$addHtml = (count($gdata) !== 1 || $multiple || $mergeGroupRepeat) && $this->renderWithHTML;
 		$uls = array();
@@ -646,7 +647,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		foreach ($gdata as $i => $d)
 		{
 			$lis = array();
-			$vals = is_array($d) ? $d : FabrikWorker::JSONtoData($d, true);
+			$vals = is_array($d) ? $d : Worker::JSONtoData($d, true);
 
 			foreach ($vals as $tmpVal)
 			{
@@ -745,7 +746,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 			$id = $this->getFullName(true, false) . '_id';
 			$data = $thisRow->$id;
 
-			$rawData = FabrikWorker::JSONtoData($data, true);
+			$rawData = Worker::JSONtoData($data, true);
 			$thisRow->$raw = json_encode($rawData);
 		}
 
@@ -784,7 +785,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		*/
 		$selected = (array) $this->getValue($data, $repeatCounter);
 
-		if (FArrayHelper::emptyIsh($selected))
+		if (ArrayHelper::emptyIsh($selected))
 		{
 			$selected = array();
 
@@ -940,7 +941,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 		if (is_string($v))
 		{
-			$v = FabrikWorker::JSONtoData($v, true);
+			$v = Worker::JSONtoData($v, true);
 		}
 
 		return $v;
@@ -1071,11 +1072,11 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
 		$multiple = $this->isMultiple();
-		$vals = is_array($v) ? $v : FabrikWorker::JSONtoData($v, true);
+		$vals = is_array($v) ? $v : Worker::JSONtoData($v, true);
 
 		foreach ($vals as $val)
 		{
-			$l = FArrayHelper::getValue($labels, $val, $defaultLabel);
+			$l = ArrayHelper::getValue($labels, $val, $defaultLabel);
 
 			if (trim($l) !== '')
 			{
@@ -1106,7 +1107,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		{
 		$v = $params->get('sub_default_label');
 		}
-		return ($key === false) ? $v : FArrayHelper::getValue($labels, $key, $defaultLabel);
+		return ($key === false) ? $v : ArrayHelper::getValue($labels, $key, $defaultLabel);
 		*/
 		return $return;
 	}

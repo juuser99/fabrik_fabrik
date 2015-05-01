@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 /**
  * Plugin element to render colour picker
  *
@@ -46,7 +48,7 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 
 	public function renderListData($data, stdClass &$thisRow)
 	{
-		$data = FabrikWorker::JSONtoData($data, true);
+		$data = Worker::JSONtoData($data, true);
 		$str = '';
 
 		foreach ($data as $d)

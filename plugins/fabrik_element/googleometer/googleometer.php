@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 
 /**
@@ -50,7 +53,7 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	{
 		$range = $this->getRange();
 		$fullName = $this->getDataElementFullName();
-		$data = FArrayHelper::getValue($data, $fullName);
+		$data = ArrayHelper::getValue($data, $fullName);
 		$str = $this->_renderListData($data, $range);
 
 		return $str;
@@ -80,7 +83,7 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	{
 		$params = $this->getParams();
 		$elementid = (int) $params->get('googleometer_element');
-		$element = FabrikWorker::getPluginManager()->getPlugIn('', 'element');
+		$element = Worker::getPluginManager()->getPlugIn('', 'element');
 		$element->setId($elementid);
 
 		return $element;

@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -324,7 +326,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	protected function getComments($formid, $rowid)
 	{
 		$formid = (int) $formid;
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$formModel = $this->setFormModel();
 		$query = $db->getQuery(true);
 		$query->select('c.*');
@@ -439,10 +441,6 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	private function writeComment($params, $comment)
 	{
 		$dateformat = $params->get('comment-date-format');
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$user = JFactory::getUser();
-		$j3 = FabrikWorker::j3();
 		$name = (int) $comment->annonymous == 0 ? $comment->name : FText::_('PLG_FORM_COMMENT_ANONYMOUS_SHORT');
 		$data = array();
 		$data[] = '<div class="metadata muted">';
@@ -459,7 +457,6 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$data[] = ' <small>' . JHTML::date($comment->time_date,$dateformat,'UTC') . '</small>';
 
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_form/comment/images/', 'image', 'form', false);
-		$insrc = FabrikHelperHTML::image("star_in.png", 'form', @$this->tmpl, array(), true);
 
 		if ($params->get('comment-internal-rating') == 1)
 		{
@@ -468,7 +465,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 			for ($i = 0; $i < $r; $i++)
 			{
-				$data[] = $j3 ? '<i class="icon-star"></i> ' : '<img src="' . $insrc . '" alt="star" />';
+				$data[] = '<i class="icon-star"></i> ';
 			}
 
 			$data[] = '</div>';
@@ -500,6 +497,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	protected function commentActions(&$data, $comment)
 	{
 		$app = JFactory::getApplication();
+		$params = $this->getParams();
 		$input = $app->input;
 		$user = JFactory::getUser();
 		$layoutData = new stdClass;
@@ -512,7 +510,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$layoutData->canAdd = !$this->commentsLocked && $this->canAddComment();
 		$layoutData->commentsLocked = $this->commentsLocked;
 		$layoutData->form = $this->getAddCommentForm($comment->id);
-		$layoutData->j3 = FabrikWorker::j3();
+		$layoutData->j3 = true;
 
 		if ($this->doThumbs())
 		{
@@ -553,7 +551,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	{
 		if (!isset($this->thumb))
 		{
-			$this->thumb = FabrikWorker::getPluginManager()->getPlugIn('thumbs', 'element');
+			$this->thumb = Worker::getPluginManager()->getPlugIn('thumbs', 'element');
 			$this->thumb->setEditable(true);
 			$this->thumb->commentThumb = true;
 			$this->thumb->formid = $this->getModel()->getId();
@@ -572,7 +570,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 	public function onDeleteComment()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$app = JFactory::getApplication();
 		$id = $app->input->getInt('comment_id');
 		$query = $db->getQuery(true);
@@ -590,7 +588,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 	public function onUpdateComment()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$id = $input->getInt('comment_id');
@@ -724,7 +722,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$formModel = $this->getModel();
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$event = $db->q('COMMENT_ADDED');
 		$user = JFactory::getUser();
 		$user_id = (int) $user->get('id');
@@ -765,7 +763,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$formModel = $this->getModel();
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$user = JFactory::getUser();
 		$user_id = (int) $user->get('id');
 		$rowid = $input->get('rowid', '', 'string');
@@ -832,7 +830,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 	protected function notificationPluginInstalled()
 	{
-		return FabrikWorker::getPluginManager()->pluginExists('cron', 'notification');
+		return Worker::getPluginManager()->pluginExists('cron', 'notification');
 	}
 
 	/**
@@ -858,7 +856,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 
-		return $params->get('comment-thumb') && FabrikWorker::getPluginManager()->pluginExists('element', 'thumbs');
+		return $params->get('comment-thumb') && Worker::getPluginManager()->pluginExists('element', 'thumbs');
 	}
 
 	/**

@@ -8,7 +8,6 @@
 var FabrikModalRepeat = new Class({
 
 	options: {
-		j3: true
 	},
 	
 	initialize: function (el, names, field, opts) {

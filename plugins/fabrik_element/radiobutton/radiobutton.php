@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\ArrayHelper;
 
 /**
  * Plugin element to a series of radio buttons
@@ -173,9 +174,9 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 		if (!array_key_exists($element->name, $data))
 		{
 			$sel = $this->getSubInitialSelection();
-			$sel = FArrayHelper::getValue($sel, 0, '');
+			$sel = ArrayHelper::getValue($sel, 0, '');
 			$arVals = $this->getSubOptionValues();
-			$data[$element->name] = array(FArrayHelper::getValue($arVals, $sel, ''));
+			$data[$element->name] = array(ArrayHelper::getValue($arVals, $sel, ''));
 		}
 	}
 

@@ -9,6 +9,8 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
@@ -157,14 +159,13 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 	private function doRating($listid, $formid, $row_id, $rating)
 	{
 		$this->createRatingTable();
-		$db        = FabrikWorker::getDbo(true);
+		$db        = Worker::getDbo(true);
 		$config    = JFactory::getConfig();
 		$tzoffset  = $config->get('offset');
 		$date      = JFactory::getDate('now', $tzoffset);
 		$strDate   = $db->quote($date->toSql());
 		$userid    = JFactory::getUser()->get('id');
 		$elementid = (int) $this->getElement()->id;
-		$query     = $db->getQuery(true);
 		$formid    = (int) $formid;
 		$listid    = (int) $listid;
 		$rating    = (int) $rating;

@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 if (!defined('DS'))
 {
@@ -56,7 +58,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		{
 			$params = $this->getParams();
 			$element = $this->getElement();
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$this->default = $params->get('imagepath');
 
 			// $$$ hugh - this gets us the default image, with the root folder prepended.
@@ -70,7 +72,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 			if ($element->eval == "1")
 			{
 				$this->default = @eval((string) stripslashes($this->default));
-				FabrikWorker::logEval($this->default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
+				Worker::logEval($this->default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
 			}
 		}
 
@@ -101,7 +103,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		 * selection was being applied instead
 		 * otherwise get the default value so if we don't find the element's value in $data we fall back on this value
 		 */
-		return FArrayHelper::getValue($opts, 'use_default', true) == false ? '' : $this->getDefaultValue($data);
+		return ArrayHelper::getValue($opts, 'use_default', true) == false ? '' : $this->getDefaultValue($data);
 	}
 
 	/**
@@ -115,8 +117,8 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 
 	public function renderListData($data, stdClass &$thisRow)
 	{
-		$w = new FabrikWorker;
-		$data = FabrikWorker::JSONtoData($data, true);
+		$w = new Worker;
+		$data = Worker::JSONtoData($data, true);
 		$params = $this->getParams();
 		$pathset = false;
 
@@ -305,7 +307,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 
 		$float = $params->get('image_float');
 		$float = $float != '' ? "style='float:$float;'" : '';
-		$w     = new FabrikWorker;
+		$w     = new Worker;
 		$rootFolder = str_replace('/', DS, $rootFolder);
 
 		$layout = $this->getLayout('form');
@@ -405,7 +407,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		$folder = array();
 		$files = array();
 		$images = array();
-		FabrikWorker::readImages($pathA, "/", $folders, $images, $this->ignoreFolders);
+		Worker::readImages($pathA, "/", $folders, $images, $this->ignoreFolders);
 
 		if (!array_key_exists('/', $images))
 		{

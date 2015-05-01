@@ -10,7 +10,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -56,7 +57,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		if ($catElement = $formModel->getElement($params->get('categories_element'), true))
 		{
 			$cat = $catElement->getFullName() . '_raw';
-			$categories = (array) FArrayHelper::getValue($this->data, $cat);
+			$categories = (array) ArrayHelper::getValue($this->data, $cat);
 			$this->mapCategoryChanges($categories, $store);
 		}
 		else
@@ -684,7 +685,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 			$this->data[$key] = $val;
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$output = $w->parseMessageForPlaceholder($message, $this->data, true);
 
 		return $output;

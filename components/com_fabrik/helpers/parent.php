@@ -8,11 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use \JFactory as JFactory;
+use \JDatabaseDriver as JDatabaseDriver;
+use \JComponentHelper as JComponentHelper;
+use \JForm as JForm;
+use \Fabrik\Admin\Models\Connection as Connection;
+use \JModelLegacy as JModelLegacy;
 
 /**
  * Generic tools that all models use
@@ -20,10 +28,9 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikWorker
+class Worker
 {
 	/**
 	 * Fabrik database objects
@@ -736,7 +743,7 @@ class FabrikWorker
 			}
 		}
 
-		return $returnType === 'array' ? $msgs : FArrayHelper::getValue($msgs, 0, '');
+		return $returnType === 'array' ? $msgs : ArrayHelper::getValue($msgs, 0, '');
 	}
 
 	/**
@@ -816,12 +823,12 @@ class FabrikWorker
 		foreach ($matches as $match)
 		{
 			$bits = explode('->', str_replace(array('{', '}'), '', $match));
-			$userid = $app->input->getInt(FArrayHelper::getValue($bits, 1));
+			$userid = $app->input->getInt(ArrayHelper::getValue($bits, 1));
 
 			if ($userid !== 0)
 			{
 				$user = JFactory::getUser($userid);
-				$val = $user->get(FArrayHelper::getValue($bits, 2));
+				$val = $user->get(ArrayHelper::getValue($bits, 2));
 				$msg = str_replace($match, $val, $msg);
 			}
 		}
@@ -883,7 +890,7 @@ class FabrikWorker
 	protected function replaceWithFormData($matches)
 	{
 		// Merge any join data key val pairs down into the main data array
-		$joins = FArrayHelper::getValue($this->_searchData, 'join', array());
+		$joins = ArrayHelper::getValue($this->_searchData, 'join', array());
 
 		foreach ($joins as $k => $data)
 		{
@@ -1465,7 +1472,7 @@ class FabrikWorker
 			if (!$loadJoomlaDb)
 			{
 
-				$cnModel = new Fabrik\Admin\Models\Connection;
+				$cnModel = new Connection;
 				echo "id = $cnnId";
 				$cnModel->set('id', $cnnId);
 				$cn = $cnModel->getItem();
@@ -1547,7 +1554,7 @@ class FabrikWorker
 
 		if (is_object($item))
 		{
-			$item = is_null($item->connection_id) ? FArrayHelper::getValue($jform, 'connection_id', -1) : $item->connection_id;
+			$item = is_null($item->list->connection_id) ? ArrayHelper::getValue($jform, 'connection_id', -1) : $item->list->connection_id;
 		}
 
 		$connId = (int) $item;
@@ -1559,7 +1566,7 @@ class FabrikWorker
 
 		if (!array_key_exists($connId, self::$connection))
 		{
-			$connectionModel = new Fabrik\Admin\Models\Connection;
+			$connectionModel = new Connection;
 			$connectionModel->set('id', $connId);
 
 			if ($connId === -1)
@@ -1745,7 +1752,7 @@ class FabrikWorker
 
 		if ($uri->getScheme() === 'https')
 		{
-			$gobackaction = 'onclick="parent.location=\'' . FArrayHelper::getValue($_SERVER, 'HTTP_REFERER') . '\'"';
+			$gobackaction = 'onclick="parent.location=\'' . ArrayHelper::getValue($_SERVER, 'HTTP_REFERER') . '\'"';
 		}
 		else
 		{
@@ -1981,17 +1988,29 @@ class FabrikWorker
 	}
 
 	/**
-	 * Get the default values for a given JForm
+	 * Get the default values for a given part of the view
 	 *
-	 * @param   string  $form  Form name e.g. list, form etc.
+	 * @param   string  $form  View pat name e.g. list, form etc.
 	 *
 	 * @since   3.0.7
+	 *
+	 * @throws Exception
 	 *
 	 * @return  array  key field name, value default value
 	 */
 
 	public static function formDefaults($form)
 	{
+		/*$template = file_get_contents(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/schemas/templates.json');
+		$template = json_decode($template);
+
+
+		if (!isset($template->$form))
+		{
+			throw new Exception($form . ' not found in template schema');
+		}
+
+		return $template->$form;*/
 		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
 		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
 		$form = JForm::getInstance('com_fabrik.' . $form, $form, array('control' => '', 'load_data' => true));
@@ -2011,7 +2030,7 @@ class FabrikWorker
 			}
 		}
 
-		return $json;
+		return ArrayHelper::toObject($json);
 	}
 
 	/**
@@ -2032,7 +2051,7 @@ class FabrikWorker
 
 		return ($tpl === 'bootstrap' || $tpl === 'fabrik4' || $version->RELEASE > 2.5);
 	}
-	
+
 	/**
 	 * Are we in a form process task
 	 * 

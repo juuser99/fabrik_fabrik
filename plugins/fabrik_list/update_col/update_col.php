@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -142,8 +143,8 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			parse_str($qs, $output);
 			$key = 'list_' . $model->getRenderContext();
 
-			$values = FArrayHelper::getValue($output, 'fabrik___filter', array());
-			$values = FArrayHelper::getValue($values, $key, array());
+			$values = ArrayHelper::getValue($output, 'fabrik___filter', array());
+			$values = ArrayHelper::getValue($values, $key, array());
 
 			$update = new stdClass;
 			$update->coltoupdate = array();
@@ -248,7 +249,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		if (!empty($postEval))
 		{
 			$err = @eval($postEval);
-			FabrikWorker::logEval($err, 'Caught exception on eval in updatecol::process() : %s');
+			Worker::logEval($err, 'Caught exception on eval in updatecol::process() : %s');
 		}
 		
 		// Clean the cache.
@@ -277,7 +278,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 
 		if (!empty($emailColID) || !empty($emailTo))
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			jimport('joomla.mail.helper');
 			$aids = explode(',', $ids);
 			$message = $params->get('update_email_msg');
@@ -294,7 +295,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 				$row = $model->getRow($id, true);
 				$to = $this->emailTo($row, $emailWhich);
 
-				if (JMailHelper::cleanAddress($to) && FabrikWorker::isEmail($to))
+				if (JMailHelper::cleanAddress($to) && Worker::isEmail($to))
 				{
 					$thissubject = $w->parseMessageForPlaceholder($subject, $row);
 					$thismessage = $w->parseMessageForPlaceholder($message, $row);
@@ -302,7 +303,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 					if ($eval)
 					{
 						$thismessage = @eval($thismessage);
-						FabrikWorker::logEval($thismessage, 'Caught exception on eval in updatecol::process() : %s');
+						Worker::logEval($thismessage, 'Caught exception on eval in updatecol::process() : %s');
 					}
 
 					$mail = JFactory::getMailer();
@@ -397,7 +398,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$params = $this->getParams();
 		$emailColID = $params->get('update_email_element', '');
 
-		return FabrikWorker::getPluginManager()->getElementPlugin($emailColID);
+		return Worker::getPluginManager()->getElementPlugin($emailColID);
 	}
 
 	/**
@@ -423,7 +424,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			ArrayHelper::toInteger($ids);
 			$ids = implode(',', $ids);
 			$userids_emails = $this->getEmailUserIds($ids);
-			$to = FArrayHelper::getValue($userids_emails, $userid);
+			$to = ArrayHelper::getValue($userids_emails, $userid);
 		}
 		elseif ($emailWhich == 'field')
 		{
@@ -468,7 +469,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		if ($eval)
 		{
 			$val = @eval($val);
-			FabrikWorker::logEval($val, 'Caught exception on eval in updatecol::_process() : %s');
+			Worker::logEval($val, 'Caught exception on eval in updatecol::_process() : %s');
 		}
 		
 		$model->updateRows($ids, $col, $val);
@@ -522,15 +523,14 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$listRef = $model->getRenderContext();
 		$prefix = 'fabrik___update_col[list_' . $listRef . '][';
 		$elements = '<select class="inputbox key" size="1" name="' . $prefix . 'key][]">' . implode("\n", $options) . '</select>';
-		$j3 = FabrikWorker::j3();
-		$addImg = $j3 ? 'plus.png' : 'add.png';
-		$removeImg = $j3 ? 'remove.png' : 'del.png';
+		$addImg = 'plus.png';
+		$removeImg = 'remove.png';
 
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->listRef = $listRef;
-		$layoutData->j3 = $j3;
+		$layoutData->j3 = true;
 		$layoutData->addImg = FabrikHelperHTML::image($addImg, 'list', $model->getTmpl());
 		$layoutData->delImg = FabrikHelperHTML::image($removeImg, 'list', $model->getTmpl());
 		$layoutData->elements = $elements;

@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -40,7 +43,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$formModel = $this->getModel();
 		// @FIXME to use selected connection
 		$upsert_db = $this->getDb();
@@ -59,7 +62,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 
 		// Used for updating previously added records. Need previous pk val to ensure new records are still created.
 		$origData = $formModel->getOrigData();
-		$origData = FArrayHelper::getValue($origData, 0, new stdClass);
+		$origData = ArrayHelper::getValue($origData, 0, new stdClass);
 
 		if (isset($origData->__pk_val))
 		{
@@ -123,7 +126,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	protected function upsertData($upsertRowExists = false)
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$upsert_db = $this->getDb();
 		$upsert = json_decode($params->get('upsert_fields'));
 		$fields = array();

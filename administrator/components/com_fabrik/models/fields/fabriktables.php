@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 // Required for menus
 require_once JPATH_SITE . '/components/com_fabrik/helpers/html.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/string.php';
@@ -59,7 +61,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 		}
 
 		$connectionDd = $this->element['observe'];
-		$db           = FabrikWorker::getDbo(true);
+		$db           = Worker::getDbo(true);
 
 		if ($connectionDd == '')
 		{
@@ -87,7 +89,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 	{
 		$c                  = isset($this->form->repeatCounter) ? (int) $this->form->repeatCounter : 0;
 		$connectionDd       = $this->getAttribute('observe');
-		$connectionInRepeat = FabrikWorker::toBoolean($this->getAttribute('connection_in_repeat', 'true'), true);
+		$connectionInRepeat = Worker::toBoolean($this->getAttribute('connection_in_repeat', 'true'), true);
 		$script             = array();
 
 		if (!isset($fabrikTables))

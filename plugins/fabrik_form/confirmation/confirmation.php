@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -215,7 +216,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 					{
 						foreach ($val as $val2)
 						{
-							if (!FabrikWorker::isReserved($key))
+							if (!Worker::isReserved($key))
 							{
 								if (!strstr($key, '[]'))
 								{
@@ -229,7 +230,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 					}
 					else
 					{
-						if (!FabrikWorker::isReserved($key))
+						if (!Worker::isReserved($key))
 						{
 							// $fields[] = '<input type="hidden" name="'.str_replace('_raw','',$key).'" value="'.urlencode($val).'" />';
 							// $fields[] = '<input type="hidden" name="'.$key.'" value="'.urlencode($val).'" />';

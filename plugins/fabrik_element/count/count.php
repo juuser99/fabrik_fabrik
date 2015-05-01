@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
@@ -55,12 +58,12 @@ class PlgFabrik_ElementCount extends PlgFabrik_Element
 	{
 		$dbtable = $this->actualTableName();
 		$app = JFactory::getApplication();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 
 		if ($app->input->get('c') != 'form')
 		{
 			$params = $this->getParams();
-			$fullElName = FArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___' . $this->getElement()->name));
+			$fullElName = ArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___' . $this->getElement()->name));
 			$r = 'COUNT(' . $params->get('count_field', '*') . ')';
 			$aFields[] = $r . ' AS ' . $fullElName;
 			$aAsFields[] = $fullElName;

@@ -8,6 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -22,15 +23,13 @@ use Joomla\String\String;
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.0
  */
-
-class FabimageHelper
+class ImageHelper
 {
 	/**
 	 * Get an array of available graphics libraries
 	 *
 	 * @return  array
 	 */
-
 	public static function getLibs()
 	{
 		$libs = array();

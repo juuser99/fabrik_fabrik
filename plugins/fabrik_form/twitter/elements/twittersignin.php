@@ -16,6 +16,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
 /**
@@ -47,7 +49,7 @@ class JFormFieldTwittersignin extends JFormField
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('id', array(0), 'array');
-		$cid = FArrayHelper::getValue($cid, 0);
+		$cid = ArrayHelper::getValue($cid, 0);
 
 		// $$$ hugh - when creating a new form, no 'cid' ... not sure what to do, so just set it to 0.  Should
 		// prolly just return something like 'available after save' ?

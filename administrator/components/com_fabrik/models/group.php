@@ -11,6 +11,9 @@
 
 namespace Fabrik\Admin\Models;
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -18,6 +21,7 @@ interface ModelGroupInterface
 {
 
 }
+
 /**
  * Fabrik Admin Group Model
  *
@@ -37,16 +41,16 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Returns a reference to the a Table object, always creating it.
 	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
+	 * @param   string $type   The table type to instantiate
+	 * @param   string $prefix A prefix for the table class name. Optional.
+	 * @param   array  $config Configuration array for model. Optional.
 	 *
-	 * @return  JTable	A database object
+	 * @return  JTable    A database object
 	 */
 
 	public function getTable($type = 'Group', $prefix = 'FabrikTable', $config = array())
 	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
+		$config['dbo'] = Worker::getDbo(true);
 
 		return FabTable::getInstance($type, $prefix, $config);
 	}
@@ -55,17 +59,19 @@ class Group extends Base implements ModelGroupInterface
 	 * Take an array of forms ids and return the corresponding group ids
 	 * used in list publish code
 	 *
-	 * @param   array  $ids  form ids
+	 * @param   array $ids form ids
 	 *
 	 * @return  string
 	 */
 
-	public function swapFormToGroupIds($ids = array()){}
+	public function swapFormToGroupIds($ids = array())
+	{
+	}
 
 	/**
 	 * Does the group have a primary key element
 	 *
-	 * @param   array  $data  jform posted data
+	 * @param   array $data jform posted data
 	 *
 	 * @return  bool
 	 */
@@ -74,8 +80,8 @@ class Group extends Base implements ModelGroupInterface
 	{
 		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
 		$groupModel->setId($data['id']);
-		$listModel = $groupModel->getListModel();
-		$pk = FabrikString::safeColName($listModel->getTable()->db_primary_key);
+		$listModel     = $groupModel->getListModel();
+		$pk            = FabrikString::safeColName($listModel->getTable()->db_primary_key);
 		$elementModels = $groupModel->getMyElements();
 
 		foreach ($elementModels as $elementModel)
@@ -92,7 +98,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Method to save the form data.
 	 *
-	 * @param   array  $data  The form data.
+	 * @param   array $data The form data.
 	 *
 	 * @return  boolean  True on success, False on error.
 	 */
@@ -101,13 +107,13 @@ class Group extends Base implements ModelGroupInterface
 	{
 		if ($data['id'] == 0)
 		{
-			$user = JFactory::getUser();
-			$data['created_by'] = $user->get('id');
+			$user                     = JFactory::getUser();
+			$data['created_by']       = $user->get('id');
 			$data['created_by_alias'] = $user->get('username');
-			$data['created'] = JFactory::getDate()->toSql();
+			$data['created']          = JFactory::getDate()->toSql();
 		}
 
-		$makeJoin = false;
+		$makeJoin   = false;
 		$unMakeJoin = false;
 
 		if ($this->checkRepeatAndPK($data))
@@ -141,8 +147,8 @@ class Group extends Base implements ModelGroupInterface
 		}
 
 		$data['params'] = json_encode($data['params']);
-		$return = parent::save($data);
-		$data['id'] = $this->getState($this->getName() . '.id');
+		$return         = parent::save($data);
+		$data['id']     = $this->getState($this->getName() . '.id');
 
 		if ($return)
 		{
@@ -162,13 +168,13 @@ class Group extends Base implements ModelGroupInterface
 				{
 					$this->checkFKIndex($data);
 				}
-				
+
 				// Update for the is_join change
 				if ($return)
 				{
 					$return = parent::save($data);
 				}
-				
+
 			}
 			else
 			{
@@ -190,7 +196,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Check if a group id has an associated join already created
 	 *
-	 * @param   int  $id  group id
+	 * @param   int $id group id
 	 *
 	 * @return  boolean
 	 */
@@ -206,38 +212,40 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Clears old form group entries if found and adds new ones
 	 *
-	 * @param   array  $data  jform data
+	 * @param   array $data jform data
 	 *
 	 * @return void
 	 */
 
-	protected function makeFormGroup($data){}
+	protected function makeFormGroup($data)
+	{
+	}
 
 	/**
 	 * Check if an index exists on the parent_id for a repeat table.
 	 * We forgot to index the parent_id until 32/2015, which could have an ipact on getData()
 	 * query performance.  Only called from the save() method.
-	 * 
-	 * @param   array  $data  jform data
-
+	 *
+	 * @param   array $data jform data
 	 */
-	
+
 	private function checkFKIndex($data)
 	{
 		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
 		$groupModel->setId($data['id']);
 		$listModel = $groupModel->getListModel();
-		$item = FabTable::getInstance('Group', 'FabrikTable');
+		$item      = FabTable::getInstance('Group', 'FabrikTable');
 		$item->load($data['id']);
 		$join = $this->getTable('join');
 		$join->load(array('id' => $item->join_id));
-		$fkFieldName = $join->table_join . '___' . $join->table_join_key;
-		$pkFieldName = $join->join_from_table . '___' . $join->table_key;
-		$formModel = $groupModel->getFormModel();
+		$fkFieldName    = $join->table_join . '___' . $join->table_join_key;
+		$pkFieldName    = $join->join_from_table . '___' . $join->table_key;
+		$formModel      = $groupModel->getFormModel();
 		$pkElementModel = $formModel->getElement($pkFieldName);
-		$fields = $listModel->storage->getDBFields($join->join_from_table, 'Field');
-		$pkField = FArrayHelper::getValue($fields, $join->table_key, false);
-		switch ($pkField->BaseType) {
+		$fields         = $listModel->storage->getDBFields($join->join_from_table, 'Field');
+		$pkField        = ArrayHelper::getValue($fields, $join->table_key, false);
+		switch ($pkField->BaseType)
+		{
 			case 'VARCHAR':
 				$pkSize = (int) $pkField->BaseLength < 10 ? $pkField->BaseLength : 10;
 				break;
@@ -245,17 +253,17 @@ class Group extends Base implements ModelGroupInterface
 			case 'DATETIME':
 			default:
 				$pkSize = '';
-				break;			
+				break;
 		}
 		$listModel->addIndex($fkFieldName, 'parent_fk', 'INDEX', $pkSize);
 	}
-	
+
 	/**
 	 * A group has been set to be repeatable but is not part of a join
 	 * so we want to:
 	 * Create a new db table for the groups elements ( + check if its not already there)
 	 *
-	 * @param   array  &$data  jform data
+	 * @param   array &$data jform data
 	 *
 	 * @return  bool
 	 */
@@ -264,14 +272,13 @@ class Group extends Base implements ModelGroupInterface
 	{
 		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
 		$groupModel->setId($data['id']);
-		$listModel = $groupModel->getListModel();
-		$pluginManager = FabrikWorker::getPluginManager();
-		$db = $listModel->getDb();
-		$list = $listModel->getTable();
-		$elements = (array) $groupModel->getMyElements();
-		$names = array();
-		$fields = $listModel->storage->getDBFields(null, 'Field');
-		$names['id'] = "id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY";
+		$listModel          = $groupModel->getListModel();
+		$db                 = $listModel->getDb();
+		$list               = $listModel->getTable();
+		$elements           = (array) $groupModel->getMyElements();
+		$names              = array();
+		$fields             = $listModel->storage->getDBFields(null, 'Field');
+		$names['id']        = "id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY";
 		$names['parent_id'] = "parent_id INT(11)";
 
 		foreach ($elements as $element)
@@ -283,8 +290,8 @@ class Group extends Base implements ModelGroupInterface
 			 */
 			if (!array_key_exists($fname, $names))
 			{
-				$str = FabrikString::safeColName($fname);
-				$field = FArrayHelper::getValue($fields, $fname);
+				$str   = FabrikString::safeColName($fname);
+				$field = ArrayHelper::getValue($fields, $fname);
 
 				if (is_object($field))
 				{
@@ -305,7 +312,7 @@ class Group extends Base implements ModelGroupInterface
 		}
 
 		$db->setQuery("show tables");
-		$newTableName = $list->db_table_name . '_' . $data['id'] . '_repeat';
+		$newTableName   = $list->db_table_name . '_' . $data['id'] . '_repeat';
 		$existingTables = $db->loadColumn();
 
 		if (!in_array($newTableName, $existingTables))
@@ -331,7 +338,7 @@ class Group extends Base implements ModelGroupInterface
 			// Repeat table already created - lets check its structure matches the group elements
 			$db->setQuery("DESCRIBE " . $db->quoteName($newTableName));
 			$existingFields = $db->loadObjectList('Field');
-			$newFields = array_diff(array_keys($names), array_keys($existingFields));
+			$newFields      = array_diff(array_keys($names), array_keys($existingFields));
 
 			if (!empty($newFields))
 			{
@@ -355,8 +362,8 @@ class Group extends Base implements ModelGroupInterface
 		// Load the matching join if found.
 		$join = $this->getTable('join');
 		$join->load($jdata);
-		$opts = new stdClass;
-		$opts->type = 'group';
+		$opts            = new stdClass;
+		$opts->type      = 'group';
 		$jdata['params'] = json_encode($opts);
 		$join->bind($jdata);
 
@@ -365,27 +372,28 @@ class Group extends Base implements ModelGroupInterface
 		$data['is_join'] = 1;
 
 		$listModel->addIndex($newTableName . '___parent_id', 'parent_fk', 'INDEX', '');
-		
+
 		return true;
 	}
-	
 
 	/**
 	 * Repeat has been turned off for a group, so we need to remove the join.
 	 * For now, leave the repeat table intact, just remove the join
 	 * and the 'id' and 'parent_id' elements.
 	 *
-	 * @param   array  &$data  jform data
+	 * @param   array &$data jform data
 	 *
 	 * @return boolean
 	 */
-	public function unMakeJoinedGroup(&$data){}
+	public function unMakeJoinedGroup(&$data)
+	{
+	}
 
 	/**
 	 * Method to delete one or more records.
 	 *
-	 * @param   array  &$pks            An array of record primary keys.
-	 * @param   bool   $deleteElements  delete elements?
+	 * @param   array &$pks           An array of record primary keys.
+	 * @param   bool  $deleteElements delete elements?
 	 *
 	 * @return  bool  True if successful, false if an error occurs.
 	 */
@@ -418,20 +426,24 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Delete group elements
 	 *
-	 * @param   array  $pks  group ids to delete elements from
+	 * @param   array $pks group ids to delete elements from
 	 *
 	 * @return  bool
 	 */
 
-	public function deleteElements($pks){}
+	public function deleteElements($pks)
+	{
+	}
 
 	/**
 	 * Delete formgroups
 	 *
-	 * @param   array  $pks  group ids
+	 * @param   array $pks group ids
 	 *
 	 * @return  bool
 	 */
 
-	public function deleteFormGroups($pks){}
+	public function deleteFormGroups($pks)
+	{
+	}
 }

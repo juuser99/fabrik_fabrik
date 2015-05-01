@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 $doc       = JFactory::getDocument();
 $rtlDir    = $doc->direction === 'rtl' ? 'left' : 'right';
 $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
@@ -72,9 +74,9 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 					for ($o = 0; $o < count($this->order_by); $o++) : ?>
 						<div class="orderby_container" style="margin-bottom:3px;clear:left;float:<?php echo $rtlDirInv; ?>">
 							<?php
-							echo FArrayHelper::getValue($this->order_by, $o, $this->order_by[0]);
+							echo ArrayHelper::getValue($this->order_by, $o, $this->order_by[0]);
 							if ((int) $this->item->id !== 0) :
-								echo FArrayHelper::getValue($this->order_dir, $o)?>
+								echo ArrayHelper::getValue($this->order_dir, $o)?>
 								<div class="btn-group pull-<?php echo $rtlDir; ?>">
 									<a class="btn btn-success addOrder" href="#"><i class="icon-plus"></i> </a>
 									<a class="btn btn-danger deleteOrder" href="#"><i class="icon-minus"></i> </a>

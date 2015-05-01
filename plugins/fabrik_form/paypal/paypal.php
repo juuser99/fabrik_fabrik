@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -50,7 +51,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 			return true;
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$user = JFactory::getUser();
 		$userid = $user->get('id');
@@ -114,8 +115,8 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		{
 			// Priority to raw data.
 			$amountKey = FabrikString::safeColNameToArrayKey($params->get('paypal_cost_element'));
-			$amount = FArrayHelper::getValue($this->data, $amountKey);
-			$amount = FArrayHelper::getValue($this->data, $amountKey . '_raw', $amount);
+			$amount = ArrayHelper::getValue($this->data, $amountKey);
+			$amount = ArrayHelper::getValue($this->data, $amountKey . '_raw', $amount);
 
 			if (is_array($amount))
 			{
@@ -135,7 +136,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		if (trim($shipping_amount) == '')
 		{
-			$shipping_amount = FArrayHelper::getValue($this->data, FabrikString::safeColNameToArrayKey($params->get('paypal_shipping_cost_element')));
+			$shipping_amount = ArrayHelper::getValue($this->data, FabrikString::safeColNameToArrayKey($params->get('paypal_shipping_cost_element')));
 
 			if (is_array($shipping_amount))
 			{
@@ -155,7 +156,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		if (trim($item) == '')
 		{
-			$item_raw = FArrayHelper::getValue($this->data, FabrikString::safeColNameToArrayKey($params->get('paypal_item_element') . '_raw'));
+			$item_raw = ArrayHelper::getValue($this->data, FabrikString::safeColNameToArrayKey($params->get('paypal_item_element') . '_raw'));
 			$item = $this->data[FabrikString::safeColNameToArrayKey($params->get('paypal_item_element'))];
 
 			if (is_array($item))
@@ -251,7 +252,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 			{
 				$shipping_select = array();
 
-				$db = FabrikWorker::getDbo();
+				$db = Worker::getDbo();
 				$query = $db->getQuery(true);
 
 				if ($params->get('paypal_shippingdata_firstname'))
@@ -507,7 +508,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		if (trim($subSwitch) !== '')
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$subSwitch = $w->parseMessageForPlaceHolder($subSwitch, $data);
 
 			return @eval($subSwitch);
@@ -533,7 +534,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 			return false;
 		}
 
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . (int) $params->get('paypal_shippingdata_table'));
 		$db->setQuery($query);
@@ -572,7 +573,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		if ($ret_msg)
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$listModel = $formModel->getlistModel();
 			$row = $listModel->getRow($rowid);
 			$ret_msg = $w->parseMessageForPlaceHolder($ret_msg, $row);
@@ -659,7 +660,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		$ipn_address_field = (array) $params->get('paypal_ipn_address_element', array());
 		$ipn_address_field = FabrikString::shortColName($ipn_address_field[$renderOrder]);
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$ipn_value = str_replace('[', '{', $ipn_value);
 		$ipn_value = str_replace(']', '}', $ipn_value);
 		$ipn_value = $w->parseMessageForPlaceHolder($ipn_value, $_POST);

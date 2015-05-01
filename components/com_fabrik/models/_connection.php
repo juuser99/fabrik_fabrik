@@ -13,6 +13,7 @@ namespace Fabrik\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use \JFactory as JFactory;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Connection Model
@@ -207,7 +208,7 @@ class Connection extends \JModelBase
 			return;
 		}
 
-		$crypt  = FabrikWorker::getCrypt();
+		$crypt  = Worker::getCrypt();
 		$params = json_decode($cnn->params);
 
 		if (is_object($params) && $params->encryptedPw == true)
@@ -284,7 +285,7 @@ class Connection extends \JModelBase
 		{
 			if ($this->isJdb())
 			{
-				$db = FabrikWorker::getDbo();
+				$db = Worker::getDbo();
 			}
 			else
 			{
@@ -311,7 +312,7 @@ class Connection extends \JModelBase
 				 */
 				if ($cn->default == 1 && $input->get('task') !== 'test')
 				{
-					self::$dbs[$cn->id] = FabrikWorker::getDbo();
+					self::$dbs[$cn->id] = Worker::getDbo();
 
 					// $$$rob remove the error from the error stack
 					// if we don't do this the form is not rendered
@@ -421,7 +422,7 @@ class Connection extends \JModelBase
 
 	public function getConnections()
 	{
-		$db    = FabrikWorker::getDbo();
+		$db    = Worker::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('*, id AS value, description AS text')->from('#__fabrik_connections')->where('published = 1');
 		$db->setQuery($query);
@@ -511,7 +512,6 @@ class Connection extends \JModelBase
 	{
 		$connectionTables       = array();
 		$connectionTables[-1]   = array();
-		$db                     = FabrikWorker::getDbo();
 		$connectionTables[-1][] = JHTML::_('select.option', '-1', FText::_('COM_FABRIK_PLEASE_SELECT'));
 
 		foreach ($connections as $cn)

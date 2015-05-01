@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\LayoutFile;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -319,7 +322,7 @@ class PlgFabrik_Form extends FabrikPlugin
 						{
 							$tmpElement = current($elementModels);
 							$smallerElHTMLName = $tmpElement->getFullName(true, false);
-							$tmpEl = FArrayHelper::getValue($model->formDataWithTableName, $smallerElHTMLName, array(), 'array');
+							$tmpEl = ArrayHelper::getValue($model->formDataWithTableName, $smallerElHTMLName, array(), 'array');
 							$repeatGroup = count($tmpEl);
 						}
 					}
@@ -353,7 +356,7 @@ class PlgFabrik_Form extends FabrikPlugin
 
 						if ($groupModel->canRepeat())
 						{
-							$raw = FArrayHelper::getValue($model->formDataWithTableName[$k], $c, '');
+							$raw = ArrayHelper::getValue($model->formDataWithTableName[$k], $c, '');
 							$this->emailData[$k . '_raw'][$c] = $raw;
 							$this->emailData[$k][$c] = $elementModel->getEmailValue($raw, $model->formDataWithTableName, $c);
 							continue;
@@ -374,7 +377,7 @@ class PlgFabrik_Form extends FabrikPlugin
 					}
 					elseif (array_key_exists($key, $model->formDataWithTableName))
 					{
-						$rawValue = FArrayHelper::getValue($model->formDataWithTableName, $k . '_raw', '');
+						$rawValue = ArrayHelper::getValue($model->formDataWithTableName, $k . '_raw', '');
 
 						if ($rawValue == '')
 						{
@@ -505,19 +508,19 @@ class PlgFabrik_Form extends FabrikPlugin
 
 	/**
 	 * Get the element's JLayout file
-	 * Its actually an instance of FabrikLayoutFile which inverses the ordering added include paths.
-	 * In FabrikLayoutFile the addedPath takes precedence over the default paths, which makes more sense!
+	 * Its actually an instance of LayoutFile which inverses the ordering added include paths.
+	 * In LayoutFile the addedPath takes precedence over the default paths, which makes more sense!
 	 *
 	 * @param   string  $type  form/details/list
 	 *
-	 * @return FabrikLayoutFile
+	 * @return LayoutFile
 	 */
 	public function getLayout($type)
 	{
 		$name = get_class($this);
 		$name = strtolower(JString::str_ireplace('PlgFabrik_Form', '', $name));
 		$basePath = COM_FABRIK_BASE . '/plugins/fabrik_form/' . $name . '/layouts';
-		$layout = new FabrikLayoutFile('fabrik-form-' . $name. '-' . $type, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+		$layout = new LayoutFile('fabrik-form-' . $name. '-' . $type, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
 
 		return $layout;

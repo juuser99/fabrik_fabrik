@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -38,7 +39,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$params = $this->getParams();
-		$data = FabrikWorker::JSONtoData($data, true);
+		$data = Worker::JSONtoData($data, true);
 		$format = $params->get('text_format_string');
 
 		foreach ($data as &$d)
@@ -231,11 +232,11 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 		if ($params->get('guess_linktype') == '1')
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$opts = $this->linkOpts();
 			$title = $params->get('link_title', '');
 
-			if (FabrikWorker::isEmail($value) || String::stristr($value, 'http'))
+			if (Worker::isEmail($value) || String::stristr($value, 'http'))
 			{
 				$guessed = true;
 			}
@@ -610,7 +611,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			 * But check __pk_val first anyway, what the heck.
 			 */
 			
-			$rowid = FArrayHelper::getValue($thisRow, '__pk_val', '');
+			$rowid = ArrayHelper::getValue($thisRow, '__pk_val', '');
 			
 			if (empty($rowid))
 			{

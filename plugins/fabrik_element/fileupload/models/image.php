@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 /**
  * Fileupload adaptor to render uploaded images
  *
@@ -94,13 +97,13 @@ class ImageRender
 			{
 				if (is_array($formModel->data))
 				{
-					$title = FArrayHelper::getValue($formModel->data, $title_name, '');
+					$title = ArrayHelper::getValue($formModel->data, $title_name, '');
 				}
 			}
 		}
 
-		$bits  = FabrikWorker::JSONtoData($title, true);
-		$title = FArrayHelper::getValue($bits, $model->_repeatGroupCounter, $title);
+		$bits  = Worker::JSONtoData($title, true);
+		$title = ArrayHelper::getValue($bits, $model->_repeatGroupCounter, $title);
 		$title = htmlspecialchars(strip_tags($title, ENT_NOQUOTES));
 		$file  = $model->getStorage()->getFileUrl($file);
 

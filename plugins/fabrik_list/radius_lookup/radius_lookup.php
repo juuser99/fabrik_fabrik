@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -247,7 +247,7 @@ class PlgFabrik_ListRadius_Lookup extends PlgFabrik_List
 		$params = $this->getParams();
 		$model = $this->getModel();
 		$elements = $model->getElements('id');
-		$this->mapElement = FArrayHelper::getValue($elements, $params->get('radius_lookup_mapelement'), false);
+		$this->mapElement = ArrayHelper::getValue($elements, $params->get('radius_lookup_mapelement'), false);
 
 		return $this->mapElement;
 	}
@@ -296,7 +296,7 @@ class PlgFabrik_ListRadius_Lookup extends PlgFabrik_List
 		$params = $this->getParams();
 		list($latitude, $longitude) = $this->getSearchLatLon();
 		$opts = $this->getElementJSOptions();
-		$containerOverride = FArrayHelper::getValue($args, 0, '');
+		$containerOverride = ArrayHelper::getValue($args, 0, '');
 
 		if (strstr($containerOverride, 'visualization'))
 		{

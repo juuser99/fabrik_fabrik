@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 /**
  * Plugin element to render series of checkboxes
@@ -131,7 +133,7 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 		$params = $this->getParams();
 		$element = $this->getElement();
 
-		$value = FArrayHelper::getValue($data, $element->name, '');
+		$value = ArrayHelper::getValue($data, $element->name, '');
 		
 		if ($value === '')
 		{
@@ -217,7 +219,7 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 					// produces valid JSON
 					$json_val = '["' . $val . '"]';
 
-					if (FabrikWorker::isJSON($json_val))
+					if (Worker::isJSON($json_val))
 					{
 						// Looks like we we have a valid JSON array, so return that
 						return $json_val;

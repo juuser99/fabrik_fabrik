@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use \JFactory as JFactory;
 use Joomla\Utilities\ArrayHelper;
-use \FabrikWorker as FabrikWorker;
+use Fabrik\Helpers\Worker;
 use \JDatabaseDriver as JDatabaseDriver;
 
 interface ConnectionsInterface
@@ -164,7 +164,7 @@ class Connections extends Base implements ConnectionsInterface
 		{
 			if ($this->isJdb())
 			{
-				$db = FabrikWorker::getDbo(true);
+				$db = Worker::getDbo(true);
 			}
 			else
 			{
@@ -191,7 +191,7 @@ class Connections extends Base implements ConnectionsInterface
 				 */
 				if ($cn->default == 1 && $this->input->get('task') !== 'test')
 				{
-					self::$dbs[$cn->id] = FabrikWorker::getDbo();
+					self::$dbs[$cn->id] = Worker::getDbo();
 
 					// $$$rob remove the error from the error stack
 					// if we don't do this the form is not rendered
@@ -490,7 +490,7 @@ class Connections extends Base implements ConnectionsInterface
 		{
 			return;
 		}
-		$crypt  = FabrikWorker::getCrypt();
+		$crypt  = Worker::getCrypt();
 		$params = $cnn->params;
 
 		if (is_object($params) && $params->encryptedPw == true)

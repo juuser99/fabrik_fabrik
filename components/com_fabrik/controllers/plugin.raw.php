@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
 
 require 'controller.php';
 
@@ -69,7 +70,7 @@ class FabrikControllerPlugin extends FabrikController
 
 	public function userAjax()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		require_once COM_FABRIK_FRONTEND . '/user_ajax.php';
 		$method = $this->input->get('method', '');
 		$userAjax = new userAjax($db);
@@ -90,7 +91,7 @@ class FabrikControllerPlugin extends FabrikController
 
 	public function doCron(&$pluginManager)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$cid = $this->input->get('element_id', array(), 'array');
 		$query = $db->getQuery(true);
 		$query->select('id, plugin')->from('#__fabrik_cron');

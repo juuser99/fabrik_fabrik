@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -43,7 +45,7 @@ class PlgFabrik_ListPhp extends plgFabrik_List
 
 		if (!empty($args))
 		{
-			$heading = FArrayHelper::getValue($args[0], 'heading');
+			$heading = ArrayHelper::getValue($args[0], 'heading');
 		}
 
 		if ($heading)

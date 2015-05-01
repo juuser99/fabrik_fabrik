@@ -22,7 +22,6 @@ var ListForm = new Class({
 	Implements: [Options],
 
 	options: {
-		j3: true
 	},
 
 	initialize: function (options) {
@@ -360,7 +359,6 @@ var adminFilters = new Class({
 	Implements: [Options],
 
 	options: {
-		j3: false
 	},
 
 	initialize: function (el, fields, options) {

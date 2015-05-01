@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -379,14 +381,14 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 		if ($twitter_msg_field_id != '')
 		{
-			$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($twitter_msg_field_id);
+			$elementModel = Worker::getPluginManager()->getElementPlugin($twitter_msg_field_id);
 			$element = $elementModel->getElement(true);
 			$twitter_msg_field = $elementModel->getFullName(true, false);
 			$msg = $data[$twitter_msg_field];
 		}
 		else
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$msg = $w->parseMessageForPlaceHolder($params->get('twitter_msg_tmpl'), $data);
 		}
 
@@ -496,7 +498,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 		foreach ($pairs as $paramname => $requestname)
 		{
-			$tokens = (array) FArrayHelper::getValue($opts, $paramname);
+			$tokens = (array) ArrayHelper::getValue($opts, $paramname);
 			$newtokens = array();
 
 			for ($i = 0; $i <= $counter; $i++)

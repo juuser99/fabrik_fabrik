@@ -14,6 +14,8 @@
 // Check to ensure this file is within the rest of the framework
 defined('JPATH_BASE') or die();
 
+use Fabrik\Helpers\PDFHelper;
+
 require_once JPATH_LIBRARIES . '/joomla/document/html/html.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
 
@@ -68,7 +70,7 @@ class JDocumentpdf extends JDocumentHTML
 
 	protected function iniDomPdf()
 	{
-		if (FabrikPDFHelper::iniDomPdf())
+		if (PDFHelper::iniDomPdf())
 		{
 			// Default settings are a portrait layout with an A4 configuration using millimeters as units
 			$this->engine = new DOMPDF;
@@ -142,7 +144,7 @@ class JDocumentpdf extends JDocumentHTML
  		// $this->addStyleDeclaration('body: { font-family: futural !important; }');
 		$pdf = $this->engine;
 		$data = parent::render();
-		FabrikPDFHelper::fullPaths($data);
+		PDFHelper::fullPaths($data);
 		$pdf->load_html($data);
 		$config = JComponentHelper::getParams('com_fabrik');
 

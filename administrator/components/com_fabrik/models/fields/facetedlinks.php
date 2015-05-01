@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
 jimport('joomla.html.html');
@@ -82,12 +84,12 @@ class JFormFieldFacetedlinks extends JFormFieldList
 			}
 		}
 
-		$listHeaders = FArrayHelper::getValue($this->value, 'linkedlistheader', array());
-		$formHeaders = FArrayHelper::getValue($this->value, 'linkedformheader', array());
-		$formLinkTypes = FArrayHelper::getValue($this->value, 'linkedform_linktype', array());
-		$listLinkTypes = FArrayHelper::getValue($this->value, 'linkedlist_linktype', array());
-		$listLinkTexts = FArrayHelper::getValue($this->value, 'linkedlisttext', array());
-		$formLinkTexts = FArrayHelper::getValue($this->value, 'linkedformtext', array());
+		$listHeaders = ArrayHelper::getValue($this->value, 'linkedlistheader', array());
+		$formHeaders = ArrayHelper::getValue($this->value, 'linkedformheader', array());
+		$formLinkTypes = ArrayHelper::getValue($this->value, 'linkedform_linktype', array());
+		$listLinkTypes = ArrayHelper::getValue($this->value, 'linkedlist_linktype', array());
+		$listLinkTexts = ArrayHelper::getValue($this->value, 'linkedlisttext', array());
+		$formLinkTexts = ArrayHelper::getValue($this->value, 'linkedformtext', array());
 
 		$this->linkedlists = array();
 		$f = 0;
@@ -137,7 +139,7 @@ class JFormFieldFacetedlinks extends JFormFieldList
 			$listReturn[] = '<td class="handle"></td>';
 			$listReturn[] = '<td>' . JHTML::_('tooltip', $hover, $label, 'tooltip.png', $label);
 
-			$yesChecked = FArrayHelper::getValue($linkedLists, $key, 0) != '0' ? 'checked="checked"' : '';
+			$yesChecked = ArrayHelper::getValue($linkedLists, $key, 0) != '0' ? 'checked="checked"' : '';
 			$noChecked = $yesChecked == '' ? 'checked="checked"' : '';
 
 			$listReturn[] = '<td>';
@@ -155,7 +157,7 @@ class JFormFieldFacetedlinks extends JFormFieldList
 			$listReturn[] = '<input type="text" name="' . $this->name . '[linkedlisttext][' . $key . ']" value="' . @$listLinkTexts[$key] . '" size="16" />';
 			$listReturn[] = '</td>';
 
-			$yesChecked = FArrayHelper::getValue($listLinkTypes, $key, 0) != '0' ? 'checked="checked"' : '';
+			$yesChecked = ArrayHelper::getValue($listLinkTypes, $key, 0) != '0' ? 'checked="checked"' : '';
 			$noChecked = $yesChecked == '' ? 'checked="checked"' : '';
 
 			$listReturn[] = '<td>';
@@ -180,7 +182,7 @@ class JFormFieldFacetedlinks extends JFormFieldList
 			$label = str_replace(array("\n", "\r", '<br>', '</br>'), '', $linkedList->listlabel);
 			$hover = FText::_('ELEMENT') . ': ' . $linkedList->element_label . ' [' . $linkedList->plugin . ']';
 
-			$yesChecked = FArrayHelper::getValue($linkedForms, $key, 0) != '0' ? 'checked="checked"' : '';
+			$yesChecked = ArrayHelper::getValue($linkedForms, $key, 0) != '0' ? 'checked="checked"' : '';
 			$noChecked = $yesChecked == '' ? 'checked="checked"' : '';
 
 			$formReturn[] = '<tr class="row' . ($f % 2) . '">';
@@ -201,7 +203,7 @@ class JFormFieldFacetedlinks extends JFormFieldList
 			$formReturn[] = '<input type="text" name="' . $this->name . '[linkedformtext][' . $key . ']" value="' . @$formLinkTexts[$key] . '" size="16" />';
 			$formReturn[] = '</td>';
 
-			$yesChecked = FArrayHelper::getValue($formLinkTypes, $key, 0) != '0' ? 'checked="checked"' : '';
+			$yesChecked = ArrayHelper::getValue($formLinkTypes, $key, 0) != '0' ? 'checked="checked"' : '';
 			$noChecked = $yesChecked == '' ? 'checked="checked"' : '';
 
 			$formReturn[] = '<td>';

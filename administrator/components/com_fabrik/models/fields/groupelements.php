@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 JFormHelper::loadFieldClass('groupedlist');
 
 /**
@@ -40,7 +42,7 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 	protected function getGroups()
 	{
 		$input = $this->app->input;
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 
 		$query = $db->getQuery(true);
 		$query->select('form_id')

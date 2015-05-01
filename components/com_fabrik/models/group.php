@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -204,7 +205,7 @@ class FabrikFEModelGroup extends FabModel
 		}
 
 		$formModel = $this->getFormModel();
-		$pluginCanEdit = FabrikWorker::getPluginManager()->runPlugins('onCanEditGroup', $formModel, 'form', $this);
+		$pluginCanEdit = Worker::getPluginManager()->runPlugins('onCanEditGroup', $formModel, 'form', $this);
 
 		if (empty($pluginCanEdit))
 		{
@@ -330,7 +331,7 @@ class FabrikFEModelGroup extends FabModel
 	{
 		if (!isset($this->formsIamIn))
 		{
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('form_id')->from('#__fabrik_formgroup')->where('group_id = ' . (int) $this->getId());
 			$db->setQuery($query);
@@ -357,7 +358,7 @@ class FabrikFEModelGroup extends FabModel
 		{
 			$group = $this->getGroup();
 			$this->elements = array();
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = Worker::getPluginManager();
 			$formModel = $this->getFormModel();
 			$allGroups = $pluginManager->getFormPlugins($formModel);
 
@@ -442,7 +443,7 @@ class FabrikFEModelGroup extends FabModel
 		if ($widths !== '')
 		{
 			$widths = explode(',', $widths);
-			$w = FArrayHelper::getValue($widths, ($rowIx) % $colcount, $w);
+			$w = ArrayHelper::getValue($widths, ($rowIx) % $colcount, $w);
 		}
 
 		$element->column = ' style="float:left;width:' . $w . ';';
@@ -472,7 +473,7 @@ class FabrikFEModelGroup extends FabModel
 		$element->column .= '" ';
 		$spans = $this->columnSpans();
 		$spanKey = $rowIx % $colcount;
-		$element->span = $element->hidden ? '' : FArrayHelper::getValue($spans, $spanKey, 'span' . floor(12 / $colcount));
+		$element->span = $element->hidden ? '' : ArrayHelper::getValue($spans, $spanKey, 'span' . floor(12 / $colcount));
 
 		if (!$element->hidden)
 		{
@@ -878,7 +879,7 @@ class FabrikFEModelGroup extends FabModel
 		{
 			$params = $this->getParams();
 			$row = $this->getFormModel()->getData();
-			$ok = FabrikWorker::canUserDo($params, $row, 'repeat_delete_access_user');
+			$ok = Worker::canUserDo($params, $row, 'repeat_delete_access_user');
 
 			if ($ok === -1)
 			{
@@ -990,7 +991,7 @@ class FabrikFEModelGroup extends FabModel
 
 	public function getGroupProperties(&$formModel)
 	{
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$input = JFactory::getApplication()->input;
 		$group = new stdClass;
 		$groupTable = $this->getGroup();
@@ -1255,7 +1256,7 @@ class FabrikFEModelGroup extends FabModel
 		$input = JFactory::getApplication()->input;
 		$repeatTotals = $input->get('fabrik_repeat_group', array(0), 'post', 'array');
 
-		return (int) FArrayHelper::getValue($repeatTotals, $this->getGroup()->id, 0);
+		return (int) ArrayHelper::getValue($repeatTotals, $this->getGroup()->id, 0);
 	}
 
 	/**
@@ -1334,7 +1335,7 @@ class FabrikFEModelGroup extends FabModel
 				}
 				else
 				{
-					$pk = $canRepeat ? FArrayHelper::getValue($formData[$pkField], $i, '') : $formData[$pkField];
+					$pk = $canRepeat ? ArrayHelper::getValue($formData[$pkField], $i, '') : $formData[$pkField];
 		
 					// Say for some reason the pk was set as a dbjoin!
 					if (is_array($pk))
@@ -1379,7 +1380,7 @@ class FabrikFEModelGroup extends FabModel
 			 * when we're in $fkOnParent mode!  So it's actually the FK field on the parent table.
 			 */
 			$fkField = $joinModel->getPrimaryKey('___');
-			$pk = FArrayHelper::getValue($formData, $fkField . '_raw', FArrayHelper::getValue($formData, $fkField, ''));
+			$pk = ArrayHelper::getValue($formData, $fkField . '_raw', ArrayHelper::getValue($formData, $fkField, ''));
 			
 			if (is_array($pk))
 			{
@@ -1474,8 +1475,8 @@ class FabrikFEModelGroup extends FabModel
 		 * $origGroupRowsIds = $input->get('fabrik_group_rowids', array(), 'array');
 		 */
 		
-		$origGroupRowsIds = FArrayHelper::getValue($formModel->formData, 'fabrik_group_rowids', array());
-		$origGroupRowsIds = FArrayHelper::getValue($origGroupRowsIds, $groupid, array());
+		$origGroupRowsIds = ArrayHelper::getValue($formModel->formData, 'fabrik_group_rowids', array());
+		$origGroupRowsIds = ArrayHelper::getValue($origGroupRowsIds, $groupid, array());
 		$origGroupRowsIds = json_decode($origGroupRowsIds);
 
 		/*
@@ -1569,7 +1570,7 @@ class FabrikFEModelGroup extends FabModel
 		if (!empty($elementModels))
 		{
 			$smallerElHTMLName = $tmpElement->getFullName(true, false);
-			$d = FArrayHelper::getValue($data, $smallerElHTMLName, 1);
+			$d = ArrayHelper::getValue($data, $smallerElHTMLName, 1);
 
 			if (is_object($d))
 			{

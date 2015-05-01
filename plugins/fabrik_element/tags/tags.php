@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
 
@@ -158,7 +159,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 		{
 			$pk = $db->quoteName($join->table_join_alias . '.' . $join->table_key);
 			$name = $this->getFullName(true, false) . '_raw';
-			$tagIds = FArrayHelper::getValue($data, $name, array());
+			$tagIds = ArrayHelper::getValue($data, $name, array());
 			ArrayHelper::toInteger($tagIds);
 			$where = empty($tagIds) ? '6 = -6' : $pk . ' IN (' . implode(', ', $tagIds) . ')';
 		}
@@ -342,7 +343,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 		$rawname = $name . '_raw';
 		$user = JFactory::getUser();
 		$date = JFactory::getDate();
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$formData =& $this->getFormModel()->formDataWithTableName;
 		$tagIds = (array) $formData[$rawname];
 

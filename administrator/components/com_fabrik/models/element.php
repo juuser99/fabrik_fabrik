@@ -15,13 +15,12 @@ namespace Fabrik\Admin\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
 use \JModelLegacy as JModelLegacy;
 use \FText as FText;
 use \stdClass as stdClass;
-use \FArrayHelper as FArrayHelper;
-use \FabrikWorker as FabrikWorker;
+use Fabrik\Helpers\ArrayHelper;
+Fabrik\Helpers;
 use \JText as JText;
 
 
@@ -148,7 +147,7 @@ class Element extends Base implements ModelElementFormInterface
 
 	public function getJsEvents()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$id = (int) $this->getItem()->id;
 		$query->select('*')->from('#__fabrik_jsactions')->where('element_id = ' . $id)->order('id');
@@ -173,11 +172,11 @@ class Element extends Base implements ModelElementFormInterface
 	public function getPlugins()
 	{
 		$item = $this->getItem();
-		$plugins = (array) FArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
-		$published = (array) FArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
-		$icons = (array) FArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
-		$in = (array) FArrayHelper::getNestedValue($item->params, 'validations.validate_in', array());
-		$on = (array) FArrayHelper::getNestedValue($item->params, 'validations.validation_on', array());
+		$plugins = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
+		$published = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
+		$icons = (array) ArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
+		$in = (array) ArrayHelper::getNestedValue($item->params, 'validations.validate_in', array());
+		$on = (array) ArrayHelper::getNestedValue($item->params, 'validations.validation_on', array());
 
 		$return = array();
 
@@ -185,10 +184,10 @@ class Element extends Base implements ModelElementFormInterface
 		{
 			$o = new stdClass;
 			$o->plugin = $plugins[$i];
-			$o->published = FArrayHelper::getValue($published, $i, 1);
-			$o->show_icon = FArrayHelper::getValue($icons, $i, 1);
-			$o->validate_in = FArrayHelper::getValue($in, $i, 'both');
-			$o->validation_on = FArrayHelper::getValue($on, $i, 'both');
+			$o->published = ArrayHelper::getValue($published, $i, 1);
+			$o->show_icon = ArrayHelper::getValue($icons, $i, 1);
+			$o->validate_in = ArrayHelper::getValue($in, $i, 'both');
+			$o->validation_on = ArrayHelper::getValue($on, $i, 'both');
 			$return[] = $o;
 		}
 
@@ -299,7 +298,7 @@ class Element extends Base implements ModelElementFormInterface
 			return false;
 		}
 
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$elementModel = $this->getElementPluginModel($data);
 		$nameChanged = $data['name'] !== $elementModel->getElement()->name;
 		$elementModel->getElement()->bind($data);
@@ -315,7 +314,7 @@ class Element extends Base implements ModelElementFormInterface
 				$this->setError(FText::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
 			}
 
-			if (FabrikWorker::isReserved($data['name']))
+			if (Worker::isReserved($data['name']))
 			{
 				$this->setError(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
 			}
@@ -327,7 +326,7 @@ class Element extends Base implements ModelElementFormInterface
 				$this->setError(FText::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
 			}
 
-			if ($nameChanged && FabrikWorker::isReserved($data['name'], false))
+			if ($nameChanged && Worker::isReserved($data['name'], false))
 			{
 				$this->setError(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
 			}
@@ -430,7 +429,7 @@ class Element extends Base implements ModelElementFormInterface
 		$params = $data['params'];
 		$data['name'] = FabrikString::iclean($data['name']);
 		$name = $data['name'];
-		$params['validations'] = FArrayHelper::getValue($data, 'validationrule', array());
+		$params['validations'] = ArrayHelper::getValue($data, 'validationrule', array());
 		$elementModel = $this->getElementPluginModel($data);
 		$elementModel->getElement()->bind($data);
 		$origId = $input->getInt('id');
@@ -526,7 +525,7 @@ class Element extends Base implements ModelElementFormInterface
 		 * the fieldsets!  Well, that's the only way I could come up with doing it.  Hopefully Rob can come up with
 		 * a quicker and simpler way of doing this!
 		 */
-		$validations = FArrayHelper::getValue($params['validations'], 'plugin', array());
+		$validations = ArrayHelper::getValue($params['validations'], 'plugin', array());
 		$num_validations = count($validations);
 		$validation_plugins = $this->getValidations($elementModel, $validations);
 
@@ -671,7 +670,7 @@ class Element extends Base implements ModelElementFormInterface
 
 	private function addElementToOtherDbTables($elementModel, $row)
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$list = $elementModel->getListModel()->getTable();
 		$origElid = $row->id;
 		$tmpgroupModel = $elementModel->getGroup();
@@ -890,18 +889,18 @@ class Element extends Base implements ModelElementFormInterface
 		$this_id = $this->getState($this->getName() . '.id');
 		$ids = $this->getElementDescendents($this_id);
 		$ids[] = $this_id;
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->delete('#__fabrik_jsactions')->where('element_id IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 		$db->execute();
 		$jform = $input->get('jform', array(), 'array');
-		$eEvent = FArrayHelper::getValue($jform, 'js_e_event', array());
-		$eTrigger = FArrayHelper::getValue($jform, 'js_e_trigger', array());
-		$eCond = FArrayHelper::getValue($jform, 'js_e_condition', array());
-		$eVal = FArrayHelper::getValue($jform, 'js_e_value', array());
-		$ePublished = FArrayHelper::getValue($jform, 'js_published', array());
-		$action = (array) FArrayHelper::getValue($jform, 'action', array());
+		$eEvent = ArrayHelper::getValue($jform, 'js_e_event', array());
+		$eTrigger = ArrayHelper::getValue($jform, 'js_e_trigger', array());
+		$eCond = ArrayHelper::getValue($jform, 'js_e_condition', array());
+		$eVal = ArrayHelper::getValue($jform, 'js_e_value', array());
+		$ePublished = ArrayHelper::getValue($jform, 'js_published', array());
+		$action = (array) ArrayHelper::getValue($jform, 'action', array());
 
 		foreach ($action as $c => $jsAction)
 		{
@@ -951,7 +950,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		ArrayHelper::toInteger($ids);
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		ArrayHelper::toInteger($ids);
 		$query->select('id')->from('#__fabrik_elements')->where('group_id IN (' . implode(',', $ids) . ')');
@@ -1027,7 +1026,7 @@ class Element extends Base implements ModelElementFormInterface
 		{
 			if ($rule->load((int) $id))
 			{
-				$name = FArrayHelper::getValue($names, $id, $rule->name);
+				$name = ArrayHelper::getValue($names, $id, $rule->name);
 				$data = ArrayHelper::fromObject($rule);
 				$elementModel = $this->getElementPluginModel($data);
 				$elementModel->getElement()->bind($data);
@@ -1083,7 +1082,7 @@ class Element extends Base implements ModelElementFormInterface
 		// Remove previous join records if found
 		if ((int) $row->id !== 0)
 		{
-			$jdb = FabrikWorker::getDbo(true);
+			$jdb = Worker::getDbo(true);
 			$query = $jdb->getQuery(true);
 			$query->delete('#__fabrik_joins')->where('element_id = ' . (int) $row->id);
 			$jdb->setQuery($query);
@@ -1114,7 +1113,7 @@ class Element extends Base implements ModelElementFormInterface
 		$listModel->addIndex($fieldName, 'parent_fk', 'INDEX', '');
 		
 		$fields = $listModel->storage->getDBFields($tableName, 'Field');
-		$field = FArrayHelper::getValue($fields, $row->name, false);
+		$field = ArrayHelper::getValue($fields, $row->name, false);
 		switch ($field->BaseType) {
 			case 'VARCHAR':
 				$size = (int) $field->BaseLength < 10 ? $field->BaseLength : 10;
@@ -1178,7 +1177,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 		else
 		{
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('*')->from('#__fabrik_elements')->where('id = ' . (int) $item->parent_id);
 			$db->setQuery($query);
@@ -1225,7 +1224,7 @@ class Element extends Base implements ModelElementFormInterface
 			$id = $this->getState($this->getName() . '.id');
 		}
 
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__fabrik_elements')->where('parent_id = ' . (int) $id);
 		$db->setQuery($query);
@@ -1260,7 +1259,7 @@ class Element extends Base implements ModelElementFormInterface
 			return $this->_aValidations;
 		}
 
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 

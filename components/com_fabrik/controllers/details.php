@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 require 'controller.php';
 
@@ -194,7 +195,7 @@ class FabrikControllerDetails extends FabrikController
 		// Check if any plugin has created a new validation error
 		if (!empty($model->errors))
 		{
-			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
+			Worker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
 
 			return;
@@ -357,7 +358,7 @@ class FabrikControllerDetails extends FabrikController
 					$url = urldecode($input->post->get('fabrik_referrer', 'index.php', 'string'));
 				}
 
-				$Itemid = FabrikWorker::itemId();
+				$Itemid = Worker::itemId();
 
 				if ($url == '')
 				{

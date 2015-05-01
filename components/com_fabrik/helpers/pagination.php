@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -28,7 +30,7 @@ jimport('joomla.html.pagination');
  * @since    3.0
  */
 
-class FPagination extends JPagination
+class Pagination extends \JPagination
 {
 	/**
 	 * Action url

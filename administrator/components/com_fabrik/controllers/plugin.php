@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Admin Plugin Controller
@@ -68,7 +69,7 @@ class Plugin extends Controller
 
 	public function userAjax()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		require_once COM_FABRIK_FRONTEND . '/user_ajax.php';
 		$method = $this->input->get('method', '');
 		$userAjax = new userAjax($db);
@@ -89,7 +90,7 @@ class Plugin extends Controller
 
 	public function doCron(&$pluginManager)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$cid = $this->input->get('element_id', array(), 'array');
 		ArrayHelper::toInteger($cid);
 

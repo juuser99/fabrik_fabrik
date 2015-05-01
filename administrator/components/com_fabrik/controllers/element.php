@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 require_once 'fabcontrollerform.php';
 
 /**
@@ -197,7 +199,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 	{
 		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
-		$id = (int) FArrayHelper::getValue($jform, 'id', 0);
+		$id = (int) ArrayHelper::getValue($jform, 'id', 0);
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$className = $input->post->get('plugin', 'field');
 		$elementModel = $pluginManager->getPlugIn($className, 'element');

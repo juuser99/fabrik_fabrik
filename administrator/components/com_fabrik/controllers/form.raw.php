@@ -14,6 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabcontrollerform.php';
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 /**
  * Raw Form controller class.
  *
@@ -133,7 +136,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 			{
 				if ($this->isMambot)
 				{
-					$input->post->set('fabrik_referrer', FArrayHelper::getValue($_SERVER, 'HTTP_REFERER', ''));
+					$input->post->set('fabrik_referrer', ArrayHelper::getValue($_SERVER, 'HTTP_REFERER', ''));
 
 					/**
 					 * $$$ hugh - testing way of preserving form values after validation fails with form plugin
@@ -158,7 +161,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 		// Check if any plugin has created a new validation error
 		if ($model->hasErrors())
 		{
-			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
+			Worker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
 
 			return;

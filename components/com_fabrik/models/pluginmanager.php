@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
@@ -148,7 +150,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 
 	protected function _getList($query = null, $limitstart = 0, $limit = 0)
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 
 		if (is_null($this->group))
 		{
@@ -414,7 +416,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 				return array();
 			}
 
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$select = '*, e.name AS name, e.id AS id, e.published AS published, e.label AS label,'
 			. 'e.plugin, e.params AS params, e.access AS access, e.ordering AS ordering';
@@ -602,7 +604,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 				break;
 			}
 
-			$state = FArrayHelper::getValue($states, $c, 1);
+			$state = ArrayHelper::getValue($states, $c, 1);
 
 			if ($state == false)
 			{
@@ -622,8 +624,8 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 					$plugin->renderOrder = $c;
 					$modelTable = $parentModel->getTable();
 					$pluginParams = $plugin->setParams($params, $c);
-					$location = FArrayHelper::getValue($usedLocations, $c);
-					$event = FArrayHelper::getValue($usedEvents, $c);
+					$location = ArrayHelper::getValue($usedLocations, $c);
+					$event = ArrayHelper::getValue($usedEvents, $c);
 					$plugin->setModel($parentModel);
 
 					if ($plugin->canUse($location, $event))

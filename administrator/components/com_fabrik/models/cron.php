@@ -19,6 +19,7 @@ use \JPluginHelper as JPluginHelper;
 use \JModelLegacy as JModelLegacy;
 use \FabrikString as FabrikString;
 use \FText as FText;
+use Fabrik\Helpers\ArrayHelper;
 
 interface CronInterface
 {
@@ -104,7 +105,7 @@ class Cron extends Base implements CronInterface
 
 	public function save($data)
 	{
-		if (FArrayHelper::getValue($data, 'lastrun') == '')
+		if (ArrayHelper::getValue($data, 'lastrun') == '')
 		{
 			$date = JFactory::getDate();
 			$data['lastrun'] = $date->toSql();

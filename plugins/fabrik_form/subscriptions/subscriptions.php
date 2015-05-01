@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -252,16 +253,16 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 	}
 
 	/**
-	 * Get FabrikWorker
+	 * Get Worker
 	 *
-	 * @return FabrikWorker
+	 * @return Worker
 	 */
 
 	protected function getWorker()
 	{
 		if (!isset($this->w))
 		{
-			$this->w = new FabrikWorker;
+			$this->w = new Worker;
 		}
 
 		return $this->w;
@@ -551,7 +552,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		$params = $formModel->getParams();
 		$ret_msg = (array) $params->get('subscriptions_return_msg');
 		$ret_msg = array_values($ret_msg);
-		$ret_msg = FArrayHelper::getValue($ret_msg, 0);
+		$ret_msg = ArrayHelper::getValue($ret_msg, 0);
 
 		if ($ret_msg)
 		{

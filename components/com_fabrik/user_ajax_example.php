@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+use Fabrik\Helpers\Worker;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -94,7 +96,7 @@ class UserAjax
 
 	public function userExists()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$query = $db->getQuery(true);
 		$retStr = '';
 		$app = JFactory::getApplication();

@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 /**
  * other records in the table to auto fill in the rest of the form with that records data
  *
@@ -222,7 +224,7 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 
 		if (!$matched)
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$newdata->$toraw = $newdata->$to = $w->parseMessageForPlaceHolder($from, $data);
 		}
 		else

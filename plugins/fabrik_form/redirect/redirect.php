@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -46,7 +49,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$sshowsystemmsg = (array) $session->get($context . 'showsystemmsg', array());
 
 		$this->formModel = $formModel;
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$form = $formModel->getForm();
 		$this->data = $this->getProcessData();
@@ -113,7 +116,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$smsg[$this->renderOrder] = $this->data['thanks_message'];
 
 		// Don't display system message if thanks is empty
-		if (FArrayHelper::getValue($this->data, 'thanks_message', '') !== '')
+		if (ArrayHelper::getValue($this->data, 'thanks_message', '') !== '')
 		{
 			$session->set($context . 'msg', $smsg);
 		}

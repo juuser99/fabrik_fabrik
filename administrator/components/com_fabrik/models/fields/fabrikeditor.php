@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.form.formfield');
 JFormHelper::loadFieldClass('textarea');
 
@@ -52,19 +54,19 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 		$required = $this->required ? ' required="required" aria-required="true"' : '';
 
 		// JS events are saved as encoded html - so we don't want to double encode them
-		$encoded = FabrikWorker::toBoolean($this->getAttribute('encoded', false), false);
+		$encoded = Worker::toBoolean($this->getAttribute('encoded', false), false);
 
 		if (!$encoded)
 		{
 			$this->value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
 		}
 
-		$onChange = FabrikWorker::toBoolean($this->getAttribute('onchange', false), false);
+		$onChange = Worker::toBoolean($this->getAttribute('onchange', false), false);
 
 		$onChange = $onChange ? ' onchange="' . (string) $onChange . '"' : '';
 
 		// Joomla 3 version
-		FabrikWorker::toBoolean($this->getAttribute('highlightpk', false), false);
+		Worker::toBoolean($this->getAttribute('highlightpk', false), false);
 
 		$mode      = $this->getAttribute('mode', 'html');
 		$theme     = $this->getAttribute('theme', 'github');

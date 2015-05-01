@@ -15,6 +15,7 @@ namespace Fabrik\Admin\Controllers;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Cron list controller class.
@@ -88,7 +89,7 @@ class Crons extends \JControllerBase
 	{
 		$mailer = JFactory::getMailer();
 		$config = JFactory::getConfig();
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		ArrayHelper::toInteger($cid);

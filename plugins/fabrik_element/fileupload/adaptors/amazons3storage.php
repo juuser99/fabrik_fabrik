@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
 
 require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
 
@@ -63,7 +64,7 @@ class Amazons3storage extends FabrikStorageAdaptor
 	protected function getBucketName()
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		return $w->parseMessageForPlaceHolder($params->get('fileupload_aws_bucketname', 'robclayburnsfabrik'));
 	}
@@ -438,7 +439,7 @@ class Amazons3storage extends FabrikStorageAdaptor
 	public function _getThumb($file)
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$ulDir = COM_FABRIK_BASE . $params->get('ul_directory');
 		$ulDir = $this->clean($ulDir);
@@ -472,7 +473,7 @@ class Amazons3storage extends FabrikStorageAdaptor
 	public function _getCropped($file)
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$ulDir = COM_FABRIK_BASE . $params->get('ul_directory');
 		$ulDir = $this->clean($ulDir);

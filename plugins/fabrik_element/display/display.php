@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Plugin element to render plain text/HTML
@@ -140,7 +141,7 @@ class PlgFabrik_ElementDisplay extends PlgFabrik_Element
 
 	protected function getDefaultOnACL($data, $opts)
 	{
-		return FArrayHelper::getValue($opts, 'use_default', true) == false ? '' : $this->getDefaultValue($data);
+		return ArrayHelper::getValue($opts, 'use_default', true) == false ? '' : $this->getDefaultValue($data);
 	}
 
 	/**
@@ -160,7 +161,7 @@ class PlgFabrik_ElementDisplay extends PlgFabrik_Element
 		if ($value === '')
 		{
 			// Query string for joined data
-			$value = FArrayHelper::getValue($data, $value);
+			$value = ArrayHelper::getValue($data, $value);
 		}
 
 		$formModel = $this->getFormModel();
@@ -169,7 +170,7 @@ class PlgFabrik_ElementDisplay extends PlgFabrik_Element
 
 		if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1)
 		{
-			FabrikWorker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
+			Worker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
 		}
 
 		return $value;

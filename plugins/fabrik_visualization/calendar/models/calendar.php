@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -88,7 +89,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		if (is_null($this->eventLists))
 		{
 			$this->eventLists = array();
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$params = $this->getParams();
 			$lists = (array) $params->get('calendar_table');
 			ArrayHelper::toInteger($lists);
@@ -116,9 +117,9 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 				}
 
 				$rows[$i]->startdate_element = $dateFields[$i];
-				$rows[$i]->enddate_element = FArrayHelper::getValue($dateFields2, $i);
+				$rows[$i]->enddate_element = ArrayHelper::getValue($dateFields2, $i);
 				$rows[$i]->label_element = $labels[$i];
-				$rows[$i]->status = FArrayHelper::getValue($stati, $i, '');
+				$rows[$i]->status = ArrayHelper::getValue($stati, $i, '');
 				$rows[$i]->colour = $colours[$i];
 			}
 
@@ -138,7 +139,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$config = JFactory::getConfig();
 		$prefix = $config->get('dbprefix');
 		$params = $this->getParams();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$db->setQuery("SELECT form_id, id FROM #__fabrik_lists WHERE db_table_name = '{$prefix}fabrik_calendar_events' AND private = '1'");
 		$o = $db->loadObject();
 
@@ -232,8 +233,8 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 				{
 					$listModel->setId($tables[$i]);
 					$table = $listModel->getTable();
-					$endDate = FArrayHelper::getValue($table_enddate, $i, '');
-					$startDate = FArrayHelper::getValue($table_startdate, $i, '');
+					$endDate = ArrayHelper::getValue($table_enddate, $i, '');
+					$startDate = ArrayHelper::getValue($table_startdate, $i, '');
 
 					$startShowTime = true;
 					$startDateEl = $listModel->getFormModel()->getElement($startDate);
@@ -270,8 +271,8 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 						$table_label[$i] = '';
 					}
 
-					$customUrl = FArrayHelper::getValue($customUrls, $i, '');
-					$status = FArrayHelper::getValue($stati, $i, '');
+					$customUrl = ArrayHelper::getValue($customUrls, $i, '');
+					$status = ArrayHelper::getValue($stati, $i, '');
 					$this->events[$tables[$i]][] = array('startdate' => $startDate, 'enddate' => $endDate, 'startShowTime' => $startShowTime,
 						'endShowTime' => $endShowTime, 'label' => $table_label[$i], 'colour' => $colour[$i], 'legendtext' => $legend[$i],
 						'formid' => $table->form_id, 'listid' => $tables[$i], 'customUrl' => $customUrl, 'status' => $status);
@@ -407,11 +408,11 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$config = JFactory::getConfig();
 		$tzoffset = $config->get('offset');
 		$tz = new DateTimeZone($tzoffset);
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$this->setupEvents();
 		$calendar = $this->getRow();
 		$aLegend = "$this->calName.addLegend([";
@@ -421,7 +422,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 		foreach ($this->events as $listid => $record)
 		{
-			$this_where = FArrayHelper::getValue($where, $listid, '');
+			$this_where = ArrayHelper::getValue($where, $listid, '');
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($listid);
 
@@ -576,7 +577,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 	public function getLegend()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$params = $this->getParams();
 		$this->setupEvents();
 		$tables = (array) $params->get('calendar_table');
@@ -637,7 +638,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 	public function updateevent()
 	{
-		$oPluginManager = FabrikWorker::getPluginManager();
+		$oPluginManager = Worker::getPluginManager();
 	}
 
 	/**
@@ -656,7 +657,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$listModel->setId($listid);
 		$list = $listModel->getTable();
 		$tableDb = $listModel->getDb();
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . $listid);
 		$db->setQuery($query);

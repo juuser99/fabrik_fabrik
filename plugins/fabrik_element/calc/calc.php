@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Plugin element to render field with PHP calculated value
@@ -35,24 +36,9 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	{
 		if (!isset($this->default))
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$element = $this->getElement();
 			$default = $w->parseMessageForPlaceHolder($element->default, $data, true, true);
-			/* calc in fabrik3.0/3.1 doesn't have eval, issues if F2.0 calc elements are migrated*/
-			/*if ($element->eval == '1')
-			{
-				if (FabrikHelperHTML::isDebug())
-				{
-					$res = eval($default);
-				}
-				else
-				{
-					$res = @eval($default);
-				}
-				FabrikWorker::logEval($res, 'Eval exception : ' . $element->name . '::getDefaultValue() : ' . $default . ' : %s');
-				$default = $res;
-			}
-			*/
 			$this->default = $default;
 		}
 
@@ -70,7 +56,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 	private function _getV($data, $repeatCounter)
 	{
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$groupModel = $this->getGroup();
 		$joinid = $groupModel->getGroup()->join_id;
 		$name = $this->getFullName(true, false);
@@ -125,7 +111,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			$d = $data;
 
 			$res = FabrikHelperHTML::isDebug() ? eval($default) : @eval($default);
-			FabrikWorker::logEval($res, 'Eval exception : ' . $this->getElement()->name . '::_getV() : ' . $default . ' : %s');
+			Worker::logEval($res, 'Eval exception : ' . $this->getElement()->name . '::_getV() : ' . $default . ' : %s');
 
 			return $res;
 		}
@@ -215,7 +201,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			// Stops this getting called from form validation code as it messes up repeated/join group validations
 			if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1)
 			{
-				FabrikWorker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
+				Worker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
 			}
 
 			if (is_array($element->default))
@@ -241,7 +227,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	public function preProcess($c)
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$form = $this->getForm();
 		$data = unserialize(serialize($form->formData));
 		$calc = $params->get('calc_calculation');
@@ -306,21 +292,21 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			{
 				$elementModel = $elementModels[$j];
 				$elkey = $elementModel->getFullName(true, false);
-				$v = FArrayHelper::getValue($d, $elkey);
+				$v = ArrayHelper::getValue($d, $elkey);
 
 				if (is_array($v))
 				{
-					$origdata = FArrayHelper::getValue($d, $elkey, array());
+					$origdata = ArrayHelper::getValue($d, $elkey, array());
 
 					foreach (array_keys($v) as $x)
 					{
-						$origval = FArrayHelper::getValue($origdata, $x);
+						$origval = ArrayHelper::getValue($origdata, $x);
 						$d[$elkey][$x] = $elementModel->getLabelForValue($v[$x], $origval, true, $x);
 					}
 				}
 				else
 				{
-					$d[$elkey] = $elementModel->getLabelForValue($v, FArrayHelper::getValue($d, $elkey), true);
+					$d[$elkey] = $elementModel->getLabelForValue($v, ArrayHelper::getValue($d, $elkey), true);
 				}
 			}
 		}
@@ -377,7 +363,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 				$res = @eval($cal);
 			}
 
-			FabrikWorker::logEval($res, 'Eval exception : ' . $element->name . '::preFormatFormJoins() : ' . $cal . ' : %s');
+			Worker::logEval($res, 'Eval exception : ' . $element->name . '::preFormatFormJoins() : ' . $cal . ' : %s');
 
 			if ($format != '')
 			{
@@ -531,7 +517,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$filter = JFilterInput::getInstance();
 		$d = $filter->clean($_REQUEST, 'array');
 		$formModel = $this->getFormModel();
@@ -575,7 +561,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 				if ($this->getGroupModel()->canRepeat() && is_array($value))
 				{
-					$value = FArrayHelper::getValue($value, $repeatCounter);
+					$value = ArrayHelper::getValue($value, $repeatCounter);
 				}
 
 				// For radio buttons and dropdowns otherwise nothing is stored for them??
@@ -597,7 +583,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
 		$name = $this->getElement()->name;
-		$field = FArrayHelper::getValue($fields, $name, false);
+		$field = ArrayHelper::getValue($fields, $name, false);
 
 		if ($field !== false && $field->Type == 'time')
 		{
@@ -630,7 +616,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
 		$name = $this->getElement()->name;
-		$field = FArrayHelper::getValue($fields, $name, false);
+		$field = ArrayHelper::getValue($fields, $name, false);
 
 		if ($field !== false && $field->Type == 'time')
 		{
@@ -663,7 +649,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
 		$name = $this->getElement()->name;
-		$field = FArrayHelper::getValue($fields, $name, false);
+		$field = ArrayHelper::getValue($fields, $name, false);
 
 		if ($field !== false && $field->Type == 'time')
 		{
@@ -741,7 +727,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 		$listModel->setId($listId);
 		$data = $listModel->getData();
 		$return = new stdClass;
-		$w = new FabrikWorker;
+		$w = new Worker;
 		/**
 		 * $$$ hugh ... no, we never need to store in this context.  The 'calc_on_save_only' param simply dictates
 		 * whether we re-calc when displaying the element, or just use the stored value.  So if calc_on_save_only is

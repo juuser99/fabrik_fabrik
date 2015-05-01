@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -142,7 +144,7 @@ abstract class FabrikWebService
 	public function map($datas, $fk)
 	{
 		$return = array();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		foreach ($datas as $data)
 		{
@@ -153,9 +155,9 @@ abstract class FabrikWebService
 				$to = $map['to'];
 				$map['from'] = $w->parseMessageForPlaceHolder($map['from'], $data, false);
 
-				if (FArrayHelper::getValue($map, 'match', '') !== '')
+				if (ArrayHelper::getValue($map, 'match', '') !== '')
 				{
-					if (FArrayHelper::getValue($map, 'eval') == 1)
+					if (ArrayHelper::getValue($map, 'eval') == 1)
 					{
 						$res = eval($map['match']);
 

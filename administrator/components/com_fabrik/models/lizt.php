@@ -15,18 +15,19 @@ namespace Fabrik\Admin\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Storage\MySql as Storage;
-use Joomla\Utilities\ArrayHelper;
 use Joomla\String\String;
-use \JForm as JForm;
 use \JModelLegacy as JModelLegacy;
 use \JText as JText;
 use \FText as FText;
 use \stdClass as stdClass;
 use \JHTML as JHTML;
-use \FabrikWorker as FabrikWorker;
+use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
-use \FArrayHelper as FArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use \FabrikString as FabrikString;
+use \RuntimeException as RuntimeException;
+use \JRegistry as JRegistry;
 
 interface ModelFormLiztInterface
 {
@@ -85,6 +86,19 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * @var array
 	 */
 	protected $dbFields = null;
+
+	/**
+	 * Instantiate the model.
+	 *
+	 * @param   Registry $state The model state.
+	 *
+	 * @since   12.1
+	 */
+	public function __construct(Registry $state = null)
+	{
+		parent::__construct($state);
+		$this->storage = new Storage;
+	}
 
 	/**
 	 * @return stdClass
@@ -302,9 +316,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function getJs()
 	{
-		$connModel     = $this->getCnn();
+		$connModel = $this->getCnn();
 		//$plugins       = $this->getPlugins();
-		$item          = $this->getItem();
+		$item = $this->getItem();
 		//$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		JText::script('COM_FABRIK_OPTIONS');
 		JText::script('COM_FABRIK_JOIN');
@@ -400,13 +414,13 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		for ($i = 0; $i < count($filterFields); $i++)
 		{
-			$selJoin = FArrayHelper::getValue($filterJoins, $i, 'and');
+			$selJoin = ArrayHelper::getValue($filterJoins, $i, 'and');
 
 			// 2.0 upgraded sites had quoted filter names
 			$selFilter    = str_replace('`', '', $filterFields[$i]);
-			$grouped      = FArrayHelper::getValue($aGrouped, $i, 0);
+			$grouped      = ArrayHelper::getValue($aGrouped, $i, 0);
 			$selCondition = $filterConditions[$i];
-			$filerEval    = (int) FArrayHelper::getValue($filterEvals, $i, '1');
+			$filerEval    = (int) ArrayHelper::getValue($filterEvals, $i, '1');
 
 			if ($selCondition == '&gt;')
 			{
@@ -418,7 +432,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$selCondition = '<';
 			}
 
-			$selValue  = FArrayHelper::getValue($filterValues, $i, '');
+			$selValue  = ArrayHelper::getValue($filterValues, $i, '');
 			$selAccess = $filterAccess[$i];
 
 			// Allow for multiline js variables ?
@@ -455,7 +469,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		if (is_null($this->formModel))
 		{
 			$config          = array();
-			$config['dbo']   = FabrikWorker::getDbo(true);
+			$config['dbo']   = Worker::getDbo(true);
 			$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel', $config);
 			$this->formModel->setDbo($config['dbo']);
 		}
@@ -502,15 +516,13 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 */
 	public function validate($data)
 	{
-		$params = $data['params'];
-		$data   = parent::validate($data);
-
-		if (!$data)
+		//$params = $data['params'];
+		if (!parent::validate($data))
 		{
 			return false;
 		}
 
-		if (empty($data['_database_name']) && FArrayHelper::getValue($data, 'db_table_name') == '')
+		if (empty($data['_database_name']) && ArrayHelper::getValue($data, 'db_table_name') == '')
 		{
 			$this->app->enqueueMessage(FText::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
 
@@ -518,8 +530,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		}
 
 		// Hack - must be able to add the plugin xml fields file to $form to include in validation but cant see how at the moment
-		$data['params'] = $params;
-
+		//$data['params'] = $params;
 		return $data;
 	}
 
@@ -533,59 +544,47 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 */
 	public function save($data)
 	{
-		echo "<pre>";
-		print_r($_REQUEST);
-		print_r($data);exit;
+
 		$this->populateState();
-		$input                = $this->app->input;
-		$user                 = JFactory::getUser();
-		$date                 = JFactory::getDate();
-		$this->storage->table = ArrayHelper::getValue($data, 'db_table_name');
-		$row                  = $this->getTable('List', 'FabrikTable', array('view' => $this->storage->table));
+		$input = $this->app->input;
+		$user  = JFactory::getUser();
+		$date  = JFactory::getDate();
 
-		$id = FArrayHelper::getValue($data, 'id');
-		$row->load($id);
+		$data = ArrayHelper::toObject($data);
+		//$params                = new JRegistry($row->params);
 
-		$params                = new JRegistry($row->params);
-		$this->storage->params = $params;
+		//$this->set('list.form_id', $row->form_id);
 
-		$this->setState('list.id', $id);
-		$this->setState('list.form_id', $row->form_id);
+		$data->order_by  = $input->get('order_by', array(), 'array');
+		$data->order_dir = $input->get('order_dir', array(), 'array');
 
-		$row->bind($data);
+		$this->collation($data);
 
-		$row->order_by  = json_encode($input->get('order_by', array(), 'array'));
-		$row->order_dir = json_encode($input->get('order_dir', array(), 'array'));
+		$file  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->view . '.json';
+		$isNew = !\JFile::exists($file);
 
-		$row->check();
-
-		$this->collation($row);
-		$isNew = true;
-
-		if ($row->id != 0)
+		if (!$isNew)
 		{
-			$datenow          = JFactory::getDate();
-			$row->modified    = $datenow->toSql();
-			$row->modified_by = $user->get('id');
+			$dateNow           = JFactory::getDate();
+			$data->modified    = $dateNow->toSql();
+			$data->modified_by = $user->get('id');
 		}
 
-		if ($id == 0)
+		if ($isNew)
 		{
-			if ($row->created == '')
+			if ($data->created == '')
 			{
-				$row->created = $date->toSql();
+				$data->created = $date->toSql();
 			}
-			// Save the row now
-			$row->store();
 
-			$isNew    = false;
-			$newtable = trim(FArrayHelper::getValue($data, '_database_name'));
+			//$isNew    = false;
+			$newTable = trim($data->_database_name);
 
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
-			$newtable = FabrikString::clean($newtable);
+			$newTable = FabrikString::clean($newTable);
 
 			// Check the entered database table doesnt already exist
-			if ($newtable != '' && $this->storage->tableExists($newtable))
+			if ($newTable != '' && $this->storage->tableExists($newTable))
 			{
 				throw new RuntimeException(FText::_('COM_FABRIK_DATABASE_TABLE_ALREADY_EXISTS'));
 
@@ -600,34 +599,38 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 
 			// Create fabrik form
-			$this->createLinkedForm();
-			$row->form_id = $this->getState('list.form_id');
+			$data->form = $this->createLinkedForm($data);
 
 			// Create fabrik group
-			$groupData          = FabrikWorker::formDefaults('group');
-			$groupData['name']  = $row->label;
-			$groupData['label'] = $row->label;
-			$input->set('_createGroup', 1, 'post');
-			$groupId = $this->createLinkedGroup($groupData, false);
+			$groupData        = Worker::formDefaults('group');
+			$groupData->name  = $data->label;
+			$groupData->label = $data->label;
 
-			if ($newtable == '')
+			$data->group = $this->createLinkedGroup($groupData, false);
+
+			if ($newTable == '')
 			{
+				// @TODO test this since move to json file format
 				// New fabrik list but existing db table
 				$this->createLinkedElements($groupId);
 			}
 			else
 			{
-				$row->db_table_name = $newtable;
-				$row->auto_inc      = 1;
+				$data->db_table_name = $newTable;
+				$data->auto_inc      = 1;
 
 				$dbOpts            = array();
-				$params            = new JRegistry($row->params);
+				$params            = new JRegistry($data->params);
 				$dbOpts['COLLATE'] = $params->get('collation', '');
-				$res               = $this->createDBTable($newtable, $input->get('defaultfields', array('id' => 'internalid', 'date_time' => 'date'), 'array'), $dbOpts);
-
+				
+				$fields = (array) $this->get('defaultfields', array('id' => 'internalid', 'date_time' => 'date'));
+				$res               = $this->createDBTable($newTable, $fields, $dbOpts);
+				echo "<pre>";
+				print_r($data);
+				exit;
 				if (is_array($res))
 				{
-					$row->db_primary_key = $newtable . '.' . $res[0];
+					$row->db_primary_key = $newTable . '.' . $res[0];
 				}
 			}
 		}
@@ -635,7 +638,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		Fabrik::prepareSaveDate($row->publish_down);
 		Fabrik::prepareSaveDate($row->created);
 		Fabrik::prepareSaveDate($row->publish_up);
-		$pk = FArrayHelper::getValue($data, 'db_primary_key');
+		$pk = ArrayHelper::getValue($data, 'db_primary_key');
 
 		if ($pk == '')
 		{
@@ -644,12 +647,11 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$extra = $pk[0]['extra'];
 
 			// Store without quoteNames as thats db specific
-			$row->db_primary_key = $row->db_primary_key == '' ? $row->db_table_name . "." . $key : $row->db_primary_key;
+			$row->db_primary_key = $row->db_primary_key == '' ? $row->db_table_name . '.' . $key : $row->db_primary_key;
 			$row->auto_inc       = String::stristr($extra, 'auto_increment') ? true : false;
 		}
 
 		$row->store();
-		$pk = $row->db_primary_key;
 		$this->updateJoins($data);
 
 		if (!$this->storage->isView())
@@ -668,13 +670,13 @@ class Lizt extends Base implements ModelFormLiztInterface
 			foreach ($elementModels as $element)
 			{
 				// Int and DATETIME elements cant have a index size attrib
-				$coltype = $element->getFieldDescription();
+				$colType = $element->getFieldDescription();
 
-				if (String::stristr($coltype, 'int'))
+				if (String::stristr($colType, 'int'))
 				{
 					$size = '';
 				}
-				elseif (String::stristr($coltype, 'datetime'))
+				elseif (String::stristr($colType, 'datetime'))
 				{
 					$size = '';
 				}
@@ -732,7 +734,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		 * existing tables it's true.
 		 */
 
-		$this->setState($this->getName() . '.new', $isNew);
+		$this->set($this->getName() . '.new', $isNew);
 		parent::cleanCache('com_fabrik');
 
 		return true;
@@ -749,6 +751,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 */
 	protected function collation($row)
 	{
+		// @todo - redo this
+		return true;
 		$feModel = $this->getFEModel();
 
 		// Don't attempt to alter new table, or a view, or if we shouldn't alter the table
@@ -805,7 +809,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	private function updateJoins($data)
 	{
-		$db    = FabrikWorker::getDbo(true);
+		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 
 		// If we are creating a new list then don't update any joins - can result in groups and elements being removed.
@@ -820,14 +824,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$params          = $data['params'];
 		$aOldJoinsToKeep = array();
 		$joinModel       = JModelLegacy::getInstance('Join', 'FabrikFEModel');
-		$joinIds         = FArrayHelper::getValue($params, 'join_id', array());
-		$joinTypes       = FArrayHelper::getValue($params, 'join_type', array());
-		$joinTableFrom   = FArrayHelper::getValue($params, 'join_from_table', array());
-		$joinTable       = FArrayHelper::getValue($params, 'table_join', array());
-		$tableKey        = FArrayHelper::getValue($params, 'table_key', array());
-		$joinTableKey    = FArrayHelper::getValue($params, 'table_join_key', array());
-		$groupIds        = FArrayHelper::getValue($params, 'group_id', array());
-		$repeats         = FArrayHelper::getValue($params, 'join_repeat', array());
+		$joinIds         = ArrayHelper::getValue($params, 'join_id', array());
+		$joinTypes       = ArrayHelper::getValue($params, 'join_type', array());
+		$joinTableFrom   = ArrayHelper::getValue($params, 'join_from_table', array());
+		$joinTable       = ArrayHelper::getValue($params, 'table_join', array());
+		$tableKey        = ArrayHelper::getValue($params, 'table_key', array());
+		$joinTableKey    = ArrayHelper::getValue($params, 'table_join_key', array());
+		$groupIds        = ArrayHelper::getValue($params, 'group_id', array());
+		$repeats         = ArrayHelper::getValue($params, 'join_repeat', array());
 		$jc              = count($joinTypes);
 
 		// Test for repeat elements to ensure their join isn't removed from here
@@ -918,7 +922,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		foreach ($joinsToIndex as $thisJoin)
 		{
 			$fields  = $this->storage->getDBFields($thisJoin->table_join, 'Field');
-			$fkField = FArrayHelper::getValue($fields, $thisJoin->table_join_key, false);
+			$fkField = ArrayHelper::getValue($fields, $thisJoin->table_join_key, false);
 			switch ($pkField->BaseType)
 			{
 				case 'VARCHAR':
@@ -950,7 +954,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	protected function makeNewJoin($tableKey, $joinTableKey, $joinType, $joinTable, $joinTableFrom, $isRepeat)
 	{
-		$groupData          = FabrikWorker::formDefaults('group');
+		$groupData          = Worker::formDefaults('group');
 		$groupData['name']  = $this->getTable()->label . '- [' . $joinTable . ']';
 		$groupData['label'] = $joinTable;
 		$groupId            = $this->createLinkedGroup($groupData, true, $isRepeat);
@@ -983,11 +987,11 @@ class Lizt extends Base implements ModelFormLiztInterface
 		if ($pk !== false)
 		{
 			// If it didn't return false, getPrimaryKeyAndExtra will have created and array with at least one key
-			$pk_col = FArrayHelper::getValue($pk[0], 'colname', '');
+			$pk_col = ArrayHelper::getValue($pk[0], 'colname', '');
 
 			if (!empty($pk_col))
 			{
-				$db     = FabrikWorker::getDbo(true);
+				$db     = Worker::getDbo(true);
 				$pk_col = $join->table_join . '.' . $pk_col;
 				$join->params->set('pk', $db->quoteName($pk_col));
 				$join->params = (string) $join->params;
@@ -1030,7 +1034,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$dispatcher    = JEventDispatcher::getInstance();
 		$input         = $this->app->input;
 		$elementModel  = new PlgFabrik_Element($dispatcher);
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$user          = JFactory::getUser();
 		$fbConfig      = JComponentHelper::getParams('com_fabrik');
 		$elementTypes  = $input->get('elementtype', array(), 'array');
@@ -1053,7 +1057,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 			if (preg_match("/\((.*)\)/i", $type, $matches))
 			{
-				$maxLength = FArrayHelper::getValue($matches, 1, 255);
+				$maxLength = ArrayHelper::getValue($matches, 1, 255);
 				$maxLength = explode(',', $maxLength);
 
 				if (count($maxLength) > 1)
@@ -1070,7 +1074,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 			// Get the basic type
 			$type    = explode(" ", $type);
-			$type    = FArrayHelper::getValue($type, 0, '');
+			$type    = ArrayHelper::getValue($type, 0, '');
 			$type    = preg_replace("/\((.*)\)/i", '', $type);
 			$element = FabTable::getInstance('Element', 'FabrikTable');
 
@@ -1176,7 +1180,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 
 			$element->params = json_encode($p);
-			$element->label  = FArrayHelper::getValue($elementLabels, $ordering, str_replace("_", " ", $label));
+			$element->label  = ArrayHelper::getValue($elementLabels, $ordering, str_replace("_", " ", $label));
 
 			//Format Label
 			$labelConfig = $fbConfig->get('format_labels', '0');
@@ -1216,107 +1220,75 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * automatically create a form to allow the update/creation of that tables
 	 * records
 	 *
-	 * @param   int $formId to copy from. If = 0 then create a default form. If not 0 then copy the form id passed in
+	 * @param       stdClass View containing all info
+	 * @param   int $formId  to copy from. If = 0 then create a default form. If not 0 then copy the form id passed in
 	 *
 	 * @return  object  form model
 	 */
 
-	private function createLinkedForm($formId = 0)
+	private function createLinkedForm($view, $formId = 0)
 	{
 		$user = JFactory::getUser();
 		$this->getFormModel();
 
 		if ($formId == 0)
 		{
-			/**
-			 * $$$ rob required otherwise the JTable is loaed with db_table_name as a property
-			 * which then generates an error - not sure why its loaded like that though?
-			 * 18/08/2011 - could be due to the Form table class having it in its bind method
-			 * - (have now overridden form table store() to remove thoes two params)
-			 */
 			$this->formModel->getForm();
 			jimport('joomla.utilities.date');
 			$createDate = JFactory::getDate();
 			$createDate = $createDate->toSql();
-			$form       = $this->getTable('Form');
-			$item       = $this->getTable('List');
 
-			$defaults = FabrikWorker::formDefaults('form');
-			$form->bind($defaults);
+			$form = Worker::formDefaults('form');
 
-			$form->label               = $item->label;
+			$form->label               = $view->label;
 			$form->record_in_database  = 1;
 			$form->created             = $createDate;
 			$form->created_by          = $user->get('id');
 			$form->created_by_alias    = $user->get('username');
 			$form->error               = FText::_('COM_FABRIK_FORM_ERROR_MSG_TEXT');
 			$form->submit_button_label = FText::_('COM_FABRIK_SAVE');
-			$form->published           = $item->published;
-
-			$version                  = new JVersion;
-			$form->form_template      = version_compare($version->RELEASE, '3.0') >= 0 ? 'bootstrap' : 'default';
-			$form->view_only_template = version_compare($version->RELEASE, '3.0') >= 0 ? 'bootstrap' : 'default';
-
-			$form->store();
-			$this->setState('list.form_id', $form->id);
-			$this->formModel->setId($form->id);
+			$form->published           = $view->published;
+			$form->form_template       = 'bootstrap';
+			$form->view_only_template  = 'bootstrap';
 		}
 		else
 		{
+			// @TODO json view this.
 			$this->setState('list.form_id', $formId);
 			$this->formModel->setId($formId);
 			$this->formModel->getTable();
 			$this->formModel->copy();
 		}
 
-		$this->formModel->getForm();
-
-		return $this->formModel;
+		return $form;
 	}
 
 	/**
 	 * Create a group
 	 * used when creating a fabrik table from an existing db table
 	 *
-	 * NEW also creates the formgroup
+	 * @param   stdClass $data     group data
+	 * @param   bool     $isJoin   is the group a join default false
+	 * @param   bool     $isRepeat is the group repeating
 	 *
-	 * @param   array $data     group data
-	 * @param   bool  $isJoin   is the group a join default false
-	 * @param   bool  $isRepeat is the group repeating
-	 *
-	 * @return  int  group id
+	 * @return  stdClass Group
 	 */
 
 	private function createLinkedGroup($data, $isJoin = false, $isRepeat = false)
 	{
-		$user       = JFactory::getUser();
-		$createDate = JFactory::getDate();
-		$group      = $this->getTable('Group');
-		$group->bind($data);
-		$group->id                     = null;
-		$group->created                = $createDate->toSql();
-		$group->created_by             = $user->get('id');
-		$group->created_by_alias       = $user->get('username');
-		$group->published              = 1;
+		$user                          = JFactory::getUser();
+		$createDate                    = JFactory::getDate();
+		$data->created                 = $createDate->toSql();
+		$data->created_by              = $user->get('id');
+		$data->created_by_alias        = $user->get('username');
+		$data->published               = 1;
 		$opts                          = new stdClass;
-		$opts->repeat_group_button     = $isRepeat ? 1 : 0;
+		$data->repeat_group_button     = $isRepeat ? 1 : 0;
 		$opts->repeat_group_show_first = 1;
-		$group->params                 = json_encode($opts);
-		$group->is_join                = ($isJoin == true) ? 1 : 0;
-		$group->store();
-		$group->store();
+		$data->params                  = $opts;
+		$data->is_join                 = ($isJoin == true) ? 1 : 0;
 
-		// Create form group
-		$formId              = $this->getState('list.form_id');
-		$formGroup           = $this->getTable('FormGroup');
-		$formGroup->id       = null;
-		$formGroup->form_id  = $formId;
-		$formGroup->group_id = $group->id;
-		$formGroup->ordering = 999999;
-		$formGroup->store();
-		$formGroup->reorder(" form_id = '$formId'");
-
-		return $group->id;
+		return $data;
 	}
 
 	/**
@@ -1329,7 +1301,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function copy()
 	{
-		$db    = FabrikWorker::getDbo(true);
+		$db    = Worker::getDbo(true);
 		$user  = JFactory::getUser();
 		$input = $this->app->input;
 		$pks   = $input->get('cid', array(), 'array');
@@ -1344,10 +1316,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$input->set('newGroupNames', $names[$pk]['groupNames']);
 			$formModel = $this->createLinkedForm($item->form_id);
 
-			if (!$formModel)
-			{
-				return;
-			}
 			// $$$ rob 20/12/2011 - any element id stored in the list needs to get mapped to the new element ids
 
 			$elementMap = $formModel->newElements;
@@ -1695,21 +1663,24 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$listId = $this->getState('list.id');
 		$item   = $this->getItem($listId);
 
-		return FabrikWorker::getConnection($item)->getDb();
+		return Worker::getConnection($item)->getDb();
 	}
 
 	/**
 	 * Create a table to store the forms' data depending upon what groups are assigned to the form
 	 *
-	 * @param   string $dbTableName Taken from the table oject linked to the form
-	 * @param   array  $fields      List of default elements to add. (key = element name, value = plugin
-	 * @param   array  $opts        Additional options, e.g. collation
+	 * @param   string $name   Taken from the table object linked to the form
+	 * @param   array  $fields List of default elements to add. (key = element name, value = plugin
+	 * @param   array  $opts   Additional options, e.g. collation
 	 *
 	 * @return mixed false if fail otherwise array of primary keys
 	 */
 
-	public function createDBTable($dbTableName = null, $fields = array('id' => 'internalid', 'date_time' => 'date'), $opts = array())
+	public function createDBTable($name = null, $fields = array('id' => 'internalid', 'date_time' => 'date'), $opts = array())
 	{
+
+
+		$this->storage->createTable($name, $fields, $opts);
 	}
 
 	/**
@@ -1723,7 +1694,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function makeElement($name, $data)
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$element       = $pluginManager->loadPlugIn($data['plugin'], 'element');
 		$item          = $element->getDefaultProperties();
 		$item->id      = null;
@@ -1785,7 +1756,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function ammendTable()
 	{
-		$db             = FabrikWorker::getDbo(true);
+		$db             = Worker::getDbo(true);
 		$input          = $this->app->input;
 		$query          = $db->getQuery(true);
 		$table          = $this->table;
@@ -1802,7 +1773,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		// $$$ hugh - looks like this is now an array in jform
 		$jForm    = $input->get('jform', array(), 'array');
-		$arGroups = FArrayHelper::getValue($jForm, 'current_groups', array(), 'array');
+		$arGroups = ArrayHelper::getValue($jForm, 'current_groups', array(), 'array');
 
 		if (empty($arGroups))
 		{

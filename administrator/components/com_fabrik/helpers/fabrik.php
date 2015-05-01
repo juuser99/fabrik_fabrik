@@ -18,6 +18,7 @@ use Joomla\String\String;
 use \JFactory as JFactory;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Admin Component Helper
@@ -73,7 +74,7 @@ class Fabrik
 	{
 		$config = JFactory::getConfig();
 		$offset = $config->get('offset');
-		$db     = FabrikWorker::getDbo(true);
+		$db     = Worker::getDbo(true);
 
 		// Handle never unpublish date
 		if (trim($strDate) == FText::_('Never') || trim($strDate) == '' || trim($strDate) == $db->getNullDate())

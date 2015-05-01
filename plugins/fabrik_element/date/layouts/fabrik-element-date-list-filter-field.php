@@ -1,17 +1,16 @@
 <?php
 defined('JPATH_BASE') or die;
+use \Joomla\Utilities\ArrayHelper;
 
 $d    = $displayData;
 $from = $d->from;
 
-$calOpts = JArrayHelper::toString($d->calOpts);
+$calOpts = ArrayHelper::toString($d->calOpts);
 
-if ($d->j3) :
-	$from->img = '<button id ="' . $from->id . '_cal_img" class="btn calendarbutton">' . $from->img . '</button>';
-endif;
+$from->img = '<button id ="' . $from->id . '_cal_img" class="btn calendarbutton">' . $from->img . '</button>';
 
-$prepend = $d->j3 ? '<div class="input-append">' : '';
-$append  = $d->j3 ? '</div>' : '';
+$prepend = '<div class="input-append">';
+$append  = '</div>';
 ?>
 <div class="fabrik_filter_container">
 	<?php echo $prepend; ?>

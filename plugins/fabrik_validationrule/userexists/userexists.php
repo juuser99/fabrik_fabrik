@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
@@ -86,7 +89,7 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 
 				if ((int) $user_field !== 0)
 				{
-					$user_elementModel = FabrikWorker::getPluginManager()->getElementPlugin($user_field);
+					$user_elementModel = Worker::getPluginManager()->getElementPlugin($user_field);
 					$user_fullName = $user_elementModel->getFullName(true, false);
 					$user_field = $user_elementModel->getFullName(false, false);
 				}
@@ -95,11 +98,11 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 				{
 					// $$$ the array thing needs fixing, for now just grab 0
 					$formdata = $elementModel->getForm()->formData;
-					$user_id = FArrayHelper::getValue($formdata, $user_fullName . '_raw', FArrayHelper::getValue($formdata, $user_fullName, ''));
+					$user_id = ArrayHelper::getValue($formdata, $user_fullName . '_raw', ArrayHelper::getValue($formdata, $user_fullName, ''));
 
 					if (is_array($user_id))
 					{
-						$user_id = FArrayHelper::getValue($user_id, 0, '');
+						$user_id = ArrayHelper::getValue($user_id, 0, '');
 					}
 				}
 

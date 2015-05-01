@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -37,7 +39,7 @@ class FabrikViewListBase extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$model = $this->getModel();
 		$params = $model->getParams();
 		$item = $model->getTable();
@@ -251,7 +253,7 @@ class FabrikViewListBase extends JViewLegacy
 
 		// Add in plugin objects
 		$params = $model->getParams();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$c = 0;
 
 		$pluginManager->runPlugins('onLoadJavascriptInstance', $model, 'list');
@@ -317,7 +319,7 @@ class FabrikViewListBase extends JViewLegacy
 		$document = JFactory::getDocument();
 		$item = $model->getTable();
 		$data = $model->render();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		// Add in some styling short cuts
 		$c = 0;
@@ -422,7 +424,7 @@ class FabrikViewListBase extends JViewLegacy
 
 		if ($this->showPDF)
 		{
-			FabrikWorker::canPdf();
+			Worker::canPdf();
 		}
 
 		$this->emptyLink = $model->canEmpty() ? '#' : '';
@@ -539,7 +541,7 @@ class FabrikViewListBase extends JViewLegacy
 	/**
 	 * Set page title
 	 *
-	 * @param   object  $w        Fabrikworker
+	 * @param   object  $w        Worker
 	 * @param   object  &$params  List params
 	 * @param   object  $model    List model
 	 *
@@ -814,7 +816,7 @@ class FabrikViewListBase extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$model = $this->getModel();
 		$item = $model->getTable();
 

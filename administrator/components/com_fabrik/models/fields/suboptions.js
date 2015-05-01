@@ -11,7 +11,6 @@ var Suboptions = new Class({
 
 	options: {
 		sub_initial_selection: [],
-		j3: false,
 		defaultMax: 0
 	},
 

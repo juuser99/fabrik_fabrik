@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -72,11 +74,11 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 
 	public function button(&$args)
 	{
-		$opts = FArrayHelper::getValue($args, 0, array());
+		$opts = ArrayHelper::getValue($args, 0, array());
 		$model = $this->getModel();
 		$this->buttonAction = $model->actionMethod();
 		$this->context = $model->getRenderContext();
-		$heading = (bool) FArrayHelper::getValue($opts, 'heading', false);
+		$heading = (bool) ArrayHelper::getValue($opts, 'heading', false);
 
 		return $heading;
 	}

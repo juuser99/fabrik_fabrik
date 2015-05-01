@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -87,7 +88,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			return '';
 		}
 
-		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
+		$elementModel = Worker::getPluginManager()->getElementPlugin($params->get($pname));
 
 		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
 	}
@@ -111,10 +112,10 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			return $default;
 		}
 
-		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
+		$elementModel = Worker::getPluginManager()->getElementPlugin($params->get($pname));
 		$name = $elementModel->getFullName(true, false);
 
-		return FArrayHelper::getValue($data, $name, $default);
+		return ArrayHelper::getValue($data, $name, $default);
 	}
 
 	/**
@@ -188,7 +189,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		}
 
 		// If we are editing a user, we need to make sure the password field is cleared
-		if (FabrikWorker::getMenuOrRequestVar('rowid'))
+		if (Worker::getMenuOrRequestVar('rowid'))
 		{
 			$this->passwordfield = $this->getFieldName('juser_field_password');
 			$formModel->data[$this->passwordfield] = '';
@@ -198,14 +199,14 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			if ($params->get('juser_sync_on_edit', 0) == 1)
 			{
 				$this->useridfield = $this->getFieldName('juser_field_userid');
-				$userid = (int) FArrayHelper::getValue($formModel->data, $this->useridfield . '_raw');
+				$userid = (int) ArrayHelper::getValue($formModel->data, $this->useridfield . '_raw');
 				/**
 				 * $$$ hugh - after a validation failure, userid _raw is an array.
 				 * Trying to work out why, and fix that, but need a bandaid for now.
 				 */
 				if (is_array($userid))
 				{
-					$userid = (int) FArrayHelper::getValue($userid, 0, 0);
+					$userid = (int) ArrayHelper::getValue($userid, 0, 0);
 				}
 
 				if ($userid > 0)
@@ -229,7 +230,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 						// @FIXME this is out of date for J1.7 - no gid field
 						if ($params->get('juser_field_usertype') != '')
 						{
-							$groupElement = FabrikWorker::getPluginManager()->getElementPlugin($params->get('juser_field_usertype'));
+							$groupElement = Worker::getPluginManager()->getElementPlugin($params->get('juser_field_usertype'));
 							$groupElementClass = get_class($groupElement);
 							$gid = $user->groups;
 
@@ -356,8 +357,6 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	{
 		$formModel = $this->getModel();
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$config = JFactory::getConfig();
 		$lang = JFactory::getLanguage();
 		$mail = JFactory::getMailer();
@@ -430,7 +429,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 					// $$$ hugh - if it's a user element, it'll be an array
 					if (is_array($original_id))
 					{
-						$original_id = FArrayHelper::getValue($original_id, 0, 0);
+						$original_id = ArrayHelper::getValue($original_id, 0, 0);
 					}
 				}
 			// }
@@ -476,7 +475,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		if ($params->get('juser_field_block') != '')
 		{
 			$this->blockfield = $this->getFieldName('juser_field_block');
-			$blocked = FArrayHelper::getValue($formModel->formData, $this->blockfield, '');
+			$blocked = ArrayHelper::getValue($formModel->formData, $this->blockfield, '');
 
 			if (is_array($blocked))
 			{
@@ -1017,7 +1016,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$userElement = $formModel->getElement($params->get('juser_field_userid'), true);
 		$userElName = $userElement === false ? false : $userElement->getFullName();
 		$userId = (int) $post['id'];
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$ok = true;
 		jimport('joomla.mail.helper');
 
@@ -1040,7 +1039,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			$ok = false;
 		}
 
-		if ((trim($post['email']) == "") || !FabrikWorker::isEmail($post['email']))
+		if ((trim($post['email']) == "") || !Worker::isEmail($post['email']))
 		{
 			$this->raiseError($formModel->errors, $this->emailfield, FText::_('JLIB_DATABASE_ERROR_VALID_MAIL'));
 			$ok = false;

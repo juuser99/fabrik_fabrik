@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
 
 /**
@@ -130,7 +133,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 					}
 				}
 
-				$id = FArrayHelper::getValue($data, $id, '');
+				$id = ArrayHelper::getValue($data, $id, '');
 
 				if ($id === '')
 				{
@@ -146,9 +149,9 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 				$id = is_array($id) ? $id[0] : $id;
 				
 				$id = html_entity_decode($id);
-				if (FabrikWorker::isJSON($id))
+				if (Worker::isJSON($id))
 				{
-					$id = FabrikWorker::JSONtoData($id, true);
+					$id = Worker::JSONtoData($id, true);
 				}
 
 				$id = is_array($id) ? $id[0] : $id;
@@ -326,9 +329,9 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		$data[$element->name] = html_entity_decode($data[$element->name]);
 
-		if (FabrikWorker::isJSON($data[$element->name]))
+		if (Worker::isJSON($data[$element->name]))
 		{
-			$data[$element->name] = FabrikWorker::JSONtoData($data[$element->name], true);
+			$data[$element->name] = Worker::JSONtoData($data[$element->name], true);
 		}
 
 		$data[$element->name] = is_array($data[$element->name]) ? $data[$element->name][0] : $data[$element->name];
@@ -412,12 +415,12 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			else if ($this->getListModel()->importingCSV)
 			{
 				$formData = $this->getFormModel()->formData;
-				$userid = FArrayHelper::getValue($formData, $element->name, '');
+				$userid = ArrayHelper::getValue($formData, $element->name, '');
 				if (!empty($userid) && !is_numeric($userid))
 				{
 					$user = JFactory::getUser($userid);
 					$new_userid = $user->get('id');
-					if (empty($new_userid) && FabrikWorker::isEmail($userid))
+					if (empty($new_userid) && Worker::isEmail($userid))
 					{
 						$db = JFactory::getDbo();
 						$query = $db->getQuery(true)
@@ -557,8 +560,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		$table = $this->actualTableName();
 		$element = $this->getElement();
 		$params = $this->getParams();
-		$db = FabrikWorker::getDbo();
-		$fullElName = FArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
+		$db = Worker::getDbo();
+		$fullElName = ArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
 
 		// Check if main database is the same as the elements database
 		if ($this->inJDb())
@@ -575,7 +578,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			$k = FabrikString::safeColName($k . '.' . $element->name);
 			$k2 = FabrikString::safeColName($this->getJoinLabelColumn());
 
-			if (FArrayHelper::getValue($opts, 'inc_raw', true))
+			if (ArrayHelper::getValue($opts, 'inc_raw', true))
 			{
 				$aFields[] = $k . ' AS ' . $db->quoteName($fullElName . '_raw');
 				$aAsFields[] = $db->quoteName($fullElName . '_raw');
@@ -941,7 +944,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 	public function getDb()
 	{
-		return FabrikWorker::getDbo(true);
+		return Worker::getDbo(true);
 	}
 
 	/**
@@ -971,7 +974,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if ($this->getGroup()->canRepeat())
 		{
-			$userid = FArrayHelper::getValue($userid, $repeatCounter, 0);
+			$userid = ArrayHelper::getValue($userid, $repeatCounter, 0);
 		}
 		
 		if (is_array($userid))
@@ -983,8 +986,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			// Test json string e.g. ["350"] - fixes JUser: :_load: User does not exist notices
 			if (!is_int($userid))
 			{
-				$userid = FabrikWorker::JSONtoData($userid, true);
-				$userid = (int) FArrayHelper::getValue($userid, 0, 0);
+				$userid = Worker::JSONtoData($userid, true);
+				$userid = (int) ArrayHelper::getValue($userid, 0, 0);
 			}
 		}
 
@@ -1019,7 +1022,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	protected function getJoinValueColumn()
 	{
 		$join = $this->getJoin();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 
 		return $db->quoteName($join->table_join_alias) . '.id';
 	}

@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
@@ -134,7 +137,7 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 				if (is_object($el))
 				{
 					$name = $el->getFullName(true, false);
-					$v = FArrayHelper::getValue($data, $name);
+					$v = ArrayHelper::getValue($data, $name);
 
 					if ($k == 'og:image')
 					{
@@ -153,7 +156,7 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 
 		if ($locEl != '')
 		{
-			$loc = FArrayHelper::getValue($data, $locEl->getFullName(true, false));
+			$loc = ArrayHelper::getValue($data, $locEl->getFullName(true, false));
 			$loc = array_shift(explode(':', $loc));
 			$loc = explode(",", $loc);
 
@@ -169,7 +172,7 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 		$meta['fb:app_id'] = $params->get('fblike_opengraph_applicationid');
 		$str = FabrikHelperHTML::facebookGraphAPI($params->get('fblike_opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
 		$url = $params->get('fblike_url');
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$url = $w->parseMessageForPlaceHolder($url, $data);
 		$this->getElement()->hidden = true;
 

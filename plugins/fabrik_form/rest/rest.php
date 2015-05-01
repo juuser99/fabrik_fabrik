@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -67,7 +68,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 			if ($fkElement)
 			{
 				$fkElementKey = $fkElement->getFullName();
-				$this->fkData = json_decode(FArrayHelper::getValue($formModel->formData, $fkElementKey));
+				$this->fkData = json_decode(ArrayHelper::getValue($formModel->formData, $fkElementKey));
 				$this->fkData = ArrayHelper::fromObject($this->fkData);
 
 				$fkEval = $params->get('foreign_key_eval', '');
@@ -143,7 +144,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	{
 		$formModel = $this->getModel();
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		if (!function_exists('curl_init'))
 		{
@@ -186,7 +187,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 		}
 
 		$output = curl_exec($chandle);
-		$jsonOutPut = FabrikWorker::isJSON($output) ? true : false;
+		$jsonOutPut = Worker::isJSON($output) ? true : false;
 
 		if (!$this->handleError($output, $chandle))
 		{
@@ -242,11 +243,11 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	{
 		$postData = array();
 		$formModel = $this->getModel();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$fkElement = $this->fkElement();
 		$fkData = $this->fkData();
 
-		if (FabrikWorker::isJSON($include))
+		if (Worker::isJSON($include))
 		{
 			$include = json_decode($include);
 			$keys = $include->put_key;
@@ -402,7 +403,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	{
 		$formModel = $this->getModel();
 
-		if (FabrikWorker::isJSON($output))
+		if (Worker::isJSON($output))
 		{
 			$output = json_decode($output);
 
@@ -565,7 +566,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 		}
 
 		$url = $params->get('get');
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$url = $w->parseMessageForPlaceHolder($url, $responseBody);
 		$result = $this->doGet($url);
 
@@ -686,13 +687,13 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 
 	protected function updateFormModelData($params, $responseBody, $data)
 	{
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$dataMap = $params->get('put_include_list', '');
 		$include = $w->parseMessageForPlaceholder($dataMap, $responseBody, true);
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 
-		if (FabrikWorker::isJSON($include))
+		if (Worker::isJSON($include))
 		{
 			$include = json_decode($include);
 
@@ -705,7 +706,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 				$key = $keys[$i];
 				$default = $defaults[$i];
 				$localKey = FabrikString::safeColNameToArrayKey($values[$i]);
-				$remoteData = FArrayHelper::getNestedValue($data, $key, $default, true);
+				$remoteData = ArrayHelper::getNestedValue($data, $key, $default, true);
 
 				if (!is_null($remoteData))
 				{

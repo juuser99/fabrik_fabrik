@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -106,7 +107,7 @@ class PlgFabrik_ValidationRule extends FabrikPlugin
 			return true;
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$condition = trim($w->parseMessageForPlaceHolder($condition));
 		$formModel = $this->elementModel->getFormModel();
 		$res = @eval($condition);

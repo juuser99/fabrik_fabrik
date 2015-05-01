@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.plugin.plugin');
 jimport('joomla.filesystem.file');
 
@@ -68,7 +70,7 @@ class PlgSystemFabrikcron extends JPlugin
 		}
 
 		// Get all active tasks
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$now = $input->get('fabrikcron_run', false);
 
 		$log = FabTable::getInstance('Log', 'FabrikTable');

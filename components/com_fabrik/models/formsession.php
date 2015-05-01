@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -120,8 +122,8 @@ class FabrikFEModelFormsession extends FabModel
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$formModel->copyToRaw($post);
-		$fabrik_vars = FArrayHelper::getValue($post, 'fabrik_vars', array());
-		$querystring = FArrayHelper::getValue($fabrik_vars, 'querystring', array());
+		$fabrik_vars = ArrayHelper::getValue($post, 'fabrik_vars', array());
+		$querystring = ArrayHelper::getValue($fabrik_vars, 'querystring', array());
 		$formModel->addEncrytedVarsToArray($post);
 
 		if (array_key_exists('fabrik_vars', $post))
@@ -200,7 +202,7 @@ class FabrikFEModelFormsession extends FabModel
 	protected function getCrypt()
 	{
 		/**
-		 * $$$ hugh - might want to alter this to use FabrikWorker::getCrypt()
+		 * $$$ hugh - might want to alter this to use Worker::getCrypt()
 		 * as we now use that everywhere else.
 		 */
 		if (!isset($this->crypt))
@@ -255,7 +257,7 @@ class FabrikFEModelFormsession extends FabModel
 			{
 				$crypt = $this->getCrypt();
 				$cookiekey = $this->getCookieKey();
-				$cookieval = FArrayHelper::getValue($_COOKIE, $cookiekey, '');
+				$cookieval = ArrayHelper::getValue($_COOKIE, $cookiekey, '');
 
 				if ($cookieval !== '')
 				{
@@ -352,7 +354,7 @@ class FabrikFEModelFormsession extends FabModel
 			{
 				$crypt = $this->getCrypt();
 				$cookiekey = (int) $user->get('id') . ":" . $this->getFormId() . ":" . $this->getRowId();
-				$cookieval = FArrayHelper::getValue($_COOKIE, $cookiekey, '');
+				$cookieval = ArrayHelper::getValue($_COOKIE, $cookiekey, '');
 
 				if ($cookieval !== '')
 				{

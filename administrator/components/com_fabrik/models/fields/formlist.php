@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
 // Needed for when you make a menu item link to a form.
@@ -48,7 +50,7 @@ class JFormFieldFormList extends JFormFieldList
 
 	protected function getOptions()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id AS value, label AS ' . $db->q('text') . ', published');
 		$query->from('#__fabrik_forms');
@@ -97,7 +99,7 @@ class JFormFieldFormList extends JFormFieldList
 
 		if (!in_array($option, array('com_modules', 'com_menus', 'com_advancedmodules')))
 		{
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('form_id')->from('#__fabrik_formgroup')->where('group_id = ' . (int) $this->form->getValue('id'));
 			$db->setQuery($query);

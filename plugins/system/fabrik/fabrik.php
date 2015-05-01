@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.plugin.plugin');
 jimport('joomla.filesystem.file');
 
@@ -75,7 +77,6 @@ class PlgSystemFabrik extends JPlugin
 		}
 
 		require_once JPATH_SITE . '/components/com_fabrik/helpers/file.php';
-		require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/models/storage.php';
 
 		parent::__construct($subject, $config);
 	}
@@ -279,7 +280,7 @@ class PlgSystemFabrik extends JPlugin
 		define('COM_FABRIK_SEARCH_RUN', true);
 		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 
 		require_once JPATH_SITE . '/components/com_content/helpers/route.php';
 

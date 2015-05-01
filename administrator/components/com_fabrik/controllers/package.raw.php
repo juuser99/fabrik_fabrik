@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 require_once 'fabcontrollerform.php';
 
 /**
@@ -39,7 +41,7 @@ class FabrikAdminControllerPackage extends FabControllerForm
 	public function dolist()
 	{
 		$input    = $this->app->input;
-		$db       = FabrikWorker::getDbo(true);
+		$db       = Worker::getDbo(true);
 		$query    = $db->getQuery(true);
 		$list     = $input->get('list', 'form');
 		$selected = $input->get('selected');

@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Admin\Helpers\AdminElement;
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -80,7 +82,7 @@ class JFormFieldListfields extends JFormFieldList
 		{
 			case 'validationrule':
 				$id = $input->getInt('id');
-				$pluginManager = FabrikWorker::getPluginManager();
+				$pluginManager = Worker::getPluginManager();
 				$elementModel = $pluginManager->getElementPlugin($id);
 				$element = $elementModel->getElement();
 				$res = $this->loadFromGroupId($element->group_id);

@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
@@ -75,7 +78,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 		$input = $app->input;
 		$params = $this->getParams();
 		$imagepath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
-		$data = FabrikWorker::JSONtoData($data, true);
+		$data = Worker::JSONtoData($data, true);
 		$listid = $this->getlistModel()->getTable()->id;
 		$formModel = $this->getFormModel();
 		$formid = $formModel->getId();
@@ -108,7 +111,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 			}
 
 			$count = $this->_renderListData($data[$i], $thisRow);
-			$count = FabrikWorker::JSONtoData($count, true);
+			$count = Worker::JSONtoData($count, true);
 			$countUp = $count[0];
 			$countDown = $count[1];
 			$countDiff = $countUp - $countDown;
@@ -157,7 +160,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 		$listid = isset($this->listid) ? $this->listid : $list->id;
 		$formid = isset($this->formid) ? $this->formid : $list->form_id;
 		$row_id = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 
 		return $this->getThumbsCount($data, $listid, $formid, $row_id);
 	}
@@ -175,7 +178,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 
 	protected function getThumbsCount($data, $listid, $formid, $row_id)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$elementid = $this->getElement()->id;
 
 		$sql = isset($this->special) ? " AND special = " . $db->quote($this->special) : '';
@@ -205,7 +208,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 		$input = JFactory::getApplication()->input;
 		$listid = isset($this->listid) ? $this->listid : $this->getListModel()->getId();
 		$formid = isset($this->formid) ? $this->formid : $this->getFormModel()->getId();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$elementid = $this->getElement()->id;
 		$return = array();
 
@@ -297,8 +300,8 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 
 
 		$id2 = FabrikString::rtrimword($id, '_ro');
-		$count = $this->_renderListData(FArrayHelper::getValue($data, $id2), $thisRow);
-		$count = FabrikWorker::JSONtoData($count, true);
+		$count = $this->_renderListData(ArrayHelper::getValue($data, $id2), $thisRow);
+		$count = Worker::JSONtoData($count, true);
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
@@ -357,7 +360,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 
 	protected function getMyThumb($listid, $formid, $row_id)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$elementid = $this->getElement()->id;
 		$user = JFactory::getUser();
 		$user_id = $user->get('id');
@@ -449,7 +452,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 	private function deleteThumb($listid, $formid, $row_id, $thumb)
 	{
 		$userid = $this->getUserId($listid, $row_id);
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$query = $db->getQuery(true);
 		$query->delete('#__fabrik_thumbs')->where('user_id = ' . $db->quote($userid))
 		->where('listid = ' . $listid . ' AND row_id = ' . $row_id . ' AND thumb = ' . $db->quote($thumb));
@@ -503,7 +506,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 			return;
 		}
 
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$date = JFactory::getDate()->toSql();
 		$userid = $this->getUserId($listid, $row_id);
 		$elementid = $this->getElement()->id;
@@ -553,7 +556,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 	 */
 	private function updateDB($listid, $formid, $row_id, $elementid)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$name = $this->getElement()->name;
 
 		// Name can be blank for comments
@@ -771,7 +774,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 
 	public function install()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$query = "CREATE TABLE IF NOT EXISTS  `#__fabrik_thumbs` (
 	`user_id` VARCHAR( 255 ) NOT NULL ,
 	`listid` INT( 6 ) NOT NULL ,

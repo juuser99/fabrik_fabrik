@@ -12,6 +12,8 @@
 defined('_JEXEC') or die();
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 /**
  * Plugin element to render day/month/year dropdowns
@@ -56,9 +58,9 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 
 		if (is_array($value))
 		{
-			$day = FArrayHelper::getValue($value, 0);
-			$month = FArrayHelper::getValue($value, 1);
-			$year = FArrayHelper::getValue($value, 2);
+			$day = ArrayHelper::getValue($value, 0);
+			$month = ArrayHelper::getValue($value, 1);
+			$year = ArrayHelper::getValue($value, 2);
 			$value = $year . '-' . $month . '-' . $day;
 		}
 
@@ -123,7 +125,7 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 				$detailValue = '';
 				$year = String::ltrim($year, '0');
 
-				if (FabrikWorker::isDate($value))
+				if (Worker::isDate($value))
 				{
 					$date = JFactory::getDate($value);
 					$detailValue = $date->format($fd);
@@ -238,9 +240,9 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 		{
 			// Weirdness for failed validation
 			$value = strstr($value, ',') ? array_reverse(explode(',', $value)) : explode('-', $value);
-			$yearValue = FArrayHelper::getValue($value, 0);
-			$monthValue = FArrayHelper::getValue($value, 1);
-			$dayValue = FArrayHelper::getValue($value, 2);
+			$yearValue = ArrayHelper::getValue($value, 0);
+			$monthValue = ArrayHelper::getValue($value, 1);
+			$dayValue = ArrayHelper::getValue($value, 2);
 			$days = array(JHTML::_('select.option', '', $params->get('birthday_daylabel', FText::_('DAY'))));
 
 			for ($i = 1; $i < 32; $i++)
@@ -414,12 +416,12 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 	{
 		$groupModel = $this->getGroup();
 		/**
-		 * Jaanus: json_decode replaced with FabrikWorker::JSONtoData that made visible also single data in repeated group
+		 * Jaanus: json_decode replaced with Worker::JSONtoData that made visible also single data in repeated group
 		 *
 		 * Jaanus: removed condition canrepeat() from renderListData: weird result such as 05",null,
 		 * "1940.07.["1940 (2011) when not repeating but still join and merged. Using isJoin() instead
 		*/
-		$data = $groupModel->isJoin() ? FabrikWorker::JSONtoData($data, true) : array($data);
+		$data = $groupModel->isJoin() ? Worker::JSONtoData($data, true) : array($data);
 		$data = (array) $data;
 		$format = array();
 
@@ -445,7 +447,7 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 
 	private function listFormat($d)
 	{
-		if (!FabrikWorker::isDate($d))
+		if (!Worker::isDate($d))
 		{
 			return '';
 		}
@@ -644,7 +646,7 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 
 	protected function getRangedFilterValue($value, $condition = '')
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$element = $this->getElement();
 
 		if ($element->filter_type === 'range' || strtoupper($condition) === 'BETWEEN')

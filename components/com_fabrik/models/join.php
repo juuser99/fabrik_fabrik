@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.application.component.model');
 
 /**
@@ -159,7 +161,6 @@ class FabrikFEModelJoin extends FabModel
 	{
 		if (!isset($this->join))
 		{
-			$db = FabrikWorker::getDbo(true);
 			$this->join = FabTable::getInstance('join', 'FabrikTable');
 			$this->join->load(array($key => $id));
 			$this->paramsType($this->join);
@@ -256,7 +257,7 @@ class FabrikFEModelJoin extends FabModel
 
 	public function deleteAll($groupId)
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->delete(' #__fabrik_elements')->where('group_id = ' . (int) $groupId);
 		$db->setQuery($query);
@@ -327,7 +328,7 @@ class FabrikFEModelJoin extends FabModel
 			return $this->isView;
 		}
 
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$dbname = $join->table_join;
 		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $db->quote($table->db_table_name)
 		. " AND table_type = 'view' AND table_schema = " . $db->quote($dbname);

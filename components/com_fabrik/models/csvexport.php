@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -512,7 +513,7 @@ class FabrikFEModelCSVExport
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$table = $this->model->getTable();
 		$params = $this->model->getParams();
 		$hformat = $params->get('csvfullname');

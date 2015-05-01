@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 
 /**
@@ -84,8 +86,8 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 				continue;
 			}
 
-			$k      = FArrayHelper::getValue($lookup, $v);
-			$tmpTxt = addslashes(htmlspecialchars(FArrayHelper::getValue($labels, $k)));
+			$k      = ArrayHelper::getValue($lookup, $v);
+			$tmpTxt = addslashes(htmlspecialchars(ArrayHelper::getValue($labels, $k)));
 			$to[$v] = $tmpTxt;
 			$i++;
 		}

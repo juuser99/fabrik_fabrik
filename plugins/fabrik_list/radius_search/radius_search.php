@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -309,7 +311,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$values = FArrayHelper::getValue($this->filters, 'value', array());
+		$values = ArrayHelper::getValue($this->filters, 'value', array());
 		list($latitude, $longitude) = $this->getSearchLatLon();
 
 		if (trim($latitude) === '' && trim($longitude) === '')
@@ -356,7 +358,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		$app = JFactory::getApplication();
 		$baseContext = $this->getSessionContext();
 		$type = $app->input->get('radius_search_type' . $this->renderOrder, array(), 'array');
-		$type = FArrayHelper::getValue($type, 0);
+		$type = ArrayHelper::getValue($type, 0);
 
 		switch ($type)
 		{
@@ -511,7 +513,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		$params = $this->getParams();
 		$model = $this->getModel();
 		$elements = $model->getElements('id');
-		$this->mapElement = FArrayHelper::getValue($elements, $params->get('radius_mapelement'), false);
+		$this->mapElement = ArrayHelper::getValue($elements, $params->get('radius_mapelement'), false);
 
 		if ($this->mapElement === false)
 		{
@@ -584,7 +586,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		$app = JFactory::getApplication();
 		list($latitude, $longitude) = $this->getSearchLatLon();
 		$opts = $this->getElementJSOptions();
-		$containerOverride = FArrayHelper::getValue($args, 0, '');
+		$containerOverride = ArrayHelper::getValue($args, 0, '');
 
 		if (strstr($containerOverride, 'visualization'))
 		{

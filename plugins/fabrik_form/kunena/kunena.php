@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -33,10 +35,6 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 
 	public function onAfterProcess()
 	{
-		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$formModel = $this->getModel();
-		$input = $app->input;
 		jimport('joomla.filesystem.file');
 		$define = COM_FABRIK_BASE . 'libraries/kunena/bootstrap.php';
 
@@ -73,7 +71,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
 		$input = $app->input;
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$catid = $params->get('kunena_category', 0);
 
@@ -140,7 +138,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 
 		$user = JFactory::getUser();
 		$now = JFactory::getDate();
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$catid = $params->get('kunena_category', 0);
 

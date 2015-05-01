@@ -155,11 +155,10 @@ var FbDateTime = new Class({
 	},
 
 	/**
-	 * Image to open calendar can be <img> (J2.5) or <i> (J3)
+	 * Image to open calendar
 	 *
 	 * @return  dom node
 	 */
-
 	getCalendarImg: function () {
 		var i = this.element.getElement('.calendarbutton');
 		return i;

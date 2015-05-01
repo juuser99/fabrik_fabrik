@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use \JForm as JForm;
-
+use Fabrik\Helpers\Worker;
 
 interface ModelFormFormInterface
 {
@@ -104,7 +104,7 @@ class Form extends Base implements ModelFormFormInterface
 	protected function _makeFormGroups($data, $currentGroups)
 	{
 		$formid = $this->getState($this->getName() . '.id');
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		ArrayHelper::toInteger($currentGroups);
 		$query->delete('#__fabrik_formgroup')->where('form_id = ' . (int) $formid);
@@ -167,7 +167,7 @@ class Form extends Base implements ModelFormFormInterface
 		}
 
 		ArrayHelper::toInteger($ids);
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('form_id')->from('#__fabrik_lists')->where('id IN (' . implode(',', $ids) . ')');
 
@@ -207,7 +207,7 @@ class Form extends Base implements ModelFormFormInterface
 				 * NOTE 1 - this code ignores joined groups, so only recreates the original table
 				 * NOTE 2 - this code ignores any 'alter existing fields' settings.
 				 */
-				$db = FabrikWorker::getDbo(true);
+				$db = Worker::getDbo(true);
 				$query = $db->getQuery(true);
 				$query->select('group_id')->from('#__fabrik_formgroup AS fg')->join('LEFT', '#__fabrik_groups AS g ON g.id = fg.group_id')
 					->where('fg.form_id = ' . $formId . ' AND g.is_join != 1');

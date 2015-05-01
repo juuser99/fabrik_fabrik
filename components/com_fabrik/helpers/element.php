@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Element Helper class
@@ -35,7 +36,7 @@ class FabrikHelperElement
 
 	public static function makeIdElement($baseElement)
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$groupModel = $baseElement->getGroupModel();
 		$elementModel = $pluginManager->getPlugIn('internalid', 'element');
 		$elementModel->getElement()->name = 'id';
@@ -58,7 +59,7 @@ class FabrikHelperElement
 
 	public static function makeParentElement($baseElement)
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$groupModel = $baseElement->getGroupModel();
 		$elementModel = $pluginManager->getPlugIn('field', 'element');
 		$elementModel->getElement()->name = 'parent_id';
@@ -83,13 +84,13 @@ class FabrikHelperElement
 	public static function filterValue($elementId)
 	{
 		$app = JFactory::getApplication();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$model = $pluginManager->getElementPlugin($elementId);
 		$listModel = $model->getListModel();
 		$listid = $listModel->getId();
 		$key = 'com_fabrik.list' . $listid . '_com_fabrik_' . $listid . '.filter';
 		$filters = ArrayHelper::fromObject($app->getUserState($key));
-		$elementIds = (array) FArrayHelper::getValue($filters, 'elementid', array());
+		$elementIds = (array) ArrayHelper::getValue($filters, 'elementid', array());
 		$index = array_search($elementId, $elementIds);
 		$value = $filters['value'][$index];
 

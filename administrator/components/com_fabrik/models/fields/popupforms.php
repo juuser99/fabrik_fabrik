@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
 jimport('joomla.html.html');
@@ -46,9 +48,7 @@ class JFormFieldPopupforms extends JFormFieldList
 	protected function getOptions()
 	{
 		// Initialize variables.
-		$options = array();
-
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('f.id AS value, f.label AS text, l.id AS listid')->from('#__fabrik_forms AS f')
 			->join('LEFT', '#__fabrik_lists As l ON f.id = l.form_id')

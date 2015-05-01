@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -36,7 +38,7 @@ class FabrikViewCalendar extends JViewLegacy
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$id = $input->get('id', $usersConfig->get('visualizationid', $input->get('visualizationid', 0)));
@@ -96,7 +98,7 @@ class FabrikViewCalendar extends JViewLegacy
 		$options->canAdd = $this->canAdd;
 		$options->showFullDetails = (bool) $params->get('show_full_details', false);
 
-		$options->restFilterStart = FabrikWorker::getMenuOrRequestVar('resetfilters', 0, false, 'request');
+		$options->restFilterStart = Worker::getMenuOrRequestVar('resetfilters', 0, false, 'request');
 		$options->tmpl = $tpl;
 
 		$o = $model->getAddStandardEventFormInfo();

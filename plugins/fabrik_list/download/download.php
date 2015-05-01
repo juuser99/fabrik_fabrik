@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -150,7 +151,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		}
 		else
 		{
-			$db = FabrikWorker::getDbo();
+			$db = Worker::getDbo();
 			ArrayHelper::toInteger($ids);
 			$query = $db->getQuery(true);
 			$query->select($db->quoteName($download_file))
@@ -178,7 +179,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 				require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
 				$storage = $this->getStorage();
 				$download_image_library = $params->get('download_image_library');
-				$oImage = FabimageHelper::loadLib($download_image_library);
+				$oImage = ImageHelper::loadLib($download_image_library);
 				$oImage->setStorage($storage);
 			}
 

@@ -10,6 +10,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -81,7 +82,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		}
 
 		// See if the checkbox should be checked
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$ref = $this->getRef($formModel->getListModel()->getId());
 		$query = $db->getQuery(true);
 		$query->select('COUNT(id)')->from('#__fabrik_notification')->where('user_id = ' . (int) $user->get('id') . ' AND reference = ' . $ref);
@@ -116,7 +117,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 
 	protected function getRef($listid = 0)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 
@@ -135,7 +136,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 	protected function process($add, $why)
 	{
 		$params = $this->getParams();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$user = JFactory::getUser();
 		$userid = (int) $user->get('id');
 		$ref = $this->getRef();
@@ -260,7 +261,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		 * Add entry indicating the form has been updated this record will then be used by the cron plugin to
 		 * see which new events have been generated and notify subscribers of said events.
 		 */
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$event = $rowId == '' ? $db->quote(FText::_('RECORD_ADDED')) : $db->quote(FText::_('RECORD_UPDATED'));
 		$date = JFactory::getDate();
 		$date = $db->quote($date->toSql());

@@ -11,6 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\LayoutFile;
+
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 require_once JPATH_SITE . '/plugins/fabrik_element/radiobutton/radiobutton.php';
 
@@ -76,7 +80,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		$displayData->value = $thisRow->$raw;
 		$displayData->tmpl = @$this->tmpl;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
-		$layout = new FabrikLayoutFile('fabrik_element_yesno_list', $basePath);
+		$layout = new LayoutFile('fabrik_element_yesno_list', $basePath);
 		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
 
 		return $layout->render($displayData);
@@ -228,7 +232,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		$app = JFactory::getApplication();
 		$displayData->format = $app->input->get('format', '');;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
-		$layout = new FabrikLayoutFile('fabrik_element_yesno_details', $basePath);
+		$layout = new LayoutFile('fabrik_element_yesno_details', $basePath);
 		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
 
 		return $layout->render($displayData);
@@ -447,7 +451,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 			}
 	
 			$shortPk = FabrikString::shortColName($pk);
-			$rowId = FArrayHelper::getValue($data, $shortPk, null);
+			$rowId = ArrayHelper::getValue($data, $shortPk, null);
 			
 			$query->update($this->actualTableName())->set($name . ' = 0');
 			
@@ -461,7 +465,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 			
 			if (!empty($toggle_where))
 			{
-				$w = new FabrikWorker;
+				$w = new Worker;
 				$toggle_where = $w->parseMessageForPlaceHolder($toggle_where);
 				$query->where($toggle_where);
 			}

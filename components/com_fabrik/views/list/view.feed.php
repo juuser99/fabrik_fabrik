@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.view');
 
@@ -38,15 +39,13 @@ class FabrikViewList extends JViewLegacy
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$Itemid	= FabrikWorker::itemId();
-		$user = JFactory::getUser();
+		$Itemid	= Worker::itemId();
 		$model = $this->getModel();
 		$model->setOutPutFormat('feed');
 		$document = JFactory::getDocument();
 		$document->_itemTags = array();
 
 		// Get the active menu item
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$table = $model->getTable();
 		$model->render();
 		$params = $model->getParams();
@@ -118,7 +117,7 @@ class FabrikViewList extends JViewLegacy
 			}
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$rows = $model->getData();
 		$document->title = $w->parseMessageForPlaceHolder($table->label, $_REQUEST);
 		$document->description = htmlspecialchars(trim(strip_tags($w->parseMessageForPlaceHolder($table->introduction, $_REQUEST))));

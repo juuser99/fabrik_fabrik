@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -20,8 +22,7 @@ jimport('joomla.filesystem.file');
  * @subpackage  Fabrik.helpers
  * @since       3.1rc3
  */
-
-class FabrikPDFHelper
+class PDFHelper
 {
 	/**
 	 * Set up DomPDF engine

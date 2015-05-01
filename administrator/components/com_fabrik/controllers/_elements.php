@@ -130,7 +130,7 @@ class Elements extends \JControllerBase
 		$cid = $input->get('cid', array(), 'array');
 		$data = array('showInListView' => 1, 'hideFromListView' => 0);
 		$task = $this->getTask();
-		$value = FArrayHelper::getValue($data, $task, 0, 'int');
+		$value = ArrayHelper::getValue($data, $task, 0, 'int');
 
 		if (empty($cid))
 		{

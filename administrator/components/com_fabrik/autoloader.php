@@ -22,12 +22,13 @@ class AutoLoader
 		spl_autoload_register(array($this, 'controller'));
 		spl_autoload_register(array($this, 'view'));
 		spl_autoload_register(array($this, 'model'));
+		spl_autoload_register(array($this, 'storage'));
 	}
 
 	/**
 	 * Load model file
 	 *
-	 * @param   string  $class  Class name
+	 * @param   string $class Class name
 	 */
 	private function model($class)
 	{
@@ -40,15 +41,15 @@ class AutoLoader
 		{
 			// Loading an admin model
 			$class = str_replace('Fabrik\Admin\\', '', $class);
-			$file = str_replace('\\', '/', strtolower($class));
-			$file = JPATH_ADMINISTRATOR . '/components/com_fabrik/' .strtolower($file . '.php');
+			$file  = str_replace('\\', '/', strtolower($class));
+			$file  = JPATH_ADMINISTRATOR . '/components/com_fabrik/' . strtolower($file . '.php');
 		}
 		else
 		{
 			// Front end model.
 			$class = str_replace('Fabrik\\', '', $class);
-			$file = str_replace('\\', '/', strtolower($class));
-			$file = JPATH_SITE . '/components/com_fabrik/' . strtolower($file . '.php');
+			$file  = str_replace('\\', '/', strtolower($class));
+			$file  = JPATH_SITE . '/components/com_fabrik/' . strtolower($file . '.php');
 		}
 
 		require $file;
@@ -57,7 +58,7 @@ class AutoLoader
 	/**
 	 * Load view file
 	 *
-	 * @param   string  $class  Class name
+	 * @param   string $class Class name
 	 */
 	private function view($class)
 	{
@@ -68,8 +69,8 @@ class AutoLoader
 		}
 
 		$class = str_replace('Fabrik\Admin\\', '', $class);
-		$file = str_replace('\\', '/', strtolower($class));
-		$file = strtolower($file . '.php');
+		$file  = str_replace('\\', '/', strtolower($class));
+		$file  = strtolower($file . '.php');
 
 		require $file;
 	}
@@ -77,7 +78,7 @@ class AutoLoader
 	/**
 	 * Load controller file
 	 *
-	 * @param   string  $class  Class name
+	 * @param   string $class Class name
 	 */
 	private function controller($class)
 	{
@@ -87,13 +88,35 @@ class AutoLoader
 		}
 
 		$class = str_replace('Fabrik\Admin\\', '', $class);
-		$file = str_replace('\\', '/', strtolower($class));
-		$file = strtolower($file . '.php');
+		$file  = str_replace('\\', '/', strtolower($class));
+		$file  = strtolower($file . '.php');
 		require_once JPATH_COMPONENT_ADMINISTRATOR . '/controller.php';
 
 		if (file_exists(JPATH_COMPONENT_ADMINISTRATOR . '/' . $file))
 		{
 			require_once $file;
+		}
+	}
+
+	/**
+	 * Load storage file
+	 *
+	 * @param   string $class Class name
+	 */
+	private function storage($class)
+	{
+		if (!strstr(strtolower($class), 'storage'))
+		{
+			return;
+		}
+
+		$class = str_replace('Fabrik\\', '', $class);
+		$file  = str_replace('\\', '/', strtolower($class));
+		$file  = strtolower($file . '.php');
+
+		if (file_exists(JPATH_COMPONENT_ADMINISTRATOR . '/models/' . $file))
+		{
+			require_once JPATH_COMPONENT_ADMINISTRATOR . '/models/' . $file;
 		}
 	}
 }

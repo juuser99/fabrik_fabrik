@@ -17,6 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 use \JSimplepieFactory as JSimplepieFactory;
 use \FText as FText;
 use \FabrikString as FabrikString;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Admin Home Model
@@ -46,7 +47,7 @@ class Home extends \JModelBase
 
 	public function getTable($type = 'Cron', $prefix = 'FabrikTable', $config = array())
 	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
+		$config['dbo'] = Worker::getDbo(true);
 
 		return parent::getTable($type, $prefix, $config);
 	}
@@ -134,9 +135,9 @@ class Home extends \JModelBase
 
 	public function installSampleData()
 	{
-		$cnn = FabrikWorker::getConnection();
+		$cnn = Worker::getConnection();
 		$defaulDb = $cnn->getDb();
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$group = $this->getTable('Group');
 
 		$dbTableName = $this->config->get('dbprefix') . "fb_contact_sample";
@@ -256,7 +257,7 @@ class Home extends \JModelBase
 
 	public function reset()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$prefix = '#__fabrik_';
 		$tables = array('cron', 'elements', 'formgroup', 'forms', 'form_sessions', 'groups', 'joins', 'jsactions', 'packages', 'lists',
 			'validations', 'visualizations');
@@ -278,7 +279,7 @@ class Home extends \JModelBase
 	{
 		$connModel = new Connection;
 		$connModel->set('id', $item->connection_id);
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select("connection_id, db_table_name")->from('#__fabrik_lists');
 		$db->setQuery($query);

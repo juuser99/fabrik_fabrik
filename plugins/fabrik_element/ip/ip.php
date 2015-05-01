@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 /**
  * Plugin element to store the user's IP address
  *
@@ -109,7 +111,7 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 		$formModel = $this->getFormModel();
 		$formData = $formModel->formData;
 
-		if (FArrayHelper::getValue($formData, 'rowid', 0) == 0 && !in_array($element->name, $data))
+		if (ArrayHelper::getValue($formData, 'rowid', 0) == 0 && !in_array($element->name, $data))
 		{
 			$data[$element->name] = $_SERVER['REMOTE_ADDR'];
 		}

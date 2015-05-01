@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.view');
 
@@ -52,7 +53,7 @@ class FabrikViewFormBase extends JViewLegacy
 		$profiler = JProfiler::getInstance('Application');
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$model = $this->getModel('form');
 		$model->isMambot = $this->isMambot;
 		$form = $model->getForm();
@@ -191,7 +192,7 @@ class FabrikViewFormBase extends JViewLegacy
 	public function output()
 	{
 		$app = JFactory::getApplication();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$text = $this->loadTemplate();
 		$model = $this->getModel();
 		$params = $model->getParams();
@@ -355,7 +356,7 @@ class FabrikViewFormBase extends JViewLegacy
 
 		if ($this->showPDF)
 		{
-			FabrikWorker::canPdf();
+			Worker::canPdf();
 
 			if ($app->isAdmin())
 			{
@@ -383,7 +384,7 @@ class FabrikViewFormBase extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$input = $app->input;
 		$document = JFactory::getDocument();
 		$model = $this->getModel();
@@ -772,7 +773,7 @@ class FabrikViewFormBase extends JViewLegacy
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$model = $this->getModel();
 		$listModel = $model->getListModel();
 		$row = ArrayHelper::toObject($model->data);
@@ -800,13 +801,13 @@ class FabrikViewFormBase extends JViewLegacy
 		$fields[] = '<input type="hidden" name="package" value="' . $app->getUserState('com_fabrik.package', 'fabrik') . '" />';
 		$fields[] = '<input type="hidden" name="packageId" value="' . $model->packageId . '" />';
 
-		if ($usekey = FabrikWorker::getMenuOrRequestVar('usekey', ''))
+		if ($usekey = Worker::getMenuOrRequestVar('usekey', ''))
 		{
 			// $$$rob v's been set from -1 to the actual row id - so ignore usekey not sure if we should comment this out
 			// see http://fabrikar.com/forums/showthread.php?t=10297&page=5
 
 			$fields[] = '<input type="hidden" name="usekey" value="' . $usekey . '" />';
-			$pk_val = FArrayHelper::getValue($model->data, FabrikString::safeColNameToArrayKey($listModel->getTable()->db_primary_key));
+			$pk_val = ArrayHelper::getValue($model->data, FabrikString::safeColNameToArrayKey($listModel->getTable()->db_primary_key));
 
 			if (empty($pk_val))
 			{
@@ -892,7 +893,7 @@ class FabrikViewFormBase extends JViewLegacy
 			$goBackLabel = $before ? $goBackIcon . '&nbsp;' . $goBackLabel : $goBackLabel . '&nbsp;' . $goBackIcon;
 		}
 
-		$goBack = $model->isAjax() ? '' : FabrikWorker::goBackAction();
+		$goBack = $model->isAjax() ? '' : Worker::goBackAction();
 		$form->gobackButton = $params->get('goback_button', 0)
 			? '<button type="button" class="btn button" name="Goback" ' . $goBack . '>' . $goBackLabel . '</button>' : '';
 
@@ -956,7 +957,7 @@ class FabrikViewFormBase extends JViewLegacy
 
 				// Use raw otherwise we inject the actual <input> into the hidden field's value
 				$groupPk .= '_raw';
-				$groupRowIds = (array) FArrayHelper::getValue($this->data, $groupPk, array());
+				$groupRowIds = (array) ArrayHelper::getValue($this->data, $groupPk, array());
 				$groupRowIds = htmlentities(json_encode($groupRowIds));
 
 				// Used to check against in group process(), when deleting removed repeat groups
@@ -996,7 +997,7 @@ class FabrikViewFormBase extends JViewLegacy
 
 	protected function _cryptQueryString(&$fields)
 	{
-		$crypt = FabrikWorker::getCrypt();
+		$crypt = Worker::getCrypt();
 		$formModel = $this->getModel();
 		$filter = JFilterInput::getInstance();
 		$get = $filter->clean($_GET, 'array');
@@ -1023,7 +1024,7 @@ class FabrikViewFormBase extends JViewLegacy
 
 					if (is_array($input))
 					{
-						$input = FArrayHelper::getValue($input, 'raw', $input);
+						$input = ArrayHelper::getValue($input, 'raw', $input);
 					}
 
 					// $$$ hugh - the aptly named SimpleCrypt encrypt is going to barf and toss a warning if we try
@@ -1054,7 +1055,7 @@ class FabrikViewFormBase extends JViewLegacy
 	protected function _cryptViewOnlyElements(&$aHiddenFields)
 	{
 		$model = $this->getModel();
-		$crypt = FabrikWorker::getCrypt();
+		$crypt = Worker::getCrypt();
 		$formModel = $this->getModel();
 		$fields = array();
 		$ro = $model->getReadOnlyVals();

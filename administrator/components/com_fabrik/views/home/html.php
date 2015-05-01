@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FabrikHelperHTML as FabrikHelperHTML;
-use \FabrikWorker as FabrikWorker;
+use Fabrik\Helpers\Worker;
 use Fabrik\Admin\Helpers\Fabrik;
 
 /**
@@ -51,7 +51,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::script($srcs);
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__fabrik_log')->where('message_type != ""')->order('timedate_created DESC');
 		$db->setQuery($query, 0, 10);

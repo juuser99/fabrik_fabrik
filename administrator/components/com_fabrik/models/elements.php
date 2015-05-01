@@ -18,6 +18,7 @@ use Joomla\Utilities\ArrayHelper;
 use \JComponentHelper as JComponentHelper;
 use \JHtml as JHtml;
 use \FText as FText;
+use Fabrik\Helpers\Worker;
 
 interface ModelElementsInterface
 {
@@ -133,7 +134,7 @@ class Elements extends \JModelBase implements ModelElementsInterface
 
 	public function getPluginOptions()
 	{
-		$db = \FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$user = \JFactory::getUser();
 		$levels = implode(',', $user->getAuthorisedViewLevels());
 		$query = $db->getQuery(true);

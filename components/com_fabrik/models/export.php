@@ -81,8 +81,6 @@ class FabrikFEModelExport
 
 	public function export()
 	{
-		$db = FabrikWorker::getDbo();
-
 		switch ($this->format)
 		{
 			case 'csv':
@@ -188,7 +186,6 @@ class FabrikFEModelExport
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$db = FabrikWorker::getDbo();
 		$this->clearExportBuffer();
 		$strXML = "<?xml version=\"1.0\" ?>\n";
 		$strXML .= "<install type=\"fabrik\" version=\"2.0\">\n";
@@ -459,7 +456,6 @@ class FabrikFEModelExport
 	 */
 	protected function _csvExport()
 	{
-		$db = FabrikWorker::getDbo();
 		initGzip();
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$id = $this->tableIds[0];

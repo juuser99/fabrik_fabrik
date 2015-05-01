@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 require 'controller.php';
 
 /**
@@ -174,7 +177,7 @@ class FabrikControllerForm extends FabrikController
 		// Check if any plugin has created a new validation error
 		if (!empty($model->errors))
 		{
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = Worker::getPluginManager();
 			$pluginManager->runPlugins('onError', $model);
 			echo $view->display();
 
@@ -257,7 +260,7 @@ class FabrikControllerForm extends FabrikController
 				if ($this->isMambot)
 				{
 					// Return to the same page
-					$url = FArrayHelper::getValue($_SERVER, 'REQUEST_URI', 'index.php');
+					$url = ArrayHelper::getValue($_SERVER, 'REQUEST_URI', 'index.php');
 				}
 				else
 				{
@@ -265,7 +268,7 @@ class FabrikControllerForm extends FabrikController
 					$url = $input->get('fabrik_referrer', 'index.php', 'string');
 				}
 
-				$Itemid = FabrikWorker::itemId();
+				$Itemid = Worker::itemId();
 
 				if ($url == '')
 				{

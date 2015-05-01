@@ -10,6 +10,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -57,8 +59,8 @@ class PlgFabrik_FormExif extends PlgFabrik_Form
 		else
 		{
 			$bits = explode('/', $value, 2);
-			$base = FArrayHelper::getValue($bits, 0);
-			$divider = FArrayHelper::getValue($bits, 1);
+			$base = ArrayHelper::getValue($bits, 0);
+			$divider = ArrayHelper::getValue($bits, 1);
 
 			return ($divider == 0) ? sprintf($format, 0) : sprintf($format, ($base / $divider));
 		}
@@ -140,7 +142,7 @@ class PlgFabrik_FormExif extends PlgFabrik_Form
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 		$params = $this->getParams();
-		$plugin = FabrikWorker::getPluginManager()->getElementPlugin($params->get('exif_map_field'));
+		$plugin = Worker::getPluginManager()->getElementPlugin($params->get('exif_map_field'));
 		$this->map_field = $plugin->getFullName();
 		$plugin->setId($params->get('exif_upload_field'));
 		$element = $plugin->getElement(true);

@@ -8,6 +8,8 @@
 
 defined('_JEXEC') or die;
 
+use Fabrik\Helpers\ArrayHelper;
+
 /**
  * Helper for mod_fabrik_list
  *
@@ -70,18 +72,18 @@ class ModFabrikListHelper
 		$model->randomRecords = $random;
 
 		// Set up prefilters - will overwrite ones defined in the list!
-		$prefilters = JArrayHelper::fromObject(json_decode($params->get('prefilters')));
+		$prefilters = ArrayHelper::fromObject(json_decode($params->get('prefilters')));
 		$conditions = (array) $prefilters['filter-conditions'];
 
 		if (!empty($conditions))
 		{
-			$joins = FArrayHelper::getValue($prefilters, 'filter-join', array());
+			$joins = ArrayHelper::getValue($prefilters, 'filter-join', array());
 			$listParams->set('filter-join', $joins);
 			$listParams->set('filter-fields', $prefilters['filter-fields']);
 			$listParams->set('filter-conditions', $prefilters['filter-conditions']);
 			$listParams->set('filter-value', $prefilters['filter-value']);
 			$listParams->set('filter-access', $prefilters['filter-access']);
-			$listParams->set('filter-eval', FArrayHelper::getValue($prefilters, 'filter-eval'));
+			$listParams->set('filter-eval', ArrayHelper::getValue($prefilters, 'filter-eval'));
 		}
 
 		return $model;

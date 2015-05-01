@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.model');
 
@@ -92,21 +93,15 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 			list($data, $total) = $this->getRatingAverage($data, $listid, $formid, $row_id, $ids);
 		}
 
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$user = JFactory::getUser();
-		$data = FabrikWorker::JSONtoData($data, true);
+		$data = Worker::JSONtoData($data, true);
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'list', false);
 		$colData = $this->getListModel()->getData();
-		$ids = ArrayHelper::getColumn($colData, '__pk_val');
-		$canRate = $this->canRate($row_id, $ids);
 
 		for ($i = 0; $i < count($data); $i++)
 		{
 			$avg = $this->_renderListData($data[$i], $thisRow);
 			$atpl = '';
 			$a2 = '';
-			$css = $canRate ? 'cursor:pointer;' : '';
 			$str = array();
 			$str[] = '<div style="width:101px;position:relative;">';
 
@@ -198,7 +193,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 		if (!isset($this->avgs))
 		{
 			ArrayHelper::toInteger($ids);
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$elementid = $this->getElement()->id;
 
 			$query = $db->getQuery(true);
@@ -241,7 +236,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 			}
 
 			ArrayHelper::toInteger($ids);
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$elementid = $this->getElement()->id;
 			$query = $db->getQuery(true);
 			$query->select('row_id, user_id')->from('#__fabrik_ratings')
@@ -458,7 +453,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 
 	private function createRatingTable()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$db
 			->setQuery(
 				"
@@ -491,7 +486,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 	private function doRating($listid, $formid, $row_id, $rating)
 	{
 		$this->createRatingTable();
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$config = JFactory::getConfig();
 		$tzoffset = $config->get('offset');
 		$date = JFactory::getDate('now', $tzoffset);

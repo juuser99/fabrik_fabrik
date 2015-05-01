@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 /**
  * Plugin element to render multi select user group list
  *
@@ -62,12 +65,12 @@ class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
 		if ($userEl)
 		{
 			$data = $formModel->getData();
-			$userid = FArrayHelper::getValue($data, $userEl->getFullName(true, false) . '_raw', 0);
+			$userid = ArrayHelper::getValue($data, $userEl->getFullName(true, false) . '_raw', 0);
 
 			// Failed validation
 			if (is_array($userid))
 			{
-				$userid = FArrayHelper::getValue($userid, 0);
+				$userid = ArrayHelper::getValue($userid, 0);
 			}
 
 			$thisUser = !empty($userid) ? JFactory::getUser($userid) : false;
@@ -174,7 +177,7 @@ class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
 
 		foreach ($tmpIds as $tmpId)
 		{
-			$tmpId = FabrikWorker::JSONtoData($tmpId, true);
+			$tmpId = Worker::JSONtoData($tmpId, true);
 			$ids = array_merge($ids, $tmpId);
 		}
 
@@ -246,7 +249,7 @@ class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$value = parent::getValue($data, $repeatCounter, $opts);
-		$value = FabrikWorker::JSONtoData($value);
+		$value = Worker::JSONtoData($value);
 
 		if (is_string($value))
 		{

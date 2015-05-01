@@ -13,6 +13,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Admin\Helpers\AdminElement;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -70,11 +72,11 @@ class JFormFieldListfields extends JFormFieldList
 		 */
 		$valueFormat    = (string) $this->getAttribute('valueformat', 'id');
 		$onlyListFields = (int) $this->getAttribute('onlylistfields', 0);
-		$showRaw        = FabrikWorker::toBoolean($this->getAttribute('raw', false), false);
+		$showRaw        = Worker::toBoolean($this->getAttribute('raw', false), false);
 		$labelMethod    = (string) $this->getAttribute('label_method');
-		$noJoins        = FabrikWorker::toBoolean($this->getAttribute('nojoins', false), false);
+		$noJoins        = Worker::toBoolean($this->getAttribute('nojoins', false), false);
 		$mode           = (string) $this->getAttribute('mode', false);
-		$useStep        = FabrikWorker::toBoolean($this->getAttribute('usestep', false), false);
+		$useStep        = Worker::toBoolean($this->getAttribute('usestep', false), false);
 
 		switch ($controller)
 		{
@@ -202,7 +204,7 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$input         = JFactory::getApplication()->input;
 		$id            = $input->getInt('id');
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$elementModel  = $pluginManager->getElementPlugin($id);
 		$element       = $elementModel->getElement();
 
@@ -220,7 +222,7 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		if ($connection == '')
 		{
-			$groupId = isset($this->form->rawData) ? FArrayHelper::getValue($this->form->rawData, 'group_id', 0)
+			$groupId = isset($this->form->rawData) ? ArrayHelper::getValue($this->form->rawData, 'group_id', 0)
 				: $this->form->getValue('group_id');
 			$res     = $this->loadFromGroupId($groupId);
 		}
@@ -358,12 +360,12 @@ class JFormFieldListfields extends JFormFieldList
 	private function js($res = array())
 	{
 		$connection        = $this->getAttribute('connection');
-		$repeat            = FabrikWorker::toBoolean($this->getAttribute('repeat', false), false);
+		$repeat            = Worker::toBoolean($this->getAttribute('repeat', false), false);
 		$repeat            = AdminElement::getRepeat($this) || $repeat;
 		$c                 = (int) AdminElement::getRepeatCounter($this);
 		$mode              = $this->getAttribute('mode');
 		$connectionDd      = $repeat ? $connection . '-' . $c : $connection;
-		$highlightPk       = FabrikWorker::toBoolean($this->getAttribute('highlightpk', false), false);
+		$highlightPk       = Worker::toBoolean($this->getAttribute('highlightpk', false), false);
 		$tableDd           = $this->getAttribute('table');
 		$opts              = new stdClass;
 		$opts->table       = ($repeat) ? 'jform_' . $tableDd . '-' . $c : 'jform_' . $tableDd;
@@ -374,7 +376,7 @@ class JFormFieldListfields extends JFormFieldList
 		$opts->highlightpk = (int) $highlightPk;
 		$opts->mode        = $mode;
 		$opts->defaultOpts = $res;
-		$opts->addBrackets = FabrikWorker::toBoolean($this->getAttribute('addbrackets', false), false);
+		$opts->addBrackets = Worker::toBoolean($this->getAttribute('addbrackets', false), false);
 		$opts              = json_encode($opts);
 		$script            = array();
 		$script[]          = "if (typeOf(FabrikAdmin.model.fields.listfields) === 'null') {";
@@ -432,18 +434,18 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$input = $this->app->input;
 		$controller = $input->get('view', $input->get('task'));
-		$valueFormat = (string) FArrayHelper::getValue($this->element, 'valueformat', 'id');
-		$onlyListFields = (int) FArrayHelper::getValue($this->element, 'onlylistfields', 0);
+		$valueFormat = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
+		$onlyListFields = (int) ArrayHelper::getValue($this->element, 'onlylistfields', 0);
 		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
-		$labelMethod = (string) FArrayHelper::getValue($this->element, 'label_method');
-		$noJoins = (bool) FArrayHelper::getValue($this->element, 'nojoins', false);
+		$labelMethod = (string) ArrayHelper::getValue($this->element, 'label_method');
+		$noJoins = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
 
 		$bits       = array();
-		$showRaw    = FabrikWorker::toBoolean($this->getAttribute('raw', false), false);
+		$showRaw    = Worker::toBoolean($this->getAttribute('raw', false), false);
 		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
 		$groupModel->setId($groupId);
 		$optsKey = $valueFormat == 'tableelement' ? 'name' : 'id';
-		$useStep = FabrikWorker::toBoolean($this->getAttribute('usestep', false), false);
+		$useStep = Worker::toBoolean($this->getAttribute('usestep', false), false);
 		$res     = $groupModel->getForm()->getElementOptions($useStep, $optsKey, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 		$hash    = $controller . '.' . implode('.', $bits);
 

@@ -42,14 +42,10 @@ class FabrikViewForm extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$w = new FabrikWorker;
-		$config = JFactory::getConfig();
 		$model = $this->getModel('form');
-		$document = JFactory::getDocument();
 
 		// Get the active menu item
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$form = $model->getForm();
+		$model->getForm();
 		$model->render();
 
 		$listModel = $model->getListModel();
@@ -96,14 +92,10 @@ class FabrikViewForm extends JViewLegacy
 		for ($i = 0; $i < count($gkeys); $i++)
 		{
 			$groupModel = $groups[$gkeys[$i]];
-			$groupTable = $groupModel->getGroup();
-			$group = new stdClass;
-			$groupParams = $groupModel->getParams();
-			$aElements = array();
+			$groupModel->getGroup();
 
 			// Check if group is actually a table join
 			$repeatGroup = 1;
-			$foreignKey = null;
 
 			if ($groupModel->canRepeat())
 			{
@@ -111,11 +103,9 @@ class FabrikViewForm extends JViewLegacy
 				{
 					$joinModel = $groupModel->getJoinModel();
 					$joinTable = $joinModel->getJoin();
-					$foreignKey = '';
 
 					if (is_object($joinTable))
 					{
-						$foreignKey = $joinTable->table_join_key;
 
 						// $$$ rob test!!!
 						if (!$groupModel->canView('form'))
@@ -133,12 +123,9 @@ class FabrikViewForm extends JViewLegacy
 			}
 
 			$groupModel->repeatTotal = $repeatGroup;
-			$aSubGroups = array();
 
 			for ($c = 0; $c < $repeatGroup; $c++)
 			{
-				$aSubGroupElements = array();
-				$elCount = 0;
 				$elementModels = $groupModel->getPublishedElements();
 
 				foreach ($elementModels as $elementModel)

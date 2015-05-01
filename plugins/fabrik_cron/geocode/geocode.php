@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
@@ -67,7 +69,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		 * needed to run.
 		 */
 		$mydata = array();
-		$db = FabrikWorker::getDbo(false, $connection);
+		$db = Worker::getDbo(false, $connection);
 		$query = $db->getQuery(true);
 		$query->select('*')->from($table_name);
 		$db->setQuery($query);
@@ -109,7 +111,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 				{
 					if ($geocode_batch_limit > 0 && $total_attempts >= $geocode_batch_limit)
 					{
-						FabrikWorker::log('plg.cron.geocode.information', 'reached batch limit');
+						Worker::log('plg.cron.geocode.information', 'reached batch limit');
 						break 2;
 					}
 					/*
@@ -219,7 +221,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 							else
 							{
 								$logMsg = sprintf('Error (%s), no geocode result for: %s', $res['status'], $full_addr);
-								FabrikWorker::log('plg.cron.geocode.information', $logMsg);
+								Worker::log('plg.cron.geocode.information', $logMsg);
 							}
 
 							if ($geocode_delay > 0)
@@ -229,7 +231,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 						}
 						else
 						{
-							FabrikWorker::log('plg.cron.geocode.information', 'empty address');
+							Worker::log('plg.cron.geocode.information', 'empty address');
 						}
 					}
 				}

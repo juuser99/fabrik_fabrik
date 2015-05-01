@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.application.component.model');
 jimport('joomla.application.component.modelform');
@@ -232,8 +234,8 @@ class FabrikFEModelImportcsv extends JModelForm
 				$this->fieldDelimiter = $session->get('com_fabrik.csv.fielddelimiter');
 			}
 
-			$tabDelimiter = FArrayHelper::getValue($data, 'tabdelimited');
-			$this->fieldDelimiter = $tabDelimiter == 1 ? "\t" : FArrayHelper::getValue($data, 'field_delimiter', $this->fieldDelimiter);
+			$tabDelimiter = ArrayHelper::getValue($data, 'tabdelimited');
+			$this->fieldDelimiter = $tabDelimiter == 1 ? "\t" : ArrayHelper::getValue($data, 'field_delimiter', $this->fieldDelimiter);
 			$session->set('com_fabrik.csv.fielddelimiter', $this->fieldDelimiter);
 		}
 
@@ -270,9 +272,9 @@ class FabrikFEModelImportcsv extends JModelForm
 		$this->data = array();
 		$data = $this->getFormData();
 		$field_delimiter = $this->getFieldDelimiter();
-		$text_delimiter = stripslashes(FArrayHelper::getValue($data, 'text_delimiter', '"'));
+		$text_delimiter = stripslashes(ArrayHelper::getValue($data, 'text_delimiter', '"'));
 		$csv = new Csv_Bv($baseDir . '/' . $file, $field_delimiter, $text_delimiter, '\\');
-		$csv->inPutFormat = FArrayHelper::getValue($data, 'inPutFormat', 'csv');
+		$csv->inPutFormat = ArrayHelper::getValue($data, 'inPutFormat', 'csv');
 
 		// Will skip empty rows. TRUE by default. (Shown here for example only).
 		$csv->SkipEmptyRows(true);
@@ -642,8 +644,8 @@ class FabrikFEModelImportcsv extends JModelForm
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$jform = $app->input->get('jform', array(), 'array');
-		$dropData = (int) FArrayHelper::getValue($jform, 'drop_data', 0);
-		$overWrite = (int) FArrayHelper::getValue($jform, 'overwrite', 0);
+		$dropData = (int) ArrayHelper::getValue($jform, 'drop_data', 0);
+		$overWrite = (int) ArrayHelper::getValue($jform, 'overwrite', 0);
 		$model = $this->getlistModel();
 		$model->importingCSV = true;
 		$item = $model->getTable();
@@ -762,10 +764,10 @@ class FabrikFEModelImportcsv extends JModelForm
 			{
 				$formModel->formData = $formModel->formDataWithTableName = $aRow;
 
-				if (!in_array(false, FabrikWorker::getPluginManager()->runPlugins('onImportCSVRow', $model, 'list')))
+				if (!in_array(false, Worker::getPluginManager()->runPlugins('onImportCSVRow', $model, 'list')))
 				{
 					$rowid = $formModel->processToDB();
-					FabrikWorker::getPluginManager()->runPlugins('onAfterImportCSVRow', $model, 'list');
+					Worker::getPluginManager()->runPlugins('onAfterImportCSVRow', $model, 'list');
 				}
 			}
 			else
@@ -967,7 +969,7 @@ class FabrikFEModelImportcsv extends JModelForm
 			// Reset the table's name back to the main table
 			$table->db_table_name = $dbname;
 			$fabrik_repeat_group = array();
-			$js = FArrayHelper::getValue($data, 'join', array());
+			$js = ArrayHelper::getValue($data, 'join', array());
 
 			foreach ($js as $jid => $jdata)
 			{
@@ -989,7 +991,7 @@ class FabrikFEModelImportcsv extends JModelForm
 			$app->input->set('fabrik_repeat_group', $fabrik_repeat_group);
 			$formModel->formData = $data;
 
-			if (!in_array(false, FabrikWorker::getPluginManager()->runPlugins('onImportCSVRow', $model, 'list')))
+			if (!in_array(false, Worker::getPluginManager()->runPlugins('onImportCSVRow', $model, 'list')))
 			{
 				$formModel->processToDB();
 			}
@@ -1199,7 +1201,7 @@ class FabrikFEModelImportcsv extends JModelForm
 
 		$post = $input->get('jform', array(), 'array');
 
-		if (FArrayHelper::getValue($post, 'addkey', 0) == 1)
+		if (ArrayHelper::getValue($post, 'addkey', 0) == 1)
 		{
 			return false;
 		}

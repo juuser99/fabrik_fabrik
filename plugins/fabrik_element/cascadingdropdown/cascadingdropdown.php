@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
 
@@ -80,9 +82,9 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 		// If returning from failed posted validation data can be in an array
 		$qsValue = $input->get($fullName, array(), 'array');
-		$qsValue = FArrayHelper::getValue($qsValue, 0, null);
+		$qsValue = ArrayHelper::getValue($qsValue, 0, null);
 		$qsWatchValue = $input->get($watchName, array(), 'array');
-		$qsWatchValue = FArrayHelper::getValue($qsWatchValue, 0, null);
+		$qsWatchValue = ArrayHelper::getValue($qsWatchValue, 0, null);
 		$useQsValue = $this->getFormModel()->hasErrors() && $this->isEditable() && $rowId === '' && !empty($qsValue) && !empty($qsWatchValue);
 		$opts->def = $useQsValue ? $qsValue : $this->getValue(array(), $repeatCounter);
 
@@ -130,7 +132,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 				$val = str_replace("{thistable}", $join->table_join_alias, $val);
 			}
 
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$val = $w->parseMessageForPlaceHolder($val, array());
 
 			return 'CONCAT_WS(\'\', ' . $val . ')';
@@ -246,7 +248,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			// Selects don't have readonly properties !
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$default = $w->parseMessageForPlaceHolder($default);
 
 		// Not yet implemented always going to use dropdown for now
@@ -687,7 +689,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			if (!$this->watchElement)
 			{
 				// This element is a child element, so $watch is in the parent element (in another form)
-				$pluginManager = FabrikWorker::getPluginManager();
+				$pluginManager = Worker::getPluginManager();
 				$parent = $pluginManager->getElementPlugin($watch);
 
 				// These are the possible watch elements
@@ -722,8 +724,8 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$input = $app->input;
 		$sig = isset($this->autocomplete_where) ? $this->autocomplete_where . '.' . $incWhere : $incWhere;
 		$sig .= '.' . serialize($opts);
-		$repeatCounter = FArrayHelper::getValue($opts, 'repeatCounter', 0);
-		$db = FabrikWorker::getDbo();
+		$repeatCounter = ArrayHelper::getValue($opts, 'repeatCounter', 0);
+		$db = Worker::getDbo();
 
 		if (isset($this->sql[$sig]))
 		{
@@ -754,7 +756,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 					if ($watchElement->isJoin())
 					{
 						$id = $watchElement->getFullName(true, false) . '_id';
-						$whereVal = FArrayHelper::getValue($formModel->data, $id);
+						$whereVal = ArrayHelper::getValue($formModel->data, $id);
 					}
 					else
 					{
@@ -874,7 +876,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			$where .= $filter;
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		// $$$ hugh - add some useful stuff to search data
 		$placeholders = is_null($whereVal) ? array() : array('whereval' => $whereVal, 'wherekey' => $whereKey);
@@ -973,7 +975,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 	protected function queryKey()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$join = $this->getJoin();
 		$table = $this->getDbName();
 		$params = $this->getParams();
@@ -1001,7 +1003,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		}
 		else
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$val = str_replace("{thistable}", $join->table_join_alias, $params->get('cascadingdropdown_label_concat'));
 			$val = $w->parseMessageForPlaceHolder($val, array());
 
@@ -1054,7 +1056,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 				return false;
 			}
 
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . (int) $id);
 			$db->setQuery($query);

@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Plugin element to render two fields to capture a link (url/label)
@@ -58,7 +59,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			FabrikHelperHTML::slimbox();
 		}
 
-		$data = FabrikWorker::JSONtoData($data, true);
+		$data = Worker::JSONtoData($data, true);
 
 		if (!empty($data))
 		{
@@ -93,11 +94,11 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 	protected function _renderListData($data, $thisRow)
 	{
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		if (is_string($data))
 		{
-			$data = FabrikWorker::JSONtoData($data, true);
+			$data = Worker::JSONtoData($data, true);
 		}
 
 		$listModel = $this->getlistModel();
@@ -107,7 +108,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		{
 			if (count($data) == 1)
 			{
-				$data['label'] = FArrayHelper::getValue($data, 'link');
+				$data['label'] = ArrayHelper::getValue($data, 'link');
 			}
 
 			$href = trim($data['link']);
@@ -152,7 +153,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				$link = $href;
 			}
 
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$aRow = ArrayHelper::fromObject($thisRow);
 			$link = $listModel->parseMessageForRowHolder($link, $aRow);
 
@@ -204,7 +205,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		{
 			if (!is_array($value))
 			{
-				$value = FabrikWorker::JSONtoData($value, true);
+				$value = Worker::JSONtoData($value, true);
 				/**
 				 * In some legacy case, data is like ...
 				 * [{"label":"foo","link":"bar"}]
@@ -227,16 +228,16 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			$value = array('label' => '', 'link' => '');
 		}
 
-		if (FabrikWorker::getMenuOrRequestVar('rowid') == 0 && FArrayHelper::getValue($value, 'link', '') === '')
+		if (Worker::getMenuOrRequestVar('rowid') == 0 && ArrayHelper::getValue($value, 'link', '') === '')
 		{
 			$value['link'] = $params->get('link_default_url');
 		}
 
 		if (!$this->isEditable())
 		{
-			$lbl = trim(FArrayHelper::getValue($value, 'label'));
-			$href = trim(FArrayHelper::getValue($value, 'link'));
-			$w = new FabrikWorker;
+			$lbl = trim(ArrayHelper::getValue($value, 'label'));
+			$href = trim(ArrayHelper::getValue($value, 'link'));
+			$w = new Worker;
 			$href = is_array($data) ? $w->parseMessageForPlaceHolder($href, $data) : $w->parseMessageForPlaceHolder($href);
 
 			$opts['target'] = trim($params->get('link_target', ''));
@@ -270,7 +271,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_URL');
 		$bits['name'] = $linkname;
-		$bits['value'] = FArrayHelper::getValue($value, 'link');
+		$bits['value'] = ArrayHelper::getValue($value, 'link');
 
 		if (is_a($bits['value'], 'stdClass'))
 		{
@@ -296,14 +297,14 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	{
 		if (is_string($value))
 		{
-			$value = FabrikWorker::JSONtoData($value, true);
-			$value['label'] = FArrayHelper::getValue($value, 0);
-			$value['link'] = FArrayHelper::getValue($value, 1);
+			$value = Worker::JSONtoData($value, true);
+			$value['label'] = ArrayHelper::getValue($value, 0);
+			$value['link'] = ArrayHelper::getValue($value, 1);
 		}
 
 		if (is_array($value))
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$link = $w->parseMessageForPlaceHolder($value['link']);
 			$value = '<a href="' . $link . '" >' . $value['label'] . '</a>';
 		}
@@ -435,13 +436,13 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				$values[$name]['data']['link'] = array();
 			}
 
-			$values[$name]['data']['label'][$c] = FArrayHelper::getValue($data, 'label');
-			$values[$name]['data']['link'][$c] = FArrayHelper::getValue($data, 'link');
+			$values[$name]['data']['label'][$c] = ArrayHelper::getValue($data, 'label');
+			$values[$name]['data']['link'][$c] = ArrayHelper::getValue($data, 'link');
 		}
 		else
 		{
-			$values[$name]['data']['label'] = FArrayHelper::getValue($data, 'label');
-			$values[$name]['data']['link'] = FArrayHelper::getValue($data, 'link');
+			$values[$name]['data']['label'] = ArrayHelper::getValue($data, 'label');
+			$values[$name]['data']['link'] = ArrayHelper::getValue($data, 'link');
 		}
 	}
 
@@ -457,7 +458,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	{
 		if (!isset($this->default))
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$params = $this->getParams();
 			$link = $params->get('link_default_url');
 			/* $$$ hugh - no idea what this was here for, but it was causing some BIZARRE bugs!
@@ -504,7 +505,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				$d = strip_tags($d);
 			}
 
-			$link = FArrayHelper::getValue($data, 'link', '');
+			$link = ArrayHelper::getValue($data, 'link', '');
 
 			return $link === '' || $link === 'http://';
 		}

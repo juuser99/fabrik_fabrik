@@ -19,6 +19,7 @@ use \FText as FText;
 use \JToolBarHelper as JToolBarHelper;
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \stdClass as stdClass;
+use Fabrik\Helpers\Worker;
 
 /**
  * View to edit a list.
@@ -99,7 +100,7 @@ class Html extends \Fabrik\Admin\Views\Html
 			$orderDir[] = JHTML::_('select.option', 'ASC', FText::_('COM_FABRIK_ASCENDING'));
 			$orderDir[] = JHTML::_('select.option', 'DESC', FText::_('COM_FABRIK_DESCENDING'));
 
-			$orderdirs       = FabrikWorker::JSONtoData($this->item->order_dir, true);
+			$orderdirs       = Worker::JSONtoData($this->item->order_dir, true);
 			$this->order_dir = array();
 			$attribs         = 'class="inputbox" size="1" ';
 

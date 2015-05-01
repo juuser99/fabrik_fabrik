@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-
+use Fabrik\Helpers\Worker;
 require_once 'fabcontrollerform.php';
 
 /**
@@ -51,7 +51,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 		$adminListModel->setFormModel($formModel);
 		$groupId = current(array_keys($formModel->getGroupsHiarachy()));
 		$plugins = $this->input->get('plugin', array(), 'array');
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$elementModel = $pluginManager->getPlugIn('field', 'element');
 		$element = FabTable::getInstance('Element', 'FabrikTable');
 		$newElements = $this->input->get('createElements', array(), 'array');
@@ -135,6 +135,8 @@ class FabrikAdminControllerImport extends FabControllerForm
 
 	/**
 	 * Make or update the list from the CSV file
+	 *
+	 * @FIXME - json view changed need to be implemented here
 	 *
 	 * @return  null
 	 */

@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+use Fabrik\Helpers\Worker;
+
 /**
  * Fabrik nvd3_chart Discretre bar chart
  *
@@ -98,7 +100,7 @@ class DiscreteBarChart
 		}
 
 		$params = $this->params;
-		$db = FabrikWorker::getDbo(false, $params->get('conn_id'));
+		$db = Worker::getDbo(false, $params->get('conn_id'));
 		$table = $params->get('tbl');
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($table));
@@ -115,9 +117,9 @@ class DiscreteBarChart
 	 */
 	protected function dbQuery()
 	{
-		$db = FabrikWorker::getDbo(false, $params->get('conn_id'));
-		$query = $db->getQuery(true);
 		$params = $this->params;
+		$db = Worker::getDbo(false, $params->get('conn_id'));
+		$query = $db->getQuery(true);
 		$table = $params->get('tbl');
 		$labelColumn = $params->get('label_field');
 		$valueColumn = $params->get('value_field');
@@ -156,7 +158,7 @@ class DiscreteBarChart
 	protected function listQuery($listid)
 	{
 		$params = $this->params;
-		$db = FabrikWorker::getDbo(false, $params->get('conn_id'));
+		$db = Worker::getDbo(false, $params->get('conn_id'));
 		$input = JFactory::getApplication()->input;
 		$fabrik_show_in_list = $input->get('fabrik_show_in_list');
 		$labelColumn = $params->get('label_field');

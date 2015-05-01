@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -417,7 +418,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		}
 
 		$listModel->setId($input->getInt('id', 0));
-		$w           = new FabrikWorker;
+		$w           = new Worker;
 		$this->_type = 'table';
 		$params      = $this->getParams();
 		$mergeEmails = $params->get('emailtable_mergemessages', 0);
@@ -484,7 +485,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 							{
 								$mailTo = $w->parseMessageForPlaceholder($mailTo, $row);
 
-								if (FabrikWorker::isEmail($mailTo))
+								if (Worker::isEmail($mailTo))
 								{
 									$res = $this->_send($row, $mailTo);
 									$res ? $sent++ : $notSent++;
@@ -534,13 +535,13 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 	 */
 	private function _parseMailTos($mailTos, $row, $notSent)
 	{
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		foreach ($mailTos as $toKey => $thisTo)
 		{
 			$thisTo = $w->parseMessageForPlaceholder($thisTo, $row);
 
-			if (!FabrikWorker::isEmail($thisTo))
+			if (!Worker::isEmail($thisTo))
 			{
 				unset($mailTos[$toKey]);
 				$notSent++;
@@ -593,7 +594,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		$coverMessage  = nl2br($input->get('message', '', 'html'));
 		$oldStyle      = $this->_oldStyle();
 		$emailTemplate = $this->_emailTemplate();
-		$w             = new FabrikWorker;
+		$w             = new Worker;
 		$cc            = null;
 		$bcc           = null;
 		list($emailFrom, $fromName) = $this->_fromEmailName($row);
@@ -749,7 +750,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 	private function _thisMsg($row)
 	{
 		list($phpMsg, $message) = $this->_message();
-		$w             = new FabrikWorker;
+		$w             = new Worker;
 		$input         = JFactory::getApplication()->input;
 		$coverMessage  = nl2br($input->get('message', '', 'html'));
 		$emailTemplate = $this->_emailTemplate();
@@ -791,7 +792,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		$input  = JFactory::getApplication()->input;
 		list($replyEmail, $replyEmailName) = $this->_replyEmailName($firstRow);
 		list($emailFrom, $fromName) = $this->_fromEmailName($firstRow);
-		$w      = new FabrikWorker;
+		$w      = new Worker;
 		$toType = $toType = $this->_toType();
 		// Arbitrarily use first row for placeholders
 		$to           = $this->_emailTo();
@@ -819,7 +820,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			{
 				$thisTo = $w->parseMessageForPlaceholder($thisTo, $firstRow);
 
-				if (!FabrikWorker::isEmail($thisTo))
+				if (!Worker::isEmail($thisTo))
 				{
 					unset($thisTos[$toKey]);
 					$notSent++;
@@ -848,7 +849,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		{
 			foreach ($thisTos as $thisTo)
 			{
-				if (FabrikWorker::isEmail($thisTo))
+				if (Worker::isEmail($thisTo))
 				{
 					$mail = JFactory::getMailer();
 					$res  = $mail->sendMail($emailFrom, $fromName, $thisTo, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
@@ -926,7 +927,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 	 */
 	private function _replyEmailName($data = array())
 	{
-		$w      = new FabrikWorker;
+		$w      = new Worker;
 		$params = $this->getParams();
 		$reply  = $w->parseMessageForPlaceholder($params->get('email_reply_to'), $data, false);
 		@list($replyEmail, $replyEmailName) = explode(':', $reply, 2);
@@ -955,7 +956,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 	 */
 	private function _fromEmailName($data = array())
 	{
-		$w        = new FabrikWorker;
+		$w        = new Worker;
 		$params   = $this->getParams();
 		$fromUser = $params->get('emailtable_from_user');
 

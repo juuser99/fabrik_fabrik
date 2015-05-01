@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -19,7 +21,7 @@ defined('_JEXEC') or die('Restricted access');
  * @since       3.0.6
  */
 
-class FabrikHelperList
+class ListHelper
 {
 	/**
 	 * Get a list of elements which match a set of criteria

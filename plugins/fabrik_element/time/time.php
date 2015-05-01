@@ -12,6 +12,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+
 /**
  * Plugin element to render time dropdowns - derived from birthday element
  *
@@ -82,9 +85,9 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 					$bits = $value;
 				}
 
-				$hour = FArrayHelper::getValue($bits, 0, '00');
-				$min = FArrayHelper::getValue($bits, 1, '00');
-				$sec = FArrayHelper::getValue($bits, 2, '00');
+				$hour = ArrayHelper::getValue($bits, 0, '00');
+				$min = ArrayHelper::getValue($bits, 1, '00');
+				$sec = ArrayHelper::getValue($bits, 2, '00');
 
 				// $$$ rob - all this below is nice but ... you still need to set a default
 				$detailvalue = '';
@@ -123,9 +126,9 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 				$value = strstr($value, ',') ? (explode(',', $value)) : explode(':', $value);
 			}
 
-			$hourvalue = FArrayHelper::getValue($value, 0);
-			$minvalue = FArrayHelper::getValue($value, 1);
-			$secvalue = FArrayHelper::getValue($value, 2);
+			$hourvalue = ArrayHelper::getValue($value, 0);
+			$minvalue = ArrayHelper::getValue($value, 1);
+			$secvalue = ArrayHelper::getValue($value, 2);
 
 			$hours = array(JHTML::_('select.option', '', $params->get('time_hourlabel', FText::_('PLG_ELEMENT_TIME_SEPARATOR_HOUR'))));
 
@@ -199,9 +202,9 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	{
 		if (is_array($val) && implode($val) != '')
 		{
-			$h = FArrayHelper::getValue($val, 0, '00');
-			$m = FArrayHelper::getValue($val, 1, '00');
-			$s = FArrayHelper::getValue($val, 2, '00');
+			$h = ArrayHelper::getValue($val, 0, '00');
+			$m = ArrayHelper::getValue($val, 1, '00');
+			$s = ArrayHelper::getValue($val, 2, '00');
 
 			return $h . ':' . $m . ':' . $s;
 		}
@@ -341,14 +344,13 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 
 	public function renderListData($data, stdClass &$thisRow)
 	{
-		$db = FabrikWorker::getDbo();
 		$params = $this->getParams();
 		$groupModel = $this->getGroup();
 		/*
 		 * Jaanus: removed condition canrepeat() from renderListData:
 		 * weird result such as ["00:03:45","00 when not repeating but still join and merged. Using isJoin() instead
 		 */
-		$data = $groupModel->isJoin() ? FabrikWorker::JSONtoData($data, true) : array($data);
+		$data = $groupModel->isJoin() ? Worker::JSONtoData($data, true) : array($data);
 		$data = (array) $data;
 		$ft = $params->get('list_time_format', 'H:i:s');
 		$sep = $params->get('time_separatorlabel', FText::_(':'));
@@ -359,9 +361,9 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 			if ($d)
 			{
 				$bits = explode(':', $d);
-				$hour = FArrayHelper::getValue($bits, 0, '00');
-				$min = FArrayHelper::getValue($bits, 1, '00');
-				$sec = FArrayHelper::getValue($bits, 2, '00');
+				$hour = ArrayHelper::getValue($bits, 0, '00');
+				$min = ArrayHelper::getValue($bits, 1, '00');
+				$sec = ArrayHelper::getValue($bits, 2, '00');
 				$hms = $hour . $sep . $min . $sep . $sec;
 				$hm = $hour . $sep . $min;
 				$ms = $min . $sep . $sec;

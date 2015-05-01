@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -147,7 +148,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		$formModel = $this->getModel();
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$db = FabrikWorker::getDBO();
+		$db = Worker::getDBO();
 		$query = $db->getQuery(true);
 		$rowid = $input->get('rowid', '', 'string');
 		$loading = strstr($messageType, 'form.load');
@@ -166,7 +167,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 			$random_filename = '';
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$logs_path = $w->parseMessageForPlaceHolder($params->get('logs_path'));
 
 		if (strpos($logs_path, '/') !== 0)
@@ -188,7 +189,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		$sep = $params->get('logs_separator');
 
 		// Making complete path + filename + extension
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$logs_file = $logs_path . '/' . $w->parseMessageForPlaceHolder($params->get('logs_file')) . $random_filename . '.' . $ext;
 		$logs_mode = $params->get('logs_append_or_overwrite');
 		$date_element = $params->get('logs_date_field');
@@ -315,7 +316,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 			$ctypes = preg_replace('/[a-zA-Z0-9_-]*[={2}]/', '', $split_clabels);
 			$labtyp = array_combine($clabels, $ctypes);
 
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$custom_msg = $w->parseMessageForPlaceHolder($custom_msg);
 			$regex = '/((?!("[^"]*))([ |\w|+|.])+(?=[^"]*"\b)|(?!\b"[^"]*)( +)+(?=([^"]*)$)|(?=\b"[^"]*)( +)+(?=[^"]*"\b))/';
 			$excl_cdata = preg_replace($regex, '', $custom_msg);
@@ -739,7 +740,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 					continue;
 				}
 
-				if (FabrikWorker::isEmail($email))
+				if (Worker::isEmail($email))
 				{
 					$mail = JFactory::getMailer();
 					$res = $mail->sendMail($email_from, $email_from, $email, $subject, $email_msg, true);

@@ -203,7 +203,7 @@ function fabrikParseRoute($segments)
 	/**
 	 * View (controller not passed into segments)
 	 * 
-	 * $$$ hugh - don't use FArrayHelper::getValue() here, use original JArrayHelper.  Don't ask.
+	 * $$$ hugh - don't use ArrayHelper::getValue() here, use original JArrayHelper.  Don't ask.
 	 * Well, since you asked, some users are reporting issues with the helper not having been
 	 * loaded (some bizarre 3rd party system plugin doing funky things), and since we don't need
 	 * what our wrapper does for this simple usage ... yes, we could specifically load our helper here,

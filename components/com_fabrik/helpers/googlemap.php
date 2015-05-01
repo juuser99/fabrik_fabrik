@@ -8,6 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
+use Fabrik\Helpers\ArrayHelper;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -54,8 +58,8 @@ class FabGoogleMapHelper
 
 		for ($i = 0; $i < count($features); $i ++)
 		{
-			$feature = FArrayHelper::getValue($features, $i);
-			$element = FArrayHelper::getValue($elements, $i);
+			$feature = ArrayHelper::getValue($features, $i);
+			$element = ArrayHelper::getValue($elements, $i);
 			$key = $feature . '|' . $element;
 
 			if (!array_key_exists($key, $stylers))
@@ -64,8 +68,8 @@ class FabGoogleMapHelper
 			}
 
 			$aStyle = new stdClass;
-			$styleKey = FArrayHelper::getValue($styleKeys, $i);
-			$styleValue = FArrayHelper::getValue($styleValues, $i);
+			$styleKey = ArrayHelper::getValue($styleKeys, $i);
+			$styleValue = ArrayHelper::getValue($styleValues, $i);
 
 			if ($styleKey && $styleValue)
 			{

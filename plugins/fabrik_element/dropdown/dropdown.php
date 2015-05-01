@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
 
 /**
  * Plugin element to render dropdown
@@ -86,8 +88,8 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 				$optgroup = true;
 			}
 
-			$tmpLabel = FArrayHelper::getValue($labels, $i);
-			$disable = FArrayHelper::getValue($endis, $i);
+			$tmpLabel = ArrayHelper::getValue($labels, $i);
+			$disable = ArrayHelper::getValue($endis, $i);
 				
 			// For values like '1"'
 			$tmpval = htmlspecialchars($tmpval, ENT_QUOTES);
@@ -232,13 +234,13 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 				}
 				else
 				{
-					$w = new FabrikWorker;
+					$w = new Worker;
 					$default = $w->parseMessageForPlaceHolder($default, $data);
 
 					if ($element->eval == "1")
 					{
 						$v = @eval((string) stripslashes($default));
-						FabrikWorker::logEval($default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
+						Worker::logEval($default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
 					}
 					else
 					{

@@ -13,7 +13,10 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Storage\MySql as Storage;
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\LayoutFile;
+use Fabrik\Helpers\Pagination;
 
 jimport('joomla.application.component.modelform');
 
@@ -198,7 +201,7 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Pagination
 	 *
-	 * @var FPagination
+	 * @var Pagination
 	 */
 	protected $nav = null;
 
@@ -486,7 +489,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function processPlugin()
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('process', $this, 'list');
 
 		return $pluginManager->data;
@@ -500,7 +503,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function getPluginTopButtons()
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('topButton', $this, 'list');
 		$buttons = $pluginManager->data;
 
@@ -515,7 +518,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function getPluginButtons()
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$pluginManager->runPlugins('button', $this, 'list');
 		$buttons = $pluginManager->data;
@@ -535,7 +538,7 @@ class FabrikFEModelList extends JModelForm
 	public function getPluginJsClasses(&$r = array(), &$shim = array())
 	{
 		$r = (array) $r;
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$src = array();
 		$pluginManager->runPlugins('loadJavascriptClass', $this, 'list', $src);
@@ -582,7 +585,7 @@ class FabrikFEModelList extends JModelForm
 			$container = 'listform_' . $this->getId();
 		}
 
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$pluginManager->runPlugins('onLoadJavascriptInstance', $this, 'list', $container);
 
@@ -597,7 +600,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function render()
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBeforeListRender', $this, 'list');
 		FabrikHelperHTML::debug($_POST, 'render:post');
 		$app = JFactory::getApplication();
@@ -701,7 +704,7 @@ class FabrikFEModelList extends JModelForm
 			{
 				// If a list (assoc with a menu item) loads a form, with db join & front end select - don't use the orig menu's rows_per_page value.
 				$mambot = $this->isMambot || ($input->get('tmpl') === 'component' && $input->getInt('ajax') === 1);
-				$rowsPerPage = FabrikWorker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $mambot);
+				$rowsPerPage = Worker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $mambot);
 				$limitLength = $app->getUserStateFromRequest($context . 'limitlength', 'limit' . $id, $rowsPerPage);
 
 				if (!$this->randomRecords)
@@ -846,7 +849,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		$profiler = JProfiler::getInstance('Application');
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onPreLoadData', $this, 'list');
 
 		// Needs to be off for FOUND_ROWS() to work
@@ -1042,7 +1045,7 @@ class FabrikFEModelList extends JModelForm
 		if (defined('JOOMFISH_PATH') && $params->get('allow-data-translation'))
 		{
 			$table = $this->getTable();
-			$db = FabrikWorker::getDbo();
+			$db = Worker::getDbo();
 			$jf = JoomFishManager::getInstance();
 			$config = JFactory::getConfig();
 			$tableName = str_replace($config->get('dbprefix'), '', $table->db_table_name);
@@ -1200,7 +1203,7 @@ class FabrikFEModelList extends JModelForm
 
 		if ($groupBy != '' && $this->outputFormat != 'csv')
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 
 			// 3.0 if not group by template spec'd by group but assigned in qs then use that as the group by tmpl
 			$requestGroupBy = $input->get('group_by', '');
@@ -1304,7 +1307,7 @@ class FabrikFEModelList extends JModelForm
 
 	protected function addSelectBoxAndLinks(&$data)
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$params = $this->getParams();
 		$buttonAction = $this->actionMethod();
 		$tmpKey = '__pk_val';
@@ -1574,7 +1577,7 @@ class FabrikFEModelList extends JModelForm
 		$align = $params->get('checkboxLocation', 'end') == 'end' ? 'right' : 'left';
 		$displayData = array('align' => $align);
 		$basePath = COM_FABRIK_FRONTEND . '/components/com_fabrik/layouts';
-		$layout = new FabrikLayoutFile('listactions.' . $buttonAction, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+		$layout = new LayoutFile('listactions.' . $buttonAction, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
 		$layout->addIncludePaths(COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tpl . '/layouts/');
 
@@ -1806,7 +1809,7 @@ class FabrikFEModelList extends JModelForm
 		$query = $db->getQuery(true);
 		$query = $listModel->buildQueryWhere($input->getInt('incfilters', 0), $query);
 
-		if (!FArrayHelper::emptyIsh($pks))
+		if (!ArrayHelper::emptyIsh($pks))
 		{
 			// Only load the current record sets record counts
 			$query->where($linkKey . ' IN (' . implode(',', $pks) . ')');
@@ -1859,12 +1862,12 @@ class FabrikFEModelList extends JModelForm
 		$linkedFormText = $params->get('linkedformtext');
 		$faceted = $params->get('facetedlinks');
 		$linkedFormText = ArrayHelper::fromObject($faceted->linkedformtext);
-		$msg = FArrayHelper::getValue($linkedFormText, $elKey);
+		$msg = ArrayHelper::getValue($linkedFormText, $elKey);
 		$row2 = ArrayHelper::fromObject($row);
 		$label = $this->parseMessageForRowHolder($msg, $row2);
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 
 		if (is_null($listid))
 		{
@@ -2008,7 +2011,7 @@ class FabrikFEModelList extends JModelForm
 		$tlabel = ($count === 0) ? $emptyLabel : '(0) ' . $label;
 		$showRelatedAdd = (int) $params->get('show_related_add', 0);
 		$aExisitngLinkedForms = (array) $params->get('linkedform');
-		$linkedForm = FArrayHelper::getValue($aExisitngLinkedForms, $f, false);
+		$linkedForm = ArrayHelper::getValue($aExisitngLinkedForms, $f, false);
 		$addLink = $linkedForm == '0' ? $this->viewFormLink($popUp, $element, $row, $key, $val, false, $f) : '';
 
 		if ($count === 0)
@@ -2057,7 +2060,7 @@ class FabrikFEModelList extends JModelForm
 	protected function releatedDataURL($key, $val, $listid)
 	{
 		$app = JFactory::getApplication();
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$url = 'index.php?option=com_' . $package . '&';
 
@@ -2213,7 +2216,7 @@ class FabrikFEModelList extends JModelForm
 				*/
 				if (is_array($v))
 				{
-					$v = FArrayHelper::getValue($v, $repeatCounter);
+					$v = ArrayHelper::getValue($v, $repeatCounter);
 				}
 				else
 				{
@@ -2223,7 +2226,7 @@ class FabrikFEModelList extends JModelForm
 					{
 						if (is_array($v2))
 						{
-							$v = FArrayHelper::getValue($v2, $repeatCounter);
+							$v = ArrayHelper::getValue($v2, $repeatCounter);
 						}
 						else
 						{
@@ -2507,7 +2510,7 @@ class FabrikFEModelList extends JModelForm
 		// Pass the query as an object property so it can be updated via reference
 		$args = new stdClass;
 		$args->query = $query;
-		FabrikWorker::getPluginManager()->runPlugins('onQueryBuilt', $this, 'list', $args);
+		Worker::getPluginManager()->runPlugins('onQueryBuilt', $this, 'list', $args);
 		$query = $args->query;
 
 		return $query;
@@ -2627,7 +2630,7 @@ class FabrikFEModelList extends JModelForm
 			$sql .= ' FROM ' . $db->quoteName($table->db_table_name) . " \n";
 		}
 
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBuildQuerySelect', $this, 'list', $query);
 
 		return $query ? $query : $sql;
@@ -2785,7 +2788,7 @@ class FabrikFEModelList extends JModelForm
 
 				foreach ($orderbys as $orderbyRaw)
 				{
-					$dir = FArrayHelper::getValue($orderdirs, $o, 'desc');
+					$dir = ArrayHelper::getValue($orderdirs, $o, 'desc');
 
 					// As we use getString() for query string, need to sanitize
 					if (!in_array(strtolower($dir), array('asc', 'desc','-')))
@@ -2953,7 +2956,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function buildQueryJoin($query = false)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$ref = $query ? '1' : '0';
 
 		if (isset($this->joinsSQL[$ref]))
@@ -3095,7 +3098,7 @@ class FabrikFEModelList extends JModelForm
 		$elementName = FabrikString::safeColName($element->getFullName(false, false));
 		$filters = $this->getFilterArray();
 		$keys = array_keys($filters);
-		$vkeys = array_keys(FArrayHelper::getValue($filters, 'value', array()));
+		$vkeys = array_keys(ArrayHelper::getValue($filters, 'value', array()));
 
 		foreach ($vkeys as $i)
 		{
@@ -3131,7 +3134,7 @@ class FabrikFEModelList extends JModelForm
 	public function buildQueryGroupBy($query = false)
 	{
 		$groups = $this->getFormModel()->getGroupsHiarachy();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 
 		foreach ($groups as $groupModel)
 		{
@@ -3183,7 +3186,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function buildQueryWhere($incFilters = true, $query = false, $doJoins = true)
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBuildQueryWhere', $this, 'list');
 
 		$sig = !$query ? 'string' : 'query';
@@ -3346,16 +3349,16 @@ class FabrikFEModelList extends JModelForm
 		$sql = array();
 
 		// $$$ rob keys may no longer be in asc order as we may have filtered out some in buildQueryPrefilterWhere()
-		$vkeys = array_keys(FArrayHelper::getValue($filters, 'key', array()));
+		$vkeys = array_keys(ArrayHelper::getValue($filters, 'key', array()));
 		$last_i = false;
 		$nullElementConditions = array('IS NULL', 'IS NOT NULL');
 
 		while (list($vkey, $i) = each($vkeys))
 		{
 			// $$$rob - prefilter with element that is not published so ignore
-			$condition = String::strtoupper(FArrayHelper::getValue($filters['condition'], $i, ''));
+			$condition = String::strtoupper(ArrayHelper::getValue($filters['condition'], $i, ''));
 
-			if (FArrayHelper::getValue($filters['sqlCond'], $i, '') == '' && !in_array($condition, $nullElementConditions))
+			if (ArrayHelper::getValue($filters['sqlCond'], $i, '') == '' && !in_array($condition, $nullElementConditions))
 			{
 				$last_i = $i;
 				continue;
@@ -3424,7 +3427,7 @@ class FabrikFEModelList extends JModelForm
 					}
 				}
 
-				$glue = FArrayHelper::getValue($filters['join'], $i, 'AND');
+				$glue = ArrayHelper::getValue($filters['join'], $i, 'AND');
 				$sql[] = empty($sql) ? $gstart : $glue . ' ' . $gstart;
 				$sql[] = $filters['sqlCond'][$i] . $gend;
 			}
@@ -3525,7 +3528,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		}
 
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 
 		// If the group by element isnt in the fields (IE its not published) add it (otherwise group by wont work)
 		$longGroupBy = $db->quoteName($this->getGroupBy());
@@ -3570,7 +3573,7 @@ class FabrikFEModelList extends JModelForm
 
 		$this->fields = array();
 		$this->asfields = array();
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$form = $this->getFormModel();
 		$table = $this->getTable();
 		$aJoinObjs = $this->getJoins();
@@ -3738,6 +3741,9 @@ class FabrikFEModelList extends JModelForm
 
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
+		// @TODO actually load in the json object
+		$json = file_get_contents(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/schemas/template.json');
+		return json_decode($json);
 		if ($name === true)
 		{
 			$this->clearTable();
@@ -3793,11 +3799,12 @@ class FabrikFEModelList extends JModelForm
 	 * @return  object	database
 	 */
 
-	public function &getDb()
+	public function getDb()
 	{
 
 		// @todo - getTable needs to be converted to just getting the json object
-		$cnn = FabrikWorker::getConnection($this->getTable());
+		$row = $this->getTable();
+		$cnn = Worker::getConnection($row);
 
 		return $cnn->getDb();
 	}
@@ -3806,14 +3813,14 @@ class FabrikFEModelList extends JModelForm
 	 * Get the lists connection object
 	 * sets $this->connection to the lists connection
 	 *
-	 * @deprecated since 3.0b use FabrikWorker::getConnection() instead
+	 * @deprecated since 3.0b use Worker::getConnection() instead
 	 *
 	 * @return  object	connection
 	 */
 
 	public function &getConnection()
 	{
-		$this->connection = FabrikWorker::getConnection($this->getTable());
+		$this->connection = Worker::getConnection($this->getTable());
 
 		return $this->connection;
 	}
@@ -3828,7 +3835,7 @@ class FabrikFEModelList extends JModelForm
 	public function canPublish()
 	{
 		$item = $this->getTable();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$nullDate = $db->getNullDate();
 		$publishup = JFactory::getDate($item->publish_up);
 		$publishup = $publishup->toUnix();
@@ -3912,7 +3919,7 @@ class FabrikFEModelList extends JModelForm
 		* Find out what any plugins have to say
 		*/
 
-		$pluginCanEdit = FabrikWorker::getPluginManager()->runPlugins('onCanEdit', $this, 'list', $row);
+		$pluginCanEdit = Worker::getPluginManager()->runPlugins('onCanEdit', $this, 'list', $row);
 
 		// At least one plugin run, so plugin results take precedence over anything else.
 		if (!empty($pluginCanEdit))
@@ -3977,7 +3984,7 @@ class FabrikFEModelList extends JModelForm
 	{
 		$params = $this->getParams();
 
-		return FabrikWorker::canUserDo($params, $row, $col);
+		return Worker::canUserDo($params, $row, $col);
 	}
 
 	/**
@@ -3995,7 +4002,7 @@ class FabrikFEModelList extends JModelForm
 		 * if useDo or group ACL allows edit.  But we don't allow plugin to allow, if userDo or group ACL
 		 * deny access.
 		 */
-		$pluginCanDelete = FabrikWorker::getPluginManager()->runPlugins('onCanDelete', $this, 'list', $row);
+		$pluginCanDelete = Worker::getPluginManager()->runPlugins('onCanDelete', $this, 'list', $row);
 		$pluginCanDelete = !in_array(false, $pluginCanDelete);
 		$canUserDo = $this->canUserDo($row, 'allow_delete2');
 
@@ -4177,7 +4184,7 @@ class FabrikFEModelList extends JModelForm
 			$form->getGroupsHiarachy();
 			$ignore = array('PlgFabrik_ElementCascadingdropdown');
 			$ids = $form->getElementIds($ignore);
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$id = (int) $this->getId();
 			$query = $db->getQuery(true);
 			$query->select('*')->from('#__fabrik_joins')->where('list_id = ' . $id, 'OR');
@@ -4213,7 +4220,7 @@ class FabrikFEModelList extends JModelForm
 
 			// Force loading of join elements
 			$ids = $form->getElementIds(array(), array('includePublised' => false, 'loadPrefilters' => true));
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$id = (int) $this->getId();
 			$query = $db->getQuery(true);
 			$query->select('*')->from('#__fabrik_joins')->where('(element_id = 0 AND list_id = ' . $id . ')', 'OR');
@@ -4260,7 +4267,7 @@ class FabrikFEModelList extends JModelForm
 		if (!isset($pk))
 		{
 			$fabrikDb = $this->getDb();
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$pk = $this->getPrimaryKeyAndExtra($join->table_join);
 			$pks = $join->table_join;
@@ -4294,7 +4301,7 @@ class FabrikFEModelList extends JModelForm
 		$app = JFactory::getApplication();
 		$prefix = $app->getCfg('dbprefix');
 		$table = $this->getTable();
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$aliases = array($table->db_table_name);
 		$tableGroups = array();
 
@@ -4468,10 +4475,10 @@ class FabrikFEModelList extends JModelForm
 	public function shouldUpdateElement(&$elementModel, $origColName = null)
 	{
 		$app = JFactory::getApplication();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$return = array(false, '', '', '', '', false);
 		$element = $elementModel->getElement();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$fabrikDb = $this->getDb();
@@ -4556,7 +4563,7 @@ class FabrikFEModelList extends JModelForm
 			// return $return;
 		}
 
-		$thisFieldDesc = FArrayHelper::getValue($dbdescriptions, $origColName, new stdClass);
+		$thisFieldDesc = ArrayHelper::getValue($dbdescriptions, $origColName, new stdClass);
 
 		/* $$$ rob the Default property for timestamps when they are set to CURRENT_TIMESTAMP
 		 * doesn't show up from getDBFields()  - so presuming a timestamp field will always default
@@ -4697,9 +4704,9 @@ class FabrikFEModelList extends JModelForm
 
 	public function alterStructure(&$elementModel, $origColName = null)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$element = $elementModel->getElement();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$fabrikDb = $this->getDb();
@@ -4942,7 +4949,7 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		$filterModel = $this->getFilterModel();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$this->filters = array();
 		$user = JFactory::getUser();
 		$request = $this->getRequestData();
@@ -4962,7 +4969,7 @@ class FabrikFEModelList extends JModelForm
 
 		// These are filters created from a search form or normal search
 		$keys = array_keys($request);
-		$indexStep = count(FArrayHelper::getValue($this->filters, 'key', array()));
+		$indexStep = count(ArrayHelper::getValue($this->filters, 'key', array()));
 		FabrikHelperHTML::debug($keys, 'filter:request keys');
 
 		foreach ($keys as $key)
@@ -4983,21 +4990,21 @@ class FabrikFEModelList extends JModelForm
 
 		FabrikHelperHTML::debug($this->filters, 'listmodel::getFilterArray middle');
 		$readOnlyValues = array();
-		$w = new FabrikWorker;
-		$noFiltersSetup = FArrayHelper::getValue($this->filters, 'no-filter-setup', array());
+		$w = new Worker;
+		$noFiltersSetup = ArrayHelper::getValue($this->filters, 'no-filter-setup', array());
 
 		if (count($this->filters) == 0)
 		{
-			FabrikWorker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
+			Worker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
 
 			return $this->filters;
 		}
 
 		// Get a list of plugins
 		$pluginKeys = $filterModel->getPluginFilterKeys();
-		$elementids = FArrayHelper::getValue($this->filters, 'elementid', array());
-		$sqlCond = FArrayHelper::getValue($this->filters, 'sqlCond', array());
-		$raws = FArrayHelper::getValue($this->filters, 'raw', array());
+		$elementids = ArrayHelper::getValue($this->filters, 'elementid', array());
+		$sqlCond = ArrayHelper::getValue($this->filters, 'sqlCond', array());
+		$raws = ArrayHelper::getValue($this->filters, 'raw', array());
 
 		foreach ($this->filters['key'] as $i => $keyval)
 		{
@@ -5005,14 +5012,14 @@ class FabrikFEModelList extends JModelForm
 			$condition = String::strtoupper($this->filters['condition'][$i]);
 			$key = $this->filters['key'][$i];
 			$filterEval = $this->filters['eval'][$i];
-			$elid = FArrayHelper::getValue($elementids, $i);
-			$key2 = array_key_exists('key2', $this->filters) ? FArrayHelper::getValue($this->filters['key2'], $i, '') : '';
+			$elid = ArrayHelper::getValue($elementids, $i);
+			$key2 = array_key_exists('key2', $this->filters) ? ArrayHelper::getValue($this->filters['key2'], $i, '') : '';
 
 			/* $$$ rob see if the key is a raw filter
 			 * 20/12/2010 - think $key is never with _raw now as it is unset in tablefilter::getQuerystringFilters() although may  be set elsewhere
 			* - if it is make a note and remove the _raw from the name
 			*/
-			$raw = FArrayHelper::getValue($raws, $i, false);
+			$raw = ArrayHelper::getValue($raws, $i, false);
 
 			if (String::substr($key, -5, 5) == '_raw`')
 			{
@@ -5036,7 +5043,7 @@ class FabrikFEModelList extends JModelForm
 				continue;
 			}
 
-			$elementModel = FArrayHelper::getValue($elements, $elid);
+			$elementModel = ArrayHelper::getValue($elements, $elid);
 
 			// $$$ rob key2 if set is in format  `countries_0`.`label` rather than  `countries`.`label`
 			// used for search all filter on 2nd db join element pointing to the same table
@@ -5072,7 +5079,7 @@ class FabrikFEModelList extends JModelForm
 				$origi = $i;
 				$value = stripslashes(htmlspecialchars_decode($value, ENT_QUOTES));
 				$value = @eval($value);
-				FabrikWorker::logEval($value, 'Caught exception on eval of tableModel::getFilterArray() ' . $key . ': %s');
+				Worker::logEval($value, 'Caught exception on eval of tableModel::getFilterArray() ' . $key . ': %s');
 				$i = $origi;
 			}
 
@@ -5205,7 +5212,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		}
 
-		FabrikWorker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
+		Worker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
 		FabrikHelperHTML::debug($this->filters, 'after plugins:onFiltersGot');
 
 		return $this->filters;
@@ -5223,7 +5230,7 @@ class FabrikFEModelList extends JModelForm
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$showInList = array();
-		$listels = json_decode(FabrikWorker::getMenuOrRequestVar('list_elements', '', $this->isMambot, 'menu'));
+		$listels = json_decode(Worker::getMenuOrRequestVar('list_elements', '', $this->isMambot, 'menu'));
 
 		if (isset($listels->show_in_list))
 		{
@@ -5301,7 +5308,7 @@ class FabrikFEModelList extends JModelForm
 				'view' => 'list',
 				'listid' => $this->getId()
 			);
-			$properties = FabrikWorker::getMenuOrRequestVar('prefilters', '', $this->isMambot, 'menu', $spoof_check);
+			$properties = Worker::getMenuOrRequestVar('prefilters', '', $this->isMambot, 'menu', $spoof_check);
 		}
 
 		if (isset($properties))
@@ -5311,12 +5318,12 @@ class FabrikFEModelList extends JModelForm
 
 			if (!empty($conditions))
 			{
-				$afilterFields = FArrayHelper::getValue($prefilters, 'filter-fields', array());
-				$afilterConditions = FArrayHelper::getValue($prefilters, 'filter-conditions', array());
-				$afilterValues = FArrayHelper::getValue($prefilters, 'filter-value', array());
-				$afilterAccess = FArrayHelper::getValue($prefilters, 'filter-access', array());
-				$afilterEval = FArrayHelper::getValue($prefilters, 'filter-eval', array());
-				$afilterJoins = FArrayHelper::getValue($prefilters, 'filter-join', array());
+				$afilterFields = ArrayHelper::getValue($prefilters, 'filter-fields', array());
+				$afilterConditions = ArrayHelper::getValue($prefilters, 'filter-conditions', array());
+				$afilterValues = ArrayHelper::getValue($prefilters, 'filter-value', array());
+				$afilterAccess = ArrayHelper::getValue($prefilters, 'filter-access', array());
+				$afilterEval = ArrayHelper::getValue($prefilters, 'filter-eval', array());
+				$afilterJoins = ArrayHelper::getValue($prefilters, 'filter-join', array());
 			}
 		}
 
@@ -5340,7 +5347,7 @@ class FabrikFEModelList extends JModelForm
 			$params = $this->getParams();
 			list($afilterFields, $afilterConditions, $afilterValues, $afilterAccess, $afilterEval, $afilterJoins, $afilterGrouped) = $this->prefilterSetting();
 			$join = 'WHERE';
-			$w = new FabrikWorker;
+			$w = new Worker;
 
 			for ($i = 0; $i < count($afilterFields); $i++)
 			{
@@ -5349,7 +5356,7 @@ class FabrikFEModelList extends JModelForm
 					$afilterJoins[0] = 'AND';
 				}
 
-				$join = FArrayHelper::getValue($afilterJoins, $i, 'AND');
+				$join = ArrayHelper::getValue($afilterJoins, $i, 'AND');
 
 				if (trim(String::strtolower($join)) == 'where')
 				{
@@ -5358,9 +5365,9 @@ class FabrikFEModelList extends JModelForm
 
 				$filter = $afilterFields[$i];
 				$condition = $afilterConditions[$i];
-				$selValue = FArrayHelper::getValue($afilterValues, $i, '');
-				$filterEval = FArrayHelper::getValue($afilterEval, $i, false);
-				$filterGrouped = FArrayHelper::getValue($afilterGrouped, $i, false);
+				$selValue = ArrayHelper::getValue($afilterValues, $i, '');
+				$filterEval = ArrayHelper::getValue($afilterEval, $i, false);
+				$filterGrouped = ArrayHelper::getValue($afilterGrouped, $i, false);
 				$selAccess = $afilterAccess[$i];
 
 				if (!$this->mustApplyFilter($selAccess))
@@ -5370,7 +5377,7 @@ class FabrikFEModelList extends JModelForm
 
 				$raw = preg_match("/_raw$/", $filter) > 0;
 				$tmpfilter = $raw ? FabrikString::rtrimword($filter, '_raw') : $filter;
-				$elementModel = FArrayHelper::getValue($elements, FabrikString::safeColName($tmpfilter), false);
+				$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpfilter), false);
 
 				if ($elementModel === false)
 				{
@@ -5381,7 +5388,7 @@ class FabrikFEModelList extends JModelForm
 					 * For this we'll just remove that to find the correct element.
 					 */
 					$tmpfilter = str_replace('_0.', '.', $tmpfilter);
-					$elementModel = FArrayHelper::getValue($elements, FabrikString::safeColName($tmpfilter), false);
+					$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpfilter), false);
 				}
 
 				if ($elementModel && $elementModel->getElement()->published == 0)
@@ -5513,7 +5520,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function &getPagination($total = 0, $limitstart = 0, $limit = 0)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 
 		if (!isset($this->nav))
 		{
@@ -5523,7 +5530,7 @@ class FabrikFEModelList extends JModelForm
 			}
 
 			$params = $this->getParams();
-			$this->nav = new FPagination($total, $limitstart, $limit);
+			$this->nav = new Pagination($total, $limitstart, $limit);
 
 			if ($limit == -1)
 			{
@@ -5536,7 +5543,7 @@ class FabrikFEModelList extends JModelForm
 			$this->nav->setId($this->getId());
 			$this->nav->showTotal = $params->get('show-total', false);
 			$item = $this->getTable();
-			$this->nav->startLimit = FabrikWorker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $this->isMambot);
+			$this->nav->startLimit = Worker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $this->isMambot);
 			$this->nav->showDisplayNum = $params->get('show_displaynum', true);
 		}
 
@@ -5604,7 +5611,7 @@ class FabrikFEModelList extends JModelForm
 			$this->real_filter_action = $table->filter_action;
 
 			// Check to see if any list filter plugins require a Go button, like radius search
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = Worker::getPluginManager();
 			$listPlugins = $pluginManager->getPlugInGroup('list');
 
 			$pluginManager->runPlugins('requireFilterSubmit', $this, 'list');
@@ -5701,7 +5708,7 @@ class FabrikFEModelList extends JModelForm
 		if (is_null($this->joinsToThisKey))
 		{
 			$this->joinsToThisKey = array();
-			$db = FabrikWorker::getDbo(true);
+			$db = Worker::getDbo(true);
 			$table = $this->getTable();
 
 			if ($table->id == 0)
@@ -5937,7 +5944,7 @@ class FabrikFEModelList extends JModelForm
 	protected function gotOptionalFilters()
 	{
 		$filters = $this->getFilterArray();
-		$ftypes = FArrayHelper::getValue($filters, 'search_type', array());
+		$ftypes = ArrayHelper::getValue($filters, 'search_type', array());
 
 		foreach ($ftypes as $i => $ftype)
 		{
@@ -6048,7 +6055,7 @@ class FabrikFEModelList extends JModelForm
 				}
 			}
 
-			FabrikWorker::getPluginManager()->runPlugins('onMakeFilters', $this, 'list');
+			Worker::getPluginManager()->runPlugins('onMakeFilters', $this, 'list');
 		}
 
 		return $this->viewfilters;
@@ -6165,7 +6172,7 @@ class FabrikFEModelList extends JModelForm
 		$this->filterJs = $fscript;
 
 		// Check for search form filters - if they exists create hidden elements for them
-		$keys = FArrayHelper::getValue($filters, 'key', array());
+		$keys = ArrayHelper::getValue($filters, 'key', array());
 
 		foreach ($keys as $i => $key)
 		{
@@ -6177,7 +6184,7 @@ class FabrikFEModelList extends JModelForm
 				*$o->filter = $value;
 				*/
 				$elementModel = $this->getFormModel()->getElement(str_replace('`', '', $key));
-				$o->filter = FArrayHelper::getValue($filters['filter'], $i);
+				$o->filter = ArrayHelper::getValue($filters['filter'], $i);
 
 				if ($elementModel)
 				{
@@ -6358,11 +6365,11 @@ class FabrikFEModelList extends JModelForm
 	{
 		$filters = $this->getFilterArray();
 		$advanced = array();
-		$iKeys = array_keys(FArrayHelper::getValue($filters, 'key', array()));
+		$iKeys = array_keys(ArrayHelper::getValue($filters, 'key', array()));
 
 		foreach ($iKeys as $i)
 		{
-			$searchType = FArrayHelper::getValue($filters['search_type'], $i);
+			$searchType = ArrayHelper::getValue($filters['search_type'], $i);
 
 			if (!is_null($searchType) && $searchType == 'advanced')
 			{
@@ -6372,7 +6379,7 @@ class FabrikFEModelList extends JModelForm
 				{
 					if (array_key_exists($k, $advanced))
 					{
-						$advanced[$k][] = FArrayHelper::getValue($filters[$k], $i, '');
+						$advanced[$k][] = ArrayHelper::getValue($filters[$k], $i, '');
 					}
 					else
 					{
@@ -6575,7 +6582,7 @@ class FabrikFEModelList extends JModelForm
 		$headingClass = array();
 		$cellClass = array();
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$session = JFactory::getSession();
 		$formModel = $this->getFormModel();
 		$oldLinksToForms = $this->getLinksToThisKey();
@@ -6669,7 +6676,7 @@ class FabrikFEModelList extends JModelForm
 
 						if ($ix !== false)
 						{
-							$orderDir = FArrayHelper::getValue($orderDirs, $ix, '');
+							$orderDir = ArrayHelper::getValue($orderDirs, $ix, '');
 						}
 					}
 
@@ -6727,7 +6734,7 @@ class FabrikFEModelList extends JModelForm
 
 				// Check responsive class
 				$responsiveKey = array_search($element->id, $listClasses->responsive_elements);
-				$responsiveClass = $responsiveKey !== false ? FArrayHelper::getValue($listClasses->responsive_class, $responsiveKey, '') : '';
+				$responsiveClass = $responsiveKey !== false ? ArrayHelper::getValue($listClasses->responsive_class, $responsiveKey, '') : '';
 
 				if ($responsiveClass !== '')
 				{
@@ -6854,7 +6861,7 @@ class FabrikFEModelList extends JModelForm
 		$args['cellClass'] =& $cellClass;
 		$args['data'] = $this->data;
 
-		FabrikWorker::getPluginManager()->runPlugins('onGetPluginRowHeadings', $this, 'list', $args);
+		Worker::getPluginManager()->runPlugins('onGetPluginRowHeadings', $this, 'list', $args);
 
 		return array($aTableHeadings, $groupHeadings, $headingClass, $cellClass);
 	}
@@ -6919,7 +6926,7 @@ class FabrikFEModelList extends JModelForm
 		if ($this->canSelectRows() || $this->canEditARow() || $details || $edit || $filtersUnderHeadingsAndGo)
 		{
 			// 3.0 actions now go in one column
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = Worker::getPluginManager();
 			$headingButtons = array();
 
 			if ($this->deletePossible())
@@ -7058,7 +7065,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function canSelectRow($row)
 	{
-		$canSelect = FabrikWorker::getPluginManager()->runPlugins('onCanSelectRow', $this, 'list', $row);
+		$canSelect = Worker::getPluginManager()->runPlugins('onCanSelectRow', $this, 'list', $row);
 
 		if (in_array(false, $canSelect))
 		{
@@ -7080,7 +7087,7 @@ class FabrikFEModelList extends JModelForm
 			return false;
 		}
 
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$listplugins = $pluginManager->getPlugInGroup('list');
 		$v = in_array(true, $pluginManager->runPlugins('canSelectRows', $this, 'list'));
 
@@ -7127,7 +7134,7 @@ class FabrikFEModelList extends JModelForm
 			return $this->canSelectRows;
 		}
 
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$this->canSelectRows = in_array(true, $pluginManager->runPlugins('canSelectRows', $this, 'list'));
 
@@ -7445,7 +7452,7 @@ class FabrikFEModelList extends JModelForm
 								if ($elementModel->isJoin() && $isJoin && array_key_exists('params', $data))
 								{
 									// Add in params object set by element plugin - eg fileupload element rotation/scale
-									$oRecord->params = FArrayHelper::getValue($data, 'params');
+									$oRecord->params = ArrayHelper::getValue($data, 'params');
 									$aBindData[$key] = $oRecord->params;
 								}
 
@@ -7784,7 +7791,7 @@ class FabrikFEModelList extends JModelForm
 							// Force a reload of the default value with $origdata
 							unset($elementModel->defaults);
 							$default = array();
-							$repeatGroupCount = FArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
+							$repeatGroupCount = ArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
 
 							for ($repeatCount = 0; $repeatCount < $repeatGroupCount; $repeatCount++)
 							{
@@ -7817,7 +7824,7 @@ class FabrikFEModelList extends JModelForm
 		// Check crypted querystring vars (encrypted in form/view.html.php ) _cryptQueryString
 		if (array_key_exists('fabrik_vars', $_REQUEST) && array_key_exists('querystring', $_REQUEST['fabrik_vars']))
 		{
-			$crypt = FabrikWorker::getCrypt();
+			$crypt = Worker::getCrypt();
 
 			foreach ($_REQUEST['fabrik_vars']['querystring'] as $key => $encrypted)
 			{
@@ -7881,11 +7888,11 @@ class FabrikFEModelList extends JModelForm
 							{
 								// Repeat groups
 								$default = array();
-								$repeatGroupCount = FArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
+								$repeatGroupCount = ArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
 
 								for ($repeatCount = 0; $repeatCount < $repeatGroupCount; $repeatCount++)
 								{
-									$enc = FArrayHelper::getValue($encrypted, $repeatCount);
+									$enc = ArrayHelper::getValue($encrypted, $repeatCount);
 
 									if (is_array($enc))
 									{
@@ -7937,7 +7944,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function doCalculations()
 	{
-		$cache = FabrikWorker::getCache($this);
+		$cache = Worker::getCache($this);
 		$cache->call(array(get_class($this), 'cacheDoCalculations'), $this->getId());
 	}
 
@@ -7956,7 +7963,7 @@ class FabrikFEModelList extends JModelForm
 
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$listModel->setId($listId);
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$formModel = $listModel->getFormModel();
 
 		JDEBUG ? $profiler->mark('cacheDoCalculations, getGroupsHiarachy: start') : null;
@@ -8081,7 +8088,7 @@ class FabrikFEModelList extends JModelForm
 	public function getOrderBys()
 	{
 		$item = $this->getTable();
-		$orderBys = FabrikWorker::JSONtoData($item->order_by, true);
+		$orderBys = Worker::JSONtoData($item->order_by, true);
 		$formModel = $this->getFormModel();
 
 		foreach ($orderBys as &$orderBy)
@@ -8116,7 +8123,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function makeIdElement($groupId)
 	{
-		$pluginMananger = FabrikWorker::getPluginManager();
+		$pluginMananger = Worker::getPluginManager();
 		$element = $pluginMananger->getPlugIn('internalid', 'element');
 		$item = $element->getDefaultProperties();
 		$item->name = $item->label = 'id';
@@ -8144,7 +8151,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function makeFkElement($groupId)
 	{
-		$pluginMananger = FabrikWorker::getPluginManager();
+		$pluginMananger = Worker::getPluginManager();
 		$element = $pluginMananger->getPlugIn('field', 'element');
 		$item = $element->getDefaultProperties();
 		$item->name = $item->label = 'parent_id';
@@ -8219,8 +8226,8 @@ class FabrikFEModelList extends JModelForm
 
 		if (trim($preSQL) != '')
 		{
-			$db = FabrikWorker::getDbo();
-			$w = new FabrikWorker;
+			$db = Worker::getDbo();
+			$w = new Worker;
 			$w->replaceRequest($preSQL);
 			$preSQL = $w->parseMessageForPlaceHolder($preSQL);
 			$db->setQuery($preSQL);
@@ -8402,7 +8409,7 @@ class FabrikFEModelList extends JModelForm
 		
 		$indexes = $this->getIndexes($table);
 		
-		FArrayHelper::filter($indexes, 'Column_name', $field);
+		ArrayHelper::filter($indexes, 'Column_name', $field);
 
 		if (!empty($indexes))
 		{
@@ -8673,7 +8680,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		}
 
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 
 		/* $$$ hugh - added onDeleteRowsForm plugin (needed it so fabrikjuser form plugin can delete users)
 		 * NOTE - had to call it onDeleteRowsForm rather than onDeleteRows, otherwise runPlugins() automagically
@@ -8818,7 +8825,7 @@ class FabrikFEModelList extends JModelForm
 		$db = $this->getDb();
 		$item = $this->getTable();
 
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 
 		$formModel = $this->getFormModel();
 		$pluginManager->runPlugins('onBeforeTruncate', $this, 'list');
@@ -8985,8 +8992,8 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		$this->parseAddSlases = $addslashes;
-		$msg = FabrikWorker::replaceWithUserData($msg);
-		$msg = FabrikWorker::replaceWithGlobals($msg);
+		$msg = Worker::replaceWithUserData($msg);
+		$msg = Worker::replaceWithGlobals($msg);
 		$msg = preg_replace("/{}/", "", $msg);
 		$this->rowIdentifierAdded = false;
 		/* replace {element name} with form data */
@@ -9047,7 +9054,7 @@ class FabrikFEModelList extends JModelForm
 			return $this->getFormModel()->getId();
 		}
 
-		$return = FArrayHelper::getValue($this->aRow, $match);
+		$return = ArrayHelper::getValue($this->aRow, $match);
 
 		if (is_array($return))
 		{
@@ -9081,7 +9088,7 @@ class FabrikFEModelList extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$keyIdentifier = $this->getKeyIndetifier($row);
 		$params = $this->getParams();
 		$table = $this->getTable();
@@ -9179,7 +9186,7 @@ class FabrikFEModelList extends JModelForm
 			$str = ($mode == 'edit') ? $params->get('editurl_attribs') : $params->get('detailurl_attribs');
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		return $w->parseMessageForPlaceHolder($str);
 	}
@@ -9196,7 +9203,7 @@ class FabrikFEModelList extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$keyIdentifier = $this->getKeyIndetifier($row);
 		$table = $this->getTable();
 		$customLink = $this->getCustomLink('url', 'edit');
@@ -9231,7 +9238,7 @@ class FabrikFEModelList extends JModelForm
 
 	public function getDropTableSQL()
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$genTable = $this->getGenericTableName();
 		$sql = "DROP TABLE IF EXISTS " . $db->quoteName($genTable);
 
@@ -9433,8 +9440,8 @@ class FabrikFEModelList extends JModelForm
 				 * assoc array, so can't assume 0 is first key.
 				* $this->rows[$sig] = $row[0][0];
 				*/
-				$row = FArrayHelper::getValue($row, FArrayHelper::firstKey($row), array());
-				$this->rows[$sig] = FArrayHelper::getValue($row, 0, new stdClass);
+				$row = ArrayHelper::getValue($row, ArrayHelper::firstKey($row), array());
+				$this->rows[$sig] = ArrayHelper::getValue($row, 0, new stdClass);
 			}
 			else
 			{
@@ -9454,7 +9461,7 @@ class FabrikFEModelList extends JModelForm
 				/* $$$ hugh - if list is grouped, formatData will have re-index as assoc array,
 				 /* so can't assume 0 is first key.
 				*/
-				$this->rows[$sig] = FArrayHelper::getValue($rows, FArrayHelper::firstKey($rows), array());
+				$this->rows[$sig] = ArrayHelper::getValue($rows, ArrayHelper::firstKey($rows), array());
 			}
 			else
 			{
@@ -9631,7 +9638,7 @@ class FabrikFEModelList extends JModelForm
 		if (!array_key_exists($col, $this->columnData))
 		{
 			$fbConfig = JComponentHelper::getParams('com_fabrik');
-			$cache = FabrikWorker::getCache($this);
+			$cache = Worker::getCache($this);
 			$opts['filters'] = $this->filters;
 			$res = $cache->call(array(get_class($this), 'columnData'), $this->getId(), $col, $distinct, $opts);
 
@@ -9670,7 +9677,7 @@ class FabrikFEModelList extends JModelForm
 	{
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$listModel->setId($listId);
-		$listModel->filters = FArrayHelper::getValue($opts, 'filters');
+		$listModel->filters = ArrayHelper::getValue($opts, 'filters');
 		$table = $listModel->getTable();
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$db = $listModel->getDb();
@@ -9684,8 +9691,8 @@ class FabrikFEModelList extends JModelForm
 		$query = $listModel->buildQueryJoin($query);
 		$query = $listModel->buildQueryWhere(false, $query);
 		$query = $listModel->pluginQuery($query);
-		$filterLimit = FArrayHelper::getValue($opts, 'filterLimit', true);
-		$where = FArrayHelper::getValue($opts, 'where', '');
+		$filterLimit = ArrayHelper::getValue($opts, 'filterLimit', true);
+		$where = ArrayHelper::getValue($opts, 'where', '');
 
 		if ($where != '')
 		{
@@ -9923,14 +9930,14 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Get pluginmanager (get reference to form's plugin manager
 	 *
-	 * @deprecated - use FabrikWorker::getPluginManager() instead since 3.0b
+	 * @deprecated - use Worker::getPluginManager() instead since 3.0b
 	 *
 	 * @return  object  plugin manager model
 	 */
 
 	public function getPluginManager()
 	{
-		return FabrikWorker::getPluginManager();
+		return Worker::getPluginManager();
 	}
 
 	/**
@@ -9945,7 +9952,7 @@ class FabrikFEModelList extends JModelForm
 		$input = $app->input;
 		$element = $input->get('element');
 		$elementid = $input->getId('elid');
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$className = $input->get('plugin');
 		$plugin = $pluginManager->getPlugIn($className, 'element');
 		$plugin->setId($elementid);
@@ -10026,21 +10033,21 @@ class FabrikFEModelList extends JModelForm
 	public function getAddRecordLink()
 	{
 		$qs = array();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$Itemid = FabrikWorker::itemId();
+		$Itemid = Worker::itemId();
 		$params = $this->getParams();
-		$addurl_url = FabrikWorker::getMenuOrRequestVar('addurl', $params->get('addurl', ''), $this->isMambot);
+		$addurl_url = Worker::getMenuOrRequestVar('addurl', $params->get('addurl', ''), $this->isMambot);
 		$filters = $this->getRequestData();
-		$keys = FArrayHelper::getValue($filters, 'key', array());
-		$vals = FArrayHelper::getValue($filters, 'value', array());
-		$types = FArrayHelper::getValue($filters, 'search_type', array());
+		$keys = ArrayHelper::getValue($filters, 'key', array());
+		$vals = ArrayHelper::getValue($filters, 'value', array());
+		$types = ArrayHelper::getValue($filters, 'search_type', array());
 
 		for ($i = 0; $i < count($keys); $i++)
 		{
-			$ftype = FArrayHelper::getValue($types, $i, '');
+			$ftype = ArrayHelper::getValue($types, $i, '');
 
 			// Append content plugin filters or querystring filters
 			if (in_array($ftype, array('jpluginfilters', 'querystring')))
@@ -10397,7 +10404,7 @@ class FabrikFEModelList extends JModelForm
 		$form = $this->getFormModel();
 		$tableParams = $this->getParams();
 		$table = $this->getTable();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$method = 'renderListData_' . $this->outputFormat;
 		$this->_aLinkElements = array();
 
@@ -10686,7 +10693,7 @@ class FabrikFEModelList extends JModelForm
 				{
 					foreach ($v as &$v2)
 					{
-						$v2 = FabrikWorker::JSONtoData($v2);
+						$v2 = Worker::JSONtoData($v2);
 					}
 
 					$v = json_encode($v);
@@ -11047,11 +11054,11 @@ class FabrikFEModelList extends JModelForm
 
 				if ($app->scope !== 'mod_fabrik_list')
 				{
-					$this->tmpl = FabrikWorker::getMenuOrRequestVar('fabriklayout', $this->tmpl, $this->isMambot);
+					$this->tmpl = Worker::getMenuOrRequestVar('fabriklayout', $this->tmpl, $this->isMambot);
 					/* $$$ rob 10/03/2012 changed menu param to listlayout to avoid the list menu item
 					 * options also being used for the form/details view template
 					*/
-					$this->tmpl = FabrikWorker::getMenuOrRequestVar('listlayout', $this->tmpl, $this->isMambot);
+					$this->tmpl = Worker::getMenuOrRequestVar('listlayout', $this->tmpl, $this->isMambot);
 				}
 			}
 
@@ -11065,8 +11072,8 @@ class FabrikFEModelList extends JModelForm
 				/* $$$ rob 10/03/2012 changed menu param to listlayout to avoid the list menu item
 				 * options also being used for the form/details view template
 				*/
-				// $this->tmpl = FabrikWorker::getMenuOrRequestVar('fabriklayout', $this->tmpl, $this->isMambot);
-				$this->tmpl = FabrikWorker::getMenuOrRequestVar('listlayout', $this->tmpl, $this->isMambot);
+				// $this->tmpl = Worker::getMenuOrRequestVar('fabriklayout', $this->tmpl, $this->isMambot);
+				$this->tmpl = Worker::getMenuOrRequestVar('listlayout', $this->tmpl, $this->isMambot);
 			}
 
 			if ($document->getType() === 'pdf')
@@ -11833,7 +11840,7 @@ class FabrikFEModelList extends JModelForm
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$listid = $this->getId();
 		$tabsField = $this->getTabField();
-		$itemId = FabrikWorker::itemId();
+		$itemId = Worker::itemId();
 		$uri = JURI::getInstance();
 		$urlBase = $uri->toString(array('path'));
 		$urlBase .= '?option=com_' . $package . '&';
@@ -11924,7 +11931,7 @@ class FabrikFEModelList extends JModelForm
 	 */
 	public function toggleCols()
 	{
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$formModel = $this->getFormModel();
 		$groups = $formModel->getGroupsHiarachy();
 		$showInList = $this->showInList();

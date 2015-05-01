@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\ArrayHelper;
 
 jimport('joomla.application.component.model');
 
@@ -219,7 +220,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 					{
 						if ($params->get('slideshow_viz_thumbnails', false))
 						{
-							$small = (string) FArrayHelper::getValue($imgs[$i], 'src');
+							$small = (string) ArrayHelper::getValue($imgs[$i], 'src');
 							$small = str_replace(COM_FABRIK_LIVESITE, '', $small);
 							$pic_opts['thumbnail'] = $small;
 						}

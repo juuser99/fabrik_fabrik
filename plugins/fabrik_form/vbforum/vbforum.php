@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -39,14 +41,13 @@ class PlgFabrik_FormVbForum extends PlgFabrik_Form
 		define(THIS_SCRIPT, 'fabrik');
 
 		// Initialize some variables
-		$db = FabrikWorker::getDbo();
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 
 		// Check for request forgeries
 		JSession::checkToken() or jexit('Invalid Token');
 
-		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get('vb_forum_field'));
+		$elementModel = Worker::getPluginManager()->getElementPlugin($params->get('vb_forum_field'));
 
 		$element = $elementModel->getElement(true);
 		$this->map_forum_field = $elementModel->getFullName();

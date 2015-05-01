@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
@@ -81,7 +83,7 @@ class PlgFabrik_ElementFbcomment extends PlgFabrik_Element
 
 		if (!empty($displayData->href))
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$displayData->href = $w->parseMessageForPlaceHolder($data->href, $data);
 			$locale = $params->get('fbcomment_locale', 'en_US');
 

@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\SMSHelper;
 
 /**
  * Itagg SMS gateway class
@@ -41,10 +43,10 @@ class Itagg extends JObject
 
 	public function process($message, $opts)
 	{
-		$username = FArrayHelper::getValue($opts, 'sms-username');
-		$password = FArrayHelper::getValue($opts, 'sms-password');
-		$smsfrom = FArrayHelper::getValue($opts, 'sms-from');
-		$smsto = FArrayHelper::getValue($opts, 'sms-to');
+		$username = ArrayHelper::getValue($opts, 'sms-username');
+		$password = ArrayHelper::getValue($opts, 'sms-password');
+		$smsfrom = ArrayHelper::getValue($opts, 'sms-from');
+		$smsto = ArrayHelper::getValue($opts, 'sms-to');
 		$smstos = explode(",", $smsto);
 		$message = urlencode($message);
 
@@ -92,7 +94,7 @@ class Itagg extends JObject
 				echo "sent ok";
 			}
 
-			$res = FabrikSMS::doRequest('POST', $url, $vars);
+			$res = SMSHelper::doRequest('POST', $url, $vars);
 		}
 	}
 }

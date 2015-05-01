@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-
+use Fabrik\Helpers\Worker;
 use Joomla\String\String;
+use Fabrik\Helpers\ArrayHelper;
 
 /**
  * String helpers
@@ -117,7 +118,7 @@ class FabrikString extends String
 
 	public static function safeColName($col)
 	{
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 		$col = str_replace('`', '', $col);
 		$splitter = '';
 
@@ -380,9 +381,9 @@ class FabrikString extends String
 	{
 		$text = htmlspecialchars(strip_tags($text), ENT_QUOTES);
 		$orig = $text;
-		$wordCount = FArrayHelper::getValue($opts, 'wordcount', 10);
-		$showTip = FArrayHelper::getValue($opts, 'tip', true);
-		$title = FArrayHelper::getValue($opts, 'title', "");
+		$wordCount = ArrayHelper::getValue($opts, 'wordcount', 10);
+		$showTip = ArrayHelper::getValue($opts, 'tip', true);
+		$title = ArrayHelper::getValue($opts, 'title', "");
 		$text = explode(' ', $text);
 		$summary = array_slice($text, 0, $wordCount);
 
@@ -405,7 +406,7 @@ class FabrikString extends String
 			$tip = htmlspecialchars('<div class="truncate_text">' . $title . $orig . '</div>');
 			$jOpts = new stdClass;
 			$jOpts->notice = true;
-			$jOpts->position = FArrayHelper::getValue($opts, 'position', 'top');
+			$jOpts->position = ArrayHelper::getValue($opts, 'position', 'top');
 			$jOpts = json_encode($jOpts);
 			$summary = '<span class="fabrikTip" opts=\'' . $jOpts . '\' title="' . $tip . '">' . $summary . '</span>';
 		}
@@ -429,12 +430,12 @@ class FabrikString extends String
 		if (count($pair) === 2)
 		{
 			$url = $pair[0];
-			$bits = FArrayHelper::getValue($pair, 1);
+			$bits = ArrayHelper::getValue($pair, 1);
 		}
 		else
 		{
 			$url = '';
-			$bits = FArrayHelper::getValue($pair, 0);
+			$bits = ArrayHelper::getValue($pair, 0);
 		}
 
 		$glue = strstr($bits, '&amp;') ? '&amp;' : '&';
@@ -483,8 +484,8 @@ class FabrikString extends String
 				foreach (explode('&', $qs) as $arg)
 				{
 					$bits = explode('=', $arg);
-					$key = FArrayHelper::getValue($bits, 0, '');
-					$val = FArrayHelper::getValue($bits, 1, '');
+					$key = ArrayHelper::getValue($bits, 0, '');
+					$val = ArrayHelper::getValue($bits, 1, '');
 					$new_qs[] = $key . "=" . urlencode($val);
 				}
 

@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.application.component.view');
 
@@ -84,7 +85,7 @@ class FabrikViewImport extends JViewLegacy
 
 		if (($id !== 0))
 		{
-			$db = FabrikWorker::getDbo();
+			$db = Worker::getDbo();
 			$query = $db->getQuery(true);
 			$query->select('label')->from('#__fabrik_lists')->where('id = ' . $id);
 			$db->setQuery($query);

@@ -17,8 +17,7 @@ namespace Fabrik\Admin\Controllers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
-
+use Fabrik\Helpers\ArrayHelper;
 /**
  * Lists controller class.
  *
@@ -111,7 +110,7 @@ class Lists extends \JControllerBase
 		$cid   = $input->get('cid', array(), 'array');
 		$data  = array('publish' => 1, 'unpublish' => 0, 'archive' => 2, 'trash' => -2, 'report' => -3);
 		$task  = $this->getTask();
-		$value = FArrayHelper::getValue($data, $task, 0, 'int');
+		$value = ArrayHelper::getValue($data, $task, 0, 'int');
 
 		if (empty($cid))
 		{

@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 $data = $displayData;
 $renderOrder = $data['renderOrder'];
 $vals = $data['vals'];
@@ -36,7 +38,7 @@ $listData = $data['data'];
 		{
 			foreach ($group as $row)
 			{
-				$val = FArrayHelper::getValue($vals, $row->__pk_val);
+				$val = ArrayHelper::getValue($vals, $row->__pk_val);
 				$noneSel = (string) $val === '' ? 'selected' : '';
 				$noSel = (string) $val === '0' ? 'selected' : '';
 				$yesSel = (string) $val === '1' ? 'selected' : '';

@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 jimport('joomla.filesystem.file');
 
@@ -249,7 +250,7 @@ class FabrikHelperHTML
 		// Don't include in an Request.JSON call - for autofill form plugin
 		$headers = self::parseRequestHeaders();
 
-		if (FArrayHelper::getValue($headers, 'X-Request') === 'JSON')
+		if (ArrayHelper::getValue($headers, 'X-Request') === 'JSON')
 		{
 			return;
 		}
@@ -480,7 +481,7 @@ EOD;
 		$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&view=details&tmpl=component&formid=' . $form->id . '&listid=' . $table->id
 		. '&rowid=' . $formModel->getRowId() . '&iframe=1&print=1';
 
-		$url .= '&Itemid=' . FabrikWorker::itemId();
+		$url .= '&Itemid=' . Worker::itemId();
 
 		/* $$$ hugh - @TODO - FIXME - if they were using rowid=-1, we don't need this, as rowid has already been transmogrified
 		 * to the correct (PK based) rowid.  but how to tell if original rowid was -1???
@@ -610,7 +611,7 @@ EOD;
 
 	public static function tableList($sel = '')
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id, label')->from('#__fabrik_lists')->where('published = 1')->order('label');
 		$db->setQuery($query);
@@ -1723,7 +1724,7 @@ EOD;
 		$json->url .= '&view=pluginAjax';
 		$json->url .= '&g=element&element_id=' . $elementid
 			. '&formid=' . $formid . '&plugin=' . $plugin . '&method=autocomplete_options&package=' . $package;
-		$c = FArrayHelper::getValue($opts, 'onSelection');
+		$c = ArrayHelper::getValue($opts, 'onSelection');
 
 		if ($c != '')
 		{
@@ -1735,9 +1736,9 @@ EOD;
 			$json->$k = $v;
 		}
 
-		$json->formRef = FArrayHelper::getValue($opts, 'formRef', 'form_' . $formid);
-		$json->container = FArrayHelper::getValue($opts, 'container', 'fabrikElementContainer');
-		$json->menuclass = FArrayHelper::getValue($opts, 'menuclass', 'auto-complete-container');
+		$json->formRef = ArrayHelper::getValue($opts, 'formRef', 'form_' . $formid);
+		$json->container = ArrayHelper::getValue($opts, 'container', 'fabrikElementContainer');
+		$json->menuclass = ArrayHelper::getValue($opts, 'menuclass', 'auto-complete-container');
 
 		return $json;
 	}
@@ -1922,15 +1923,15 @@ EOD;
 			$properties = array('alt' => $properties);
 		}
 
-		$forceImage = FArrayHelper::getValue($opts, 'forceImage', false);
+		$forceImage = ArrayHelper::getValue($opts, 'forceImage', false);
 
 		if ($forceImage !== true)
 		{
 			unset($properties['alt']);
-			$class = FArrayHelper::getValue($properties, 'icon-class', '');
+			$class = ArrayHelper::getValue($properties, 'icon-class', '');
 			$class = 'icon-' . JFile::stripExt($file) . ($class ? ' ' . $class : '');
 			unset($properties['icon-class']);
-			$class .= ' ' . FArrayHelper::getValue($properties, 'class', '');
+			$class .= ' ' . ArrayHelper::getValue($properties, 'class', '');
 			unset($properties['class']);
 			$p = self::propertiesFromArray($properties);
 
@@ -2299,8 +2300,8 @@ EOD;
 	{
 		$url = $_SERVER['REQUEST_URI'];
 		$bits = explode('?', $url);
-		$root = FArrayHelper::getValue($bits, 0, '', 'string');
-		$bits = FArrayHelper::getValue($bits, 1, '', 'string');
+		$root = ArrayHelper::getValue($bits, 0, '', 'string');
+		$bits = ArrayHelper::getValue($bits, 1, '', 'string');
 		$bits = explode("&", $bits);
 
 		for ($b = count($bits) - 1; $b >= 0; $b --)
@@ -2449,7 +2450,7 @@ EOD;
 			return '';
 		}
 
-		if (FabrikWorker::isEmail($href))
+		if (Worker::isEmail($href))
 		{
 			jimport('joomla.mail.helper');
 
@@ -2462,8 +2463,8 @@ EOD;
 			$lbl = $href;
 		}
 
-		$smart_link = FArrayHelper::getValue($opts, 'smart_link', false);
-		$target = FArrayHelper::getValue($opts, 'target', false);
+		$smart_link = ArrayHelper::getValue($opts, 'smart_link', false);
+		$target = ArrayHelper::getValue($opts, 'target', false);
 
 		if ($smart_link || $target == 'mediabox')
 		{

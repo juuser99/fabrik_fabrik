@@ -10,6 +10,9 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\PDFHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -69,7 +72,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		jimport('joomla.mail.helper');
 		$config = JFactory::getConfig();
 		$db = JFactory::getDbo();
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$formModel = $this->getModel();
 		$emailTemplate = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/email/tmpl/' . $params->get('email_template', ''));
 
@@ -186,7 +189,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			foreach ($emailkey as &$key)
 			{
 				// $$$ rob added strstr test as no point trying to add raw suffix if not placeholder in $emailkey
-				if (!FabrikWorker::isEmail($key) && trim($key) !== '' && strstr($key, '}'))
+				if (!Worker::isEmail($key) && trim($key) !== '' && strstr($key, '}'))
 				{
 					$key = explode('}', $key);
 
@@ -221,7 +224,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		{
 			$email_to_eval = $w->parseMessageForPlaceholder($email_to_eval, $this->data, false);
 			$email_to_eval = @eval($email_to_eval);
-			FabrikWorker::logEval($email_to_eval, 'Caught exception on eval in email emailto : %s');
+			Worker::logEval($email_to_eval, 'Caught exception on eval in email emailto : %s');
 			$email_to_eval = explode(',', $email_to_eval);
 			$email_to = array_merge($email_to, $email_to_eval);
 		}
@@ -294,7 +297,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		{
 			$email = strip_tags($email);
 
-			if (FabrikWorker::isEmail($email))
+			if (Worker::isEmail($email))
 			{
 				$thisAttachments = $this->attachments;
 				$this->data['emailto'] = $email;
@@ -392,7 +395,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			// Require files and set up DOM pdf
 			require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
 			require_once JPATH_SITE . '/components/com_fabrik/controllers/details.php';
-			FabrikPDFHelper::iniDomPdf();
+			PDFHelper::iniDomPdf();
 			$dompdf = new DOMPDF;
 			$size = strtoupper($params->get('pdf_size', 'A4'));
 			$orientation = $params->get('pdf_orientation', 'portrait');
@@ -516,7 +519,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 							{
 								// Can't implode multi dimensional arrays
 								$val = json_encode($val);
-								$val = FabrikWorker::JSONtoData($val, true);
+								$val = Worker::JSONtoData($val, true);
 							}
 						}
 						else
@@ -539,13 +542,13 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		}
 		// $$$ hugh - added an optional eval for adding attachments.
 		// Eval'd code should just return an array of file paths which we merge with $this->attachments[]
-		$w = new FabrikWorker;
+		$w = new Worker;
 		$email_attach_eval = $w->parseMessageForPlaceholder($params->get('email_attach_eval', ''), $this->data, false);
 
 		if (!empty($email_attach_eval))
 		{
 			$email_attach_array = @eval($email_attach_eval);
-			FabrikWorker::logEval($email_attach_array, 'Caught exception on eval in email email_attach_eval : %s');
+			Worker::logEval($email_attach_array, 'Caught exception on eval in email email_attach_eval : %s');
 
 			if (!empty($email_attach_array))
 			{
@@ -649,7 +652,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 				{
 					$val = '';
 
-					if (is_array(FArrayHelper::getValue($data, $key)))
+					if (is_array(ArrayHelper::getValue($data, $key)))
 					{
 						// Repeat group data
 						foreach ($data[$key] as $k => $v)
@@ -664,7 +667,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 					}
 					else
 					{
-						$val = FArrayHelper::getValue($data, $key);
+						$val = ArrayHelper::getValue($data, $key);
 					}
 
 					$val = FabrikString::rtrimword($val, "<br />");

@@ -12,10 +12,10 @@ var FbThumbs =  new Class({
 		this.parent(element, options);
 		this.thumb = thumb;
 		this.spinner = new Spinner(this.getContainer());
-		this.setupj3();
+		this.setup();
 	},
 	
-	setupj3: function () {
+	setup: function () {
 		var c = this.getContainer();
 		var up = c.getElement('button.thumb-up');
 		var down = c.getElement('button.thumb-down');

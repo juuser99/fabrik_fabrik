@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+
 /**
  * Plugin element to render 2 fields to capture and confirm a password
  *
@@ -195,11 +197,11 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 			$rowId = $input->get('rowid', '', 'string');
 
 			// If its coming from an ajax form submit then the key is possibly an array.
-			$keyVal = FArrayHelper::getValue($_REQUEST, $k);
+			$keyVal = ArrayHelper::getValue($_REQUEST, $k);
 
 			if (is_array($keyVal))
 			{
-				$keyVal = FArrayHelper::getValue($keyVal, 0);
+				$keyVal = ArrayHelper::getValue($keyVal, 0);
 			}
 
 			// $$$ rob add rowid test as well as if using row=-1 and usekey=field $k may have a value
