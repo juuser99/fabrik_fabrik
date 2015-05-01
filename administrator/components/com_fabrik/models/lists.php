@@ -28,8 +28,15 @@ interface ModelListsInterface
  * @since       3.5
  */
 
-class Lists extends \JModelBase implements ModelListsInterface
+class Lists extends Base implements ModelListsInterface
 {
+	/**
+	 * State prefix
+	 *
+	 * @var string
+	 */
+	protected $context = 'fabrik.lists';
+
 	/**
 	 * Constructor.
 	 *
@@ -45,11 +52,6 @@ class Lists extends \JModelBase implements ModelListsInterface
 		{
 			$this->state->set('filter_fields', array('l.id', 'label', 'db_table_name', 'published'));
 		}
-	}
-
-	public function getItems()
-	{
-		return array();
 	}
 
 	public function getPagination()
@@ -118,8 +120,8 @@ class Lists extends \JModelBase implements ModelListsInterface
 		$this->set('filter.published', $published);
 
 		// Load the parameters.
-		$params = JComponentHelper::getParams('com_fabrik');
-		$this->set('params', $params);
+		/*$params = JComponentHelper::getParams('com_fabrik');
+		$this->set('params', $params);*/
 
 		// List state information.
 		parent::populateState('label', 'asc');
@@ -134,6 +136,25 @@ class Lists extends \JModelBase implements ModelListsInterface
 	public function getDbTableNames()
 	{
 
+	}
+
+	/**
+	 * Trash items
+	 *
+	 * @param   array $ids Ids
+	 *
+	 * @return  void
+	 */
+	public function trash($ids)
+	{
+		foreach ($ids as $id)
+		{
+			$this->set('id', $id);
+			$list = new Lizt;
+			$item = $list->getItem($id);
+			$item->list->published = -2;
+			$list->save($item);
+		}
 	}
 
 }

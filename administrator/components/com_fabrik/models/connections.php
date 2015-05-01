@@ -383,11 +383,18 @@ class Connections extends Base implements ConnectionsInterface
 	/**
 	 * Get an item
 	 *
+	 * @param   string  $id  JSON view file name
+	 *
 	 * @return stdClass
 	 */
-	public function getItem()
+	public function getItem($id = null)
 	{
-		if ($this->get('id', '') === '')
+		if (is_null($id))
+		{
+			$id = $this->get('id', '');
+		}
+
+		if ($id === '')
 		{
 			return $this->itemSchema();
 		}
@@ -397,7 +404,6 @@ class Connections extends Base implements ConnectionsInterface
 
 		if (empty($test))
 		{
-			$id    = $this->get('id');
 			$items = $this->getItems();
 
 			if (!array_key_exists($id, $items))
@@ -494,6 +500,25 @@ class Connections extends Base implements ConnectionsInterface
 		{
 			$cnn->password  = $crypt->decrypt($cnn->password);
 			$cnn->decrypted = true;
+		}
+	}
+
+	/**
+	 * Trash items
+	 *
+	 * @param   array $ids Ids
+	 *
+	 * @return  void
+	 */
+	public function trash($ids)
+	{
+		$items = $this->getItems();
+
+		foreach ($ids as $id)
+		{
+			$items[$id]->published = -2;
+			$items[$id]->id        = $id;
+			$this->save($items[$id]);
 		}
 	}
 

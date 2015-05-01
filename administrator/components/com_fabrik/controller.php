@@ -58,7 +58,7 @@ class Controller extends \JControllerBase
 
 		$viewClass  = 'Fabrik\Admin\Views\\' . ucfirst($viewName) . '\\' . ucfirst($viewFormat);
 		$modelClass = 'Fabrik\Admin\Models\\' . ucfirst($viewName);
-		//echo "viewClass = $viewClass, modelClass = $modelClass";exit;
+
 		$model      = new $modelClass;
 		$view       = new $viewClass($model, $paths);
 
@@ -74,6 +74,10 @@ class Controller extends \JControllerBase
 			case 'edit':
 				$model->set('id', $id);
 				$model->checkout();
+				break;
+			case 'delete':
+				$model->delete($ids);
+				$this->app->redirect($listUrl);
 				break;
 			case 'apply':
 				$this->save($model);
@@ -97,7 +101,6 @@ class Controller extends \JControllerBase
 			case 'checkin':
 				$model->set('id', $id);
 				$model->checkin();
-				//echo $listUrl;exit;
 				$this->app->redirect($listUrl);
 				break;
 			case 'checkout':

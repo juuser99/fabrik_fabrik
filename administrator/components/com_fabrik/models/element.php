@@ -22,7 +22,7 @@ use \stdClass as stdClass;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \JText as JText;
-
+use \JComponentHelper as JComponentHelper;
 
 jimport('joomla.application.component.modeladmin');
 
@@ -419,7 +419,7 @@ class Element extends Base implements ModelElementFormInterface
 		if ($config->get('fbConf_wysiwyg_label', 0) == 0)
 		{
 			// Ensure the data is in the same format as when saved by the wysiwyg element e.g. < becomes &lt;
-			$data['label'] = htmlspecialchars($data['label']);
+			$data['label'] = htmlspecialchars($data->label);
 		}
 
 		jimport('joomla.utilities.date');

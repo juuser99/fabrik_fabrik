@@ -99,23 +99,54 @@ class Base extends \JModelBase
 	}
 
 	/**
-	 * Get an item
+	 * Get the item -
+	 * if no id set load data template
+	 *
+	 * @param  string $id
 	 *
 	 * @return stdClass
 	 */
-	public function getItem()
+	public function getItem($id = null)
 	{
-		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_fabrik.edit.' . $this->name . '.data', array());
-		$test = (array) $data;
-
-		if (empty($test))
+		if (is_null($id))
 		{
-			$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/template.json');
-			$data = json_decode($json);
+			$id = $this->get('id', '');
 		}
 
-		return $data;
+		// @TODO - save & load from session?
+
+		if ($id === '')
+		{
+			$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/template.json');
+		}
+		else
+		{
+			$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $id . '.json');
+		}
+
+		$item = json_decode($json);
+
+		return $item;
+	}
+
+	/**
+	 * Get view items.
+	 *
+	 * @return array
+	 */
+	public function getItems()
+	{
+		$path  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views';
+		$files = \JFolder::files($path, '.json', false, true);
+		$items = array();
+
+		foreach ($files as $file)
+		{
+			$json    = file_get_contents($file);
+			$items[] = json_decode($json);
+		}
+
+		return $items;
 	}
 
 	/**
@@ -344,22 +375,32 @@ class Base extends \JModelBase
 		return $this->save($item);
 	}
 
-	/**
-	 * Trash items
-	 *
-	 * @param   array $ids Ids
-	 *
-	 * @return  void
-	 */
-	public function trash($ids)
+	public function cleanCache($option)
 	{
-		$items = $this->getItems();
+		// FIXME - needs to be implemented - copy from JModelLegacy?
+	}
+
+	/**
+	 * Delete main json files.
+	 *
+	 * @param   array $ids File names
+	 *
+	 * @return  int  Number of deleted files
+	 */
+	public function delete($ids)
+	{
+		$count = 0;
 
 		foreach ($ids as $id)
 		{
-			$items[$id]->published = -2;
-			$items[$id]->id        = $id;
-			$this->save($items[$id]);
+			$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $id . '.json';
+			if (\JFile::delete($file))
+			{
+				$count++;
+			}
 		}
+
+		return $count;
 	}
+
 }

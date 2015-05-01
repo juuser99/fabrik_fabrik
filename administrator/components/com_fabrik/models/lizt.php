@@ -101,19 +101,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 	}
 
 	/**
-	 * FIXME - Should return a loaded view - not the template.
-	 *
-	 * @return stdClass
-	 */
-	public function getItem()
-	{
-		$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/template.json');
-		$item = json_decode($json);
-
-		return $item;
-	}
-
-	/**
 	 * Method to get the confirm list delete form.
 	 *
 	 * @param   array $data     Data for the form.
@@ -539,26 +526,38 @@ class Lizt extends Base implements ModelFormLiztInterface
 	/**
 	 * Save the form
 	 *
-	 * @param   array $data The jform part of the request data
+	 * @param   array $data The jform part of the request data pertaining to the list.
 	 *
 	 * @return bool
 	 * @throws RuntimeException
 	 */
 	public function save($post)
 	{
-
 		$this->populateState();
 		$input = $this->app->input;
 		$user  = JFactory::getUser();
 		$date  = JFactory::getDate();
 
-		$data       = new stdClass;
-		$data->list = ArrayHelper::toObject($post);
-		$data->view = $data->list->view;
-		unset($data->list->view);
+		if (is_array($post))
+		{
+			// We are saving from the (new?) form submission
+			$data       = new stdClass;
+			$post = ArrayHelper::toObject($post);
+			$data->list = $post;
+			$data->view = $data->list->view;
+			unset($data->list->view);
+		}
+		else
+		{
+			// We are saving from anywhere except the (new?) form - in this case the json file is being passed in
+			$data = $post;
+		}
 
+		//echo "<pre>";print_r($data);exit;
 		$data->list->order_by  = $input->get('order_by', array(), 'array');
 		$data->list->order_dir = $input->get('order_dir', array(), 'array');
+		$data->checked_out = false;
+		$data->checked_out_time = '';
 
 		$this->collation($data);
 
@@ -580,7 +579,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 
 			//$isNew    = false;
-			$newTable = trim($data->list->_database_name);
+			$newTable = !isset($data->list->_database_name) ? '' : trim($data->list->_database_name);
 
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
 			$newTable = FabrikString::clean($newTable);
@@ -620,8 +619,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 			else
 			{
-				$data->db_table_name = $newTable;
-				$data->auto_inc      = 1;
+				$data->list->db_table_name = $newTable;
+				$data->list->auto_inc      = 1;
 
 				$dbOpts            = array();
 				$params            = new JRegistry($data->list->params);
@@ -663,12 +662,15 @@ class Lizt extends Base implements ModelFormLiztInterface
 		}
 
 		$this->updateJoins($data);
+		//echo "nane  " . $data->list->db_table_name;exit;
+		$storage = $this->getStorage(array('table' => $data->list->db_table_name));
 
-		if (!$this->storage->isView())
+		if (!$storage->isView())
 		{
-			$this->storage->updatePrimaryKey($data->list->db_primary_key, $data->list->auto_inc);
+			$storage->updatePrimaryKey($data->list->db_primary_key, $data->list->auto_inc);
 		}
 
+		unset($data->list->_database_name);
 		$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->view .'.json';
 
 		$output = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
@@ -719,16 +721,20 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		if ($data->list->group_by !== '' && array_key_exists($data->list->group_by, $map))
+		if (isset($data->list->group_by))
 		{
-			$this->storage->addIndex($data->list->group_by, 'groupby', 'INDEX', $map[$data->list->group_by]);
+			if ($data->list->group_by !== '' && array_key_exists($data->list->group_by, $map))
+			{
+				$this->storage->addIndex($data->list->group_by, 'groupby', 'INDEX', $map[$data->list->group_by]);
+			}
+
+			if (trim($params->get('group_by_order')) !== '')
+			{
+				$this->storage->addIndex($params->get('group_by_order'), 'groupbyorder', 'INDEX', $map[$params->get('group_by_order')]);
+			}
 		}
 
-		if (trim($params->get('group_by_order')) !== '')
-		{
-			$this->storage->addIndex($params->get('group_by_order'), 'groupbyorder', 'INDEX', $map[$params->get('group_by_order')]);
-		}
-
+		$params = new JRegistry($data->list);
 		$filterFields = (array) $params->get('filter-fields', array());
 
 		foreach ($filterFields as $field)
@@ -1674,11 +1680,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 		return Worker::getConnection($item)->getDb();
 	}
 
-	protected function getStorage()
+	protected function getStorage($options = array())
 	{
-		$db = $this->getDb();
+		if (!array_key_exists('db', $options))
+		{
+			$options['db'] = $this->getDb();
+		}
 
-		return new Storage(array('db' => $db));
+		return new Storage($options);
 	}
 
 	/**
@@ -1877,5 +1886,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 	}
+
 
 }

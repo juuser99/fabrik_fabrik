@@ -251,7 +251,7 @@ class MySql
 		{
 			$table = $this->table;
 		}
-
+echo "tabke = $table";
 		$origColNames = $this->getDBFields($table);
 		$keys         = array();
 

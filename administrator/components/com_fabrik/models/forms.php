@@ -25,8 +25,15 @@ interface ModelFormsInterface
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Forms extends \JModelBase implements ModelFormsInterface
+class Forms extends Base implements ModelFormsInterface
 {
+	/**
+	 * State prefix
+	 *
+	 * @var string
+	 */
+	protected $context = 'fabrik.forms';
+
 	/**
 	 * Constructor.
 	 *
@@ -42,11 +49,6 @@ class Forms extends \JModelBase implements ModelFormsInterface
 		{
 			$this->state->set('filter_fields', array('f.id', 'f.label', 'f.published'));
 		}
-	}
-
-	public function getItems()
-	{
-		return array();
 	}
 
 	public function getPagination()
