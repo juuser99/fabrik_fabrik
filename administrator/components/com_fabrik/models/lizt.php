@@ -101,6 +101,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 	}
 
 	/**
+	 * FIXME - Should return a loaded view - not the template.
+	 *
 	 * @return stdClass
 	 */
 	public function getItem()
@@ -501,7 +503,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		if (is_null($this->feListModel))
 		{
 			$this->feListModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$this->feListModel->setState('list.id', $this->getState('list.id'));
+			$this->feListModel->set('list.id', $this->get('list.id'));
 		}
 
 		return $this->feListModel;
@@ -625,7 +627,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$params            = new JRegistry($data->list->params);
 				$dbOpts['COLLATE'] = $params->get('collation', '');
 
-				$fields = array('id' => array('plugin' => 'internalid'), 'date_time' => array('plugin' => 'date'));
+				$fields = array('id' => array('plugin' => 'internalid', 'primary_key' => true),
+					'date_time' => array('plugin' => 'date'));
 				$fields = (array) $this->get('defaultfields', $fields);
 
 				foreach ($fields as $name => $fieldData)
@@ -642,10 +645,11 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		Fabrik::prepareSaveDate($row->publish_down);
-		Fabrik::prepareSaveDate($row->created);
-		Fabrik::prepareSaveDate($row->publish_up);
-		$pk = ArrayHelper::getValue($data, 'db_primary_key');
+		Fabrik::prepareSaveDate($data->list->publish_down);
+		Fabrik::prepareSaveDate($data->list->created);
+		Fabrik::prepareSaveDate($data->list->publish_up);
+
+		$pk = ArrayHelper::getValue($data->list, 'db_primary_key');
 
 		if ($pk == '')
 		{
@@ -654,22 +658,28 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$extra = $pk[0]['extra'];
 
 			// Store without quoteNames as thats db specific
-			$row->db_primary_key = $row->db_primary_key == '' ? $row->db_table_name . '.' . $key : $row->db_primary_key;
-			$row->auto_inc       = String::stristr($extra, 'auto_increment') ? true : false;
+			$data->list->db_primary_key = $data->list->db_primary_key == '' ? $data->list->db_table_name . '.' . $key : $data->list->db_primary_key;
+			$data->list->auto_inc       = String::stristr($extra, 'auto_increment') ? true : false;
 		}
 
-		$row->store();
 		$this->updateJoins($data);
 
 		if (!$this->storage->isView())
 		{
-			$this->storage->updatePrimaryKey($row->db_primary_key, $row->auto_inc);
+			$this->storage->updatePrimaryKey($data->list->db_primary_key, $data->list->auto_inc);
 		}
+
+		$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->view .'.json';
+
+		$output = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+		file_put_contents($file, $output);
 
 		// Make an array of elements and a presumed index size, map is then used in creating indexes
 		$map    = array();
 		$groups = $this->getFormModel()->getGroupsHiarachy();
 
+		// FIXME - from here on - not tested for json views
 		foreach ($groups as $groupModel)
 		{
 			$elementModels = $groupModel->getMyElements();
@@ -696,8 +706,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$map[$element->getElement()->id]          = $size;
 			}
 		}
+
 		// Update indexes (added array_key_exists check as these may be during after CSV import)
-		if (!empty($aOrderBy) && array_key_exists($row->order_by, $map))
+		if (!empty($aOrderBy) && array_key_exists($data->list->order_by, $map))
 		{
 			foreach ($aOrderBy as $orderBy)
 			{
@@ -708,9 +719,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		if ($row->group_by !== '' && array_key_exists($row->group_by, $map))
+		if ($data->list->group_by !== '' && array_key_exists($data->list->group_by, $map))
 		{
-			$this->storage->addIndex($row->group_by, 'groupby', 'INDEX', $map["$row->group_by"]);
+			$this->storage->addIndex($data->list->group_by, 'groupby', 'INDEX', $map[$data->list->group_by]);
 		}
 
 		if (trim($params->get('group_by_order')) !== '')
@@ -728,20 +739,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		$pkName = $row->getKeyName();
-
-		if (isset($row->$pkName))
-		{
-			$this->setState($this->getName() . '.id', $row->$pkName);
-		}
-
-		/**
-		 * $$$ hugh - I don't know what this state gets used for, but $iNew is
-		 * currently ending up the wrong way round.  New tables it's false,
-		 * existing tables it's true.
-		 */
-
-		$this->set($this->getName() . '.new', $isNew);
 		parent::cleanCache('com_fabrik');
 
 		return true;
@@ -816,16 +813,19 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	private function updateJoins($data)
 	{
+		// FIXME - test for json view;
+		return;
+
 		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 
 		// If we are creating a new list then don't update any joins - can result in groups and elements being removed.
-		if ((int) $this->getState('list.id') === 0)
+		if ((int) $this->get('list.id') === 0)
 		{
 			return;
 		}
 		// $$$ hugh - added "AND element_id = 0" to avoid fallout from "random join and group deletion" issue from May 2012
-		$query->select('*')->from('#__fabrik_joins')->where('list_id = ' . (int) $this->getState('list.id') . ' AND element_id = 0');
+		$query->select('*')->from('#__fabrik_joins')->where('list_id = ' . (int) $this->get('list.id') . ' AND element_id = 0');
 		$db->setQuery($query);
 		$aOldJoins       = $db->loadObjectList();
 		$params          = $data['params'];
@@ -967,7 +967,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		$join                  = $this->getTable('Join');
 		$join->id              = null;
-		$join->list_id         = $this->getState('list.id');
+		$join->list_id         = $this->get('list.id');
 		$join->join_from_table = $joinTableFrom;
 		$join->table_join      = $joinTable;
 		$join->table_join_key  = $joinTableKey;
@@ -1260,7 +1260,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		else
 		{
 			// @TODO json view this.
-			$this->setState('list.form_id', $formId);
+			$this->set('list.form_id', $formId);
 			$this->formModel->setId($formId);
 			$this->formModel->getTable();
 			$this->formModel->copy();
@@ -1366,7 +1366,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				return false;
 			}
 
-			$this->setState('list.id', $item->id);
+			$this->set('list.id', $item->id);
 
 			// Test for seeing if joins correctly stored when coping new table
 			$this->copyJoins($pk, $item->id, $formModel->groupidmap);
@@ -1654,7 +1654,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$this->__state_set = true;
 		$item->load(array('form_id' => $formId));
 		$this->table = $item;
-		$this->setState('list.id', $item->id);
+		$this->set('list.id', $item->id);
 
 		return $item;
 	}
@@ -1666,12 +1666,19 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 *
 	 * @return  object database
 	 */
-	public function &getDb()
+	public function getDb()
 	{
-		$listId = $this->getState('list.id');
+		$listId = $this->get('list.id');
 		$item   = $this->getItem($listId);
 
 		return Worker::getConnection($item)->getDb();
+	}
+
+	protected function getStorage()
+	{
+		$db = $this->getDb();
+
+		return new Storage(array('db' => $db));
 	}
 
 	/**
@@ -1686,7 +1693,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function createDBTable($name = null, $fields = array('id' => 'internalid', 'date_time' => 'date'), $opts = array())
 	{
-		return $this->storage->createTable($name, $fields, $opts);
+		$storage = $this->getStorage();
+
+		return $storage->createTable($name, $fields, $opts);
 	}
 
 	/**

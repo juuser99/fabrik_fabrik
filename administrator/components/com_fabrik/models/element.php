@@ -20,7 +20,7 @@ use \JModelLegacy as JModelLegacy;
 use \FText as FText;
 use \stdClass as stdClass;
 use Fabrik\Helpers\ArrayHelper;
-Fabrik\Helpers;
+use Fabrik\Helpers\Worker;
 use \JText as JText;
 
 
@@ -630,7 +630,7 @@ class Element extends Base implements ModelElementFormInterface
 		if ($return)
 		{
 			$this->updateJavascript($data);
-			$elementModel->setId($this->getState($this->getName() . '.id'));
+			$elementModel->setId($this->get($this->getName() . '.id'));
 			$row->id = $elementModel->getId();
 			$data['id'] = $row->id;
 			$this->createRepeatElement($elementModel, $row);
@@ -886,7 +886,7 @@ class Element extends Base implements ModelElementFormInterface
 		 * all descendants (i.e. children of children, etc.), not just direct children.
 		 */
 		$input = $this->app->input;
-		$this_id = $this->getState($this->getName() . '.id');
+		$this_id = $this->get($this->getName() . '.id');
 		$ids = $this->getElementDescendents($this_id);
 		$ids[] = $this_id;
 		$db = Worker::getDbo(true);
@@ -1221,7 +1221,7 @@ class Element extends Base implements ModelElementFormInterface
 	{
 		if (empty($id))
 		{
-			$id = $this->getState($this->getName() . '.id');
+			$id = $this->get($this->getName() . '.id');
 		}
 
 		$db = Worker::getDbo(true);

@@ -326,14 +326,19 @@ class ArrayHelper extends \JArrayHelper
 	{
 		if (is_object($array))
 		{
-			$array = JArrayHelper::fromObject($array);
+			$lookup = clone ($array);
+			$lookup = ArrayHelper::fromObject($lookup);
+		}
+		else
+		{
+			$lookup = $array;
 		}
 
 		$result = null;
 
-		if (isset($array[$name]))
+		if (isset($lookup[$name]))
 		{
-			$result = $array[$name];
+			$result = $lookup[$name];
 		}
 
 		// Handle the default case

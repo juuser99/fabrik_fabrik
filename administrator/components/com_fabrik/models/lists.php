@@ -74,11 +74,11 @@ class Lists extends \JModelBase implements ModelListsInterface
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
-		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . $this->getState('filter.access');
-		$id .= ':' . $this->getState('filter.state');
-		$id .= ':' . $this->getState('filter.category_id');
-		$id .= ':' . $this->getState('filter.language');
+		$id .= ':' . $this->get('filter.search');
+		$id .= ':' . $this->get('filter.access');
+		$id .= ':' . $this->get('filter.state');
+		$id .= ':' . $this->get('filter.category_id');
+		$id .= ':' . $this->get('filter.language');
 
 		return parent::getStoreId($id);
 	}
@@ -111,15 +111,15 @@ class Lists extends \JModelBase implements ModelListsInterface
 	{
 		// Load the filter state.
 		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
+		$this->set('filter.search', $search);
 
 		// Load the published state
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
+		$this->set('filter.published', $published);
 
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_fabrik');
-		$this->setState('params', $params);
+		$this->set('params', $params);
 
 		// List state information.
 		parent::populateState('label', 'asc');

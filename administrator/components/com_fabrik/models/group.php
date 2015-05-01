@@ -148,7 +148,7 @@ class Group extends Base implements ModelGroupInterface
 
 		$data['params'] = json_encode($data['params']);
 		$return         = parent::save($data);
-		$data['id']     = $this->getState($this->getName() . '.id');
+		$data['id']     = $this->get($this->getName() . '.id');
 
 		if ($return)
 		{

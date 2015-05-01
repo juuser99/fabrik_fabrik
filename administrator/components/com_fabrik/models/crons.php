@@ -75,18 +75,18 @@ class Crons extends \JModelBase implements ModelCronsInterface
 		// Load the parameters.
 		// @TODO is this used?
 		$params = JComponentHelper::getParams('com_fabrik');
-		$this->setState('params', $params);
+		$this->set('params', $params);
 
 		// Load the filter state.
 		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
+		$this->set('filter.search', $search);
 
 		// Load the published state
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
+		$this->set('filter.published', $published);
 
 		$state = $this->app->getUserStateFromRequest($this->context . '.filter.state', 'filter_state', '', 'string');
-		$this->setState('filter.state', $state);
+		$this->set('filter.state', $state);
 
 		// List state information.
 		parent::populateState('name', 'asc');

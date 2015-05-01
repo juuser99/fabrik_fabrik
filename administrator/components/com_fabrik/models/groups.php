@@ -68,17 +68,17 @@ class Groups extends \JModelBase implements ModelGroupsInterface
 	{
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_fabrik');
-		$this->setState('params', $params);
+		$this->set('params', $params);
 
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
+		$this->set('filter.published', $published);
 
 		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
+		$this->set('filter.search', $search);
 
 		// Load the form state
 		$package = $this->app->getUserStateFromRequest($this->context . '.filter.form', 'filter_form', '');
-		$this->setState('filter.form', $package);
+		$this->set('filter.form', $package);
 
 		// List state information.
 		parent::populateState('name', 'asc');

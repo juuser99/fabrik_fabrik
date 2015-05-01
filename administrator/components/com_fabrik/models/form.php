@@ -103,7 +103,7 @@ class Form extends Base implements ModelFormFormInterface
 	 */
 	protected function _makeFormGroups($data, $currentGroups)
 	{
-		$formid = $this->getState($this->getName() . '.id');
+		$formid = $this->get($this->getName() . '.id');
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		ArrayHelper::toInteger($currentGroups);

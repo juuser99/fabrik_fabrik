@@ -12,6 +12,7 @@ namespace Fabrik\Storage;
 
 use Fabrik\Helpers\ArrayHelper;
 use Joomla\Registry\Registry;
+use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 
 // No direct access
@@ -32,7 +33,7 @@ class MySql
 	 *
 	 * @var \JDatabaseDriver
 	 */
-	protected $db = null;
+	public $db = null;
 
 	/**
 	 * Table name
@@ -303,55 +304,33 @@ class MySql
 	public function createTable($name, $fields, $opts)
 	{
 		$db = Worker::getDbo(true);
-		$fabrikDb = $this->getDb();
-		$formModel = $this->getFormModel();
+		$fabrikDb = $this->db;
 
 		if (is_null($name))
 		{
 			$name = $this->getTable()->db_table_name;
 		}
+
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . $db->qn($name) . ' (';
-
-		$i = 0;
-		foreach ($fields as $name => $plugin)
-		{
-			// $$$ hugh - testing corner case where we are called from form model's updateDatabase,
-			// and the underlying table has been deleted.  So elements already exist.
-			$element = $formModel->getElement($name);
-
-			if ($element === false)
-			{
-				if (is_string($plugin))
-				{
-					$plugin = array('plugin' => $plugin);
-				}
-
-				$plugin['ordering'] = $i;
-				//$element = $this->makeElement($name, $plugin);
-
-				if (!$element)
-				{
-					return false;
-				}
-			}
-			//$elementModels[] = clone ($element);
-			$i++;
-		}
 
 		$arAddedObj = array();
 		$keys = array();
 		$lines = array();
+		$pluginManager = Worker::getPluginManager();
 
-		foreach ($elementModels as $elementModel)
+		foreach ($fields as $fieldName => $fieldData)
 		{
+			$elementModel = $pluginManager->loadPlugIn($fieldData['plugin'], 'element');
 			$element = $elementModel->getElement();
+
 			// Replace all non alphanumeric characters with _
-			$fieldName = FabrikString::dbFieldName($element->name);
-			
-			if ($element->primary_key)
+			$fieldName = \FabrikString::dbFieldName($fieldName);
+
+			if ($element->primary_key || ArrayHelper::getValue($fieldData, 'primary_key'))
 			{
 				$keys[] = $fieldName;
 			}
+
 			// Any elements that are names the same (eg radio buttons) can not be entered twice into the database
 			if (!in_array($fieldName, $arAddedObj))
 			{
@@ -360,27 +339,21 @@ class MySql
 
 				if ($fieldName != '' && !is_null($fieldType))
 				{
-					if (\JString::stristr($fieldType, 'not null'))
+					if (String::stristr($fieldType, 'not null'))
 					{
 						$lines[] = $fabrikDb->qn($fieldName) . ' ' . $fieldType;
 					}
 					else
 					{
-						$lines[] = $fabrikDb->qn($fieldName) . ' ' . $fieldType . 'null';
+						$lines[] = $fabrikDb->qn($fieldName) . ' ' . $fieldType . ' null';
 					}
 				}
 			}
 		}
-		$func = create_function('$value', '$db = Worker::getDbo(true);return $db->qn($value);');
+
 		$sql .= implode(', ', $lines);
-		if (!empty($keys))
-		{
-			$sql .= ', PRIMARY KEY (' . implode(',', array_map($func, $keys)) . '))';
-		}
-		else
-		{
-			$sql .= ')';
-		}
+		$sql .= !empty($keys) ? ', PRIMARY KEY (' . implode(',', $db->qn($keys)) . '))' : ')';
+
 		foreach ($opts as $k => $v)
 		{
 			if ($v != '')
@@ -391,6 +364,7 @@ class MySql
 		$sql .= ' ENGINE = MYISAM ';
 		$fabrikDb->setQuery($sql);
 		$fabrikDb->execute();
+
 		return $keys;
 	}
 

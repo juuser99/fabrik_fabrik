@@ -68,13 +68,13 @@ class Forms extends \JModelBase implements ModelFormsInterface
 	{
 		// Load the parameters.
 		$params = \JComponentHelper::getParams('com_fabrik');
-		$this->setState('params', $params);
+		$this->set('params', $params);
 
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
+		$this->set('filter.published', $published);
 
 		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
+		$this->set('filter.search', $search);
 
 		// List state information.
 		parent::populateState('label', 'asc');

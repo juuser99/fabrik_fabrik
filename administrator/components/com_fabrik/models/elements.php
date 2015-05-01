@@ -87,29 +87,29 @@ class Elements extends \JModelBase implements ModelElementsInterface
 	{
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_fabrik');
-		$this->setState('params', $params);
+		$this->set('params', $params);
 
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
+		$this->set('filter.published', $published);
 
 		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
+		$this->set('filter.search', $search);
 
 		// Load the form state
 		$form = $this->app->getUserStateFromRequest($this->context . '.filter.form', 'filter_form', '');
-		$this->setState('filter.form', $form);
+		$this->set('filter.form', $form);
 
 		// Load the group state
 		$group = $this->app->getUserStateFromRequest($this->context . '.filter.group', 'filter_group', '');
-		$this->setState('filter.group', $group);
+		$this->set('filter.group', $group);
 
 		// Load the show in list state
 		$showinlist = $this->app->getUserStateFromRequest($this->context . '.filter.showinlist', 'filter_showinlist', '');
-		$this->setState('filter.showinlist', $showinlist);
+		$this->set('filter.showinlist', $showinlist);
 
 		// Load the plug-in state
 		$plugin = $this->app->getUserStateFromRequest($this->context . '.filter.plugin', 'filter_plugin', '');
-		$this->setState('filter.plugin', $plugin);
+		$this->set('filter.plugin', $plugin);
 
 		// List state information.
 		parent::populateState($ordering, $direction);

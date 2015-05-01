@@ -237,7 +237,7 @@ class Home extends \JModelBase
 		$formModel->setId($form->id);
 		$formModel->form = $form;
 
-		$listModel->setState('list.id', $list->id);
+		$listModel->set('list.id', $list->id);
 		$listModel->getItem();
 
 		$elements = array('id' => array('plugin' => 'internalid', 'label' => 'id', 'group_id' => $groupId),

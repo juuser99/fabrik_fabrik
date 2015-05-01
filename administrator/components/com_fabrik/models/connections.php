@@ -286,9 +286,6 @@ class Connections extends Base implements ConnectionsInterface
 	 */
 	protected function populateState($ordering = '', $direction = '')
 	{
-		// Load the parameters.
-		/*$params = JComponentHelper::getParams('com_fabrik');
-		$this->setState('params', $params);*/
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->set('filter.published', $published);
 		$search = $this->app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
