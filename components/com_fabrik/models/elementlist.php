@@ -604,19 +604,17 @@ class ElementList extends Element
 	 * Shows the data formatted for the list view
 	 *
 	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   \stdClass  &$thisRow  All the data in the lists current row
 	 *
 	 * @return  string	formatted value
 	 */
 
-	public function renderListData($data, stdClass &$thisRow)
+	public function renderListData($data, \stdClass &$thisRow)
 	{
-		$element = $this->getElement();
 		$params = $this->getParams();
 		$listModel = $this->getListModel();
 		$multiple = $this->isMultiple();
 		$mergeGroupRepeat = ($this->getGroup()->canRepeat() && $this->getListModel()->mergeJoinedData());
-		$sLabels = array();
 		$useIcon = $params->get('icon_folder', 0);
 
 		// Give priority to raw value icons (podion)

@@ -20,7 +20,7 @@ jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
+//require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
 /**
  * Renders a list of elements found in a fabrik list
@@ -59,13 +59,12 @@ class JFormFieldListfields extends JFormFieldList
 			$this->results = array();
 		}
 
-		$this->app = JFactory::getApplication();
-		$input = $this->app->input;
-		$controller = $input->get('view', $input->get('task'));
-		$formModel = false;
-		$aEls = array();
+		$this->app     = JFactory::getApplication();
+		$input         = $this->app->input;
+		$controller    = $input->get('view', $input->get('task'));
+		$formModel     = false;
 		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
-		$connection = $this->element['connection'];
+		$connection    = $this->element['connection'];
 		/*
 		 * 27/08/2011 - changed from default table-element to id - for juser form plugin - might cause havoc
 		 * else where but loading elements by id as default seems more robust (and is the default behaviour in f2.1
@@ -91,6 +90,7 @@ class JFormFieldListfields extends JFormFieldList
 			case 'list':
 			case 'module':
 			case 'item':
+			case 'lizt':
 				// Menu item
 				$res = $this->_listOptions($controller, $valueFormat, $useStep, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 				break;
@@ -281,16 +281,15 @@ class JFormFieldListfields extends JFormFieldList
 
 		$listModel = $this->form->model;
 
-		if ($id !== 0)
-		{
-			$formModel = $listModel->getFormModel();
+		/*if ($id !== 0)
+		{*/
 			$valField  = $valueFormat == 'tableelement' ? 'name' : 'id';
-			$res       = $formModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
-		}
+			$res       = $listModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
+		/*}
 		else
 		{
 			$res = array();
-		}
+		}*/
 
 		return $res;
 	}
@@ -432,13 +431,13 @@ class JFormFieldListfields extends JFormFieldList
 
 	protected function loadFromGroupId($groupId)
 	{
-		$input = $this->app->input;
-		$controller = $input->get('view', $input->get('task'));
-		$valueFormat = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
+		$input          = $this->app->input;
+		$controller     = $input->get('view', $input->get('task'));
+		$valueFormat    = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
 		$onlyListFields = (int) ArrayHelper::getValue($this->element, 'onlylistfields', 0);
-		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
-		$labelMethod = (string) ArrayHelper::getValue($this->element, 'label_method');
-		$noJoins = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
+		$pluginFilters  = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
+		$labelMethod    = (string) ArrayHelper::getValue($this->element, 'label_method');
+		$noJoins        = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
 
 		$bits       = array();
 		$showRaw    = Worker::toBoolean($this->getAttribute('raw', false), false);

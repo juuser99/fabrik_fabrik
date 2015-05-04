@@ -350,25 +350,14 @@ class Element extends Plugin
 	 * and bind each record to that plugins _element. This is instead of using getElement() which
 	 * reloads in the element increasing the number of queries run
 	 *
-	 * @param   mixed  &$row  (object or assoc array)
+	 * @param   stdClass  &$row
 	 *
 	 * @return  object  element table
 	 */
 
-	public function bindToElement(&$row)
+	public function bindToElement(stdClass &$row)
 	{
-		if (!$this->element)
-		{
-			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$this->element = FabTable::getInstance('Element', 'FabrikTable');
-		}
-
-		if (is_object($row))
-		{
-			$row = ArrayHelper::fromObject($row);
-		}
-
-		$this->element->bind($row);
+		$this->element = $row;
 
 		return $this->element;
 	}

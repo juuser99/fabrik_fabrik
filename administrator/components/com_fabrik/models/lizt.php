@@ -584,19 +584,18 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$data->form = $this->createLinkedForm($data);
 
 			// Create fabrik group
-			$groupData         = Worker::formDefaults('group');
-			$groupData->name   = $data->list->label;
-			$groupData->label  = $data->list->label;
-			$groupData->fields = array();
+			$groupData        = Worker::formDefaults('group');
+			$groupName        = FabrikString::clean($data->list->label);
+			$groupData->name  = $groupName;
 
-			$data->groups   = array();
-			$data->groups[] = $this->createLinkedGroup($groupData, false);
+			$data->form->groups             = new stdClass;
+			$data->form->groups->$groupName = $this->createLinkedGroup($groupData, false);
 
 			if ($newTable == '')
 			{
 				// @TODO test this since move to json file format
-				// New fabrik list but existing db table
-				$this->createLinkedElements($data);
+				// New fabrik list but existing db $groupName
+				$this->createLinkedElements($data, $groupName);
 			}
 			else
 			{
@@ -613,7 +612,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 				foreach ($fields as $name => $fieldData)
 				{
-					$data->groups[0]->fields[] = $this->makeElement($name, $fieldData);
+					$data->groups->$groupName->fields->$name = $this->makeElement($name, $fieldData);
 				}
 
 				$res = $this->createDBTable($newTable, $fields, $dbOpts);
@@ -633,7 +632,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		if ($pk == '')
 		{
-			$pk    = $this->storage->getPrimaryKeyAndExtra();
+			$pk = $this->storage->getPrimaryKeyAndExtra();
 			print_r($pk);
 			$key   = $pk[0]['colname'];
 			$extra = $pk[0]['extra'];
@@ -648,7 +647,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$data->list->db_primary_key = '';
 			}
 
-			$data->list->auto_inc       = String::stristr($extra, 'auto_increment') ? true : false;
+			$data->list->auto_inc = String::stristr($extra, 'auto_increment') ? true : false;
 		}
 
 		$this->updateJoins($data);
@@ -667,7 +666,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		file_put_contents($file, $output);
 
 		// Make an array of elements and a presumed index size, map is then used in creating indexes
-		$map    = array();
+		$map = array();
 
 		$groups = $this->getFormModel()->getGroupsHiarachy();
 
@@ -711,6 +710,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
+		$params       = new JRegistry($data->list);
+
 		if (isset($data->list->group_by))
 		{
 			if ($data->list->group_by !== '' && array_key_exists($data->list->group_by, $map))
@@ -724,7 +725,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		$params       = new JRegistry($data->list);
 		$filterFields = (array) $params->get('filter-fields', array());
 
 		foreach ($filterFields as $field)
@@ -1011,16 +1011,26 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * need to create all the elements based on the database table fields and their
 	 * column type
 	 *
-	 * @param   object $data  JSON view data
-	 * @param   string $table Table name - if not set then use jform's db_table_name (@since 3.1)
+	 * @param   object $data      JSON view data
+	 * @param   string $groupName Group name
+	 * @param   string $table     Table name - if not set then use jform's db_table_name (@since 3.1)
 	 *
 	 * @return  void
 	 */
-	protected function createLinkedElements(&$data, $table = '')
+	protected function createLinkedElements(&$data, $groupName = '', $table = '')
 	{
 		$table    = $table === '' ? $data->list->db_table_name : $table;
 		$elements = $this->makeElementsFromFields(0, $table);
-		$data->groups[0]->fields = $elements;
+
+		if ($groupName === '')
+		{
+			$groupData = new stdClass;
+			$groupName = $data->list->label;
+			$groupData->$groupName;
+			$data->form->groups->$groupName = $this->createLinkedGroup($groupData, false);
+		}
+
+		$data->form->groups->$groupName->fields = $elements;
 	}
 
 	/**
@@ -1029,13 +1039,12 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * @param   int    $groupId   group id
 	 * @param   string $tableName table name
 	 *
-	 * @return  array  elements
+	 * @return  object  elements
 	 */
 
 	protected function makeElementsFromFields($groupId, $tableName)
 	{
-		echo "here2";exit;
-		$elements     = array();
+		$elements     = new stdClass;
 		$fabrikDb     = $this->storage->db;
 		$dispatcher   = JEventDispatcher::getInstance();
 		$input        = $this->app->input;
@@ -1206,7 +1215,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 				default:
 					break;
 			}
-			$elements[] = $element;
+
+			$name = $element->name;
+			$elements->$name = $element;
 
 			// FIXME - test what happens on save for user element etc.
 			/*$element->store();
@@ -1285,10 +1296,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	private function createLinkedGroup($data, $isJoin = false, $isRepeat = false)
 	{
-		$user                          = JFactory::getUser();
-		$createDate                    = JFactory::getDate();
-		$data->created                 = $createDate->toSql();
-		$data->created_by              = $user->get('id');
+		$user             = JFactory::getUser();
+		$createDate       = JFactory::getDate();
+		$data->created    = $createDate->toSql();
+		$data->created_by = $user->get('id');
+		if (!isset($data->fields))
+		{
+			$data->fields = new stdClass;
+		}
 		$data->created_by_alias        = $user->get('username');
 		$data->published               = 1;
 		$opts                          = new stdClass;
@@ -1601,7 +1616,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function ammendTable()
 	{
-		echo "here2";exit;
 		$db             = Worker::getDbo(true);
 		$input          = $this->app->input;
 		$query          = $db->getQuery(true);
@@ -1728,13 +1742,13 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function getOrderBys()
 	{
-		$item = $this->getItem();
+		$item     = $this->getItem();
 		$orderBys = Worker::JSONtoData($item->get('list.order_by'), true);
 
 		foreach ($orderBys as &$orderBy)
 		{
 			$elementModel = $this->getElement($orderBy, true);
-			$orderBy = $elementModel ? $elementModel->getId() : '';
+			$orderBy      = $elementModel ? $elementModel->getId() : '';
 		}
 
 		return $orderBys;

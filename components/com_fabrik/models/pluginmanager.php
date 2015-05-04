@@ -399,7 +399,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 		}
 
 		// Ensure packages load their own form
-		$sig = $package . '.' . $form->get('id');
+		$sig = $package . '.' . $form->get('view');
 		JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:start - ' . $sig) : null;
 
 		if (!array_key_exists($sig, $this->formPlugins))
@@ -441,8 +441,9 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 				}
 
 				$pluginModel->xmlPath = COM_FABRIK_FRONTEND . '/plugins/' . $group . '/' . $element->plugin . '/' . $element->plugin . '.xml';
-				$pluginModel->setId($element->id);
-				$groupModel = $groupModels[$element->group_id];
+				//echo "<pre>";print_r($element);exit;
+				//$pluginModel->setId($element->id);
+				//$groupModel = $groupModels[$element->group_id];
 
 				$langFile = 'plg_' . $folder . '_' . $element->plugin;
 				$langPath = $client->path . '/plugins/' . $folder . '/' . $element->plugin;
@@ -451,7 +452,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 				$listModel = $form->getListModel();
 				$pluginModel->setContext($groupModel, $form, $listModel);
 				$pluginModel->bindToElement($element);
-				$groupModel->elements[$pluginModel->getId()] = $pluginModel;
+				$groupModel->elements[$element->name] = $pluginModel;
 			}
 
 			foreach ($groupModels as $groupid => $g)

@@ -88,14 +88,14 @@ echo "view = $view";
 			$model->set('id', $id);
 		}
 
-		$subForm->model = $feModel;
+		$subForm->model = $model;
 
 		// Hack for order by elements which we now want to store as ids
 		$v = json_decode($this->value);
 
 		if (isset($v->order_by))
 		{
-			$formModel = $feModel->getFormModel();
+			$formModel = $model->getFormModel();
 
 			foreach ($v->order_by as &$orderBy)
 			{
