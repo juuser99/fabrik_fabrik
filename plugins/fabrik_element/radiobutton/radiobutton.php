@@ -13,16 +13,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to a series of radio buttons
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.radiolist
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
+class PlgFabrik_ElementRadiobutton extends ElementList
 {
 	/**
 	 * Method to set the element id

@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\Element as Element;
 
 jimport('joomla.application.component.model');
 
@@ -29,8 +30,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.count
  * @since       3.0
  */
-
-class PlgFabrik_ElementCount extends PlgFabrik_Element
+class PlgFabrik_ElementCount extends Element
 {
 	/**
 	 * Get group by query

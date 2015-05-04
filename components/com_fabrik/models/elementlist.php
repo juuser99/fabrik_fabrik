@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -22,10 +24,9 @@ jimport('joomla.filesystem.file');
  * Fabrik Element List Model
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    3.5
  */
-
-class PlgFabrik_ElementList extends PlgFabrik_Element
+class ElementList extends Element
 {
 	/**
 	 * Does the element have sub elements

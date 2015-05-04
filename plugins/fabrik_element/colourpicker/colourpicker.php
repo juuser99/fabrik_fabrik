@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render colour picker
@@ -21,7 +22,7 @@ use Fabrik\Helpers\Worker;
  * @since       3.0
  */
 
-class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
+class PlgFabrik_ElementColourpicker extends Element
 {
 	/**
 	 * Db table field type

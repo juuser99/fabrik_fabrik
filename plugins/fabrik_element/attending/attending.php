@@ -10,6 +10,7 @@
 defined('_JEXEC') or die();
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugins\Element as Element;
 
 jimport('joomla.application.component.model');
 
@@ -22,7 +23,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.attending
  * @since       3.0
  */
-class PlgFabrik_ElementAttending extends PlgFabrik_Element
+class PlgFabrik_ElementAttending extends Element
 {
 	/**
 	 * Db table field type

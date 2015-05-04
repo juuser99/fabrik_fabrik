@@ -11,15 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Plugins\ElementList as ElementList;
+
 /**
  * Plugin element to render user view levels
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.viewlevel
- * @since       3.0.6
+ * @since       3.5
  */
-
-class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
+class PlgFabrik_ElementViewlevel extends ElementList
 {
 	/**
 	 * Db table field type

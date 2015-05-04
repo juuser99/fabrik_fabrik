@@ -12,16 +12,16 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render text area or wysiwyg editor
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.textarea
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementTextarea extends PlgFabrik_Element
+class PlgFabrik_ElementTextarea extends Element
 {
 	/**
 	 * Db table field type

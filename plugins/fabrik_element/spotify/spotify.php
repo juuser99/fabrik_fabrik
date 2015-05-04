@@ -11,19 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Render a spotify player in an iframe
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.spotify
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementSpotify extends PlgFabrik_Element
+class PlgFabrik_ElementSpotify extends Element
 {
 	protected $pluginName = 'spotify';
 

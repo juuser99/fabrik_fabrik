@@ -14,16 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to render dropdown
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.dropdown
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
+class PlgFabrik_ElementDropdown extends ElementList
 {
 	/**
 	 * Method to set the element id

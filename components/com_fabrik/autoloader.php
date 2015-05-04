@@ -23,6 +23,38 @@ class AutoLoader
 		spl_autoload_register(array($this, 'view'));
 		spl_autoload_register(array($this, 'model'));
 		spl_autoload_register(array($this, 'storage'));
+		spl_autoload_register(array($this, 'helpers'));
+	}
+
+	/**
+	 * Load helper file
+	 *
+	 * @param   string $class Class name
+	 */
+	private function helpers($class)
+	{
+		if (!strstr(strtolower($class), 'helpers\\'))
+		{
+			return;
+		}
+
+
+		if (strstr($class, '\Admin'))
+		{
+			// Loading an admin model
+			$class = str_replace('Fabrik\Admin\\', '', $class);
+			$file  = str_replace('\\', '/', strtolower($class));
+			$file  = JPATH_ADMINISTRATOR . '/components/com_fabrik/' . strtolower($file . '.php');
+		}
+		else
+		{
+			// Front end model.
+			$class = str_replace('Fabrik\\', '', $class);
+			$file  = str_replace('\\', '/', strtolower($class));
+			$file  = JPATH_SITE . '/components/com_fabrik/' . strtolower($file . '.php');
+		}
+
+		require $file;
 	}
 
 	/**
@@ -62,15 +94,24 @@ class AutoLoader
 	 */
 	private function view($class)
 	{
-
 		if (!strstr(strtolower($class), 'views'))
 		{
 			return;
 		}
 
+		$admin = strstr($class, '\Admin');
 		$class = str_replace('Fabrik\Admin\\', '', $class);
 		$file  = str_replace('\\', '/', strtolower($class));
 		$file  = strtolower($file . '.php');
+
+		if ($admin)
+		{
+			$file  = JPATH_ADMINISTRATOR . '/components/com_fabrik/' . $file;
+		}
+		else
+		{
+			$file  = JPATH_SITE . '/components/com_fabrik/' . $file;
+		}
 
 		require $file;
 	}
@@ -87,14 +128,24 @@ class AutoLoader
 			return;
 		}
 
+		$admin = strstr($class, '\Admin');
 		$class = str_replace('Fabrik\Admin\\', '', $class);
 		$file  = str_replace('\\', '/', strtolower($class));
 		$file  = strtolower($file . '.php');
 		require_once JPATH_COMPONENT_ADMINISTRATOR . '/controller.php';
 
-		if (file_exists(JPATH_COMPONENT_ADMINISTRATOR . '/' . $file))
+		if ($admin)
 		{
-			require_once $file;
+			$file  = JPATH_ADMINISTRATOR . '/components/com_fabrik/' . $file;
+		}
+		else
+		{
+			$file  = JPATH_SITE . '/components/com_fabrik/' . $file;
+		}
+
+		if (\JFile::exists($file))
+		{
+			require $file;
 		}
 	}
 

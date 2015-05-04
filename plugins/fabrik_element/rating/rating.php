@@ -13,20 +13,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render rating widget
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.rating
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementRating extends PlgFabrik_Element
+class PlgFabrik_ElementRating extends Element
 {
 	/**
 	 * Db table field type

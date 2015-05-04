@@ -11,8 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
-
 /**
  * Plugin element to enable users to make notes on a give record
  *

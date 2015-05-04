@@ -16,8 +16,9 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ImageHelper;
 use Fabrik\Helpers\UploaderHelper;
+use Fabrik\Plugins\Element as Element;
 
-require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
+//require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
 
 define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
@@ -32,10 +33,9 @@ JLog::addLogger(array('text_file' => 'fabrik.element.fileupload.log.php'), $logL
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementFileupload extends PlgFabrik_Element
+class PlgFabrik_ElementFileupload extends Element
 {
 	/**
 	 * Storage method adaptor object (filesystem/amazon s3)
@@ -92,7 +92,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		}
 
 		$fullName = $this->getFullName(true, false);
-		$params = $this->getParams();
 		$groupModel = $this->getGroupModel();
 		$return = false;
 

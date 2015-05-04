@@ -12,19 +12,16 @@
 defined('_JEXEC') or die('Restricted access');
 
 use \Joomla\Utilities\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render digital signature pad
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.digsig
- * @since       3.0
+ * @since       3.5
  */
-class PlgFabrik_ElementDigsig extends PlgFabrik_Element
+class PlgFabrik_ElementDigsig extends Element
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the

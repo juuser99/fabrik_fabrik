@@ -11,17 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render folder list
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.folder
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementFolder extends PlgFabrik_Element
+class PlgFabrik_ElementFolder extends Element
 {
 	/**
 	 * Draws the html form element

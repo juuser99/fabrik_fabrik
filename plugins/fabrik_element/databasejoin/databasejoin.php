@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugins\Element as Element;
 
 /**
  *  Plugin element to render list of data looked up from a database table
@@ -24,7 +25,7 @@ use Fabrik\Helpers\Worker;
  * @since       3.0
  */
 
-class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
+class PlgFabrik_ElementDatabasejoin extends ElementList
 {
 	/**
 	 * connection

@@ -11,15 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Plugins\Element as Element;
+
 /**
  * Plugin element to render internal id
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.internalid
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementInternalid extends PlgFabrik_Element
+class PlgFabrik_ElementInternalid extends Element
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the

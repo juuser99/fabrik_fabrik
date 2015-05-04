@@ -14,17 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render a google o meter chart
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.googleometer
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
+class PlgFabrik_ElementGoogleometer extends Element
 {
 	/**
 	 * Db table field type

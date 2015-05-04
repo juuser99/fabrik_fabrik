@@ -13,16 +13,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to render multi select user group list
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.usergroup
- * @since       3.0.6
+ * @since       3.5
  */
-
-class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
+class PlgFabrik_ElementUsergroup extends ElementList
 {
 	/**
 	 * Db table field type
@@ -65,15 +65,15 @@ class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
 		if ($userEl)
 		{
 			$data = $formModel->getData();
-			$userid = ArrayHelper::getValue($data, $userEl->getFullName(true, false) . '_raw', 0);
+			$userId = ArrayHelper::getValue($data, $userEl->getFullName(true, false) . '_raw', 0);
 
 			// Failed validation
-			if (is_array($userid))
+			if (is_array($userId))
 			{
-				$userid = ArrayHelper::getValue($userid, 0);
+				$userId = ArrayHelper::getValue($userId, 0);
 			}
 
-			$thisUser = !empty($userid) ? JFactory::getUser($userid) : false;
+			$thisUser = !empty($userId) ? JFactory::getUser($userId) : false;
 		}
 
 		$selected = $this->getValue($data, $repeatCounter);

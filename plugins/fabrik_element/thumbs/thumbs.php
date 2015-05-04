@@ -13,10 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render thumbs-up/down widget
@@ -26,7 +23,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @since       3.0
  */
 
-class PlgFabrik_ElementThumbs extends PlgFabrik_Element
+class PlgFabrik_ElementThumbs extends Element
 {
 	/**
 	 * States the element should be ignored from advanced search all queries.

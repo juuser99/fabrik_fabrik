@@ -14,16 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render time dropdowns - derived from birthday element
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.time
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementTime extends PlgFabrik_Element
+class PlgFabrik_ElementTime extends Element
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons

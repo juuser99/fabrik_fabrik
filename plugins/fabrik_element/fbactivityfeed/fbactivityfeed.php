@@ -11,19 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render facebook open graph activity feed widget
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.facebookactivityfeed
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementFbActivityFeed extends PlgFabrik_Element
+class PlgFabrik_ElementFbActivityFeed extends Element
 {
 	/**
 	 * Does the element have a label

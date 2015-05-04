@@ -14,8 +14,6 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 
-require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
-
 /**
  * Plugin element to render Joomla's tags field
  *

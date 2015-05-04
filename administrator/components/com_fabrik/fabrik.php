@@ -17,7 +17,7 @@ use Joomla\String\String;
 use Fabrik\Admin\Helpers\Fabrik;
 use \JFactory as JFactory;
 
-require_once 'autoloader.php';
+require_once JPATH_SITE . '/components/com_fabrik/autoloader.php';
 
 // Load front end language file as well
 $lang = JFactory::getLanguage();

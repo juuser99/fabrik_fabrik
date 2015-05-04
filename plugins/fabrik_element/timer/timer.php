@@ -11,20 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
-require_once JPATH_SITE . '/plugins/fabrik_element/date/date.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render a user controllable stopwatch timer
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.timer
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementTimer extends PlgFabrik_Element
+class PlgFabrik_ElementTimer extends Element
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons

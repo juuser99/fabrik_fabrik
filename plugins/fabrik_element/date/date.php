@@ -14,16 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to render date picker
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.date
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementDate extends PlgFabrik_ElementList
+class PlgFabrik_ElementDate extends ElementList
 {
 	/**
 	 * States the element should be ignored from advanced search all queries.

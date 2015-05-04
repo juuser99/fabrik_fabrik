@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -23,10 +25,9 @@ jimport('joomla.application.component.model');
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.1b2
+ * @since       3.5
  */
-
-class FabrikFEModelElementValidator extends JModelLegacy
+class Validator extends \JModelBase
 {
 	/**
 	 * Validation objects associated with the element

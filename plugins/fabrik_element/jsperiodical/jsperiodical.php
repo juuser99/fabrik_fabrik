@@ -10,17 +10,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element: js periodical will fire a JavaScript function at a definable interval
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.jsperiodical
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
+class PlgFabrik_ElementJSPeriodical extends Element
 {
 	/**
 	 * Shows the data formatted for the list view
@@ -118,16 +117,16 @@ class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
 		{
 			case 'text':
 			default:
-				$objtype = "VARCHAR(255)";
+				$type = "VARCHAR(255)";
 				break;
 			case 'integer':
-				$objtype = "INT(" . $p->get('integer_length', 10) . ")";
+				$type = "INT(" . $p->get('integer_length', 10) . ")";
 				break;
 			case 'decimal':
-				$objtype = "DECIMAL(" . $p->get('integer_length', 10) . "," . $p->get('decimal_length', 2) . ")";
+				$type = "DECIMAL(" . $p->get('integer_length', 10) . "," . $p->get('decimal_length', 2) . ")";
 				break;
 		}
 
-		return $objtype;
+		return $type;
 	}
 }

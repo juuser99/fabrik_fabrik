@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 
+require_once JPATH_SITE . '/components/com_fabrik/autoloader.php';
+
 jimport('joomla.application.component.helper');
 jimport('joomla.filesystem.file');
 

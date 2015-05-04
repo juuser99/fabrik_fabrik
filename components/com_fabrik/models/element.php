@@ -8,13 +8,18 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Validator;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
+use \JModelLegacy as JModelLegacy;
+use \stdClass as stdClass;
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
@@ -26,7 +31,7 @@ jimport('joomla.filesystem.file');
  * @since    3.0
  */
 
-class PlgFabrik_Element extends FabrikPlugin
+class Element extends Plugin
 {
 	/**
 	 * Element id
@@ -255,7 +260,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function __construct(&$subject, $config = array())
 	{
 		parent::__construct($subject, $config);
-		$this->validator = JModelLegacy::getInstance('ElementValidator', 'FabrikFEModel');
+		$this->validator = new Validator;
 		$this->validator->setElementModel($this);
 		$this->access = new stdClass;
 	}

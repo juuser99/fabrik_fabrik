@@ -13,20 +13,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render facebook open graph like button
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.facebooklike
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementFblike extends PlgFabrik_Element
+class PlgFabrik_ElementFblike extends Element
 {
 	/**
 	 * Does the element have a label

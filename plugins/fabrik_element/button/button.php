@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Plugins\Element as Element;
+
 /**
  * Plugin element to render button
  *
@@ -19,7 +21,7 @@ defined('_JEXEC') or die('Restricted access');
  * @since       3.0
  */
 
-class PlgFabrik_ElementButton extends PlgFabrik_Element
+class PlgFabrik_ElementButton extends Element
 {
 	/**
 	 * Draws the html form element

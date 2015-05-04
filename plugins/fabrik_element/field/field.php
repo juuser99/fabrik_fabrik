@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+use Fabrik\Plugins\Element as Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -15,17 +17,14 @@ use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 
-jimport('joomla.application.component.model');
-
 /**
  * Plugin element to render fields
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.field
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementField extends PlgFabrik_Element
+class PlgFabrik_ElementField extends Element
 {
 	/**
 	 * Shows the data formatted for the list view
@@ -399,51 +398,18 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		{
 			case 'text':
 			default:
-				$objtype = "VARCHAR(" . $p->get('maxlength', 255) . ")";
+				$type = "VARCHAR(" . $p->get('maxlength', 255) . ")";
 				break;
 			case 'integer':
-				$objtype = "INT(" . $p->get('integer_length', 11) . ")";
+				$type = "INT(" . $p->get('integer_length', 11) . ")";
 				break;
 			case 'decimal':
 				$total = (int) $p->get('integer_length', 11) + (int) $p->get('decimal_length', 2);
-				$objtype = "DECIMAL(" . $total . "," . $p->get('decimal_length', 2) . ")";
+				$type = "DECIMAL(" . $total . "," . $p->get('decimal_length', 2) . ")";
 				break;
 		}
 
-		return $objtype;
-	}
-
-	/**
-	 * Get Joomfish options
-	 *
-	 * @deprecated - not supporting joomfish
-	 *
-	 * @return  array	key=>value options
-	 */
-
-	public function getJoomfishOptions()
-	{
-		$params = $this->getParams();
-		$return = array();
-		$size = (int) $this->getElement()->width;
-		$maxlength = (int) $params->get('maxlength');
-
-		if ($size !== 0)
-		{
-			$return['length'] = $size;
-		}
-
-		if ($maxlength === 0)
-		{
-			$maxlength = $size;
-		}
-
-		if ($params->get('textarea-showmax') && $maxlength !== 0)
-		{
-			$return['maxlength'] = $maxlength;
-		}
-
-		return $return;
+		return $type;
 	}
 
 	/**
@@ -544,9 +510,9 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			exit;
 		}
 
-		$rowid = $input->get('rowid', '', 'string');
+		$rowId = $input->get('rowid', '', 'string');
 
-		if (empty($rowid))
+		if (empty($rowId))
 		{
 			// $app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
 			$app->redirect($url);
@@ -554,7 +520,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		}
 
 		$listModel = $this->getListModel();
-		$row = $listModel->getRow($rowid, false);
+		$row = $listModel->getRow($rowId, false);
 
 		if (empty($row))
 		{
@@ -619,10 +585,10 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$formModel = $this->getFormModel();
-		$formid = $formModel->getId();
-		$rowid = $formModel->getRowId();
+		$formId = $formModel->getId();
+		$rowId = $formModel->getRowId();
 
-		if (empty($rowid))
+		if (empty($rowId))
 		{
 			/**
 			 * Meh.  See commentary at the start of $formModel->getEmailData() about rowid.  For now, if this is a new row,
@@ -630,23 +596,23 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			 * But check __pk_val first anyway, what the heck.
 			 */
 			
-			$rowid = ArrayHelper::getValue($thisRow, '__pk_val', '');
+			$rowId = ArrayHelper::getValue($thisRow, '__pk_val', '');
 			
-			if (empty($rowid))
+			if (empty($rowId))
 			{
 				/**
 				 * Nope.  Try lastInsertId. Or maybe on top of the fridge?  Or in the microwave?  Down the back
 				 * of the couch cushions? 
 				 */
 				
-				$rowid = $formModel->getListModel()->lastInsertId;
+				$rowId = $formModel->getListModel()->lastInsertId;
 				
 				/**
 				 * OK, give up.  If *still* no rowid, we're probably being called from something like getEmailData() on onBeforeProcess or
 				 * onBeforeStore, and it's a new form, so no rowid yet.  So no point returning anything yet.
 				 */
 					
-				if (empty($rowid))
+				if (empty($rowId))
 				{
 					return '';
 				}
@@ -660,7 +626,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		$elementid = $this->getId();
 		$src = COM_FABRIK_LIVESITE
 		. 'index.php?option=com_' . $package . '&amp;view=pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
-				. 'format=raw&amp;element_id=' . $elementid . '&amp;formid=' . $formid . '&amp;rowid=' . $rowid . '&amp;repeatcount=0';
+				. 'format=raw&amp;element_id=' . $elementid . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 		$layout = $this->getLayout('qr');
 		$displayData = new stdClass;

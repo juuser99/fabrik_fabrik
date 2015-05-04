@@ -14,6 +14,7 @@ defined('_JEXEC') or die();
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render day/month/year dropdowns
@@ -23,7 +24,7 @@ use Fabrik\Helpers\ArrayHelper;
  * @since       3.0
  */
 
-class PlgFabrik_ElementBirthday extends PlgFabrik_Element
+class PlgFabrik_ElementBirthday extends Element
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons

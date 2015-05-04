@@ -13,16 +13,15 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
+use Fabrik\Plugins\Element as Element;
 /**
  * Plugin element to render two fields to capture a link (url/label)
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.link
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementLink extends PlgFabrik_Element
+class PlgFabrik_ElementLink extends Element
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons

@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Access element
@@ -21,7 +22,7 @@ use Joomla\String\String;
  * @since       3.0
  */
 
-class PlgFabrik_ElementAccess extends PlgFabrik_Element
+class PlgFabrik_ElementAccess extends Element
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the

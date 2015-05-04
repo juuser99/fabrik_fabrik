@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Plugins\Element as Element;
 
 require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.11/recaptchalib.php';
 
@@ -23,7 +24,7 @@ require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.
  * @since       3.0
  */
 
-class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
+class PlgFabrik_ElementCaptcha extends Element
 {
 	protected $font = 'monofont.ttf';
 

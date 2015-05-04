@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render field with PHP calculated value
@@ -22,7 +23,7 @@ use Fabrik\Helpers\Worker;
  * @since       3.0
  */
 
-class PlgFabrik_ElementCalc extends PlgFabrik_Element
+class PlgFabrik_ElementCalc extends Element
 {
 	/**
 	 * This really does get just the default value (as defined in the element's settings)

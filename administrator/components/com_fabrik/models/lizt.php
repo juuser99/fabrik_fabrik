@@ -28,6 +28,9 @@ use Fabrik\Helpers\ArrayHelper;
 use \FabrikString as FabrikString;
 use \RuntimeException as RuntimeException;
 use \JRegistry as JRegistry;
+use \JComponentHelper as JComponentHelper;
+use \JEventDispatcher as JEventDispatcher;
+use \Fabrik\Plugins\Element as Element;
 
 interface ModelFormLiztInterface
 {
@@ -524,7 +527,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 	/**
 	 * Save the form
 	 *
-	 * @param   array $data The jform part of the request data pertaining to the list.
+	 * @param   array $post The jform part of the request data pertaining to the list.
 	 *
 	 * @return bool
 	 * @throws RuntimeException
@@ -1031,8 +1034,24 @@ class Lizt extends Base implements ModelFormLiztInterface
 	protected function createLinkedElements(&$data, $tableName = '')
 	{
 		$table = $data->list->db_table_name;
-		$fields = $this->getStorage(array('table' => $table))->getDBFields();
-		print_r($fields);exit;
+		$this->makeElementsFromFields(0, $table);
+		/*$fields = $this->getStorage(array('table' => $table))->getDBFields();
+		$fbConfig      = JComponentHelper::getParams('com_fabrik');
+		echo "<pre>";print_r($fbConfig);
+
+		foreach ($fields as $field)
+		{
+			$plugin     = 'field';
+			$type       = $field->Type;
+			$maxLength  = 255;
+			$maxLength2 = 0;
+
+			if (preg_match("/\((.*)\)/i", $type, $matches))
+			{
+				print_r($matches); echo "<br>";
+			}
+		}
+		print_r($fields);exit;*/
 	}
 
 	/**
@@ -1049,7 +1068,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$fabrikDb      = $this->getFEModel()->getDb();
 		$dispatcher    = JEventDispatcher::getInstance();
 		$input         = $this->app->input;
-		$elementModel  = new PlgFabrik_Element($dispatcher);
+		$elementModel  = new Element($dispatcher);
 		$pluginManager = Worker::getPluginManager();
 		$user          = JFactory::getUser();
 		$fbConfig      = JComponentHelper::getParams('com_fabrik');
@@ -1217,7 +1236,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				default:
 					break;
 			}
-
+echo "<pre>";print_r($element);exit;
 			$element->store();
 			$elementModel = $pluginManager->getPlugIn($element->plugin, 'element');
 			$elementModel->setId($element->id);

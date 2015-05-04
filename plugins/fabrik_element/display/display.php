@@ -13,16 +13,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render plain text/HTML
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.display
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementDisplay extends PlgFabrik_Element
+class PlgFabrik_ElementDisplay extends Element
 {
 	/**
 	 * Db table field type

@@ -11,19 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render facebook likebox widget
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.facebooklikebox
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementFbLikeBox extends PlgFabrik_Element
+class PlgFabrik_ElementFbLikeBox extends Element
 {
 	/**
 	 * Does the element have a label

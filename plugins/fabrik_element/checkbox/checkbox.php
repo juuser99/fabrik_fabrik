@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to render series of checkboxes
@@ -23,7 +24,7 @@ use Fabrik\Helpers\ArrayHelper;
  * @since       3.0
  */
 
-class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
+class PlgFabrik_ElementCheckbox extends ElementList
 {
 	protected $inputType = 'checkbox';
 

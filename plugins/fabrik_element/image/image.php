@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\Element as Element;
 
 if (!defined('DS'))
 {
@@ -25,10 +26,9 @@ if (!defined('DS'))
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.image
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementImage extends PlgFabrik_Element
+class PlgFabrik_ElementImage extends Element
 {
 	/**
 	 * Ignored folders

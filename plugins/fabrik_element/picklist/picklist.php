@@ -12,17 +12,16 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to two lists - one to select from the other to select into
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.picklist
- * @since       3.0
+ * @since       3.5
  */
-class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
+class PlgFabrik_ElementPicklist extends ElementList
 {
 	/**
 	 * Does the element have sub elements
@@ -166,7 +165,7 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 	 * Builds an array containing the filters value and condition
 	 *
 	 * @param   string $value     Initial value
-	 * @param   string $condition Intial $condition
+	 * @param   string $condition Initial $condition
 	 * @param   string $eval      How the value should be handled
 	 *
 	 * @return  array    (value condition)

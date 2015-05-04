@@ -14,19 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\GoogleMapHelper;
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
-require_once JPATH_SITE . '/components/com_fabrik/helpers/googlemap.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render a Google map
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.googlemap
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
+class PlgFabrik_ElementGooglemap extends Element
 {
 	/**
 	 * Has the geoJS been loaded

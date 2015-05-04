@@ -11,9 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render facebook recommendations widget
@@ -22,7 +20,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.facebookrecommendations
  * @since       3.0
  */
-class PlgFabrik_ElementFbRecommendations extends PlgFabrik_Element
+class PlgFabrik_ElementFbRecommendations extends Element
 {
 	/**
 	 * Does the element have a label

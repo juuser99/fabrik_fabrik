@@ -69,7 +69,6 @@ class PluginAjax extends Controller
 		$dispatcher->trigger($method);
 
 		return;
-
 	}
 
 }

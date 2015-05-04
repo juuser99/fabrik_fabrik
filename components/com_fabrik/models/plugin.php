@@ -8,11 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use \Fabrik\Admin\Models\Connection as Connection;
 use Fabrik\Helpers\Worker;
+use \JFactory as JFactory;
 
 jimport('joomla.application.component.model');
 
@@ -24,7 +28,7 @@ jimport('joomla.application.component.model');
  * @since       3.0
  */
 
-class FabrikPlugin extends JPlugin
+class Plugin extends \JPlugin
 {
 	/**
 	 * path to xml file
@@ -669,7 +673,7 @@ class FabrikPlugin extends JPlugin
 		{
 			if ($cid !== -1)
 			{
-				$cnn = new Fabrik\Admin\Models\Connection;
+				$cnn = new Connection;
 
 				$cnn->set('id', $cid);
 				$db = $cnn->getDb();

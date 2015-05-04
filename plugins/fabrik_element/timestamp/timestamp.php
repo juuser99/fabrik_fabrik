@@ -11,17 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render a timestamp
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.timestamp
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
+class PlgFabrik_ElementTimestamp extends Element
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the

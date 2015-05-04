@@ -12,15 +12,16 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render 2 fields to capture and confirm a password
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.password
- * @since       3.0
+ * @since       3.5
  */
-class PlgFabrik_ElementPassword extends PlgFabrik_Element
+class PlgFabrik_ElementPassword extends Element
 {
 	/**
 	 * States if the element contains data which is recorded in the database
