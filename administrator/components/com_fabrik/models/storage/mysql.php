@@ -556,6 +556,16 @@ echo "tabke = $table";
 	}
 
 	/**
+	 * Drop the db table
+	 */
+	public function drop()
+	{
+		$query = 'DROP TABLE IF EXISTS ' . $this->db->qn($this->table);
+		$this->db->setQuery($query);
+		$this->db->execute();
+	}
+
+	/**
 	 * Internal function: update an exisitng key in the table
 	 *
 	 * @param   string $fieldName     primary key column name

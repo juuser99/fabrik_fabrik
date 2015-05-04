@@ -13,6 +13,10 @@ namespace Fabrik\Admin\Models;
 use \JForm as JForm;
 use Joomla\Utilities\ArrayHelper;
 use \JDate as Date;
+use Fabrik\Storage\MySql as Storage;
+use \JPluginHelper as JPluginHelper;
+use Joomla\String\String as String;
+use Fabrik\Helpers\Worker as Worker;
 
 /**
  * Fabrik Base Admin Model
@@ -93,6 +97,8 @@ class Base extends \JModelBase
 
 				return true;
 			}
+
+			return true;
 		});
 
 		return $items;
@@ -381,6 +387,19 @@ class Base extends \JModelBase
 	}
 
 	/**
+	 * Can the user perform a core action on the model
+	 *
+	 * @param   string   $task Action to perform e.g 'delete'
+	 * @param   stdClass $item Item
+	 *
+	 * @return mixed
+	 */
+	protected function can($task, $item = null)
+	{
+		return $this->user->authorise('core.' . $task, 'com_fabrik');
+	}
+
+	/**
 	 * Delete main json files.
 	 *
 	 * @param   array $ids File names
@@ -389,18 +408,101 @@ class Base extends \JModelBase
 	 */
 	public function delete($ids)
 	{
-		$count = 0;
+		// Include the content plugins for the on delete events.
+		JPluginHelper::importPlugin('content');
+		$dispatcher = \JEventDispatcher::getInstance();
+		$count      = 0;
+
+		if (!$this->can('delete'))
+		{
+			$this->app->enqueueMessage(\FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+
+			return $count;
+		}
 
 		foreach ($ids as $id)
 		{
+			$dispatcher->trigger('onContentBeforeDelete', array('com_fabrik.list', $id));
 			$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $id . '.json';
+
 			if (\JFile::delete($file))
 			{
 				$count++;
 			}
+
+			$dispatcher->trigger('onContentAfterDelete', array('com_fabrik.list', $id));
 		}
 
 		return $count;
+	}
+
+	/**
+	 * Drop a series of lists' tables.
+	 *
+	 * @param   array  $ids  List references
+	 *
+	 * @return  bool
+	 */
+	public function drop($ids = array())
+	{
+		JPluginHelper::importPlugin('content');
+		$dispatcher = \JEventDispatcher::getInstance();
+		$dbPrefix = $this->app->get('dbprefix');
+
+		foreach ($ids as $id)
+		{
+			$item     = $this->getItem($id);
+			$table    = $item->list->db_table_name;
+			$dispatcher->trigger('onContentBeforeDrop', array('com_fabrik.list', $id));
+
+			if (strncasecmp($table, $dbPrefix, String::strlen($dbPrefix)) == 0)
+			{
+				$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table, $dbPrefix), 'notice');
+			}
+			else
+			{
+				$storage = $this->getStorage(array('table' => $table));
+				$storage->drop();
+				$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_DROPPED', $table));
+			}
+
+			$dispatcher->trigger('onContentAfterDrop', array('com_fabrik.list', $id));
+		}
+
+
+		return true;
+	}
+
+	/**
+	 * Get the storage model
+	 *
+	 * @param array $options
+	 *
+	 * @return Storage
+	 */
+	protected function getStorage($options = array())
+	{
+		if (!array_key_exists('db', $options))
+		{
+			$options['db'] = $this->getDb();
+		}
+
+		return new Storage($options);
+	}
+
+	/**
+	 * Load the database object associated with the list
+	 *
+	 * @since   3.0b
+	 *
+	 * @return  object database
+	 */
+	public function getDb()
+	{
+		$listId = $this->get('list.id');
+		$item   = $this->getItem($listId);
+
+		return Worker::getConnection($item)->getDb();
 	}
 
 }

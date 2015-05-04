@@ -59,7 +59,9 @@ if (String::strpos($cName, '.') != false)
 else
 {
 	// Do we have a custom controller - if not load the main controller.
-	$view                = String::ucfirst($input->get('view', 'Controller'));
+	$view = $input->get('view', 'Controller') !== '' ? $input->get('view', 'Controller') : $input->get->get('view', 'Controller');
+	$input->set('view', $view);
+	$view                = String::ucfirst($view);
 	$base                = 'Fabrik\Admin\Controllers';
 	$baseControllerClass = $base . '\\Controller';
 	$controllerClass     = $base . '\\' . $view;

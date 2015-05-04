@@ -132,6 +132,7 @@ class Connections extends Base implements ConnectionsInterface
 
 		$this->items = $this->filterItems($json->$uri);
 
+		// FIXME - this shouldn't be here. Will checkout all connections
 		foreach ($this->items as &$item)
 		{
 			if ($item->checked_out !== '')
@@ -374,16 +375,21 @@ class Connections extends Base implements ConnectionsInterface
 	 */
 	protected function itemSchema()
 	{
-		$path = JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/connection.json';
-		$json = file_get_contents($path);
+		$path              = JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/connection.json';
+		$json              = file_get_contents($path);
+		$json = json_decode($json);
+		$json->description = 'Default JDb';
+		$json->host        = $this->config->get('host');
+		$json->user        = $this->config->get('user');
+		$json->database    = $this->config->get('db');
 
-		return json_decode($json);
+		return $json;
 	}
 
 	/**
 	 * Get an item
 	 *
-	 * @param   string  $id  JSON view file name
+	 * @param   string $id JSON view file name
 	 *
 	 * @return stdClass
 	 */

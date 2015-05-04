@@ -44,6 +44,9 @@ class JFormFieldConnections extends JFormFieldList
 	protected function getOptions()
 	{
 		$model       = new Connections;
+
+		// Ensure we show all connections
+		$model->set('filter', array());
 		$connections = $model->getItems();
 		$options     = array();
 

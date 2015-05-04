@@ -305,10 +305,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function getJs()
 	{
+		$item      = $this->getItem();
 		$connModel = $this->getCnn();
-		//$plugins       = $this->getPlugins();
-		$item = $this->getItem();
-		//$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		JText::script('COM_FABRIK_OPTIONS');
 		JText::script('COM_FABRIK_JOIN');
 		JText::script('COM_FABRIK_FIELD');
@@ -542,7 +540,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		{
 			// We are saving from the (new?) form submission
 			$data       = new stdClass;
-			$post = ArrayHelper::toObject($post);
+			$post       = ArrayHelper::toObject($post);
 			$data->list = $post;
 			$data->view = $data->list->view;
 			unset($data->list->view);
@@ -554,9 +552,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 		}
 
 		//echo "<pre>";print_r($data);exit;
-		$data->list->order_by  = $input->get('order_by', array(), 'array');
-		$data->list->order_dir = $input->get('order_dir', array(), 'array');
-		$data->checked_out = false;
+		$data->list->order_by   = $input->get('order_by', array(), 'array');
+		$data->list->order_dir  = $input->get('order_dir', array(), 'array');
+		$data->checked_out      = false;
 		$data->checked_out_time = '';
 
 		$this->collation($data);
@@ -584,7 +582,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
 			$newTable = FabrikString::clean($newTable);
 
-			// Check the entered database table doesnt already exist
+			// Check the entered database table does not already exist
 			if ($newTable != '' && $this->storage->tableExists($newTable))
 			{
 				throw new RuntimeException(FText::_('COM_FABRIK_DATABASE_TABLE_ALREADY_EXISTS'));
@@ -615,7 +613,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 			{
 				// @TODO test this since move to json file format
 				// New fabrik list but existing db table
-				$this->createLinkedElements($groupId);
+				$this->createLinkedElements($data);
 			}
 			else
 			{
@@ -664,6 +662,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$this->updateJoins($data);
 		//echo "nane  " . $data->list->db_table_name;exit;
 		$storage = $this->getStorage(array('table' => $data->list->db_table_name));
+		echo "<pre>";
+		print_r($data);
+		exit;
 
 		if (!$storage->isView())
 		{
@@ -671,7 +672,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		}
 
 		unset($data->list->_database_name);
-		$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->view .'.json';
+		$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->view . '.json';
 
 		$output = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
@@ -734,7 +735,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		$params = new JRegistry($data->list);
+		$params       = new JRegistry($data->list);
 		$filterFields = (array) $params->get('filter-fields', array());
 
 		foreach ($filterFields as $field)
@@ -1018,17 +1019,20 @@ class Lizt extends Base implements ModelFormLiztInterface
 	}
 
 	/**
-	 * When saving a table that links to a database for the first time we
+	 * When saving a list that links to a database for the first time we
 	 * need to create all the elements based on the database table fields and their
 	 * column type
 	 *
-	 * @param   int    $groupId   group id
+	 * @param   object $data      JSON view data
 	 * @param   string $tableName table name - if not set then use jform's db_table_name (@since 3.1)
 	 *
 	 * @return  void
 	 */
-	protected function createLinkedElements($groupId, $tableName = '')
+	protected function createLinkedElements(&$data, $tableName = '')
 	{
+		$table = $data->list->db_table_name;
+		$fields = $this->getStorage(array('table' => $table))->getDBFields();
+		print_r($fields);exit;
 	}
 
 	/**
@@ -1396,148 +1400,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 	}
 
 	/**
-	 * Method to delete one or more records.
-	 *
-	 * @param   array &$pks An array of record primary keys.
-	 *
-	 * @return  boolean    True if successful, false if an error occurs.
-	 *
-	 * @since    1.6
-	 */
-	public function delete(&$pks)
-	{
-		// Initialise variables.
-		$dispatcher = JEventDispatcher::getInstance();
-		$pks        = (array) $pks;
-
-		// Include the content plugins for the on delete events.
-		JPluginHelper::importPlugin('content');
-
-		$input       = $this->app->input;
-		$jForm       = $input->get('jform', array(), 'array');
-		$deleteDepth = $jForm['recordsDeleteDepth'];
-		$drop        = $jForm['dropTablesFromDB'];
-
-		$feModel        = $this->getFEModel();
-		$dbConfigPrefix = $this->app->get('dbprefix');
-
-		// Iterate the items to delete each one.
-		foreach ($pks as $i => $pk)
-		{
-			$feModel->setId($pk);
-
-			if ($table->load($pk))
-			{
-				$feModel->setTable($table);
-
-				if ($drop)
-				{
-					if (strncasecmp($table->db_table_name, $dbConfigPrefix, String::strlen($dbConfigPrefix)) == 0)
-					{
-						$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table->db_table_name, $dbConfigPrefix), 'notice');
-					}
-					else
-					{
-						$feModel->drop();
-						$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_DROPPED', $table->db_table_name));
-					}
-				}
-				else
-				{
-					$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED', $table->db_table_name));
-				}
-
-				if ($this->canDelete($table))
-				{
-					$context = $this->option . '.' . $this->name;
-
-					// Trigger the onContentBeforeDelete event.
-					$result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
-
-					if (in_array(false, $result, true))
-					{
-						$this->setError($table->getError());
-
-						return false;
-					}
-
-					if (!$table->delete($pk))
-					{
-						$this->setError($table->getError());
-
-						return false;
-					}
-
-					// Trigger the onContentAfterDelete event.
-					$dispatcher->trigger($this->event_after_delete, array($context, $table));
-				}
-				else
-				{
-					// Prune items that you can't change.
-					unset($pks[$i]);
-
-					return JError::raiseWarning(403, FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
-				}
-
-				switch ($deleteDepth)
-				{
-					case 0:
-					default:
-						// List only
-						break;
-					case 1:
-						// List and form
-						$form = $this->deleteAssociatedForm($table);
-						break;
-					case 2:
-						// List form and groups
-						$form = $this->deleteAssociatedForm($table);
-						$this->deleteAssociatedGroups($form, false);
-						break;
-					case 3:
-						// List form groups and elements
-						$form = $this->deleteAssociatedForm($table);
-						$this->deleteAssociatedGroups($form, true);
-						break;
-				}
-			}
-			else
-			{
-				$this->setError($table->getError());
-
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Remove the associated form
-	 *
-	 * @param   object &$item list item
-	 *
-	 * @return boolean|form object
-	 */
-
-	protected function deleteAssociatedForm(&$item)
-	{
-	}
-
-	/**
-	 * Delete associated fabrik groups
-	 *
-	 * @param   object &$form          item
-	 * @param   bool   $deleteElements delete group items as well
-	 *
-	 * @return boolean|form id
-	 */
-
-	protected function deleteAssociatedGroups(&$form, $deleteElements = false)
-	{
-	}
-
-	/**
 	 * Make a database table from  XML definition
 	 *
 	 * @param   string $key  primary key
@@ -1663,31 +1525,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$this->set('list.id', $item->id);
 
 		return $item;
-	}
-
-	/**
-	 * Load the database object associated with the list
-	 *
-	 * @since   3.0b
-	 *
-	 * @return  object database
-	 */
-	public function getDb()
-	{
-		$listId = $this->get('list.id');
-		$item   = $this->getItem($listId);
-
-		return Worker::getConnection($item)->getDb();
-	}
-
-	protected function getStorage($options = array())
-	{
-		if (!array_key_exists('db', $options))
-		{
-			$options['db'] = $this->getDb();
-		}
-
-		return new Storage($options);
 	}
 
 	/**
@@ -1886,6 +1723,5 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 	}
-
 
 }
