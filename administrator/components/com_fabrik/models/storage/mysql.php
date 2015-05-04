@@ -148,7 +148,6 @@ class MySql
 	 *
 	 * @return  string  index type
 	 */
-
 	public function dropIndex($field, $prefix = '', $type = 'INDEX')
 	{
 		$table = $this->table;
@@ -184,11 +183,10 @@ class MySql
 	 * @param   string $prefix index name prefix (allows you to differentiate between indexes created in
 	 *                         different parts of fabrik)
 	 * @param   string $type   index type
-	 * @param   int    $size   index length
+	 * @param   int|string    $size   index length
 	 *
 	 * @return void
 	 */
-
 	public function addIndex($field, $prefix = '', $type = 'INDEX', $size = '')
 	{
 		$indexes = $this->getIndexes();
@@ -251,7 +249,7 @@ class MySql
 		{
 			$table = $this->table;
 		}
-echo "tabke = $table";
+
 		$origColNames = $this->getDBFields($table);
 		$keys         = array();
 
@@ -361,6 +359,7 @@ echo "tabke = $table";
 				$sql .= ' ' . $k . ' ' . $v;
 			}
 		}
+
 		$sql .= ' ENGINE = MYISAM ';
 		$fabrikDb->setQuery($sql);
 		$fabrikDb->execute();
@@ -392,7 +391,6 @@ echo "tabke = $table";
 	 *
 	 * @return  bool    true if table is a view
 	 */
-
 	public function isView()
 	{
 		$isView = $this->params->get('isview', null);
@@ -437,6 +435,11 @@ echo "tabke = $table";
 	 */
 	public function updatePrimaryKey($fieldName, $autoIncrement, $type = 'int(11)')
 	{
+		if ($fieldName === '')
+		{
+			return;
+		}
+
 		if (!$this->canAlterFields())
 		{
 			return;
@@ -491,7 +494,6 @@ echo "tabke = $table";
 	 *
 	 * @return  mixed  false / JError
 	 */
-
 	public function addKey($fieldName, $autoIncrement, $type = "INT(6)")
 	{
 		$result = true;
@@ -532,9 +534,8 @@ echo "tabke = $table";
 	 *
 	 * @param   array $aPriKey existing key data
 	 *
-	 * @return  bool true if key droped
+	 * @return  bool true if key dropped
 	 */
-
 	public function dropKey($aPriKey)
 	{
 		$sql = 'ALTER TABLE ' . $this->db->qn($this->table) . ' CHANGE ' . $this->db->qn($aPriKey['colname']) . ' '
@@ -574,7 +575,6 @@ echo "tabke = $table";
 	 *
 	 * @return  bool
 	 */
-
 	public function updateKey($fieldName, $autoIncrement, $type = "INT(11)")
 	{
 		if (strstr($fieldName, '.'))
@@ -607,7 +607,6 @@ echo "tabke = $table";
 	 *
 	 * @return  array  table fields
 	 */
-
 	public function getDBFields($tbl = null, $key = null, $basetype = false)
 	{
 		if (is_null($tbl))

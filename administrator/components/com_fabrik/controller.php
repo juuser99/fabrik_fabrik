@@ -63,7 +63,7 @@ class Controller extends \JControllerBase
 		$view       = new $viewClass($model, $paths);
 
 		$ids        = $app->input->get('cid', array(), 'array');
-		$id         = $app->input->get('id', ArrayHelper::getValue($ids, 0));
+		$id         = $app->input->getString('id', ArrayHelper::getValue($ids, 0));
 		$listUrl    = $this->listUrl($viewName);
 
 		switch ($layoutName)
@@ -101,6 +101,7 @@ class Controller extends \JControllerBase
 			case 'checkin':
 				$model->set('id', $id);
 				$model->checkin();
+
 				$this->app->redirect($listUrl);
 				break;
 			case 'checkout':

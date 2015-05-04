@@ -54,7 +54,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 				<?php
 				$this->field = $this->form->getField('connection_id');
 				require '_control_group.php';
-				if ($this->item->id == 0) :
+				if ($this->item->get('view') == '') :
 					$this->field = $this->form->getField('_database_name');
 					require '_control_group.php';
 					echo $this->form->getLabel('or');
@@ -75,7 +75,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 						<div class="orderby_container" style="margin-bottom:3px;clear:left;float:<?php echo $rtlDirInv; ?>">
 							<?php
 							echo ArrayHelper::getValue($this->order_by, $o, $this->order_by[0]);
-							if ((int) $this->item->id !== 0) :
+							if ($this->item->get('view') == '') :
 								echo ArrayHelper::getValue($this->order_dir, $o)?>
 								<div class="btn-group pull-<?php echo $rtlDir; ?>">
 									<a class="btn btn-success addOrder" href="#"><i class="icon-plus"></i> </a>
@@ -127,7 +127,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 				<legend>
 					<?php echo FText::_('COM_FABRIK_JOINS'); ?>
 				</legend>
-				<?php if ($this->item->id != 0)
+				<?php if ($this->item->get('view') != '')
 				{ ?>
 					<a href="#" id="addAJoin" class="btn">
 						<i class="icon-plus"></i>  <?php echo FText::_('COM_FABRIK_ADD'); ?>

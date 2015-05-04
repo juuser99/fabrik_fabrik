@@ -382,7 +382,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 	/**
 	 * Load all the forms element plugins
 	 *
-	 * @param   object  &$form  Form model
+	 * @param  \Fabrik\Admin\Models\Form  &$form  Form model
 	 *
 	 * @return  array	Group objects with plugin objects loaded in group->elements
 	 */
@@ -408,30 +408,20 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 			$lang = JFactory::getLanguage();
 			$folder = 'fabrik_element';
 			$client = JApplicationHelper::getClientInfo(0);
-			$groupIds = $form->getGroupIds();
 
-			if (empty($groupIds))
+			$elements = array();
+			$item = $form->getItem();
+
+			foreach ($item->get('form.groups', array()) as $group)
 			{
-				// New form
-				return array();
+				foreach ($group->fields as $field)
+				{
+					if ($field->published != -2)
+					{
+						$elements[] = $field;
+					}
+				}
 			}
-
-			$db = Worker::getDbo(true);
-			$query = $db->getQuery(true);
-			$select = '*, e.name AS name, e.id AS id, e.published AS published, e.label AS label,'
-			. 'e.plugin, e.params AS params, e.access AS access, e.ordering AS ordering';
-			$query->select($select);
-			$query->from('#__fabrik_elements AS e');
-			$query->join('INNER', '#__extensions AS p ON p.element = e.plugin');
-			$query->where('group_id IN (' . implode(',', $groupIds) . ')');
-			$query->where('p.folder = "fabrik_element"');
-
-			// Ignore trashed elements
-			$query->where('e.published != -2');
-			$query->order("group_id, e.ordering");
-			$db->setQuery($query);
-
-			$elements = $db->loadObjectList();
 
 			// Don't assign the elements into Joomla's main dispatcher as this causes out of memory errors in J1.6rc1
 			$dispatcher = new JDispatcher;
@@ -440,7 +430,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 
 			foreach ($elements as $element)
 			{
-				JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->id . '' . $element->plugin) : null;
+				JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->name . '' . $element->plugin) : null;
 				require_once JPATH_PLUGINS . '/fabrik_element/' . $element->plugin . '/' . $element->plugin . '.php';
 				$class = 'PlgFabrik_Element' . $element->plugin;
 				$pluginModel = new $class($dispatcher, array());

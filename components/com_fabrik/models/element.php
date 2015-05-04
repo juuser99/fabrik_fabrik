@@ -4531,6 +4531,8 @@ class Element extends Plugin
 	 *
 	 * @param   array  $data  posted element save data
 	 *
+	 * @throws RuntimeException
+	 *
 	 * @return  bool  save ok or not
 	 */
 
@@ -4550,6 +4552,8 @@ class Element extends Plugin
 	 * Called from admin element controller when element is removed
 	 *
 	 * @param   bool  $drop  has the user elected to drop column?
+	 *
+	 * @throws RuntimeException
 	 *
 	 * @return  bool  save ok or not
 	 */

@@ -20,6 +20,7 @@ use \JToolBarHelper as JToolBarHelper;
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \stdClass as stdClass;
 use Fabrik\Helpers\Worker;
+use \JHTML as JHTML;
 
 /**
  * View to edit a list.
@@ -70,37 +71,35 @@ class Html extends \Fabrik\Admin\Views\Html
 		$model      = $this->model;
 		$this->form = $model->getForm();
 		$this->item = $model->getItem();
-		//$formModel = $this->get('FormModel');
-		//$formModel->setId($this->item->form_id);
 		$this->state = $model->getState();
 		$this->js    = $model->getJs();
 		$this->addToolbar();
 
-		if ($this->item->id == 0)
+		if ($this->item->get('view') == '')
 		{
 			$this->order_by = array(FText::_('COM_FABRIK_AVAILABLE_AFTER_SAVE'));
 			$this->group_by = FText::_('COM_FABRIK_AVAILABLE_AFTER_SAVE');
 		}
 		else
 		{
+
 			$this->order_by = array();
-			$feListModel    = $formModel->getListModel();
-			$orderbys       = $feListModel->getOrderBys();
+			$orderbys       = $model->getOrderBys();
 
 			foreach ($orderbys as $orderby)
 			{
-				$this->order_by[] = $formModel->getElementList('order_by[]', $orderby, true, false, false, 'id');
+				$this->order_by[] = $model->getElementList('order_by[]', $orderby, true, false, false, 'id');
 			}
 
 			if (empty($this->order_by))
 			{
-				$this->order_by[] = $formModel->getElementList('order_by[]', '', true, false, false, 'id');
+				$this->order_by[] = $model->getElementList('order_by[]', '', true, false, false, 'id');
 			}
 
 			$orderDir[] = JHTML::_('select.option', 'ASC', FText::_('COM_FABRIK_ASCENDING'));
 			$orderDir[] = JHTML::_('select.option', 'DESC', FText::_('COM_FABRIK_DESCENDING'));
 
-			$orderdirs       = Worker::JSONtoData($this->item->order_dir, true);
+			$orderdirs       = Worker::JSONtoData($this->item->get('list.order_dir'), true);
 			$this->order_dir = array();
 			$attribs         = 'class="inputbox" size="1" ';
 
@@ -114,7 +113,7 @@ class Html extends \Fabrik\Admin\Views\Html
 				$this->order_dir[] = JHTML::_('select.genericlist', $orderDir, 'order_dir[]', $attribs, 'value', 'text', '');
 			}
 
-			$this->group_by = $formModel->getElementList('group_by', $this->item->group_by, true, false, false);
+			$this->group_by = $model->getElementList('group_by', $this->item->get('list.group_by'), true, false, false);
 		}
 
 		$srcs   = FabrikHelperHTML::framework();
@@ -212,10 +211,10 @@ class Html extends \Fabrik\Admin\Views\Html
 		$input->set('hidemainmenu', true);
 		$user       = JFactory::getUser();
 		$userId     = $user->get('id');
-		$isNew      = ($this->item->id == 0);
-		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
+		$isNew      = ($this->item->get('view', '') == '');
+		$checkedOut = !($this->item->get('checked_out') == 0 || $this->item->get('checked_out') == $user->get('id'));
 		$canDo      = Fabrik::getActions($this->state->get('filter.category_id'));
-		$title      = $isNew ? FText::_('COM_FABRIK_MANAGER_LIST_NEW') : FText::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->label . '"';
+		$title      = $isNew ? FText::_('COM_FABRIK_MANAGER_LIST_NEW') : FText::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->get('list.label') . '"';
 		JToolBarHelper::title($title, 'list.png');
 
 		if ($isNew)
@@ -266,7 +265,6 @@ class Html extends \Fabrik\Admin\Views\Html
 	 *
 	 * @return  void
 	 */
-
 	protected function addLinkedElementsToolbar()
 	{
 		$app   = JFactory::getApplication();
@@ -283,7 +281,6 @@ class Html extends \Fabrik\Admin\Views\Html
 	 *
 	 * @return  void
 	 */
-
 	protected function addConfirmCopyToolbar()
 	{
 		$app   = JFactory::getApplication();

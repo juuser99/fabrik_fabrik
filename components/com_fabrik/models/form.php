@@ -767,43 +767,6 @@ class FabrikFEModelForm extends FabModelForm
 	}
 
 	/**
-	 * Test to try to load all group data in one query and then bind that data to group table objects
-	 * in getGroups()
-	 *
-	 * @return  array
-	 */
-
-	public function getPublishedGroups()
-	{
-		$db = Worker::getDbo(true);
-
-		if (!isset($this->_publishedformGroups) || empty($this->_publishedformGroups))
-		{
-			$params = $this->getParams();
-			$query = $db->getQuery(true);
-			$query->select(' *, fg.group_id AS group_id, RAND() AS rand_order')
-			->from('#__fabrik_formgroup AS fg')
-			->join('INNER', '#__fabrik_groups as g ON g.id = fg.group_id')
-			->where('fg.form_id = ' . (int) $this->getId() . ' AND published = 1');
-
-			if ($params->get('randomise_groups') == 1)
-			{
-				$query->order('rand_order');
-			}
-			else
-			{
-				$query->order('fg.ordering');
-			}
-
-			$db->setQuery($query);
-			$groups = $db->loadObjectList('group_id');
-			$this->_publishedformGroups = $this->mergeGroupsWithJoins($groups);
-		}
-
-		return $this->_publishedformGroups;
-	}
-
-	/**
 	 * Get the ids of all the groups in the form
 	 *
 	 * @return  array  group ids
@@ -831,85 +794,6 @@ class FabrikFEModelForm extends FabModelForm
 		unset($this->_publishedformGroups);
 
 		return $this->getGroupIds();
-	}
-
-	/**
-	 * Merge in Join Ids into an array of groups
-	 *
-	 * @param   array  $groups  form groups
-	 *
-	 * @return  array
-	 */
-
-	private function mergeGroupsWithJoins($groups)
-	{
-		$db = Worker::getDbo(true);
-		$form = $this->getForm();
-
-		if ($form->record_in_database)
-		{
-			$listModel = $this->getListModel();
-			$listid = (int) $listModel->getId();
-
-			if (is_object($listModel) && $listid !== 0)
-			{
-				$query = $db->getQuery(true);
-				$query->select('g.id, j.id AS joinid')->from('#__fabrik_joins AS j')
-					->join('INNER', '#__fabrik_groups AS g ON g.id = j.group_id')->where('list_id = ' . $listid . ' AND g.published = 1');
-
-				// Added as otherwise you could potentially load a element joinid as a group join id. 3.1
-				$query->where('j.element_id = 0');
-				$db->setQuery($query);
-				$joinGroups = $db->loadObjectList('id');
-
-				foreach ($joinGroups as $k => $o)
-				{
-					if (array_key_exists($k, $groups))
-					{
-						$groups[$k]->join_id = $o->joinid;
-					}
-				}
-			}
-		}
-
-		return $groups;
-	}
-
-	/**
-	 * Get the forms published group objects
-	 *
-	 * @return  array  Group model objects with table row loaded
-	 */
-
-	public function getGroups()
-	{
-		if (!isset($this->groups))
-		{
-			$this->groups = array();
-			$listModel = $this->getListModel();
-			$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
-			$groupdata = $this->getPublishedGroups();
-
-			foreach ($groupdata as $id => $groupd)
-			{
-				$thisGroup = clone ($groupModel);
-				$thisGroup->setId($id);
-				$thisGroup->setContext($this, $listModel);
-
-				// $$ rob 25/02/2011 this was doing a query per group - pointless as we bind $groupd to $row afterwards
-				// $row = $thisGroup->getGroup();
-				$row = FabTable::getInstance('Group', 'FabrikTable');
-				$row->bind($groupd);
-				$thisGroup->setGroup($row);
-
-				if ($row->published == 1)
-				{
-					$this->groups[$id] = $thisGroup;
-				}
-			}
-		}
-
-		return $this->groups;
 	}
 
 	/**
@@ -952,29 +836,6 @@ class FabrikFEModelForm extends FabModelForm
 		$this->elements = $groups;
 
 		return $groups;
-	}
-
-	/**
-	 * Similar to getFormGroups() except that this returns a data structure of
-	 * form
-	 * --->group
-	 * -------->element
-	 * -------->element
-	 * --->group
-	 * if run before then existing data returned
-	 *
-	 * @return  array  element objects
-	 */
-
-	public function getGroupsHiarachy()
-	{
-		if (!isset($this->groups))
-		{
-			$this->getGroups();
-			$this->groups = Worker::getPluginManager()->getFormPlugins($this);
-		}
-
-		return $this->groups;
 	}
 
 	/**
@@ -1958,26 +1819,6 @@ class FabrikFEModelForm extends FabModelForm
 	}
 
 	/**
-	 * Get the form's list model
-	 * (was getTable but that clashed with J1.5 func)
-	 *
-	 * @return  FabrikFEModelList  fabrik list model
-	 */
-
-	public function getListModel()
-	{
-		if (!isset($this->listModel))
-		{
-			$this->listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$item = $this->getForm();
-			$this->listModel->loadFromFormId($item->id);
-			$this->listModel->setFormModel($this);
-		}
-
-		return $this->listModel;
-	}
-
-	/**
 	 * Get the class names for each of the validation rules
 	 *
 	 * @deprecated (was only used in element label)
@@ -2631,32 +2472,6 @@ echo "form get errors";
 	}
 
 	/**
-	 * Create a drop down list of all the elements in the form
-	 *
-	 * @param   string  $name                Drop down name
-	 * @param   string  $default             Current value
-	 * @param   bool    $excludeUnpublished  Add elements that are unpublished
-	 * @param   bool    $useStep             Concat table name and el name with '___' (true) or "." (false)
-	 * @param   bool    $incRaw              Include raw labels default = true
-	 * @param   string  $key                 What value should be used for the option value 'name' (default) or 'id' @since 3.0.7
-	 * @param   string  $attribs             Select list attributes @since 3.1b
-	 *
-	 * @return	string	html list
-	 */
-
-	public function getElementList($name = 'order_by', $default = '', $excludeUnpublished = false,
-		$useStep = false, $incRaw = true, $key = 'name', $attribs = 'class="inputbox" size="1"')
-	{
-		$aEls = $this->getElementOptions($useStep, $key, false, $incRaw);
-		asort($aEls);
-
-		// Paul - Prepend rather than append "none" option.
-		array_unshift($aEls, JHTML::_('select.option', '', '-'));
-
-		return JHTML::_('select.genericlist', $aEls, $name, $attribs, 'value', 'text', $default);
-	}
-
-	/**
 	 * Get an array of the form's element's ids
 	 *
 	 * @param   array  $ignore  ClassNames to ignore e.g. array('FabrikModelFabrikCascadingdropdown')
@@ -2720,98 +2535,6 @@ echo "form get errors";
 				$aEls[] = (int) $element->id;
 			}
 		}
-	}
-
-	/**
-	 * Creates options array to be then used by getElementList to create a drop down of elements in the form
-	 * separated as elements need to collate this options from multiple forms
-	 *
-	 * @param   bool    $useStep               concat table name and el name with '___' (true) or "." (false)
-	 * @param   string  $key                   name of key to use (default "name")
-	 * @param   bool    $show_in_list_summary  only show those elements shown in table summary
-	 * @param   bool    $incRaw                include raw labels in list (default = false) Only works if $key = name
-	 * @param   array   $filter                list of plugin names that should be included in the list - if empty include all plugin types
-	 * @param   string  $labelMethod           An element method that if set can alter the option's label
-	 *                                         Used to only show elements that can be selected for search all
-	 * @param   bool    $noJoins               do not include elements in joined tables (default false)
-	 *
-	 * @return	array	html options
-	 */
-
-	public function getElementOptions($useStep = false, $key = 'name', $show_in_list_summary = false, $incRaw = false,
-		$filter = array(), $labelMethod = '', $noJoins = false)
-	{
-		$groups = $this->getGroupsHiarachy();
-		$aEls = array();
-
-		foreach ($groups as $gid => $groupModel)
-		{
-			if ($noJoins && $groupModel->isJoin())
-			{
-				continue;
-			}
-
-			$elementModels = $groupModel->getMyElements();
-			$prefix = $groupModel->isJoin() ? $groupModel->getJoinModel()->getJoin()->table_join . '.' : '';
-
-			foreach ($elementModels as $elementModel)
-			{
-				$el = $elementModel->getElement();
-
-				if (!empty($filter) && !in_array($el->plugin, $filter))
-				{
-					continue;
-				}
-
-				if ($show_in_list_summary == true && $el->show_in_list_summary != 1)
-				{
-					continue;
-				}
-
-				$val = $el->$key;
-				$label = strip_tags($prefix . $el->label);
-
-				if ($labelMethod !== '')
-				{
-					$elementModel->$labelMethod($label);
-				}
-
-				if ($key != 'id')
-				{
-					$val = $elementModel->getFullName($useStep, false);
-
-					if ($this->addDbQuote)
-					{
-						$val = FabrikString::safeColName($val);
-					}
-
-					if ($incRaw && is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
-					{
-						/* @FIXME - next line had been commented out, causing undefined warning for $rawval
-						 * on following line.  Not sure if getrawColumn is right thing to use here though,
-						 * like, it adds filed quotes, not sure if we need them.
-						 */
-						if ($elementModel->getElement()->published != 0)
-						{
-							$rawval = $elementModel->getRawColumn($useStep);
-
-							if (!$this->addDbQuote)
-							{
-								$rawval = str_replace('`', '', $rawval);
-							}
-
-							$aEls[$label . '(raw)'] = JHTML::_('select.option', $rawval, $label . '(raw)');
-						}
-					}
-				}
-
-				$aEls[] = JHTML::_('select.option', $val, $label);
-			}
-		}
-		// Paul - Sort removed so that list is presented in group/id order regardless of whether $key is name or id
-		// asort($aEls);
-
-		return $aEls;
 	}
 
 	/**

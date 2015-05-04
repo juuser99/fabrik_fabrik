@@ -294,8 +294,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 	{
 		$item      = $this->getItem();
 		$connModel = new Connection;
-		$connModel->set('id', $item->list->connection_id);
-		$connModel->getItem($item->list->connection_id);
+		$connModel->set('id', $item->get('list.connection_id'));
+		$connModel->getItem($item->get('list.connection_id'));
 
 		return $connModel;
 	}
@@ -339,7 +339,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$joinTypeOpts[]    = array('left', FText::_('LEFT JOIN'));
 		$joinTypeOpts[]    = array('right', FText::_('RIGHT JOIN'));
 		$activeTableOpts[] = "";
-		$activeTableOpts[] = $item->list->db_table_name;
+		$activeTableOpts[] = $item->get('list.db_table_name');
 
 		$joins = $this->getJoins();
 
@@ -361,20 +361,19 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$filterOpts               = new stdClass;
 		$filterOpts->filterJoinDd = $this->getFilterJoinDd(false, 'jform[params][filter-join][]');
 		$filterOpts->filterCondDd = $this->getFilterConditionDd(false, 'jform[params][filter-conditions][]', 2);
-		$filterOpts->filterAccess = JHtml::_('access.level', 'jform[params][filter-access][]', $item->list->access, 'class="input-small"');
+		$filterOpts->filterAccess = JHtml::_('access.level', 'jform[params][filter-access][]', $item->get('list.access'), 'class="input-small"');
 		$filterOpts->filterAccess = str_replace(array("\n", "\r"), '', $filterOpts->filterAccess);
 		$filterOpts               = json_encode($filterOpts);
 
-		$formModel    = $this->getFormModel();
 		$attribs      = 'class="inputbox input-small" size="1"';
-		$filterFields = $formModel->getElementList('jform[params][filter-fields][]', '', false, false, true, 'name', $attribs);
+		$filterFields = $this->getElementList('jform[params][filter-fields][]', '', false, false, true, 'name', $attribs);
 		$filterFields = addslashes(str_replace(array("\n", "\r"), '', $filterFields));
 
 		$plugins = json_encode($this->getPlugins());
 
 		$js   = array();
 		$js[] = "window.addEvent('domready', function () {";
-		$js[] = "Fabrik.controller = new PluginManager($plugins, " . (int) $this->getItem()->id . ", 'list');";
+		$js[] = "Fabrik.controller = new PluginManager($plugins, '" . $item->get('view') . "', 'list');";
 
 		$js[] = "oAdminTable = new ListForm($opts);";
 		$js[] = "oAdminTable.watchJoins();";
@@ -449,25 +448,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 	}
 
 	/**
-	 * Load up a front end form model - used in saving the list
-	 *
-	 * @return  object  front end form model
-	 */
-
-	public function getFormModel()
-	{
-		if (is_null($this->formModel))
-		{
-			$config          = array();
-			$config['dbo']   = Worker::getDbo(true);
-			$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel', $config);
-			$this->formModel->setDbo($config['dbo']);
-		}
-
-		return $this->formModel;
-	}
-
-	/**
 	 * Set the form model
 	 *
 	 * @param   object $model form model
@@ -488,13 +468,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 	public function getFEModel()
 	{
-		if (is_null($this->feListModel))
+		throw new Error ('list admin model trying to load front end model - no no - its now all in admin model');
+		/*if (is_null($this->feListModel))
 		{
 			$this->feListModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 			$this->feListModel->set('list.id', $this->get('list.id'));
 		}
 
-		return $this->feListModel;
+		return $this->feListModel;*/
 	}
 
 	/**
@@ -554,7 +535,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$data = $post;
 		}
 
-		//echo "<pre>";print_r($data);exit;
 		$data->list->order_by   = $input->get('order_by', array(), 'array');
 		$data->list->order_dir  = $input->get('order_dir', array(), 'array');
 		$data->checked_out      = false;
@@ -654,20 +634,25 @@ class Lizt extends Base implements ModelFormLiztInterface
 		if ($pk == '')
 		{
 			$pk    = $this->storage->getPrimaryKeyAndExtra();
+			print_r($pk);
 			$key   = $pk[0]['colname'];
 			$extra = $pk[0]['extra'];
 
 			// Store without quoteNames as thats db specific
-			$data->list->db_primary_key = $data->list->db_primary_key == '' ? $data->list->db_table_name . '.' . $key : $data->list->db_primary_key;
+			if ($key)
+			{
+				$data->list->db_primary_key = $data->list->db_primary_key == '' ? $data->list->db_table_name . '.' . $key : $data->list->db_primary_key;
+			}
+			else
+			{
+				$data->list->db_primary_key = '';
+			}
+
 			$data->list->auto_inc       = String::stristr($extra, 'auto_increment') ? true : false;
 		}
 
 		$this->updateJoins($data);
-		//echo "nane  " . $data->list->db_table_name;exit;
 		$storage = $this->getStorage(array('table' => $data->list->db_table_name));
-		echo "<pre>";
-		print_r($data);
-		exit;
 
 		if (!$storage->isView())
 		{
@@ -683,6 +668,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		// Make an array of elements and a presumed index size, map is then used in creating indexes
 		$map    = array();
+
 		$groups = $this->getFormModel()->getGroupsHiarachy();
 
 		// FIXME - from here on - not tested for json views
@@ -765,12 +751,11 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 */
 	protected function collation($row)
 	{
-		// @todo - redo this
+		// @FIXME - redo this after json view changes.
 		return true;
-		$feModel = $this->getFEModel();
 
 		// Don't attempt to alter new table, or a view, or if we shouldn't alter the table
-		if ($row->id == 0 || $this->storage->isView() || !$feModel->canAlterFields())
+		if ($row->id == 0 || $this->storage->isView() || !$this->canAlterFields())
 		{
 			return;
 		}
@@ -951,7 +936,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 					break;
 			}
 			$joinField = $thisJoin->table_join . '___' . $thisJoin->table_join_key;
-			$this->getFEModel()->addIndex($joinField, 'join_fk', 'INDEX', $fkSize);
+			$this->getStorage()->addIndex($joinField, 'join_fk', 'INDEX', $fkSize);
 		}
 	}
 
@@ -1026,32 +1011,16 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * need to create all the elements based on the database table fields and their
 	 * column type
 	 *
-	 * @param   object $data      JSON view data
-	 * @param   string $tableName table name - if not set then use jform's db_table_name (@since 3.1)
+	 * @param   object $data  JSON view data
+	 * @param   string $table Table name - if not set then use jform's db_table_name (@since 3.1)
 	 *
 	 * @return  void
 	 */
-	protected function createLinkedElements(&$data, $tableName = '')
+	protected function createLinkedElements(&$data, $table = '')
 	{
-		$table = $data->list->db_table_name;
-		$this->makeElementsFromFields(0, $table);
-		/*$fields = $this->getStorage(array('table' => $table))->getDBFields();
-		$fbConfig      = JComponentHelper::getParams('com_fabrik');
-		echo "<pre>";print_r($fbConfig);
-
-		foreach ($fields as $field)
-		{
-			$plugin     = 'field';
-			$type       = $field->Type;
-			$maxLength  = 255;
-			$maxLength2 = 0;
-
-			if (preg_match("/\((.*)\)/i", $type, $matches))
-			{
-				print_r($matches); echo "<br>";
-			}
-		}
-		print_r($fields);exit;*/
+		$table    = $table === '' ? $data->list->db_table_name : $table;
+		$elements = $this->makeElementsFromFields(0, $table);
+		$data->groups[0]->fields = $elements;
 	}
 
 	/**
@@ -1060,23 +1029,24 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * @param   int    $groupId   group id
 	 * @param   string $tableName table name
 	 *
-	 * @return  void
+	 * @return  array  elements
 	 */
 
 	protected function makeElementsFromFields($groupId, $tableName)
 	{
-		$fabrikDb      = $this->getFEModel()->getDb();
-		$dispatcher    = JEventDispatcher::getInstance();
-		$input         = $this->app->input;
-		$elementModel  = new Element($dispatcher);
-		$pluginManager = Worker::getPluginManager();
-		$user          = JFactory::getUser();
-		$fbConfig      = JComponentHelper::getParams('com_fabrik');
-		$elementTypes  = $input->get('elementtype', array(), 'array');
-		$fields        = $fabrikDb->getTableColumns($tableName, false);
-		$createDate    = JFactory::getDate()->toSQL();
-		$key           = $this->storage->getPrimaryKeyAndExtra($tableName);
-		$ordering      = 0;
+		echo "here2";exit;
+		$elements     = array();
+		$fabrikDb     = $this->storage->db;
+		$dispatcher   = JEventDispatcher::getInstance();
+		$input        = $this->app->input;
+		$elementModel = new Element($dispatcher);
+		$user         = JFactory::getUser();
+		$fbConfig     = JComponentHelper::getParams('com_fabrik');
+		$elementTypes = $input->get('elementtype', array(), 'array');
+		$fields       = $fabrikDb->getTableColumns($tableName, false);
+		$createDate   = JFactory::getDate()->toSQL();
+		$key          = $this->storage->getPrimaryKeyAndExtra($tableName);
+		$ordering     = 0;
 		/**
 		 * no existing fabrik table so we take a guess at the most
 		 * relevant element types to  create
@@ -1111,11 +1081,12 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$type    = explode(" ", $type);
 			$type    = ArrayHelper::getValue($type, 0, '');
 			$type    = preg_replace("/\((.*)\)/i", '', $type);
-			$element = FabTable::getInstance('Element', 'FabrikTable');
+			$element = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/element.json');
+			$element = json_decode($element);
 
 			if (array_key_exists($ordering, $elementTypes))
 			{
-				// If importing from a CSV file then we have userselect field definitions
+				// If importing from a CSV file then we have user select field definitions
 				$plugin = $elementTypes[$ordering];
 			}
 			else
@@ -1190,9 +1161,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$element->width = $maxLength;
 			}
 
-			$element->height   = '6';
-			$element->ordering = $ordering;
-			$p                 = $elementModel->getDefaultAttribs();
+			$element->height = '6';
+			$p               = $elementModel->getDefaultAttribs();
 
 			if (in_array($type, array('int', 'tinyint', 'smallint', 'mediumint', 'bigint')) && $plugin == 'field')
 			{
@@ -1214,8 +1184,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$p->maxlength = $maxLength;
 			}
 
-			$element->params = json_encode($p);
-			$element->label  = ArrayHelper::getValue($elementLabels, $ordering, str_replace("_", " ", $label));
+			$element->params = $p;
+			$element->label  = ArrayHelper::getValue($elementLabels, $ordering, str_replace('_', ' ', $label));
 
 			//Format Label
 			$labelConfig = $fbConfig->get('format_labels', '0');
@@ -1236,8 +1206,10 @@ class Lizt extends Base implements ModelFormLiztInterface
 				default:
 					break;
 			}
-echo "<pre>";print_r($element);exit;
-			$element->store();
+			$elements[] = $element;
+
+			// FIXME - test what happens on save for user element etc.
+			/*$element->store();
 			$elementModel = $pluginManager->getPlugIn($element->plugin, 'element');
 			$elementModel->setId($element->id);
 			$elementModel->element = $element;
@@ -1245,9 +1217,11 @@ echo "<pre>";print_r($element);exit;
 			// Hack for user element
 			$details = array('group_id' => $element->group_id);
 			$input->set('details', $details);
-			$elementModel->onSave(array());
+			$elementModel->onSave(array());*/
 			$ordering++;
 		}
+
+		return $elements;
 	}
 
 	/**
@@ -1627,6 +1601,7 @@ echo "<pre>";print_r($element);exit;
 
 	public function ammendTable()
 	{
+		echo "here2";exit;
 		$db             = Worker::getDbo(true);
 		$input          = $this->app->input;
 		$query          = $db->getQuery(true);
@@ -1741,6 +1716,28 @@ echo "<pre>";print_r($element);exit;
 				throw new \Exception('amend table: ' . $e->getMessage());
 			}
 		}
+	}
+
+	/**
+	 * Get the element ids for list ordering
+	 *
+	 * @since  3.0.7
+	 *
+	 * @return  array  element ids
+	 */
+
+	public function getOrderBys()
+	{
+		$item = $this->getItem();
+		$orderBys = Worker::JSONtoData($item->get('list.order_by'), true);
+
+		foreach ($orderBys as &$orderBy)
+		{
+			$elementModel = $this->getElement($orderBy, true);
+			$orderBy = $elementModel ? $elementModel->getId() : '';
+		}
+
+		return $orderBys;
 	}
 
 }

@@ -3802,6 +3802,7 @@ class FabrikFEModelList extends JModelForm
 	public function getDb()
 	{
 
+		echo "get dbb";
 		// @todo - getTable needs to be converted to just getting the json object
 		$row = $this->getTable();
 		$cnn = Worker::getConnection($row);
@@ -8078,29 +8079,6 @@ class FabrikFEModelList extends JModelForm
 	}
 
 	/**
-	 * Get the element ids for list odering
-	 *
-	 * @since  3.0.7
-	 *
-	 * @return  array  element ids
-	 */
-
-	public function getOrderBys()
-	{
-		$item = $this->getTable();
-		$orderBys = Worker::JSONtoData($item->order_by, true);
-		$formModel = $this->getFormModel();
-
-		foreach ($orderBys as &$orderBy)
-		{
-			$elementModel = $formModel->getElement($orderBy, true);
-			$orderBy = $elementModel ? $elementModel->getId() : '';
-		}
-
-		return $orderBys;
-	}
-
-	/**
 	 * Test if the main J user can create mySQL tables
 	 *
 	 * @return  bool
@@ -8123,8 +8101,8 @@ class FabrikFEModelList extends JModelForm
 
 	public function makeIdElement($groupId)
 	{
-		$pluginMananger = Worker::getPluginManager();
-		$element = $pluginMananger->getPlugIn('internalid', 'element');
+		$pluginManager = Worker::getPluginManager();
+		$element = $pluginManager->getPlugIn('internalid', 'element');
 		$item = $element->getDefaultProperties();
 		$item->name = $item->label = 'id';
 		$item->group_id = $groupId;
@@ -8151,8 +8129,8 @@ class FabrikFEModelList extends JModelForm
 
 	public function makeFkElement($groupId)
 	{
-		$pluginMananger = Worker::getPluginManager();
-		$element = $pluginMananger->getPlugIn('field', 'element');
+		$pluginManager = Worker::getPluginManager();
+		$element = $pluginManager->getPlugIn('field', 'element');
 		$item = $element->getDefaultProperties();
 		$item->name = $item->label = 'parent_id';
 		$item->hidden = 1;

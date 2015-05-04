@@ -611,9 +611,10 @@ class Worker
 	 *
 	 * @since  3.1
 	 *
+	 * @throws RuntimeException
+	 *
 	 * @return  JCrypt
 	 */
-
 	public static function getCrypt()
 	{
 		jimport('joomla.crypt.crypt');
@@ -626,8 +627,8 @@ class Worker
 			throw new RuntimeException('You must supply a secret code in your Joomla configuration.php file');
 		}
 
-		$key = new JCryptKey('simple', $secret, $secret);
-		$crypt = new JCrypt(new JCryptCipherSimple, $key);
+		$key = new \JCryptKey('simple', $secret, $secret);
+		$crypt = new \JCrypt(new \JCryptCipherSimple, $key);
 
 		return $crypt;
 	}
@@ -1554,7 +1555,7 @@ class Worker
 
 		if (is_object($item))
 		{
-			$item = is_null($item->list->connection_id) ? ArrayHelper::getValue($jform, 'connection_id', -1) : $item->list->connection_id;
+			$item = is_null($item->get('list.connection_id')) ? ArrayHelper::getValue($jform, 'connection_id', -1) : $item->get('list.connection_id');
 		}
 
 		$connId = (int) $item;
@@ -2000,55 +2001,16 @@ class Worker
 	 */
 	public static function formDefaults($form)
 	{
-		/*$template = file_get_contents(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/schemas/templates.json');
+		$template = file_get_contents(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/schemas/' . $form . '.json');
 		$template = json_decode($template);
 
 
-		if (!isset($template->$form))
+		if (!isset($template))
 		{
-			throw new Exception($form . ' not found in template schema');
+			throw new Exception($form . ' no template schema found');
 		}
 
-		return $template->$form;*/
-		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
-		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
-		$form = JForm::getInstance('com_fabrik.' . $form, $form, array('control' => '', 'load_data' => true));
-		$fs = $form->getFieldset();
-		$json = array('params' => array());
-
-		foreach ($fs as $name => $field)
-		{
-			if (substr($name, 0, 7) === 'params_')
-			{
-				$name = str_replace('params_', '', $name);
-				$json['params'][$name] = $field->value;
-			}
-			else
-			{
-				$json[$name] = $field->value;
-			}
-		}
-
-		return ArrayHelper::toObject($json);
-	}
-
-	/**
-	 * Are we in J3 or using a bootstrap tmpl
-	 *
-	 * @since   3.1
-	 *
-	 * @return  bool
-	 */
-
-	public static function j3()
-	{
-		$app = JFactory::getApplication();
-		$version = new JVersion;
-
-		// Only use template test for testing in 2.5 with my temp J bootstrap template.
-		$tpl = $app->getTemplate();
-
-		return ($tpl === 'bootstrap' || $tpl === 'fabrik4' || $version->RELEASE > 2.5);
+		return $template;
 	}
 
 	/**

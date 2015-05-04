@@ -11,12 +11,14 @@
 namespace Fabrik\Admin\Models;
 
 use \JForm as JForm;
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use \JDate as Date;
 use Fabrik\Storage\MySql as Storage;
 use \JPluginHelper as JPluginHelper;
 use Joomla\String\String as String;
 use Fabrik\Helpers\Worker as Worker;
+use \JHTML as JHTML;
 
 /**
  * Fabrik Base Admin Model
@@ -110,7 +112,7 @@ class Base extends \JModelBase
 	 *
 	 * @param  string $id
 	 *
-	 * @return stdClass
+	 * @return Registry
 	 */
 	public function getItem($id = null)
 	{
@@ -131,6 +133,8 @@ class Base extends \JModelBase
 		}
 
 		$item = json_decode($json);
+
+		return new Registry($item);
 
 		return $item;
 	}
@@ -189,18 +193,150 @@ class Base extends \JModelBase
 	 *
 	 * @return array
 	 */
-	public function getPlugins()
+	public function getPlugins($subView = 'list')
 	{
 		$item = $this->getItem();
 		// Load up the active plug-ins
-		$plugins = array();
-
-		if (is_array($item->params))
-		{
-			$plugins = ArrayHelper::getValue($item->params, 'plugins', array());
-		}
+		$plugins = $item->get($subView . '.params.plugins', array());
 
 		return $plugins;
+	}
+
+	/**
+	 * Create a drop down list of all the elements in the form
+	 *
+	 * @param   string $name               Drop down name
+	 * @param   string $default            Current value
+	 * @param   bool   $excludeUnpublished Add elements that are unpublished
+	 * @param   bool   $useStep            Concat table name and el name with '___' (true) or "." (false)
+	 * @param   bool   $incRaw             Include raw labels default = true
+	 * @param   string $key                What value should be used for the option value 'name' (default) or 'id'
+	 *                                     @since 3.0.7
+	 * @param   string $attribs            Select list attributes @since 3.1b
+	 *
+	 * @return    string    html list
+	 */
+
+	public function getElementList($name = 'order_by', $default = '', $excludeUnpublished = false,
+		$useStep = false, $incRaw = true, $key = 'name', $attribs = 'class="inputbox" size="1"')
+	{
+		$aEls = $this->getElementOptions($useStep, $key, false, $incRaw);
+		asort($aEls);
+
+		array_unshift($aEls, JHTML::_('select.option', '', '-'));
+
+		return JHTML::_('select.genericlist', $aEls, $name, $attribs, 'value', 'text', $default);
+	}
+
+	/**
+	 * Load up a front end form model - used in saving the list
+	 *
+	 * @return  object  front end form model
+	 */
+	public function getFormModel()
+	{
+		if (is_null($this->formModel))
+		{
+			$this->formModel = new Form;
+			$this->formModel->set('id', $this->get('id'));
+			/*$config          = array();
+			$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel', $config);
+			$this->formModel->setDbo($config['dbo']);*/
+		}
+
+		return $this->formModel;
+	}
+
+	/**
+	 * Creates options array to be then used by getElementList to create a drop down of elements in the form
+	 * separated as elements need to collate this options from multiple forms
+	 *
+	 * @param   bool   $useStep                concat table name and el name with '___' (true) or "." (false)
+	 * @param   string $key                    name of key to use (default "name")
+	 * @param   bool   $show_in_list_summary   only show those elements shown in table summary
+	 * @param   bool   $incRaw                 include raw labels in list (default = false) Only works if $key = name
+	 * @param   array  $filter                 list of plugin names that should be included in the list - if empty
+	 *                                         include all plugin types
+	 * @param   string $labelMethod            An element method that if set can alter the option's label
+	 *                                         Used to only show elements that can be selected for search all
+	 * @param   bool   $noJoins                do not include elements in joined tables (default false)
+	 *
+	 * @return    array    html options
+	 */
+	public function getElementOptions($useStep = false, $key = 'name', $show_in_list_summary = false, $incRaw = false,
+		$filter = array(), $labelMethod = '', $noJoins = false)
+	{
+		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$aEls   = array();
+
+		foreach ($groups as $gid => $groupModel)
+		{
+			if ($noJoins && $groupModel->isJoin())
+			{
+				continue;
+			}
+
+			$elementModels = $groupModel->getMyElements();
+			$prefix        = $groupModel->isJoin() ? $groupModel->getJoinModel()->getJoin()->table_join . '.' : '';
+
+			foreach ($elementModels as $elementModel)
+			{
+				$el = $elementModel->getElement();
+
+				if (!empty($filter) && !in_array($el->plugin, $filter))
+				{
+					continue;
+				}
+
+				if ($show_in_list_summary == true && $el->show_in_list_summary != 1)
+				{
+					continue;
+				}
+
+				$val   = $el->$key;
+				$label = strip_tags($prefix . $el->label);
+
+				if ($labelMethod !== '')
+				{
+					$elementModel->$labelMethod($label);
+				}
+
+				if ($key != 'id')
+				{
+					$val = $elementModel->getFullName($useStep, false);
+
+					if ($this->addDbQuote)
+					{
+						$val = FabrikString::safeColName($val);
+					}
+
+					if ($incRaw && is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
+					{
+						/* @FIXME - next line had been commented out, causing undefined warning for $rawval
+						 * on following line.  Not sure if getrawColumn is right thing to use here though,
+						 * like, it adds filed quotes, not sure if we need them.
+						 */
+						if ($elementModel->getElement()->published != 0)
+						{
+							$rawval = $elementModel->getRawColumn($useStep);
+
+							if (!$this->addDbQuote)
+							{
+								$rawval = str_replace('`', '', $rawval);
+							}
+
+							$aEls[$label . '(raw)'] = JHTML::_('select.option', $rawval, $label . '(raw)');
+						}
+					}
+				}
+
+				$aEls[] = JHTML::_('select.option', $val, $label);
+			}
+		}
+		// Paul - Sort removed so that list is presented in group/id order regardless of whether $key is name or id
+		// asort($aEls);
+
+		return $aEls;
 	}
 
 	/**
@@ -259,7 +395,19 @@ class Base extends \JModelBase
 			$options = array('control' => 'jform', 'load_data' => true);
 		}
 
-		$form        = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
+		$form = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
+		$item = $this->getItem();
+		$klass = explode("\\", get_class($this));
+		$klass =strtolower(array_pop($klass));
+
+		if ($klass === 'lizt')
+		{
+			$klass = 'list';
+		}
+
+		$data = $this->getItem()->get($klass);
+		$data->view = $item->get('view');
+		$form->bind($data);
 		$form->model = $this;
 
 		return $form;
@@ -373,10 +521,12 @@ class Base extends \JModelBase
 	 */
 	public function checkout()
 	{
-		$now                    = new Date;
-		$item                   = $this->getItem();
-		$item->checked_out      = $this->user->get('id');
-		$item->checked_out_time = $now->toSql();
+		$now  = new Date;
+		$item = $this->getItem();
+
+		$item->set('checked_out', $this->user->get('id'));
+		$item->set('checked_out_time', $now->toSql());
+		$item = $item->toObject();
 
 		return $this->save($item);
 	}
@@ -439,7 +589,7 @@ class Base extends \JModelBase
 	/**
 	 * Drop a series of lists' tables.
 	 *
-	 * @param   array  $ids  List references
+	 * @param   array $ids List references
 	 *
 	 * @return  bool
 	 */
@@ -447,12 +597,12 @@ class Base extends \JModelBase
 	{
 		JPluginHelper::importPlugin('content');
 		$dispatcher = \JEventDispatcher::getInstance();
-		$dbPrefix = $this->app->get('dbprefix');
+		$dbPrefix   = $this->app->get('dbprefix');
 
 		foreach ($ids as $id)
 		{
-			$item     = $this->getItem($id);
-			$table    = $item->list->db_table_name;
+			$item  = $this->getItem($id);
+			$table = $item->list->db_table_name;
 			$dispatcher->trigger('onContentBeforeDrop', array('com_fabrik.list', $id));
 
 			if (strncasecmp($table, $dbPrefix, String::strlen($dbPrefix)) == 0)
@@ -468,7 +618,6 @@ class Base extends \JModelBase
 
 			$dispatcher->trigger('onContentAfterDrop', array('com_fabrik.list', $id));
 		}
-
 
 		return true;
 	}
@@ -501,6 +650,7 @@ class Base extends \JModelBase
 	{
 		$listId = $this->get('list.id');
 		$item   = $this->getItem($listId);
+		echo "getdb";
 
 		return Worker::getConnection($item)->getDb();
 	}

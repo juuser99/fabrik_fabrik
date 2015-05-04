@@ -398,7 +398,7 @@ class Group extends Base implements ModelGroupInterface
 	 * @return  bool  True if successful, false if an error occurs.
 	 */
 
-	public function delete(&$pks, $deleteElements = false)
+	public function delete($pks, $deleteElements = false)
 	{
 		if (empty($pks))
 		{

@@ -43,6 +43,8 @@ class JFormFieldFacetedlinks extends JFormFieldList
 
 	protected function getInput()
 	{
+		// FIXME - for json views - not sure about getJoinsToThisKey;
+		return '';
 		$feListModel = $this->form->model->getFEModel();
 		$joins = $feListModel->getJoinsToThisKey();
 

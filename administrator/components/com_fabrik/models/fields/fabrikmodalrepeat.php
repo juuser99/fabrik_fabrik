@@ -59,19 +59,19 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$this->app = JFactory::getApplication();
 		$input = $this->app->input;
 		$view = $input->get('view', 'list');
-
+echo "view = $view";
 		switch ($view)
 		{
 			case 'item':
 				$view = 'list';
-				$id = (int) $this->form->getValue('request.listid');
+				$id = $this->form->getValue('request.listid');
 				break;
 			case 'module':
 				$view = 'list';
-				$id = (int) $this->form->getValue('params.list_id');
+				$id = $this->form->getValue('params.list_id');
 				break;
 			default:
-				$id = $input->getInt('id');
+				$id = $input->getString('id');
 				break;
 		}
 
@@ -82,12 +82,10 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		}
 		else
 		{
-			// Tmp hack for admin list editv view
-			if ($view == 'lizt') {
-				$view = 'list';
-			}
-			$feModel = JModelLegacy::getInstance($view, 'FabrikFEModel');
-			$feModel->setId($id);
+			$view = \Joomla\String\String::ucfirst($view);
+			$klass = "Fabrik\\Admin\\Models\\$view";
+			$model = new $klass;
+			$model->set('id', $id);
 		}
 
 		$subForm->model = $feModel;

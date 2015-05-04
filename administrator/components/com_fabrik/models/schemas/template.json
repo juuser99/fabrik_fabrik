@@ -1,12 +1,14 @@
 {
-  "id": 0,
+  "view": "",
   "checked_out": false,
   "list" : {
     "db_table_name": "",
     "access": 0,
     "connection_id" : 0,
     "db_table_name": "",
-    "access": false
+    "access": false,
+    "params": {},
+    "plugins": []
   },
   "form": {
     "label": "",
@@ -70,7 +72,9 @@
     "current_groups": "",
     "randomise_groups": "",
     "record_in_database": "1",
-    "db_table_name": ""
+    "db_table_name": "",
+    "groups": []
+
   },
   "params": {
 
