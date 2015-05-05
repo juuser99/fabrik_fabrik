@@ -3,6 +3,13 @@
 	<name>Form Edit Form</name>
 	<fieldset name="details">
 
+		<field name="view"
+		       type="text"
+		       class="input-xxlarge"
+		       label="COM_FABRIK_FIELD_VIEW_LABEL"
+		       description="COM_FABRIK_FIELD_VIEW_DESC"
+		       required="true"/>
+
 		<field name="label"
 			type="text"
 			size="40"

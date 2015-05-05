@@ -30,19 +30,6 @@ interface ModelFormFormInterface
 	 */
 	public function save($data);
 
-	/**
-	 * After having saved the form we
-	 * 1) Create a new group if none selected in edit form list
-	 * 2) Delete all old form_group records
-	 * 3) Recreate the form group records
-	 * 4) Make a table view if needed
-	 *
-	 * @param   array  $data  jform data
-	 *
-	 * @return  bool  True if you should display the form list, False if you're
-	 * redirected elsewhere
-	 */
-	public function saveFormGroups($data);
 }
 
 /**
@@ -70,13 +57,38 @@ class Form extends Base implements ModelFormFormInterface
 	 */
 	protected $pluginType = 'Form';
 
-
-	public function save($data){
-		echo "todo save";
-	}
-	public function saveFormGroups($data)
+	/**
+	 * Save the form
+	 *
+	 * @param   array $post The jform part of the request data pertaining to the list.
+	 *
+	 * @return bool
+	 * @throws RuntimeException
+	 */
+	public function save($post)
 	{
-		echo "todo save form groups";exit;
+		$view = ArrayHelper::getValue($post, 'view');
+		$this->set('id', $view);
+		$item = $this->getItem();
+		$groups = $item->get('form.groups');
+
+		$post = $this->prepareSave($post, 'form');
+		$selectedGroups = ArrayHelper::fromObject($post->get('form.current_groups'));
+
+		$newGroups = new \stdClass;
+
+		foreach ($groups as $group)
+		{
+			if (in_array($group->id, $selectedGroups))
+			{
+				$name = $group->name;
+				$newGroups->$name = $group;
+			}
+		}
+
+		$post->set('form.groups', $newGroups);
+
+		return parent::save($post);
 	}
 
 	/**
