@@ -165,11 +165,16 @@ class Base extends \JModelBase
 	}
 
 	/**
-	 * Get view items.
+	 * Get list view items.
 	 *
 	 * @return array
 	 */
 	public function getItems()
+	{
+		return $this->getViews();
+	}
+
+	protected final function getViews()
 	{
 		$path  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views';
 		$files = \JFolder::files($path, '.json', false, true);
@@ -1415,6 +1420,23 @@ class Base extends \JModelBase
 			$joinField = $thisJoin->table_join . '___' . $thisJoin->table_join_key;
 			$this->getStorage()->addIndex($joinField, 'join_fk', 'INDEX', $fkSize);
 		}
+	}
+
+	public function getFormOptions()
+	{
+		$items = $this->getViews();
+		$options = array();
+
+		foreach ($items as $item)
+		{
+			$item = new JRegistry($item);
+			$option = new stdClass;
+			$option->value = $item->get('view');
+			$option->text = $item->get('form.label');
+			$options[] = $option;
+		}
+
+		return $options;
 	}
 
 }

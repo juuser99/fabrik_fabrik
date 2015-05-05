@@ -18,6 +18,7 @@ use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
 use Fabrik\Admin\Helpers\Fabrik;
+
 /**
  * View class for a list of groups.
  *
@@ -37,7 +38,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	/**
 	 * Pagination
 	 *
-	 * @var  JPagination
+	 * @var  \JPagination
 	 */
 	protected $pagination;
 
@@ -56,11 +57,10 @@ class Html extends \Fabrik\Admin\Views\Html
 
 	public function render()
 	{
-		$this->items = $this->model->getItems();
-		$this->pagination = $this->model->getPagination();
-		$this->state = $this->model->getState();
-		//$this->formOptions = $this->model->getFormOptions();
-		$this->formOptions = array();
+		$this->items       = $this->model->getItems();
+		$this->pagination  = $this->model->getPagination();
+		$this->state       = $this->model->getState();
+		$this->formOptions = $this->model->getFormOptions();
 		//$this->packageOptions = $this->get('PackageOptions');
 
 		$this->addToolbar();
@@ -76,7 +76,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	/**
 	 * Add the page title and toolbar.
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 *
 	 * @return  void
 	 */
@@ -134,25 +134,25 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
 		JHtmlSidebar::addFilter(
-		FText::_('JOPTION_SELECT_PUBLISHED'),
-		'filter_published',
-		JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+			FText::_('JOPTION_SELECT_PUBLISHED'),
+			'filter_published',
+			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
 		);
 
 		if (!empty($this->packageOptions))
 		{
 			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
 			JHtmlSidebar::addFilter(
-			FText::_('JOPTION_SELECT_PUBLISHED'),
-			'package',
-			JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
+				FText::_('JOPTION_SELECT_PUBLISHED'),
+				'package',
+				JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
 		}
 
 		JHtmlSidebar::addFilter(
-		FText::_('COM_FABRIK_SELECT_FORM'),
-		'filter_form',
-		JHtml::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
+			FText::_('COM_FABRIK_SELECT_FORM'),
+			'filter_form',
+			JHtml::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
 		);
 	}
 }

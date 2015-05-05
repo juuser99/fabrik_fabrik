@@ -19,6 +19,9 @@ use \JComponentHelper as JComponentHelper;
 use \JHtml as JHtml;
 use \FText as FText;
 use Fabrik\Helpers\Worker;
+use Joomla\Registry\Registry as JRegistry;
+
+use \stdClass as stdClass;
 
 interface ModelElementsInterface
 {
@@ -31,8 +34,15 @@ interface ModelElementsInterface
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Elements extends \JModelBase implements ModelElementsInterface
+class Elements extends Base implements ModelElementsInterface
 {
+	/**
+	 * State prefix
+	 *
+	 * @var string
+	 */
+	protected $context = 'fabrik.elements';
+
 	/**
 	 * Constructor.
 	 *
@@ -50,25 +60,70 @@ class Elements extends \JModelBase implements ModelElementsInterface
 				'e.plugin', 'g.name'));
 		}
 	}
-
+	/**
+	 * Get list view items.
+	 *
+	 * @return array
+	 */
 	public function getItems()
 	{
-		return array();
+		$items = parent::getItems();
+		$elements = array();
+
+		foreach ($items as $item)
+		{
+			$item = new JRegistry($item);
+			$itemGroups = (array) $item->get('form.groups');
+
+			foreach ($itemGroups as $itemGroup)
+			{
+				$groupElements = (array) $itemGroup->fields;
+
+				foreach ($groupElements as $i => &$element)
+				{
+					$element->full_element_name = $element->name;
+					$element->numValidations = 'todo';
+					$element->numJs = 'todo';
+					$element->validationTip = array('todo');
+					$element->group_name = $itemGroup->name;
+					$element->ordering = $i;
+					$element->tip = 'todo';
+				}
+
+				$elements = $elements + $groupElements;
+			}
+		}
+
+		return $elements;
 	}
 
 	public function getPagination()
 	{
+		// FIXME
 		return new \JPagination(0, 0, 0);
-	}
-
-	public function getFormOptions()
-	{
-		return array();
 	}
 
 	public function getGroupOptions()
 	{
-		return array();
+		$items = parent::getItems();
+		$options = array();
+
+		foreach ($items as $item)
+		{
+			$item = new JRegistry($item);
+			$groups = $item->get('form.groups');
+
+			foreach ($groups as $group)
+			{
+
+				$option = new stdClass;
+				$option->value = $item->get('view');
+				$option->text = $group->name;
+				$options[] = $option;
+			}
+		}
+
+		return $options;
 	}
 
 	/**

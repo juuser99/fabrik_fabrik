@@ -11,6 +11,9 @@
 
 namespace Fabrik\Admin\Models;
 
+use \JComponentHelper as JComponentHelper;
+use \Joomla\Registry\Registry as JRegistry;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -25,8 +28,15 @@ interface ModelGroupsInterface
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Groups extends \JModelBase implements ModelGroupsInterface
+class Groups extends Base implements ModelGroupsInterface
 {
+	/**
+	 * State prefix
+	 *
+	 * @var string
+	 */
+	protected $context = 'fabrik.groups';
+
 	/**
 	 * Constructor.
 	 *
@@ -44,13 +54,37 @@ class Groups extends \JModelBase implements ModelGroupsInterface
 		}
 	}
 
+	/**
+	 * Get list view items.
+	 *
+	 * @return array
+	 */
 	public function getItems()
 	{
-		return array();
+		$items = parent::getItems();
+		$groups = array();
+
+		foreach ($items as $item)
+		{
+			$item = new JRegistry($item);
+			$itemGroups = (array) $item->get('form.groups');
+
+			foreach ($itemGroups as &$itemGroup)
+			{
+				$itemGroup->form_id = $item->get('view');
+				$itemGroup->flabel = $item->get('form.label');
+				$itemGroup->_elementCount = count((array) $itemGroup->fields);
+			}
+
+			$groups = $groups + $itemGroups;
+		}
+
+		return $groups;
 	}
 
 	public function getPagination()
 	{
+		// FIXME
 		return new \JPagination(0, 0, 0);
 	}
 
