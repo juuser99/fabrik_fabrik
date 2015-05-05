@@ -33,15 +33,8 @@ class JFormFieldGrouprepeat extends JFormFieldRadio
 	/**
 	 * Method to get the field input markup.
 	 *
-	 * @return  string	The field input markup.
-	 */
-
-	/**
-	 * Method to get the field input markup.
-	 *
 	 * @return	string	The field input markup.
 	 */
-
 	protected function getInput()
 	{
 		if ($this->form->getValue('form') === '')

@@ -71,7 +71,7 @@ class Group extends Base implements ModelGroupInterface
 
 	protected function checkRepeatAndPK($data)
 	{
-		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+		$groupModel = new Group;
 		$groupModel->setId($data['id']);
 		$listModel     = $groupModel->getListModel();
 		$pk            = FabrikString::safeColName($listModel->getTable()->db_primary_key);
@@ -89,6 +89,43 @@ class Group extends Base implements ModelGroupInterface
 	}
 
 	/**
+	 * Save the form
+	 *
+	 * @param   array $post The jform part of the request data pertaining to the list.
+	 *
+	 * @return bool
+	 * @throws RuntimeException
+	 */
+	public function save($post)
+	{
+		$view = ArrayHelper::getValue($post, 'view');
+		$id = ArrayHelper::getValue($post, 'id');
+		$this->set('id', $view);
+		$item = $this->getItem();
+		$groups = $item->get('form.groups');
+
+		foreach ($groups as &$group)
+		{
+			if ($group->id === $id)
+			{
+				$group = (object) array_merge((array) $group, (array) $post);
+				$found = true;
+			}
+		}
+
+		if (!$found)
+		{
+			// Add in new group - TODO not tested
+			$default = Worker::formDefaults('group');
+			$merged = (object) array_merge((array) $default, (array) $post);
+			$item->append('form.groups', $merged);
+		}
+
+		return parent::save($item);
+	}
+
+
+	/**
 	 * Method to save the form data.
 	 *
 	 * @param   array $data The form data.
@@ -96,7 +133,7 @@ class Group extends Base implements ModelGroupInterface
 	 * @return  boolean  True on success, False on error.
 	 */
 
-	public function save($data)
+	public function save34($data)
 	{
 		if ($data['id'] == 0)
 		{
@@ -116,18 +153,6 @@ class Group extends Base implements ModelGroupInterface
 			if ($makeJoin)
 			{
 				$data['is_join'] = 1;
-			}
-			elseif ($data['is_join'] == 1)
-			{
-				/*
-				 * $$$ rob - this was destroying legitimate joins on saving the group
-				 * see http://fabrikar.com/forums/showthread.php?t=29385
-				 * commenting out for now until Hugh can take another look at what ever he was trying to solve
-				 * in commit #ee697dd
-				 *
-				$unMakeJoin = true;
-				$data['is_join'] = 0;
-				*/
 			}
 		}
 		else
@@ -204,7 +229,7 @@ class Group extends Base implements ModelGroupInterface
 
 	/**
 	 * Check if an index exists on the parent_id for a repeat table.
-	 * We forgot to index the parent_id until 32/2015, which could have an ipact on getData()
+	 * We forgot to index the parent_id until 32/2015, which could have an impact on getData()
 	 * query performance.  Only called from the save() method.
 	 *
 	 * @param   array $data jform data
@@ -225,6 +250,7 @@ class Group extends Base implements ModelGroupInterface
 		$pkElementModel = $formModel->getElement($pkFieldName);
 		$fields         = $listModel->storage->getDBFields($join->join_from_table, 'Field');
 		$pkField        = ArrayHelper::getValue($fields, $join->table_key, false);
+
 		switch ($pkField->BaseType)
 		{
 			case 'VARCHAR':
@@ -299,7 +325,7 @@ class Group extends Base implements ModelGroupInterface
 		if (!in_array($newTableName, $existingTables))
 		{
 			// No existing repeat group table found so lets create it
-			$query = "CREATE TABLE IF NOT EXISTS " . $db->quoteName($newTableName) . " (" . implode(",", $names) . ")";
+			$query = "CREATE TABLE IF NOT EXISTS " . $db->qn($newTableName) . " (" . implode(",", $names) . ")";
 			$db->setQuery($query);
 			$db->execute();
 
@@ -317,19 +343,19 @@ class Group extends Base implements ModelGroupInterface
 				return false;
 			}
 			// Repeat table already created - lets check its structure matches the group elements
-			$db->setQuery("DESCRIBE " . $db->quoteName($newTableName));
+			$db->setQuery("DESCRIBE " . $db->qn($newTableName));
 			$existingFields = $db->loadObjectList('Field');
 			$newFields      = array_diff(array_keys($names), array_keys($existingFields));
 
 			if (!empty($newFields))
 			{
-				$lastfield = array_pop($existingFields);
-				$lastfield = $lastfield->Field;
+				$lastField = array_pop($existingFields);
+				$lastField = $lastField->Field;
 
 				foreach ($newFields as $newField)
 				{
 					$info = $names[$newField];
-					$db->setQuery("ALTER TABLE " . $db->quoteName($newTableName) . " ADD COLUMN $info AFTER $lastfield");
+					$db->setQuery("ALTER TABLE " . $db->qn($newTableName) . " ADD COLUMN $info AFTER $lastField");
 					$db->execute();
 				}
 			}
