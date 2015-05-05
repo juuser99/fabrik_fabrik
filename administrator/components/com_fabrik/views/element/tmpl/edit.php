@@ -39,7 +39,8 @@ JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 </script>
 <form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 
-	<?php if ($this->item->parent_id != 0)
+	<?php
+	if ($this->item->parent_id != 0)
 	{
 		?>
 		<div id="system-message" class="alert alert-notice">

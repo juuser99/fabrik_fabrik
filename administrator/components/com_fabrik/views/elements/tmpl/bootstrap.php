@@ -126,7 +126,7 @@ $states	= array(
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
 			$ordering	= ($listOrder == 'e.ordering');
-			$link = JRoute::_('index.php?option=com_fabrik&task=element.edit&id='.(int) $item->id);
+			$link = JRoute::_('index.php?option=com_fabrik&view=element&layout=edit&id='. $item->view . '&elementid=' . $item->id);
 			$canCreate	= $user->authorise('core.create',		'com_fabrik.element.'.$item->group_id);
 			$canEdit	= $user->authorise('core.edit',			'com_fabrik.element.'.$item->group_id);
 			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out==$user->get('id') || $item->checked_out==0;
@@ -161,7 +161,8 @@ $states	= array(
 				</td>
 				<td>
 				<?php if ($item->parent_id != 0) :
-					echo "<a href='index.php?option=com_fabrik&task=element.edit&id=" . $item->parent_id . "'>"
+					// FIXME - need to decide what to do about parent elements.
+					echo "<a href='index.php?option=com_fabrik&view==element&layout=edit&id=" . $item->parent_id . "'>"
 					. JHTML::image('media/com_fabrik/images/child_element.png', JText::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id), 'title="' . JText::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id) . '"')
 					. '</a>&nbsp;';
 				else :

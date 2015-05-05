@@ -51,7 +51,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Group
 	 *
-	 * @var stdClass
+	 * @var JRegistry
 	 */
 	protected $group = null;
 	/**
@@ -389,7 +389,6 @@ class Group extends Base implements ModelGroupInterface
 		return true;
 	}
 
-
 	/**
 	 * Load a form
 	 *
@@ -427,7 +426,6 @@ class Group extends Base implements ModelGroupInterface
 		$form->model = $this;
 
 		return $form;
-
 	}
 
 	/**
@@ -447,6 +445,7 @@ class Group extends Base implements ModelGroupInterface
 		$this->set('groupid', $this->app->input->get('groupid'));
 		parent::populateState($ordering, $direction);
 	}
+
 	/**
 	 * Repeat has been turned off for a group, so we need to remove the join.
 	 * For now, leave the repeat table intact, just remove the join
@@ -510,7 +509,8 @@ class Group extends Base implements ModelGroupInterface
 
 	public function setGroup($group)
 	{
-		$this->group = $group;
+
+		$this->group = new JRegistry($group);
 	}
 
 	public function getGroup()

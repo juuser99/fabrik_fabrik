@@ -80,7 +80,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		// Initialise variables.
 		$model = $this->model;
 		$this->form = $model->getForm();
-		$this->item = $model->getItem();
+		$this->item = $model->getElement()->toObject();
 		$this->state = $model->getState();
 		$this->pluginFields = $model->getPluginHTML();
 

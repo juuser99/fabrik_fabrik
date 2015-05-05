@@ -88,6 +88,7 @@ class Elements extends Base implements ModelElementsInterface
 					$element->group_name = $itemGroup->name;
 					$element->ordering = $i;
 					$element->tip = 'todo';
+					$element->view = $item->get('view');
 				}
 
 				$elements = $elements + $groupElements;
@@ -95,7 +96,7 @@ class Elements extends Base implements ModelElementsInterface
 		}
 
 		$elements = parent::filterItems($elements);
-echo "<pre>";print_r($elements);echo "</pre>";
+
 		return $elements;
 	}
 

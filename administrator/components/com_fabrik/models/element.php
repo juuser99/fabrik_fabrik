@@ -23,6 +23,9 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \JText as JText;
 use \JComponentHelper as JComponentHelper;
+use \JForm as JForm;
+use \Joomla\Registry\Registry as JRegistry;
+
 
 jimport('joomla.application.component.modeladmin');
 
@@ -46,6 +49,11 @@ class Element extends Base implements ModelElementFormInterface
 	 */
 	protected $text_prefix = 'COM_FABRIK_ELEMENT';
 
+	/**
+	 * Element Object
+	 * @var object
+	 */
+	protected $element = null;
 	/**
 	 * Validation plugin models for this element
 	 *
@@ -147,7 +155,8 @@ class Element extends Base implements ModelElementFormInterface
 
 	public function getJsEvents()
 	{
-		$db = Worker::getDbo(true);
+		$items = $this->element->get('jsevents', array());
+		/*$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$id = (int) $this->getItem()->id;
 		$query->select('*')->from('#__fabrik_jsactions')->where('element_id = ' . $id)->order('id');
@@ -158,7 +167,7 @@ class Element extends Base implements ModelElementFormInterface
 		{
 			$items[$i]->params = json_decode($items[$i]->params);
 			$items[$i]->params->js_e_value = htmlspecialchars_decode($items[$i]->params->js_e_value);
-		}
+		}*/
 
 		return $items;
 	}
@@ -169,9 +178,10 @@ class Element extends Base implements ModelElementFormInterface
 	 * @return  array  plugins
 	 */
 
-	public function getPlugins()
+	public function getPlugins($subView = 'list')
 	{
-		$item = $this->getItem();
+		return $this->element->get('validations', array());
+	/*	$item = $this->getItem();
 		$plugins = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
 		$published = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
 		$icons = (array) ArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
@@ -191,7 +201,7 @@ class Element extends Base implements ModelElementFormInterface
 			$return[] = $o;
 		}
 
-		return $return;
+		return $return;*/
 	}
 
 	/**
@@ -202,15 +212,11 @@ class Element extends Base implements ModelElementFormInterface
 
 	public function getJs()
 	{
-		$plugins = $this->getPlugins();
-		$item = $this->getItem();
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-
 		$opts = new stdClass;
-		$opts->plugin = $item->plugin;
-		$opts->parentid = (int) $item->parent_id;
+		$opts->plugin = $this->element->get('plugin');
+		$opts->parentid = $this->element->get('parent_id');
 		$opts->jsevents = $this->getJsEvents();
-		$opts->id = (int) $item->id;
+		$opts->id = $this->element->get('id');
 		$opts->deleteButton = '<a class="btn btn-danger"><i class="icon-delete"></i> ';
 		$opts->deleteButton .= FText::_('COM_FABRIK_DELETE') . '</a>';
 		$opts = json_encode($opts);
@@ -225,7 +231,7 @@ class Element extends Base implements ModelElementFormInterface
 		$js[] = "\tvar opts = $opts;";
 
 		$plugins = json_encode($this->getPlugins());
-		$js[] = "\tFabrik.controller = new fabrikAdminElement($plugins, opts, " . (int) $this->getItem()->id . ");";
+		$js[] = "\tFabrik.controller = new fabrikAdminElement($plugins, opts, " . $this->element->get('id') . ");";
 		$js[] = "})";
 
 		return implode("\n", $js);
@@ -242,7 +248,6 @@ class Element extends Base implements ModelElementFormInterface
 
 	public function getPluginHTML($plugin = null)
 	{
-	//	$input = $this->app->input;
 		$item = $this->getItem();
 
 		if (is_null($plugin))
@@ -716,21 +721,21 @@ class Element extends Base implements ModelElementFormInterface
 			 * $$$ hugh - we use $row after this, so we need to work on a copy, otherwise
 			 * (for instance) we redirect to the wrong copy of the element
 			 */
-			$rowcopy = clone ($row);
+			$rowCopy = clone ($row);
 
 			foreach ($othertables as $listid => $t)
 			{
-				$rowcopy->id = 0;
-				$rowcopy->parent_id = $origElid;
-				$rowcopy->group_id = $t->group_id;
-				$rowcopy->name = str_replace('`', '', $rowcopy->name);
+				$rowCopy->id = 0;
+				$rowCopy->parent_id = $origElid;
+				$rowCopy->group_id = $t->group_id;
+				$rowCopy->name = str_replace('`', '', $rowCopy->name);
 
 				if ($config->get('unpublish_clones', false))
 				{
-					$rowcopy->published = 0;
+					$rowCopy->published = 0;
 				}
 
-				$rowcopy->store();
+				$rowCopy->store();
 
 				// Copy join records
 				$join = $this->getTable('join');
@@ -739,7 +744,7 @@ class Element extends Base implements ModelElementFormInterface
 				{
 					$join->id = 0;
 					unset($join->id);
-					$join->element_id = $rowcopy->id;
+					$join->element_id = $rowCopy->id;
 					$join->list_id = $listid;
 					$join->store();
 				}
@@ -819,10 +824,7 @@ class Element extends Base implements ModelElementFormInterface
 				}
 			}
 
-			if (!$item->store())
-			{
-				JError::raiseWarning(500, $item->getError());
-			}
+			$item->store();
 		}
 
 		return true;
@@ -845,10 +847,10 @@ class Element extends Base implements ModelElementFormInterface
 			return;
 		}
 		// Update table indexes
-		$ftype = $elementModel->getFieldDescription();
+		$type = $elementModel->getFieldDescription();
 
 		// Int elements can't have a index size attrib
-		$size = String::stristr($ftype, 'int') || $ftype == 'DATETIME' ? '' : '10';
+		$size = String::stristr($type, 'int') || $type == 'DATETIME' ? '' : '10';
 
 		if ($elementModel->getParams()->get('can_order'))
 		{
@@ -966,10 +968,9 @@ class Element extends Base implements ModelElementFormInterface
 	 * @return  boolean  True if successful, false if an error occurs.
 	 */
 
-	public function delete(&$pks)
+	/*public function delete(&$pks)
 	{
 		// Initialize variables
-		$input = $this->app->input;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$elementIds = $this->app->input->get('elementIds', array(), 'array');
 
@@ -988,7 +989,7 @@ class Element extends Base implements ModelElementFormInterface
 			{
 				$listModel = $pluginModel->getListModel();
 				$db = $listModel->getDb();
-				$tableName = $db->quoteName($this->getRepeatElementTableName($pluginModel));
+				$tableName = $db->qn($this->getRepeatElementTableName($pluginModel));
 				$db->setQuery('DROP TABLE ' . $tableName);
 				$db->execute();
 			}
@@ -1000,13 +1001,13 @@ class Element extends Base implements ModelElementFormInterface
 			if (!empty($item->id))
 			{
 				$db = $listModel->getDb();
-				$db->setQuery('ALTER TABLE ' . $db->quoteName($item->db_table_name) . ' DROP ' . $db->quoteName($element->name));
+				$db->setQuery('ALTER TABLE ' . $db->qn($item->db_table_name) . ' DROP ' . $db->qn($element->name));
 				$db->execute();
 			}
 		}
 
 		return parent::delete($pks);
-	}
+	}*/
 
 	/**
 	 * Copy an element
@@ -1022,7 +1023,7 @@ class Element extends Base implements ModelElementFormInterface
 		$names = $input->get('name', array(), 'array');
 		$rule = $this->getTable('element');
 
-		foreach ($cid as $id => $groupid)
+		foreach ($cid as $id => $groupId)
 		{
 			if ($rule->load((int) $id))
 			{
@@ -1030,8 +1031,8 @@ class Element extends Base implements ModelElementFormInterface
 				$data = ArrayHelper::fromObject($rule);
 				$elementModel = $this->getElementPluginModel($data);
 				$elementModel->getElement()->bind($data);
-				$newrule = $elementModel->copyRow($id, $rule->label, $groupid, $name);
-				$data = ArrayHelper::fromObject($newrule);
+				$newRule = $elementModel->copyRow($id, $rule->label, $groupId, $name);
+				$data = ArrayHelper::fromObject($newRule);
 				$elementModel = $this->getElementPluginModel($data);
 				$elementModel->getElement()->bind($data);
 				$listModel = $elementModel->getListModel();
@@ -1072,11 +1073,11 @@ class Element extends Base implements ModelElementFormInterface
 		$formModel = $elementModel->getForm();
 		$db = $listModel->getDb();
 		$desc = $elementModel->getFieldDescription();
-		$name = $db->quoteName($row->name);
+		$name = $db->qn($row->name);
 		$db
 			->setQuery(
-				'CREATE TABLE IF NOT EXISTS ' . $db->quoteName($tableName) . ' ( id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, parent_id INT(11), '
-					. $name . ' ' . $desc . ', ' . $db->quoteName('params') . ' TEXT );');
+				'CREATE TABLE IF NOT EXISTS ' . $db->qn($tableName) . ' ( id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, parent_id INT(11), '
+					. $name . ' ' . $desc . ', ' . $db->qn('params') . ' TEXT );');
 		$db->execute();
 
 		// Remove previous join records if found
@@ -1104,7 +1105,7 @@ class Element extends Base implements ModelElementFormInterface
 		$join->load(array('element_id' => $data['element_id']));
 		$opts = new stdClass;
 		$opts->type = 'repeatElement';
-		$opts->pk = FabrikString::safeQuoteName($tableName  . '.id');
+		$opts->pk = FabrikString::safeqn($tableName  . '.id');
 		$data['params'] = json_encode($opts);
 		$join->bind($data);
 		$join->store();
@@ -1160,6 +1161,11 @@ class Element extends Base implements ModelElementFormInterface
 		return $origTableName . '_repeat_' . str_replace('`', '', $row->name);
 	}
 
+	public function getElement()
+	{
+		return $this->element;
+	}
+
 	/**
 	 * Gets the element's parent element
 	 *
@@ -1168,6 +1174,8 @@ class Element extends Base implements ModelElementFormInterface
 
 	public function getParent()
 	{
+		// FIXME
+		return 0;
 		$item = $this->getItem();
 		$item->parent_id = (int) $item->parent_id;
 
@@ -1282,5 +1290,65 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		return $this->aValidations;
+	}
+
+	/**
+	 * Load a form
+	 *
+	 * @param string $name
+	 * @param array  $options
+	 *
+	 * @return mixed
+	 */
+	public function loadForm($name, $options = array())
+	{
+		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
+		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
+		JForm::addFormPath(JPATH_COMPONENT . '/model/form');
+		JForm::addFieldPath(JPATH_COMPONENT . '/model/field');
+
+		if (empty($options))
+		{
+			$options = array('control' => 'jform', 'load_data' => true);
+		}
+
+		$form  = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
+		$item  = $this->getItem();
+		$groups       = $this->getItem()->get('form.groups');
+
+		foreach ($groups as $group)
+		{
+			foreach ($group->fields as $field)
+			{
+				if ($field->id === $this->get('elementid'))
+				{
+					$field->view = $item->get('view');
+					$this->element = new JRegistry($field);
+					$form->bind($field);
+				}
+			}
+		}
+
+		$form->model = $this;
+
+		return $form;
+	}
+
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string $ordering  An optional ordering field.
+	 * @param   string $direction An optional direction (asc|desc).
+	 *
+	 * @since    1.6
+	 *
+	 * @return  void
+	 */
+	protected function populateState($ordering = '', $direction = '')
+	{
+		$this->set('elementid', $this->app->input->get('elementid'));
+		parent::populateState($ordering, $direction);
 	}
 }

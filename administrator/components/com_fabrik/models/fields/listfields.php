@@ -432,6 +432,7 @@ class JFormFieldListfields extends JFormFieldList
 
 	protected function loadFromGroupId($groupId)
 	{
+
 		$input          = $this->app->input;
 		$controller     = $input->get('view', $input->get('task'));
 		$valueFormat    = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
@@ -442,11 +443,14 @@ class JFormFieldListfields extends JFormFieldList
 
 		$bits       = array();
 		$showRaw    = Worker::toBoolean($this->getAttribute('raw', false), false);
-		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
-		$groupModel->setId($groupId);
+		/*$groupModel = new Group;//JModelLegacy::getInstance('Group', 'FabrikFEModel');
+		echo "group id = $groupId";
+		$groupModel->setId($groupId);*/
+
+		$formModel = $this->form->model->getFormModel();
 		$optsKey = $valueFormat == 'tableelement' ? 'name' : 'id';
 		$useStep = Worker::toBoolean($this->getAttribute('usestep', false), false);
-		$res     = $groupModel->getForm()->getElementOptions($useStep, $optsKey, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
+		$res     = $formModel->getElementOptions($useStep, $optsKey, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 		$hash    = $controller . '.' . implode('.', $bits);
 
 		if (array_key_exists($hash, $this->results))

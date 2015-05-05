@@ -723,7 +723,6 @@ class Base extends \JModelBase
 		$form  = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
 		$item  = $this->getItem();
 		$class = $this->getKlass();
-		echo "<pre>";print_r($this->getItem());exit;
 		$data       = $this->getItem()->get($class);
 		$data->view = $item->get('view');
 		$form->bind($data);
