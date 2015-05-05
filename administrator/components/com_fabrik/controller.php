@@ -59,12 +59,13 @@ class Controller extends \JControllerBase
 		$viewClass  = 'Fabrik\Admin\Views\\' . ucfirst($viewName) . '\\' . ucfirst($viewFormat);
 		$modelClass = 'Fabrik\Admin\Models\\' . ucfirst($viewName);
 
-		$model      = new $modelClass;
-		$view       = new $viewClass($model, $paths);
+		$model = new $modelClass;
+		$view  = new $viewClass($model, $paths);
 
-		$ids        = $app->input->get('cid', array(), 'array');
-		$id         = $app->input->getString('id', ArrayHelper::getValue($ids, 0));
-		$listUrl    = $this->listUrl($viewName);
+		$ids      = $app->input->get('cid', array(), 'array');
+		$id       = $app->input->getString('id', ArrayHelper::getValue($ids, 0));
+		$listUrl  = $this->listUrl($viewName);
+		$applyUrl = $this->applyUrl($viewName, $id);
 
 		switch ($layoutName)
 		{
@@ -81,11 +82,15 @@ class Controller extends \JControllerBase
 				break;
 			case 'apply':
 				$this->save($model);
-				$this->app->redirect('index.php?option=com_fabrik&view=' . $viewName . '&task=' . $viewName . '.edit&id=' . $id);
+				$this->app->redirect($applyUrl);
 				break;
 			case 'save':
 				$this->save($model);
 				$this->app->redirect($listUrl);
+				break;
+			case 'save2new':
+				$this->save($model);
+				$this->app->redirect('index.php?option=com_fabrik&view=' . $viewName . '&layout=edit');
 				break;
 			case 'cancel':
 				$model->storeFormState(array());
@@ -124,6 +129,13 @@ class Controller extends \JControllerBase
 		return true;
 	}
 
+	/**
+	 * Create the list redirect url
+	 *
+	 * @param   string $viewName View name
+	 *
+	 * @return string
+	 */
 	protected function listUrl($viewName)
 	{
 		if ($viewName === 'lizt')
@@ -131,9 +143,35 @@ class Controller extends \JControllerBase
 			$viewName = 'list';
 		}
 
-		$inflector  = Inflector::getInstance();
+		$inflector = Inflector::getInstance();
 
 		return 'index.php?option=com_fabrik&view=' . $inflector->toPlural($viewName);
+	}
+
+	/**
+	 * Build apply url
+	 *
+	 * @param   string  $viewName
+	 * @param   string  $id
+	 *
+	 * @return string
+	 */
+	protected function applyUrl($viewName, $id)
+	{
+		$url = 'index.php?option=com_fabrik&view=' . $viewName . '&task=' . $viewName . '.edit&id=' . $id;
+
+		if ($viewName === 'group')
+		{
+			$data = $this->input->post->get('jform', array(), 'array');
+			$id   = ArrayHelper::getValue($data, 'id');
+
+			if (!is_null($id))
+			{
+				$url .= '&groupid=' . $id;
+			}
+		}
+
+		return $url;
 	}
 
 	/**

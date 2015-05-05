@@ -49,6 +49,12 @@ class Group extends Base implements ModelGroupInterface
 	protected $text_prefix = 'COM_FABRIK_GROUP';
 
 	/**
+	 * Group
+	 *
+	 * @var stdClass
+	 */
+	protected $group = null;
+	/**
 	 * Take an array of forms ids and return the corresponding group ids
 	 * used in list publish code
 	 *
@@ -413,6 +419,7 @@ class Group extends Base implements ModelGroupInterface
 			if ($group->id === $this->get('groupid'))
 			{
 				$group->view = $item->get('view');
+				$this->setGroup($group);
 				$form->bind($group);
 			}
 		}

@@ -56,9 +56,10 @@ class Html extends \Fabrik\Admin\Views\Html
 	public function render()
 	{
 		// Initialise variables.
-		$this->form = $this->model->getForm();
-		$this->item = $this->model->getItem()->toObject();
+		$this->form  = $this->model->getForm();
+		$this->item  = $this->model->getItem()->toObject();
 		$this->state = $this->model->getState();
+		$this->group = $this->model->getGroup();
 
 		$this->addToolbar();
 
@@ -77,15 +78,15 @@ class Html extends \Fabrik\Admin\Views\Html
 
 	protected function addToolbar()
 	{
-		$app = JFactory::getApplication();
+		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
-		$user = JFactory::getUser();
-		$isNew = ($this->item->id == 0);
-		$userId = $user->get('id');
-		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
-		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_GROUP_NEW') : FText::_('COM_FABRIK_MANAGER_GROUP_EDIT') . ' "' . $this->item->name . '"';
+		$user       = JFactory::getUser();
+		$isNew      = ($this->item->view === '');
+		$userId     = $user->get('id');
+		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
+		$canDo      = Fabrik::getActions($this->state->get('filter.category_id'));
+		$title      = $isNew ? FText::_('COM_FABRIK_MANAGER_GROUP_NEW') : FText::_('COM_FABRIK_MANAGER_GROUP_EDIT') . ' "' . $this->group->name . '"';
 		JToolBarHelper::title($title, 'group.png');
 
 		if ($isNew)
