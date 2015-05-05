@@ -242,7 +242,7 @@ class Base extends \JModelBase
 	 */
 	public function getFormModel()
 	{
-		if (is_null($this->formModel))
+		if (is_null($this->formModel) || $this->formModel->get('id') !== $this->get('id'))
 		{
 			$this->formModel = new Form;
 			$this->formModel->set('id', $this->get('id'));

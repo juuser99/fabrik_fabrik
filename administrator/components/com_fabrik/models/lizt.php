@@ -27,7 +27,7 @@ use Fabrik\Admin\Helpers\Fabrik;
 use Fabrik\Helpers\ArrayHelper;
 use \FabrikString as FabrikString;
 use \RuntimeException as RuntimeException;
-use \JRegistry as JRegistry;
+use \Joomla\Registry\Registry as JRegistry;
 use \JComponentHelper as JComponentHelper;
 use \JEventDispatcher as JEventDispatcher;
 use \Fabrik\Plugins\Element as Element;
@@ -522,8 +522,18 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		if (is_array($post))
 		{
-			// We are saving from the (new?) form submission
-			$data       = new stdClass;
+			$file  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . ArrayHelper::getValue($post, 'view') . '.json';
+
+			if (file_exists($file))
+			{
+				$data = json_decode(file_get_contents($file));
+			}
+			else
+			{
+				$data       = new stdClass;
+			}
+			// We are saving from the form submission
+
 			$post       = ArrayHelper::toObject($post);
 			$data->list = $post;
 			$data->view = $data->list->view;
@@ -534,34 +544,35 @@ class Lizt extends Base implements ModelFormLiztInterface
 			// We are saving from anywhere except the (new?) form - in this case the json file is being passed in
 			$data = $post;
 		}
+//
+		$data = new JRegistry($data);
 
-		$data->list->order_by   = $input->get('order_by', array(), 'array');
-		$data->list->order_dir  = $input->get('order_dir', array(), 'array');
-		$data->checked_out      = false;
-		$data->checked_out_time = '';
+
+		$data->set('list.order_by', $input->get('order_by', array(), 'array'));
+		$data->set('list.order_dir', $input->get('order_dir', array(), 'array'));
+		$data->set('checked_out', false);
+		$data->set('checked_out_time', '');
 
 		$this->collation($data);
 
-		$file  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->view . '.json';
+		$file  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->get('view') . '.json';
 		$isNew = !\JFile::exists($file);
 
 		if (!$isNew)
 		{
-			$dateNow                 = JFactory::getDate();
-			$data->list->modified    = $dateNow->toSql();
-			$data->list->modified_by = $user->get('id');
+			$dateNow = JFactory::getDate();
+			$data->set('list.modified', $dateNow->toSql());
+			$data->set('list.modified_by', $user->get('id'));
 		}
 
 		if ($isNew)
 		{
-			if ($data->list->created == '')
+			if ($data->get('list.created') == '')
 			{
-				$data->list->created = $date->toSql();
+				$data->set('list.created', $date->toSql());
 			}
 
-			//$isNew    = false;
-			$newTable = !isset($data->list->_database_name) ? '' : trim($data->list->_database_name);
-
+			$newTable = trim($data->get('list._database_name', ''));
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
 			$newTable = FabrikString::clean($newTable);
 
@@ -581,29 +592,28 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 
 			// Create fabrik form
-			$data->form = $this->createLinkedForm($data);
+			$data->set('form', $this->createLinkedForm($data));
 
 			// Create fabrik group
 			$groupData       = Worker::formDefaults('group');
-			$groupName       = FabrikString::clean($data->list->label);
+			$groupName       = FabrikString::clean($data->get('list.label'));
 			$groupData->name = $groupName;
 
-			$data->form->groups             = new stdClass;
-			$data->form->groups->$groupName = $this->createLinkedGroup($groupData, false);
+			$data->set('form.groups', new stdClass);
+			$data->set('form.groups.' . $groupName, $this->createLinkedGroup($groupData, false));
 
 			if ($newTable == '')
 			{
-				// @TODO test this since move to json file format
 				// New fabrik list but existing db $groupName
 				$this->createLinkedElements($data, $groupName);
 			}
 			else
 			{
-				$data->list->db_table_name = $newTable;
-				$data->list->auto_inc      = 1;
+				$data->set('list.db_table_name', $newTable);
+				$data->set('list.auto_inc', 1);
 
 				$dbOpts            = array();
-				$params            = new JRegistry($data->list->params);
+				$params            = new JRegistry($data->get('list.params'));
 				$dbOpts['COLLATE'] = $params->get('collation', '');
 
 				$fields = array('id' => array('plugin' => 'internalid', 'primary_key' => true),
@@ -612,7 +622,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 				foreach ($fields as $name => $fieldData)
 				{
-					$data->groups->$groupName->fields->$name = $this->makeElement($name, $fieldData);
+					$data->set('form.groups.' . $groupName . '.fields.' . $name, $this->makeElement($name, $fieldData));
 				}
 
 				$res = $this->createDBTable($newTable, $fields, $dbOpts);
@@ -624,11 +634,11 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		Fabrik::prepareSaveDate($data->list->publish_down);
-		Fabrik::prepareSaveDate($data->list->created);
-		Fabrik::prepareSaveDate($data->list->publish_up);
+		Fabrik::prepareSaveDate($data, 'list.publish_down');
+		Fabrik::prepareSaveDate($data, 'list.created');
+		Fabrik::prepareSaveDate($data, 'list.publish_up');
 
-		$pk = ArrayHelper::getValue($data->list, 'db_primary_key');
+		$pk = $data->get('list.db_primary_key', '');
 
 		if ($pk == '')
 		{
@@ -636,40 +646,89 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$key   = $pk[0]['colname'];
 			$extra = $pk[0]['extra'];
 
-			// Store without quoteNames as thats db specific
+			// Store without quoteNames as that is db specific
 			if ($key)
 			{
-				$data->list->db_primary_key = $data->list->db_primary_key == '' ? $data->list->db_table_name . '.' . $key : $data->list->db_primary_key;
+				$pk = $data->get('list.db_primary_key') == '' ? $data->get('list.db_table_name') . '.' . $key : $data->get('list.db_primary_key');
 			}
 			else
 			{
-				$data->list->db_primary_key = '';
+				$pk = '';
 			}
 
-			$data->list->auto_inc = String::stristr($extra, 'auto_increment') ? true : false;
+			$data->set('list.db_primary_key', $pk);
+
+			$data->set('list.auto_inc', String::stristr($extra, 'auto_increment') ? true : false);
 		}
 
 		$this->updateJoins($data);
-		$storage = $this->getStorage(array('table' => $data->list->db_table_name));
+
+		$storage = $this->getStorage(array('table' => $data->get('list.db_table_name')));
 
 		if (!$storage->isView())
 		{
-			$storage->updatePrimaryKey($data->list->db_primary_key, $data->list->auto_inc);
+			$storage->updatePrimaryKey($data->get('list.db_primary_key', ''), $data->get('list.auto_inc'));
 		}
 
-		unset($data->list->_database_name);
-		$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->view . '.json';
-
-		$output = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-
+		$data->set('list._database_name', null);
+		//echo "<pre>";print_r($data);exit;
+		$output = json_encode($data->toObject(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 		file_put_contents($file, $output);
 
 		// Make an array of elements and a presumed index size, map is then used in creating indexes
-		$map = array();
 
-		$groups = $this->getFormModel()->getGroupsHiarachy();
-
+		$this->set('id', $data->get('view'));
+		$map = $this->fieldSizeMap();
 		// FIXME - from here on - not tested for json views
+
+		// Update indexes (added array_key_exists check as these may be during after CSV import)
+		if (!empty($aOrderBy) && array_key_exists($data->list->order_by, $map))
+		{
+			foreach ($aOrderBy as $orderBy)
+			{
+				if (array_key_exists($orderBy, $map))
+				{
+					$this->storage->addIndex($orderBy, 'tableorder', 'INDEX', $map[$orderBy]);
+				}
+			}
+		}
+
+		$params = new JRegistry($data->get('list'));
+
+		if (!is_null($data->get('list.group_by')))
+		{
+			if ($data->get('list.group_by') !== '' && array_key_exists($data->get('list.group_by'), $map))
+			{
+				$this->storage->addIndex($data->get('list.group_by'), 'groupby', 'INDEX', $map[$data->get('list.group_by')]);
+			}
+
+			if (trim($params->get('group_by_order')) !== '')
+			{
+				$this->storage->addIndex($params->get('group_by_order'), 'groupbyorder', 'INDEX', $map[$params->get('group_by_order')]);
+			}
+		}
+
+		$filterFields = (array) $params->get('filter-fields', array());
+
+		foreach ($filterFields as $field)
+		{
+			if (array_key_exists($field, $map))
+			{
+				$this->storage->addIndex($field, 'prefilter', 'INDEX', $map[$field]);
+			}
+		}
+
+		parent::cleanCache('com_fabrik');
+
+		return true;
+	}
+
+	protected function fieldSizeMap()
+	{
+		$map = array();
+		$formModel = $this->getFormModel();
+		$groups = $formModel->getGroupsHiarachy();
+
 		foreach ($groups as $groupModel)
 		{
 			$elementModels = $groupModel->getMyElements();
@@ -693,50 +752,11 @@ class Lizt extends Base implements ModelFormLiztInterface
 				}
 
 				$map[$element->getFullName(false, false)] = $size;
-				$map[$element->getId()]                   = $size;
+				$map[$element->getElement()->id]                   = $size;
 			}
 		}
 
-		// Update indexes (added array_key_exists check as these may be during after CSV import)
-		if (!empty($aOrderBy) && array_key_exists($data->list->order_by, $map))
-		{
-			foreach ($aOrderBy as $orderBy)
-			{
-				if (array_key_exists($orderBy, $map))
-				{
-					$this->storage->addIndex($orderBy, 'tableorder', 'INDEX', $map[$orderBy]);
-				}
-			}
-		}
-
-		$params = new JRegistry($data->list);
-
-		if (isset($data->list->group_by))
-		{
-			if ($data->list->group_by !== '' && array_key_exists($data->list->group_by, $map))
-			{
-				$this->storage->addIndex($data->list->group_by, 'groupby', 'INDEX', $map[$data->list->group_by]);
-			}
-
-			if (trim($params->get('group_by_order')) !== '')
-			{
-				$this->storage->addIndex($params->get('group_by_order'), 'groupbyorder', 'INDEX', $map[$params->get('group_by_order')]);
-			}
-		}
-
-		$filterFields = (array) $params->get('filter-fields', array());
-
-		foreach ($filterFields as $field)
-		{
-			if (array_key_exists($field, $map))
-			{
-				$this->storage->addIndex($field, 'prefilter', 'INDEX', $map[$field]);
-			}
-		}
-
-		parent::cleanCache('com_fabrik');
-
-		return true;
+		return $map;
 	}
 
 	/**
@@ -1010,15 +1030,15 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * need to create all the elements based on the database table fields and their
 	 * column type
 	 *
-	 * @param   object $data      JSON view data
-	 * @param   string $groupName Group name
-	 * @param   string $table     Table name - if not set then use jform's db_table_name (@since 3.1)
+	 * @param   JRegistry $data      JSON view data
+	 * @param   string    $groupName Group name
+	 * @param   string    $table     Table name - if not set then use jform's db_table_name (@since 3.1)
 	 *
 	 * @return  void
 	 */
 	protected function createLinkedElements(&$data, $groupName = '', $table = '')
 	{
-		$table    = $table === '' ? $data->list->db_table_name : $table;
+		$table    = $table === '' ? $data->get('list.db_table_name') : $table;
 		$elements = $this->makeElementsFromFields(0, $table);
 
 		if ($groupName === '')
@@ -1026,10 +1046,10 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$groupData = new stdClass;
 			$groupName = $data->list->label;
 			$groupData->$groupName;
-			$data->form->groups->$groupName = $this->createLinkedGroup($groupData, false);
+			$data->set('form.groups.' . $groupName, $this->createLinkedGroup($groupData, false));
 		}
 
-		$data->form->groups->$groupName->fields = $elements;
+		$data->set('form.groups.' . $groupName . '.fields', $elements);
 	}
 
 	/**
@@ -1240,8 +1260,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 	 * automatically create a form to allow the update/creation of that tables
 	 * records
 	 *
-	 * @param       stdClass View containing all info
-	 * @param   int $formId  to copy from. If = 0 then create a default form. If not 0 then copy the form id passed in
+	 * @param   JRegistry $view   View containing all info
+	 * @param   int       $formId to copy from. If = 0 then create a default form. If not 0 then copy the form id
+	 *                            passed in
 	 *
 	 * @return  object  form model
 	 */
@@ -1261,14 +1282,14 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$form = Worker::formDefaults('form');
 
 			$form->id                  = uniqid();
-			$form->label               = $view->list->label;
+			$form->label               = $view->get('list.label');
 			$form->record_in_database  = 1;
 			$form->created             = $createDate;
 			$form->created_by          = $user->get('id');
 			$form->created_by_alias    = $user->get('username');
 			$form->error               = FText::_('COM_FABRIK_FORM_ERROR_MSG_TEXT');
 			$form->submit_button_label = FText::_('COM_FABRIK_SAVE');
-			$form->published           = $view->list->published;
+			$form->published           = $view->get('list.published');
 			$form->form_template       = 'bootstrap';
 			$form->view_only_template  = 'bootstrap';
 		}
@@ -1343,6 +1364,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$item->id = null;
 			$input->set('newFormLabel', $names[$pk]['formLabel']);
 			$input->set('newGroupNames', $names[$pk]['groupNames']);
+
+			// FIXME - not right params
 			$formModel = $this->createLinkedForm($item->form_id);
 
 			// $$$ rob 20/12/2011 - any element id stored in the list needs to get mapped to the new element ids

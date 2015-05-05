@@ -303,9 +303,12 @@ class Form extends Base implements ModelFormFormInterface
 
 	public function getGroupsHiarachy()
 	{
+		//echo "getGroupsHiarachy";exit;
 		if (!isset($this->groups))
 		{
+		//	echo "get groups";exit;
 			$this->getGroups();
+
 			$this->groups = Worker::getPluginManager()->getFormPlugins($this);
 		}
 

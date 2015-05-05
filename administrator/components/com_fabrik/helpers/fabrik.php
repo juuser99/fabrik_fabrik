@@ -65,18 +65,19 @@ class Fabrik
 	 * Prepare the date for saving
 	 * DATES SHOULD BE SAVED AS UTC
 	 *
-	 * @param   string &$strDate publish down date
+	 * @param   JRegistry &$data Data to prepare
+	 * @param   string    $key   Key to prepare
 	 *
-	 * @return  null
+	 * @return  JRegistry
 	 */
-
-	public static function prepareSaveDate(&$strDate)
+	public static function prepareSaveDate(&$data, $key)
 	{
-		$config = JFactory::getConfig();
-		$offset = $config->get('offset');
-		$db     = Worker::getDbo(true);
+		$strDate = $data->get($key);
+		$config  = JFactory::getConfig();
+		$offset  = $config->get('offset');
+		$db      = Worker::getDbo(true);
 
-		// Handle never unpublish date
+		// Handle never unpublished dates
 		if (trim($strDate) == FText::_('Never') || trim($strDate) == '' || trim($strDate) == $db->getNullDate())
 		{
 			$strDate = $db->getNullDate();
@@ -91,6 +92,10 @@ class Fabrik
 			$date    = JFactory::getDate($strDate, $offset);
 			$strDate = $date->toSql();
 		}
+
+		$data->set($key, $strDate);
+
+		return $data;
 	}
 
 	/**
