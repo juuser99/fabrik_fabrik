@@ -14,6 +14,8 @@ namespace Fabrik\Admin\Models;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use \JRegistry as JRegistry;
+use \JForm as JForm;
+
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -45,23 +47,6 @@ class Group extends Base implements ModelGroupInterface
 	 * @var  string
 	 */
 	protected $text_prefix = 'COM_FABRIK_GROUP';
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string $type   The table type to instantiate
-	 * @param   string $prefix A prefix for the table class name. Optional.
-	 * @param   array  $config Configuration array for model. Optional.
-	 *
-	 * @return  JTable    A database object
-	 */
-
-	public function getTable($type = 'Group', $prefix = 'FabrikTable', $config = array())
-	{
-		$config['dbo'] = Worker::getDbo(true);
-
-		return FabTable::getInstance($type, $prefix, $config);
-	}
 
 	/**
 	 * Take an array of forms ids and return the corresponding group ids
@@ -160,7 +145,7 @@ class Group extends Base implements ModelGroupInterface
 
 		if ($return)
 		{
-			$this->makeFormGroup($data);
+			//$this->makeFormGroup($data);
 
 			if ($makeJoin)
 			{
@@ -215,18 +200,6 @@ class Group extends Base implements ModelGroupInterface
 		$item->load($id);
 
 		return $item->join_id == '' ? false : true;
-	}
-
-	/**
-	 * Clears old form group entries if found and adds new ones
-	 *
-	 * @param   array $data jform data
-	 *
-	 * @return void
-	 */
-
-	protected function makeFormGroup($data)
-	{
 	}
 
 	/**
@@ -384,6 +357,63 @@ class Group extends Base implements ModelGroupInterface
 		return true;
 	}
 
+
+	/**
+	 * Load a form
+	 *
+	 * @param string $name
+	 * @param array  $options
+	 *
+	 * @return mixed
+	 */
+	public function loadForm($name, $options = array())
+	{
+		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
+		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
+		JForm::addFormPath(JPATH_COMPONENT . '/model/form');
+		JForm::addFieldPath(JPATH_COMPONENT . '/model/field');
+
+		if (empty($options))
+		{
+			$options = array('control' => 'jform', 'load_data' => true);
+		}
+
+		$form  = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
+		$item  = $this->getItem();
+		$groups       = $this->getItem()->get('form.groups');
+
+		foreach ($groups as $group)
+		{
+			if ($group->id === $this->get('groupid'))
+			{
+				$group->view = $item->get('view');
+				$form->bind($group);
+			}
+		}
+
+		$form->model = $this;
+
+		return $form;
+
+	}
+
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string $ordering  An optional ordering field.
+	 * @param   string $direction An optional direction (asc|desc).
+	 *
+	 * @since    1.6
+	 *
+	 * @return  void
+	 */
+	protected function populateState($ordering = '', $direction = '')
+	{
+		$this->set('groupid', $this->app->input->get('groupid'));
+		parent::populateState($ordering, $direction);
+	}
 	/**
 	 * Repeat has been turned off for a group, so we need to remove the join.
 	 * For now, leave the repeat table intact, just remove the join
@@ -406,7 +436,7 @@ class Group extends Base implements ModelGroupInterface
 	 * @return  bool  True if successful, false if an error occurs.
 	 */
 
-	public function delete($pks, $deleteElements = false)
+	/*public function delete($pks, $deleteElements = false)
 	{
 		if (empty($pks))
 		{
@@ -429,31 +459,7 @@ class Group extends Base implements ModelGroupInterface
 		}
 
 		return false;
-	}
-
-	/**
-	 * Delete group elements
-	 *
-	 * @param   array $pks group ids to delete elements from
-	 *
-	 * @return  bool
-	 */
-
-	public function deleteElements($pks)
-	{
-	}
-
-	/**
-	 * Delete formgroups
-	 *
-	 * @param   array $pks group ids
-	 *
-	 * @return  bool
-	 */
-
-	public function deleteFormGroups($pks)
-	{
-	}
+	}*/
 
 	/**
 	 * Set the context in which the element occurs

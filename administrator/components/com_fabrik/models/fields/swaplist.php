@@ -14,8 +14,6 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
-
 /**
  * Renders widget for (de)selecting available groups when editing a from
  *

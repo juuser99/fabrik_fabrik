@@ -15,12 +15,12 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Admin\Helpers\AdminElement;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Admin\Models\Group as Group;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
-//require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
 
 /**
  * Renders a list of elements found in a fabrik list
@@ -259,14 +259,14 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$app = JFactory::getApplication();
 
-		if ($controller === 'item')
+		/*if ($controller === 'item')
 		{
 			$id = $this->form->getValue('request.listid');
 		}
 		else
 		{
 			$id = $this->form->getValue('id');
-		}
+		}*/
 
 		if (!isset($this->form->model))
 		{
@@ -283,8 +283,9 @@ class JFormFieldListfields extends JFormFieldList
 
 		/*if ($id !== 0)
 		{*/
-			$valField  = $valueFormat == 'tableelement' ? 'name' : 'id';
-			$res       = $listModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
+		$valField = $valueFormat == 'tableelement' ? 'name' : 'id';
+		$res      = $listModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
+
 		/*}
 		else
 		{
@@ -344,8 +345,9 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$valField   = $valueFormat == 'tableelement' ? 'name' : 'id';
 		$id         = $this->form->getValue('id');
-		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
-		$groupModel->setId($id);
+		$view       = $this->form->getValue('view');
+		$groupModel = new Group;
+		$groupModel->get('groupid', $id);
 		$formModel = $groupModel->getFormModel();
 
 		return $formModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
@@ -400,7 +402,6 @@ class JFormFieldListfields extends JFormFieldList
 
 	private function gui()
 	{
-		$attribs   = $this->element['@attributes'];
 		$str       = array();
 		$modeField = (string) $this->getAttribute('modefield', 'textarea');
 

@@ -13,8 +13,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
-
 /**
  * Renders a upload size field
  *

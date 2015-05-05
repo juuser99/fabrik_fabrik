@@ -11,10 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Worker;
-
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
-
 // Needed for when you make a menu item link to a form.
 require_once JPATH_SITE . '/components/com_fabrik/helpers/parent.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/string.php';
@@ -31,7 +27,6 @@ JFormHelper::loadFieldClass('list');
  * @subpackage  Form
  * @since       1.6
  */
-
 class JFormFieldFormList extends JFormFieldList
 {
 	/**
@@ -47,42 +42,45 @@ class JFormFieldFormList extends JFormFieldList
 	 *
 	 * @return  array	The field option objects.
 	 */
-
 	protected function getOptions()
 	{
-		$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		$query->select('id AS value, label AS ' . $db->q('text') . ', published');
-		$query->from('#__fabrik_forms');
+		$items = $this->form->model->getItems();
 
-		if (!$this->element['showtrashed'])
+		$options = array();
+		foreach ($items as $item)
 		{
-			$query->where('published <> -2');
-		}
+			$item = new JRegistry($item);
 
-		$query->order('published DESC, label ASC');
-		$db->setQuery($query);
-		$rows = $db->loadObjectList();
+			if (!$this->element['showtrashed'] && (int) $item->get('published') === -2)
+			{
+				continue;
+			}
 
-		foreach ($rows as &$row)
-		{
-			switch ($row->published)
+			$option = new stdClass;
+			$option->value = $item->get('view');
+			$option->text = $item->get('form.label');
+			$key = $item->get('published') . '.' . $option->text;
+
+			switch ($item->get('published'))
 			{
 				case '0':
-					$row->text .= ' [' . FText::_('JUNPUBLISHED') . ']';
+					$option->text .= ' [' . FText::_('JUNPUBLISHED') . ']';
 					break;
 				case '-2':
-					$row->text .= ' [' . FText::_('JTRASHED') . ']';
+					$option->text .= ' [' . FText::_('JTRASHED') . ']';
 					break;
 			}
+
+			$options[$key] = $option;
 		}
 
+		ksort($options);
 		$o = new stdClass;
 		$o->value = '';
 		$o->text = '';
-		array_unshift($rows, $o);
+		array_unshift($options, $o);
 
-		return $rows;
+		return $options;
 	}
 
 	/**
@@ -90,7 +88,6 @@ class JFormFieldFormList extends JFormFieldList
 	 *
 	 * @return	string	The field input markup.
 	 */
-
 	protected function getInput()
 	{
 		$this->app = JFactory::getApplication();
@@ -99,11 +96,8 @@ class JFormFieldFormList extends JFormFieldList
 
 		if (!in_array($option, array('com_modules', 'com_menus', 'com_advancedmodules')))
 		{
-			$db = Worker::getDbo(true);
-			$query = $db->getQuery(true);
-			$query->select('form_id')->from('#__fabrik_formgroup')->where('group_id = ' . (int) $this->form->getValue('id'));
-			$db->setQuery($query);
-			$this->value = $db->loadResult();
+			$item = $this->form->model->getItem();
+			$this->value = $item->get('view');
 			$this->form->setValue('form', null, $this->value);
 		}
 

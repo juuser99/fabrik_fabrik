@@ -51,9 +51,16 @@ class Forms extends Base implements ModelFormsInterface
 		}
 	}
 
-	public function getPagination()
+	/**
+	 * Get list view items.
+	 *
+	 * @return array
+	 */
+	public function getItems()
 	{
-		return new \JPagination(0, 0, 0);
+		$items = parent::getItems();
+
+		return $this->filterItems($items);
 	}
 
 	/**
@@ -68,10 +75,6 @@ class Forms extends Base implements ModelFormsInterface
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		// Load the parameters.
-		$params = \JComponentHelper::getParams('com_fabrik');
-		$this->set('params', $params);
-
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->set('filter.published', $published);
 

@@ -75,7 +75,6 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->items = $this->model->getItems();
 		$this->pagination = $this->model->getPagination();
 		$this->state = $this->model->getState();
-		//$this->packageOptions = $this->get('PackageOptions');
 
 		$this->addToolbar();
 		Fabrik::addSubmenu('lists');

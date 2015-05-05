@@ -87,7 +87,7 @@ $listDirn  = $this->state->get('list.direction');
 				<tbody>
 				<?php foreach ($this->items as $i => $item) :
 					$ordering   = ($listOrder == 'ordering');
-					$link       = JRoute::_('index.php?option=com_fabrik&task=group.edit&id=' . (int) $item->id);
+					$link       = JRoute::_('index.php?option=com_fabrik&task=group.edit&id=' . $item->view . '&groupid=' . $item->id);
 					$canCreate  = $user->authorise('core.create', 'com_fabrik.group.' . $item->form_id);
 					$canEdit    = $user->authorise('core.edit', 'com_fabrik.group.' . $item->form_id);
 					$canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
@@ -119,7 +119,7 @@ $listDirn  = $this->state->get('list.direction');
 						</td>
 						</td>
 						<td>
-							<a href="index.php?option=com_fabrik&task=form.edit&id=<?php echo $item->form_id?>">
+							<a href="index.php?option=com_fabrik&view=form&layout=edit&id=<?php echo $item->form_id?>">
 								<i class="icon-pencil"></i> <?php echo $item->flabel; ?>
 							</a>
 						</td>

@@ -27,7 +27,6 @@ interface ModelListsInterface
  * @subpackage  Fabrik
  * @since       3.5
  */
-
 class Lists extends Base implements ModelListsInterface
 {
 	/**
@@ -56,6 +55,7 @@ class Lists extends Base implements ModelListsInterface
 
 	public function getPagination()
 	{
+		// FIXME
 		return new \JPagination(0, 0, 0);
 	}
 
@@ -72,7 +72,6 @@ class Lists extends Base implements ModelListsInterface
 	 *
 	 * @since	1.6
 	 */
-
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
@@ -83,17 +82,6 @@ class Lists extends Base implements ModelListsInterface
 		$id .= ':' . $this->get('filter.language');
 
 		return parent::getStoreId($id);
-	}
-
-	/**
-	 * Get list groups
-	 *
-	 * @return  array  groups
-	 */
-
-	public function getTableGroups()
-	{
-
 	}
 
 	/**
@@ -108,7 +96,6 @@ class Lists extends Base implements ModelListsInterface
 	 *
 	 * @return  void
 	 */
-
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Load the filter state.
@@ -119,12 +106,20 @@ class Lists extends Base implements ModelListsInterface
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->set('filter.published', $published);
 
-		// Load the parameters.
-		/*$params = JComponentHelper::getParams('com_fabrik');
-		$this->set('params', $params);*/
-
 		// List state information.
 		parent::populateState('label', 'asc');
+	}
+
+	/**
+	 * Get list view items.
+	 *
+	 * @return array
+	 */
+	public function getItems()
+	{
+		$items = parent::getItems();
+
+		return $this->filterItems($items);
 	}
 
 	/**

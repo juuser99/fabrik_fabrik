@@ -11,8 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
-
 JFormHelper::loadFieldClass('radio');
 
 /**
@@ -23,7 +21,6 @@ JFormHelper::loadFieldClass('radio');
  * @subpackage  Form
  * @since       1.6
  */
-
 class JFormFieldGrouprepeat extends JFormFieldRadio
 {
 	/**
@@ -47,7 +44,7 @@ class JFormFieldGrouprepeat extends JFormFieldRadio
 
 	protected function getInput()
 	{
-		if ((int) $this->form->getValue('form') === 0)
+		if ($this->form->getValue('form') === '')
 		{
 			return '<input class="readonly" size="60" value="' . FText::_('COM_FABRIK_FIELD_ASSIGN_GROUP_TO_FORM_FIRST') . '" type="readonly" />';
 		}

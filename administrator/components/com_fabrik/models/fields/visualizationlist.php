@@ -14,9 +14,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
-require_once JPATH_SITE . '/components/com_fabrik/helpers/parent.php';
-
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
 

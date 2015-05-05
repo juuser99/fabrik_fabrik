@@ -171,7 +171,7 @@ $listDir   = $this->state->get('list.direction');
 								</a>
 							</td>
 							<td class="center">
-								<?php echo JHtml::_('jgrid.published', $item->list->published, $i, 'lists.', $canChange);?>
+								<?php echo JHtml::_('jgrid.published', $item->published, $i, 'lists.', $canChange);?>
 							</td>
 						</tr>
 					<?php endforeach; ?>

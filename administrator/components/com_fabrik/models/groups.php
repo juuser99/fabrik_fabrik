@@ -11,7 +11,6 @@
 
 namespace Fabrik\Admin\Models;
 
-use \JComponentHelper as JComponentHelper;
 use \Joomla\Registry\Registry as JRegistry;
 
 // No direct access
@@ -40,9 +39,9 @@ class Groups extends Base implements ModelGroupsInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param   Registry  $state  Optional configuration settings.
+	 * @param   Registry $state Optional configuration settings.
 	 *
-	 * @since	3.5
+	 * @since    3.5
 	 */
 	public function __construct(Registry $state = null)
 	{
@@ -61,18 +60,19 @@ class Groups extends Base implements ModelGroupsInterface
 	 */
 	public function getItems()
 	{
-		$items = parent::getItems();
+		$items  = parent::getItems();
 		$groups = array();
 
 		foreach ($items as $item)
 		{
-			$item = new JRegistry($item);
+			$item       = new JRegistry($item);
 			$itemGroups = (array) $item->get('form.groups');
 
 			foreach ($itemGroups as &$itemGroup)
 			{
-				$itemGroup->form_id = $item->get('view');
-				$itemGroup->flabel = $item->get('form.label');
+				$itemGroup->form_id       = $item->get('view');
+				$itemGroup->flabel        = $item->get('form.label');
+				$itemGroup->view          = $item->get('view');
 				$itemGroup->_elementCount = count((array) $itemGroup->fields);
 			}
 
@@ -82,28 +82,17 @@ class Groups extends Base implements ModelGroupsInterface
 		return $groups;
 	}
 
-	public function getPagination()
-	{
-		// FIXME
-		return new \JPagination(0, 0, 0);
-	}
-
 	/**
 	 * Method to auto-populate the model state.
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @param   string  $ordering   An optional ordering field.
-	 * @param   string  $direction  An optional direction (asc|desc).
+	 * @param   string $ordering  An optional ordering field.
+	 * @param   string $direction An optional direction (asc|desc).
 	 *
 	 * @return  void
 	 */
-
 	protected function populateState($ordering = null, $direction = null)
 	{
-		// Load the parameters.
-		$params = JComponentHelper::getParams('com_fabrik');
-		$this->set('params', $params);
-
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->set('filter.published', $published);
 
@@ -111,10 +100,99 @@ class Groups extends Base implements ModelGroupsInterface
 		$this->set('filter.search', $search);
 
 		// Load the form state
-		$package = $this->app->getUserStateFromRequest($this->context . '.filter.form', 'filter_form', '');
-		$this->set('filter.form', $package);
+		$form = $this->app->getUserStateFromRequest($this->context . '.filter.form', 'filter_form', '');
+		$this->set('filter.form', $form);
 
 		// List state information.
 		parent::populateState('name', 'asc');
+	}
+
+	/**
+	 * Unpublish items
+	 *
+	 * @param array $ids
+	 */
+	public function unpublish($ids = array())
+	{
+		$this->doPublish($ids, $state = 0);
+	}
+
+	/**
+	 * Publish items
+	 *
+	 * @param array $ids
+	 */
+	public function publish($ids = array())
+	{
+		$this->doPublish($ids, 1);
+	}
+
+	/**
+	 * Trash items
+	 *
+	 * @param   array $ids Ids
+	 *
+	 * @return  void
+	 */
+	public function trash($ids)
+	{
+		$this->doPublish($ids, -2);
+	}
+
+	/**
+	 * Toggle publish state
+	 *
+	 * @param array $ids
+	 * @param int   $state 1|0
+	 *
+	 * @throws RuntimeException
+	 *
+	 */
+	protected function doPublish($ids = array(), $state = 1)
+	{
+		$items = $this->getViews();
+
+		foreach ($items as &$item)
+		{
+			$item   = new JRegistry($item);
+			$groups = $item->get('form.groups');
+
+			foreach ($groups as &$group)
+			{
+				$group = new JRegistry($group);
+
+				if (in_array($group->get('id'), $ids))
+
+				{
+					$group->set('published', $state);
+				}
+
+				$group = $group->toObject();
+			}
+
+			$row = $this->prepareSave($item->toObject());
+			$this->save($row);
+		}
+	}
+
+	/**
+	 * @param  array|object $post
+	 *
+	 * @return JRegistry
+	 */
+	protected function prepareSave($post, $view = null)
+	{
+		if (is_array($post))
+		{
+			echo "tod oprepare group sae for array data";
+			exit;
+
+		}
+		else
+		{
+			$data = $post;
+		}
+
+		return new JRegistry($data);
 	}
 }

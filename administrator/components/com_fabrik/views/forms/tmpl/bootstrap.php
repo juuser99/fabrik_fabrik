@@ -120,7 +120,7 @@ $listDirn	= $this->state->get('list.direction');
 						</a>
 					</td>
 					<td class="center">
-						<?php echo JHtml::_('jgrid.published', $item->form->published, $i, 'forms.', $canChange);?>
+						<?php echo JHtml::_('jgrid.published', $item->published, $i, 'forms.', $canChange);?>
 					</td>
 				</tr>
 

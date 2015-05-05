@@ -11,8 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
-
 /**
  * Renders either a plain <textarea> or WYSIWYG editor
  *

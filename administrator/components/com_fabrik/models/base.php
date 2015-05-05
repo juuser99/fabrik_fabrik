@@ -28,6 +28,7 @@ use \JEventDispatcher as JEventDispatcher;
 use \Fabrik\Plugins\Element as Element;
 use \JComponentHelper as JComponentHelper;
 use Fabrik\Admin\Helpers\Fabrik as Fabrik;
+use Joomla\String\Inflector;
 
 /**
  * Fabrik Base Admin Model
@@ -122,7 +123,7 @@ class Base extends \JModelBase
 					}
 				}
 
-				return true;
+				//return true;
 			}
 
 			return true;
@@ -183,7 +184,8 @@ class Base extends \JModelBase
 		foreach ($files as $file)
 		{
 			$json    = file_get_contents($file);
-			$items[] = json_decode($json);
+			$item = json_decode($json);;
+			$items[$item->view] = $item;
 		}
 
 		return $items;
@@ -206,8 +208,12 @@ class Base extends \JModelBase
 	 *
 	 * @return JRegistry
 	 */
-	protected function prepareSave($post, $view = 'list')
+	protected function prepareSave($post, $view = null)
 	{
+		if (is_null($view))
+		{
+			$view = $this->getKlass();
+		}
 		if (is_array($post))
 		{
 			// We are saving from the form submission
@@ -215,8 +221,15 @@ class Base extends \JModelBase
 			$data = file_exists($file) ? json_decode(file_get_contents($file)) : new stdClass;
 			$post        = ArrayHelper::toObject($post);
 			$data->$view = $post;
-			$data->view  = $data->$view->view;
-			unset($data->$view->view);
+
+			if ($view === 'list' || $view === 'form')
+			{
+				$data->view  = $data->$view->view;
+
+				$data->published = $data->$view->published;
+				unset($data->$view->view);
+			}
+
 		}
 		else
 		{
@@ -547,9 +560,6 @@ class Base extends \JModelBase
 		{
 			$this->formModel = new Form;
 			$this->formModel->set('id', $this->get('id'));
-			/*$config          = array();
-			$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel', $config);
-			$this->formModel->setDbo($config['dbo']);*/
 		}
 
 		return $this->formModel;
@@ -620,20 +630,20 @@ class Base extends \JModelBase
 
 					if ($incRaw && is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
 					{
-						/* @FIXME - next line had been commented out, causing undefined warning for $rawval
+						/* @FIXME - next line had been commented out, causing undefined warning for $rawValue
 						 * on following line.  Not sure if getrawColumn is right thing to use here though,
 						 * like, it adds filed quotes, not sure if we need them.
 						 */
 						if ($elementModel->getElement()->published != 0)
 						{
-							$rawval = $elementModel->getRawColumn($useStep);
+							$rawValue = $elementModel->getRawColumn($useStep);
 
 							if (!$this->addDbQuote)
 							{
-								$rawval = str_replace('`', '', $rawval);
+								$rawValue = str_replace('`', '', $rawValue);
 							}
 
-							$aEls[$label . '(raw)'] = JHTML::_('select.option', $rawval, $label . '(raw)');
+							$aEls[$label . '(raw)'] = JHTML::_('select.option', $rawValue, $label . '(raw)');
 						}
 					}
 				}
@@ -705,20 +715,40 @@ class Base extends \JModelBase
 
 		$form  = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
 		$item  = $this->getItem();
-		$klass = explode("\\", get_class($this));
-		$klass = strtolower(array_pop($klass));
-
-		if ($klass === 'lizt')
-		{
-			$klass = 'list';
-		}
-
-		$data       = $this->getItem()->get($klass);
+		$class = $this->getKlass();
+		echo "<pre>";print_r($this->getItem());exit;
+		$data       = $this->getItem()->get($class);
 		$data->view = $item->get('view');
 		$form->bind($data);
 		$form->model = $this;
 
 		return $form;
+	}
+
+	/**
+	 * Get the short class name which maps to the view json files key
+	 * So lizt is returned as list
+	 *
+	 * @return array|string
+	 */
+	private function getKlass()
+	{
+		$inflector  = Inflector::getInstance();
+		$class = explode("\\", get_class($this));
+		$class = strtolower(array_pop($class));
+		$class = $inflector->toSingular($class);
+
+		if ($class === 'lists')
+		{
+			// Inflector not working for lists.
+			$class = 'list';
+		}
+		if ($class === 'lizt')
+		{
+			$class = 'list';
+		}
+
+		return $class;
 	}
 
 	/**
@@ -787,6 +817,7 @@ class Base extends \JModelBase
 		{
 			$items[$id]->published = 0;
 			$items[$id]->id        = $id;
+			$items[$id] = $this->prepareSave($items[$id]);
 			$this->save($items[$id]);
 		}
 	}
@@ -804,6 +835,7 @@ class Base extends \JModelBase
 		{
 			$items[$id]->published = 1;
 			$items[$id]->id        = $id;
+			$items[$id] = $this->prepareSave($items[$id]);
 			$this->save($items[$id]);
 		}
 	}
