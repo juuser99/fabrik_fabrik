@@ -127,6 +127,72 @@ class Elements extends Base implements ModelElementsInterface
 	}
 
 	/**
+	 * Unpublish items
+	 *
+	 * @param array $ids
+	 */
+	public function unpublish($ids = array())
+	{
+		$this->doPublish($ids, 0);
+	}
+
+	/**
+	 * Publish items
+	 *
+	 * @param array $ids
+	 */
+	public function publish($ids = array())
+	{
+		$this->doPublish($ids, 1);
+	}
+
+	/**
+	 * Trash items
+	 *
+	 * @param   array $ids Ids
+	 *
+	 * @return  void
+	 */
+	public function trash($ids)
+	{
+		$this->doPublish($ids, -2);
+	}
+
+	/**
+	 * Toggle publish state
+	 *
+	 * @param array $ids
+	 * @param int   $state 1|0
+	 *
+	 * @throws RuntimeException
+	 *
+	 */
+	protected function doPublish($ids = array(), $state = 1)
+	{
+		$items = $this->getViews();
+
+		foreach ($items as &$item)
+		{
+			$item   = new JRegistry($item);
+			$groups = $item->get('form.groups');
+
+			foreach ($groups as &$group)
+			{
+				foreach ($group->fields as &$field)
+				{
+					if (in_array($field->id, $ids))
+					{
+						$field->published = $state;
+					}
+				}
+			}
+
+			$row = $this->prepareSave($item->toObject());
+			$this->save($row);
+		}
+	}
+
+	/**
 	 * Method to auto-populate the model state.
 	 *
 	 * Note. Calling getState in this method will result in recursion.
