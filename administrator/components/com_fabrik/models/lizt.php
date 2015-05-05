@@ -671,7 +671,6 @@ class Lizt extends Base implements ModelFormLiztInterface
 		}
 
 		$data->set('list._database_name', null);
-		//echo "<pre>";print_r($data);exit;
 		$output = json_encode($data->toObject(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 		file_put_contents($file, $output);
 

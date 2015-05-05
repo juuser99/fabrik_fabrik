@@ -17,6 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use \JForm as JForm;
 use Fabrik\Helpers\Worker;
+use \Joomla\Registry\Registry as JRegistry;
 
 interface ModelFormFormInterface
 {
@@ -87,7 +88,7 @@ class Form extends Base implements ModelFormFormInterface
 	{
 		$js[] = "\twindow.addEvent('domready', function () {";
 		$plugins = json_encode($this->getPlugins());
-		$js[] = "\t\tFabrik.controller = new PluginManager($plugins, " . (int) $this->getItem()->id . ", 'form');";
+		$js[] = "\t\tFabrik.controller = new PluginManager($plugins, " . (int) $this->getItem()->get('id') . ", 'form');";
 		$js[] = "\t})";
 
 		return implode("\n", $js);
@@ -103,6 +104,8 @@ class Form extends Base implements ModelFormFormInterface
 	 */
 	protected function _makeFormGroups($data, $currentGroups)
 	{
+		// FIXME for json view
+		echo "_makeFormGroups not workee ";exit;
 		$formid = $this->get($this->getName() . '.id');
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
@@ -161,6 +164,8 @@ class Form extends Base implements ModelFormFormInterface
 	 */
 	public function swapListToFormIds($ids = array())
 	{
+		// FIXME
+		echo "swapListToFormIds not json vied";exit;
 		if (empty($ids))
 		{
 			return array();
@@ -181,6 +186,8 @@ class Form extends Base implements ModelFormFormInterface
 	 */
 	public function updateDatabase()
 	{
+		// FIXME
+		echo "update database not json viewd";exit;
 		$input = $this->app->input;
 		$cid = $input->get('cid', array(), 'array');
 		$formId = $cid[0];
@@ -300,13 +307,10 @@ class Form extends Base implements ModelFormFormInterface
 	 *
 	 * @return  array  element objects
 	 */
-
 	public function getGroupsHiarachy()
 	{
-		//echo "getGroupsHiarachy";exit;
 		if (!isset($this->groups))
 		{
-		//	echo "get groups";exit;
 			$this->getGroups();
 
 			$this->groups = Worker::getPluginManager()->getFormPlugins($this);
@@ -356,8 +360,6 @@ class Form extends Base implements ModelFormFormInterface
 	 */
 	public function getPublishedGroups()
 	{
-		$db = Worker::getDbo(true);
-
 		if (!isset($this->_publishedformGroups) || empty($this->_publishedformGroups))
 		{
 			$item = $this->getItem();

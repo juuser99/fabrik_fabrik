@@ -23,29 +23,29 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
  * @subpackage  Form
  * @since       1.6
  */
-
 class JFormFieldSwapList extends JFormFieldList
 {
 	/**
 	 * Element name
-	 * @access	protected
-	 * @var		string
+	 *
+	 * @access    protected
+	 * @var        string
 	 */
 	protected $name = 'SwapList';
 
 	/**
 	 * Method to get the field input markup.
 	 *
-	 * @return  string	The field input markup.
+	 * @return  string    The field input markup.
 	 */
 
 	protected function getInput()
 	{
-		$from = $this->id . '-from';
-		$add = $this->id . '-add';
-		$remove = $this->id . '-remove';
-		$up = $this->id . '-up';
-		$down = $this->id . '-down';
+		$from     = $this->id . '-from';
+		$add      = $this->id . '-add';
+		$remove   = $this->id . '-remove';
+		$up       = $this->id . '-up';
+		$down     = $this->id . '-down';
 		$script[] = "window.addEvent('domready', function () {";
 		$script[] = "\tswaplist = new SwapList('$from', '$this->id','$add', '$remove', '$up', '$down');";
 		$script[] = "});";
@@ -63,7 +63,7 @@ class JFormFieldSwapList extends JFormFieldList
 		}
 		else
 		{
-			$str =	FText::_('COM_FABRIK_AVAILABLE_GROUPS');
+			$str = FText::_('COM_FABRIK_AVAILABLE_GROUPS');
 			$str .= '<br />' . $this->groupList;
 			$str .= '<button class="button btn btn-success btn-small" type="button" id="' . $this->id . '-add">';
 			$str .= '<i class="icon-new"></i>' . FText::_('COM_FABRIK_ADD') . '</button>';
@@ -93,32 +93,26 @@ class JFormFieldSwapList extends JFormFieldList
 	}
 
 	/**
-	 * get a list of unused groups
+	 * get a list of group templates
 	 *
-	 * @return  array	list of groups, html list of groups
+	 * @return  array    list of groups, html list of groups
 	 */
 
 	public function getGroupList()
 	{
-		$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		$query->select('DISTINCT(group_id)')->from('#__fabrik_formgroup');
-		$db->setQuery($query);
-		$usedgroups = $db->loadColumn();
-		ArrayHelper::toInteger($usedgroups);
-		$query = $db->getQuery(true);
-		$query->select('id AS value, name AS text')->from('#__fabrik_groups');
+		$templates = JFolder::files(JPATH_COMPONENT_ADMINISTRATOR . '/models/templates/groups', '.json', false, true);
 
-		if (!empty($usedgroups))
+		foreach ($templates as $template)
 		{
-			$query->where('id NOT IN(' . implode(',', $usedgroups) . ')');
+			$template   = json_decode(file_get_contents($template));
+			$opt        = new stdClass;
+			$opt->value = 'template_' . uniqid();
+			$opt->text  = $template->name;
+			$options[]  = $opt;
 		}
 
-		$query->where('published <> -2');
-		$query->order(FabrikString::safeColName('text'));
-		$db->setQuery($query);
-		$groups = $db->loadObjectList();
-		$list = JHTML::_('select.genericlist', $groups, 'jform[groups]', 'class="inputbox" size="10" ', 'value', 'text', null,
+		$groups = array();
+		$list   = JHTML::_('select.genericlist', $options, 'jform[groups]', 'class="inputbox" size="10" ', 'value', 'text', null,
 			$this->id . '-from');
 
 		return array($groups, $list);
@@ -129,22 +123,23 @@ class JFormFieldSwapList extends JFormFieldList
 	 *
 	 * @return  array  list of groups, html list of groups
 	 */
-
 	public function getCurrentGroupList()
 	{
-		$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		$query->select('fg.group_id AS value, g.name AS text');
-		$query->from('#__fabrik_formgroup AS fg');
-		$query->join('LEFT', ' #__fabrik_groups AS g ON fg.group_id = g.id');
-		$query->where('fg.form_id = ' . (int) $this->form->getValue('id'));
-		$query->where('g.name <> ""');
-		$query->order('fg.ordering');
-		$db->setQuery($query);
-		$currentGroups = $db->loadObjectList();
-		$attribs = 'class="inputbox" multiple="multiple" size="10" ';
-		$list = JHTML::_('select.genericlist', $currentGroups, $this->name, $attribs, 'value', 'text', '/', $this->id);
+		$item    = $this->form->model->getItem();
+		$groups  = $item->get('form.groups');
+		$options = array();
 
-		return array($currentGroups, $list);
+		foreach ($groups as $group)
+		{
+			$opt        = new stdClass;
+			$opt->value = $group->id;
+			$opt->text  = $group->name;
+			$options[]  = $opt;
+		}
+
+		$attribs = 'class="inputbox" multiple="multiple" size="10" ';
+		$list    = JHTML::_('select.genericlist', $options, $this->name, $attribs, 'value', 'text', '/', $this->id);
+
+		return array($options, $list);
 	}
 }

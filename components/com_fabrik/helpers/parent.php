@@ -1472,12 +1472,9 @@ class Worker
 
 			if (!$loadJoomlaDb)
 			{
-
 				$cnModel = new Connection;
-				echo "id = $cnnId";
 				$cnModel->set('id', $cnnId);
 				$cn = $cnModel->getItem();
-				echo "<pre>";print_r($cn);exit;
 				$host = $cn->host;
 				$user = $cn->user;
 				$password = $cn->password;
@@ -1491,13 +1488,13 @@ class Worker
 				$database = $conf->get('db');
 			}
 
-			$dbprefix = $conf->get('dbprefix');
+			$dbPrefix = $conf->get('dbprefix');
 			$driver = $conf->get('dbtype');
 
 			// Test for swapping db table names
 			$options = array('driver' =>
 				$driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,
-				'prefix' => $dbprefix);
+				'prefix' => $dbPrefix);
 
 			self::$database[$sig] = JDatabaseDriver::getInstance($options);
 
