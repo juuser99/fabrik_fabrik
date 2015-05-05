@@ -107,6 +107,13 @@ class Base extends \JModelBase
 	{
 	}
 
+	/**
+	 * Filter the list items based on the stored filter state.
+	 *
+	 * @param $items
+	 *
+	 * @return array
+	 */
 	protected function filterItems($items)
 	{
 		$items = array_filter($items, function ($item)
@@ -117,7 +124,7 @@ class Base extends \JModelBase
 			{
 				if ($field <> 'search' && $value <> '*' && $value <> '')
 				{
-					if ($item->$field <> $value)
+					if (isset($item->$field) && $item->$field <> $value)
 					{
 						return false;
 					}

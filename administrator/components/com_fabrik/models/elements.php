@@ -94,6 +94,8 @@ class Elements extends Base implements ModelElementsInterface
 			}
 		}
 
+		$elements = parent::filterItems($elements);
+echo "<pre>";print_r($elements);echo "</pre>";
 		return $elements;
 	}
 
@@ -206,10 +208,6 @@ class Elements extends Base implements ModelElementsInterface
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		// Load the parameters.
-		$params = JComponentHelper::getParams('com_fabrik');
-		$this->set('params', $params);
-
 		$published = $this->app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->set('filter.published', $published);
 
@@ -225,8 +223,8 @@ class Elements extends Base implements ModelElementsInterface
 		$this->set('filter.group', $group);
 
 		// Load the show in list state
-		$showinlist = $this->app->getUserStateFromRequest($this->context . '.filter.showinlist', 'filter_showinlist', '');
-		$this->set('filter.showinlist', $showinlist);
+		$showInList = $this->app->getUserStateFromRequest($this->context . '.filter.show_in_list_summary', 'filter_showinlist', '');
+		$this->set('filter.show_in_list_summary', $showInList);
 
 		// Load the plug-in state
 		$plugin = $this->app->getUserStateFromRequest($this->context . '.filter.plugin', 'filter_plugin', '');
