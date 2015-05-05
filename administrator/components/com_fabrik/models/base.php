@@ -44,6 +44,13 @@ class Base extends \JModelBase
 	protected $name = '';
 
 	/**
+	 * If true encase table and element names with "`" when getting element list
+	 *
+	 * @var bool
+	 */
+	protected $addDbQuote = false;
+
+	/**
 	 * Instantiate the model.
 	 *
 	 * @param   Registry $state The model state.
@@ -650,7 +657,6 @@ class Base extends \JModelBase
 	{
 		$listId = $this->get('list.id');
 		$item   = $this->getItem($listId);
-		echo "getdb";
 
 		return Worker::getConnection($item)->getDb();
 	}

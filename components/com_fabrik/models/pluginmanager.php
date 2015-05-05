@@ -409,50 +409,39 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 			$folder = 'fabrik_element';
 			$client = JApplicationHelper::getClientInfo(0);
 
-			$elements = array();
-			$item = $form->getItem();
-
-			foreach ($item->get('form.groups', array()) as $group)
-			{
-				foreach ($group->fields as $field)
-				{
-					if ($field->published != -2)
-					{
-						$elements[] = $field;
-					}
-				}
-			}
-
 			// Don't assign the elements into Joomla's main dispatcher as this causes out of memory errors in J1.6rc1
 			$dispatcher = new JDispatcher;
 			$groupModels = $form->getGroups();
 			$group = 'element';
 
-			foreach ($elements as $element)
+			foreach ($groupModels as $name => &$groupModel)
 			{
-				JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->name . '' . $element->plugin) : null;
-				require_once JPATH_PLUGINS . '/fabrik_element/' . $element->plugin . '/' . $element->plugin . '.php';
-				$class = 'PlgFabrik_Element' . $element->plugin;
-				$pluginModel = new $class($dispatcher, array());
+				$elements = $groupModel->getElements();
 
-				if (!is_object($pluginModel))
+				foreach ($elements as $element)
 				{
-					continue;
+					JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->name . '' . $element->plugin) : null;
+					require_once JPATH_PLUGINS . '/fabrik_element/' . $element->plugin . '/' . $element->plugin . '.php';
+					$class = 'PlgFabrik_Element' . $element->plugin;
+					$pluginModel = new $class($dispatcher, array());
+
+					if (!is_object($pluginModel))
+					{
+						continue;
+					}
+
+					$pluginModel->xmlPath = COM_FABRIK_FRONTEND . '/plugins/' . $group . '/' . $element->plugin . '/' . $element->plugin . '.xml';
+					//$pluginModel->setId($element->id);
+
+					$langFile = 'plg_' . $folder . '_' . $element->plugin;
+					$langPath = $client->path . '/plugins/' . $folder . '/' . $element->plugin;
+					$lang->load($langFile, $langPath, null, false, false) || $lang->load($langFile, $langPath, $lang->getDefault(), false, false);
+
+					$listModel = $form->getListModel();
+					$pluginModel->setContext($groupModel, $form, $listModel);
+					$pluginModel->bindToElement($element);
+					$groupModel->elements[$element->name] = $pluginModel;
 				}
-
-				$pluginModel->xmlPath = COM_FABRIK_FRONTEND . '/plugins/' . $group . '/' . $element->plugin . '/' . $element->plugin . '.xml';
-				//echo "<pre>";print_r($element);exit;
-				//$pluginModel->setId($element->id);
-				//$groupModel = $groupModels[$element->group_id];
-
-				$langFile = 'plg_' . $folder . '_' . $element->plugin;
-				$langPath = $client->path . '/plugins/' . $folder . '/' . $element->plugin;
-				$lang->load($langFile, $langPath, null, false, false) || $lang->load($langFile, $langPath, $lang->getDefault(), false, false);
-
-				$listModel = $form->getListModel();
-				$pluginModel->setContext($groupModel, $form, $listModel);
-				$pluginModel->bindToElement($element);
-				$groupModel->elements[$element->name] = $pluginModel;
 			}
 
 			foreach ($groupModels as $groupid => $g)

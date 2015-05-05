@@ -136,13 +136,6 @@ class FabrikFEModelForm extends FabModelForm
 	protected $currentElement = null;
 
 	/**
-	 * If true encase table and element names with "`" when getting element list
-	 *
-	 * @var bool
-	 */
-	protected $addDbQuote = false;
-
-	/**
 	 * Form Data
 	 *
 	 * @var array

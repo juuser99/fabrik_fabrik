@@ -20,6 +20,7 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
 use \JModelLegacy as JModelLegacy;
 use \stdClass as stdClass;
+use \JRegistry as JRegistry;
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
@@ -407,19 +408,21 @@ class Element extends Plugin
 
 	public function &getGroup($groupId = null)
 	{
-		if (is_null($groupId))
+		// @todo ensure that the element is always loaded inside a group context.
+		/*if (is_null($groupId))
 		{
 			$element = $this->getElement();
 			$groupId = $element->group_id;
 		}
 
+		echo "group id = $groupId";exit;
 		if (is_null($this->group) || $this->group->getId() != $groupId)
 		{
 			$model = JModelLegacy::getInstance('Group', 'FabrikFEModel');
 			$model->setId($groupId);
 			$model->getGroup();
 			$this->group = $model;
-		}
+		}*/
 
 		return $this->group;
 	}
@@ -1909,13 +1912,12 @@ class Element extends Plugin
 
 	public function getFullName($useStep = true, $incRepeatGroup = true)
 	{
-		$db = Worker::getDbo();
 		$groupModel = $this->getGroup();
 		$formModel = $this->getFormModel();
 		$listModel = $this->getListModel();
 		$element = $this->getElement();
 
-		$key = $element->id . '.' . $groupModel->get('id') . '_' . $formModel->getId() . '_' . $useStep . '_'
+		$key = $element->name . '.' . $groupModel->get('id') . '_' . $formModel->get('id') . '_' . $useStep . '_'
 				. $incRepeatGroup;
 
 		if (isset($this->fullNames[$key]))
@@ -1923,10 +1925,10 @@ class Element extends Plugin
 			return $this->fullNames[$key];
 		}
 
-		$table = $listModel->getTable();
-		$db_table_name = $table->db_table_name;
+		$item = $listModel->getItem();
+		$dbTableName = $item->get('list.db_table_name');
+
 		$thisStep = ($useStep) ? $formModel->joinTableElementStep : '.';
-		$group = $groupModel->getGroup();
 
 		if ($groupModel->isJoin())
 		{
@@ -1936,7 +1938,7 @@ class Element extends Plugin
 		}
 		else
 		{
-			$fullName = $db_table_name . $thisStep . $element->name;
+			$fullName = $dbTableName . $thisStep . $element->name;
 		}
 
 		if ($groupModel->canRepeat() == 1 && $incRepeatGroup)

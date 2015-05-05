@@ -315,33 +315,29 @@ class Form extends Base implements ModelFormFormInterface
 	/**
 	 * Get the forms published group objects
 	 *
-	 * @return  array  Group model objects with table row loaded
+	 * @return  stdClass  Group model objects
 	 */
 
 	public function getGroups()
 	{
 		if (!isset($this->groups))
 		{
-			$this->groups = array();
+			$this->groups = new \stdClass;
 			$listModel = $this->getListModel();
-			$groupModel = new Group; //JModelLegacy::getInstance('Group', 'FabrikFEModel');
-			$groupdata = $this->getPublishedGroups();
+			$groupModel = new Group;
+			$groupData = $this->getPublishedGroups();
 
-			foreach ($groupdata as $id => $groupd)
+			foreach ($groupData as $id => $data)
 			{
 				$thisGroup = clone ($groupModel);
-				$thisGroup->setId($id);
+				$thisGroup->set('id', $id);
 				$thisGroup->setContext($this, $listModel);
+				$thisGroup->setGroup($data);
 
-				// $$ rob 25/02/2011 this was doing a query per group - pointless as we bind $groupd to $row afterwards
-				// $row = $thisGroup->getGroup();
-				$row = FabTable::getInstance('Group', 'FabrikTable');
-				$row->bind($groupd);
-				$thisGroup->setGroup($row);
-
-				if ($row->published == 1)
+				if ($data->published == 1)
 				{
-					$this->groups[$id] = $thisGroup;
+					$name = $data->name;
+					$this->groups->$name = $thisGroup;
 				}
 			}
 		}
@@ -363,7 +359,7 @@ class Form extends Base implements ModelFormFormInterface
 		{
 			$item = $this->getItem();
 			$return = array();
-			$groups = isset($item->form->groups) ? $item->form->groups : array();
+			$groups = $item->get('form.groups');
 
 			foreach ($groups as $group)
 			{

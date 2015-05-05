@@ -584,9 +584,9 @@ class Lizt extends Base implements ModelFormLiztInterface
 			$data->form = $this->createLinkedForm($data);
 
 			// Create fabrik group
-			$groupData        = Worker::formDefaults('group');
-			$groupName        = FabrikString::clean($data->list->label);
-			$groupData->name  = $groupName;
+			$groupData       = Worker::formDefaults('group');
+			$groupName       = FabrikString::clean($data->list->label);
+			$groupData->name = $groupName;
 
 			$data->form->groups             = new stdClass;
 			$data->form->groups->$groupName = $this->createLinkedGroup($groupData, false);
@@ -632,8 +632,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 		if ($pk == '')
 		{
-			$pk = $this->storage->getPrimaryKeyAndExtra();
-			print_r($pk);
+			$pk    = $this->storage->getPrimaryKeyAndExtra();
 			$key   = $pk[0]['colname'];
 			$extra = $pk[0]['extra'];
 
@@ -677,7 +676,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 			foreach ($elementModels as $element)
 			{
-				// Int and DATETIME elements cant have a index size attrib
+				// Int and DATETIME elements cant have a index size attribute
 				$colType = $element->getFieldDescription();
 
 				if (String::stristr($colType, 'int'))
@@ -694,7 +693,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				}
 
 				$map[$element->getFullName(false, false)] = $size;
-				$map[$element->getElement()->id]          = $size;
+				$map[$element->getId()]                   = $size;
 			}
 		}
 
@@ -710,7 +709,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 			}
 		}
 
-		$params       = new JRegistry($data->list);
+		$params = new JRegistry($data->list);
 
 		if (isset($data->list->group_by))
 		{
@@ -1142,6 +1141,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 				$plugin  = ($key[0]['colname'] == $label && $defType === 'int') ? 'internalid' : $fbConfig->get($type, $plugin);
 			}
 
+			$element->id                   = uniqid();
 			$element->plugin               = $plugin;
 			$element->hidden               = $element->label == 'id' ? '1' : '0';
 			$element->group_id             = $groupId;
@@ -1216,7 +1216,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 					break;
 			}
 
-			$name = $element->name;
+			$name            = $element->name;
 			$elements->$name = $element;
 
 			// FIXME - test what happens on save for user element etc.
@@ -1260,6 +1260,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 
 			$form = Worker::formDefaults('form');
 
+			$form->id                  = uniqid();
 			$form->label               = $view->list->label;
 			$form->record_in_database  = 1;
 			$form->created             = $createDate;
@@ -1304,6 +1305,8 @@ class Lizt extends Base implements ModelFormLiztInterface
 		{
 			$data->fields = new stdClass;
 		}
+
+		$data->id                      = uniqid();
 		$data->created_by_alias        = $user->get('username');
 		$data->published               = 1;
 		$opts                          = new stdClass;

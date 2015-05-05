@@ -161,21 +161,6 @@ class FabrikFEModelGroup extends FabModel
 	}
 
 	/**
-	 * Set the group row
-	 *
-	 * @param   FabTableGroup  $group  Fabrik table
-	 *
-	 * @since   3.0.5
-	 *
-	 * @return  void
-	 */
-
-	public function setGroup($group)
-	{
-		$this->group = $group;
-	}
-
-	/**
 	 * Can the user edit the group
 	 *
 	 * @return   bool
@@ -303,21 +288,6 @@ class FabrikFEModelGroup extends FabModel
 		}
 
 		return $this->canView;
-	}
-
-	/**
-	 * Set the context in which the element occurs
-	 *
-	 * @param   object  $formModel  Form model
-	 * @param   object  $listModel  List model
-	 *
-	 * @return void
-	 */
-
-	public function setContext($formModel, $listModel)
-	{
-		$this->form = $formModel;
-		$this->table = $listModel;
 	}
 
 	/**
@@ -828,19 +798,6 @@ class FabrikFEModelGroup extends FabModel
 	}
 
 	/**
-	 * Is the group a repeat group
-	 *
-	 * @return  bool
-	 */
-
-	public function canRepeat()
-	{
-		$params = $this->getParams();
-
-		return $params->get('repeat_group_button');
-	}
-
-	/**
 	 * Can the user add a repeat group
 	 *
 	 * @since   3.0.1
@@ -906,17 +863,6 @@ class FabrikFEModelGroup extends FabModel
 	}
 
 	/**
-	 * Is the group a join?
-	 *
-	 * @return  bool
-	 */
-
-	public function isJoin()
-	{
-		return $this->getGroup()->is_join;
-	}
-
-	/**
 	 * Get the group's join_id
 	 *
 	 * @return  mixed   join_id, or false if not a join
@@ -962,22 +908,6 @@ class FabrikFEModelGroup extends FabModel
 		}
 
 		return $this->joinModel;
-	}
-
-	/**
-	 * Get group params
-	 *
-	 * @return  object	params
-	 */
-
-	public function &getParams()
-	{
-		if (!$this->params)
-		{
-			$this->params = new JRegistry($this->getGroup()->params);
-		}
-
-		return $this->params;
 	}
 
 	/**

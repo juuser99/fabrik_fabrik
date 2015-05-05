@@ -13,6 +13,7 @@ namespace Fabrik\Admin\Models;
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \JRegistry as JRegistry;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -31,6 +32,13 @@ interface ModelGroupInterface
  */
 class Group extends Base implements ModelGroupInterface
 {
+	/**
+	 * Parameters
+	 *
+	 * @var JRegistry
+	 */
+	protected $params = null;
+
 	/**
 	 * The prefix to use with controller messages.
 	 *
@@ -446,4 +454,76 @@ class Group extends Base implements ModelGroupInterface
 	public function deleteFormGroups($pks)
 	{
 	}
+
+	/**
+	 * Set the context in which the element occurs
+	 *
+	 * @param   object  $formModel  Form model
+	 * @param   object  $listModel  List model
+	 *
+	 * @return void
+	 */
+	public function setContext($formModel, $listModel)
+	{
+		$this->form = $formModel;
+		$this->table = $listModel;
+	}
+
+	public function setGroup($group)
+	{
+		$this->group = $group;
+	}
+
+	public function getGroup()
+	{
+		return $this->group;
+	}
+
+	public function getElements()
+	{
+		return $this->group->fields;
+	}
+
+	public function getMyElements()
+	{
+		return $this->elements;
+	}
+
+	/**
+	 * Is the group a join?
+	 *
+	 * @return  bool
+	 */
+	public function isJoin()
+	{
+		return $this->getGroup()->is_join;
+	}
+
+	/**
+	 * Is the group a repeat group
+	 *
+	 * @return  bool
+	 */
+	public function canRepeat()
+	{
+		$params = $this->getParams();
+
+		return $params->get('repeat_group_button');
+	}
+
+	/**
+	 * Get group params
+	 *
+	 * @return  object	params
+	 */
+	public function &getParams()
+	{
+		if (!$this->params)
+		{
+			$this->params = new JRegistry($this->getGroup()->params);
+		}
+
+		return $this->params;
+	}
+
 }
