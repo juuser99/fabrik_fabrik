@@ -19,6 +19,7 @@ use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
 use Fabrik\Admin\Helpers\Fabrik;
 use \FabrikHelperHTML as FabrikHelperHTML;
+use JFactory as JFactory;
 
 /**
  * View class for a list of lists.
@@ -58,23 +59,27 @@ class Html extends \Fabrik\Admin\Views\Html
 	public function render()
 	{
 		// @todo - test this - probaby should be moved into their own views
+
 		switch ($this->getLayout())
 		{
-			case 'confirmdelete':
-				$this->confirmdelete();
+			case 'confirm_copy':
+				return $this->confirmCopy();
 
-				return;
+				break;
+
+			case 'confirmdelete':
+				return $this->confirmdelete();
+
 				break;
 			case 'import':
-				$this->import();
+				return $this->import();
 
-				return;
 				break;
 		}
 		// Initialise variables.
-		$this->items = $this->model->getItems();
+		$this->items      = $this->model->getItems();
 		$this->pagination = $this->model->getPagination();
-		$this->state = $this->model->getState();
+		$this->state      = $this->model->getState();
 
 		$this->addToolbar();
 		Fabrik::addSubmenu('lists');
@@ -83,6 +88,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->sidebar = JHtmlSidebar::render();
 
 		FabrikHelperHTML::iniRequireJS();
+
 		return parent::render();
 	}
 
@@ -107,7 +113,7 @@ class Html extends \Fabrik\Admin\Views\Html
 			JToolBarHelper::editList('lizt.edit', 'JTOOLBAR_EDIT');
 		}
 
-		JToolBarHelper::custom('lizt.copy', 'copy.png', 'copy_f2.png', 'COM_FABRIK_COPY');
+		JToolBarHelper::custom('lists.copy', 'copy.png', 'copy_f2.png', 'COM_FABRIK_COPY');
 
 		if ($canDo->get('core.edit.state'))
 		{
@@ -128,7 +134,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		JToolBarHelper::divider();
 
-		if (\JFactory::getUser()->authorise('core.manage', 'com_checkin'))
+		if (JFactory::getUser()->authorise('core.manage', 'com_checkin'))
 		{
 			JToolBarHelper::custom('lists.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
 		}
@@ -180,7 +186,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	 */
 	protected function addConfirmDeleteToolbar()
 	{
-		$app = \JFactory::getApplication();
+		$app = JFactory::getApplication();
 		$app->input->set('hidemainmenu', true);
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_CONFIRM_DELETE'), 'lizt.png');
 		JToolBarHelper::save('lists.dodelete', 'JTOOLBAR_APPLY');
@@ -198,27 +204,52 @@ class Html extends \Fabrik\Admin\Views\Html
 	 */
 	protected function addImportToolBar()
 	{
-		$app = \JFactory::getApplication();
+		$app = JFactory::getApplication();
 		$app->input->set('hidemainmenu', true);
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_IMPORT'), 'lizt.png');
 		JToolBarHelper::save('lists.doimport', 'JTOOLBAR_APPLY');
 		JToolBarHelper::cancel('lizt.cancel', 'JTOOLBAR_CANCEL');
 	}
 
+	protected function confirmCopy()
+	{
+		$this->addConfirmCopyToolbar();
+		$this->lists = $this->model->getItems();
+
+		return parent::render();
+	}
+
+	/**
+	 * Add the page title and toolbar for the confirm copy page
+	 *
+	 * @return  void
+	 */
+	protected function addConfirmCopyToolbar()
+	{
+		$app   = JFactory::getApplication();
+		$input = $app->input;
+		$input->set('hidemainmenu', true);
+		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_COPY'), 'list.png');
+		JToolBarHelper::cancel('lists.cancel', 'JTOOLBAR_CLOSE');
+		JToolBarHelper::save('lists.doCopy', 'JTOOLBAR_SAVE');
+		JToolBarHelper::divider();
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS_EDIT');
+	}
+
 	/**
 	 * Show a screen asking if the user wants to delete the lists forms/groups/elements
 	 * and if they want to drop the underlying database table
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
-	 * @todo - test this
+	 * FIXME - test this
 	 *
-	 * @return  void
+	 * @return  string
 	 */
 	protected function confirmdelete($tpl = null)
 	{
-		$this->form = $this->get('ConfirmDeleteForm', 'list');
-		$model = $this->getModel('lists');
+		$this->form  = $this->get('ConfirmDeleteForm', 'list');
+		$model       = $this->getModel('lists');
 		$this->items = $model->getDbTableNames();
 		$this->addConfirmDeleteToolbar();
 		$v = new JVersion;
@@ -228,22 +259,23 @@ class Html extends \Fabrik\Admin\Views\Html
 			$this->setLayout('confirmdeletebootstrap');
 		}
 
-		parent::display($tpl);
+		return parent::render();
 	}
 
 	/**
 	 * Show a screen allowing the user to import a csv file to create a fabrik table.
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
-	 * @todo - test this
+	 * FIXME - test this
 	 *
-	 * @return  void
+	 * @return  string
 	 */
 	protected function import($tpl = null)
 	{
 		$this->form = $this->get('ImportForm');
 		$this->addImportToolBar();
-		parent::display($tpl);
+
+		return parent::render();
 	}
 }

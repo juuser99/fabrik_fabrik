@@ -46,7 +46,7 @@ class Plugin extends Controller
 	 */
 	public function execute()
 	{
-		// @todo move userAjax and doCron into their own controllers.
+		// @todo move userAjax and doCron into their own controllers. FIXME
 		list($viewName, $layoutName) = $this->viewLayout();
 
 		switch ($layoutName)

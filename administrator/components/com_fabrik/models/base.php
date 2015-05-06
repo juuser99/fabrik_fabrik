@@ -29,6 +29,7 @@ use \Fabrik\Plugins\Element as Element;
 use \JComponentHelper as JComponentHelper;
 use Fabrik\Admin\Helpers\Fabrik as Fabrik;
 use Joomla\String\Inflector;
+use \JFile as JFile;
 
 /**
  * Fabrik Base Admin Model
@@ -191,8 +192,8 @@ class Base extends \JModelBase
 		foreach ($files as $file)
 		{
 			$json    = file_get_contents($file);
-			$item = json_decode($json);;
-			$items[$item->view] = $item;
+			$item = json_decode($json);
+			$items[$item->id] = $item;
 		}
 
 		return $items;
@@ -1477,9 +1478,69 @@ class Base extends \JModelBase
 		return $options;
 	}
 
-	public function copy($ids)
+	/**
+	 * Method to copy one or more records.
+	 *
+	 * @FIXME    for json views
+	 * @param  array  &$ids  Ids to copy
+	 * @param  array  $names  Old to new name map.
+	 *
+	 * @return  boolean    True if successful, false if an error occurs.
+	 *
+	 * @since    1.6
+	 */
+	public function copy(&$ids, $names)
 	{
-		echo "copy ";print_r($ids);exit;
+		$db = $this->getDb();
+		$nullDate = $db->getNullDate();
+		$user  = JFactory::getUser();
+		$createDate             = JFactory::getDate();
+		$createDate             = $createDate->toSql();
+
+		echo "<pre>";print_r($names);
+		foreach ($ids as $i => $pk)
+		{
+			$item = $this->getItem($pk);
+			$listName = $names[$pk]['listLabel'];
+			$item->set('id', $listName);
+
+			$item->set('list.created_by', $user->get('id'));
+			$item->set('list.created', $createDate);
+			$item->set('list.created_by_alias', $user->get('name'));
+			$item->set('list.modified', $nullDate);
+			$item->set('list.modified_by', '');
+			$item->set('list.label', $listName);
+
+			$item->set('form.label', $names[$pk]['formLabel']);
+			$item->set('form.created', $createDate);
+			$item->set('form.created_by_alias', $user->get('name'));
+			$item->set('form.modified', $nullDate);
+			$item->set('form.modified_by', '');
+
+			foreach ($names[$pk]['groupNames'] as $groupId => $viewName)
+			{
+				$groupKey = 'form.groups.' . $groupId;
+				$item->set($groupKey . '.name', $viewName);
+				$item->set($groupKey . '.created', $createDate);
+				$item->set($groupKey . '.created_by_alias', $user->get('name'));
+				$item->set($groupKey . '.modified', $nullDate);
+				$item->set($groupKey . '.modified_by', '');
+			}
+
+
+			$file  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' .$listName . '.json';
+
+			if (JFile::exists($file))
+			{
+				throw new \Exception('Can not copy to ' . $pk . ', the file already exists');
+				return false;
+			}
+
+			$output = json_encode($item->toObject(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+			file_put_contents($file, $output);
+		}
+
+		return true;
 	}
 
 }

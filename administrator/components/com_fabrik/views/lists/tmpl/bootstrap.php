@@ -23,11 +23,19 @@ $listDir   = $this->state->get('list.direction');
 ?>
 	<script type="text/javascript">
 		Joomla.submitbutton = function (task) {
-			if (task === 'lists.delete') {
-				jQuery('#delete').modal('show');
-				return false;
-			} else {
-				Joomla.submitform(task, document.getElementById('adminForm'));
+			switch (task) {
+				case 'lists.delete':
+					jQuery('#delete').modal('show');
+					return false;
+					break;
+				case 'lists.copy':
+					jQuery('input[name=view]').val('listconfirmcopy');
+					Joomla.submitform(task);
+					return false;
+					break;
+				default:
+					Joomla.submitform(task, document.getElementById('adminForm'));
+					break;
 			}
 		}
 
@@ -43,7 +51,6 @@ $listDir   = $this->state->get('list.direction');
 				alert('drop');
 			});
 		});
-
 
 	</script>
 	<form action="<?php echo JRoute::_('index.php?option=com_fabrik&view=lists'); ?>" method="post" name="adminForm" id="adminForm">

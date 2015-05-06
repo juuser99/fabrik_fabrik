@@ -1,30 +1,30 @@
 <?php
 /**
- * Fabrik Admin Plugin Controller
+ * Fabrik Admin Actually copy a list controller
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
  * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       1.6
+ * @since       3.5
  */
 
 namespace Fabrik\Admin\Controllers;
 
+use Fabrik\Admin\Models\Lists as Lists;
+use Fabrik\Admin\Views\Lists\Html as View;
+use \JText as JText;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
-use \JPluginHelper as JPluginHelper;
-use \JEventDispatcher as JEventDispatcher;
-
 /**
- * Fabrik Admin Plugin Controller
+ * Remove element from list view
  *
  * @package  Fabrik
  * @since    3.5
  */
-class PluginAjax extends Controller
+class listCopy extends Controller
 {
 	/**
 	 * Execute the controller.
@@ -39,29 +39,12 @@ class PluginAjax extends Controller
 	 */
 	public function execute()
 	{
-		$input  = $this->input;
-		$plugin = $input->get('plugin', '');
-		$method = $input->get('method', '');
-		$group  = $input->get('g', 'element');
+		$ids   = $this->app->input->get('cid', array(), 'array');
+		$names = $this->app->input->get('names', array(), 'array');
+		$model = new Lists;
+		$model->copy($ids, $names);
 
-		if (!JPluginHelper::importPlugin('fabrik_' . $group, $plugin))
-		{
-			$o      = new stdClass;
-			$o->err = 'unable to import plugin fabrik_' . $group . ' ' . $plugin;
-			echo json_encode($o);
-
-			return;
-		}
-
-		if (substr($method, 0, 2) !== 'on')
-		{
-			$method = 'on' . String::ucfirst($method);
-		}
-
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger($method);
-
-		return;
+		$this->app->enqueueMessage(JText::plural('COM_FABRIK_LIST_N_ITEMS_COPIED', $ids));
+		$this->app->redirect($this->listUrl('list'));
 	}
-
 }

@@ -67,7 +67,7 @@ class Controller extends \JControllerBase
 		$id       = $app->input->getString('id', ArrayHelper::getValue($ids, 0));
 		$listUrl  = $this->listUrl($viewName);
 		$applyUrl = $this->applyUrl($viewName, $id);
-echo $layoutName;exit;
+
 		switch ($layoutName)
 		{
 			case 'add':

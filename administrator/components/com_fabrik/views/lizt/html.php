@@ -276,20 +276,4 @@ class Html extends \Fabrik\Admin\Views\Html
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS_EDIT');
 	}
 
-	/**
-	 * Add the page title and toolbar for the confirm copy page
-	 *
-	 * @return  void
-	 */
-	protected function addConfirmCopyToolbar()
-	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
-		$input->set('hidemainmenu', true);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_COPY'), 'list.png');
-		JToolBarHelper::cancel('list.cancel', 'JTOOLBAR_CLOSE');
-		JToolBarHelper::save('list.doCopy', 'JTOOLBAR_SAVE');
-		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS_EDIT');
-	}
 }

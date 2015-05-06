@@ -1,30 +1,29 @@
 <?php
 /**
- * Fabrik Admin Plugin Controller
+ * Fabrik Lists Confirm Copy View Controller
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
  * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       1.6
+ * @since       3.5
  */
 
 namespace Fabrik\Admin\Controllers;
 
+use Fabrik\Admin\Models\Lists as Lists;
+use Fabrik\Admin\Views\Lists\Html as View;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
-use \JPluginHelper as JPluginHelper;
-use \JEventDispatcher as JEventDispatcher;
-
 /**
- * Fabrik Admin Plugin Controller
+ * Set up confirm copy list view
  *
  * @package  Fabrik
  * @since    3.5
  */
-class PluginAjax extends Controller
+class listConfirmCopy extends Controller
 {
 	/**
 	 * Execute the controller.
@@ -39,29 +38,17 @@ class PluginAjax extends Controller
 	 */
 	public function execute()
 	{
-		$input  = $this->input;
-		$plugin = $input->get('plugin', '');
-		$method = $input->get('method', '');
-		$group  = $input->get('g', 'element');
+		$ids   = $this->app->input->get('cid', array(), 'array');
+		$model = new Lists;
+		$model->set('ids', $ids);
 
-		if (!JPluginHelper::importPlugin('fabrik_' . $group, $plugin))
-		{
-			$o      = new stdClass;
-			$o->err = 'unable to import plugin fabrik_' . $group . ' ' . $plugin;
-			echo json_encode($o);
+		// Register the layout paths for the view
+		$paths = new \SplPriorityQueue;
+		$paths->insert(JPATH_COMPONENT . '/views/lists/tmpl', 'normal');
+		$view  = new View($model, $paths);
+		$view->setLayout('confirm_copy');
 
-			return;
-		}
-
-		if (substr($method, 0, 2) !== 'on')
-		{
-			$method = 'on' . String::ucfirst($method);
-		}
-
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger($method);
-
-		return;
+		// Render our view.
+		echo $view->render();
 	}
-
 }
