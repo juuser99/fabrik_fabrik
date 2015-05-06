@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Admin\Helpers\AdminElement;
+use Fabrik\Admin\Helpers\AdminElement as AdminElement;
 use Fabrik\Helpers\Worker;
 
 jimport('joomla.html.html');

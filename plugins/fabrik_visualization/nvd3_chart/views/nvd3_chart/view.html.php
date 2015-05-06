@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Models\PluginManager as PluginManager;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -76,7 +78,7 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 
 		$this->params = $params;
 		$viewName = $this->getName();
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$plugin = $pluginManager->getPlugIn('calendar', 'visualization');
 		$this->params = $params;
 

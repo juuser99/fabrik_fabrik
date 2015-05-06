@@ -11,6 +11,8 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
+use \Fabrik\Models\PluginManager as PluginManager;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -88,7 +90,7 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 		$input = JFactory::getApplication()->input;
 		$ids = $input->get('ids', array(), 'array');
 		$origRowId = $input->get('rowid');
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 
 		// Abstract version of the form article plugin
 		$articlePlugin = $pluginManager->getPlugin('article', 'form');

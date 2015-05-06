@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Models\PluginManager as PluginManager;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -64,7 +66,7 @@ class FabrikViewElement extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$ids = $input->get('plugin', array(), 'array');
 
 		foreach ($ids as $id)

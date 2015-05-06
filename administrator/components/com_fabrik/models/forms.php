@@ -25,7 +25,7 @@ interface ModelFormsInterface
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Forms extends Base implements ModelFormsInterface
+class Forms extends View implements ModelFormsInterface
 {
 	/**
 	 * State prefix

@@ -15,10 +15,18 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use \Fabrik\Admin\Models\Connection as Connection;
+use \Fabrik\Admin\Models\Lists as Lists;
+use \Fabrik\Admin\Models\Lizt as Lizt;
 use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
+use \JForm as JForm;
+use \JFile as JFile;
+use \FText as FText;
+use \stdClass as stdClass;
+use \Joomla\Registry\Registry as JRegistry;
+use \FabrikString as FabrikString;
+use \JHTML as JHTML;
 
-jimport('joomla.application.component.model');
 
 /**
  * Base Fabrik Plugin Model
@@ -230,7 +238,6 @@ class Plugin extends \JPlugin
 	public function onRenderAdminSettings($data = array(), $repeatCounter = null, $mode = null)
 	{
 		$this->makeDbTable();
-		$version = new JVersion;
 		$type = str_replace('fabrik_', '', $this->_type);
 		JForm::addFormPath(JPATH_SITE . '/plugins/' . $this->_type . '/' . $this->_name);
 		$xmlFile = JPATH_SITE . '/plugins/' . $this->_type . '/' . $this->_name . '/forms/fields.xml';
@@ -654,14 +661,21 @@ class Plugin extends \JPlugin
 
 		if ($showFabrikLists)
 		{
-			$db = Worker::getDbo(true);
+			$model = new Lists;
+			$items = $model->getItems();
+			$rows = array();
 
-			if ($cid !== 0)
+			foreach ($items as $id => $item)
 			{
-				$query = $db->getQuery(true);
-				$query->select('id, label')->from('#__fabrik_lists')->where('connection_id = ' . $cid)->order('label ASC');
-				$db->setQuery($query);
-				$rows = $db->loadObjectList();
+				$item = new JRegistry($item);
+
+				if ((int) $item->get('list.connection_id') === $cid)
+				{
+					$option = new stdClass;
+					$option->id = $id;
+					$option->label = $item->get('list.label');
+					$rows[] = $option;
+				}
 			}
 
 			$default = new stdClass;
@@ -708,7 +722,7 @@ class Plugin extends \JPlugin
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$tid = $input->get('t');
+		$tid = $input->getString('t');
 		$keyType = $input->getInt('k', 1);
 
 		// If true show all fields if false show fabrik elements
@@ -725,6 +739,7 @@ class Plugin extends \JPlugin
 		{
 			if ($showAll)
 			{
+				echo "show all";exit;
 				// Show all db columns
 				$cid = $input->get('cid', -1);
 				$cnn = new Fabrik\Admin\Models\Connection;
@@ -777,11 +792,14 @@ class Plugin extends \JPlugin
 				* $keyType 1 = $element->id;
 				* $keyType 2 = tablename___elementname
 				*/
-				$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
-				$model->setId($tid);
-				$table = $model->getTable();
+				$model = new Lizt;//JModelLegacy::getInstance('List', 'FabrikFEModel');
+
+				$model->set('id', $tid);
+
+				$table = $model->getItem();
+
 				$db = $model->getDb();
-				$groups = $model->getFormGroupElementData();
+				$groups = $model->getGroupsHiarachy();
 				$published = $input->get('published', false);
 				$showintable = $input->get('showintable', false);
 

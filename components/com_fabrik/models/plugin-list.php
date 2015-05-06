@@ -8,11 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\LayoutFile;
+use Fabrik\Plugins\Plugin as Plugin;
 
 jimport('joomla.application.component.model');
 
@@ -24,7 +26,7 @@ jimport('joomla.application.component.model');
  * @since       3.0
  */
 
-class PlgFabrik_List extends FabrikPlugin
+class PlgFabrik_List extends Plugin
 {
 	/**
 	 * Button prefix

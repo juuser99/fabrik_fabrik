@@ -21,6 +21,8 @@ use \JComponentHelper as JComponentHelper;
 use \JForm as JForm;
 use \Fabrik\Admin\Models\Connection as Connection;
 use \JModelLegacy as JModelLegacy;
+use \Joomla\Registry\Registry as JRegistry;
+use \Fabrik\Models\PluginManager as PluginManager;
 
 /**
  * Generic tools that all models use
@@ -1552,6 +1554,11 @@ class Worker
 
 		if (is_object($item))
 		{
+			if (!is_a($item, 'Joomla\Registry\Registry'))
+			{
+				$item = new JRegistry($item);
+			}
+
 			$item = is_null($item->get('list.connection_id')) ? ArrayHelper::getValue($jform, 'connection_id', -1) : $item->get('list.connection_id');
 		}
 
@@ -1593,7 +1600,7 @@ class Worker
 	{
 		if (!self::$pluginManager)
 		{
-			self::$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+			self::$pluginManager = new PluginManager;
 		}
 
 		return self::$pluginManager;

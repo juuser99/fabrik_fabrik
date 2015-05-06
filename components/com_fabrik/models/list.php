@@ -3801,8 +3801,6 @@ class FabrikFEModelList extends JModelForm
 
 	public function getDb()
 	{
-
-		echo "get dbb";
 		// @todo - getTable needs to be converted to just getting the json object
 		$row = $this->getTable();
 		$cnn = Worker::getConnection($row);

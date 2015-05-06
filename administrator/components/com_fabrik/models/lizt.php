@@ -16,7 +16,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Storage\MySql as Storage;
 use Joomla\String\String;
-use \JModelLegacy as JModelLegacy;
 use \JText as JText;
 use \FText as FText;
 use \stdClass as stdClass;
@@ -27,6 +26,7 @@ use Fabrik\Helpers\ArrayHelper;
 use \RuntimeException as RuntimeException;
 use \Joomla\Registry\Registry as JRegistry;
 use \JEventDispatcher as JEventDispatcher;
+use \Fabrik\Models\PluginManager as PluginManager;
 
 
 interface ModelFormLiztInterface
@@ -41,7 +41,7 @@ interface ModelFormLiztInterface
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Lizt extends Base implements ModelFormLiztInterface
+class Lizt extends View implements ModelFormLiztInterface
 {
 	protected $name = 'list';
 	/**
@@ -814,7 +814,7 @@ class Lizt extends Base implements ModelFormLiztInterface
 		$input          = $this->app->input;
 		$query          = $db->getQuery(true);
 		$table          = $this->table;
-		$pluginManager  = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager  = new PluginManager;
 		$amend          = false;
 		$tableName      = $table->db_table_name;
 		$fabrikDb       = $this->getDb();

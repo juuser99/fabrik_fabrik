@@ -1,12 +1,12 @@
 <?php
 /**
- * JHtml element helper
+ * JHtml admin element helper
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
  * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       3.0
+ * @since       3.5
  */
 
 namespace Fabrik\Admin\Helpers;
@@ -15,7 +15,7 @@ namespace Fabrik\Admin\Helpers;
 defined('_JEXEC') or die('Restricted access');
 
 /**
- * JHtml element helper
+ * JHtml admin element helper
  *
  * @package  Fabrik
  * @since    3.5
@@ -31,7 +31,6 @@ class AdminElement
 	 *
 	 * @return string
 	 */
-
 	public static function getId($element, $control_name, $name)
 	{
 		if (method_exists($element, 'getId'))
@@ -55,7 +54,6 @@ class AdminElement
 	 *
 	 * @return string
 	 */
-
 	public static function getFullName($element, $control_name, $name)
 	{
 		if (method_exists($element, 'getFullName'))
@@ -77,7 +75,6 @@ class AdminElement
 	 *
 	 * @return mixed
 	 */
-
 	public static function getRepeatCounter($element)
 	{
 		if (method_exists($element, 'getRepeatCounter'))
@@ -99,7 +96,6 @@ class AdminElement
 	 *
 	 * @return mixed
 	 */
-
 	public static function getRepeat($element)
 	{
 		if (method_exists($element, 'getRepeat'))

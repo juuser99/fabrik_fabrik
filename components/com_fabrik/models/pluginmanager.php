@@ -8,24 +8,37 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \FabrikHelperHTML as FabrikHelperHTML;
+use \FabrikString as FabrikString;
+use \JApplicationHelper as JApplicationHelper;
+use \JDispatcher as JDispatcher;
+use \JEventDispatcher as JEventDispatcher;
+use \JFactory as JFactory;
+use \JFile as JFile;
+use \JFolder as JFolder;
+use \JHTML as JHTML;
+use \JPluginHelper as JPluginHelper;
+use \JProfiler as JProfiler;
+use \RuntimeException as RuntimeException;
 
-jimport('joomla.application.component.model');
+
 jimport('joomla.filesystem.file');
 
 /**
  * Fabrik Plugin Manager Class
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    3.5
  */
-
-class FabrikFEModelPluginmanager extends JModelLegacy
+class PluginManager extends \JModelBase
 {
 	/**
 	 * plugins
@@ -141,14 +154,9 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 	 * Get a list of plugin ids/names for us in in a drop down list
 	 * if no group set defaults to element list
 	 *
-	 * @param   object  $query       Query
-	 * @param   int     $limitstart  Limit start
-	 * @param   int     $limit       # of records to return
-	 *
 	 * @return  array	plugin list
 	 */
-
-	protected function _getList($query = null, $limitstart = 0, $limit = 0)
+	protected function _getList()
 	{
 		$db = Worker::getDbo(true);
 
@@ -161,9 +169,9 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 		$folder = $db->quote('fabrik_' . $this->group);
 		$query->select('element AS value, name AS text')->from('#__extensions')->where('folder =' . $folder);
 		$db->setQuery($query);
-		$elementstypes = $db->loadObjectList();
+		$plugins = $db->loadObjectList();
 
-		return $elementstypes;
+		return $plugins;
 	}
 
 	/**
@@ -382,12 +390,12 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 	/**
 	 * Load all the forms element plugins
 	 *
-	 * @param  \Fabrik\Admin\Models\Form  &$form  Form model
+	 * @param  \Fabrik\Admin\Models\View  &$form  View model
 	 *
 	 * @return  array	Group objects with plugin objects loaded in group->elements
 	 */
 
-	public function getFormPlugins(&$form)
+	public function getFormPlugins(&$model)
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
@@ -399,7 +407,7 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 		}
 
 		// Ensure packages load their own form
-		$sig = $package . '.' . $form->get('view');
+		$sig = $package . '.' . $model->get('id');
 		JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:start - ' . $sig) : null;
 
 		if (!array_key_exists($sig, $this->formPlugins))
@@ -411,11 +419,12 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 
 			// Don't assign the elements into Joomla's main dispatcher as this causes out of memory errors in J1.6rc1
 			$dispatcher = new JDispatcher;
-			$groupModels = $form->getGroups();
+			$groupModels = $model->getGroups();
 			$group = 'element';
 
 			foreach ($groupModels as $name => &$groupModel)
 			{
+
 				$elements = $groupModel->getElements();
 
 				foreach ($elements as $element)
@@ -437,8 +446,9 @@ class FabrikFEModelPluginmanager extends JModelLegacy
 					$langPath = $client->path . '/plugins/' . $folder . '/' . $element->plugin;
 					$lang->load($langFile, $langPath, null, false, false) || $lang->load($langFile, $langPath, $lang->getDefault(), false, false);
 
-					$listModel = $form->getListModel();
-					$pluginModel->setContext($groupModel, $form, $listModel);
+					$listModel = $model->getListModel();
+
+					$pluginModel->setContext($groupModel, $model, $listModel);
 					$pluginModel->bindToElement($element);
 					$groupModel->elements[$element->name] = $pluginModel;
 				}

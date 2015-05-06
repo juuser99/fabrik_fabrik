@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Models\PluginManager as PluginManager;
+
 jimport('joomla.application.component.controller');
 
 require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
@@ -69,7 +71,7 @@ class FabrikControllerListemail extends JControllerLegacy
 		$formModel = $listModel->getFormModel();
 
 		// Push a model into the view
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$model = $pluginManager->getPlugIn('email', 'list');
 
 		$model->formModel = $formModel;
@@ -96,7 +98,7 @@ class FabrikControllerListemail extends JControllerLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$model = $pluginManager->getPlugIn('email', 'list');
 		$listModel = $this->getModel('List', 'FabrikFEModel');
 		$listModel->setId($input->getInt('id'));

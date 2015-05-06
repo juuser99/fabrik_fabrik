@@ -27,7 +27,7 @@ interface ModelListsInterface
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Lists extends Base implements ModelListsInterface
+class Lists extends View implements ModelListsInterface
 {
 	/**
 	 * State prefix

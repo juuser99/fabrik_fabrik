@@ -259,15 +259,6 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$app = JFactory::getApplication();
 
-		/*if ($controller === 'item')
-		{
-			$id = $this->form->getValue('request.listid');
-		}
-		else
-		{
-			$id = $this->form->getValue('id');
-		}*/
-
 		if (!isset($this->form->model))
 		{
 			if (!in_array($controller, array('item', 'module')))
@@ -280,17 +271,8 @@ class JFormFieldListfields extends JFormFieldList
 		}
 
 		$listModel = $this->form->model;
-
-		/*if ($id !== 0)
-		{*/
-		$valField = $valueFormat == 'tableelement' ? 'name' : 'id';
-		$res      = $listModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
-
-		/*}
-		else
-		{
-			$res = array();
-		}*/
+		$valField  = $valueFormat == 'tableelement' ? 'name' : 'id';
+		$res       = $listModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 
 		return $res;
 	}
@@ -441,17 +423,17 @@ class JFormFieldListfields extends JFormFieldList
 		$labelMethod    = (string) ArrayHelper::getValue($this->element, 'label_method');
 		$noJoins        = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
 
-		$bits       = array();
-		$showRaw    = Worker::toBoolean($this->getAttribute('raw', false), false);
+		$bits    = array();
+		$showRaw = Worker::toBoolean($this->getAttribute('raw', false), false);
 		/*$groupModel = new Group;//JModelLegacy::getInstance('Group', 'FabrikFEModel');
 		echo "group id = $groupId";
 		$groupModel->setId($groupId);*/
 
 		$formModel = $this->form->model->getFormModel();
-		$optsKey = $valueFormat == 'tableelement' ? 'name' : 'id';
-		$useStep = Worker::toBoolean($this->getAttribute('usestep', false), false);
-		$res     = $formModel->getElementOptions($useStep, $optsKey, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
-		$hash    = $controller . '.' . implode('.', $bits);
+		$optsKey   = $valueFormat == 'tableelement' ? 'name' : 'id';
+		$useStep   = Worker::toBoolean($this->getAttribute('usestep', false), false);
+		$res       = $formModel->getElementOptions($useStep, $optsKey, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
+		$hash      = $controller . '.' . implode('.', $bits);
 
 		if (array_key_exists($hash, $this->results))
 		{

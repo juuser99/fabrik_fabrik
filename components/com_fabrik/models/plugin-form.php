@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\LayoutFile;
+use \JFactory as JFactory;
+use Fabrik\Plugins\Plugin as Plugin;
 
 jimport('joomla.application.component.model');
 
@@ -21,10 +23,9 @@ jimport('joomla.application.component.model');
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_Form extends FabrikPlugin
+class PlgFabrik_Form extends Plugin
 {
 	/**
 	 * Formatted email data

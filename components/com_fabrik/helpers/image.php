@@ -13,6 +13,7 @@ namespace Fabrik\Helpers;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use \JHtml as JHtml;
 
 /**
  * Image manipulation class

@@ -59,7 +59,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$this->app = JFactory::getApplication();
 		$input = $this->app->input;
 		$view = $input->get('view', 'list');
-echo "view = $view";
+
 		switch ($view)
 		{
 			case 'item':
@@ -77,11 +77,15 @@ echo "view = $view";
 
 		if ($view === 'element')
 		{
-			$pluginManager = Worker::getPluginManager();
-			$feModel = $pluginManager->getPluginFromId($id);
+			//$pluginManager = Worker::getPluginManager();
+			//$feModel = $pluginManager->getPluginFromId($id);
 		}
 		else
 		{
+			if ($view === 'list')
+			{
+				$view = 'lizt';
+			}
 			$view = \Joomla\String\String::ucfirst($view);
 			$klass = "Fabrik\\Admin\\Models\\$view";
 			$model = new $klass;
@@ -122,8 +126,6 @@ echo "view = $view";
 		$css = '#' . $fieldSetId . ' { display: none; }';
 		$document->addStyleDeclaration($css);
 
-		$path = 'templates/' . $this->app->getTemplate() . '/images/menu/';
-
 		$str[] = '<div id="' . $modalId . '" style="display:none">';
 		$str[] = '<table class="adminlist ' . $this->element['class'] . ' table table-striped">';
 		$str[] = '<thead><tr class="row0">';
@@ -156,7 +158,6 @@ echo "view = $view";
 		$str[] = '</tr></tbody>';
 		$str[] = '</table>';
 		$str[] = '</div>';
-		$form = implode("\n", $str);
 		static $modalRepeat;
 
 		if (!isset($modalRepeat))
@@ -178,7 +179,6 @@ echo "view = $view";
 		{
 			// If loaded as js template then we don't want to repeat this again. (fabrik)
 			$names = json_encode($names);
-			$pane = str_replace('jform_params_', '', $modalId) . '-options';
 
 			$modalRepeat[$modalId][$this->form->repeatCounter] = true;
 			$opts = new stdClass;
@@ -192,14 +192,6 @@ echo "view = $view";
 			}
 			else
 			{
-
-				$context = strtoupper($option);
-
-				if ($context === 'COM_ADVANCEDMODULES')
-				{
-					$context = 'COM_MODULES';
-				}
-
 				$script = "window.addEvent('domready', function() {
 				" . $script . "
 				});";

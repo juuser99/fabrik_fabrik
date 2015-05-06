@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Models\PluginManager as PluginManager;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -41,7 +43,7 @@ class FabrikViewVisualization extends JViewLegacy
 		$model->setId($input->get('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
 		$visualization = $model->getVisualization();
 		$params = $model->getParams();
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$plugin = $pluginManager->getPlugIn($visualization->plugin, 'visualization');
 		$plugin->setRow($visualization);
 

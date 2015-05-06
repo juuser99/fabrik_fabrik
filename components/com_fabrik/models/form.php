@@ -15,6 +15,7 @@ use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\UploaderHelper;
+use \Fabrik\Models\PluginManager as PluginManager;
 
 jimport('joomla.application.component.model');
 require_once 'fabrikmodelform.php';
@@ -2023,7 +2024,7 @@ class FabrikFEModelForm extends FabModelForm
 		}
 
 		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$validationRules = $pluginManager->getPlugInGroup('validationrule');
 
 		$post = $this->setFormData();

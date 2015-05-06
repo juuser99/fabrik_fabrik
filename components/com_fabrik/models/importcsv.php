@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \Fabrik\Models\PluginManager as PluginManager;
 
 jimport('joomla.application.component.model');
 jimport('joomla.application.component.modelform');
@@ -484,9 +485,8 @@ class FabrikFEModelImportcsv extends JModelForm
 	{
 		$model = $this->getlistModel();
 		$model->getFormGroupElementData();
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$pluginManager->getPlugInGroup('list');
-		$aUsedElements = array();
 		$formModel = $model->getFormModel();
 		$tableParams = $model->getParams();
 		$mode = $tableParams->get('csvfullname');

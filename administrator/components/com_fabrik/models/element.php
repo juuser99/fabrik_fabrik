@@ -25,8 +25,7 @@ use \JText as JText;
 use \JComponentHelper as JComponentHelper;
 use \JForm as JForm;
 use \Joomla\Registry\Registry as JRegistry;
-
-jimport('joomla.application.component.modeladmin');
+use \Fabrik\Models\PluginManager as PluginManager;
 
 interface ModelElementFormInterface
 {
@@ -258,7 +257,7 @@ class Element extends Base implements ModelElementFormInterface
 // Should not be setting input directly in a model - poor design
 		//$input->set('view', 'element');
 		JPluginHelper::importPlugin('fabrik_element', $plugin);
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 
 		if ($plugin == '')
 		{
@@ -396,7 +395,7 @@ class Element extends Base implements ModelElementFormInterface
 
 	private function getElementPluginModel($data)
 	{
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$id            = $data['id'];
 		$elementModel  = $pluginManager->getPlugIn($data['plugin'], 'element');
 		/**
@@ -785,7 +784,7 @@ class Element extends Base implements ModelElementFormInterface
 			'checked_out_time',
 			'show_in_list_summary'
 		);
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 
 		foreach ($ids as $id)
 		{
@@ -972,7 +971,7 @@ class Element extends Base implements ModelElementFormInterface
 	/*public function delete(&$pks)
 	{
 		// Initialize variables
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$elementIds = $this->app->input->get('elementIds', array(), 'array');
 
 		foreach ($elementIds as $id)

@@ -1,6 +1,6 @@
 <?php
 /**
- * Fabrik Admin Group Model
+ * Fabrik Admin View Model. Common methods for list/forms
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
@@ -9,178 +9,167 @@
  * @since       3.5
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
- * Fabrik Admin View Model.Handles storing a 'view' to a json file
+ * Fabrik Admin View Model. Common methods for list/forms
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
  * @since       3.5
  */
-
-class FabrikView implements JTableInterface
+class View extends Base
 {
-
-	public $params = '';
 	/**
-	 * Object constructor to set table and key fields.  In most cases this will
-	 * be overridden by child classes to explicitly set the table and key fields
-	 * for a particular database table.
+	 * Similar to getFormGroups() except that this returns a data structure of
+	 * form
+	 * --->group
+	 * -------->element
+	 * -------->element
+	 * --->group
+	 * if run before then existing data returned
 	 *
-	 * @param   JDatabaseDriver  $db     JDatabaseDriver object.
-	 *
-	 * @since   11.1
+	 * @return  array  element objects
 	 */
-	public function __construct($db, $config = array())
+	public function getGroupsHiarachy()
 	{
-		$this->viewName = ArrayHelper::getValue($config, 'view');
-		$this->subView = ArrayHelper::getValue($config, 'subview');
-		$this->db = $db;
+		if (!isset($this->groups))
+		{
+			$this->getGroups();
+
+			$this->groups = Worker::getPluginManager()->getFormPlugins($this);
+		}
+
+		return $this->groups;
 	}
 
 	/**
-	 * Method to get the primary key field name for the table.
+	 * Get the forms published group objects
 	 *
-	 * @param   boolean  $multiple  True to return all primary keys (as an array) or false to return just the first one (as a string).
-	 *
-	 * @return  mixed  Array of primary key field names or string containing the first primary key field.
-	 *
-	 * @link    http://docs.joomla.org/JTable/getKeyName
-	 * @since   11.1
+	 * @return  stdClass  Group model objects
 	 */
-	public function getKeyName($multiple = false)
+	public function getGroups()
 	{
-		return 'id';
+		if (!isset($this->groups))
+		{
+			$this->groups = new \stdClass;
+			$listModel = $this->getListModel();
+			$groupModel = new Group;
+			$groupData = $this->getPublishedGroups();
+
+			foreach ($groupData as $id => $data)
+			{
+				$thisGroup = clone ($groupModel);
+				$thisGroup->set('id', $id);
+				$thisGroup->setContext($this, $listModel);
+				$thisGroup->setGroup($data);
+
+				if ($data->published == 1)
+				{
+					$name = $data->name;
+					$this->groups->$name = $thisGroup;
+				}
+			}
+		}
+
+		return $this->groups;
 	}
 
 	/**
-	 * Method to load a row from the database by primary key and bind the fields
-	 * to the JTable instance properties.
+	 * Get the View Models list model
 	 *
-	 * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.  If not
-	 *                           set the instance property value is used.
-	 * @param   boolean  $reset  True to reset the default values before loading the new row.
-	 *
-	 * @return  boolean  True if successful. False if row not found.
-	 *
-	 * @link    http://docs.joomla.org/JTable/load
-	 * @since   11.1
-	 * @throws  InvalidArgumentException
-	 * @throws  RuntimeException
-	 * @throws  UnexpectedValueException
+	 * @return  \Fabrik\Admin\Models\List
 	 */
-	public function load($keys = null, $reset = true)
+	public function getListModel()
 	{
-		return true;
+		if (!isset($this->listModel))
+		{
+			$this->listModel = new Lizt;
+			$this->listModel->set('id', $this->get('id'));
+			$this->listModel->setFormModel($this);
+		}
+
+		return $this->listModel;
 	}
 
 	/**
-	 * Method to bind an associative array or object to the JTable instance.This
-	 * method only binds properties that are publicly accessible and optionally
-	 * takes an array of properties to ignore when binding.
+	 * Test to try to load all group data in one query and then bind that data to group table objects
+	 * in getGroups()
 	 *
-	 * @param   mixed  $src     An associative array or object to bind to the JTable instance.
-	 * @param   mixed  $ignore  An optional array or space separated list of properties to ignore while binding.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @link    http://docs.joomla.org/JTable/bind
-	 * @since   11.1
-	 * @throws  InvalidArgumentException
+	 * @return  array
 	 */
-	public function bind($src, $ignore = array())
+	public function getPublishedGroups()
 	{
-		$subview = $this->subView;
-		$this->$subview = $src;
+		if (!isset($this->_publishedformGroups) || empty($this->_publishedformGroups))
+		{
+			$item = $this->getItem();
+			$return = array();
+			$groups = $item->get('form.groups');
 
-		return true;
+			foreach ($groups as $group)
+			{
+				if ((bool) $group->published)
+				{
+					$return[] = $group;
+				}
+			}
+
+			if ($item->get('form.params.randomise_groups') == 1)
+			{
+				shuffle($return);
+			}
+
+			$this->_publishedformGroups = $this->mergeGroupsWithJoins($return);
+		}
+
+		return $this->_publishedformGroups;
 	}
 
 	/**
-	 * Method to perform sanity checks on the JTable instance properties to ensure
-	 * they are safe to store in the database.  Child classes should override this
-	 * method to make sure the data they are storing in the database is safe and
-	 * as expected before storage.
+	 * Merge in Join Ids into an array of groups
 	 *
-	 * @return  boolean  True if the instance is sane and able to be stored in the database.
+	 * @param   array  $groups  form groups
 	 *
-	 * @link    http://docs.joomla.org/JTable/check
-	 * @since   11.1
+	 * @return  array
 	 */
-	public function check()
-	{
-		return true;
-	}
 
-	/**
-	 * Method to store a row in the database from the JTable instance properties.
-	 * If a primary key value is set the row with that primary key value will be
-	 * updated with the instance property values.  If no primary key value is set
-	 * a new row will be inserted into the database with the properties from the
-	 * JTable instance.
-	 *
-	 * @param   boolean  $updateNulls  True to update fields even if they are null.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @link    http://docs.joomla.org/JTable/store
-	 * @since   11.1
-	 */
-	public function store($updateNulls = false)
+	private function mergeGroupsWithJoins($groups)
 	{
-		return true;
-	}
+		$db = Worker::getDbo(true);
+		$item = $this->getItem();
 
-	/**
-	 * Override parent delete method to delete tags information.
-	 *
-	 * @param   mixed  $pk  An optional primary key value to delete.  If not set the instance property value is used.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @link    http://docs.joomla.org/JTable/delete
-	 * @since   3.2
-	 * @throws  UnexpectedValueException
-	 */
-	public function delete($pk = null)
-	{
-		return true;
-	}
+		if ($item->get('form.record_in_database'))
+		{
+			// FIXME - workout what to do with this in json view
+			/*$listModel = $this->getListModel();
+			$listid = (int) $listModel->getId();
 
-	/**
-	 * Method to reset class properties to the defaults set in the class
-	 * definition. It will ignore the primary key as well as any private class
-	 * properties.
-	 *
-	 * @return  void
-	 *
-	 * @link    http://docs.joomla.org/JTable/reset
-	 * @since   3.2
-	 */
-	public function reset()
-	{
+			if (is_object($listModel) && $listid !== 0)
+			{
+				$query = $db->getQuery(true);
+				$query->select('g.id, j.id AS joinid')->from('#__fabrik_joins AS j')
+					->join('INNER', '#__fabrik_groups AS g ON g.id = j.group_id')->where('list_id = ' . $listid . ' AND g.published = 1');
 
-	}
+				// Added as otherwise you could potentially load a element joinid as a group join id. 3.1
+				$query->where('j.element_id = 0');
+				$db->setQuery($query);
+				$joinGroups = $db->loadObjectList('id');
 
-	/**
-	 * Method to get the JDatabaseDriver object.
-	 *
-	 * @return  JDatabaseDriver  The internal database driver object.
-	 *
-	 * @link    http://docs.joomla.org/JTable/getDBO
-	 * @since   3.2
-	 */
-	public function getDbo()
-	{
-		return $this->db;
-	}
+				foreach ($joinGroups as $k => $o)
+				{
+					if (array_key_exists($k, $groups))
+					{
+						$groups[$k]->join_id = $o->joinid;
+					}
+				}
+			}*/
+		}
 
-	public function getProperties($public = true)
-	{
-		return array();
+		return $groups;
 	}
 }

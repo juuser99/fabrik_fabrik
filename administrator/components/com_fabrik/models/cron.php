@@ -19,6 +19,7 @@ use \JPluginHelper as JPluginHelper;
 use \JModelLegacy as JModelLegacy;
 use \FabrikString as FabrikString;
 use \FText as FText;
+use \Fabrik\Models\PluginManager as PluginManager;
 
 interface CronInterface
 {
@@ -76,7 +77,7 @@ class Cron extends Base implements CronInterface
 		}
 
 		JPluginHelper::importPlugin('fabrik_cron');
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 
 		// Trim old f2 cron prefix.
 		$plugin = FabrikString::ltrimiword($plugin, 'cron');

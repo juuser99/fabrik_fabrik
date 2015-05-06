@@ -69,6 +69,13 @@ class Base extends \JModelBase
 	protected $formModel = null;
 
 	/**
+	 * Concat string to create full element names
+	 *
+	 * @var string
+	 */
+	public $joinTableElementStep = '___';
+
+	/**
 	 * Instantiate the model.
 	 *
 	 * @param   Registry $state The model state.
@@ -725,6 +732,7 @@ class Base extends \JModelBase
 		$item  = $this->getItem();
 		$class = $this->getKlass();
 		$data       = $this->getItem()->get($class);
+
 		$data->view = $item->get('view');
 		$form->bind($data);
 		$form->model = $this;
@@ -743,17 +751,25 @@ class Base extends \JModelBase
 		$inflector  = Inflector::getInstance();
 		$class = explode("\\", get_class($this));
 		$class = strtolower(array_pop($class));
-		$class = $inflector->toSingular($class);
+
+		if ($class === 'lizt')
+		{
+			$class = 'list';
+		}
+
+		$class2 = $inflector->toSingular($class);
+
+		if ($class2 != '')
+		{
+			$class = $class2;
+		}
 
 		if ($class === 'lists')
 		{
 			// Inflector not working for lists.
 			$class = 'list';
 		}
-		if ($class === 'lizt')
-		{
-			$class = 'list';
-		}
+
 
 		return $class;
 	}
@@ -1481,13 +1497,12 @@ class Base extends \JModelBase
 	/**
 	 * Method to copy one or more records.
 	 *
-	 * @FIXME    for json views
 	 * @param  array  &$ids  Ids to copy
 	 * @param  array  $names  Old to new name map.
 	 *
-	 * @return  boolean    True if successful, false if an error occurs.
+	 * @throws \Exception
 	 *
-	 * @since    1.6
+	 * @return  boolean    True if successful, false if an error occurs.
 	 */
 	public function copy(&$ids, $names)
 	{

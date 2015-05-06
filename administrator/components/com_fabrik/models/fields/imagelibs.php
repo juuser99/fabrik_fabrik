@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ImageHelper as ImageHelper;
+
 /**
  * Renders a list of installed image libraries
  *
@@ -37,7 +39,7 @@ class JFormFieldImagelibs extends JFormFieldList
 	protected function getOptions()
 	{
 		require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
-		$imageLibs = FabimageHelper::getLibs();
+		$imageLibs = ImageHelper::getLibs();
 
 		if (empty($imageLibs))
 		{

@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Models\PluginManager as PluginManager;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -63,7 +65,7 @@ class FabrikViewFusionchart extends JViewLegacy
 
 		$params = $model->getParams();
 		$this->params = $params;
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 		$plugin = $pluginManager->getPlugIn('calendar', 'visualization');
 		$this->containerId = $this->get('ContainerId');
 		$this->filters = $this->get('Filters');

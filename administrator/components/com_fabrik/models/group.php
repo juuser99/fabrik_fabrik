@@ -513,6 +513,11 @@ class Group extends Base implements ModelGroupInterface
 		$this->group = new JRegistry($group);
 	}
 
+	/**
+	 * Get group
+	 *
+	 * @return JRegistry
+	 */
 	public function getGroup()
 	{
 		return $this->group;
@@ -559,7 +564,7 @@ class Group extends Base implements ModelGroupInterface
 	{
 		if (!$this->params)
 		{
-			$this->params = new JRegistry($this->getGroup()->params);
+			$this->params = new JRegistry($this->getGroup()->get('params'));
 		}
 
 		return $this->params;

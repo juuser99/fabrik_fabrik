@@ -14,8 +14,9 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \JModelLegacy as JModelLegacy;
+use \Fabrik\Admin\Models\Lizt as Lizt;
 use Fabrik\Helpers\ArrayHelper;
+use \Fabrik\Models\PluginManager as PluginManager;
 
 
 interface PluginInterface
@@ -40,7 +41,7 @@ class Plugin extends Base implements PluginInterface
 	public function render()
 	{
 		$input                     = $this->app->input;
-		$pluginManager             = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager             = new PluginManager;
 		$plugin                    = $pluginManager->getPlugIn($this->get('plugin'), $this->get('type'));
 		$feModel                   = $this->getPluginModel();
 		$plugin->getJForm()->model = $feModel;
@@ -63,6 +64,7 @@ class Plugin extends Base implements PluginInterface
 	{
 		$type = $this->get('type');
 		$data = array();
+
 		if ($type === 'validationrule')
 		{
 			$item = FabTable::getInstance('Element', 'FabrikTable');
@@ -76,10 +78,11 @@ class Plugin extends Base implements PluginInterface
 		}
 		else
 		{
-			$feModel = $this->getPluginModel();
-			$item    = $feModel->getTable();
+			$model = $this->getPluginModel();
+			$item    = $model->getItem();
 		}
-		$data                                       = $data + (array) json_decode($item->params);
+
+		//$data                                       = $data + (array) $item->params;
 		$data['plugin']                             = $this->get('plugin');
 		$data['params']                             = (array) ArrayHelper::getValue($data, 'params', array());
 		$data['params']['plugins']                  = $this->get('plugin');
@@ -109,7 +112,7 @@ class Plugin extends Base implements PluginInterface
 	 */
 	protected function getPluginModel()
 	{
-		$feModel = null;
+		$model = null;
 		$type    = $this->get('type');
 
 		if ($type === 'elementjavascript')
@@ -120,11 +123,14 @@ class Plugin extends Base implements PluginInterface
 		if ($type !== 'validationrule')
 		{
 			// Set the parent model e.g. form/list
-			$feModel = JModelLegacy::getInstance($type, 'FabrikFEModel');
-			$feModel->setId($this->get('id'));
+			/*$feModel = JModelLegacy::getInstance($type, 'FabrikFEModel');
+			$feModel->setId($this->get('id'));*/
+			$model = new Lizt;
+			// FIXME? set to 0 not view name
+			//$model->set('id', $this->get('id'));
 		}
 
-		return $feModel;
+		return $model;
 	}
 
 }

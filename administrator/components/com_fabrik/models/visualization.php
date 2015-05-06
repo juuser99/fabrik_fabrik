@@ -18,7 +18,7 @@ use Joomla\Utilities\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
 use \JModelLegacy as JModelLegacy;
 use \FText as FText;
-
+use \Fabrik\Models\PluginManager as PluginManager;
 
 interface ModelVisualizationInterface
 {
@@ -62,7 +62,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 
 		//$input->set('view', 'visualization');
 		JPluginHelper::importPlugin('fabrik_visualization', $plugin);
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new PluginManager;
 
 		if ($plugin == '')
 		{
