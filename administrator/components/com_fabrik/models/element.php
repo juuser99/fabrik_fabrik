@@ -26,7 +26,6 @@ use \JComponentHelper as JComponentHelper;
 use \JForm as JForm;
 use \Joomla\Registry\Registry as JRegistry;
 
-
 jimport('joomla.application.component.modeladmin');
 
 interface ModelElementFormInterface
@@ -51,13 +50,14 @@ class Element extends Base implements ModelElementFormInterface
 
 	/**
 	 * Element Object
+	 *
 	 * @var object
 	 */
 	protected $element = null;
 	/**
 	 * Validation plugin models for this element
 	 *
-	 * @since	3.0.6
+	 * @since    3.0.6
 	 *
 	 * @var  array
 	 */
@@ -93,8 +93,8 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Toggle adding / removing the element from the list view
 	 *
-	 * @param   array  &$pks   primary keys
-	 * @param   int    $value  add (1) or remove (0) from list view
+	 * @param   array &$pks  primary keys
+	 * @param   int   $value add (1) or remove (0) from list view
 	 *
 	 * @return  bool
 	 */
@@ -103,9 +103,9 @@ class Element extends Base implements ModelElementFormInterface
 	{
 		// Initialise variables.
 		$dispatcher = JEventDispatcher::getInstance();
-		$user = JFactory::getUser();
-		$item = $this->getTable();
-		$pks = (array) $pks;
+		$user       = JFactory::getUser();
+		$item       = $this->getTable();
+		$pks        = (array) $pks;
 
 		// Include the content plugins for the change of state event.
 		JPluginHelper::importPlugin('content');
@@ -156,6 +156,7 @@ class Element extends Base implements ModelElementFormInterface
 	public function getJsEvents()
 	{
 		$items = $this->element->get('jsevents', array());
+
 		/*$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$id = (int) $this->getItem()->id;
@@ -181,27 +182,27 @@ class Element extends Base implements ModelElementFormInterface
 	public function getPlugins($subView = 'list')
 	{
 		return $this->element->get('validations', array());
-	/*	$item = $this->getItem();
-		$plugins = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
-		$published = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
-		$icons = (array) ArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
-		$in = (array) ArrayHelper::getNestedValue($item->params, 'validations.validate_in', array());
-		$on = (array) ArrayHelper::getNestedValue($item->params, 'validations.validation_on', array());
+		/*	$item = $this->getItem();
+			$plugins = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
+			$published = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
+			$icons = (array) ArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
+			$in = (array) ArrayHelper::getNestedValue($item->params, 'validations.validate_in', array());
+			$on = (array) ArrayHelper::getNestedValue($item->params, 'validations.validation_on', array());
 
-		$return = array();
+			$return = array();
 
-		for ($i = 0; $i < count($plugins); $i ++)
-		{
-			$o = new stdClass;
-			$o->plugin = $plugins[$i];
-			$o->published = ArrayHelper::getValue($published, $i, 1);
-			$o->show_icon = ArrayHelper::getValue($icons, $i, 1);
-			$o->validate_in = ArrayHelper::getValue($in, $i, 'both');
-			$o->validation_on = ArrayHelper::getValue($on, $i, 'both');
-			$return[] = $o;
-		}
+			for ($i = 0; $i < count($plugins); $i ++)
+			{
+				$o = new stdClass;
+				$o->plugin = $plugins[$i];
+				$o->published = ArrayHelper::getValue($published, $i, 1);
+				$o->show_icon = ArrayHelper::getValue($icons, $i, 1);
+				$o->validate_in = ArrayHelper::getValue($in, $i, 'both');
+				$o->validation_on = ArrayHelper::getValue($on, $i, 'both');
+				$return[] = $o;
+			}
 
-		return $return;*/
+			return $return;*/
 	}
 
 	/**
@@ -212,11 +213,11 @@ class Element extends Base implements ModelElementFormInterface
 
 	public function getJs()
 	{
-		$opts = new stdClass;
-		$opts->plugin = $this->element->get('plugin');
-		$opts->parentid = $this->element->get('parent_id');
-		$opts->jsevents = $this->getJsEvents();
-		$opts->id = $this->element->get('id');
+		$opts               = new stdClass;
+		$opts->plugin       = $this->element->get('plugin');
+		$opts->parentid     = $this->element->get('parent_id');
+		$opts->jsevents     = $this->getJsEvents();
+		$opts->id           = $this->element->get('id');
 		$opts->deleteButton = '<a class="btn btn-danger"><i class="icon-delete"></i> ';
 		$opts->deleteButton .= FText::_('COM_FABRIK_DELETE') . '</a>';
 		$opts = json_encode($opts);
@@ -231,8 +232,8 @@ class Element extends Base implements ModelElementFormInterface
 		$js[] = "\tvar opts = $opts;";
 
 		$plugins = json_encode($this->getPlugins());
-		$js[] = "\tFabrik.controller = new fabrikAdminElement($plugins, opts, " . $this->element->get('id') . ");";
-		$js[] = "})";
+		$js[]    = "\tFabrik.controller = new fabrikAdminElement($plugins, opts, " . $this->element->get('id') . ");";
+		$js[]    = "})";
 
 		return implode("\n", $js);
 	}
@@ -241,9 +242,9 @@ class Element extends Base implements ModelElementFormInterface
 	 * Get html form fields for a plugin (filled with
 	 * current element's plugin data
 	 *
-	 * @param   string  $plugin  plugin name
+	 * @param   string $plugin plugin name
 	 *
-	 * @return  string	html form fields
+	 * @return  string    html form fields
 	 */
 
 	public function getPluginHTML($plugin = null)
@@ -266,7 +267,7 @@ class Element extends Base implements ModelElementFormInterface
 		else
 		{
 			$plugin = $pluginManager->getPlugIn($plugin, 'Element');
-			$str = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
+			$str    = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
 		}
 
 		return $str;
@@ -275,7 +276,7 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Prepare and sanitise the table data prior to saving.
 	 *
-	 * @param   JTable  $table  A reference to a JTable object.
+	 * @param   JTable $table A reference to a JTable object.
 	 *
 	 * @return  void
 	 *
@@ -288,13 +289,13 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Validate the form
 	 *
-	 * @param   array   $data   The data to validate.
+	 * @param   array $data The data to validate.
 	 *
 	 * @return mixed  false or data
 	 */
 	public function validate($data)
 	{
-		$ok = parent::validate($data);
+		$ok    = parent::validate($data);
 		$input = $this->app->input;
 
 		// Standard jform validation failed so we shouldn't test further as we can't be sure of the data
@@ -303,9 +304,9 @@ class Element extends Base implements ModelElementFormInterface
 			return false;
 		}
 
-		$db = Worker::getDbo(true);
+		$db           = Worker::getDbo(true);
 		$elementModel = $this->getElementPluginModel($data);
-		$nameChanged = $data['name'] !== $elementModel->getElement()->name;
+		$nameChanged  = $data['name'] !== $elementModel->getElement()->name;
 		$elementModel->getElement()->bind($data);
 		$listModel = $elementModel->getListModel();
 
@@ -350,7 +351,7 @@ class Element extends Base implements ModelElementFormInterface
 			$query->where('group_id = ' . (int) $data['group_id'] . ' AND element_id = 0');
 			$db->setQuery($query);
 			$joinTblId = (int) $db->loadResult();
-			$ignore = array($data['id']);
+			$ignore    = array($data['id']);
 
 			if ($joinTblId === 0)
 			{
@@ -388,7 +389,7 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Load the element plugin / model for the posted data
 	 *
-	 * @param   array  $data  posted data
+	 * @param   array $data posted data
 	 *
 	 * @return  object  element model
 	 */
@@ -396,8 +397,8 @@ class Element extends Base implements ModelElementFormInterface
 	private function getElementPluginModel($data)
 	{
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$id = $data['id'];
-		$elementModel = $pluginManager->getPlugIn($data['plugin'], 'element');
+		$id            = $data['id'];
+		$elementModel  = $pluginManager->getPlugIn($data['plugin'], 'element');
 		/**
 		 * $$$ rob f3 - need to bind the data in here otherwise validate fails on dup name test (as no group_id set)
 		 * $$$ rob 29/06/2011 removed as you can't then test name changes in validate() so now bind should be done after
@@ -412,7 +413,7 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Method to save the form data.
 	 *
-	 * @param   array  $data  The form data.
+	 * @param   array $data The form data.
 	 *
 	 * @return  boolean  True on success, False on error.
 	 */
@@ -428,17 +429,17 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		jimport('joomla.utilities.date');
-		$user = JFactory::getUser();
-		$input = $this->app->input;
-		$new = $data['id'] == 0 ? true : false;
-		$params = $data['params'];
-		$data['name'] = FabrikString::iclean($data['name']);
-		$name = $data['name'];
+		$user                  = JFactory::getUser();
+		$input                 = $this->app->input;
+		$new                   = $data['id'] == 0 ? true : false;
+		$params                = $data['params'];
+		$data['name']          = FabrikString::iclean($data['name']);
+		$name                  = $data['name'];
 		$params['validations'] = ArrayHelper::getValue($data, 'validationrule', array());
-		$elementModel = $this->getElementPluginModel($data);
+		$elementModel          = $this->getElementPluginModel($data);
 		$elementModel->getElement()->bind($data);
 		$origId = $input->getInt('id');
-		$row = $elementModel->getElement();
+		$row    = $elementModel->getElement();
 
 		if ($new)
 		{
@@ -447,7 +448,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		$listModel = $elementModel->getListModel();
-		$item = $listModel->getTable();
+		$item      = $listModel->getTable();
 
 		// Are we updating the name of the primary key element?
 
@@ -500,13 +501,13 @@ class Element extends Base implements ModelElementFormInterface
 
 		if ($row->id != 0)
 		{
-			$data['modified'] = $datenow->toSql();
+			$data['modified']    = $datenow->toSql();
 			$data['modified_by'] = $user->get('id');
 		}
 		else
 		{
-			$data['created'] = $datenow->toSql();
-			$data['created_by'] = $user->get('id');
+			$data['created']          = $datenow->toSql();
+			$data['created_by']       = $user->get('id');
 			$data['created_by_alias'] = $user->get('username');
 		}
 
@@ -530,8 +531,8 @@ class Element extends Base implements ModelElementFormInterface
 		 * the fieldsets!  Well, that's the only way I could come up with doing it.  Hopefully Rob can come up with
 		 * a quicker and simpler way of doing this!
 		 */
-		$validations = ArrayHelper::getValue($params['validations'], 'plugin', array());
-		$num_validations = count($validations);
+		$validations        = ArrayHelper::getValue($params['validations'], 'plugin', array());
+		$num_validations    = count($validations);
 		$validation_plugins = $this->getValidations($elementModel, $validations);
 
 		foreach ($validation_plugins as $plugin)
@@ -539,7 +540,7 @@ class Element extends Base implements ModelElementFormInterface
 			$plugin_form = $plugin->getJForm();
 			JForm::addFormPath(JPATH_SITE . '/plugins/fabrik_validationrule/' . $plugin->get('pluginName'));
 			$xmlFile = JPATH_SITE . '/plugins/fabrik_validationrule/' . $plugin->get('pluginName') . '/forms/fields.xml';
-			$xml = $plugin->jform->loadFile($xmlFile, false);
+			$xml     = $plugin->jform->loadFile($xmlFile, false);
 
 			foreach ($plugin_form->getFieldsets() as $fieldset)
 			{
@@ -565,8 +566,8 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		$data['params'] = json_encode($params);
-		$row->params = $data['params'];
-		$cond = 'group_id = ' . (int) $row->group_id;
+		$row->params    = $data['params'];
+		$cond           = 'group_id = ' . (int) $row->group_id;
 
 		if ($new)
 		{
@@ -586,10 +587,10 @@ class Element extends Base implements ModelElementFormInterface
 		if ($update && $input->get('task') !== 'save2copy')
 		{
 			$origplugin = $input->get('plugin_orig');
-			$prefix = $this->config->get('dbprefix');
-			$tablename = $listModel->getTable()->db_table_name;
-			$hasprefix = (strstr($tablename, $prefix) === false) ? false : true;
-			$tablename = str_replace($prefix, '#__', $tablename);
+			$prefix     = $this->config->get('dbprefix');
+			$tablename  = $listModel->getTable()->db_table_name;
+			$hasprefix  = (strstr($tablename, $prefix) === false) ? false : true;
+			$tablename  = str_replace($prefix, '#__', $tablename);
 
 			if (in_array($tablename, $this->core))
 			{
@@ -616,7 +617,7 @@ class Element extends Base implements ModelElementFormInterface
 			$this->app->setUserState('com_fabrik.origtask', $input->get('task'));
 			$this->app->setUserState('com_fabrik.plugin', $data['plugin']);
 			$task = $input->get('task');
-			$url = 'index.php?option=com_fabrik&view=element&layout=confirmupdate&id=' . (int) $origId . '&origplugin=' . $origplugin . '&origtask='
+			$url  = 'index.php?option=com_fabrik&view=element&layout=confirmupdate&id=' . (int) $origId . '&origplugin=' . $origplugin . '&origtask='
 				. $task . '&plugin=' . $row->plugin;
 			$this->app->setUserState('com_fabrik.redirect', $url);
 		}
@@ -636,7 +637,7 @@ class Element extends Base implements ModelElementFormInterface
 		{
 			$this->updateJavascript($data);
 			$elementModel->setId($this->get($this->getName() . '.id'));
-			$row->id = $elementModel->getId();
+			$row->id    = $elementModel->getId();
 			$data['id'] = $row->id;
 			$this->createRepeatElement($elementModel, $row);
 
@@ -667,19 +668,19 @@ class Element extends Base implements ModelElementFormInterface
 	 * When saving an element, it may need to be added to other Fabrik lists
 	 * If those lists point to the same database table.
 	 *
-	 * @param   object  $elementModel  element
-	 * @param   object  $row           item
+	 * @param   object $elementModel element
+	 * @param   object $row          item
 	 *
 	 * @return  void
 	 */
 
 	private function addElementToOtherDbTables($elementModel, $row)
 	{
-		$db = Worker::getDbo(true);
-		$list = $elementModel->getListModel()->getTable();
-		$origElid = $row->id;
+		$db            = Worker::getDbo(true);
+		$list          = $elementModel->getListModel()->getTable();
+		$origElid      = $row->id;
 		$tmpgroupModel = $elementModel->getGroup();
-		$config = JComponentHelper::getParams('com_fabrik');
+		$config        = JComponentHelper::getParams('com_fabrik');
 
 		if ($tmpgroupModel->isJoin())
 		{
@@ -725,10 +726,10 @@ class Element extends Base implements ModelElementFormInterface
 
 			foreach ($othertables as $listid => $t)
 			{
-				$rowCopy->id = 0;
+				$rowCopy->id        = 0;
 				$rowCopy->parent_id = $origElid;
-				$rowCopy->group_id = $t->group_id;
-				$rowCopy->name = str_replace('`', '', $rowCopy->name);
+				$rowCopy->group_id  = $t->group_id;
+				$rowCopy->name      = str_replace('`', '', $rowCopy->name);
 
 				if ($config->get('unpublish_clones', false))
 				{
@@ -745,7 +746,7 @@ class Element extends Base implements ModelElementFormInterface
 					$join->id = 0;
 					unset($join->id);
 					$join->element_id = $rowCopy->id;
-					$join->list_id = $listid;
+					$join->list_id    = $listid;
 					$join->store();
 				}
 			}
@@ -755,7 +756,7 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Update child elements
 	 *
-	 * @param   object  &$row  element
+	 * @param   object &$row element
 	 *
 	 * @return  mixed
 	 */
@@ -769,8 +770,8 @@ class Element extends Base implements ModelElementFormInterface
 			return;
 		}
 
-		$ids = $this->getElementDescendents($row->id);
-		$ignore = array(
+		$ids           = $this->getElementDescendents($row->id);
+		$ignore        = array(
 			'_tbl',
 			'_tbl_key',
 			'_db',
@@ -789,8 +790,8 @@ class Element extends Base implements ModelElementFormInterface
 		foreach ($ids as $id)
 		{
 			$plugin = $pluginManager->getElementPlugin($id);
-			$leave = $plugin->getFixedChildParameters();
-			$item = $plugin->getElement();
+			$leave  = $plugin->getFixedChildParameters();
+			$item   = $plugin->getElement();
 
 			foreach ($row as $key => $val)
 			{
@@ -799,7 +800,7 @@ class Element extends Base implements ModelElementFormInterface
 					if ($key == 'params')
 					{
 						$origParams = json_decode($item->params);
-						$newParams = json_decode($val);
+						$newParams  = json_decode($val);
 
 						foreach ($newParams as $pKey => $pVal)
 						{
@@ -833,9 +834,9 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Update table indexes based on element settings
 	 *
-	 * @param   object  &$elementModel  element model
-	 * @param   object  &$listModel     list model
-	 * @param   object  &$row           element item
+	 * @param   object &$elementModel element model
+	 * @param   object &$listModel    list model
+	 * @param   object &$row          element item
 	 *
 	 * @return  void
 	 */
@@ -875,7 +876,7 @@ class Element extends Base implements ModelElementFormInterface
 	 * Delete old javascript actions for the element
 	 * & add new javascript actions
 	 *
-	 * @param   array  $data  to save
+	 * @param   array $data to save
 	 *
 	 * @return void
 	 */
@@ -887,22 +888,22 @@ class Element extends Base implements ModelElementFormInterface
 		 * updated to apply js changes to descendants as well.  NOTE that this means
 		 * all descendants (i.e. children of children, etc.), not just direct children.
 		 */
-		$input = $this->app->input;
+		$input   = $this->app->input;
 		$this_id = $this->get($this->getName() . '.id');
-		$ids = $this->getElementDescendents($this_id);
-		$ids[] = $this_id;
-		$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
+		$ids     = $this->getElementDescendents($this_id);
+		$ids[]   = $this_id;
+		$db      = Worker::getDbo(true);
+		$query   = $db->getQuery(true);
 		$query->delete('#__fabrik_jsactions')->where('element_id IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 		$db->execute();
-		$jform = $input->get('jform', array(), 'array');
-		$eEvent = ArrayHelper::getValue($jform, 'js_e_event', array());
-		$eTrigger = ArrayHelper::getValue($jform, 'js_e_trigger', array());
-		$eCond = ArrayHelper::getValue($jform, 'js_e_condition', array());
-		$eVal = ArrayHelper::getValue($jform, 'js_e_value', array());
+		$jform      = $input->get('jform', array(), 'array');
+		$eEvent     = ArrayHelper::getValue($jform, 'js_e_event', array());
+		$eTrigger   = ArrayHelper::getValue($jform, 'js_e_trigger', array());
+		$eCond      = ArrayHelper::getValue($jform, 'js_e_condition', array());
+		$eVal       = ArrayHelper::getValue($jform, 'js_e_value', array());
 		$ePublished = ArrayHelper::getValue($jform, 'js_published', array());
-		$action = (array) ArrayHelper::getValue($jform, 'action', array());
+		$action     = (array) ArrayHelper::getValue($jform, 'action', array());
 
 		foreach ($action as $c => $jsAction)
 		{
@@ -911,15 +912,15 @@ class Element extends Base implements ModelElementFormInterface
 				continue;
 			}
 
-			$params = new stdClass;
-			$params->js_e_event = $eEvent[$c];
-			$params->js_e_trigger = $eTrigger[$c];
+			$params                 = new stdClass;
+			$params->js_e_event     = $eEvent[$c];
+			$params->js_e_trigger   = $eTrigger[$c];
 			$params->js_e_condition = $eCond[$c];
-			$params->js_e_value = htmlspecialchars($eVal[$c]);
-			$params->js_published = $ePublished[$c];
-			$params = json_encode($params);
-			$code = $jform['code'][$c];
-			$code = htmlspecialchars($code, ENT_QUOTES);
+			$params->js_e_value     = htmlspecialchars($eVal[$c]);
+			$params->js_published   = $ePublished[$c];
+			$params                 = json_encode($params);
+			$code                   = $jform['code'][$c];
+			$code                   = htmlspecialchars($code, ENT_QUOTES);
 
 			foreach ($ids as $id)
 			{
@@ -939,7 +940,7 @@ class Element extends Base implements ModelElementFormInterface
 	 * Take an array of group ids and return the corresponding element
 	 * used in list publish code
 	 *
-	 * @param   array  $ids  group ids
+	 * @param   array $ids group ids
 	 *
 	 * @return  array  element ids
 	 */
@@ -952,7 +953,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		ArrayHelper::toInteger($ids);
-		$db = Worker::getDbo(true);
+		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		ArrayHelper::toInteger($ids);
 		$query->select('id')->from('#__fabrik_elements')->where('group_id IN (' . implode(',', $ids) . ')');
@@ -963,7 +964,7 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Potentially drop fields then remove element record
 	 *
-	 * @param   array  &$pks  To delete
+	 * @param   array &$pks To delete
 	 *
 	 * @return  boolean  True if successful, false if an error occurs.
 	 */
@@ -1018,25 +1019,25 @@ class Element extends Base implements ModelElementFormInterface
 	public function copy()
 	{
 		$input = $this->app->input;
-		$cid = $input->get('cid', array(), 'array');
+		$cid   = $input->get('cid', array(), 'array');
 		ArrayHelper::toInteger($cid);
 		$names = $input->get('name', array(), 'array');
-		$rule = $this->getTable('element');
+		$rule  = $this->getTable('element');
 
 		foreach ($cid as $id => $groupId)
 		{
 			if ($rule->load((int) $id))
 			{
-				$name = ArrayHelper::getValue($names, $id, $rule->name);
-				$data = ArrayHelper::fromObject($rule);
+				$name         = ArrayHelper::getValue($names, $id, $rule->name);
+				$data         = ArrayHelper::fromObject($rule);
 				$elementModel = $this->getElementPluginModel($data);
 				$elementModel->getElement()->bind($data);
-				$newRule = $elementModel->copyRow($id, $rule->label, $groupId, $name);
-				$data = ArrayHelper::fromObject($newRule);
+				$newRule      = $elementModel->copyRow($id, $rule->label, $groupId, $name);
+				$data         = ArrayHelper::fromObject($newRule);
 				$elementModel = $this->getElementPluginModel($data);
 				$elementModel->getElement()->bind($data);
 				$listModel = $elementModel->getListModel();
-				$res = $listModel->shouldUpdateElement($elementModel);
+				$res       = $listModel->shouldUpdateElement($elementModel);
 				$this->addElementToOtherDbTables($elementModel, $rule);
 			}
 			else
@@ -1051,8 +1052,8 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * If repeated element we need to make a joined db table to store repeated data in
 	 *
-	 * @param   object  $elementModel  element model
-	 * @param   object  $row           element item
+	 * @param   object $elementModel element model
+	 * @param   object $row          element item
 	 *
 	 * @return  void
 	 */
@@ -1064,26 +1065,26 @@ class Element extends Base implements ModelElementFormInterface
 			return;
 		}
 
-		$row->name = str_replace('`', '', $row->name);
-		$listModel = $elementModel->getListModel();
+		$row->name  = str_replace('`', '', $row->name);
+		$listModel  = $elementModel->getListModel();
 		$groupModel = $elementModel->getGroupModel();
-		$tableName = $this->getRepeatElementTableName($elementModel, $row);
+		$tableName  = $this->getRepeatElementTableName($elementModel, $row);
 
 		// Create db table!
 		$formModel = $elementModel->getForm();
-		$db = $listModel->getDb();
-		$desc = $elementModel->getFieldDescription();
-		$name = $db->qn($row->name);
+		$db        = $listModel->getDb();
+		$desc      = $elementModel->getFieldDescription();
+		$name      = $db->qn($row->name);
 		$db
 			->setQuery(
 				'CREATE TABLE IF NOT EXISTS ' . $db->qn($tableName) . ' ( id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, parent_id INT(11), '
-					. $name . ' ' . $desc . ', ' . $db->qn('params') . ' TEXT );');
+				. $name . ' ' . $desc . ', ' . $db->qn('params') . ' TEXT );');
 		$db->execute();
 
 		// Remove previous join records if found
 		if ((int) $row->id !== 0)
 		{
-			$jdb = Worker::getDbo(true);
+			$jdb   = Worker::getDbo(true);
 			$query = $jdb->getQuery(true);
 			$query->delete('#__fabrik_joins')->where('element_id = ' . (int) $row->id);
 			$jdb->setQuery($query);
@@ -1092,7 +1093,7 @@ class Element extends Base implements ModelElementFormInterface
 		// Create or update fabrik join
 		if ($groupModel->isJoin())
 		{
-			$joinFromTable = $groupModel->getJoinModel()->getJoin()->table_join;		
+			$joinFromTable = $groupModel->getJoinModel()->getJoin()->table_join;
 		}
 		else
 		{
@@ -1103,19 +1104,20 @@ class Element extends Base implements ModelElementFormInterface
 			'table_join' => $tableName, 'table_key' => $row->name, 'table_join_key' => 'parent_id', 'join_type' => 'left');
 		$join = $this->getTable('join');
 		$join->load(array('element_id' => $data['element_id']));
-		$opts = new stdClass;
-		$opts->type = 'repeatElement';
-		$opts->pk = FabrikString::safeqn($tableName  . '.id');
+		$opts           = new stdClass;
+		$opts->type     = 'repeatElement';
+		$opts->pk       = FabrikString::safeqn($tableName . '.id');
 		$data['params'] = json_encode($opts);
 		$join->bind($data);
 		$join->store();
-		
+
 		$fieldName = $tableName . '___parent_id';
 		$listModel->addIndex($fieldName, 'parent_fk', 'INDEX', '');
-		
+
 		$fields = $listModel->storage->getDBFields($tableName, 'Field');
-		$field = ArrayHelper::getValue($fields, $row->name, false);
-		switch ($field->BaseType) {
+		$field  = ArrayHelper::getValue($fields, $row->name, false);
+		switch ($field->BaseType)
+		{
 			case 'VARCHAR':
 				$size = (int) $field->BaseLength < 10 ? $field->BaseLength : 10;
 				break;
@@ -1127,21 +1129,21 @@ class Element extends Base implements ModelElementFormInterface
 		}
 		$fieldName = $tableName . '___' . $row->name;
 		$listModel->addIndex($fieldName, 'repeat_el', 'INDEX', $size);
-		
+
 	}
 
 	/**
 	 * Get the name of the repeated elements table
 	 *
-	 * @param   object  $elementModel  element model
-	 * @param   object  $row           element item
+	 * @param   object $elementModel element model
+	 * @param   object $row          element item
 	 *
-	 * @return  string	table name
+	 * @return  string    table name
 	 */
 
 	protected function getRepeatElementTableName($elementModel, $row = null)
 	{
-		$listModel = $elementModel->getListModel();
+		$listModel  = $elementModel->getListModel();
 		$groupModel = $elementModel->getGroupModel();
 
 		if (is_null($row))
@@ -1151,7 +1153,7 @@ class Element extends Base implements ModelElementFormInterface
 
 		if ($groupModel->isJoin())
 		{
-			$origTableName = $groupModel->getJoinModel()->getJoin()->table_join;		
+			$origTableName = $groupModel->getJoinModel()->getJoin()->table_join;
 		}
 		else
 		{
@@ -1169,14 +1171,14 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Gets the element's parent element
 	 *
-	 * @return  mixed	0 if no parent, object if exists.
+	 * @return  mixed    0 if no parent, object if exists.
 	 */
 
 	public function getParent()
 	{
 		// FIXME
 		return 0;
-		$item = $this->getItem();
+		$item            = $this->getItem();
 		$item->parent_id = (int) $item->parent_id;
 
 		if ($item->parent_id === 0)
@@ -1185,7 +1187,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 		else
 		{
-			$db = Worker::getDbo(true);
+			$db    = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('*')->from('#__fabrik_elements')->where('id = ' . (int) $item->parent_id);
 			$db->setQuery($query);
@@ -1194,7 +1196,7 @@ class Element extends Base implements ModelElementFormInterface
 			if (is_null($parent))
 			{
 				// Perhaps the parent element was deleted?
-				$parent = 0;
+				$parent          = 0;
 				$item->parent_id = 0;
 			}
 		}
@@ -1205,7 +1207,7 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * A protected method to get a set of ordering conditions.
 	 *
-	 * @param   object  $table  A JTable object.
+	 * @param   object $table A JTable object.
 	 *
 	 * @return  array  An array of conditions to add to ordering queries.
 	 *
@@ -1220,7 +1222,7 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Recursively get all linked children of an element
 	 *
-	 * @param   int  $id  element id
+	 * @param   int $id element id
 	 *
 	 * @return  array
 	 */
@@ -1232,17 +1234,17 @@ class Element extends Base implements ModelElementFormInterface
 			$id = $this->get($this->getName() . '.id');
 		}
 
-		$db = Worker::getDbo(true);
+		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__fabrik_elements')->where('parent_id = ' . (int) $id);
 		$db->setQuery($query);
-		$kids = $db->loadObjectList();
+		$kids     = $db->loadObjectList();
 		$all_kids = array();
 
 		foreach ($kids as $kid)
 		{
 			$all_kids[] = $kid->id;
-			$all_kids = array_merge($this->getElementDescendents($kid->id), $all_kids);
+			$all_kids   = array_merge($this->getElementDescendents($kid->id), $all_kids);
 		}
 
 		return $all_kids;
@@ -1254,10 +1256,10 @@ class Element extends Base implements ModelElementFormInterface
 	 * params, which means knowing all the param names, but we can't call the FE model
 	 * version of this method 'cos ... well, it breaks.
 	 *
-	 * @param   object  $elementModel  a front end element model
-	 * @param   array   $usedPlugins   an array of validation plugin names to load
+	 * @param   object $elementModel a front end element model
+	 * @param   array  $usedPlugins  an array of validation plugin names to load
 	 *
-	 * @return  array	validation objects
+	 * @return  array    validation objects
 	 */
 
 	private function getValidations($elementModel, $usedPlugins = array())
@@ -1272,18 +1274,18 @@ class Element extends Base implements ModelElementFormInterface
 		$this->aValidations = array();
 
 		$dispatcher = JEventDispatcher::getInstance();
-		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
+		$ok         = JPluginHelper::importPlugin('fabrik_validationrule');
 
 		foreach ($usedPlugins as $usedPlugin)
 		{
 			if ($usedPlugin !== '')
 			{
-				$class = 'plgFabrik_Validationrule' . String::ucfirst($usedPlugin);
-				$conf = array();
-				$conf['name'] = String::strtolower($usedPlugin);
-				$conf['type'] = String::strtolower('fabrik_Validationrule');
-				$plugIn = new $class($dispatcher, $conf);
-				$oPlugin = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
+				$class                = 'plgFabrik_Validationrule' . String::ucfirst($usedPlugin);
+				$conf                 = array();
+				$conf['name']         = String::strtolower($usedPlugin);
+				$conf['type']         = String::strtolower('fabrik_Validationrule');
+				$plugIn               = new $class($dispatcher, $conf);
+				$oPlugin              = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
 				$plugIn->elementModel = $elementModel;
 				$this->aValidations[] = $plugIn;
 			}
@@ -1312,9 +1314,9 @@ class Element extends Base implements ModelElementFormInterface
 			$options = array('control' => 'jform', 'load_data' => true);
 		}
 
-		$form  = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
-		$item  = $this->getItem();
-		$groups       = $this->getItem()->get('form.groups');
+		$form   = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
+		$item   = $this->getItem();
+		$groups = $this->getItem()->get('form.groups');
 
 		foreach ($groups as $group)
 		{
@@ -1322,8 +1324,9 @@ class Element extends Base implements ModelElementFormInterface
 			{
 				if ($field->id === $this->get('elementid'))
 				{
-					$field->view = $item->get('view');
-					$this->element = new JRegistry($field);
+					$field->view     = $item->get('view');
+					$field->group_id = $group->id;
+					$this->element   = new JRegistry($field);
 					$form->bind($field);
 				}
 			}

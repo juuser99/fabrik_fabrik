@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Joomla\Registry\Registry as JRegistry;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -50,39 +51,35 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 			$this->value = $this->app->getUserStateFromRequest('com_fabrik.elements.filter.group', 'filter_groupId', $this->value);
 		}
 
-		// Initialize variables.
-		$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-
-		$query->select('g.id AS value, g.name AS text, f.label AS form');
-		$query->from('#__fabrik_groups AS g');
-		$query->where('g.published <> -2')
-		->join('INNER', '#__fabrik_formgroup AS fg ON fg.group_id = g.id')
-		->join('INNER', '#__fabrik_forms AS f on fg.form_id = f.id');
-		$query->order('f.label, g.name');
-
-		// Get the options.
-		$db->setQuery($query);
-		$options = $db->loadObjectList();
-		$groups = array();
+		$items = $this->form->model->getItems();
+		$options = array();
 
 		// Add please select
 		$sel = new stdClass;
 		$sel->value = '';
-		$sel->form = '';
 		$sel->text = FText::_('COM_FABRIK_PLEASE_SELECT');
+
 		array_unshift($options, $sel);
 
-		foreach ($options as $option)
+		foreach ($items as $item)
 		{
-			if (!array_key_exists($option->form, $groups))
-			{
-				$groups[$option->form] = array();
-			}
+			$item = new JRegistry($item);
+			$label = $item->get('form.label');
+			$groups = $item->get('form.groups', array());
+			$options[$label] = array();
 
-			$groups[$option->form][] = $option;
+			foreach ($groups as $group)
+			{
+				if ($group->published <> -2)
+				{
+					$option = new stdClass;
+					$option->value = $group->id;
+					$option->text = $group->name;
+					$options[$label][] = $option;
+				}
+			}
 		}
 
-		return $groups;
+		return $options;
 	}
 }

@@ -27,7 +27,8 @@ Fabrik::testPublishedPlugins();
 
 $input = JFactory::getApplication()->input;
 $cName = $input->getCmd('controller');
-
+/*echo "<Pre>";print_r($_POST);
+echo $cName;exit;*/
 // Check for plugin views (e.g. list email plugin's "email form"
 if (String::strpos($cName, '.') != false)
 {
@@ -47,6 +48,7 @@ if (String::strpos($cName, '.') != false)
 		$controller = $type . $name;
 
 		$className  = 'FabrikController' . String::ucfirst($controller);
+		//echo $className;exit;
 		$controller = new $className;
 
 		// Add in plugin view

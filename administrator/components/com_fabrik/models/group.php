@@ -520,7 +520,7 @@ class Group extends Base implements ModelGroupInterface
 
 	public function getElements()
 	{
-		return $this->group->fields;
+		return $this->group->get('fields', array());
 	}
 
 	public function getMyElements()
@@ -535,7 +535,7 @@ class Group extends Base implements ModelGroupInterface
 	 */
 	public function isJoin()
 	{
-		return $this->getGroup()->is_join;
+		return $this->getGroup()->get('is_join', 0);
 	}
 
 	/**

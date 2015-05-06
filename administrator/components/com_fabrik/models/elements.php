@@ -172,6 +172,11 @@ class Elements extends Base implements ModelElementsInterface
 	 */
 	protected function doPublish($ids = array(), $state = 1)
 	{
+		$this->changeState($ids, 'published', $state);
+	}
+
+	public function changeState($ids = array(), $property = '', $state = 1)
+	{
 		$items = $this->getViews();
 
 		foreach ($items as &$item)
@@ -185,7 +190,10 @@ class Elements extends Base implements ModelElementsInterface
 				{
 					if (in_array($field->id, $ids))
 					{
-						$field->published = $state;
+						if (isset($field->$property))
+						{
+							$field->$property = $state;
+						}
 					}
 				}
 			}
