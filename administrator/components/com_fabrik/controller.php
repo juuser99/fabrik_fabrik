@@ -67,7 +67,7 @@ class Controller extends \JControllerBase
 		$id       = $app->input->getString('id', ArrayHelper::getValue($ids, 0));
 		$listUrl  = $this->listUrl($viewName);
 		$applyUrl = $this->applyUrl($viewName, $id);
-
+echo $layoutName;exit;
 		switch ($layoutName)
 		{
 			case 'add':
@@ -111,7 +111,6 @@ class Controller extends \JControllerBase
 			case 'checkin':
 				$model->set('id', $id);
 				$model->checkin();
-
 				$this->app->redirect($listUrl);
 				break;
 			case 'checkout':
@@ -122,6 +121,11 @@ class Controller extends \JControllerBase
 			case 'trash':
 				$model->trash($ids);
 				$this->app->redirect($listUrl);
+				break;
+			case 'copy':
+				$model->copy($ids);
+				$msg = 'COM_FABRIK_' . strtoupper($viewName) . 'N_ITEMS_COPIED';
+				$app->enqueueMessage(JText::plural($msg, $ids));
 				break;
 			default:
 				break;

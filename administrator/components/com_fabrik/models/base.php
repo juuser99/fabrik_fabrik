@@ -1477,4 +1477,9 @@ class Base extends \JModelBase
 		return $options;
 	}
 
+	public function copy($ids)
+	{
+		echo "copy ";print_r($ids);exit;
+	}
+
 }
