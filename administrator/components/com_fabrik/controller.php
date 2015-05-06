@@ -13,6 +13,7 @@ namespace Fabrik\Admin\Controllers;
 // No direct access
 use Joomla\String\Inflector;
 use Joomla\Utilities\ArrayHelper;
+use \JText as JText;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -97,10 +98,14 @@ class Controller extends \JControllerBase
 				$this->app->redirect($listUrl);
 			case 'unpublish':
 				$model->unpublish($ids);
+				$msg = 'COM_FABRIK_' . strtoupper($viewName) . '_N_ITEMS_UNPUBLISHED';
+				$this->app->enqueueMessage(JText::plural($msg, $ids));
 				$this->app->redirect($listUrl);
 				break;
 			case 'publish':
 				$model->publish($ids);
+				$msg = 'COM_FABRIK_' . strtoupper($viewName) . '_N_ITEMS_PUBLISHED';
+				$this->app->enqueueMessage(JText::plural($msg, $ids));
 				$this->app->redirect($listUrl);
 				break;
 			case 'checkin':

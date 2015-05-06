@@ -80,23 +80,7 @@ class Lists extends \JControllerBase
 		return true;
 	}
 
-	/**
-	 * Method to get a model object, loading it if required.
-	 *
-	 * @param   string $name   The model name. Optional.
-	 * @param   string $prefix The class prefix. Optional.
-	 * @param   array  $config Configuration array for model. Optional.
-	 *
-	 * @return  object  The model.
-	 *
-	 * @since   12.2
-	 */
-	/*public function getModel($name = 'List', $prefix = 'FabrikAdminModel', $config = array())
-	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 
-		return $model;
-	}*/
 
 	/**
 	 * Method to publish a list of items
