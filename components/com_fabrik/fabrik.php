@@ -68,7 +68,7 @@ $controllerName = $input->getCmd('view');
 // Call a plugin controller via the url :
 // &controller=visualization.calendar
 
-$isplugin = false;
+$isPlugin = false;
 $cName = $input->getCmd('controller');
 
 if (String::strpos($cName, '.') != false)
@@ -85,7 +85,7 @@ if (String::strpos($cName, '.') != false)
 	if (JFile::exists($path))
 	{
 		require_once $path;
-		$isplugin = true;
+		$isPlugin = true;
 		$controller = $type . $name;
 	}
 	else
@@ -154,18 +154,27 @@ if (strpos($input->getCmd('task'), '.') !== false)
 }
 else
 {
-	$classname = 'FabrikController' . String::ucfirst($controller);
+	/*$classname = 'FabrikController' . String::ucfirst($controller);
 	$controller = new $classname;
-	$task = $input->getCmd('task');
+	$task = $input->getCmd('task');*/
+
+	// Do we have a custom controller - if not load the main controller.
+	$view = $input->get('view', 'Controller') !== '' ? $input->get('view', 'Controller') : $input->get->get('view', 'Controller');
+	$input->set('view', $view);
+	$view                = String::ucfirst($view);
+	$base                = 'Fabrik\Controllers';
+	$baseControllerClass = $base . '\\Controller';
+	$controllerClass     = $base . '\\' . $view;
+	$controller          = class_exists($controllerClass) ? new $controllerClass : new $baseControllerClass;
 }
 
-if ($isplugin)
+if ($isPlugin)
 {
 	// Add in plugin view
 	$controller->addViewPath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/views');
 
 	// Add the model path
-	$modelpaths = JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
+	$modelPaths = JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
 }
 
 $package = $input->get('package', 'fabrik');
@@ -181,7 +190,7 @@ if ($input->get('yql') == 1)
 }
 // End web service testing
 
-$controller->execute($task);
+$controller->execute();
 
 // Redirect if set by the controller
 $controller->redirect();

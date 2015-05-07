@@ -40,7 +40,6 @@ class PlgFabrik_ElementTextarea extends Element
 
 	protected function tagify($data)
 	{
-		$app = JFactory::getApplication();
 		$name = $this->getFullName(true, false);
 		$params = $this->getParams();
 		$data = explode(',', strip_tags($data));
@@ -49,13 +48,13 @@ class PlgFabrik_ElementTextarea extends Element
 
 		if ($url == '')
 		{
-			if ($app->isAdmin())
+			if ($this->app->isAdmin())
 			{
 				$url = 'index.php?option=com_fabrik&amp;task=list.view&amp;listid=' . $listId;
 			}
 			else
 			{
-				$package = $app->getUserState('com_fabrik.package', 'fabrik');
+				$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 				$url = 'index.php?option=com_' . $package . '&view=list&listid=' . $listId;
 			}
 		}
@@ -229,8 +228,7 @@ class PlgFabrik_ElementTextarea extends Element
 	protected function useWysiwyg()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		if ($input->get('format') == 'raw')
 		{

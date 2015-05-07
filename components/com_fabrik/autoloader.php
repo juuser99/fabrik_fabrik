@@ -129,9 +129,13 @@ class AutoLoader
 		}
 
 		$admin = strstr($class, '\Admin');
-		$class = str_replace('Fabrik\Admin\\', '', $class);
+
+		//$class = str_replace('Fabrik\Admin\\', '', $class);
+		$class = explode('\\', $class);
+		$class = array_pop($class);
 		$file  = str_replace('\\', '/', strtolower($class));
 		$file  = strtolower($file . '.php');
+
 		require_once JPATH_COMPONENT_ADMINISTRATOR . '/controller.php';
 
 		if ($admin)

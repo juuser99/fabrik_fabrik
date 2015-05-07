@@ -34,12 +34,11 @@ class PlgFabrik_ElementIp extends Element
 
 	public function render($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 
-		$rowid = $app->input->get('rowid', false);
+		$rowid = $this->app->input->get('rowid', false);
 		/**
 		 * @TODO when editing a form with joined repeat group the rowid will be set but
 		 * the record is in fact new

@@ -50,9 +50,8 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$rowid = $input->get('rowid', '', 'string');
+		$input = $this->app->input;
+		$rowId = $input->get('rowid', '', 'string');
 		$opts = new stdClass;
 		$opts->observe = str_replace('.', '___', $params->get('autofill_field_name'));
 		$opts->trigger = str_replace('.', '___', $params->get('autofill_trigger'));
@@ -72,10 +71,10 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 				$opts->fillOnLoad = false;
 				break;
 			case '1':
-				$opts->fillOnLoad = ($rowid === '');
+				$opts->fillOnLoad = ($rowId === '');
 				break;
 			case '2':
-				$opts->fillOnLoad = ($rowid !== '');
+				$opts->fillOnLoad = ($rowId !== '');
 				break;
 			case '3':
 				$opts->fillOnLoad = true;
@@ -104,8 +103,7 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 
 	public function onajax_getAutoFill()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$model = JModelLegacy::getInstance('form', 'FabrikFEModel');
 		$cnn = (int) $input->getInt('cnn');
 		$element = $input->get('observe');
@@ -116,10 +114,10 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 		if ($cnn === 0 || $cnn == -1)
 		{
 			// No connection selected so query current forms' table data
-			$formid = $input->getInt('formid');
+			$formId = $input->getInt('formid');
 			$input->set($element, $value, 'get');
 			$model = JModelLegacy::getInstance('form', 'FabrikFEModel');
-			$model->setId($formid);
+			$model->setId($formId);
 			$listModel = $model->getlistModel();
 		}
 		else

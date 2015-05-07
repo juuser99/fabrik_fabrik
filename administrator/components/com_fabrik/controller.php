@@ -17,8 +17,6 @@ use \JText as JText;
 
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
-
 /**
  * Fabrik master display controller.
  *

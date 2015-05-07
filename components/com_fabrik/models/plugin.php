@@ -154,6 +154,9 @@ class Plugin extends \JPlugin
 	public function __construct(&$subject, $config = array())
 	{
 		parent::__construct($subject, $config);
+		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
+		$this->user = ArrayHelper::getValue($config, 'user', JFactory::getUser());
+		$this->config = ArrayHelper::getValue($config, 'config', JFactory::getConfig());
 		$this->loadLanguage();
 	}
 
@@ -576,7 +579,7 @@ class Plugin extends \JPlugin
 	public function canUse($location = null, $event = null)
 	{
 		$ok = false;
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$model = $this->getModel();
 
 		switch ($location)
@@ -653,7 +656,7 @@ class Plugin extends \JPlugin
 
 	public function onAjax_tables()
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$input = $app->input;
 		$cid = $input->getInt('cid', -1);
 		$rows = array();
@@ -720,7 +723,7 @@ class Plugin extends \JPlugin
 
 	public function ajax_fields()
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$input = $app->input;
 		$tid = $input->getString('t');
 		$keyType = $input->getInt('k', 1);

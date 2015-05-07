@@ -58,8 +58,7 @@ class PlgFabrik_ElementDigsig extends Element
 		$val           = $this->getValue($data, $repeatCounter);
 		$basePath      = COM_FABRIK_BASE . '/plugins/fabrik_element/digsig/layouts/';
 		$layoutData    = new stdClass;
-		$app           = JFactory::getApplication();
-		$input         = $app->input;
+		$input         = $this->app->input;
 		$format        = $input->get('format');
 
 		$layoutData->id            = $id;
@@ -76,7 +75,7 @@ class PlgFabrik_ElementDigsig extends Element
 		{
 			if ($format === 'pdf')
 			{
-				$package   = $app->getUserState('com_fabrik.package', 'fabrik');
+				$package   = $this->app->getUserState('com_fabrik.package', 'fabrik');
 				$formModel = $this->getFormModel();
 				$formId    = $formModel->getId();
 				$rowId     = ArrayHelper::getValue($data, $pk);
@@ -136,8 +135,7 @@ class PlgFabrik_ElementDigsig extends Element
 	private function toImage($rowId)
 	{
 		$params    = $this->getParams();
-		$app       = JFactory::getApplication();
-		$package   = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package   = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formModel = $this->getFormModel();
 		$formid    = $formModel->getId();
 		$elementid = $this->getId();
@@ -178,8 +176,7 @@ class PlgFabrik_ElementDigsig extends Element
 	 */
 	public function onAjax_signature_to_image()
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
 		$this->getElement();

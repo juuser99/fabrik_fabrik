@@ -116,7 +116,6 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 
 	protected function defaultMessage()
 	{
-		$config = JFactory::getConfig();
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 		$arDontEmailThesKeys = array();
@@ -176,7 +175,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 			}
 		}
 
-		$message = FText::_('PLG_FORM_SMS_FROM') . $config->get('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
+		$message = FText::_('PLG_FORM_SMS_FROM') . $this->config->get('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
 
 		return $message;
 	}

@@ -145,8 +145,7 @@ class PlgFabrik_ElementPassword extends Element
 			return true;
 		}
 
-		$app      = JFactory::getApplication();
-		$input    = $app->input;
+		$input    = $this->app->input;
 		$k        = $this->getlistModel()->getTable()->db_primary_key;
 		$k        = FabrikString::safeColNameToArrayKey($k);
 		$element  = $this->getElement();

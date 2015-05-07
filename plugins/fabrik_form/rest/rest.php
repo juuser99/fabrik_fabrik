@@ -447,7 +447,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 
 		if (curl_errno($chandle))
 		{
-			JFactory::getApplication()->enqueueMessage('Fabrik Rest form plugin: ' . curl_error($chandle), 'error');
+			$this->app->enqueueMessage('Fabrik Rest form plugin: ' . curl_error($chandle), 'error');
 
 			return false;
 		}
@@ -490,9 +490,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 */
 	public function onLoad()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$formModel = $this->getModel();
+		$input = $this->app->input;
 		$params = $this->getParams();
 
 		if ($params->get('oauth_consumer_key', '') === '')
@@ -508,19 +506,16 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 		 * require_once COM_FABRIK_BASE . '/components/com_fabrik/libs/oauth-php/OAuthRequester.php';
 		 */
 
-		$config = JFactory::getConfig();
-
 		define("OAUTH_CALLBACK_URL", JUri::getInstance());
-		define('OAUTH_TMP_DIR', $config->get('tmp_path'));
+		define('OAUTH_TMP_DIR', $this->config->get('tmp_path'));
 		define("OAUTH_AUTHORIZE_URL", $params->get('authorize_uri'));
 
 		$this->getOAuthStore();
 
 		$session = JFactory::getSession();
-		$user = JFactory::getUser();
-		$userid = $user->get('id');
-		define(OATH_SESSION_KEY, 'fabrik.rest.xing' . $userid);
-		$sessionResponseKey = 'fabrik.rest.xing' . $userid . '.response';
+		$userId = $this->user->get('id');
+		define(OATH_SESSION_KEY, 'fabrik.rest.xing' . $userId);
+		$sessionResponseKey = 'fabrik.rest.xing' . $userId . '.response';
 
 		if ($input->get('reset') == 1 && $input->get('oauth_token', '') === '')
 		{
@@ -587,7 +582,6 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$consumerKey = $params->get('oauth_consumer_key');
-		$app = JFactory::getApplication();
 		$tokenParams = array(
 			'oauth_callback' => OAUTH_CALLBACK_URL,
 			'oauth_consumer_key' => $consumerKey
@@ -600,7 +594,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 
 		// $tokenResult = OAuthRequester::requestRequestToken($consumerKey, 0, $tokenParams, 'POST', $requestOpts, $curlOpts);
 		$uri = OAUTH_AUTHORIZE_URL . "?btmpl=mobile&oauth_token=" . $tokenResult['token'];
-		$app->redirect($uri);
+		$this->app->redirect($uri);
 	}
 
 	/**
@@ -620,11 +614,10 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 */
 	protected function getAccessToken()
 	{
-		$app = JFactory::getApplication();
 		$params = $this->getParams();
 		$consumerKey = $params->get('oauth_consumer_key');
 		$session = JFactory::getSession();
-		$oauthToken = $app->input->get('oauth_token', '', 'string');
+		$oauthToken = $this->app->input->get('oauth_token', '', 'string');
 
 		try
 		{

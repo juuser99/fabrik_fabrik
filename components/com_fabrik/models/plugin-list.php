@@ -257,8 +257,7 @@ class PlgFabrik_List extends Plugin
 			return false;
 		}
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$postedRenderOrder = $input->getInt('fabrik_listplugin_renderOrder', -1);
 
 		return $input->get('fabrik_listplugin_name') == $this->buttonPrefix && $this->renderOrder == $postedRenderOrder;
@@ -304,8 +303,7 @@ class PlgFabrik_List extends Plugin
 
 	protected function getSessionContext()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 
 		return 'com_' . $package . '.list' . $this->model->getRenderContext() . '.plugins.' . $this->onGetFilterKey() . '.';
 	}
@@ -433,7 +431,7 @@ class PlgFabrik_List extends Plugin
 		$name = strtolower(JString::str_ireplace('PlgFabrik_List', '', $name));
 		$basePath = COM_FABRIK_BASE . '/plugins/fabrik_list/' . $name . '/layouts';
 		$layout = new LayoutFile('fabrik-list-' . $name. '-' . $type, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
-		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+		$layout->addIncludePaths(JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts');
 
 		return $layout;
 	}

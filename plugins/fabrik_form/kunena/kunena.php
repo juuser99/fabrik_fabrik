@@ -68,9 +68,8 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 	protected function post2x()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
-		$input = $app->input;
+		$input = $this->app->input;
 		$w = new Worker;
 
 		$catid = $params->get('kunena_category', 0);
@@ -132,11 +131,9 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		$lang->load('com_kunena', JPATH_SITE . '/components/com_kunena');
 
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
-		$input = $app->input;
+		$input = $this->app->input;
 
-		$user = JFactory::getUser();
 		$now = JFactory::getDate();
 		$w = new Worker;
 
@@ -155,7 +152,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		$topic->category_id = $catid;
 		$topic->subject = $subject;
 		$topic->first_post_time = $topic->last_post_time = $now->toUnix();
-		$topic->first_post_userid = $topic->last_post_userid = $user->get('id');
+		$topic->first_post_userid = $topic->last_post_userid = $this->user->get('id');
 		$topic->first_post_message = $topic->last_post_message = $msg;
 		$topic->posts = 1;
 
@@ -166,18 +163,18 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 
 			$message->subject = $subject;
 			$message->catid = $catid;
-			$message->name = $user->get('name');
+			$message->name = $this->user->get('name');
 			$message->time = $now->toUnix();
 			$message->message = $msg;
 
 			if (!$message->save())
 			{
-				$app->enqueueMessage(FText::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_MESSAGE') . ': ' . $message->getError(), 'error');
+				$this->app->enqueueMessage(FText::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_MESSAGE') . ': ' . $message->getError(), 'error');
 			}
 		}
 		else
 		{
-			$app->enqueueMessage(FText::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_TOPIC') . ': ' . $topic->getError(), 'error');
+			$this->app->enqueueMessage(FText::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_TOPIC') . ': ' . $topic->getError(), 'error');
 		}
 
 		$input->set('id', $origId);

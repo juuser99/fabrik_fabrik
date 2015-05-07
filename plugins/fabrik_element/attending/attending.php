@@ -83,8 +83,7 @@ class PlgFabrik_ElementAttending extends Element
 	 */
 	protected function getAttendees()
 	{
-		$app       = JFactory::getApplication();
-		$input     = $app->input;
+		$input     = $this->app->input;
 		$listModel = $this->getListModel();
 		$list      = $listModel->getTable();
 		$listId    = $list->id;
@@ -116,17 +115,16 @@ class PlgFabrik_ElementAttending extends Element
 
 	public function onAjax_rate()
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
 		$listModel = $this->getListModel();
 		$list      = $listModel->getTable();
 		$listid    = $list->id;
 		$formid    = $listModel->getFormModel()->getId();
-		$row_id    = $input->get('row_id');
+		$rowId    = $input->get('row_id');
 		$rating    = $input->getInt('rating');
-		$this->doRating($listid, $formid, $row_id, $rating);
+		$this->doRating($listid, $formid, $rowId, $rating);
 
 		if ($input->get('mode') == 'creator-rating')
 		{
@@ -137,12 +135,12 @@ class PlgFabrik_ElementAttending extends Element
 			$element = $this->getElement();
 			$query   = $db->getQuery(true);
 			$query->update($list->db_table_name)
-				->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->quote($row_id));
+				->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->quote($rowId));
 			$db->setQuery($query);
 			$db->execute();
 		}
 
-		$this->getRatingAverage('', $listid, $formid, $row_id);
+		$this->getRatingAverage('', $listid, $formid, $rowId);
 		echo $this->avg;
 	}
 
@@ -151,30 +149,29 @@ class PlgFabrik_ElementAttending extends Element
 	 *
 	 * @param   int    $listid List id
 	 * @param   int    $formid Form id
-	 * @param   string $row_id Row reference
+	 * @param   string $rowId Row reference
 	 * @param   int    $rating Rating
 	 *
 	 * @return  void
 	 */
 
-	private function doRating($listid, $formid, $row_id, $rating)
+	private function doRating($listid, $formid, $rowId, $rating)
 	{
 		$this->createRatingTable();
 		$db        = Worker::getDbo(true);
-		$config    = JFactory::getConfig();
-		$tzoffset  = $config->get('offset');
+		$tzoffset  = $this->config->get('offset');
 		$date      = JFactory::getDate('now', $tzoffset);
 		$strDate   = $db->quote($date->toSql());
-		$userid    = JFactory::getUser()->get('id');
+		$userid    = $this->user->get('id');
 		$elementid = (int) $this->getElement()->id;
 		$formid    = (int) $formid;
 		$listid    = (int) $listid;
 		$rating    = (int) $rating;
-		$row_id    = $db->quote($row_id);
+		$rowId    = $db->quote($rowId);
 		$db
 			->setQuery(
 				"INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
-		values ($userid, $listid, $formid, $row_id, $rating, $strDate, $elementid)
+		values ($userid, $listid, $formid, $rowId, $rating, $strDate, $elementid)
 			ON DUPLICATE KEY UPDATE date_created = $strDate, rating = $rating"
 			);
 		$db->execute();
@@ -190,20 +187,14 @@ class PlgFabrik_ElementAttending extends Element
 
 	public function elementJavascript($repeatCounter)
 	{
-		$app    = JFactory::getApplication();
-		$input  = $app->input;
-		$user   = JFactory::getUser();
-		$params = $this->getParams();
+		$input  = $this->app->input;
+		$user   = $this->user;
 
 		$id      = $this->getHTMLId($repeatCounter);
-		$element = $this->getElement();
-		$data    = $this->getFormModel()->data;
-		$listid  = $this->getlistModel()->getTable()->id;
-		$formid  = $input->getInt('formid');
-		$row_id  = $input->get('rowid', '', 'string');
+		$rowId  = $input->get('rowid', '', 'string');
 
 		$opts         = new stdClass;
-		$opts->row_id = $row_id;
+		$opts->row_id = $rowId;
 		$opts->elid   = $this->getElement()->id;
 		$opts->userid = (int) $user->get('id');
 		$opts->view   = $input->get('view');

@@ -47,13 +47,11 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 
 	public function getBottomContent()
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
-		if ($user->get('id') == 0)
+		if ($this->user->get('id') == 0)
 		{
 			$this->html = FText::_('PLG_CRON_NOTIFICATION_SIGN_IN_TO_RECEIVE_NOTIFICATIONS');
 
@@ -102,8 +100,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 
 	public function onToggleNotification()
 	{
-		$app = JFactory::getApplication();
-		$notify = $app->input->getBool('notify');
+		$notify = $this->app->input->getBool('notify');
 		$this->process($notify, 'observer');
 	}
 
@@ -118,8 +115,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 	protected function getRef($listid = 0)
 	{
 		$db = Worker::getDbo();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		return $db->quote($input->getInt('listid', $listid) . '.' . $input->getInt('formid', 0) . '.' . $input->get('rowid', '', 'string'));
 	}
@@ -137,15 +133,14 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$db = Worker::getDbo();
-		$user = JFactory::getUser();
-		$userid = (int) $user->get('id');
+		$userId = (int) $this->user->get('id');
 		$ref = $this->getRef();
 		$query = $db->getQuery(true);
 		$fields = array('reference = ' . $ref);
 
 		if ($params->get('send_mode', 0) == '0')
 		{
-			$fields[] = 'user_id = ' . $userid;
+			$fields[] = 'user_id = ' . $userId;
 
 			if ($add)
 			{
@@ -185,12 +180,12 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		else
 		{
 			$sendTo = (array) $params->get('sendto');
-			$userids = $this->getUsersInGroups($sendTo);
+			$userIds = $this->getUsersInGroups($sendTo);
 
-			foreach ($userids as $userid)
+			foreach ($userIds as $userId)
 			{
 				$query->clear('set');
-				$fields2 = array_merge($fields, array('user_id = ' . $userid));
+				$fields2 = array_merge($fields, array('user_id = ' . $userId));
 				$query->insert('#__fabrik_notification')->set($fields2);
 				$db->setQuery($query);
 				$db->execute();
@@ -211,9 +206,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 
 		if ($params->get('send_mode', 0) == 0)
 		{
-			$user = JFactory::getUser();
-
-			return $user->get('id') == 0 ? false : true;
+			return $this->user->get('id') == 0 ? false : true;
 		}
 		else
 		{
@@ -235,17 +228,15 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		if ($params->get('notification_ajax', 0) == 1)
 		{
 			return;
 		}
 
-		$user = JFactory::getUser();
-		$userid = $user->get('id');
+		$userId = $this->user->get('id');
 		$notify = $input->getInt('fabrik_notification', 0);
 
 		if (!$this->triggered())
@@ -267,14 +258,13 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		$date = $db->quote($date->toSql());
 		$ref = $this->getRef();
 		$msg = $notify ? FText::_('PLG_CRON_NOTIFICATION_ADDED') : FText::_('PLG_CRON_NOTIFICATION_REMOVED');
-		$app = JFactory::getApplication();
-		$app->enqueueMessage($msg);
+		$this->app->enqueueMessage($msg);
 		$query = $db->getQuery(true);
 		$fields = array('reference = ' . $ref, 'event = ' . $event, 'date_time = ' . $date);
 
 		if ($params->get('send_mode') == '0')
 		{
-			$fields[] = 'user_id = ' . (int) $userid;
+			$fields[] = 'user_id = ' . (int) $userId;
 			$query->insert('#__fabrik_notification_event')->set($fields);
 			$db->setQuery($query);
 			$db->execute();
@@ -282,13 +272,13 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		else
 		{
 			$sendTo = (array) $params->get('sendto');
-			$userids = $this->getUsersInGroups($sendTo);
+			$userIds = $this->getUsersInGroups($sendTo);
 			$query->clear();
 
-			foreach ($userids as $userid)
+			foreach ($userIds as $userId)
 			{
 				$query->clear('set');
-				$fields2 = array_merge($fields, array('user_id = ' . $userid));
+				$fields2 = array_merge($fields, array('user_id = ' . $userId));
 				$query->insert('#__fabrik_notification_event')->set($fields2);
 				$db->setQuery($query);
 				$db->execute();

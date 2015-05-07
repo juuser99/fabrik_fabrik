@@ -51,8 +51,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 	public function elementJavascript($repeatCounter)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 
@@ -119,11 +118,10 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 	public function getJoinLabelColumn($useStep = false)
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$join = $this->getJoin();
 		$db = $this->getDb();
 
-		if (($params->get('cascadingdropdown_label_concat') != '') && $app->input->get('override_join_val_column_concat') != 1)
+		if (($params->get('cascadingdropdown_label_concat') != '') && $this->app->input->get('override_join_val_column_concat') != 1)
 		{
 			$val = $params->get('cascadingdropdown_label_concat');
 
@@ -187,7 +185,6 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 	public function render($data, $repeatCounter = 0)
 	{
 		$db = $this->getDb();
-		$app = JFactory::getApplication();
 		$params = $this->getParams();
 		$name = $this->getHTMLName($repeatCounter);
 		$opts = array('raw' => 1);
@@ -204,7 +201,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		 * elementJavascript() above, so the JS won't get options on init when editing an existing row
 		 */
 		$tmp = array();
-		$rowId = $app->input->string('rowid', '', 'string');
+		$rowId = $this->app->input->string('rowid', '', 'string');
 		$show_please = $this->showPleaseSelect();
 
 		// $$$ hugh testing to see if we need to load options after a validation failure, but I don't think we do, as JS will reload via AJAX
@@ -399,9 +396,8 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 	public function onAjax_getOptions()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$filterView = $app->input->get('filterview', '');
+		$input = $this->app->input;
+		$filterView = $this->app->input->get('filterview', '');
 		$this->loadMeForAjax();
 
 		/**
@@ -569,8 +565,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		 * (should probably shift this logic into showPleaseSelect, and have that just do this
 		 * test, and return the label to use.
 		 */
-		$app = JFactory::getApplication();
-		$filterView = $app->input->get('filterview', '');
+		$filterView = $this->app->input->get('filterview', '');
 
 		if ($filterView == 'table')
 		{
@@ -720,8 +715,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 	protected function buildQuery($data = array(), $incWhere = true, $opts = array())
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$sig = isset($this->autocomplete_where) ? $this->autocomplete_where . '.' . $incWhere : $incWhere;
 		$sig .= '.' . serialize($opts);
 		$repeatCounter = ArrayHelper::getValue($opts, 'repeatCounter', 0);
@@ -810,7 +804,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 						// but should probably select none.
 
 						// Unless its a cdd autocomplete list filter - seems sensible to populate that with the values matching the search term
-						if ($app->input->get('method') !== 'autocomplete_options')
+						if ($this->app->input->get('method') !== 'autocomplete_options')
 						{
 							$whereVal = '';
 						}

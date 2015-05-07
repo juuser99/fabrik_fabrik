@@ -66,11 +66,9 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark("email: start: onAfterProcess") : null;
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		jimport('joomla.mail.helper');
-		$config = JFactory::getConfig();
 		$db = JFactory::getDbo();
 		$w = new Worker;
 		$formModel = $this->getModel();
@@ -233,12 +231,12 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		if (empty($email_from))
 		{
-			$email_from = $config->get('mailfrom');
+			$email_from = $this->config->get('mailfrom');
 		}
 
 		if (empty($email_from_name))
 		{
-			$email_from_name = $config->get('fromname', $email_from);
+			$email_from_name = $this->config->get('fromname', $email_from);
 		}
 
 		// Changes by JFQ
@@ -258,14 +256,13 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		if ($subject == '')
 		{
-			$subject = $config->get('sitename') . " :: Email";
+			$subject = $this->config->get('sitename') . " :: Email";
 		}
 
 		$subject = preg_replace_callback('/&#([0-9a-fx]+);/mi', array($this, 'replace_num_entity'), $subject);
 
 		$attach_type = $params->get('email_attach_type', '');
-		$config = JFactory::getConfig();
-		$attach_fname = $config->get('tmp_path') . '/' . uniqid() . '.' . $attach_type;
+		$attach_fname = $this->config->get('tmp_path') . '/' . uniqid() . '.' . $attach_type;
 
 		$query = $db->getQuery(true);
 		$email_to = array_map('trim', $email_to);
@@ -335,7 +332,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 				 */
 				if ($res !== true)
 				{
-					$app->enqueueMessage(JText::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL', $email), 'notice');
+					$this->app->enqueueMessage(JText::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL', $email), 'notice');
 				}
 
 				if (JFile::exists($attach_fname))
@@ -345,7 +342,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			}
 			else
 			{
-				$app->enqueueMessage(JText::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email), 'notice');
+				$this->app->enqueueMessage(JText::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email), 'notice');
 			}
 		}
 
@@ -373,11 +370,9 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		$model = $this->getModel();
 		$document = JFactory::getDocument();
-		$config = JFactory::getConfig();
 		$docType = $document->getType();
 		$document->setType('pdf');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		$orig['details'] = $input->get('view');
 		$orig['format'] = $input->get('format');
@@ -386,8 +381,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$input->set('format', 'pdf');
 
 		// Ensure the package is set to fabrik
-		$prevUserState = $app->getUserState('com_fabrik.package');
-		$app->setUserState('com_fabrik.package', 'fabrik');
+		$prevUserState = $this->app->getUserState('com_fabrik.package');
+		$this->app->setUserState('com_fabrik.package', 'fabrik');
 
 		try
 		{
@@ -422,7 +417,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			$dompdf->render();
 
 			// Store the file in the tmp folder so it can be attached
-			$file = $config->get('tmp_path') . '/' . JStringNormalise::toDashSeparated($model->getForm()->label . '-' . $input->getString('rowid')) . '.pdf';
+			$file = $this->config->get('tmp_path') . '/' . JStringNormalise::toDashSeparated($model->getForm()->label . '-' . $input->getString('rowid')) . '.pdf';
 			$pdf = $dompdf->output();
 
 			if (JFile::write($file, $pdf))
@@ -436,11 +431,11 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		}
 		catch (Exception $e)
 		{
-			$app->enqueueMessage($e->getMessage(), 'error');
+			$this->app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		// Set the package back to what it was before rendering the module
-		$app->setUserState('com_fabrik.package', $prevUserState);
+		$this->app->setUserState('com_fabrik.package', $prevUserState);
 
 		// Reset input
 		foreach ($orig as $key => $val)
@@ -602,9 +597,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 	protected function _getConentTemplate($contentTemplate)
 	{
-		$app = JFactory::getApplication();
-
-		if ($app->isAdmin())
+		if ($this->app->isAdmin())
 		{
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -631,7 +624,6 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	protected function _getTextEmail()
 	{
 		$data = $this->getProcessData();
-		$config = JFactory::getConfig();
 		$ignore = $this->getDontEmailKeys();
 		$message = "";
 		$formModel = $this->getModel();
@@ -692,7 +684,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			}
 		}
 
-		$message = FText::_('Email from') . ' ' . $config->get('sitename') . '<br />' . FText::_('Message') . ':'
+		$message = FText::_('Email from') . ' ' . $this->config->get('sitename') . '<br />' . FText::_('Message') . ':'
 			. "<br />===================================<br />" . "<br />" . stripslashes($message);
 
 		return $message;

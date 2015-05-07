@@ -69,12 +69,10 @@ class FabrikSubscriptionsIPN
 	 */
 	protected function activateSubscription($listModel, $request, &$set_list, &$err_msg, $recurring = true)
 	{
-
 		$db = JFactory::getDbo();
 		$mail = JFactory::getMailer();
-		$app = JFactory::getApplication();
-
 		$invoice = $this->checkInvoice($request);
+
 		if ($invoice === false)
 		{
 			$this->reportError('Activate subscription: failed invoice check');
@@ -83,18 +81,23 @@ class FabrikSubscriptionsIPN
 
 		// Update subscription details
 		$inv = $this->getInvoice($invoice);
+
 		if ($inv === false)
 		{
 			$this->reportError('Activate subscription: didn\'t load invoice id: ' . $invoice);
+
 			return false;
 		}
 
 		$sub = $this->getSubscriptionFromInvoice($invoice);
+
 		if ($sub === false)
 		{
 			$this->reportError('Activate subscription: didn\'t load sub for invoice id: ' . $invoice);
+
 			return false;
 		}
+
 		$sub->activate();
 
 		// Update invoice status
@@ -111,7 +114,7 @@ class FabrikSubscriptionsIPN
 		$subErrors = $subUser->getErrors();
 		if (!empty($subErrors))
 		{
-			$msg = $subUser->getError() . "<br>" . $subUser->get('email') . " / userid = " . $subUser->get('id') . ' NOT set to ' . $gid[0];
+			$msg = $subUser->getError() . "<br>" . $subUser->get('email') . " / userid = " . $subUser->get('id') . ' NOT set to ?' ;
 			$this->reportError($msg);
 		}
 		else
@@ -120,9 +123,9 @@ class FabrikSubscriptionsIPN
 			$this->log('fabrik.ipn.setusergid', $msg);
 		}
 
-		$mailFrom = $app->getCfg('mailfrom');
-		$fromName = $app->getCfg('fromname');
-		$siteName = $app->getCfg('sitename');
+		$mailFrom = $this->app->getCfg('mailfrom');
+		$fromName = $this->app->getCfg('fromname');
+		$siteName = $this->app->getCfg('sitename');
 
 		$txn_id = $request['txn_id'];
 		$payer_email = $request['payer_email'];
@@ -182,7 +185,7 @@ class FabrikSubscriptionsIPN
 	 */
 	protected function expireOldSubs($userid)
 	{
-		JLog::add('fabrik.ipn.expireOldSubs.start', JLog::INFO, 'expired old subs for ' . $subUser->get('id'));
+		JLog::add('fabrik.ipn.expireOldSubs.start', JLog::INFO, 'expired old subs for ' . $userid);
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -226,10 +229,9 @@ class FabrikSubscriptionsIPN
 	public function payment_status_Pending($listModel, $request, &$set_list, &$err_msg)
 	{
 		$this->log('fabrik.ipn.payment_status_Pending', '');
-		$app = JFactory::getApplication();
-		$MailFrom = $app->getCfg('mailfrom');
-		$FromName = $app->getCfg('fromname');
-		$SiteName = $app->getCfg('sitename');
+		$MailFrom = $this->app->get('mailfrom');
+		$FromName = $this->app->get('fromname');
+		$SiteName = $this->app->get('sitename');
 
 		$payer_email = $request['payer_email'];
 		$receiver_email = $request['receiver_email'];
@@ -239,7 +241,7 @@ class FabrikSubscriptionsIPN
 		$subject = html_entity_decode($subject, ENT_QUOTES);
 
 		$msgbuyer = 'Your payment on %s is pending. (Paypal transaction ID: %s)<br /><br />%s';
-		$txn_id = $app->input->get('txn_id', 'n/a');
+		$txn_id = $this->app->input->get('txn_id', 'n/a');
 		$msgbuyer = sprintf($msgbuyer, $SiteName, $txn_id, $SiteName);
 		$msgbuyer = html_entity_decode($msgbuyer, ENT_QUOTES);
 		JFactory::getMailer()->sendMail($MailFrom, $FromName, $payer_email, $subject, $msgbuyer, true);
@@ -475,7 +477,7 @@ class FabrikSubscriptionsIPN
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
 		$this->log('fabrik.ipn.txn_type_subscr_payment', $msg);
-		return $this->activateSubscription($tableModel, $request, $set_list, $err_msg, true);
+		return $this->activateSubscription($listModel, $request, $set_list, $err_msg, true);
 	}
 
 	/**
@@ -598,24 +600,26 @@ class FabrikSubscriptionsIPN
 
 	private function reportError($msg, $to = '', $data = array())
 	{
-		$app = JFactory::getApplication();
-		$MailFrom = $app->getCfg('mailfrom');
-		$FromName = $app->getCfg('fromname');
+		$MailFrom = $this->app->get('mailfrom');
+		$FromName = $this->app->get('fromname');
+
 		if ($to === '')
 		{
 			$to = $FromName;
 		}
+
 		$body = $msg . "\n\n\\";
+
 		foreach ($data as $k => $v)
 		{
 			$body .= "$k = $v \n";
 		}
+
 		$subject = 'fabrik.ipn.fabrikar_subs error';
 		JFactory::getMailer()->sendMail($MailFrom, $FromName, $to, $subject, $body);
 
 		// Start logging...
 		JLog::add($body, JLog::ERROR, $subject);
-		continue;
 	}
 
 	/**
@@ -649,7 +653,7 @@ class FabrikSubscriptionsIPN
 		// Eekk no invoice number found in returned data - inform the sys admin
 		if ($invoice === '')
 		{
-			$this->reportError('missing invoice', $receiver_email, array_merge($request, $set_list));
+			$this->reportError('missing invoice', $receiver_email, $request);
 			return false;
 		}
 		return $invoice;

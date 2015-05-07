@@ -38,12 +38,11 @@ class PlgFabrik_FormMailChimp extends PlgFabrik_Form
 
 	public function getBottomContent()
 	{
-		$app = JFactory::getApplication();
 		$params = $this->getParams();
 
 		if ($params->get('mailchimp_userconfirm', true))
 		{
-			$checked = $app->input->get('fabrik_mailchimp_signup', '') !== '' ? ' checked="checked"' : '';
+			$checked = $this->app->input->get('fabrik_mailchimp_signup', '') !== '' ? ' checked="checked"' : '';
 			$this->html = '<label class="mailchimpsignup"><input type="checkbox" name="fabrik_mailchimp_signup" class="fabrik_mailchimp_signup" value="1" '
 				. $checked . '/>' . $params->get('mailchimp_signuplabel') . '</label>';
 		}
@@ -109,7 +108,6 @@ class PlgFabrik_FormMailChimp extends PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
 		$emailData = $this->getProcessData();
 		$filter = JFilterInput::getInstance();
@@ -192,7 +190,7 @@ class PlgFabrik_FormMailChimp extends PlgFabrik_Form
 
 		if ($api->errorCode)
 		{
-			$app->enqueueMessage($api->errorCode, 'Mailchimp: ' . $api->errorMessage, 'notice');
+			$this->app->enqueueMessage($api->errorCode, 'Mailchimp: ' . $api->errorMessage, 'notice');
 
 			if ((bool) $params->get('mailchimp_fail_on_error', true) === true)
 			{

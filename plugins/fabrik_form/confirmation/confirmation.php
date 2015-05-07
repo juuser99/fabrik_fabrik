@@ -61,8 +61,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 
 	protected function clearSession($id)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$session = JFactory::getSession();
 		$session->clear('com_' . $package . '.form.' . $id . '.session.on');
 		$session->clear('com_' . $package . '.form.' . $id . '.session.hash');
@@ -78,9 +77,8 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	public function onBeforeStore()
 	{
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 
 		if ($input->getInt('fabrik_ignorevalidation') === 1 || $input->getInt('fabrik_ajax') === 1)
 		{
@@ -171,9 +169,8 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 
 	public function getBottomContent()
 	{
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// If we have already processed the form
 		$this->html = '';

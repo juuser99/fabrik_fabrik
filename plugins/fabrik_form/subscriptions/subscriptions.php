@@ -208,7 +208,6 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 	protected function setSubscriptionValues(&$opts)
 	{
 		$w = $this->getWorker();
-		$config = JFactory::getConfig();
 		$data = $this->getProcessData();
 		$gateWay = $this->getGateway();
 
@@ -226,7 +225,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		// @TODO test replace various placeholders
 		$filter = JFilterInput::getInstance();
 		$post = $filter->clean($_REQUEST, 'array');
-		$name = $config->get('sitename') . ' {plan_name}  User: {jos_fabrik_subs_users___name} ({jos_fabrik_subs_users___username})';
+		$name = $this->config->get('sitename') . ' {plan_name}  User: {jos_fabrik_subs_users___name} ({jos_fabrik_subs_users___username})';
 		$tmp = array_merge($post, ArrayHelper::fromObject($sub));
 
 		// 'http://fabrikar.com/ '.$sub->item_name. ' - User: subtest26012010 (subtest26012010)';
@@ -306,8 +305,6 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 	public function onBeforeLoad()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$pendingSub = $this->pendingSub();
 
 		if ($pendingSub !== false)
@@ -315,7 +312,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 			/* $input->set('usekey', false);
 			$formModel->unsetData();
 			$formModel->setRowId($pendingSub->id); */
-			$app->enqueueMessage('We found an existing pending subscription from ' . $pendingSub->signup_date);
+			$this->app->enqueueMessage('We found an existing pending subscription from ' . $pendingSub->signup_date);
 		}
 
 		return true;
@@ -325,7 +322,6 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
 		$pendingSub = $this->pendingSub($formModel, false);
 		if ($pendingSub !== false)
 		{
@@ -350,14 +346,13 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 	{
 		// Check if the user has pending subscriptions
 		$formModel = $this->getModel();
-		$user = JFactory::getUser();
-		$rowid = $formModel->getRowId();
+		$rowId = $formModel->getRowId();
 
-		if (($rowid === '' || !$newRow) && $user->get('id') !== 0)
+		if (($rowId === '' || !$newRow) && $this->user->get('id') !== 0)
 		{
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
-			$query->select('*')->from('#__fabrik_subs_subscriptions')->where('userid = ' . (int) $user->get('id'))
+			$query->select('*')->from('#__fabrik_subs_subscriptions')->where('userid = ' . (int) $this->user->get('id'))
 			->where('status = ' . $db->quote('Pending'))
 			->order('signup_date DESC');
 			$db->setQuery($query);
@@ -386,8 +381,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 	{
 		$formModel = $this->getModel();
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->data = $formModel->fullFormData;
 
 		if (!$this->shouldProcess('subscriptions_conditon'))
@@ -476,10 +470,9 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 	protected function getNotifyUrl()
 	{
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
 		$params = $this->getParams();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$testSite = $params->get('subscriptions_test_site', '');
 		$testSiteQs = $params->get('subscriptions_test_site_qs', '');
 		$testMode = $params->get('subscriptions_testmode', false);
@@ -505,9 +498,8 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 	protected function getReturnUrl()
 	{
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$url = '';
 		$params = $this->getParams();
 		$testSite = $params->get('subscriptions_test_site', '');
@@ -542,10 +534,9 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 	public function onThanks()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$formid = $input->getInt('formid');
-		$rowid = $input->getString('rowid', '', 'string');
+		$rowId = $input->getString('rowid', '', 'string');
 		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$formModel->setId($formid);
@@ -558,7 +549,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		{
 			$w = $this->getWorker();
 			$listModel = $formModel->getlistModel();
-			$row = $listModel->getRow($rowid);
+			$row = $listModel->getRow($rowId);
 			$ret_msg = $w->parseMessageForPlaceHolder($ret_msg, $row);
 
 			if (String::stristr($ret_msg, '[show_all]'))
@@ -596,9 +587,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 	public function onIpn()
 	{
-		$config = JFactory::getConfig();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		JLog::add($_SERVER['REQUEST_URI'] . ' ' . http_build_query($_REQUEST), JLog::INFO, 'fabrik.ipn.start');
 
 		// Lets try to load in the custom returned value so we can load up the form and its parameters
@@ -625,7 +614,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 		$w = $this->getWorker();
 
-		$email_from = $admin_email = $config->get('mailfrom');
+		$email_from = $admin_email = $this->config->get('mailfrom');
 
 		// Read the post from Subscriptions system and add 'cmd'
 		$req = 'cmd=_notify-validate';
@@ -838,14 +827,14 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		if ($status == false)
 		{
 			$logLevel = JLog::CRITICAL;
-			$subject = $config->get('sitename') . ": Error with Fabrik Subscriptions IPN";
+			$subject = $this->config->get('sitename') . ": Error with Fabrik Subscriptions IPN";
 			$logMessageTitle = $err_title;
 			$logMessage .= $err_msg;
 			$payer_emailtext = "There was an error processing your Subscriptions payment.  The administrator of this site has been informed.";
 		}
 		else
 		{
-			$subject = $config->get('sitename') . ': IPN ' . $payment_status;
+			$subject = $this->config->get('sitename') . ': IPN ' . $payment_status;
 			$logMessageTitle = 'form.subscriptions.ipn.' . $payment_status;
 			$payer_subject = "Subscriptions success";
 			$payer_emailtext = "Your Subscriptions payment was successfully processed.  The Subscriptions transaction id was $txn_id";
@@ -916,8 +905,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		{
 			try
 			{
-				$app = JFactory::getApplication();
-				$input = $app->input;
+				$input = $this->app->input;
 				$db = JFactory::getDbo();
 				$planField = $db->replacePrefix('#__fabrik_subs_users___plan_id');
 				$planid = $input->getInt($planField, $input->getInt($planField . '_raw'));
@@ -958,11 +946,8 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 	{
 		$gateway = $this->getGateway();
 		$plan = $this->getPlan();
-		$db = JFactory::getDbo();
-		$app = JFactory::getApplication();
 		$date = JFactory::getDate();
-		$input = $app->input;
-		$user = JFactory::getUser();
+		$input = $this->app->input;
 		$sub = JTable::getInstance('Subscription', 'FabrikTable');
 
 		// Replace fields with db prefix
@@ -977,7 +962,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		}
 
 		// If upgrading fall back to logged in user id
-		$sub->userid = $input->getInt('newuserid', $user->get('id'));
+		$sub->userid = $input->getInt('newuserid', $this->user->get('id'));
 		$sub->primary = 1;
 		$sub->type = $gateway->id;
 		$sub->status = $plan->free == 1 ? 'Active' : 'Pending';
@@ -1002,10 +987,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 	protected function createInvoice($sub)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$input = $this->app->input;
 		$date = JFactory::getDate();
 
 		$invoice = JTable::getInstance('Invoice', 'FabrikTable');

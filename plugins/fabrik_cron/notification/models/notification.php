@@ -81,10 +81,9 @@ class FabrikModelNotification extends JModelLegacy
 
 	protected function getRows()
 	{
-		$user = JFactory::getUser();
 		$db = Worker::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('*')->from('#__fabrik_notification')->where('user_id = ' . (int) $user->get('id'));
+		$query->select('*')->from('#__fabrik_notification')->where('user_id = ' . (int) $this->user->get('id'));
 		$db->setQuery($query);
 
 		return $db->loadObjectList();
@@ -100,8 +99,7 @@ class FabrikModelNotification extends JModelLegacy
 	{
 		// Check for request forgeries
 		JSessoin::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$ids = $app->input->get('cid', array());
+		$ids = $this->app->input->get('cid', array());
 		ArrayHelper::toInteger($ids);
 
 		if (empty($ids))
@@ -140,8 +138,6 @@ class FabrikModelNotification extends JModelLegacy
 
 	public function getId()
 	{
-		$app = JFactory::getApplication();
-
-		return $app->input->getInt('id');
+		return $this->app->input->getInt('id');
 	}
 }

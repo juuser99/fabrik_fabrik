@@ -43,7 +43,6 @@ class JFormFieldTwittersignin extends JFormField
 
 	protected function getInput()
 	{
-		$iframeid = $this->id . '_iframe';
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('id', array(0), 'array');

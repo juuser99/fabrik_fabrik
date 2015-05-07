@@ -77,10 +77,9 @@ class PlgFabrik_ElementCaptcha extends Element
 
 	public function getLabel($repeatCounter, $tmpl = '')
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 
-		if ($user->id != 0)
+		if ($this->user->id != 0)
 		{
 			if ($params->get('captcha-showloggedin', 0) == 0)
 			{
@@ -99,10 +98,9 @@ class PlgFabrik_ElementCaptcha extends Element
 
 	public function isHidden()
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 
-		if ($user->id != 0)
+		if ($this->user->id != 0)
 		{
 			if ($params->get('captcha-showloggedin', 0) == 0)
 			{
@@ -138,10 +136,9 @@ class PlgFabrik_ElementCaptcha extends Element
 
 	public function canUse($location = null, $event = null)
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 
-		if ($user->id != 0)
+		if ($this->user->id != 0)
 		{
 			if ($params->get('captcha-showloggedin', 0) == 0)
 			{
@@ -163,14 +160,12 @@ class PlgFabrik_ElementCaptcha extends Element
 
 	public function render($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$session = JFactory::getSession();
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
 		$params = $this->getParams();
-		$user = JFactory::getUser();
 		$value = $this->getValue($data, $repeatCounter);
 
 		if (!$this->isEditable())
@@ -194,7 +189,7 @@ class PlgFabrik_ElementCaptcha extends Element
 			$lang = String::strtolower($params->get('recaptcha_lang', 'en'));
 			$error = null;
 
-			if ($user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
+			if ($this->user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
 			{
 				return '<input class="inputbox text" type="hidden" name="' . $name . '" id="' . $id . '" value="" />';
 			}
@@ -208,7 +203,7 @@ class PlgFabrik_ElementCaptcha extends Element
 		}
 		elseif ($params->get('captcha-method') == 'playthru')
 		{
-			if ($user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
+			if ($this->user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
 			{
 				return '<input class="inputbox text" type="hidden" name="' . $name . '" id="' . $id . '" value="" />';
 			}
@@ -321,11 +316,9 @@ class PlgFabrik_ElementCaptcha extends Element
 
 	public function validate($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		if (!$this->canUse())
 		{
@@ -435,9 +428,7 @@ class PlgFabrik_ElementCaptcha extends Element
 
 	public function elementJavascript($repeatCounter)
 	{
-		$user = JFactory::getUser();
-
-		if ($user->id == 0)
+		if ($this->user->id == 0)
 		{
 			$id = $this->getHTMLId($repeatCounter);
 			$opts = $this->getElementJSOptions($repeatCounter);

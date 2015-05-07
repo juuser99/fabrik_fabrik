@@ -79,7 +79,7 @@ class PlgFabrik_ElementCalc extends Element
 		 *  If viewing form or details view and calc set to always run then return the $default
 		 *  which has had the calculation run on it.
 		 */
-		$task = JFactory::getApplication()->input->get('task', '');
+		$task = $this->app->input->get('task', '');
 
 		if (!$params->get('calc_on_save_only', true) || $task == 'form.process' || $task == 'process')
 		{
@@ -513,8 +513,7 @@ class PlgFabrik_ElementCalc extends Element
 
 	public function onAjax_calc()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
 		$params = $this->getParams();
@@ -715,8 +714,7 @@ class PlgFabrik_ElementCalc extends Element
 
 	public function onAjax_listUpdate()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$ids = $input->get('rows', array(), 'array');
 		$listId = $input->getInt('listid');
 		$elId = $input->getInt('element_id');

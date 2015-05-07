@@ -117,7 +117,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$access = $this->getParams()->get('updatecol_access');
 		$name = $this->_getButtonName();
 
-		return in_array($access, JFactory::getUser()->getAuthorisedViewLevels());
+		return in_array($access, $this->user->getAuthorisedViewLevels());
 	}
 
 	/**
@@ -184,10 +184,8 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	{
 		$params = $this->getParams();
 		$model = $this->getModel();
-		$db = $model->getDb();
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$user = JFactory::getUser();
 		$update = $this->getUpdateCols($params);
 		$postEval = $params->get('update_post_eval', '');
 		
@@ -222,7 +220,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 
 		if (!empty($userCol))
 		{
-			$this->_process($model, $userCol, (int) $user->get('id'), false);
+			$this->_process($model, $userCol, (int) $this->user->get('id'), false);
 		}
 
 		if (!empty($update))
@@ -284,9 +282,8 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			$message = $params->get('update_email_msg');
 			$subject = $params->get('update_email_subject');
 			$eval = $params->get('eval', 0);
-			$config = JFactory::getConfig();
-			$from = $config->get('mailfrom');
-			$fromname = $config->get('fromname');
+			$from = $this->config->get('mailfrom');
+			$fromname = $this->config->get('fromname');
 
 			$emailWhich = $this->emailWhich();
 

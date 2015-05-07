@@ -238,8 +238,6 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
 	{
-		$app = JFactory::getApplication();
-
 		if ($this->isJoin())
 		{
 			$fbConfig = JComponentHelper::getParams('com_fabrik');
@@ -249,11 +247,11 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		else
 		{
 			// Autocomplete with concat label was not working if we called the parent method
-			if ($app->input->get('method') === 'autocomplete_options')
+			if ($this->app->input->get('method') === 'autocomplete_options')
 			{
 				$data = array();
 				$opts = array();
-				$v = $app->input->get('value', '', 'string');
+				$v = $this->app->input->get('value', '', 'string');
 
 				/*
 				 * $$$ hugh (and Joe) - added 'autocomplete_how', currently just "starts_with" or "contains"
@@ -283,8 +281,6 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 	public function getJoinLabelColumn($useStep = false)
 	{
-		$app = JFactory::getApplication();
-
 		if (!isset($this->joinLabelCols))
 		{
 			$this->joinLabelCols = array();
@@ -304,7 +300,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		*/
 		if (is_object($join) && ($params->get($this->concatLabelParam) != ''))
 		{
-			if ($app->input->get('override_join_val_column_concat') != 1)
+			if ($this->app->input->get('override_join_val_column_concat') != 1)
 			{
 				$val = str_replace("{thistable}", $join->table_join_alias, $params->get($this->concatLabelParam));
 				$w = new Worker;
@@ -392,8 +388,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			return $this->join;
 		}
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$element = $this->getElement();
 
 		if ($element->published == 0)
@@ -801,7 +796,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			return false;
 		}
 
-		return in_array($gid, JFactory::getUser()->getAuthorisedViewLevels());
+		return in_array($gid, $this->user->getAuthorisedViewLevels());
 	}
 
 	/**
@@ -1255,8 +1250,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 	public function render($data, $repeatCounter = 0)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 
 		// For repeating groups we need to unset this where each time the element is rendered
 		unset($this->autocomplete_where);
@@ -1500,8 +1494,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 	protected function popUpFormUrl()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
 		$popupformid = (int) $params->get('databasejoin_popupform');
 
@@ -2881,8 +2874,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	public function onAjax_getOptions()
 	{
 		// Needed for ajax update (since we are calling this method via dispatcher element is not set
-		$app = JFactory::getApplication();
-		$this->id = $app->input->getInt('element_id');
+		$this->id = $this->app->input->getInt('element_id');
 		$this->loadMeForAjax();
 		$this->getElement(true);
 		$filter = JFilterInput::getInstance();

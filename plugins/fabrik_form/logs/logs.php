@@ -35,9 +35,8 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 	public function onLoad()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
-		$view = $app->input->get('view', 'form');
+		$view = $this->app->input->get('view', 'form');
 
 		if ((!$formModel->isEditable() || $view == 'details') && ($params->get('log_details') != '0'))
 		{
@@ -54,22 +53,21 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 	/**
 	 * Get message type
 	 *
-	 * @param   string  $rowid  row reference
+	 * @param   string  $rowId  row reference
 	 *
 	 * @return  string
 	 */
 
-	protected function getMessageType($rowid)
+	protected function getMessageType($rowId)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		if ($input->get('view') == 'details')
 		{
 			return 'form.details';
 		}
 
-		if ($rowid == '')
+		if ($rowId == '')
 		{
 			return 'form.add';
 		}
@@ -146,16 +144,13 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$db = Worker::getDBO();
-		$query = $db->getQuery(true);
-		$rowid = $input->get('rowid', '', 'string');
+		$rowId = $input->get('rowid', '', 'string');
 		$loading = strstr($messageType, 'form.load');
 		$http_referrer = $input->server->get('HTTP_REFERER', 'no HTTP_REFERER', 'string');
-		$user = JFactory::getUser();
-		$userid = $user->get('id');
-		$username = $user->get('username');
+		$userId = $this->user->get('id');
+		$username = $this->user->get('username');
 
 		// Generate random filename
 		if ($params->get('logs_random_filename') == 1)
@@ -192,7 +187,6 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		$w = new Worker;
 		$logs_file = $logs_path . '/' . $w->parseMessageForPlaceHolder($params->get('logs_file')) . $random_filename . '.' . $ext;
 		$logs_mode = $params->get('logs_append_or_overwrite');
-		$date_element = $params->get('logs_date_field');
 		$date_now = $params->get('logs_date_now');
 
 		// COMPARE DATA
@@ -433,11 +427,11 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 			$clabelsCreateDb[] = $db->quoteName('rowid') . " INT(11) NOT NULL";
 			$clabelsDb[] = $db->quoteName('rowid');
-			$cdataDb[] = $db->quote($rowid);
+			$cdataDb[] = $db->quote($rowId);
 
 			$clabelsCreateDb[] = $db->quoteName('userid') . " INT(11) NOT NULL";
 			$clabelsDb[] = $db->quoteName('userid');
-			$cdataDb[] = $db->quote((int) $userid);
+			$cdataDb[] = $db->quote((int) $userId);
 
 			$clabelsCreateDb[] = $db->quoteName('tableid') . " INT(11) NOT NULL";
 			$clabelsDb[] = $db->quoteName('tableid');
@@ -537,7 +531,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 						if (!$res)
 						{
-							$app->enqueueMessage("error writing html to log file: " . $logs_file, 'notice');
+							$this->app->enqueueMessage("error writing html to log file: " . $logs_file, 'notice');
 						}
 					}
 				}
@@ -547,8 +541,8 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 					$txtMsg = "Date: " . $date . "\n";
 					$txtMsg .= "Form ID: " . $formModel->getId() . "\n";
 					$txtMsg .= "Table ID: " . $formModel->getListModel()->getId() . "\n";
-					$txtMsg .= "Row ID: " . $rowid . "\n";
-					$txtMsg .= "User ID: $userid ($username)\n";
+					$txtMsg .= "Row ID: " . $rowId . "\n";
+					$txtMsg .= "User ID: $userId ($username)\n";
 
 					if ($params->get('logs_record_ip') == 1)
 					{
@@ -726,8 +720,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		if ($send_email)
 		{
 			jimport('joomla.mail.helper');
-			$config = &JFactory::getConfig();
-			$email_from = $config->get('mailfrom');
+			$email_from = $this->config->get('mailfrom');
 			$email_to = explode(',', $w->parseMessageForPlaceholder($params->get('log_send_email_to', '')));
 			$subject = strip_tags($w->parseMessageForPlaceholder($params->get('log_send_email_subject', 'log event')));
 
@@ -747,7 +740,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 				}
 				else
 				{
-					$app->enqueueMessage(JText::sprintf('DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email));
+					$this->app->enqueueMessage(JText::sprintf('DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email));
 				}
 			}
 		}

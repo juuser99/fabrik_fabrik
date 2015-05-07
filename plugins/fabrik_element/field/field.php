@@ -494,8 +494,7 @@ class PlgFabrik_ElementField extends Element
 
 	public function onAjax_renderQRCode()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
 		$this->getElement();
@@ -582,8 +581,7 @@ class PlgFabrik_ElementField extends Element
 			$thisRow = ArrayHelper::fromObject($thisRow);
 		}
 
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formModel = $this->getFormModel();
 		$formId = $formModel->getId();
 		$rowId = $formModel->getRowId();

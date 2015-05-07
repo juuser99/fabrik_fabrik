@@ -87,14 +87,14 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			// Set user to logged in user
 			if ($this->isEditable())
 			{
-				$user = JFactory::getUser();
+				$user = $this->user;
 			}
 			else
 			{
 				$userid = (int) $this->getValue($data, $repeatCounter);
 
 				// On failed validation value is 1 - user ids are always more than that so don't load userid=1 otherwise an error is generated
-				$user = $userid <= 1 ? JFactory::getUser() : JFactory::getUser($userid);
+				$user = $userid <= 1 ? $this->user : JFactory::getUser($userid);
 			}
 		}
 		else
@@ -108,7 +108,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			// $$$ hugh ... what a mess ... of course if it's a new form, $data doesn't exist ...
 			if (empty($data))
 			{
-				$user = JFactory::getUser();
+				$user = $this->user;
 			}
 			else
 			{
@@ -162,7 +162,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 				}
 				else
 				{
-					$user = $id === '' ? JFactory::getUser() : JFactory::getUser((int) $id);
+					$user = $id === '' ? $this->user : JFactory::getUser((int) $id);
 				}
 			}
 		}
@@ -211,8 +211,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 	public function preProcess($c)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
 
 		/**
@@ -298,8 +297,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			return false;
 		}
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// $$$ hugh - special case, if we have just run the fabrikjuser plugin, we need to
 		// use the 'newuserid' as set by the plugin.
@@ -368,7 +366,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			// $$$ rob if we cant use the element or its hidden force the use of current logged in user
 			if (!$this->canUse() || $this->getElement()->hidden == 1)
 			{
-				$user = JFactory::getUser();
+				$user = $this->user;
 				$data[$element->name] = $user->get('id');
 				$data[$element->name . '_raw'] = $data[$element->name];
 			}
@@ -392,7 +390,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		{
 			if ($this->updateOnEdit())
 			{
-				$user = JFactory::getUser();
+				$user = $this->user;
 				$data[$element->name] = $user->get('id');
 				$data[$element->name . '_raw'] = $data[$element->name];
 
@@ -480,9 +478,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 	public function canView($view = 'form')
 	{
-		$app = JFactory::getApplication();
-
-		if ($app->input->get('task', '') == 'processForm')
+		if ($this->app->input->get('task', '') == 'processForm')
 		{
 			return true;
 		}
@@ -650,8 +646,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	{
 		if (!isset($this->default))
 		{
-			$user = JFactory::getUser();
-			$this->default = $user->get('id');
+			$this->default = $this->user->get('id');
 		}
 
 		return $this->default;
@@ -669,8 +664,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// Kludge for 2 scenarios
 		if (array_key_exists('rowid', $data))
@@ -989,7 +983,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			}
 		}
 
-		$user = $userid === 0 ? JFactory::getUser() : JFactory::getUser($userid);
+		$user = $userid === 0 ? $this->user : JFactory::getUser($userid);
 
 		return $this->getUserDisplayProperty($user);
 	}
@@ -1053,8 +1047,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if ($params->get('update_on_edit'))
 		{
-			$user = JFactory::getUser();
-			$val = $user->get('id');
+			$val = $this->user->get('id');
 		}
 
 		return $val;
@@ -1074,8 +1067,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if ($params->get('update_on_copy', false))
 		{
-			$user = JFactory::getUser();
-			$val = $user->get('id');
+			$val = $this->user->get('id');
 		}
 
 		return $val;
@@ -1091,7 +1083,6 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	protected function getLabelOrConcatVal()
 	{
 		static $displayMessage;
-		$app = JFactory::getApplication();
 		$params = $this->getParams();
 		$displayParam = $params->get('my_table_data', 'username');
 
@@ -1101,7 +1092,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 			if (!isset($displayMessage))
 			{
-				$app->enqueueMessage(JText::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->id), 'notice');
+				$this->app->enqueueMessage(JText::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->id), 'notice');
 				$displayMessage = true;
 			}
 		}

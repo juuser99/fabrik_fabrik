@@ -51,7 +51,6 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 
 	public function process(&$data)
 	{
-		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
 		$params = $this->getParams();
 		$msg = $params->get('message');
@@ -59,8 +58,8 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		$to = explode(',', $params->get('to'));
 
 		$w = new Worker;
-		$MailFrom = $app->get('mailfrom');
-		$FromName = $app->get('fromname');
+		$MailFrom = $this->app->get('mailfrom');
+		$FromName = $this->app->get('fromname');
 		$subject = $params->get('subject', 'Fabrik cron job');
 		$eval = $params->get('cronemail-eval');
 		$condition = $params->get('cronemail_condition', '');

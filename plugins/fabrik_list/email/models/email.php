@@ -378,7 +378,6 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		$params    = $this->getParams();
 		$app       = JFactory::getApplication();
 		$input     = $app->input;
-		$user      = JFactory::getUser();
 		$updateVal = $params->get($name);
 
 		if ($updateVal === 'now()')
@@ -393,7 +392,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 		if ($updateVal === '{$my->id}')
 		{
-			$updateVal = $user->get('id', 0, 'int');
+			$updateVal = $this->user->get('id', 0, 'int');
 		}
 
 		return $updateVal;
@@ -962,15 +961,12 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 		if ($fromUser)
 		{
-			$my        = JFactory::getUser();
-			$emailFrom = $my->get('email');
-			$fromName  = $my->get('name');
+			$emailFrom = $this->user->get('email');
+			$fromName  = $this->user->get('name');
 		}
 		else
 		{
-			$config = JFactory::getConfig();
-
-			$emailFrom = $params->get('email_from', $config->get('mailfrom'));
+			$emailFrom = $params->get('email_from', $this->config->get('mailfrom'));
 			@list($emailFrom, $fromName) = explode(':', $w->parseMessageForPlaceholder($emailFrom, $data, false), 2);
 		}
 

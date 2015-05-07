@@ -132,7 +132,6 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		$sObject->type = $updateObject;
 		$sObject->fields = $submission;
 		array_push($sObjects, $sObject);
-		$app = JFactory::getApplication();
 
 		if ($params->get('salesforce_allowupsert', 0))
 		{
@@ -147,11 +146,11 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		{
 			if ($result->created == '' && $params->get('salesforce_allowupsert', 0))
 			{
-				$app->enqueueMessage(JText::sprintf(SALESFORCE_UPDATED, $updateObject));
+				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_UPDATED, $updateObject));
 			}
 			else
 			{
-				$app->enqueueMessage(JText::sprintf(SALESFORCE_CREATED, $updateObject));
+				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_CREATED, $updateObject));
 			}
 		}
 		else

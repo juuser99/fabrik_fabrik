@@ -57,16 +57,15 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 			return;
 		}
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formId = $formModel->getForm()->id;
 		$mode = String::strtolower($input->get('view', 'form'));
 		$this->ids = $this->getNavIds($formModel);
 		$linkStartPrev = $this->ids->index == 0 ? ' disabled' : '';
 		$linkNextEnd = $this->ids->index == $this->ids->lastKey ? ' disabled' : '';
 
-		if ($app->isAdmin())
+		if ($this->app->isAdmin())
 		{
 			$url = 'index.php?option=com_fabrik&task=' . $mode . '.view&formid=' . $formId . '&rowid=';
 		}
@@ -178,8 +177,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 			return;
 		}
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$opts = new stdClass;
 		$opts->liveSite = COM_FABRIK_LIVESITE;
 		$opts->view = $input->get('view');
@@ -199,9 +197,8 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 
 	public function onXRecord()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
 		$formid = $input->getInt('formid');
 		$rowid = $input->get('rowid', '', 'string');
 		$mode = $input->get('mode', 'details');

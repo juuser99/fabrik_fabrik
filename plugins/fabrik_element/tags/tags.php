@@ -339,7 +339,6 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 	{
 		$name = $this->getFullName(true, false);
 		$rawname = $name . '_raw';
-		$user = JFactory::getUser();
 		$date = JFactory::getDate();
 		$db = Worker::getDbo(true);
 		$formData =& $this->getFormModel()->formDataWithTableName;
@@ -352,7 +351,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 			{
 				$tagId = $db->quote(str_replace('#fabrik#', '', $tagId));
 				$query = $db->getQuery(true);
-				$query->insert('#__tags')->set('level = 1, published = 1, parent_id = 1, created_user_id = ' . (int) $user->get('id'))
+				$query->insert('#__tags')->set('level = 1, published = 1, parent_id = 1, created_user_id = ' . (int) $this->user->get('id'))
 				->set('created_time = ' . $db->quote($date->toSql()), ', language = "*", version = 1')
 				->set('path = ' . $tagId . ', title = ' . $tagId . ', alias = ' . $tagId);
 				$db->setQuery($query);

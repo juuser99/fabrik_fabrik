@@ -89,10 +89,8 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 	public function tweet()
 	{
-		$session = JFactory::getSession();
 		global $_SESSION;
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->buildModel($input->get('formid'));
 		$params = $this->getParams();
 		$renderOrder = $input->getInt('renderOrder');
@@ -136,12 +134,10 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 	protected function sendTweet($connection)
 	{
-		$params = $this->getParams();
 		$session = JFactory::getSession();
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
 		$formdata = $session->get('com_' . $package . '.form.data');
 
 		/*
@@ -157,7 +153,6 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		// Get logged in user to help with tests
 		$user = $connection->get('account/verify_credentials');
 		$msg = $_SESSION['msg'];
-		$data = JFactory::getDate();
 
 		$parameters = array('status' => $msg);
 		$status = $connection->post('statuses/update', $parameters);
@@ -169,18 +164,18 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 			case '304':
 				if ($show_success == 1)
 				{
-					$app->enqueueMessage(FText::_('PLG_FORM_TWITTER_SUCCESS'));
+					$this->app->enqueueMessage(FText::_('PLG_FORM_TWITTER_SUCCESS'));
 				}
 				break;
 			default:
-				$app->enqueueMessage(FText::_('PLG_FORM_TWITTER_ERR') . ": $connection->http_code : $status->error");
+				$this->app->enqueueMessage(FText::_('PLG_FORM_TWITTER_ERR') . ": $connection->http_code : $status->error");
 		}
 
 		$url = $input->get('fabrik_referrer', '', 'string');
 		$context = $formModel->getRedirectContext();
 		$url = $session->get($context . 'url', array($url));
 		$url = array_shift($url);
-		$app->redirect($url);
+		$this->app->redirect($url);
 	}
 
 	/**
@@ -192,9 +187,8 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		global $_SESSION;
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formModel = $this->getModel();
 		$session = JFactory::getSession();
 
@@ -275,10 +269,9 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 	public function getEmailData()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$formModel = $this->getModel();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$data = parent::getEmailData();
 		$id = $input->get('rowid');
 		$formId = $formModel->getId();
@@ -408,9 +401,8 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 	public function onAuthenticateAdmin()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formModel = $this->buildModel($input->getInt('formid'));
 		$params = $formModel->getParams();
 		$consumer_key = $input->get('twitter_consumer_key');
@@ -468,8 +460,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 	public function onUpdateAdmin()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$formModel = $this->buildModel($input->getInt('formid'));
 		$params = $formModel->getParams();
 		$renderOrder = $input->getInt('repeatCounter');

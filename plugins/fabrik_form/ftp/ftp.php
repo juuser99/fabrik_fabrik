@@ -47,11 +47,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 		$params = $this->getParams();
 		jimport('joomla.mail.helper');
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$config	= JFactory::getConfig();
-		$db = JFactory::getDbo();
-		$formParams	= $formModel->getParams();
+		$input = $this->app->input;
 		$ftpTemplate = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/ftp/tmpl/' . $params->get('ftp_template', ''));
 		$this->data = $this->getProcessData();
 
@@ -124,7 +120,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 		$ftp_user = $w->parseMessageForPlaceholder($params->get('ftp_user', ''), $this->data, false);
 		$ftp_password = $w->parseMessageForPlaceholder($params->get('ftp_password', ''), $this->data, false);
 
-		$tmp_dir = rtrim($config->getValue('config.tmp_path'), '/');
+		$tmp_dir = rtrim($this->config->get('tmp_path'), '/');
 
 		if (empty($tmp_dir) || !JFolder::exists($tmp_dir))
 		{
@@ -146,7 +142,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 					{
 						if (!ftp_chdir($conn_id, $ftp_chdir))
 						{
-							$app->enqueueMessage(FText::_('PLG_FORM_FTP_COULD_NOT_CHDIR'), 'notice');
+							$this->app->enqueueMessage(FText::_('PLG_FORM_FTP_COULD_NOT_CHDIR'), 'notice');
 							JFile::delete($tmp_file);
 
 							return false;
@@ -155,7 +151,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 
 					if (!ftp_put($conn_id, $ftp_filename, $tmp_file, FTP_ASCII))
 					{
-						$app->enqueueMessage(FText::_('PLG_FORM_FTP_COULD_NOT_SEND_FILE'), 'notice');
+						$this->app->enqueueMessage(FText::_('PLG_FORM_FTP_COULD_NOT_SEND_FILE'), 'notice');
 						JFile::delete($tmp_file);
 
 						return false;
@@ -163,7 +159,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 				}
 				else
 				{
-					$app->enqueueMessage(FText::_('PLG_FORM_FTP_COULD_NOT_LOGIN'), 'notice');
+					$this->app->enqueueMessage(FText::_('PLG_FORM_FTP_COULD_NOT_LOGIN'), 'notice');
 					JFile::delete($tmp_file);
 
 					return false;
@@ -258,9 +254,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 
 	protected function _getConentTemplate($contentTemplate)
 	{
-		$app = JFactory::getApplication();
-
-		if ($app->isAdmin())
+		if ($this->app->isAdmin())
 		{
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -287,7 +281,6 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 	protected function _getTextFtp()
 	{
 		$data = $this->getProcessData();
-		$config = JFactory::getConfig();
 		$ignore = $this->getDontEmailKeys();
 		$message = "";
 		$pluginManager = Worker::getPluginManager();
@@ -350,7 +343,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 			}
 		}
 
-		$message = FText::_('Email from') . ' ' . $config->get('sitename') . '<br />' . FText::_('Message') . ':'
+		$message = FText::_('Email from') . ' ' . $this->config->get('sitename') . '<br />' . FText::_('Message') . ':'
 			. "<br />===================================<br />" . "<br />" . stripslashes($message);
 
 		return $message;

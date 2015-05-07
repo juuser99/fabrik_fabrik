@@ -37,8 +37,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	{
 		$formModel = $this->getModel();
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$session = JFactory::getSession();
 		$context = $formModel->getRedirectContext();
 
@@ -99,7 +98,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			$msg = $this->data['thanks_message'];
 
 			// Redirect not working in admin.
-			if (!$app->isAdmin())
+			if (!$this->app->isAdmin())
 			{
 				$sshowsystemmsg[$this->renderOrder] = false;
 				$session->set($context . 'showsystemmsg', $sshowsystemmsg);
@@ -149,9 +148,8 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	protected function displayThanks($title = '', $message = '')
 	{
 		$session = JFactory::getSession();
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
 		$formdata = $session->get('com_' . $package . '.form.data');
 		$context = 'com_' . $package . '.form.' . $formdata['formid'] . '.redirect.';
 		$title = (array) $session->get($context . 'title', $title);
@@ -190,8 +188,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 	public function customProcessResult($method)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$formModel = $this->getModel();
 
 		// If we are applying the form don't run redirect
@@ -282,8 +279,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			}
 		}
 
-		$app = JFactory::getApplication();
-		$isMabmot = $app->input->get('isMambot', false);
+		$isMabmot = $this->app->input->get('isMambot', false);
 
 		if ($isMabmot)
 		{
@@ -353,9 +349,8 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	{
 		$formModel = $this->getModel();
 		$listModel = $formModel->getlistModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->app->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$store = array();
 
 		$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->db_primary_key);

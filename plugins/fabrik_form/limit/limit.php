@@ -44,7 +44,6 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	private function _process()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
 		$this->data = $this->getProcessData();
 
@@ -58,7 +57,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 			return true;
 		}
 
-		if (JFactory::getApplication()->input->get('view') === 'details' || $formModel->getRowId() !== '')
+		if ($this->app->input->get('view') === 'details' || $formModel->getRowId() !== '')
 		{
 			return true;
 		}
@@ -76,7 +75,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		{
 			$msg = $params->get('limit_reached_message', JText::sprintf('PLG_FORM_LIMIT_LIMIT_REACHED', $limit));
 			$msg = str_replace('{limit}', $limit, $msg);
-			$app->enqueueMessage(FText::_($msg), 'notice');
+			$this->app->enqueueMessage(FText::_($msg), 'notice');
 
 			return false;
 		}
@@ -84,7 +83,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		{
 			if ($params->get('show_limit_message', true))
 			{
-				$app->enqueueMessage(JText::sprintf('PLG_FORM_LIMIT_ENTRIES_LEFT_MESSAGE', $limit - $c, $limit));
+				$this->app->enqueueMessage(JText::sprintf('PLG_FORM_LIMIT_ENTRIES_LEFT_MESSAGE', $limit - $c, $limit));
 			}
 		}
 
@@ -99,7 +98,6 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	protected function count()
 	{
 		$formModel = $this->getModel();
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 		$field = $params->get('limit_userfield');
 		$fk = $params->get('limit_fk');
@@ -122,7 +120,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		$list = $listModel->getTable();
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
-		$query->clear()->select(' COUNT(' . $field . ')')->from($list->db_table_name)->where($field . ' = ' . (int) $user->get('id'));
+		$query->clear()->select(' COUNT(' . $field . ')')->from($list->db_table_name)->where($field . ' = ' . (int) $this->user->get('id'));
 
 		if (!empty($fkVal))
 		{
@@ -166,7 +164,6 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	 */
 	protected function limitQuery()
 	{
-		$user = JFactory::getUser();
 		$params = $this->getParams();
 		$listid = (int) $params->get('limit_table');
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
@@ -181,11 +178,11 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 
 		if ($type == 'user')
 		{
-			$query->where($lookup . ' = ' . (int) $user->get('id'));
+			$query->where($lookup . ' = ' . (int) $this->user->get('id'));
 		}
 		else
 		{
-			$groups = $user->getAuthorisedGroups();
+			$groups = $this->user->getAuthorisedGroups();
 			$query->where($lookup . ' IN (' . implode(',', $groups) . ')');
 		}
 

@@ -338,8 +338,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 
 	public function onAjax_addNote()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$this->loadMeForAjax();
 		$return = new stdClass;
 		$db = $this->getDb();
@@ -359,7 +358,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 
 			if ($user !== '')
 			{
-				$query->set($db->quoteName($user) . ' = ' . (int) JFactory::getUser()->get('id'));
+				$query->set($db->quoteName($user) . ' = ' . (int) $this->user->get('id'));
 			}
 
 			$fk = $params->get('join_fk_column', '');

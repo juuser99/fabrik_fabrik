@@ -77,7 +77,7 @@ class PlgFabrik_ElementDate extends ElementList
 		}
 
 		// @TODO: deal with time options (currently can be defined in date_table_format param).
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$params = $this->getParams();
 		$store_as_local = (int) $params->get('date_store_as_local', 0);
 		$groupModel = $this->getGroup();
@@ -133,7 +133,7 @@ class PlgFabrik_ElementDate extends ElementList
 	public function renderListData_csv($data, &$thisRow)
 	{
 		// @TODO: deal with time options (currently can be defined in date_table_format param).
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$db = Worker::getDbo();
 		$params = $this->getParams();
 		$element = $this->getElement();
@@ -394,7 +394,7 @@ class PlgFabrik_ElementDate extends ElementList
 
 		if ($this->shouldApplyTz())
 		{
-			$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+			$timeZone = new DateTimeZone($this->config->get('offset'));
 			$date->setTimeZone($timeZone);
 		}
 
@@ -477,7 +477,7 @@ class PlgFabrik_ElementDate extends ElementList
 	private function _indStoreDBFormat($val)
 	{
 		$params = $this->getParams();
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$store_as_local = (bool) $params->get('date_store_as_local', false);
 		$alwaysToday = $params->get('date_alwaystoday', false);
 
@@ -519,7 +519,7 @@ class PlgFabrik_ElementDate extends ElementList
 		}
 
 		// $$$ rob - as the date js code formats to the db format - just return the value.
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$val = JFactory::getDate($val, $timeZone)->toSql($store_as_local);
 
 		return $val;
@@ -538,7 +538,7 @@ class PlgFabrik_ElementDate extends ElementList
 		if ($this->resetToGMT)
 		{
 			// $$$ rob 3.0 offset is no longer an integer but a timezone string
-			$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+			$timeZone = new DateTimeZone($this->config->get('offset'));
 			$hours = $timeZone->getOffset($date) / (60 * 60);
 			$invert = false;
 
@@ -683,7 +683,7 @@ class PlgFabrik_ElementDate extends ElementList
 		 */
 		$params = $this->getParams();
 		$store_as_local = (int) $params->get('date_store_as_local', 0);
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$f = $params->get('date_table_format', 'Y-m-d');
 		$tz_date = '';
 
@@ -721,7 +721,7 @@ class PlgFabrik_ElementDate extends ElementList
 	{
 		$params = $this->getParams();
 		$f = $params->get('date_table_format', 'Y-m-d');
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 
 		if (Worker::isDate($v))
 		{
@@ -1068,7 +1068,7 @@ class PlgFabrik_ElementDate extends ElementList
 			return $value;
 		}
 
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$date = JFactory::getDate($value, $timeZone);
 
 		// If value = '' don't offset it (not sure what the logic is but testing seems to indicate this to be true)
@@ -1559,7 +1559,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$element = $this->getElement();
 		$listModel = $this->getListModel();
 		$fabrikDb = $listModel->getDb();
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$params = $this->getParams();
 		$format = $params->get('date_table_format', 'Y-m-d');
 		/**
@@ -1714,8 +1714,7 @@ class PlgFabrik_ElementDate extends ElementList
 
 	protected function getFilterHtmlId($range)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$counter = $input->get('counter', 0);
 
 		return $this->getHTMLId() . '_filter_range_' . $range . '_' . $input->get('task') . '.' . $counter;
@@ -1887,7 +1886,7 @@ class PlgFabrik_ElementDate extends ElementList
 
 		// $$$ rob 20/07/2012 Date is posted as local time, need to set it back to GMT. Seems needed even if dates are saved without timeselector
 		// $$$ hugh - think we may need to take 'store as local' in to account here?
-		$localTimeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+		$localTimeZone = new DateTimeZone($this->config->get('offset'));
 
 		$params = $this->getParams();
 		$store_as_local = $params->get('date_store_as_local', '0') == '1';
@@ -2193,7 +2192,7 @@ class PlgFabrik_ElementDate extends ElementList
 			if (!$store_as_local)
 			{
 				$date = JFactory::getDate($val);
-				$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
+				$timeZone = new DateTimeZone($this->config->get('offset'));
 				$date->setTimeZone($timeZone);
 				$val = $date->toSql(true);
 			}
@@ -2558,7 +2557,6 @@ class FabDate extends JDate
 
 	public function __construct($date = 'now', $tz = null)
 	{
-		$app = JFactory::getApplication();
 		$orig = $date;
 		$date = $this->stripDays($date);
 		/* not sure if this one needed?
@@ -2572,7 +2570,7 @@ class FabDate extends JDate
 		}
 		catch (Exception $e)
 		{
-			JDEBUG ? $app->enqueueMessage('date format unknown for ' . $orig . ' replacing with today\'s date', 'notice') : '';
+			JDEBUG ? $this->app->enqueueMessage('date format unknown for ' . $orig . ' replacing with today\'s date', 'notice') : '';
 			$date = 'now';
 			/* catches 'Failed to parse time string (ublingah!) at position 0 (u)' exception.
 			 * don't use this object

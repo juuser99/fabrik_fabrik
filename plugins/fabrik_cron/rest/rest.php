@@ -112,8 +112,7 @@ class PlgFabrik_CronRest extends PlgFabrik_Cron
 
 	protected function createList($listModel, $adminListModel)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
 		$table = $params->get('create_list');
 
@@ -131,7 +130,7 @@ class PlgFabrik_CronRest extends PlgFabrik_Cron
 		$res = (int) $db->loadResult();
 
 		$now = JFactory::getDate()->toSql();
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		$data = array();
 

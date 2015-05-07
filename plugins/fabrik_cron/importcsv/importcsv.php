@@ -87,8 +87,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 
 	public function process(&$data, &$listModel)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
 
 		// Get plugin settings and save state of request array vars we might change
@@ -159,7 +158,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 
 			if (empty($listid))
 			{
-				Worker::log('plg.cron.cronimportcsv.warning', "List with name $filename does not exist");
+				Worker::log('plg.cron.cronimportcsv.warning', "List with id $listid does not exist");
 				continue;
 			}
 
@@ -174,9 +173,9 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 			$clsImportCSV->findExistingElements();
 			$msg = $clsImportCSV->makeTableFromCSV();
 
-			if ($app->isAdmin())
+			if ($this->app->isAdmin())
 			{
-				$app->enqueueMessage($msg);
+				$this->app->enqueueMessage($msg);
 			}
 
 			if ($deleteFile == '1')
@@ -199,9 +198,9 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 				}
 				else
 				{
-					if ($app->isAdmin())
+					if ($this->app->isAdmin())
 					{
-						$app->enqueueMessage("Move file requested, but can't find 'done' folder: $done_folder");
+						$this->app->enqueueMessage("Move file requested, but can't find 'done' folder: $done_folder");
 					}
 				}
 			}

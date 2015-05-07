@@ -128,7 +128,6 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		JPluginHelper::importPlugin('content');
 
 		$params = $this->getParams();
-		$user = JFactory::getUser();
 		$data = array('articletext' => $this->buildContent(), 'catid' => $catid, 'state' => 1, 'language' => '*');
 		$attribs = array('title' => '', 'publish_up' => '', 'publish_down' => '', 'featured' => '0', 'state' => '1', 'metadesc' => '', 'metakey' => '', 'tags' => '');
 
@@ -139,12 +138,12 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		if ($isNew)
 		{
 			$data['created'] = JFactory::getDate()->toSql();
-			$attribs['created_by'] = $user->get('id');
+			$attribs['created_by'] = $this->user->get('id');
 		}
 		else
 		{
 			$data['modified'] = JFactory::getDate()->toSql();
-			$data['modified_by'] = $user->get('id');
+			$data['modified_by'] = $this->user->get('id');
 		}
 
 		foreach ($attribs as $attrib => $default)
@@ -178,10 +177,9 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		 * Otherwise we've had to hack over the admin featured() method into this plugin for the front end
 		 */
 		
-		$version = new JVersion;
 		JTable::addIncludePath(COM_FABRIK_BASE . 'administrator/components/com_content/tables');
 
-		if (JFactory::getApplication()->isAdmin())
+		if ($this->app->isAdmin())
 		{
 			JModelLegacy::addIncludePath(COM_FABRIK_BASE . 'administrator/components/com_content/models');
 			$articleModel = JModelLegacy::getInstance('Article', 'ContentModel');
@@ -534,7 +532,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 			// Ensure we store to the main db table
 			$listModel->clearTable();
 
-			$rowId = JFactory::getApplication()->input->getString('rowid');
+			$rowId = $this->app->input->getString('rowid');
 			$listModel->storeCell($rowId, $key, $val);
 		}
 		else
@@ -582,7 +580,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		$params = $this->getParams();
 		$deleteMode = $params->get('delete_mode', 'DELETE');
 		$item = JTable::getInstance('Content');
-		$userId = JFactory::getUser()->get('id');
+		$userId = $this->user->get('id');
 
 		if ($elementModel = $formModel->getElement($params->get('meta_store'), true))
 		{
@@ -635,8 +633,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	{
 		$images = $this->images();
 		$formModel = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
 		$template = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/article/tmpl/' . $params->get('template', ''));
@@ -740,9 +737,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 	protected function _getConentTemplate($contentTemplate)
 	{
-		$app = JFactory::getApplication();
-
-		if ($app->isAdmin())
+		if ($this->app->isAdmin())
 		{
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);

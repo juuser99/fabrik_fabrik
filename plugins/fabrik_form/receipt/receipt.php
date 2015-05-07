@@ -73,10 +73,9 @@ class PlgFabrik_FormReceipt extends PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$formModel = $this->getModel();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 
 		if ($params->get('ask-receipt'))
 		{
@@ -87,7 +86,6 @@ class PlgFabrik_FormReceipt extends PlgFabrik_Form
 		}
 
 		$rowid = $input->get('rowid');
-		$config = JFactory::getConfig();
 		$w = new Worker;
 		$form = $formModel->getForm();
 		$data = $this->getProcessData();
@@ -118,8 +116,8 @@ class PlgFabrik_FormReceipt extends PlgFabrik_Form
 
 		$subject = html_entity_decode($params->get('receipt_subject', ''));
 		$subject = JText::_($w->parseMessageForPlaceHolder($subject, $data, false));
-		$from = $config->get('mailfrom', '');
-		$fromname = $config->get('fromname', '');
+		$from = $this->config->get('mailfrom', '');
+		$fromName = $this->config->get('fromname', '');
 
 		// Darn silly hack for poor joomfish settings where lang parameters are set to override joomla global config but not mail translations entered
 		$rawconfig = new JConfig;
@@ -129,14 +127,14 @@ class PlgFabrik_FormReceipt extends PlgFabrik_Form
 			$from = $rawconfig->mailfrom;
 		}
 
-		if ($fromname === '')
+		if ($fromName === '')
 		{
-			$fromname = $rawconfig->fromname;
+			$fromName = $rawconfig->fromname;
 		}
 
 		$from = $params->get('from_email', $from);
 		$mail = JFactory::getMailer();
-		$res = $mail->sendMail($from, $fromname, $to, $subject, $message, true);
+		$res = $mail->sendMail($from, $fromName, $to, $subject, $message, true);
 
 		if (!$res)
 		{

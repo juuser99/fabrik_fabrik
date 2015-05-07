@@ -56,8 +56,7 @@ class PlgFabrik_ElementViewlevel extends ElementList
 	{
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
-		$user = JFactory::getUser();
-		$selected = $user->getAuthorisedViewLevels();
+		$selected = $this->user->getAuthorisedViewLevels();
 		arsort($selected);
 		$selected = array_shift($selected);
 

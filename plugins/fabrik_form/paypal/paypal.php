@@ -38,9 +38,8 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$formModel = $this->getModel();
-		$input = $app->input;
+		$input = $this->app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$this->data = $this->getProcessData();
 		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
@@ -53,8 +52,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		$w = new Worker;
 
-		$user = JFactory::getUser();
-		$userid = $user->get('id');
+		$userid = $this->user->get('id');
 
 		$ipn = $this->getIPNHandler($params);
 
@@ -560,8 +558,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		 * so we don't have to pass the teg_msg around as a QS arg between us and PayPal,
 		 * and just grab it from params directly.
 		 */
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$formid = $input->getInt('formid');
 		$rowid = $input->getString('rowid', '', 'string');
 		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
@@ -613,9 +610,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 	public function onIpn()
 	{
-		$config = JFactory::getConfig();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$mail = JFactory::getMailer();
 		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 		$log = FabTable::getInstance('log', 'FabrikTable');
@@ -665,7 +660,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		$ipn_value = str_replace(']', '}', $ipn_value);
 		$ipn_value = $w->parseMessageForPlaceHolder($ipn_value, $_POST);
 
-		$email_from = $admin_email = $config->get('mailfrom');
+		$email_from = $admin_email = $this->config->get('mailfrom');
 
 		// Read the post from PayPal system and add 'cmd'
 		$req = 'cmd=_notify-validate';
@@ -677,7 +672,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		}
 
 		// Post back to PayPal system to validate
-		$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
+		$header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
 		$header .= "Host: www.paypal.com:443\r\n";
 		$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
 		$header .= "Content-Length: " . String::strlen($req) . "\r\n\r\n";
@@ -899,7 +894,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 					$emailtext .= $key . " = " . $value . "\n\n";
 				}
 
-				$subject = $config->get('sitename') . ": Error with PayPal IPN from Fabrik";
+				$subject = $this->config->get('sitename') . ": Error with PayPal IPN from Fabrik";
 				$mail->sendMail($email_from, $email_from, $admin_email, $subject, $emailtext, false);
 			}
 
@@ -908,7 +903,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 			if ($send_default_email == '1')
 			{
-				$subject = $config->get('sitename') . ": Error with PayPal IPN from Fabrik";
+				$subject = $this->config->get('sitename') . ": Error with PayPal IPN from Fabrik";
 				$payer_emailtext = FText::_('PLG_FORM_PAYPAL_ERR_PROCESSING_PAYMENT');
 				$mail->sendMail($email_from, $email_from, $payer_email, $subject, $payer_emailtext, false);
 			}
@@ -922,7 +917,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 					$emailtext .= $key . " = " . $value . "\n\n";
 				}
 
-				$subject = $config->get('sitename') . ': IPN ' . $payment_status;
+				$subject = $this->config->get('sitename') . ': IPN ' . $payment_status;
 				$mail->sendMail($email_from, $email_from, $admin_email, $subject, $emailtext, false);
 			}
 

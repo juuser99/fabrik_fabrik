@@ -50,11 +50,10 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 
 		// As ornot is a radio button it gets json encoded/decoded as an object
 		$ornot = $params->get('userexists_or_not', 'fail_if_exists');
-		$user = JFactory::getUser();
 		jimport('joomla.user.helper');
 		$result = JUserHelper::getUserId($data);
 
-		if ($user->get('guest'))
+		if ($this->user->get('guest'))
 		{
 			if (!$result)
 			{
@@ -118,7 +117,7 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 				else
 				{
 					// The connected user is editing his own data
-					if ($result == $user->get('id'))
+					if ($result == $this->user->get('id'))
 					{
 						return ($ornot == 'fail_if_exists') ? true : false;
 					}

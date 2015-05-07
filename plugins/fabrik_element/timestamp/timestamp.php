@@ -76,8 +76,7 @@ class PlgFabrik_ElementTimestamp extends Element
 	public function render($data, $repeatCounter = 0)
 	{
 		$date = JFactory::getDate();
-		$config = JFactory::getConfig();
-		$tz = new DateTimeZone($config->get('offset'));
+		$tz = new DateTimeZone($this->config->get('offset'));
 		$date->setTimezone($tz);
 		$params = $this->getParams();
 		$gmt_or_local = $params->get('gmt_or_local');

@@ -57,10 +57,9 @@ class PlgFabrik_ElementCount extends Element
 	public function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
 		$dbtable = $this->actualTableName();
-		$app = JFactory::getApplication();
 		$db = Worker::getDbo();
 
-		if ($app->input->get('c') != 'form')
+		if ($this->app->input->get('c') != 'form')
 		{
 			$params = $this->getParams();
 			$fullElName = ArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___' . $this->getElement()->name));

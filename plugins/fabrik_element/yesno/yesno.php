@@ -80,7 +80,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		$displayData->tmpl = @$this->tmpl;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
 		$layout = new LayoutFile('fabrik_element_yesno_list', $basePath);
-		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+		$layout->addIncludePaths(JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts');
 
 		return $layout->render($displayData);
 	}
@@ -228,11 +228,10 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		$displayData = new stdClass;
 		$displayData->value = $value;
 		$displayData->tmpl = @$this->tmpl;
-		$app = JFactory::getApplication();
-		$displayData->format = $app->input->get('format', '');;
+		$displayData->format = $this->app->input->get('format', '');;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
 		$layout = new LayoutFile('fabrik_element_yesno_details', $basePath);
-		$layout->addIncludePaths(JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts');
+		$layout->addIncludePaths(JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts');
 
 		return $layout->render($displayData);
 	}

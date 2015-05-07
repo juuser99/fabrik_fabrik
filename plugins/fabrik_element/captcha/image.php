@@ -21,8 +21,7 @@ define('DS', DIRECTORY_SEPARATOR);
 
 require_once JPATH_BASE . '/includes/defines.php';
 require_once JPATH_BASE . '/includes/framework.php';
-$app = JFactory::getApplication('site');
-$app->initialise();
+$this->app->initialise();
 $package = $app->getUserState('com_fabrik.package', 'fabrik');
 $session = JFactory::getSession();
 
