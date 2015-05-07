@@ -100,7 +100,7 @@ class Raw extends \JViewHtml
 		$model->set('type', $input->get('type'));
 		$model->set('plugin', $input->get('plugin'));
 		$model->set('c', $input->getInt('c'));
-		$model->set('id', $input->getInt('id', 0));
+		$model->set('id', $input->getString('id', ''));
 		$model->set('plugin_published', $input->get('plugin_published'));
 		$model->set('show_icon', $input->get('show_icon'));
 		$model->set('validate_in', $input->get('validate_in'));

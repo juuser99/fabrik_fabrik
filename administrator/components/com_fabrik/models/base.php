@@ -1512,7 +1512,6 @@ class Base extends \JModelBase
 		$createDate             = JFactory::getDate();
 		$createDate             = $createDate->toSql();
 
-		echo "<pre>";print_r($names);
 		foreach ($ids as $i => $pk)
 		{
 			$item = $this->getItem($pk);

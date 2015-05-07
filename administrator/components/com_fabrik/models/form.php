@@ -100,7 +100,7 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$js[] = "\twindow.addEvent('domready', function () {";
 		$plugins = json_encode($this->getPlugins());
-		$js[] = "\t\tFabrik.controller = new PluginManager($plugins, " . (int) $this->getItem()->get('id') . ", 'form');";
+		$js[] = "\t\tFabrik.controller = new PluginManager($plugins, '" . $this->getItem()->get('id') . "', 'form');";
 		$js[] = "\t})";
 
 		return implode("\n", $js);

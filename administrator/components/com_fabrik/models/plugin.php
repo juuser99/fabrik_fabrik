@@ -123,11 +123,8 @@ class Plugin extends Base implements PluginInterface
 		if ($type !== 'validationrule')
 		{
 			// Set the parent model e.g. form/list
-			/*$feModel = JModelLegacy::getInstance($type, 'FabrikFEModel');
-			$feModel->setId($this->get('id'));*/
 			$model = new Lizt;
-			// FIXME? set to 0 not view name
-			//$model->set('id', $this->get('id'));
+			$model->set('id', $this->get('id'));
 		}
 
 		return $model;
