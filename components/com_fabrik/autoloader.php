@@ -38,7 +38,6 @@ class AutoLoader
 			return;
 		}
 
-
 		if (strstr($class, '\Admin'))
 		{
 			// Loading an admin model
@@ -134,14 +133,14 @@ class AutoLoader
 		$file  = str_replace('\\', '/', strtolower($class));
 		$file  = strtolower($file . '.php');
 
-		require_once JPATH_COMPONENT_ADMINISTRATOR . '/controller.php';
-
 		if ($admin)
 		{
+			require_once JPATH_COMPONENT_ADMINISTRATOR . '/controller.php';
 			$file  = JPATH_ADMINISTRATOR . '/components/com_fabrik/' . $file;
 		}
 		else
 		{
+			require_once JPATH_COMPONENT . '/controller.php';
 			$file  = JPATH_SITE . '/components/com_fabrik/' . $file;
 		}
 
