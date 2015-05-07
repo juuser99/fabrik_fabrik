@@ -69,7 +69,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$input = $this->app->input;
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		jimport('joomla.mail.helper');
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$w = new Worker;
 		$formModel = $this->getModel();
 		$emailTemplate = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/email/tmpl/' . $params->get('email_template', ''));
@@ -599,7 +599,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	{
 		if ($this->app->isAdmin())
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
 			$db->setQuery($query);

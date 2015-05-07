@@ -26,7 +26,7 @@ use \stdClass as stdClass;
 use \Joomla\Registry\Registry as JRegistry;
 use \FabrikString as FabrikString;
 use \JHTML as JHTML;
-
+use \FabTable as FabTable;
 
 /**
  * Base Fabrik Plugin Model
@@ -157,6 +157,8 @@ class Plugin extends \JPlugin
 		$this->app = ArrayHelper::getValue($config, 'app', JFactory::getApplication());
 		$this->user = ArrayHelper::getValue($config, 'user', JFactory::getUser());
 		$this->config = ArrayHelper::getValue($config, 'config', JFactory::getConfig());
+		$this->language = ArrayHelper::getValue($config, 'language', JFactory::getLanguage());
+		$this->db = ArrayHelper::getValue($config, 'db', JFactory::getDbo());
 		$this->loadLanguage();
 	}
 

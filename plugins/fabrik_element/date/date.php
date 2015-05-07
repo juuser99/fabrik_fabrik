@@ -2507,7 +2507,7 @@ class PlgFabrik_ElementDate extends ElementList
 	public function getFrontDefaultValue($data = array())
 	{
 		$params = $this->getParams();
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$alwaysToday = $params->get('date_alwaystoday', false);
 		$defaultToday = $params->get('date_defaulttotoday', false);
 		$formModel = $this->getFormModel();

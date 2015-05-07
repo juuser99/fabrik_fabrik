@@ -127,8 +127,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 	protected function post3x()
 	{
 		// Load front end language file as well
-		$lang = JFactory::getLanguage();
-		$lang->load('com_kunena', JPATH_SITE . '/components/com_kunena');
+		$this->language->load('com_kunena', JPATH_SITE . '/components/com_kunena');
 
 		$params = $this->getParams();
 		$formModel = $this->getModel();

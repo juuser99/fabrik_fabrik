@@ -363,7 +363,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$item = $model->getTable();
 		$emailColumn = $elementModel->getFullName(false, false);
 		$tbl = array_shift(explode('.', $emailColumn));
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$userids_emails = array();
 		$query = $db->getQuery();
 		$query->select('#__users.id AS id, #__users.email AS email')

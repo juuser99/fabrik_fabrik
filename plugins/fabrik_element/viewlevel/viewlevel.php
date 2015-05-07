@@ -110,7 +110,7 @@ class PlgFabrik_ElementViewlevel extends ElementList
 	{
 		if (!isset($this->allOpts))
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('id, title');
 			$query->from($db->quoteName('#__viewlevels'));

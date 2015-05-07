@@ -16,7 +16,7 @@ var fabrikAdminElement = new Class({
 
 	options: {
 		id: 0,
-		parentid: 0,
+		//parentid: 0,
 		jsevents: [],
 		jsTotal: 0,
 		deleteButton: 'removeButton'
@@ -31,7 +31,7 @@ var fabrikAdminElement = new Class({
 		}
 		this.parent(plugins, id, 'validationrule');
 		this.setOptions(options);
-		this.setParentViz();
+		//this.setParentViz();
 
 		this.jsAccordion = new Fx.Accordion([], [], {
 			alwaysHide: true,
@@ -106,7 +106,8 @@ var fabrikAdminElement = new Class({
 			'data': {
 				'option': 'com_fabrik',
 				'id': this.options.id,
-				'task': 'element.getPluginHTML',
+				'view': 'plugin',
+				'type': 'element',
 				'format': 'raw',
 				'plugin': e.target.get('value')
 			},
@@ -250,9 +251,9 @@ var fabrikAdminElement = new Class({
 			s += '<span style="font-weight:normal">' + t + '</span>';
 		}
 		header.set('html', s);
-	},
+	}
 
-	setParentViz: function () {
+	/*setParentViz: function () {
 		if (this.options.parentid.toInt() !== 0) {
 			var myFX = new Fx.Tween('elementFormTable', {
 				property: 'opacity',
@@ -276,5 +277,5 @@ var fabrikAdminElement = new Class({
 				f.submit();
 			});
 		}
-	}
+	}*/
 });

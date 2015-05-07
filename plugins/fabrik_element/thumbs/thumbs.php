@@ -579,8 +579,7 @@ class PlgFabrik_ElementThumbs extends Element
 		$formModel = $this->getFormModel();
 		$formId = $formModel->getId();
 		$rowId = $formModel->getRowId();
-		$lang = JFactory::getLanguage();
-		$lang->load('plg_fabrik_element_thumbs', JPATH_BASE . '/plugns/fabrik_element/thumbs');
+		$this->language->load('plg_fabrik_element_thumbs', JPATH_BASE . '/plugns/fabrik_element/thumbs');
 		$opts = new stdClass;
 		$opts->canUse = $this->canUse();
 		$opts->noAccessMsg = trim(FText::_($params->get('thumbs_no_access_msg', FText::_('PLG_ELEMENT_THUMBS_NO_ACCESS_MSG_DEFAULT'))));
@@ -635,8 +634,7 @@ class PlgFabrik_ElementThumbs extends Element
 			$userId = $this->user->get('id');
 		}
 
-		$lang = JFactory::getLanguage();
-		$lang->load('plg_fabrik_element_thumbs', JPATH_BASE . '/plugns/fabrik_element/thumbs');
+		$this->language->load('plg_fabrik_element_thumbs', JPATH_BASE . '/plugns/fabrik_element/thumbs');
 
 		$opts = new stdClass;
 		$opts->canUse = $this->canUse();

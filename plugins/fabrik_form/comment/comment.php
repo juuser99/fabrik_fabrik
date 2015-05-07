@@ -689,7 +689,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 		if (!array_key_exists('notify', $columns))
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = 'ALTER TABLE `#__fabrik_comments` ADD `notify` TINYINT(1) NOT NULL;';
 			$db->setQuery($query)
 				->execute();

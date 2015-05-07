@@ -13,10 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\LayoutFile;
-use \JFactory as JFactory;
 use Fabrik\Plugins\Plugin as Plugin;
-
-jimport('joomla.application.component.model');
 
 /**
  * Fabrik Plugin From Model
@@ -472,11 +469,10 @@ class PlgFabrik_Form extends Plugin
 	 */
 	protected function getAdminInfo()
 	{
-		$db = JFactory::getDbo(true);
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 		$query->select(' id, name, email, sendEmail')->from('#__users')->where('sendEmail = 1');
-		$db->setQuery($query);
-		$rows = $db->loadObjectList();
+		$this->db->setQuery($query);
+		$rows = $this->db->loadObjectList();
 
 		return $rows;
 	}

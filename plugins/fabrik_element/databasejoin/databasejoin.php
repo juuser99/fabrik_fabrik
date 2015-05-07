@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\Element as Element;
+use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  *  Plugin element to render list of data looked up from a database table
@@ -1069,12 +1069,11 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 		$where = str_replace("{thistable}", $thisTableAlias, $where);
 		$w = new Worker;
-		$lang = JFactory::getLanguage();
 		$data = is_array($data) ? $data : array();
 
 		if (!isset($data['lang']))
 		{
-			$data['lang'] = $lang->getTag();
+			$data['lang'] = $this->language->getTag();
 		}
 
 		$where = $w->parseMessageForPlaceHolder($where, $data, false);
@@ -2447,7 +2446,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		 used in prefilter dropdown in admin to allow users to prefilter on raw db join value */
 		$str = '';
 		$params = $this->getParams();
-		$db = JFactory::getDBO();
+		$db = $this->db;
 
 		if ($this->isJoin())
 		{

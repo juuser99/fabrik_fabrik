@@ -103,7 +103,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		{
 			try
 			{
-				$db = JFactory::getDbo();
+				$db = $this->db;
 				$query = $db->getQuery(true);
 				$data = $this->getProcessData();
 				$cycleField = $db->replacePrefix('#__fabrik_subs_users___billing_cycle');
@@ -151,7 +151,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		{
 			try
 			{
-				$db = JFactory::getDbo();
+				$db = $this->db;
 				$query = $db->getQuery(true);
 				$data = $this->getProcessData();
 				$gatewayField = $db->replacePrefix('#__fabrik_subs_users___gateway');
@@ -214,7 +214,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		$item = $data['jos_fabrik_subs_users___billing_cycle'][0] . ' ' . $data['jos_fabrik_subs_users___gateway'][0];
 		$item_raw = $data['jos_fabrik_subs_users___billing_cycle_raw'][0];
 
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$query = $db->getQuery(true);
 		$query->select('cost, label, plan_name, duration AS p3, period_unit AS t3, ' . $db->quote($item_raw) . ' AS item_number ')
 		->from('#__fabrik_subs_plan_billing_cycle')->where('id = ' . $db->quote($item_raw));
@@ -350,7 +350,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 		if (($rowId === '' || !$newRow) && $this->user->get('id') !== 0)
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('*')->from('#__fabrik_subs_subscriptions')->where('userid = ' . (int) $this->user->get('id'))
 			->where('status = ' . $db->quote('Pending'))
@@ -906,7 +906,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 			try
 			{
 				$input = $this->app->input;
-				$db = JFactory::getDbo();
+				$db = $this->db;
 				$planField = $db->replacePrefix('#__fabrik_subs_users___plan_id');
 				$planid = $input->getInt($planField, $input->getInt($planField . '_raw'));
 				$query = $db->getQuery(true);

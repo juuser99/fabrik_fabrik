@@ -122,7 +122,7 @@ class FabrikModelNotification extends JModelLegacy
 
 	public function loadLang()
 	{
-		$lang = JFactory::getLanguage();
+		$lang = $this->language;
 		$client = JApplicationHelper::getClientInfo(0);
 		$langFile = 'plg_fabrik_cron_notification';
 		$langPath = $client->path . '/plugins/fabrik_cron/notification';

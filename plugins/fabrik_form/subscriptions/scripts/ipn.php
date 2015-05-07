@@ -135,19 +135,19 @@ class FabrikSubscriptionsIPN
 		$subject = sprintf($subject, $siteName);
 		$subject = html_entity_decode($subject, ENT_QUOTES);
 		$type = $recurring ? 'subscription payment' : 'payment';
-		$msgbuyer = 'Your ' . $type . ' on %s has successfully completed. (Paypal transaction ID: %s)<br /><br />%s';
-		$msgbuyer = sprintf($msgbuyer, $siteName, $txn_id, $siteName);
-		$msgbuyer = html_entity_decode($msgbuyer, ENT_QUOTES);
+		$msgBuyer = 'Your ' . $type . ' on %s has successfully completed. (Paypal transaction ID: %s)<br /><br />%s';
+		$msgBuyer = sprintf($msgBuyer, $siteName, $txn_id, $siteName);
+		$msgBuyer = html_entity_decode($msgBuyer, ENT_QUOTES);
 
-		JLog::add('fabrik.ipn.activateSubscription', JLog::INFO, $payer_email . ', ' . $msgbuyer);
-		$mail->sendMail($mailFrom, $fromName, $payer_email, $subject, $msgbuyer, true);
+		JLog::add('fabrik.ipn.activateSubscription', JLog::INFO, $payer_email . ', ' . $msgBuyer);
+		$mail->sendMail($mailFrom, $fromName, $payer_email, $subject, $msgBuyer, true);
 
-		$msgseller = $type . ' success on %s. (Paypal transaction ID: %s)<br /><br />%s';
-		$msgseller = sprintf($msgseller, $siteName, $txn_id, $siteName);
-		$msgseller = html_entity_decode($msgseller, ENT_QUOTES);
+		$msgSeller = $type . ' success on %s. (Paypal transaction ID: %s)<br /><br />%s';
+		$msgSeller = sprintf($msgSeller, $siteName, $txn_id, $siteName);
+		$msgSeller = html_entity_decode($msgSeller, ENT_QUOTES);
 
 
-		$mail->sendMail($mailFrom, $fromName, $receiver_email, $subject, $msgseller, true);
+		$mail->sendMail($mailFrom, $fromName, $receiver_email, $subject, $msgSeller, true);
 		$this->expireOldSubs($subUser->get('id'));
 		return true;
 	}
@@ -240,16 +240,16 @@ class FabrikSubscriptionsIPN
 		$subject = sprintf($subject, $SiteName);
 		$subject = html_entity_decode($subject, ENT_QUOTES);
 
-		$msgbuyer = 'Your payment on %s is pending. (Paypal transaction ID: %s)<br /><br />%s';
+		$msgBuyer = 'Your payment on %s is pending. (Paypal transaction ID: %s)<br /><br />%s';
 		$txn_id = $this->app->input->get('txn_id', 'n/a');
-		$msgbuyer = sprintf($msgbuyer, $SiteName, $txn_id, $SiteName);
-		$msgbuyer = html_entity_decode($msgbuyer, ENT_QUOTES);
-		JFactory::getMailer()->sendMail($MailFrom, $FromName, $payer_email, $subject, $msgbuyer, true);
+		$msgBuyer = sprintf($msgBuyer, $SiteName, $txn_id, $SiteName);
+		$msgBuyer = html_entity_decode($msgBuyer, ENT_QUOTES);
+		JFactory::getMailer()->sendMail($MailFrom, $FromName, $payer_email, $subject, $msgBuyer, true);
 
-		$msgseller = 'Payment pending on %s. (Paypal transaction ID: %s)<br /><br />%s';
-		$msgseller = sprintf($msgseller, $SiteName, $txn_id, $SiteName);
-		$msgseller = html_entity_decode($msgseller, ENT_QUOTES);
-		JFactory::getMailer()->sendMail($MailFrom, $FromName, $receiver_email, $subject, $msgseller, true);
+		$msgSeller = 'Payment pending on %s. (Paypal transaction ID: %s)<br /><br />%s';
+		$msgSeller = sprintf($msgSeller, $SiteName, $txn_id, $SiteName);
+		$msgSeller = html_entity_decode($msgSeller, ENT_QUOTES);
+		JFactory::getMailer()->sendMail($MailFrom, $FromName, $receiver_email, $subject, $msgSeller, true);
 		return true;
 	}
 

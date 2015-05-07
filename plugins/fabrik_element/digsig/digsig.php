@@ -183,14 +183,13 @@ class PlgFabrik_ElementDigsig extends Element
 		$params        = $this->getParams();
 		$digsig_width  = (int) $params->get('digsig_list_width', '200');
 		$digsig_height = (int) $params->get('digsig_list_height', '75');
-		$lang          = JFactory::getLanguage();
-		$lang->load('com_fabrik.plg.element.fabrikdigsig', JPATH_ADMINISTRATOR);
+		$this->language->load('com_fabrik.plg.element.fabrikdigsig', JPATH_ADMINISTRATOR);
 		$url = 'index.php';
 
 		if (!$this->canView())
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
+			$this->app->redirect($url);
 			exit;
 		}
 
@@ -198,8 +197,8 @@ class PlgFabrik_ElementDigsig extends Element
 
 		if (empty($rowId))
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_FDIGSIG_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FDIGSIG_NO_SUCH_FILE'));
+			$this->app->redirect($url);
 			exit;
 		}
 
@@ -208,8 +207,8 @@ class PlgFabrik_ElementDigsig extends Element
 
 		if (empty($row))
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->redirect($url);
 			exit;
 		}
 
@@ -246,8 +245,8 @@ class PlgFabrik_ElementDigsig extends Element
 		}
 		else
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->redirect($url);
 			exit;
 		}
 	}

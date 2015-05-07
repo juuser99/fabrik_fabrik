@@ -71,7 +71,11 @@
 		</fieldset>
 		
 		<fieldset name="plg-birthday-details" label="PLG_ELEMENT_BIRTHDAY_DETAILS">
-		
+
+			<field
+					type="helplink"
+					url="PLG_ELEMENT_BIRTHDAY_HELP_SERVER" />
+
 			<field name="details_date_format"
 				type="list"
 				default="d.m.Y"
@@ -99,7 +103,11 @@
 		</fieldset>
 		
 		<fieldset name="plg-birthday-list" label="PLG_ELEMENT_BIRTHDAY_LIST">
-	
+
+			<field
+					type="helplink"
+					url="PLG_ELEMENT_BIRTHDAY_HELP_SERVER" />
+
 			<field
 				type="helplink"
 				url="PLG_ELEMENT_BIRTHDAY_HELP_SERVER" />

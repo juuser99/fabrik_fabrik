@@ -136,7 +136,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 
 		if (!array_key_exists($c, $this->components))
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('COUNT(id)')->from('#__extensions')->where('name = ' . $db->quote($c));
 			$db->seQuery($query);

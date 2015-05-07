@@ -225,7 +225,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		// Sanitize the ids.
 		$pks = (array) $pks;
 		ArrayHelper::toInteger($pks);
-		$db = JFactory::getDbo();
+		$db = $this->db;
 
 		if (empty($pks))
 		{
@@ -739,7 +739,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	{
 		if ($this->app->isAdmin())
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
 			$db->setQuery($query);

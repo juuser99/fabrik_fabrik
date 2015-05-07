@@ -102,7 +102,7 @@ class PlgFabrik_ElementAccess extends Element
 
 	private function getOpts($allowAll = true)
 	{
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$db
 			->setQuery(
 				'SELECT a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level' . ' FROM #__usergroups AS a'
@@ -118,8 +118,7 @@ class PlgFabrik_ElementAccess extends Element
 		if ($allowAll)
 		{
 			// If in front end we need to load the admin language..
-			$lang = JFactory::getLanguage();
-			$lang->load('joomla', JPATH_ADMINISTRATOR, null, false, false);
+			$this->language->load('joomla', JPATH_ADMINISTRATOR, null, false, false);
 
 			array_unshift($options, JHtml::_('select.option', '', FText::_('JOPTION_ACCESS_SHOW_ALL_GROUPS')));
 		}

@@ -854,9 +854,9 @@ class PlgFabrik_ElementFileupload extends Element
 			}
 
 			$formModel = $this->getFormModel();
-			$formid = $formModel->getId();
-			$rowid = $thisRow->__pk_val;
-			$elementid = $this->getId();
+			$formId = $formModel->getId();
+			$rowId = $thisRow->__pk_val;
+			$elementId = $this->getId();
 			$title = '';
 
 			if ($params->get('fu_title_element') == '')
@@ -888,7 +888,7 @@ class PlgFabrik_ElementFileupload extends Element
 			$displayData->downloadImg = ($downloadImg && JFile::exists('media/com_fabrik/images/' . $downloadImg)) ? COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $downloadImg : '';
 			$displayData->href =  COM_FABRIK_LIVESITE
 				. 'index.php?option=com_' . $package . '&amp;view=pluginAjax&amp;plugin=fileupload&amp;method=ajax_download&amp;format=raw&amp;element_id='
-				. $elementid . '&amp;formid=' . $formid . '&amp;rowid=' . $rowid . '&amp;repeatcount=' . $i;;
+				. $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=' . $i;;
 
 			return $layout->render($displayData);
 		}
@@ -2338,9 +2338,9 @@ class PlgFabrik_ElementFileupload extends Element
 			$canDownload = in_array($data[$aclEl], $this->user->getAuthorisedViewLevels());
 		}
 
-		$formid = $formModel->getId();
-		$rowid = $input->get('rowid', '0');
-		$elementid = $this->getId();
+		$formId = $formModel->getId();
+		$rowId = $input->get('rowid', '0');
+		$elementId = $this->getId();
 		$title = basename($value);
 
 		if ($params->get('fu_title_element') == '')
@@ -2375,7 +2375,7 @@ class PlgFabrik_ElementFileupload extends Element
 		$displayData->downloadImg = ($downloadImg && JFile::exists('media/com_fabrik/images/' . $downloadImg)) ? COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $downloadImg : '';
 		$displayData->href = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package
 			. '&view=pluginAjax&plugin=fileupload&method=ajax_download&format=raw&element_id='
-			. $elementid . '&formid=' . $formid . '&rowid=' . $rowid . '&repeatcount=' . $repeatCounter;
+			. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter;
 
 
 		return $layout->render($displayData);
@@ -2822,12 +2822,11 @@ class PlgFabrik_ElementFileupload extends Element
 		$this->getElement();
 		$params = $this->getParams();
 		$url = $input->server->get('HTTP_REFERER', '', 'string');
-		$lang = JFactory::getLanguage();
-		$lang->load('com_fabrik.plg.element.fabrikfileupload', JPATH_ADMINISTRATOR);
-		$rowid = $input->get('rowid', '', 'string');
+		$this->language->load('com_fabrik.plg.element.fabrikfileupload', JPATH_ADMINISTRATOR);
+		$rowId = $input->get('rowid', '', 'string');
 		$repeatcount = $input->getInt('repeatcount', 0);
 		$listModel = $this->getListModel();
-		$row = $listModel->getRow($rowid, false, true);
+		$row = $listModel->getRow($rowId, false, true);
 
 		if (!$this->canView())
 		{
@@ -2836,7 +2835,7 @@ class PlgFabrik_ElementFileupload extends Element
 			exit;
 		}
 
-		if (empty($rowid))
+		if (empty($rowId))
 		{
 			$errmsg = FText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE');
 			$errmsg .= FabrikHelperHTML::isDebug() ? ' (empty rowid)' : '';
@@ -2907,7 +2906,7 @@ class PlgFabrik_ElementFileupload extends Element
 			echo $filecontent;
 
 			// $this->downloadEmail($row, $filepath);
-			$this->downloadHit($rowid, $repeatcount);
+			$this->downloadHit($rowId, $repeatcount);
 			$this->downloadLog($row, $filepath);
 
 			// And we're done.
@@ -2924,13 +2923,13 @@ class PlgFabrik_ElementFileupload extends Element
 	/**
 	 * Update downloads hits table
 	 *
-	 * @param   int|string  $rowid        Update table's primary key
+	 * @param   int|string  $rowId        Update table's primary key
 	 * @param   int         $repeatCount  Repeat group counter
 	 *
 	 * @return  void
 	 */
 
-	protected function downloadHit($rowid, $repeatCount = 0)
+	protected function downloadHit($rowId, $repeatCount = 0)
 	{
 		// $$$ hugh @TODO - make this work for repeats and/or joins!
 		$params = $this->getParams();
@@ -2942,7 +2941,7 @@ class PlgFabrik_ElementFileupload extends Element
 			$pk = $listModel->getTable()->db_primary_key;
 			$fabrikDb = $listModel->getDb();
 			list($table_name, $element_name) = explode('.', $hit_counter);
-			$sql = "UPDATE $table_name SET $element_name = COALESCE($element_name,0) + 1 WHERE $pk = " . $fabrikDb->quote($rowid);
+			$sql = "UPDATE $table_name SET $element_name = COALESCE($element_name,0) + 1 WHERE $pk = " . $fabrikDb->quote($rowId);
 			$fabrikDb->setQuery($sql);
 			$fabrikDb->execute();
 		}

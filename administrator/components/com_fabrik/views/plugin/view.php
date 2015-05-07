@@ -50,7 +50,6 @@ class FabrikAdminViewPlugin extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	protected function setStates()
 	{
 		$model = $this->getModel();

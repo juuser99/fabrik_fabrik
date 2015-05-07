@@ -209,14 +209,13 @@ class Element extends Base implements ModelElementFormInterface
 	 *
 	 * @return  string  js code
 	 */
-
 	public function getJs()
 	{
 		$opts               = new stdClass;
 		$opts->plugin       = $this->element->get('plugin');
-		$opts->parentid     = $this->element->get('parent_id');
 		$opts->jsevents     = $this->getJsEvents();
-		$opts->id           = $this->element->get('id');
+		$opts->elementId    = $this->element->get('id');
+		$opts->id           = $this->get('id');
 		$opts->deleteButton = '<a class="btn btn-danger"><i class="icon-delete"></i> ';
 		$opts->deleteButton .= FText::_('COM_FABRIK_DELETE') . '</a>';
 		$opts = json_encode($opts);
@@ -231,7 +230,7 @@ class Element extends Base implements ModelElementFormInterface
 		$js[] = "\tvar opts = $opts;";
 
 		$plugins = json_encode($this->getPlugins());
-		$js[]    = "\tFabrik.controller = new fabrikAdminElement($plugins, opts, " . $this->element->get('id') . ");";
+		$js[]    = "\tFabrik.controller = new fabrikAdminElement($plugins, opts, '" . $this->element->get('id') . "');";
 		$js[]    = "})";
 
 		return implode("\n", $js);
@@ -254,6 +253,7 @@ class Element extends Base implements ModelElementFormInterface
 		{
 			$plugin = isset($item->plugin) ? $item->plugin : '';
 		}
+		// FIXME - not showing plugin options when you load the form.
 // Should not be setting input directly in a model - poor design
 		//$input->set('view', 'element');
 		JPluginHelper::importPlugin('fabrik_element', $plugin);
@@ -961,6 +961,7 @@ class Element extends Base implements ModelElementFormInterface
 	}
 
 	/**
+	 * FIXME - reimplement in elements model
 	 * Potentially drop fields then remove element record
 	 *
 	 * @param   array &$pks To delete
@@ -1010,12 +1011,13 @@ class Element extends Base implements ModelElementFormInterface
 	}*/
 
 	/**
+	 * FIXME - move to elements model and redo
 	 * Copy an element
 	 *
 	 * @return  mixed  true or warning
 	 */
 
-	public function copy()
+	/*public function copy()
 	{
 		$input = $this->app->input;
 		$cid   = $input->get('cid', array(), 'array');
@@ -1046,7 +1048,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		return true;
-	}
+	}*/
 
 	/**
 	 * If repeated element we need to make a joined db table to store repeated data in

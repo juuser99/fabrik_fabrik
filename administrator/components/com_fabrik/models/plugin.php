@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 use \Fabrik\Admin\Models\Lizt as Lizt;
 use Fabrik\Helpers\ArrayHelper;
 use \Fabrik\Models\PluginManager as PluginManager;
-
+use \JForm as JForm;
 
 interface PluginInterface
 {
@@ -40,6 +40,7 @@ class Plugin extends Base implements PluginInterface
 	 */
 	public function render()
 	{
+		JForm::addFieldPath(JPATH_COMPONENT_ADMINISTRATOR . '/models/fields');
 		$input                     = $this->app->input;
 		$pluginManager             = new PluginManager;
 		$plugin                    = $pluginManager->getPlugIn($this->get('plugin'), $this->get('type'));
@@ -67,8 +68,8 @@ class Plugin extends Base implements PluginInterface
 
 		if ($type === 'validationrule')
 		{
-			$item = FabTable::getInstance('Element', 'FabrikTable');
-			$item->load($this->get('id'));
+			//$item = FabTable::getInstance('Element', 'FabrikTable');
+			//$item->load($this->get('id'));
 		}
 		elseif ($type === 'elementjavascript')
 		{
@@ -79,7 +80,7 @@ class Plugin extends Base implements PluginInterface
 		else
 		{
 			$model = $this->getPluginModel();
-			$item    = $model->getItem();
+			$item  = $model->getItem();
 		}
 
 		//$data                                       = $data + (array) $item->params;
@@ -113,7 +114,7 @@ class Plugin extends Base implements PluginInterface
 	protected function getPluginModel()
 	{
 		$model = null;
-		$type    = $this->get('type');
+		$type  = $this->get('type');
 
 		if ($type === 'elementjavascript')
 		{

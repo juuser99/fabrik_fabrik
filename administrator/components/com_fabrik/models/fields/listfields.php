@@ -202,8 +202,9 @@ class JFormFieldListfields extends JFormFieldList
 	 */
 	private function _validationOptions()
 	{
-		$input         = JFactory::getApplication()->input;
-		$id            = $input->getInt('id');
+		$input         = $this->app->input;
+		$id            = $input->getString('id');
+		echo "id = $id";exit;
 		$pluginManager = Worker::getPluginManager();
 		$elementModel  = $pluginManager->getElementPlugin($id);
 		$element       = $elementModel->getElement();

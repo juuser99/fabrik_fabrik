@@ -256,7 +256,7 @@ class PlgFabrik_FormFtp extends PlgFabrik_Form
 	{
 		if ($this->app->isAdmin())
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
 			$db->setQuery($query);

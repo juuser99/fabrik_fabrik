@@ -92,7 +92,7 @@ class PlgFabrik_ElementUsergroup extends ElementList
 			// Get the titles for the user groups.
 			if (count($selected) > 0)
 			{
-				$db    = JFactory::getDbo();
+				$db    = $this->db;
 				$query = $db->getQuery(true);
 				$query->select($db->quoteName('title'));
 				$query->from($db->quoteName('#__usergroups'));
@@ -209,7 +209,7 @@ class PlgFabrik_ElementUsergroup extends ElementList
 	{
 		if (!isset($this->allOpts))
 		{
-			$db = JFactory::getDbo();
+			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('id, title');
 			$query->from($db->quoteName('#__usergroups'));
@@ -305,7 +305,7 @@ class PlgFabrik_ElementUsergroup extends ElementList
 
 	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
 	{
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$query = $db->getQuery(true);
 		$query->select('id, title');
 		$query->from($db->quoteName('#__usergroups'));

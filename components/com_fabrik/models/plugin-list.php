@@ -73,7 +73,7 @@ class PlgFabrik_List extends Plugin
 		}
 
 		$params = $this->getParams();
-		$groups = JFactory::getUser()->getAuthorisedViewLevels();
+		$groups = $this->user->getAuthorisedViewLevels();
 
 		return in_array($params->get($aclParam), $groups);
 	}

@@ -13,19 +13,15 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
+use Fabrik\Plugins\Plugin as Plugin;
 
 /**
  * Fabrik Validation Rule Model
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    3.5
  */
-
-class PlgFabrik_ValidationRule extends FabrikPlugin
+class PlgFabrik_ValidationRule extends Plugin
 {
 	/**
 	 * Plugin name
@@ -128,12 +124,9 @@ class PlgFabrik_ValidationRule extends FabrikPlugin
 	protected function shouldValidateIn()
 	{
 		$params = $this->getParams();
-		$name = $this->elementModel->getFullName();
-
-		$app = JFactory::getApplication();
 		$in = $params->get('validate_in', 'both');
 
-		$admin = $app->isAdmin();
+		$admin = $this->app->isAdmin();
 
 		if ($in === 'both')
 		{
@@ -161,21 +154,20 @@ class PlgFabrik_ValidationRule extends FabrikPlugin
 	protected function shouldValidateOn()
 	{
 		$params = $this->getParams();
-		$app = JFactory::getApplication();
 		$on = $params->get('validation_on', 'both');
-		$rowid = $this->elementModel->getFormModel()->getRowId();
+		$rowId = $this->elementModel->getFormModel()->getRowId();
 
 		if ($on === 'both')
 		{
 			return true;
 		}
 
-		if ($rowid === '' && $on === 'new')
+		if ($rowId === '' && $on === 'new')
 		{
 			return true;
 		}
 
-		if ($rowid !== '' && $on === 'edit')
+		if ($rowId !== '' && $on === 'edit')
 		{
 			return true;
 		}

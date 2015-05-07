@@ -83,7 +83,7 @@ class PlgFabrik_ElementBirthday extends Element
 		 * Jaanus: needed also here to not to show 0000-00-00 in detail view;
 		 * see also 58, added && !in_array($value, $aNullDates) (same reason).
 		 */
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$aNullDates = array('0000-00-000000-00-00', '0000-00-00 00:00:00', '0000-00-00', '', $db->getNullDate());
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
@@ -720,7 +720,7 @@ class PlgFabrik_ElementBirthday extends Element
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		$ft = $this->getParams()->get('list_date_format', 'd.m.Y');
-		$db = JFactory::getDbo();
+		$db = $this->db;
 
 		if ($ft === 'd m')
 		{

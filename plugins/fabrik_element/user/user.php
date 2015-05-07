@@ -418,7 +418,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 					$new_userid = $user->get('id');
 					if (empty($new_userid) && Worker::isEmail($userid))
 					{
-						$db = JFactory::getDbo();
+						$db = $this->db;
 						$query = $db->getQuery(true)
 						->select($db->quoteName('id'))
 						->from($db->quoteName('#__users'))
@@ -849,7 +849,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		}
 
 		$element = $this->getElement();
-		$db = JFactory::getDbo();
+		$db = $this->db;
 
 		// $$$ hugh - we need to use the join alias, not hard code #__users
 		$join = $this->getJoin();

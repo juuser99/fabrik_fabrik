@@ -355,12 +355,11 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$input = $this->app->input;
 		$formModel = $this->getModel();
 		$params = $this->getParams();
-		$lang = JFactory::getLanguage();
 		$mail = JFactory::getMailer();
 		$mail->isHtml(true);
 
 		// Load up com_users lang - used in email text
-		$lang->load('com_users', JPATH_SITE);
+		$this->language->load('com_users', JPATH_SITE);
 		/*
 		 * If the fabrik table is set to be #__users and the this plugin is used
 		 * we need to alter the form model to tell it not to store the main row
@@ -688,7 +687,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	 */
 	protected function reportFailedMail($data)
 	{
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$this->setError(FText::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
 
 		// Send a system message to administrators receiving system mails
@@ -791,7 +790,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	protected function emailToAdmin($data)
 	{
 		$usersConfig = JComponentHelper::getParams('com_users');
-		$db = JFactory::getDbo();
+		$db = $this->db;
 
 		// Send Notification mail to administrators
 		if (($usersConfig->get('useractivation') < 2) && ($usersConfig->get('mail_to_admin') == 1))

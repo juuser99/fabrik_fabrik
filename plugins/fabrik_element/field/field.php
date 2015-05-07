@@ -499,13 +499,12 @@ class PlgFabrik_ElementField extends Element
 		$this->loadMeForAjax();
 		$this->getElement();
 		$url = 'index.php';
-		$lang = JFactory::getLanguage();
-		$lang->load('com_fabrik.plg.element.field', JPATH_ADMINISTRATOR);
+		$this->language->load('com_fabrik.plg.element.field', JPATH_ADMINISTRATOR);
 
 		if (!$this->canView())
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_PERMISSION'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_PERMISSION'));
+			$this->app->redirect($url);
 			exit;
 		}
 
@@ -514,7 +513,7 @@ class PlgFabrik_ElementField extends Element
 		if (empty($rowId))
 		{
 			// $app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->redirect($url);
 			exit;
 		}
 
@@ -524,7 +523,7 @@ class PlgFabrik_ElementField extends Element
 		if (empty($row))
 		{
 			// $app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->redirect($url);
 			exit;
 		}
 
@@ -557,8 +556,8 @@ class PlgFabrik_ElementField extends Element
 		}
 		else
 		{
-			$app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
-			$app->redirect($url);
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
+			$this->app->redirect($url);
 			exit;
 		}
 	}

@@ -441,7 +441,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 			case 200:
 				// Build authorize URL and redirect user to Twitter.
 				$url = $connection->getAuthorizeURL($token);
-				$app->redirect($url);
+				$this->app->redirect($url);
 				break;
 			default:
 				// Show notification if something went wrong.
@@ -509,9 +509,8 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 			JError::raiseWarning(500, $row->getError());
 		}
 
-		$lang = JFactory::getLanguage();
 		$langfile = 'com_fabrik.plg.form.fabriktwitter';
-		$lang->load($langfile, JPATH_ADMINISTRATOR, null, true);
+		$this->language->load($langfile, JPATH_ADMINISTRATOR, null, true);
 
 		// If we had already authorized the app then we will still be in the admin page - so update the fields:
 		echo FText::_('PLG_FORM_TWITTER_CREDENTIALS_SAVED');
