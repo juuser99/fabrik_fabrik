@@ -16,7 +16,6 @@ var fabrikAdminElement = new Class({
 
 	options: {
 		id: 0,
-		//parentid: 0,
 		jsevents: [],
 		jsTotal: 0,
 		deleteButton: 'removeButton'
@@ -29,7 +28,8 @@ var fabrikAdminElement = new Class({
 		if (Fabrik.debug) {
 			fconsole('Fabrik adminelement.js: Initialising', plugins, options, id);
 		}
-		this.parent(plugins, id, 'validationrule');
+		console.log(options, id);
+		this.parent(plugins, options, 'validationrule');
 		this.setOptions(options);
 		//this.setParentViz();
 
@@ -132,7 +132,6 @@ var fabrikAdminElement = new Class({
 	},
 
 	addJavascript: function (opt) {
-		var jsId = opt && opt.id ? opt.id : 0;
 		// Ajax request to load the first part of the plugin form
 		// (do[plugin] in, on)
 		var div = new Element('div.actionContainer.panel.accordion-group');
@@ -159,7 +158,7 @@ var fabrikAdminElement = new Class({
 				'plugin': null,
 				'plugin_published': true,
 				'c': c,
-				'id': jsId,
+				'id': this.options.id,
 				'elementid': this.id
 			},
 			update: body,

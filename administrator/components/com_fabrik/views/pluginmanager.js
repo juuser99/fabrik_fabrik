@@ -17,11 +17,15 @@ var PluginManager = new Class({
 
 	topTotal: -1,
 
-	initialize: function (plugins, id, type) {
+	initialize: function (plugins, options, type) {
 		if (typeOf(plugins) === 'string') {
 			plugins = [plugins];
 		}
-		this.id = id;
+		this.options = options;
+
+		// 3.5 - set to use the view model ref (not the element/etc id)
+		console.log('options', options);
+		this.id = options.id;
 		this.plugins = plugins;
 		this.type = type;
 		window.addEvent('domready', function () {
@@ -143,7 +147,7 @@ var PluginManager = new Class({
 
 		// Ajax request to load the first part of the plugin form (do[plugin]
 		// in, on)
-		
+
 		var d = {
 				'option': 'com_fabrik',
 				'view': 'plugin',

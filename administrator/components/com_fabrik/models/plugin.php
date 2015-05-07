@@ -73,9 +73,9 @@ class Plugin extends Base implements PluginInterface
 		}
 		elseif ($type === 'elementjavascript')
 		{
-			$item = FabTable::getInstance('Jsaction', 'FabrikTable');
+			/*$item = FabTable::getInstance('Jsaction', 'FabrikTable');
 			$item->load($this->get('id'));
-			$data = $item->getProperties();
+			$data = $item->getProperties();*/
 		}
 		else
 		{
@@ -113,7 +113,7 @@ class Plugin extends Base implements PluginInterface
 	 */
 	protected function getPluginModel()
 	{
-		$model = null;
+		/*$model = null;
 		$type  = $this->get('type');
 
 		if ($type === 'elementjavascript')
@@ -126,7 +126,10 @@ class Plugin extends Base implements PluginInterface
 			// Set the parent model e.g. form/list
 			$model = new Lizt;
 			$model->set('id', $this->get('id'));
-		}
+		}*/
+		// Set the parent model e.g. form/list
+		$model = new Lizt;
+		$model->set('id', $this->get('id'));
 
 		return $model;
 	}

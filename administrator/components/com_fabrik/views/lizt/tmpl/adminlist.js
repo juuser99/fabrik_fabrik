@@ -12,7 +12,7 @@ var ListPluginManager = new Class({
 	type: 'list',
 
 	initialize: function (plugins, id) {
-		this.parent(plugins, id);
+		this.parent(plugins, options);
 	}
 
 });

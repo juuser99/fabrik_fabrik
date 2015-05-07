@@ -80,7 +80,7 @@ class JFormFieldListfields extends JFormFieldList
 		switch ($controller)
 		{
 			case 'validationrule':
-				$res = $this->_validationOptions();
+				$res = $this->loadFromGroupId(null);
 				break;
 			case 'visualization':
 			case 'element':
@@ -195,24 +195,6 @@ class JFormFieldListfields extends JFormFieldList
 	}
 
 	/**
-	 * Get validation options
-	 *
-	 * @return array
-	 * @throws Exception
-	 */
-	private function _validationOptions()
-	{
-		$input         = $this->app->input;
-		$id            = $input->getString('id');
-		echo "id = $id";exit;
-		$pluginManager = Worker::getPluginManager();
-		$elementModel  = $pluginManager->getElementPlugin($id);
-		$element       = $elementModel->getElement();
-
-		return $this->loadFromGroupId($element->group_id);
-	}
-
-	/**
 	 * Get element options
 	 *
 	 * @param $connection
@@ -223,9 +205,7 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		if ($connection == '')
 		{
-			$groupId = isset($this->form->rawData) ? ArrayHelper::getValue($this->form->rawData, 'group_id', 0)
-				: $this->form->getValue('group_id');
-			$res     = $this->loadFromGroupId($groupId);
+			$res = $this->loadFromGroupId(null);
 		}
 		else
 		{
@@ -328,7 +308,6 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$valField   = $valueFormat == 'tableelement' ? 'name' : 'id';
 		$id         = $this->form->getValue('id');
-		$view       = $this->form->getValue('view');
 		$groupModel = new Group;
 		$groupModel->get('groupid', $id);
 		$formModel = $groupModel->getFormModel();

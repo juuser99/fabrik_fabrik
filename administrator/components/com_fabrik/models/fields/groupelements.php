@@ -11,8 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Worker;
-
 JFormHelper::loadFieldClass('groupedlist');
 
 /**
@@ -22,7 +20,6 @@ JFormHelper::loadFieldClass('groupedlist');
  * @subpackage  Form
  * @since       3.1
  */
-
 class JFormFieldGroupElements extends JFormFieldGroupedList
 {
 	/**
@@ -38,34 +35,22 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 	 *
 	 * @return  array  The field option objects as a nested array in groups.
 	 */
-
 	protected function getGroups()
 	{
-		$input = $this->app->input;
-		$db = Worker::getDbo(true);
-
-		$query = $db->getQuery(true);
-		$query->select('form_id')
-		->from($db->quoteName('#__fabrik_formgroup') . ' AS fg')
-		->join('LEFT', '#__fabrik_elements AS e ON e.group_id = fg.group_id')
-		->where('e.id = ' . $input->getInt('elementid'));
-		$db->setQuery($query);
-		$formId = $db->loadResult();
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-		$formModel->setId($formId);
+		$model = $this->form->model;
 
 		$rows = array();
 		$rows[FText::_('COM_FABRIK_GROUPS')] = array();
 		$rows[FText::_('COM_FABRIK_ELEMENTS')] = array();
 
 		// Get available element types
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $model->getFormModel()->getGroupsHiarachy();
 
 		foreach ($groups as $groupModel)
 		{
 			$group = $groupModel->getGroup();
-			$label = $group->name;
-			$value = 'fabrik_trigger_group_group' . $group->id;
+			$label = $group->get('name');
+			$value = 'fabrik_trigger_group_group' . $group->get('id');
 			$rows[FText::_('COM_FABRIK_GROUPS')][] = JHTML::_('select.option', $value, $label);
 			$elementModels = $groupModel->getMyElements();
 

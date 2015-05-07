@@ -62,6 +62,7 @@ class Raw extends \JViewHtml
 		// Add the plugin specific fields to the form.
 		$topForm->loadFile($xmlFile, false);
 		$topForm->bind($data);
+		$topForm->model = $this->model;
 		// Filter the forms fieldsets for those starting with the correct $searchName prefix
 		foreach ($topForm->getFieldsets() as $fieldset)
 		{
