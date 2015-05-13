@@ -110,7 +110,7 @@ $listDirn	= $this->state->get('list.direction');
 						</a>
 					</td>
 					<td>
-						<a href="index.php?option=com_fabrik&view=forms&layout=updateDatabase&id=<?php echo $item->view?>">
+						<a href="index.php?option=com_fabrik&view=updateDatabase&id=<?php echo $item->view?>">
 							<i class="icon-refresh"></i> <?php echo FText::_('COM_FABRIK_UPDATE_DATABASE')?>
 						</a>
 					</td>

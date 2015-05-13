@@ -104,14 +104,11 @@ class Base extends \JModelBase
 	 *
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @param   string $ordering  An optional ordering field.
-	 * @param   string $direction An optional direction (asc|desc).
-	 *
 	 * @since    1.6
 	 *
 	 * @return  void
 	 */
-	protected function populateState($ordering = '', $direction = '')
+	protected function populateState()
 	{
 	}
 
@@ -982,6 +979,18 @@ class Base extends \JModelBase
 			{
 				$storage = $this->getStorage(array('table' => $table));
 				$storage->drop();
+
+				// Remove any groups that were set to be repeating and hence were storing in their own db table.
+				$joinModels = $this->getInternalRepeatJoins();
+
+				foreach ($joinModels as $joinModel)
+				{
+					if ($joinModel->getJoin()->table_join !== '')
+					{
+						$storage->drop($joinModel->getJoin()->table_join);
+					}
+				}
+
 				$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_DROPPED', $table));
 			}
 
@@ -1555,6 +1564,37 @@ class Base extends \JModelBase
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get an array of join models relating to the groups which were set to be repeating and thus thier data
+	 * stored in a separate db table
+	 *
+	 * @return  array  join models.
+	 */
+
+	public function getInternalRepeatJoins()
+	{
+		$return = array();
+		$groupModels = $this->getFormGroupElementData();
+
+		// Remove any groups that were set to be repeating and hence were storing in their own db table.
+		foreach ($groupModels as $groupModel)
+		{
+			if ($groupModel->isJoin())
+			{
+				$joinModel = $groupModel->getJoinModel();
+				$join = $joinModel->getJoin();
+				$joinParams = is_string($join->params) ? json_decode($join->params) : $join->params;
+
+				if (isset($joinParams->type) && $joinParams->type === 'group')
+				{
+					$return[] = $joinModel;
+				}
+			}
+		}
+
+		return $return;
 	}
 
 }

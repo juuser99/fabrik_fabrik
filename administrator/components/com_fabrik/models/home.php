@@ -277,6 +277,7 @@ class Home extends \JModelBase
 
 	public function dropData()
 	{
+		// FIXME - 3.5 not working
 		$connModel = new Connection;
 		$connModel->set('id', $item->connection_id);
 		$db = Worker::getDbo(true);

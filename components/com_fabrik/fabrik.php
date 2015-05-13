@@ -31,29 +31,8 @@ if (JDEBUG)
 	JLog::addLogger(array('text_file' => 'fabrik.log.php'));
 }
 
-//require_once JPATH_COMPONENT . '/controller.php';
-$app = JFactory::getApplication();
+$app   = JFactory::getApplication();
 $input = $app->input;
-
-/**
- * Test for YQL & XML document type
- * use the format request value to check for document type
- */
-$docs = array("yql", "xml");
-
-foreach ($docs as $d)
-{
-	if ($input->getCmd("type") == $d)
-	{
-		// Get the class
-		require_once JPATH_SITE . '/administrator/components/com_fabrik/classes/' . $d . 'document.php';
-
-		// Replace the document
-		$document = JFactory::getDocument();
-		$docClass = 'JDocument' . String::strtoupper($d);
-		$document = new $docClass;
-	}
-}
 
 JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
 
@@ -69,7 +48,7 @@ $controllerName = $input->getCmd('view');
 // &controller=visualization.calendar
 
 $isPlugin = false;
-$cName = $input->getCmd('controller');
+$cName    = $input->getCmd('controller');
 
 if (String::strpos($cName, '.') != false)
 {
@@ -85,7 +64,7 @@ if (String::strpos($cName, '.') != false)
 	if (JFile::exists($path))
 	{
 		require_once $path;
-		$isPlugin = true;
+		$isPlugin   = true;
 		$controller = $type . $name;
 	}
 	else
@@ -134,9 +113,9 @@ else
 if (strpos($input->getCmd('task'), '.') !== false)
 {
 	$controllerTask = explode('.', $input->getCmd('task'));
-	$controller = array_shift($controllerTask);
-	$classname = 'FabrikController' . String::ucfirst($controller);
-	$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
+	$controller     = array_shift($controllerTask);
+	$classname      = 'FabrikController' . String::ucfirst($controller);
+	$path           = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
 
 	if (JFile::exists($path))
 	{
@@ -144,7 +123,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 
 		// Needed to process J content plugin (form)
 		$input->set('view', $controller);
-		$task = array_pop($controllerTask);
+		$task       = array_pop($controllerTask);
 		$controller = new $classname;
 	}
 	else
@@ -161,11 +140,17 @@ else
 	// Do we have a custom controller - if not load the main controller.
 	$view = $input->get('view', 'Controller') !== '' ? $input->get('view', 'Controller') : $input->get->get('view', 'Controller');
 	$input->set('view', $view);
-	$view                = String::ucfirst($view);
+	$view = String::ucfirst($view);
+
+	if ($view === 'List')
+	{
+		$view = 'Lizt';
+	}
+
 	$base                = 'Fabrik\Controllers';
 	$baseControllerClass = $base . '\\Controller';
 	$controllerClass     = $base . '\\' . $view;
-	$controller          = class_exists($controllerClass) ? new $controllerClass : new $baseControllerClass;
+	$controller = class_exists($controllerClass) ? new $controllerClass : new $baseControllerClass;
 }
 
 if ($isPlugin)
@@ -180,17 +165,6 @@ if ($isPlugin)
 $package = $input->get('package', 'fabrik');
 $app->setUserState('com_fabrik.package', $package);
 
-if ($input->get('yql') == 1)
-{
-	$opts = array('driver' => 'yql', 'endpoint' => 'https://query.yahooapis.com/v1/public/yql');
-
-	$service = FabrikWebService::getInstance($opts);
-	$query = "select * from upcoming.events where location='London'";
-	$program = $service->get($query, array(), 'event', null);
-}
-// End web service testing
-
 $controller->execute();
 
 // Redirect if set by the controller
-$controller->redirect();

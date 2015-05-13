@@ -21,6 +21,8 @@ use Fabrik\Helpers\LayoutFile;
 use \JModelLegacy as JModelLegacy;
 use \stdClass as stdClass;
 use \JRegistry as JRegistry;
+use \JTable as JTable;
+use \FabTable as FabTable;
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
@@ -303,6 +305,7 @@ class Element extends Plugin
 	{
 		if (!$this->element || $force)
 		{
+			// FIXME - no longer loading from table!
 			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 			$row = FabTable::getInstance('Element', 'FabrikTable');
 			$row->load($this->id);
@@ -6125,6 +6128,8 @@ class Element extends Plugin
 		$db = Worker::getDbo(true);
 		$element->params = $this->getParams()->toString();
 		$query = $db->getQuery(true);
+
+		// FIXME 3.5 - no longer stored in db
 		$query->update('#__fabrik_elements')->set('params = ' . $db->quote($element->params))->where('id = ' . (int) $element->id);
 		$db->setQuery($query);
 		$res = $db->execute();

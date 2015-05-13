@@ -125,6 +125,11 @@ class Controller extends \JControllerBase
 				$msg = 'COM_FABRIK_' . strtoupper($viewName) . 'N_ITEMS_COPIED';
 				$app->enqueueMessage(JText::plural($msg, $ids));
 				break;
+			case 'view':
+				$paths = new \SplPriorityQueue;
+				$paths->insert(JPATH_COMPONENT . '/views/View/tmpl', 'normal');
+				$view  = new \Fabrik\Admin\Views\View\Html($model, $paths);
+				break;
 			default:
 				break;
 		}

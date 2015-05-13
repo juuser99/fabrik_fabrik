@@ -26,7 +26,6 @@ use Fabrik\Helpers\ArrayHelper;
 use \RuntimeException as RuntimeException;
 use \Joomla\Registry\Registry as JRegistry;
 use \JEventDispatcher as JEventDispatcher;
-use \Fabrik\Models\PluginManager as PluginManager;
 
 
 interface ModelFormLiztInterface
@@ -515,10 +514,10 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		if (!is_null($tableName))
 		{
-			$this->storage->table = tableName;
+			$this->storage->table = $tableName;
 		}
 
-		return $this->storage->tableExists(tableName);
+		return $this->storage->tableExists($tableName);
 	}
 
 	/**
@@ -730,23 +729,6 @@ class Lizt extends View implements ModelFormLiztInterface
 	}
 
 	/**
-	 * Create a table to store the forms' data depending upon what groups are assigned to the form
-	 *
-	 * @param   string $name   Taken from the table object linked to the form
-	 * @param   array  $fields List of default elements to add. (key = element name, value = plugin
-	 * @param   array  $opts   Additional options, e.g. collation
-	 *
-	 * @return mixed false if fail otherwise array of primary keys
-	 */
-
-	public function createDBTable($name = null, $fields = array('id' => 'internalid', 'date_time' => 'date'), $opts = array())
-	{
-		$storage = $this->getStorage();
-
-		return $storage->createTable($name, $fields, $opts);
-	}
-
-	/**
 	 * Create an element
 	 *
 	 * @param   string $name Element name
@@ -799,131 +781,6 @@ class Lizt extends View implements ModelFormLiztInterface
 		$o->prefilter_query     = '';
 
 		return json_encode($o);
-	}
-
-	/**
-	 * Alter the forms' data collection table when the forms' groups and/or
-	 * elements are altered
-	 *
-	 * @return void|JError
-	 */
-
-	public function ammendTable()
-	{
-		$db             = Worker::getDbo(true);
-		$input          = $this->app->input;
-		$query          = $db->getQuery(true);
-		$table          = $this->table;
-		$pluginManager  = new PluginManager;
-		$amend          = false;
-		$tableName      = $table->db_table_name;
-		$fabrikDb       = $this->getDb();
-		$columns        = $fabrikDb->getTableColumns($tableName);
-		$existingFields = array_keys($columns);
-		$existingFields = array_map('strtolower', $existingFields);
-		$lastField      = empty($existingFields) ? '' : $existingFields[count($existingFields) - 1];
-		$sql            = 'ALTER TABLE ' . $db->quoteName($tableName) . ' ';
-		$sqlAdd         = array();
-
-		// $$$ hugh - looks like this is now an array in jform
-		$jForm    = $input->get('jform', array(), 'array');
-		$arGroups = ArrayHelper::getValue($jForm, 'current_groups', array(), 'array');
-
-		if (empty($arGroups))
-		{
-			// Get a list of groups used by the form
-			$query->select('group_id')->from('#__fabrik_formgroup')->where('form_id = ' . (int) $this->getFormModel()->getId());
-			$db->setQuery($query);
-			$groups   = $db->loadObjectList();
-			$arGroups = array();
-
-			foreach ($groups as $g)
-			{
-				$arGroups[] = $g->group_id;
-			}
-		}
-
-		$arAddedObj = array();
-
-		foreach ($arGroups as $group_id)
-		{
-			$group = FabTable::getInstance('Group', 'FabrikTable');
-			$group->load($group_id);
-
-			if ($group->is_join == '0')
-			{
-				$query->clear();
-				$query->select('*')->from('#__fabrik_elements')->where('group_id = ' . (int) $group_id);
-				$db->setQuery($query);
-				$elements = $db->loadObjectList();
-
-				foreach ($elements as $obj)
-				{
-					$objName = $obj->name;
-
-					/*
-					 * Do the check in lowercase (we already strtowlower()'ed $existingFields up there ^^,
-					 * because MySQL field names are case insensitive, so if the element is called 'foo' and there
-					 * is a column called 'Foo', and we try and create 'foo' on the table ... it'll blow up.
-					 * 
-					 * However, leave the $objName unchanged, so if we do create a column for it, it uses the case
-					 * they specific in the element name - it's not up to us to force their column naming to all lower,
-					 * we just need to avoid clashes.
-					 * 
-					 * @TODO We might consider detecting and raising a warning about case inconsistencies?
-					 */
-
-					if (!in_array(strtolower($objName), $existingFields))
-					{
-						// Make sure that the object is not already in the table
-						if (!in_array($objName, $arAddedObj))
-						{
-							// Any elements that are names the same (eg radio buttons) can not be entered twice into the database
-							$arAddedObj[]    = $objName;
-							$pluginClassName = $obj->plugin;
-							$plugin          = $pluginManager->getPlugIn($pluginClassName, 'element');
-
-							if (is_object($plugin))
-							{
-								$plugin->setId($obj->id);
-								$objType = $plugin->getFieldDescription();
-							}
-							else
-							{
-								$objType = 'VARCHAR(255)';
-							}
-
-							if ($objName != "" && !is_null($objType))
-							{
-								$amend = true;
-								$add   = "ADD COLUMN " . $db->quoteName($objName) . " $objType null";
-
-								if ($lastField !== '')
-								{
-									$add .= " AFTER " . $db->quoteName($lastField);
-								}
-
-								$sqlAdd[] = $add;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if ($amend)
-		{
-			$sql .= implode(', ', $sqlAdd);
-			$fabrikDb->setQuery($sql);
-
-			try
-			{
-				$fabrikDb->execute();
-			} catch (Exception $e)
-			{
-				throw new \Exception('amend table: ' . $e->getMessage());
-			}
-		}
 	}
 
 	/**

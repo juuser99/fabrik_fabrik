@@ -104,7 +104,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 			$c++;
 		}
 
-		$adminListModel->ammendTable();
+		$adminListModel->amendTable();
 
 		if ($dataRemoved)
 		{

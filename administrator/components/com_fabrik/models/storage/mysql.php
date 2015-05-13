@@ -70,7 +70,7 @@ class MySql
 		$this->params = $params;
 
 		$this->db    = ArrayHelper::getValue($config, 'db', \JFactory::getDbo());
-		$this->app = ArrayHelper::getValue($config, 'app', \JFactory::getApplication());
+		$this->app   = ArrayHelper::getValue($config, 'app', \JFactory::getApplication());
 		$this->table = ArrayHelper::getValue($config, 'table');
 	}
 
@@ -179,11 +179,11 @@ class MySql
 	/**
 	 * Add an index to the table
 	 *
-	 * @param   string $field  field name
-	 * @param   string $prefix index name prefix (allows you to differentiate between indexes created in
-	 *                         different parts of fabrik)
-	 * @param   string $type   index type
-	 * @param   int|string    $size   index length
+	 * @param   string     $field  field name
+	 * @param   string     $prefix index name prefix (allows you to differentiate between indexes created in
+	 *                             different parts of fabrik)
+	 * @param   string     $type   index type
+	 * @param   int|string $size   index length
 	 *
 	 * @return void
 	 */
@@ -293,57 +293,47 @@ class MySql
 
 	/**
 	 * Create a db table
-	 * @param   string  $name    Table name
-	 * @param   array   $fields  Fields to create
-	 * @param   array   $opts    Options
+	 *
+	 * @param   string $name   Table name
+	 * @param   array  $fields Fields to create
+	 * @param   array  $opts   Options
 	 *
 	 * @return array
 	 */
-	public function createTable($name, $fields, $opts)
+	public function createTable($name, $fields, $opts = array())
 	{
-		$db = Worker::getDbo(true);
-		$fabrikDb = $this->db;
-
-		if (is_null($name))
-		{
-			$name = $this->getTable()->db_table_name;
-		}
-
+		$db  = $this->db;
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . $db->qn($name) . ' (';
 
-		$arAddedObj = array();
-		$keys = array();
-		$lines = array();
-		$pluginManager = Worker::getPluginManager();
+		$added         = array();
+		$keys          = array();
+		$lines         = array();
 
-		foreach ($fields as $fieldName => $fieldData)
+		foreach ($fields as $name => $field)
 		{
-			$elementModel = $pluginManager->loadPlugIn($fieldData['plugin'], 'element');
-			$element = $elementModel->getElement();
-
 			// Replace all non alphanumeric characters with _
-			$fieldName = \FabrikString::dbFieldName($fieldName);
+			$name = \FabrikString::dbFieldName($name);
 
-			if ($element->primary_key || ArrayHelper::getValue($fieldData, 'primary_key'))
+			if ($field->primary_key)
 			{
-				$keys[] = $fieldName;
+				$keys[] = $name;
 			}
 
 			// Any elements that are names the same (eg radio buttons) can not be entered twice into the database
-			if (!in_array($fieldName, $arAddedObj))
+			if (!in_array($name, $added))
 			{
-				$arAddedObj[] = $fieldName;
-				$fieldType = $elementModel->getFieldDescription();
+				$added[] = $name;
+				$type    = ArrayHelper::getValue($field, 'field', 'VARCHAR(255)');
 
-				if ($fieldName != '' && !is_null($fieldType))
+				if ($name != '' && !is_null($type))
 				{
-					if (String::stristr($fieldType, 'not null'))
+					if (String::stristr($type, 'not null'))
 					{
-						$lines[] = $fabrikDb->qn($fieldName) . ' ' . $fieldType;
+						$lines[] = $db->qn($name) . ' ' . $type;
 					}
 					else
 					{
-						$lines[] = $fabrikDb->qn($fieldName) . ' ' . $fieldType . ' null';
+						$lines[] = $db->qn($name) . ' ' . $type . ' null';
 					}
 				}
 			}
@@ -361,10 +351,63 @@ class MySql
 		}
 
 		$sql .= ' ENGINE = MYISAM ';
-		$fabrikDb->setQuery($sql);
-		$fabrikDb->execute();
+		$db->setQuery($sql);
+		$db->execute();
 
 		return $keys;
+	}
+
+	/**
+	 * Alter the forms' data collection table when the forms' groups and/or
+	 * elements are altered
+	 *
+	 * @param   string $name   Database table name
+	 * @param   array  $fields Fields to add
+	 *
+	 * @throws \Exception
+	 *
+	 * @return boolean
+	 */
+	public function amendTable($name, $fields = array())
+	{
+		$db             = Worker::getDbo(true);
+		$columns        = $this->db->getTableColumns($name);
+		$existingFields = array_keys($columns);
+		$existingFields = array_map('strtolower', $existingFields);
+		$lastField      = empty($existingFields) ? '' : $existingFields[count($existingFields) - 1];
+		$sql            = 'ALTER TABLE ' . $db->qn($name) . ' ';
+		$sqlAdd         = array();
+
+		foreach ($fields as $name => $field)
+		{
+			// Make sure that the object is not already in the table
+			if (!in_array(strtolower($name), $existingFields))
+			{
+				$existingFields[] = $name;
+				$type             = ArrayHelper::getValue($field, 'field', 'VARCHAR(255)');
+
+				if ($name != '' && !is_null($type))
+				{
+					$add = 'ADD COLUMN ' . $db->qn($name) . ' ' . $type . ' null';
+
+					if ($lastField !== '')
+					{
+						$add .= ' AFTER ' . $db->qn($lastField);
+					}
+
+					$sqlAdd[] = $add;
+				}
+			}
+		}
+
+		if (!empty($sqlAdd))
+		{
+			$sql .= implode(', ', $sqlAdd);
+			$this->db->setQuery($sql);
+			$this->db->execute();
+		}
+
+		return true;
 	}
 
 	/**
@@ -559,9 +602,14 @@ class MySql
 	/**
 	 * Drop the db table
 	 */
-	public function drop()
+	public function drop($table = null)
 	{
-		$query = 'DROP TABLE IF EXISTS ' . $this->db->qn($this->table);
+		if (is_null($table))
+		{
+			$table = $this->table;
+		}
+
+		$query = 'DROP TABLE IF EXISTS ' . $this->db->qn($table);
 		$this->db->setQuery($query);
 		$this->db->execute();
 	}

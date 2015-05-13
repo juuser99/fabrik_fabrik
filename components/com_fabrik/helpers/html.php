@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Joomla\Registry\Registry as JRegistry;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 
@@ -611,25 +612,19 @@ EOD;
 
 	public static function tableList($sel = '')
 	{
-		$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		$query->select('id, label')->from('#__fabrik_lists')->where('published = 1')->order('label');
-		$db->setQuery($query);
-		$rows = $db->loadObjectList();
+		$files = JFolder::files(JPATH_COMPONENT_ADMINISTRATOR . '/models/views/',  '.json', false, true);
 
+		foreach ($files as $file)
+		{
+			$json = file_get_contents($file);
+			$item = new JRegistry(json_decode($json));
+
+			if ($item->get('published'))
+			{
+				$rows[] = (object) array('id' => $item->get('id'), 'label' => $item->get('list.label'));
+			}
+		}
 		return JHTML::_('select.genericlist', $rows, 'fabrik__swaptable', 'class="inputbox" size="1" ', 'id', 'label', $sel);
-	}
-
-	/**
-	 * Load the css and js files once only (using calendar-eightsix)
-	 *
-	 * @deprecated - behavior.calendar is loaded in framework();
-	 *
-	 * @return  void
-	 */
-
-	public static function loadCalendar()
-	{
 	}
 
 	/**

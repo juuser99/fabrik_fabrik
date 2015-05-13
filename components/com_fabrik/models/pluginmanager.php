@@ -390,11 +390,10 @@ class PluginManager extends \JModelBase
 	/**
 	 * Load all the forms element plugins
 	 *
-	 * @param  \Fabrik\Admin\Models\View  &$form  View model
+	 * @param  \Fabrik\Admin\Models\View  &$model  View model
 	 *
 	 * @return  array	Group objects with plugin objects loaded in group->elements
 	 */
-
 	public function getFormPlugins(&$model)
 	{
 		$app = JFactory::getApplication();
@@ -424,7 +423,6 @@ class PluginManager extends \JModelBase
 
 			foreach ($groupModels as $name => &$groupModel)
 			{
-
 				$elements = $groupModel->getElements();
 
 				foreach ($elements as $element)
@@ -487,6 +485,7 @@ class PluginManager extends \JModelBase
 
 	public function getPluginFromId($id, $type = 'Element')
 	{
+		// FIXME - 3.5: elements no longer stored db tables.
 		$el = FabTable::getInstance($type, 'FabrikTable');
 		$el->load($id);
 		$o = $this->loadPlugIn($el->plugin, $type);

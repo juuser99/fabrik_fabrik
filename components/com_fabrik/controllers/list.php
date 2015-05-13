@@ -8,10 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require 'controller.php';
+use \Fabrik\Models\Lizt as Model;
+use \JFactory as JFactory;
 
 /**
  * Fabrik List Controller
@@ -19,9 +22,9 @@ require 'controller.php';
  * @static
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       1.5
+ * @since       3.5
  */
-class FabrikControllerList extends FabrikController
+class Lizt extends Controller
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -30,39 +33,34 @@ class FabrikControllerList extends FabrikController
 	 */
 	public $cacheId = 0;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   object $model     list model
-	 * @param   array  $urlparams An array of safe url parameters and their variable types, for valid values see {@link
-	 *                            JFilterInput::clean()}.
-	 *
-	 * @return  null
-	 */
-
-	public function display($model = false, $urlparams = false)
+	public function execute()
 	{
 		$document  = JFactory::getDocument();
 		$input     = $this->input;
 		$viewName  = $input->get('view', 'list');
-		$modelName = $viewName;
 		$layout    = $input->getWord('layout', 'default');
-		$viewType  = $document->getType();
+		$viewFormat  = $document->getType();
 
-		if ($viewType == 'pdf')
+		if ($viewFormat == 'pdf')
 		{
 			// In PDF view only shown the main component content.
 			$input->set('tmpl', 'component');
 		}
 		// Set the default view name from the Request
-		$view = $this->getView($viewName, $viewType);
+
+		// Register the layout paths for the view
+		$paths = new \SplPriorityQueue;
+		$paths->insert(JPATH_COMPONENT . '/views/' . $viewName . '/tmpl', 'normal');
+		// Push a model into the view
+		echo "new...";
+		$modelClass = 'Fabrik\Models\\Lizt';// . ucfirst($viewName);
+		echo " $modelClass <br>";
+		$model = new $modelClass;
+		$viewClass  = 'Fabrik\Views\Lizt\\' . ucfirst($viewFormat);
+		$view = new $viewClass($model);
 		$view->setLayout($layout);
 
-		// Push a model into the view
-		if (is_null($model) || $model == false)
-		{
-			$model = $this->getModel($modelName, 'FabrikFEModel');
-		}
+
 
 		$view->setModel($model, true);
 

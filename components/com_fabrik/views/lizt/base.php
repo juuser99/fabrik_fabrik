@@ -8,22 +8,27 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Lizt;
+
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.view');
+use \JComponentHelper as JComponentHelper;
+use \JProfiler as JProfiler;
+use \JFactory as JFactory;
+use \JRegistry as JRegistry;
+use \FabrikHelperHTML as FabrikHelperHTML;
 
 /**
  * Base List view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.6
+ * @since       3.5
  */
-
-class FabrikViewListBase extends JViewLegacy
+class Base extends \Fabrik\Admin\Views\Html
 {
 	public $isMambot = null;
 
@@ -40,7 +45,7 @@ class FabrikViewListBase extends JViewLegacy
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$Itemid = Worker::itemId();
-		$model = $this->getModel();
+		$model = $this->model;
 		$params = $model->getParams();
 		$item = $model->getTable();
 		$listref = $model->getRenderContext();
@@ -272,7 +277,7 @@ class FabrikViewListBase extends JViewLegacy
 		$script[] = $model->filterJs;
 
 		// Was separate but should now load in with the rest of the require js code
-		$model = $this->getModel();
+		$model = $this->model;
 		$script[] = $model->getElementJs($src);
 
 		// End domready wrapper
@@ -293,7 +298,7 @@ class FabrikViewListBase extends JViewLegacy
 	 * @return void
 	 */
 
-	public function display($tpl = null)
+	public function render($tpl = null)
 	{
 		if ($this->getLayout() == '_advancedsearch')
 		{
@@ -306,15 +311,15 @@ class FabrikViewListBase extends JViewLegacy
 		$profiler = JProfiler::getInstance('Application');
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$model = $this->getModel();
+		$model = $this->model;
 
 		// Force front end templates
 		$tmpl = $model->getTmpl();
 		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
-		$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
+		//$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
 
 		$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
-		$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
+		//$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
 		$user = JFactory::getUser();
 		$document = JFactory::getDocument();
 		$item = $model->getTable();

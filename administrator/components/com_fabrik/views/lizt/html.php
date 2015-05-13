@@ -82,7 +82,6 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 		else
 		{
-
 			$this->order_by = array();
 			$orderbys       = $model->getOrderBys();
 

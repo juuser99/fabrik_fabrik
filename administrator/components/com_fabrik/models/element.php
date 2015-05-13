@@ -581,23 +581,23 @@ class Element extends Base implements ModelElementFormInterface
 		$this->updateChildIds($row);
 		$elementModel->getElement()->bind($data);
 		$origName = $input->get('name_orig', '');
-		list($update, $q, $oldName, $newdesc, $origDesc) = $listModel->shouldUpdateElement($elementModel, $origName);
+		list($update, $q, $oldName, $newDesc, $origDesc) = $listModel->shouldUpdateElement($elementModel, $origName);
 
 		if ($update && $input->get('task') !== 'save2copy')
 		{
-			$origplugin = $input->get('plugin_orig');
+			$origPlugin = $input->get('plugin_orig');
 			$prefix     = $this->config->get('dbprefix');
-			$tablename  = $listModel->getTable()->db_table_name;
-			$hasprefix  = (strstr($tablename, $prefix) === false) ? false : true;
-			$tablename  = str_replace($prefix, '#__', $tablename);
+			$tableName  = $listModel->getTable()->db_table_name;
+			$hasPrefix  = (strstr($tableName, $prefix) === false) ? false : true;
+			$tableName  = str_replace($prefix, '#__', $tableName);
 
-			if (in_array($tablename, $this->core))
+			if (in_array($tableName, $this->core))
 			{
 				$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
 			}
 			else
 			{
-				if ($hasprefix)
+				if ($hasPrefix)
 				{
 					$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
 				}
@@ -605,18 +605,18 @@ class Element extends Base implements ModelElementFormInterface
 
 			$this->app->setUserState('com_fabrik.confirmUpdate', 1);
 
-			$this->app->setUserState('com_fabrik.plugin_orig', $origplugin);
+			$this->app->setUserState('com_fabrik.plugin_orig', $origPlugin);
 			$this->app->setUserState('com_fabrik.q', $q);
-			$this->app->setUserState('com_fabrik.newdesc', $newdesc);
+			$this->app->setUserState('com_fabrik.newdesc', $newDesc);
 			$this->app->setUserState('com_fabrik.origDesc', $origDesc);
 
-			$this->app->setUserState('com_fabrik.origplugin', $origplugin);
+			$this->app->setUserState('com_fabrik.origplugin', $origPlugin);
 			$this->app->setUserState('com_fabrik.oldname', $oldName);
 			$this->app->setUserState('com_fabrik.newname', $data['name']);
 			$this->app->setUserState('com_fabrik.origtask', $input->get('task'));
 			$this->app->setUserState('com_fabrik.plugin', $data['plugin']);
 			$task = $input->get('task');
-			$url  = 'index.php?option=com_fabrik&view=element&layout=confirmupdate&id=' . (int) $origId . '&origplugin=' . $origplugin . '&origtask='
+			$url  = 'index.php?option=com_fabrik&view=element&layout=confirmupdate&id=' . (int) $origId . '&origplugin=' . $origPlugin . '&origtask='
 				. $task . '&plugin=' . $row->plugin;
 			$this->app->setUserState('com_fabrik.redirect', $url);
 		}

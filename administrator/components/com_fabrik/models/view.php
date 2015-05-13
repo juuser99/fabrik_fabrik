@@ -172,4 +172,58 @@ class View extends Base
 
 		return $groups;
 	}
+
+	/**
+	 * Iterate over the form's elements and update its db table to match
+	 *
+	 * @return  void
+	 */
+	public function updateDatabase()
+	{
+		$item = $this->getItem();
+		$form = $item->get('form');
+
+		// Use this in case there is not table view linked to the form
+		if ($form->record_in_database == 1)
+		{
+			$tableName = $item->get('list.db_table_name');
+			$exists = $this->storage->tableExists($tableName);
+			$fields = array();
+			$groups = $this->getGroupsHiarachy();
+
+			foreach ($groups as $group)
+			{
+				foreach ($group->elements as $elementModel)
+				{
+					$element = $elementModel->getElement();
+					$fields[$element->name] = array(
+						'plugin' => $element->plugin,
+						'field' => $elementModel->getFieldDescription(),
+						'primary_key' => $element->primary_key
+					);
+				}
+			}
+
+			if (!$exists)
+			{
+				/* $$$ hugh - if we're recreating a table for an existing form, we need to pass the field
+				 * list to createDBTable(), otherwise all we get is id and date_time.  Not sure if this
+				 * code really belongs here, or if we should handle it in createDBTable(), but I didn't want
+				 * to mess with createDBTable(), although I did have to make one small change in it (see comments
+				 * therein).
+				 * NOTE 1 - this code ignores joined groups, so only recreates the original table
+				 * NOTE 2 - this code ignores any 'alter existing fields' settings.
+				 */
+
+				if (!empty($fields))
+				{
+					$this->storage->createTable($tableName, $fields);
+				}
+			}
+			else
+			{
+				$this->storage->amendTable($tableName, $fields);
+			}
+		}
+	}
 }

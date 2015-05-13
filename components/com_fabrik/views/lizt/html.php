@@ -8,32 +8,29 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
 /**
  * HTML Fabrik List view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
 
-class FabrikViewList extends FabrikViewListBase
+class Html extends Base
 {
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  template
-	 *
 	 * @return void
 	 */
-
-	public function display($tpl = null)
+	public function render()
 	{
-		if (parent::display($tpl) !== false)
+		if (parent::render() !== false)
 		{
 			$model = $this->getModel();
 			$this->tabs = $model->loadTabs();

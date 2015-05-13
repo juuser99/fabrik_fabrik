@@ -53,7 +53,7 @@ class AutoLoader
 			$file  = JPATH_SITE . '/components/com_fabrik/' . strtolower($file . '.php');
 		}
 
-		require $file;
+		require_once $file;
 	}
 
 	/**
@@ -83,7 +83,7 @@ class AutoLoader
 			$file  = JPATH_SITE . '/components/com_fabrik/' . strtolower($file . '.php');
 		}
 
-		require $file;
+		require_once $file;
 	}
 
 	/**
@@ -100,6 +100,7 @@ class AutoLoader
 
 		$admin = strstr($class, '\Admin');
 		$class = str_replace('Fabrik\Admin\\', '', $class);
+		$class = str_replace('Fabrik\\', '', $class);
 		$file  = str_replace('\\', '/', strtolower($class));
 		$file  = strtolower($file . '.php');
 
@@ -112,7 +113,7 @@ class AutoLoader
 			$file  = JPATH_SITE . '/components/com_fabrik/' . $file;
 		}
 
-		require $file;
+		require_once $file;
 	}
 
 	/**
@@ -146,7 +147,7 @@ class AutoLoader
 
 		if (\JFile::exists($file))
 		{
-			require $file;
+			require_once $file;
 		}
 	}
 
