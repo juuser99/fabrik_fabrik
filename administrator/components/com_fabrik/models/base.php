@@ -33,6 +33,7 @@ use Joomla\String\Inflector;
 use \JFile as JFile;
 use \FabrikHelperHTML as FabrikHelperHTML;
 
+
 /**
  * Fabrik Base Admin Model
  *
@@ -727,6 +728,20 @@ class Base extends \JModelBase
 		}
 
 		return false;
+	}
+
+	/**
+	 * Attempts to determine if the form contains the element
+	 *
+	 * @param   string  $searchName  Element name to search for
+	 * @param   bool    $checkInt    Check search name against element id
+	 * @param   bool    $checkShort  Check short element name
+	 *
+	 * @return  bool  true if found, false if not found
+	 */
+	public function hasElement($searchName, $checkInt = false, $checkShort = true)
+	{
+		return $this->getElement($searchName, $checkInt, $checkShort) === false ? false : true;
 	}
 
 	/**

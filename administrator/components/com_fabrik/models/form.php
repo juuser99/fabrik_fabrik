@@ -543,4 +543,38 @@ class Form extends View implements ModelFormFormInterface
 		return $this->editable;
 	}
 
+	/**
+	 * Get an list of elements that aren't shown in the table view
+	 *
+	 * @return  array  of element table objects
+	 */
+	public function getElementsNotInTable()
+	{
+		if (!isset($this->elementsNotInList))
+		{
+			$this->elementsNotInList = array();
+			$groups = $this->getGroupsHiarachy();
+
+			foreach ($groups as $group)
+			{
+				$elements = $group->getPublishedElements();
+
+				foreach ($elements as $elementModel)
+				{
+					if ($elementModel->canView() || $elementModel->canUse())
+					{
+						$element = $elementModel->getElement();
+
+						if (!isset($element->show_in_list_summary) || !$element->show_in_list_summary)
+						{
+							$this->elementsNotInList[] = $element;
+						}
+					}
+				}
+			}
+		}
+
+		return $this->elementsNotInList;
+	}
+
 }

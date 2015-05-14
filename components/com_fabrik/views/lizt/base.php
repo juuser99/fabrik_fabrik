@@ -23,6 +23,9 @@ use \FabrikHelperHTML as FabrikHelperHTML;
 use \FText as FText;
 use \stdClass as stdClass;
 use \FabrikString as FabrikString;
+use \JRoute as JRoute;
+use \JHtml as JHtml;
+use \JFile as JFile;
 
 /**
  * Base List view class
@@ -469,11 +472,11 @@ class Base extends \Fabrik\Admin\Views\Html
 		if ($app->isAdmin())
 		{
 			// Admin always uses com_fabrik option
-			$this->pdfLink = JRoute::_('index.php?option=com_fabrik&task=list.view&listid=' . $item->id . '&format=pdf&tmpl=component');
+			$this->pdfLink = JRoute::_('index.php?option=com_fabrik&task=list.view&id=' . $item->get('id') . '&format=pdf&tmpl=component');
 		}
 		else
 		{
-			$pdfLink = 'index.php?option=com_' . $package . '&view=list&format=pdf&listid=' . $item->id;
+			$pdfLink = 'index.php?option=com_' . $package . '&view=list&format=pdf&id=' . $item->get('id');
 
 			if (!$this->nodata)
 			{
@@ -680,7 +683,7 @@ class Base extends \Fabrik\Admin\Views\Html
 	{
 		$aData = array();
 		$found = false;
-		$model = $this->getModel();
+		$model = $this->model;
 		$modelCals = $model->getCalculations();
 
 		foreach ($aCols as $key => $val)
@@ -826,7 +829,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$itemId = Worker::itemId();
-		$model = $this->getModel();
+		$model = $this->model;
 		$item = $model->getTable();
 
 		$reffer = str_replace('&', '&amp;', $input->server->get('REQUEST_URI', '', 'string'));
@@ -845,7 +848,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		// revert to view var. Used when showing table in article/blog layouts
 		$view = $input->get('origview', $input->get('view', 'list'));
 		$this->hiddenFields[] = '<input type="hidden" name="view" value="' . $view . '" />';
-		$this->hiddenFields[] = '<input type="hidden" name="listid" value="' . $item->id . '"/>';
+		$this->hiddenFields[] = '<input type="hidden" name="listid" value="' . $item->get('id') . '"/>';
 		$this->hiddenFields[] = '<input type="hidden" name="listref" value="' . $this->renderContext . '"/>';
 		$this->hiddenFields[] = '<input type="hidden" name="Itemid" value="' . $itemId . '"/>';
 

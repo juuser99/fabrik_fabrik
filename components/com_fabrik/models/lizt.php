@@ -5221,8 +5221,6 @@ class Lizt extends Base
 
 	public function &getPagination($total = 0, $limitStart = 0, $limit = 0)
 	{
-		$db = Worker::getDbo();
-
 		if (!isset($this->nav))
 		{
 			if ($this->randomRecords)
@@ -5231,6 +5229,7 @@ class Lizt extends Base
 			}
 
 			$params = $this->getParams();
+
 			$this->nav = new Pagination($total, $limitStart, $limit);
 
 			if ($limit == -1)
@@ -5309,8 +5308,8 @@ class Lizt extends Base
 		if (!isset($this->real_filter_action))
 		{
 			// First, grab the list's setting as the default
-			$table = $this->getTable();
-			$this->real_filter_action = $table->filter_action;
+			$item = $this->getTable();
+			$this->real_filter_action = $item->get('list.filter_action');
 
 			// Check to see if any list filter plugins require a Go button, like radius search
 			$pluginManager = Worker::getPluginManager();
@@ -6273,7 +6272,7 @@ class Lizt extends Base
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$item = $this->getTable();
-		$item->order_dir = String::strtolower($item->order_dir);
+		$item->order_dir = String::strtolower($item->get('list.order_dir'));
 		$aTableHeadings = array();
 		$headingClass = array();
 		$cellClass = array();
@@ -6297,7 +6296,7 @@ class Lizt extends Base
 		$groups = $formModel->getGroupsHiarachy();
 		$groupHeadings = array();
 
-		$orderBys = json_decode($item->order_by, true);
+		$orderBys = (array) $item->get('list.order_by');
 
 		if (!isset($orderBys))
 		{
@@ -6330,7 +6329,7 @@ class Lizt extends Base
 
 		foreach ($groups as $groupModel)
 		{
-			$groupHeadingKey = $w->parseMessageForPlaceHolder($groupModel->getGroup()->label, array(), false);
+			$groupHeadingKey = $w->parseMessageForPlaceHolder($groupModel->getGroup()->get('label'), array(), false);
 			$groupHeadings[$groupHeadingKey] = 0;
 			$elementModels = $groupModel->getPublishedListElements();
 

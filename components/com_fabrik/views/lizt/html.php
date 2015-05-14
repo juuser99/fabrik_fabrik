@@ -10,6 +10,7 @@
 
 namespace Fabrik\Views\Lizt;
 
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 

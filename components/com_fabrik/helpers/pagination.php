@@ -15,7 +15,10 @@ use \JHtml as JHtml;
 use \stdClass as stdClass;
 use \FabrikString as FabrikString;
 use \JPaginationObject as JPaginationObject;
-
+use \JPagination as JPagination;
+use \FText as FText;
+use \JRoute as JRoute;
+use \JFile as JFile;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -36,8 +39,7 @@ jimport('joomla.html.pagination');
  * @package  Fabrik
  * @since    3.0
  */
-
-class Pagination extends \JPagination
+class Pagination extends JPagination
 {
 	/**
 	 * Action url
@@ -195,7 +197,7 @@ class Pagination extends \JPagination
 	 * @return   string  HTML link
 	 */
 
-	protected function _item_active(c $item)
+	protected function _item_active(JPaginationObject $item)
 	{
 		$app = JFactory::getApplication();
 
@@ -485,31 +487,19 @@ class Pagination extends \JPagination
 	 */
 	public function get($property, $default = null)
 	{
-		$version = new JVersion;
-
-		if ($version->RELEASE > 2.5)
+		if (strpos($property, '.'))
 		{
-			if (strpos($property, '.'))
-			{
-				$prop = explode('.', $property);
-				$prop[1] = ucfirst($prop[1]);
-				$property = implode($prop);
-			}
-
-			if (isset($this->$property))
-			{
-				return $this->$property;
-			}
-
-			return $default;
+			$prop = explode('.', $property);
+			$prop[1] = ucfirst($prop[1]);
+			$property = implode($prop);
 		}
-		elseif (isset($this->$property))
+
+		if (isset($this->$property))
 		{
 			return $this->$property;
 		}
-		else
-		{
-			return $default;
-		}
+
+		return $default;
+
 	}
 }
