@@ -16,9 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-jimport('joomla.filesystem.file');
+use \JPath as JPath;
 
 /**
  * Fabrik Element List Model

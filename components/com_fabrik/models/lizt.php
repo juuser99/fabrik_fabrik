@@ -28,6 +28,14 @@ use \JRegistry as JRegistry;
 use \JFolder as JFolder;
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \JProfiler as JProfiler;
+use \RuntimeException as RuntimeException;
+use \FText as FText;
+use \Exception as Exception;
+use \FabrikString as FabrikString;
+use \JUri as JUri;
+use \JRoute as JRoute;
+use \JSession as JSession;
+
 
 /**
  * Fabrik List Model
@@ -74,13 +82,6 @@ class Lizt extends Base
 	protected $formModel = null;
 
 	/**
-	 * Joins
-	 *
-	 * @var array
-	 */
-	private $joins = null;
-
-	/**
 	 * Column calculations
 	 * @var array
 	 */
@@ -100,6 +101,12 @@ class Lizt extends Base
 	 */
 	public $isMambot = false;
 
+	/**
+	 * Empty data message
+	 * 
+	 * @var string
+	 */
+	protected $emptyMsg = '';
 	/**
 	 * Contain access rights
 	 *
@@ -479,9 +486,7 @@ class Lizt extends Base
 
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$input = $this->app->input;
-		$id = $input->getInt('listid', $usersConfig->get('listid'));
 		$this->packageId = (int) $input->getInt('packageId', $usersConfig->get('packageId'));
-		$this->setId($id);
 		$this->access = new stdClass;
 
 		$db = $this->getDb();
@@ -614,6 +619,7 @@ class Lizt extends Base
 		$input = $this->app->input;
 		$profiler = JProfiler::getInstance('Application');
 		$id = $this->getId();
+		echo "id = $id";
 		$this->outputFormat = $input->get('format', 'html');
 
 		if (is_null($id) || $id == '0')
@@ -628,7 +634,7 @@ class Lizt extends Base
 
 		$item = $this->getTable();
 
-		if ($item->db_table_name == '')
+		if ($item->get('list.db_table_name') == '')
 		{
 			throw new RuntimeException(FText::_('COM_FABRIK_INCORRECT_LIST_ID'), 500);
 		}
@@ -648,7 +654,6 @@ class Lizt extends Base
 		JDEBUG ? $profiler->mark('done calcs') : null;
 		$this->getCalculations();
 		JDEBUG ? $profiler->mark('got calcs') : null;
-		$item->hit();
 
 		return $data;
 	}
@@ -656,18 +661,18 @@ class Lizt extends Base
 	/**
 	 * Set the navigation limit and limitstart
 	 *
-	 * @param   int  $limitstart_override   Specific limitstart to use, if both start and length are specified
+	 * @param   int  $limitStart_override   Specific limitstart to use, if both start and length are specified
 	 * @param   int  $limitlength_override  Specific limitlength to use, if both start and length are specified
 	 *
 	 * @return  void
 	 */
 
-	public function setLimits($limitstart_override = null, $limitlength_override = null)
+	public function setLimits($limitStart_override = null, $limitlength_override = null)
 	{
 		$input = $this->app->input;
 
 		// Plugins using setLimits - these limits would get overwritten by render() or getData() calls
-		if (isset($this->limitLength) && isset($this->limitStart) && is_null($limitstart_override) && is_null($limitlength_override))
+		if (isset($this->limitLength) && isset($this->limitStart) && is_null($limitStart_override) && is_null($limitlength_override))
 		{
 			return;
 		}
@@ -676,10 +681,10 @@ class Lizt extends Base
 		 * limits off, by passing 0's, without having to go round the houses setting
 		 * the request array before calling this method.
 		 */
-		if (!is_null($limitstart_override) && !is_null($limitlength_override))
+		if (!is_null($limitStart_override) && !is_null($limitlength_override))
 		{
 			// Might want to set the request vars here?
-			$limitStart = $limitstart_override;
+			$limitStart = $limitStart_override;
 			$limitLength = $limitlength_override;
 		}
 		else
@@ -699,7 +704,7 @@ class Lizt extends Base
 			// If list is rendered as a content plugin don't set the limits in the session
 			if ($this->app->scope == 'com_content')
 			{
-				$limitLength = $input->getInt('limit' . $id, $item->rows_per_page);
+				$limitLength = $input->getInt('limit' . $id, $item->get('list.rows_per_page'));
 
 				if (!$this->randomRecords)
 				{
@@ -710,7 +715,7 @@ class Lizt extends Base
 			{
 				// If a list (assoc with a menu item) loads a form, with db join & front end select - don't use the orig menu's rows_per_page value.
 				$mambot = $this->isMambot || ($input->get('tmpl') === 'component' && $input->getInt('ajax') === 1);
-				$rowsPerPage = Worker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $mambot);
+				$rowsPerPage = Worker::getMenuOrRequestVar('rows_per_page', $item->get('list.rows_per_page'), $mambot);
 				$limitLength = $this->app->getUserStateFromRequest($context . 'limitlength', 'limit' . $id, $rowsPerPage);
 
 				if (!$this->randomRecords)
@@ -767,7 +772,7 @@ class Lizt extends Base
 	{
 		if (!isset($this->filterModel))
 		{
-			$this->filterModel = JModelLegacy::getInstance('Listfilter', 'FabrikFEModel');
+			$this->filterModel = new ListFilter;
 			$this->filterModel->setListModel($this);
 		}
 
@@ -913,7 +918,7 @@ class Lizt extends Base
 			$fabrikDb->setQuery($query, $this->limitStart, $this->limitLength);
 		}
 
-		FabrikHelperHTML::debug($fabrikDb->getQuery(), 'list GetData:' . $this->getTable()->label);
+		FabrikHelperHTML::debug($fabrikDb->getQuery(), 'list GetData:' . $this->getItem()->get('list.label'));
 		JDEBUG ? $profiler->mark('before query run') : null;
 
 		/* set 2nd param to false in attempt to stop joomfish db adaptor from translating the original query
@@ -940,7 +945,6 @@ class Lizt extends Base
 
 		ini_set('mysql.trace_mode', $traceModel);
 		JDEBUG ? $profiler->mark('query run and data loaded') : null;
-		$this->translateData($this->data);
 
 		// Add labels before preformatting - otherwise calc elements on dropdown elements show raw data for {list___element}
 		$this->addLabels($this->data);
@@ -1042,7 +1046,7 @@ class Lizt extends Base
 		jimport('joomla.filesystem.file');
 		$form = $this->getFormModel();
 		$tableParams = $this->getParams();
-		$table = $this->getTable();
+		$item = $this->getItem();
 		$method = 'renderListData_' . $this->outputFormat;
 		$this->_aLinkElements = array();
 
@@ -1074,7 +1078,7 @@ class Lizt extends Base
 					}
 					else
 					{
-						JDEBUG ? $profiler->mark("elements renderListData: ($ec) tableid = $table->id $col") : null;
+						JDEBUG ? $profiler->mark('elements renderListData: (' . $ec . ') id =' . $item->get('id') . ' ' . $col) : null;
 
 						for ($i = 0; $i < $ec; $i++)
 						{
@@ -1174,7 +1178,7 @@ class Lizt extends Base
 
 				if ($this->temp_db_key_addded)
 				{
-					$k = $table->db_primary_key;
+					$k = $item->get('list.db_primary_key');
 				}
 
 				$groupedData[$gKey][] = $data[$i];
@@ -1188,7 +1192,7 @@ class Lizt extends Base
 			{
 				if ($this->temp_db_key_addded)
 				{
-					$k = $table->db_primary_key;
+					$k = $item->get('list.db_primary_key');
 				}
 			}
 			// Make sure that the none grouped data is in the same format
@@ -1633,7 +1637,7 @@ class Lizt extends Base
 
 	/**
 	 * Get a list of possible menus
-	 * USED TO BUILD RELTED TABLE LNKS WITH CORRECT iTEMD AND TEMPLATE
+	 * USED TO BUILD RELATED TABLE LINKS WITH CORRECT ITEM ID AND TEMPLATE
 	 *
 	 * @since   2.0.4
 	 *
@@ -1726,12 +1730,13 @@ class Lizt extends Base
 
 		// Trigger load of joins without cdd elements - seems to mess up count otherwise
 		$listModel->set('includeCddInJoin', false);
-		$k2 = $db->quote(FabrikString::safeColNameToArrayKey($key));
+		$k2 = $db->q(FabrikString::safeColNameToArrayKey($key));
 
 		// $$$ Jannus - see http://fabrikar.com/forums/showthread.php?t=20751
 		$distinct = $listModel->mergeJoinedData() ? 'DISTINCT ' : '';
 		$item = $listModel->getTable();
-		$query->select($k2 . ' AS linkKey, ' . $linkKey . ' AS id, COUNT(' . $distinct . $item->db_primary_key . ') AS total')->from($item->db_table_name);
+		$query->select($k2 . ' AS linkKey, ' . $linkKey . ' AS id, COUNT(' . $distinct . $item->get('list.db_primary_key') . ') AS total')
+			->from($item->get('list.db_table_name'));
 		$query = $listModel->buildQueryJoin($query);
 		$listModel->set('includeCddInJoin', true);
 		$query->group($linkKey);
@@ -1765,7 +1770,7 @@ class Lizt extends Base
 		$elKey = $element->list_id . '-' . $element->form_id . '-' . $element->element_id;
 		$params = $this->getParams();
 		$listid = $element->list_id;
-		$formid = $element->form_id;
+		$formId = $element->form_id;
 		$linkedFormText = $params->get('linkedformtext');
 		$faceted = $params->get('facetedlinks');
 		$linkedFormText = ArrayHelper::fromObject($faceted->linkedformtext);
@@ -1781,10 +1786,10 @@ class Lizt extends Base
 			$listid = $list->id;
 		}
 
-		if (is_null($formid))
+		if (is_null($formId))
 		{
 			$form = $this->getFormModel()->getForm();
-			$formid = $form->id;
+			$formId = $form->id;
 		}
 
 		$facetTable = $this->facetedTable($listid);
@@ -1798,7 +1803,7 @@ class Lizt extends Base
 		if ($this->app->isAdmin())
 		{
 			$bits[] = 'task=form.view';
-			$bits[] = 'cid=' . $formid;
+			$bits[] = 'cid=' . $formId;
 		}
 		else
 		{
@@ -1806,7 +1811,7 @@ class Lizt extends Base
 			$bits[] = 'Itemid=' . $Itemid;
 		}
 
-		$bits[] = 'formid=' . $formid;
+		$bits[] = 'formid=' . $formId;
 		$bits[] = 'referring_table=' . $this->getTable()->id;
 
 		// $$$ hugh - change in databasejoin getValue() means we have to append _raw to key name
@@ -2039,7 +2044,7 @@ class Lizt extends Base
 		}
 
 		$list = $this->getTable();
-		$primaryKeyVal = $this->getKeyIndetifier($row);
+		$primaryKeyVal = $this->getKeyIdentifier($row);
 		$link = $this->linkHref($elementModel, $row, $repeatCounter);
 
 		if ($link == '')
@@ -2138,7 +2143,7 @@ class Lizt extends Base
 			}
 
 			$array['rowid'] = $this->getSlug($row);
-			$array['listid'] = $table->id;
+			$array['listid'] = $item->get('id');
 			$link = JRoute::_($this->parseMessageForRowHolder($customLink, $array));
 		}
 
@@ -2178,7 +2183,6 @@ class Lizt extends Base
 			$joins = $this->getJoins();
 
 			// Default to the primary key as before this fix
-			$lookupC = 0;
 			$tmpPks = array();
 
 			foreach ($joins as $join)
@@ -2233,20 +2237,20 @@ class Lizt extends Base
 							$v = str_replace('`', '', $tmpPks[$pk][0]);
 							$v = explode('.', $v);
 							$v[0] = $v[0] . '_0';
-							$tmpPks[$pk][0] = $db->quoteName($v[0] . '.' . $v[1]);
+							$tmpPks[$pk][0] = $db->qn($v[0] . '.' . $v[1]);
 						}
 
 						$v = str_replace('`', '', $pk);
 						$v = explode('.', $v);
 						$v[0] = $v[0] . '_' . count($tmpPks[$pk]);
-						$tmpPks[$pk][] = $db->quoteName($v[0] . '.' . $v[1]);
+						$tmpPks[$pk][] = $db->qn($v[0] . '.' . $v[1]);
 					}
 				}
 			}
 			// Check for duplicate pks if so we can presume that they are aliased with _X in from query
 			$lookupC = 0;
-			$lookUps = array('DISTINCT ' . $table->db_primary_key . ' AS __pk_val' . $lookupC);
-			$lookUpNames = array($table->db_primary_key);
+			$lookUps = array('DISTINCT ' . $table->get('list.db_primary_key') . ' AS __pk_val' . $lookupC);
+			$lookUpNames = array($table->get('list.db_primary_key'));
 
 			foreach ($tmpPks as $pks)
 			{
@@ -2269,7 +2273,7 @@ class Lizt extends Base
 				$table->order_dir = json_encode($dir);
 
 				$by = (array) json_decode($table->order_by);
-				array_unshift($by, $table->db_primary_key);
+				array_unshift($by, $table->get('list.db_primary_key'));
 				$table->order_by = json_encode($by);
 			}
 
@@ -2278,7 +2282,7 @@ class Lizt extends Base
 			$this->selectedOrderFields = (array) $this->selectedOrderFields;
 			$this->selectedOrderFields = array_unique(array_merge($lookUps, $this->selectedOrderFields));
 
-			$query->select(implode(', ', $this->selectedOrderFields) . ' FROM ' . $db->quoteName($table->db_table_name));
+			$query->select(implode(', ', $this->selectedOrderFields) . ' FROM ' . $db->qn($table->get('list.db_table_name')));
 			$query = $this->buildQueryJoin($query);
 			$query = $this->buildQueryWhere($input->get('incfilters', 1), $query);
 			$query = $this->buildQueryGroupBy($query);
@@ -2296,7 +2300,7 @@ class Lizt extends Base
 
 			foreach ($idRows as $r)
 			{
-				$mainKeys[] = $db->quote($r->__pk_val0);
+				$mainKeys[] = $db->q($r->__pk_val0);
 			}
 
 			// Chop up main keys for list limitstart, length to cull the data down to the correct length as defined by the page nav/ list settings
@@ -2324,7 +2328,7 @@ class Lizt extends Base
 					}
 					else
 					{
-						$ids[$idx] = $db->quote($ids[$idx]);
+						$ids[$idx] = $db->q($ids[$idx]);
 					}
 				}
 
@@ -2353,7 +2357,7 @@ class Lizt extends Base
 			*/
 			if (!empty($ids))
 			{
-				if ($lookUpNames[$lookupC] !== $table->db_primary_key)
+				if ($lookUpNames[$lookupC] !== $table->get('list.db_primary_key'))
 				{
 					$query->where($lookUpNames[$lookupC] . ' IN (' . implode(array_unique($ids), ',') . ')');
 				}
@@ -2361,7 +2365,7 @@ class Lizt extends Base
 				if (!empty($mainKeys))
 				{
 					// Limit to the current page
-					$query->where($table->db_primary_key . ' IN (' . implode($mainKeys, ',') . ')');
+					$query->where($table->get('list.db_primary_key') . ' IN (' . implode($mainKeys, ',') . ')');
 				}
 				else
 				{
@@ -2430,7 +2434,7 @@ class Lizt extends Base
 	{
 		$formModel = $this->getFormModel();
 		$item = $this->getTable();
-		$pk = FabrikString::safeColName($item->db_primary_key);
+		$pk = FabrikString::safeColName($item->get('list.db_primary_key'));
 		$params = $this->getParams();
 
 		if (in_array($this->outputFormat, array('raw', 'html', 'feed', 'pdf', 'phocapdf')))
@@ -2475,7 +2479,7 @@ class Lizt extends Base
 		$form->getGroupsHiarachy();
 		JDEBUG ? $profiler->mark('queryselect: fields load start') : null;
 		$fields = $this->getAsFields($mode);
-		$pk = FabrikString::safeColName($table->db_primary_key);
+		$pk = FabrikString::safeColName($table->get('list.db_primary_key'));
 		$params = $this->getParams();
 		$this->selectSlug($fields);
 		JDEBUG ? $profiler->mark('queryselect: fields loaded') : null;
@@ -2495,10 +2499,10 @@ class Lizt extends Base
 		$distinct = $params->get('distinct', true) ? 'DISTINCT' : '';
 
 		// $$$rob added raw as an option to fix issue in saving calendar data
-		if (trim($table->db_primary_key) != '' && (in_array($this->outputFormat, array('raw', 'html', 'feed', 'pdf', 'phocapdf', 'csv', 'word', 'yql'))))
+		if (trim($table->get('list.db_primary_key')) != '' && (in_array($this->outputFormat, array('raw', 'html', 'feed', 'pdf', 'phocapdf', 'csv', 'word', 'yql'))))
 		{
 			$sfields .= ', ';
-			$strPKey = $pk . ' AS ' . $db->quoteName('__pk_val') . "\n";
+			$strPKey = $pk . ' AS ' . $db->qn('__pk_val') . "\n";
 
 			if ($query)
 			{
@@ -2523,11 +2527,11 @@ class Lizt extends Base
 
 		if ($query)
 		{
-			$query->from($db->quoteName($table->db_table_name));
+			$query->from($db->qn($table->get('list.db_table_name')));
 		}
 		else
 		{
-			$sql .= ' FROM ' . $db->quoteName($table->db_table_name) . " \n";
+			$sql .= ' FROM ' . $db->qn($table->get('list.db_table_name')) . " \n";
 		}
 
 		$pluginManager = Worker::getPluginManager();
@@ -2563,7 +2567,7 @@ class Lizt extends Base
 		$params = $this->getParams();
 		$input = $this->app->input;
 		$formModel = $this->getFormModel();
-		$table = $this->getTable();
+		$item = $this->getTable();
 		$db = $this->getDb();
 		$this->selectedOrderFields = array();
 
@@ -2571,7 +2575,7 @@ class Lizt extends Base
 		{
 			$dateColId = (int) $params->get('feed_date', 0);
 			$dateColElement = $formModel->getElement($dateColId, true);
-			$dateCol = $db->quoteName($dateColElement->getFullName(false, false, false));
+			$dateCol = $db->qn($dateColElement->getFullName(false, false, false));
 
 			if ($dateColId !== 0)
 			{
@@ -2626,8 +2630,8 @@ class Lizt extends Base
 					if ($dir != '' && $dir != '-' && trim($dir) != 'Array')
 					{
 						$strOrder == '' ? $strOrder = "\n ORDER BY " : $strOrder .= ',';
-						$strOrder .= FabrikString::safeNameQuote($element->getOrderByName(), false) . ' ' . $dir;
-						$orderByName = FabrikString::safeNameQuote($element->getOrderByName(), false);
+						$strOrder .= FabrikString::safeNameq($element->getOrderByName(), false) . ' ' . $dir;
+						$orderByName = FabrikString::safeNameq($element->getOrderByName(), false);
 						$this->orderEls[] = $orderByName;
 						$this->orderDirs[] = $dir;
 						$element->getAsField_html($this->selectedOrderFields, $aAsFields);
@@ -2648,46 +2652,46 @@ class Lizt extends Base
 		// If nothing found in session use default ordering (or that set by querystring)
 		if ($strOrder == '')
 		{
-			$orderbys = explode(',', $input->getString('order_by', $input->getString('orderby', '')));
+			$orderBys = explode(',', $input->getString('order_by', $input->getString('orderby', '')));
 
-			if ($orderbys[0] == '')
+			if ($orderBys[0] == '')
 			{
-				$orderbys = json_decode($table->order_by, true);
+				$orderBys = $item->get('list.order_by');
 			}
 
-			// $$$ not sure why, but sometimes $orderbys is NULL at this point.
-			if (!isset($orderbys))
+			// $$$ not sure why, but sometimes $orderBys is NULL at this point.
+			if (!isset($orderBys))
 			{
-				$orderbys = array();
+				$orderBys = array();
 			}
 			// Covert ids to names (were stored as names but then stored as ids)
-			foreach ($orderbys as &$orderby)
+			foreach ($orderBys as &$orderBy)
 			{
-				if (is_numeric($orderby))
+				if (is_numeric($orderBy))
 				{
 
-					$elementModel = $formModel->getElement($orderby, true);
-					$orderby = $elementModel ? $elementModel->getOrderByName() : $orderby;
+					$elementModel = $formModel->getElement($orderBy, true);
+					$orderBy = $elementModel ? $elementModel->getOrderByName() : $orderBy;
 				}
 			}
 
-			$orderdirs = explode(',', $input->getString('order_dir', $input->getString('orderdir', '')));
+			$orderDirs = explode(',', $input->getString('order_dir', $input->getString('orderdir', '')));
 
-			if ($orderdirs[0] == '')
+			if ($orderDirs[0] == '')
 			{
-				$orderdirs = json_decode($table->order_dir, true);
+				$orderDirs = $item->get('list.order_dir');
 			}
 
 			$els = $this->getElements('filtername');
 
-			if (!empty($orderbys))
+			if (!empty($orderBys))
 			{
 				$bits = array();
 				$o = 0;
 
-				foreach ($orderbys as $orderbyRaw)
+				foreach ($orderBys as $orderByRaw)
 				{
-					$dir = ArrayHelper::getValue($orderdirs, $o, 'desc');
+					$dir = ArrayHelper::getValue($orderDirs, $o, 'desc');
 
 					// As we use getString() for query string, need to sanitize
 					if (!in_array(strtolower($dir), array('asc', 'desc','-')))
@@ -2695,7 +2699,7 @@ class Lizt extends Base
 						throw new ErrorException('invalid order direction: ' . $dir, 500);
 					}
 
-					if ($orderbyRaw !== '' && $dir != '-')
+					if ($orderByRaw !== '' && $dir != '-')
 					{
 						// $$$ hugh - getOrderByName can return a CONCAT, ie join element ...
 
@@ -2704,13 +2708,13 @@ class Lizt extends Base
 						 * which get converted form names to ids above have already been run through
 						 * getOrderByName().  So first check here ...
 						 */
-						if (!String::stristr($orderbyRaw, 'CONCAT(') && !String::stristr($orderbyRaw, 'CONCAT_WS('))
+						if (!String::stristr($orderByRaw, 'CONCAT(') && !String::stristr($orderByRaw, 'CONCAT_WS('))
 						{
-							$orderbyRaw = FabrikString::safeColName($orderbyRaw);
+							$orderByRaw = FabrikString::safeColName($orderByRaw);
 
-							if (array_key_exists($orderbyRaw, $els))
+							if (array_key_exists($orderByRaw, $els))
 							{
-								$field = $els[$orderbyRaw]->getOrderByName();
+								$field = $els[$orderByRaw]->getOrderByName();
 								/*
 								 * $$$ hugh - ... second check for CONCAT, see comment above
 								 * $$$ @TODO why don't we just embed this logic in safeColName(), so
@@ -2727,21 +2731,21 @@ class Lizt extends Base
 							}
 							else
 							{
-								if (strstr($orderbyRaw, '_raw`'))
+								if (strstr($orderByRaw, '_raw`'))
 								{
-									$orderbyRaw = FabrikString::safeColNameToArrayKey($orderbyRaw);
+									$orderByRaw = FabrikString::safeColNameToArrayKey($orderByRaw);
 								}
 
-								$bits[] = " $orderbyRaw $dir";
-								$this->orderEls[] = $orderbyRaw;
+								$bits[] = " $orderByRaw $dir";
+								$this->orderEls[] = $orderByRaw;
 								$this->orderDirs[] = $dir;
 							}
 						}
 						else
 						{
 							// If it was a CONCAT(), just add it with no other checks or processing
-							$bits[] = " $orderbyRaw $dir";
-							$this->orderEls[] = $orderbyRaw;
+							$bits[] = " $orderByRaw $dir";
+							$this->orderEls[] = $orderByRaw;
 							$this->orderDirs[] = $dir;
 						}
 					}
@@ -2772,18 +2776,18 @@ class Lizt extends Base
 		{
 			$groupOrderDir = $params->get('group_by_order_dir');
 			$strOrder == '' ? $strOrder = "\n ORDER BY " : $strOrder .= ',';
-			$orderby = strstr($groupOrderBy, '_raw`') ? FabrikString::safeColNameToArrayKey($groupOrderBy) : FabrikString::safeColName($groupOrderBy);
+			$orderBy = strstr($groupOrderBy, '_raw`') ? FabrikString::safeColNameToArrayKey($groupOrderBy) : FabrikString::safeColName($groupOrderBy);
 
 			if (!$query)
 			{
-				$strOrder .= $orderby . ' ' . $groupOrderDir;
+				$strOrder .= $orderBy . ' ' . $groupOrderDir;
 			}
 			else
 			{
-				$query->order($orderby . ' ' . $groupOrderDir);
+				$query->order($orderBy . ' ' . $groupOrderDir);
 			}
 
-			$this->orderEls[] = $orderby;
+			$this->orderEls[] = $orderBy;
 			$this->orderDirs[] = $groupOrderDir;
 		}
 
@@ -2795,7 +2799,7 @@ class Lizt extends Base
 	/**
 	 * Should we order on multiple elements or one
 	 *
-	 * @since   3.0.7 (refractored from buildQueryOrder())
+	 * @since   3.0.7 (refactored from buildQueryOrder())
 	 *
 	 * @return  bool
 	 */
@@ -2832,10 +2836,10 @@ class Lizt extends Base
 		$input = $this->app->input;
 		$postOrderBy = $input->getInt('orderby', '');
 		$postOrderDir = $input->get('orderdir', '');
-		$arOrderVals = array('asc', 'desc', '-');
+		$orders = array('asc', 'desc', '-');
 		$id = $this->getRenderContext();
 
-		if (in_array($postOrderDir, $arOrderVals))
+		if (in_array($postOrderDir, $orders))
 		{
 			$context = 'com_' . $package . '.list' . $id . '.order.' . $postOrderBy;
 			$session->set($context, $postOrderDir);
@@ -2863,14 +2867,13 @@ class Lizt extends Base
 
 		$statements = array();
 		$table = $this->getTable();
-		$selectedTables[] = $table->db_table_name;
+		$selectedTables[] = $table->get('list.db_table_name');
 		$return = array();
 		$joins = ($this->get('includeCddInJoin', true) === false) ? $this->getJoinsNoCdd() : $this->getJoins();
-		$tableGroups = array();
 
 		foreach ($joins as $join)
 		{
-			// Used to bypass user joins if the table connect isnt the Joomla connection
+			// Used to bypass user joins if the table connect is not the Joomla connection
 			if ((int) $join->canUse === 0)
 			{
 				continue;
@@ -2881,7 +2884,7 @@ class Lizt extends Base
 				$join->join_type = 'LEFT';
 			}
 
-			$sql = String::strtoupper($join->join_type) . ' JOIN ' . $db->quoteName($join->table_join);
+			$sql = String::strtoupper($join->join_type) . ' JOIN ' . $db->qn($join->table_join);
 			$k = FabrikString::safeColName($join->keytable . '.' . $join->table_key);
 
 			// Check we only get the field name
@@ -2995,9 +2998,9 @@ class Lizt extends Base
 		$elementName = FabrikString::safeColName($element->getFullName(false, false));
 		$filters = $this->getFilterArray();
 		$keys = array_keys($filters);
-		$vkeys = array_keys(ArrayHelper::getValue($filters, 'value', array()));
+		$valueKeys = array_keys(ArrayHelper::getValue($filters, 'value', array()));
 
-		foreach ($vkeys as $i)
+		foreach ($valueKeys as $i)
 		{
 			if ($filters['search_type'][$i] != 'prefilter' || $filters['key'][$i] != $elementName)
 			{
@@ -3095,7 +3098,6 @@ class Lizt extends Base
 		}
 
 		$filters = $this->getFilterArray();
-		$params = $this->getParams();
 
 		/* $$$ hugh - added option to 'require filtering', so if no filters specified
 		 * we return an empty table.  Only do this where $inFilters is set, so we're only doing this
@@ -3186,14 +3188,14 @@ class Lizt extends Base
 	private function _filtersToSQL(&$filters, $startWithWhere = true)
 	{
 		$prefilters = $this->groupFilterSQL($filters, 'prefilter');
-		$postfilers = $this->groupFilterSQL($filters);
+		$postFilters = $this->groupFilterSQL($filters);
 
-		if (!empty($prefilters) && !empty($postfilers))
+		if (!empty($prefilters) && !empty($postFilters))
 		{
-			array_unshift($postfilers, 'AND');
+			array_unshift($postFilters, 'AND');
 		}
 
-		$sql = array_merge($prefilters, $postfilers);
+		$sql = array_merge($prefilters, $postFilters);
 		$pluginQueryWhere = trim(implode(' AND ', $this->pluginQueryWhere));
 
 		if ($pluginQueryWhere !== '')
@@ -3246,11 +3248,11 @@ class Lizt extends Base
 		$sql = array();
 
 		// $$$ rob keys may no longer be in asc order as we may have filtered out some in buildQueryPrefilterWhere()
-		$vkeys = array_keys(ArrayHelper::getValue($filters, 'key', array()));
+		$valueKeys = array_keys(ArrayHelper::getValue($filters, 'key', array()));
 		$last_i = false;
 		$nullElementConditions = array('IS NULL', 'IS NOT NULL');
 
-		while (list($vkey, $i) = each($vkeys))
+		while (list($vkey, $i) = each($valueKeys))
 		{
 			// $$$rob - prefilter with element that is not published so ignore
 			$condition = String::strtoupper(ArrayHelper::getValue($filters['condition'], $i, ''));
@@ -3273,7 +3275,7 @@ class Lizt extends Base
 				continue;
 			}
 
-			$n = current($vkeys);
+			$n = current($valueKeys);
 
 			if ($n === false)
 			{
@@ -3428,7 +3430,7 @@ class Lizt extends Base
 		$db = Worker::getDbo();
 
 		// If the group by element isnt in the fields (IE its not published) add it (otherwise group by wont work)
-		$longGroupBy = $db->quoteName($this->getGroupBy());
+		$longGroupBy = $db->qn($this->getGroupBy());
 
 		if (!in_array($longGroupBy, $searchAllFields) && trim($table->group_by) != '')
 		{
@@ -3476,6 +3478,7 @@ class Lizt extends Base
 		$aJoinObjs = $this->getJoins();
 		$this->temp_db_key_addded = false;
 		$groups = $form->getGroupsHiarachy();
+
 		$gkeys = array_keys($groups);
 
 		foreach ($gkeys as $x)
@@ -3508,10 +3511,10 @@ class Lizt extends Base
 
 		if (!$this->isView())
 		{
-			if (!$this->temp_db_key_addded && $table->db_primary_key != '')
+			if (!$this->temp_db_key_addded && $table->get('list.db_primary_key') != '')
 			{
-				$str = FabrikString::safeColName($table->db_primary_key) . ' AS ' . FabrikString::safeColNameToArrayKey($table->db_primary_key);
-				$this->fields[] = $db->quoteName(FabrikString::safeColNameToArrayKey($table->db_primary_key));
+				$str = FabrikString::safeColName($table->get('list.db_primary_key')) . ' AS ' . FabrikString::safeColNameToArrayKey($table->get('list.db_primary_key'));
+				$this->fields[] = $db->qn(FabrikString::safeColNameToArrayKey($table->get('list.db_primary_key')));
 			}
 		}
 
@@ -3520,7 +3523,7 @@ class Lizt extends Base
 		// For raw data in packages
 		if ($this->outputFormat == 'raw')
 		{
-			$str = FabrikString::safeColName($table->db_primary_key) . ' AS __pk_val';
+			$str = FabrikString::safeColName($table->get('list.db_primary_key')) . ' AS __pk_val';
 			$this->fields[] = $str;
 		}
 
@@ -3550,7 +3553,7 @@ class Lizt extends Base
 	{
 		$item = $this->getTable();
 		$formModel = $this->getFormModel();
-		$groupBy = $this->app->input->get('group_by', $item->group_by, 'string');
+		$groupBy = $this->app->input->get('group_by', $item->get('list.group_by'), 'string');
 
 		return $formModel->getElement($groupBy, true);
 	}
@@ -3575,7 +3578,7 @@ class Lizt extends Base
 
 		$groupBy = $elementModel->getFullName(true, false);
 
-		return $db->quoteName(FabrikString::safeColNameToArrayKey($groupBy));
+		return $db->qn(FabrikString::safeColNameToArrayKey($groupBy));
 	}
 
 	/**
@@ -3590,7 +3593,7 @@ class Lizt extends Base
 
 		if (!isset($this->params))
 		{
-			$this->params = new JRegistry($item->params);
+			$this->params = new JRegistry($item->get('params'));
 		}
 
 		return $this->params;
@@ -3599,30 +3602,18 @@ class Lizt extends Base
 	/**
 	 * Method to set the list id
 	 *
-	 * @param   int  $id  list ID
+	 * @param   string  $id  list ID
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
-		$this->set('list.id', $id);
+		$this->set('id', $id);
 		$this->renderContext = '';
 
-		// $$$ rob not sure why but we need this getState() here when assinging id from admin view
+		// $$$ rob not sure why but we need this getState() here when assigning id from admin view
 		$this->setRenderContext($id);
 		$this->getState();
-	}
-
-	/**
-	 * Get the list id
-	 *
-	 * @return  int  list id
-	 */
-
-	public function getId()
-	{
-		return $this->get('list.id');
 	}
 
 	/**
@@ -3637,9 +3628,6 @@ class Lizt extends Base
 
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
-		// @TODO actually load in the json object
-		$json = file_get_contents(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/schemas/template.json');
-		return json_decode($json);
 		if ($name === true)
 		{
 			$this->clearTable();
@@ -3647,18 +3635,12 @@ class Lizt extends Base
 
 		if (!isset($this->table) || !is_object($this->table))
 		{
-			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$this->table = FabTable::getInstance('List', 'FabrikTable');
-			$id = $this->getId();
+			$id = $this->get('id');
+			$this->table =  $this->getItem($id);
 
-			if ($id !== 0)
+			if (trim($this->table->get('db_primary_key')) !== '')
 			{
-				$this->table->load($id);
-			}
-
-			if (trim($this->table->db_primary_key) !== '')
-			{
-				$this->table->db_primary_key = FabrikString::safeColName($this->table->db_primary_key);
+				$this->table->set('db_primary_key', FabrikString::safeColName($this->table->get('db_primary_key')));
 			}
 		}
 
@@ -3732,18 +3714,19 @@ class Lizt extends Base
 		$item = $this->getTable();
 		$db = Worker::getDbo();
 		$nullDate = $db->getNullDate();
-		$publishup = JFactory::getDate($item->publish_up);
-		$publishup = $publishup->toUnix();
-		$publishdown = JFactory::getDate($item->publish_down);
-		$publishdown = $publishdown->toUnix();
-		$jnow = JFactory::getDate();
-		$now = $jnow->toUnix();
+		$up = $item->get('list.publish_up');
+		$down = $item->get('list.publish_down');
+		$publishUp = JFactory::getDate($up);
+		$publishUp = $publishUp->toUnix();
+		$publishDown = JFactory::getDate($down);
+		$publishDown = $publishDown->toUnix();
+		$now = JFactory::getDate()->toUnix();
 
-		if ($item->published == '1')
+		if ($item->get('list.published') == '1')
 		{
-			if ($now >= $publishup || $item->publish_up == '' || $item->publish_up == $nullDate)
+			if ($now >= $publishUp || $up == '' || $up == $nullDate)
 			{
-				if ($now <= $publishdown || $item->publish_down == '' || $item->publish_down == $nullDate)
+				if ($now <= $publishDown || $down == '' || $down == $nullDate)
 				{
 					return true;
 				}
@@ -4027,7 +4010,7 @@ class Lizt extends Base
 		if (!array_key_exists('view', $this->access))
 		{
 			$groups = $this->user->getAuthorisedViewLevels();
-			$this->access->view = in_array($this->getTable()->access, $groups);
+			$this->access->view = in_array($this->getItem()->get('list.access'), $groups);
 		}
 
 		return $this->access->view;
@@ -4094,51 +4077,6 @@ class Lizt extends Base
 	}
 
 	/**
-	 * Get joins
-	 *
-	 * @return array join objects (table rows - not table objects or models)
-	 */
-
-	public function &getJoins()
-	{
-		if (!isset($this->joins))
-		{
-			$form = $this->getFormModel();
-			$form->getGroupsHiarachy();
-
-			// Force loading of join elements
-			$ids = $form->getElementIds(array(), array('includePublised' => false, 'loadPrefilters' => true));
-			$db = Worker::getDbo(true);
-			$id = (int) $this->getId();
-			$query = $db->getQuery(true);
-			$query->select('*')->from('#__fabrik_joins')->where('(element_id = 0 AND list_id = ' . $id . ')', 'OR');
-
-			if (!empty($ids))
-			{
-				$query->where('element_id IN ( ' . implode(', ', $ids) . ')');
-			}
-			/* maybe we will have to order by element_id asc to ensure that table joins are loaded
-			 * before element joins (if an element join is in a table join then its 'join_from_table' key needs to be updated
-			 		*/
-			$query->order('id');
-			$db->setQuery($query);
-			$this->joins = $db->loadObjectList();
-			$this->_makeJoinAliases($this->joins);
-
-			foreach ($this->joins as &$join)
-			{
-				if (is_string($join->params))
-				{
-					$join->params = new JRegistry($join->params);
-					$this->setJoinPk($join);
-				}
-			}
-		}
-
-		return $this->joins;
-	}
-
-	/**
 	 * Merged data queries need to know the joined tables primary key value
 	 *
 	 * @param   object  &$join  join
@@ -4150,6 +4088,8 @@ class Lizt extends Base
 
 	protected function setJoinPk(&$join)
 	{
+		// FIXME
+		throw new Exception('not done for 3.5!');
 		$pk = $join->params->get('pk');
 
 		if (!isset($pk))
@@ -4160,8 +4100,8 @@ class Lizt extends Base
 			$pk = $this->getPrimaryKeyAndExtra($join->table_join);
 			$pks = $join->table_join;
 			$pks .= '.' . $pk[0]['colname'];
-			$join->params->set('pk', $fabrikDb->quoteName($pks));
-			$query->update('#__fabrik_joins')->set('params = ' . $db->quote((string) $join->params))->where('id = ' . (int) $join->id);
+			$join->params->set('pk', $fabrikDb->qn($pks));
+			$query->update('#__fabrik_joins')->set('params = ' . $db->q((string) $join->params))->where('id = ' . (int) $join->id);
 			$db->setQuery($query);
 
 			try
@@ -4174,116 +4114,6 @@ class Lizt extends Base
 
 			$join->params = new JRegistry($join->params);
 		}
-	}
-
-	/**
-	 * As you may be joining to multiple versions of the same db table we need
-	 * to set the various database name alaises that our SQL query will use
-	 *
-	 * @param   array  &$joins  joins
-	 *
-	 * @return  void
-	 */
-	protected function _makeJoinAliases(&$joins)
-	{
-		$prefix = $this->app->get('dbprefix');
-		$table = $this->getTable();
-		$db = Worker::getDbo(true);
-		$aliases = array($table->db_table_name);
-		$tableGroups = array();
-
-		// Build up the alias and $tableGroups array first
-		foreach ($joins as &$join)
-		{
-			$join->canUse = true;
-
-			if ($join->table_join == '#__users' || $join->table_join == $prefix . 'users')
-			{
-				if (!$this->inJDb())
-				{
-					/* $$$ hugh - changed this to pitch an error and bang out, otherwise if we just set canUse to false, our getData query
-					 * is just going to blow up, with no useful warning msg.
-					* This is basically a bandaid for corner case where user has (say) host name in J!'s config, and IP address in
-					* our connection details, or vice versa, which is not uncommon for 'locahost' setups,
-					* so at least I'll know what the problem is when they post in the forums!
-					*/
-
-					$join->canUse = false;
-				}
-			}
-			// $$$ rob Check for repeat elements In list view we don't need to add the join
-			// as the element data is concatenated into one row. see elementModel::getAsField_html()
-			$opts = json_decode($join->params);
-
-			if (isset($opts->type) && $opts->type == 'repeatElement')
-			{
-				$join->canUse = false;
-			}
-
-			$tablejoin = str_replace('#__', $prefix, $join->table_join);
-
-			if (in_array($tablejoin, $aliases))
-			{
-				$base = $tablejoin;
-				$a = $base;
-				$c = 0;
-
-				while (in_array($a, $aliases))
-				{
-					$a = $base . '_' . $c;
-					$c++;
-				}
-
-				$join->table_join_alias = $a;
-			}
-			else
-			{
-				$join->table_join_alias = $tablejoin;
-			}
-
-			$aliases[] = str_replace('#__', $prefix, $join->table_join_alias);
-
-			if (!array_key_exists($join->group_id, $tableGroups))
-			{
-				if ($join->element_id == 0)
-				{
-					$tableGroups[$join->group_id] = $join->table_join_alias;
-				}
-			}
-		}
-
-		foreach ($joins as &$join)
-		{
-			// If they are element joins add in this table's name as the calling joining table.
-			if ($join->join_from_table == '')
-			{
-				$join->join_from_table = $table->db_table_name;
-			}
-
-			/*
-			 * Test case:
-			* you have a table that joins to a 2nd table
-			* in that 2nd table there is a database join element
-			* that 2nd elements key needs to point to the 2nd tables name and not the first
-			*
-			* e.g. when you want to create a n-n relationship
-			*
-			* events -> (table join) events_artists -> (element join) artist
-			*/
-
-			$join->keytable = $join->join_from_table;
-
-			if (array_key_exists($join->group_id, $tableGroups))
-			{
-				if ($join->element_id != 0)
-				{
-					$join->keytable = $tableGroups[$join->group_id];
-					$join->join_from_table = $join->keytable;
-				}
-			}
-		}
-
-		FabrikHelperHTML::debug($joins, 'joins');
 	}
 
 	/**
@@ -4303,7 +4133,7 @@ class Lizt extends Base
 		if (is_null($tbl))
 		{
 			$table = $this->getTable();
-			$tbl = $table->db_table_name;
+			$tbl = $table->get('list.db_table_name');
 		}
 
 		if ($tbl == '')
@@ -4395,8 +4225,8 @@ class Lizt extends Base
 		else
 		{
 			$keydata = $this->getPrimaryKeyAndExtra();
-			$tableName = $table->db_table_name;
-			$primaryKey = $table->db_primary_key;
+			$tableName = $table->get('list.db_table_name');
+			$primaryKey = $table->get('list.db_primary_key');
 		}
 
 		// $$$ rob base plugin needs to know group info for date fields in non-join repeat groups
@@ -4540,7 +4370,7 @@ class Lizt extends Base
 			// really want to do this
 			if ($this->canAlterFields())
 			{
-				$origColName = $origColName == null ? $fabrikDb->quoteName($element->name) : $fabrikDb->quoteName($origColName);
+				$origColName = $origColName == null ? $fabrikDb->qn($element->name) : $fabrikDb->qn($origColName);
 
 				if (String::strtolower($objtype) == 'blob')
 				{
@@ -4588,14 +4418,12 @@ class Lizt extends Base
 
 	public function alterStructure(&$elementModel, $origColName = null)
 	{
-		$db = Worker::getDbo();
 		$element = $elementModel->getElement();
 		$pluginManager = Worker::getPluginManager();
 		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$fabrikDb = $this->getDb();
 		$table = $this->getTable();
-		$tableName = $table->db_table_name;
+		$tableName = $table->get('list.db_table_name');
 
 		// $$$ rob base plugin needs to know group info for date fields in non-join repeat groups
 		$basePlugIn->setGroupModel($elementModel->getGroupModel());
@@ -4736,7 +4564,7 @@ class Lizt extends Base
 	 * @return  object	form model with form table loaded
 	 */
 
-	public function &getFormModel()
+	/*public function &getFormModel()
 	{
 		if (!isset($this->formModel))
 		{
@@ -4748,7 +4576,7 @@ class Lizt extends Base
 		}
 
 		return $this->formModel;
-	}
+	}*/
 
 	/**
 	 * Set the form model
@@ -4912,7 +4740,7 @@ class Lizt extends Base
 			{
 				// Bool match
 				$this->filters['origvalue'][$i] = $value;
-				$this->filters['sqlCond'][$i] = $key . ' ' . $condition . ' (' . $db->quote($value) . ' IN BOOLEAN MODE)';
+				$this->filters['sqlCond'][$i] = $key . ' ' . $condition . ' (' . $db->q($value) . ' IN BOOLEAN MODE)';
 				continue;
 			}
 
@@ -4935,7 +4763,6 @@ class Lizt extends Base
 
 			$eval = $this->filters['eval'][$i];
 			$fullWordsOnly = $this->filters['full_words_only'][$i];
-			$exactMatch = $this->filters['match'][$i];
 
 			// $$ hugh - testing allowing {QS} replacements in pre-filter values
 			$w->replaceRequest($value);
@@ -4966,7 +4793,7 @@ class Lizt extends Base
 
 			if ($condition == 'LATERTHISYEAR' || $condition == 'EARLIERTHISYEAR')
 			{
-				$value = $db->quote($value);
+				$value = $db->q($value);
 			}
 
 			if ($fullWordsOnly == '1')
@@ -5019,7 +4846,7 @@ class Lizt extends Base
 				if (strtoupper($condition) === 'REGEXP')
 				{
 					// $$$ 15/11/2012 - moved from before getFilterValue() to after as otherwise date filters in querystrings created wonky query
-					$value = 'LOWER(' . $db->quote($value, false) . ')';
+					$value = 'LOWER(' . $db->q($value, false) . ')';
 				}
 			
 			}
@@ -5170,13 +4997,13 @@ class Lizt extends Base
 
 		// List prefilter properties
 		$elements = $this->getElements('filtername');
-		$afilterFields = (array) $params->get('filter-fields');
+		$filterFields = (array) $params->get('filter-fields');
 		$afilterConditions = (array) $params->get('filter-conditions');
-		$afilterValues = (array) $params->get('filter-value');
+		$filterValues = (array) $params->get('filter-value');
 		$afilterAccess = (array) $params->get('filter-access');
 		$afilterEval = (array) $params->get('filter-eval');
-		$afilterJoins = (array) $params->get('filter-join');
-		$afilterGrouped = (array) $params->get('filter-grouped');
+		$filterJoins = (array) $params->get('filter-join');
+		$filterGrouped = (array) $params->get('filter-grouped');
 
 		/* If we are rendering as a module dont pick up the menu item options (parmas already set in list module)
 		 * so first statement when rendenering a module, 2nd when posting to the component from a module.
@@ -5197,16 +5024,16 @@ class Lizt extends Base
 
 			if (!empty($conditions))
 			{
-				$afilterFields = ArrayHelper::getValue($prefilters, 'filter-fields', array());
+				$filterFields = ArrayHelper::getValue($prefilters, 'filter-fields', array());
 				$afilterConditions = ArrayHelper::getValue($prefilters, 'filter-conditions', array());
-				$afilterValues = ArrayHelper::getValue($prefilters, 'filter-value', array());
+				$filterValues = ArrayHelper::getValue($prefilters, 'filter-value', array());
 				$afilterAccess = ArrayHelper::getValue($prefilters, 'filter-access', array());
 				$afilterEval = ArrayHelper::getValue($prefilters, 'filter-eval', array());
-				$afilterJoins = ArrayHelper::getValue($prefilters, 'filter-join', array());
+				$filterJoins = ArrayHelper::getValue($prefilters, 'filter-join', array());
 			}
 		}
 
-		return array($afilterFields, $afilterConditions, $afilterValues, $afilterAccess, $afilterEval, $afilterJoins, $afilterGrouped);
+		return array($filterFields, $afilterConditions, $filterValues, $afilterAccess, $afilterEval, $filterJoins, $filterGrouped);
 	}
 
 	/**
@@ -5223,30 +5050,27 @@ class Lizt extends Base
 		if (!isset($this->prefilters))
 		{
 			$elements = $this->getElements('filtername', false, false);
-			$params = $this->getParams();
-			list($afilterFields, $afilterConditions, $afilterValues, $afilterAccess, $afilterEval, $afilterJoins, $afilterGrouped) = $this->prefilterSetting();
-			$join = 'WHERE';
-			$w = new Worker;
+			list($filterFields, $afilterConditions, $filterValues, $afilterAccess, $afilterEval, $filterJoins, $filterGrouped) = $this->prefilterSetting();
 
-			for ($i = 0; $i < count($afilterFields); $i++)
+			for ($i = 0; $i < count($filterFields); $i++)
 			{
-				if (!array_key_exists(0, $afilterJoins) || $afilterJoins[0] == '')
+				if (!array_key_exists(0, $filterJoins) || $filterJoins[0] == '')
 				{
-					$afilterJoins[0] = 'AND';
+					$filterJoins[0] = 'AND';
 				}
 
-				$join = ArrayHelper::getValue($afilterJoins, $i, 'AND');
+				$join = ArrayHelper::getValue($filterJoins, $i, 'AND');
 
 				if (trim(String::strtolower($join)) == 'where')
 				{
 					$join = 'AND';
 				}
 
-				$filter = $afilterFields[$i];
+				$filter = $filterFields[$i];
 				$condition = $afilterConditions[$i];
-				$selValue = ArrayHelper::getValue($afilterValues, $i, '');
+				$selValue = ArrayHelper::getValue($filterValues, $i, '');
 				$filterEval = ArrayHelper::getValue($afilterEval, $i, false);
-				$filterGrouped = ArrayHelper::getValue($afilterGrouped, $i, false);
+				$filterGrouped = ArrayHelper::getValue($filterGrouped, $i, false);
 				$selAccess = $afilterAccess[$i];
 
 				if (!$this->mustApplyFilter($selAccess))
@@ -5255,8 +5079,8 @@ class Lizt extends Base
 				}
 
 				$raw = preg_match("/_raw$/", $filter) > 0;
-				$tmpfilter = $raw ? FabrikString::rtrimword($filter, '_raw') : $filter;
-				$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpfilter), false);
+				$tmpFilter = $raw ? FabrikString::rtrimword($filter, '_raw') : $filter;
+				$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpFilter), false);
 
 				if ($elementModel === false)
 				{
@@ -5266,8 +5090,8 @@ class Lizt extends Base
 					 * Complex set up of joined group which has a user element which is linked to a parent one. Raw AS field has _0 applied to its name
 					 * For this we'll just remove that to find the correct element.
 					 */
-					$tmpfilter = str_replace('_0.', '.', $tmpfilter);
-					$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpfilter), false);
+					$tmpFilter = str_replace('_0.', '.', $tmpFilter);
+					$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpFilter), false);
 				}
 
 				if ($elementModel && $elementModel->getElement()->published == 0)
@@ -5279,7 +5103,7 @@ class Lizt extends Base
 					JLog::addLogger(array('text_file' => 'fabrik.log.php'));
 
 					// Start logging...
-					$msg = JText::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', FabrikString::safeColName($tmpfilter));
+					$msg = JText::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', FabrikString::safeColName($tmpFilter));
 					JLog::add($msg,	JLog::NOTICE, 'com_fabrik');
 
 					$this->app->enqueueMessage($msg, 'notice');
@@ -5288,7 +5112,7 @@ class Lizt extends Base
 
 				$filters['join'][] = $join;
 				$filters['search_type'][] = 'prefilter';
-				$filters['key'][] = $tmpfilter;
+				$filters['key'][] = $tmpFilter;
 				$filters['value'][] = $selValue;
 				$filters['origvalue'][] = $selValue;
 				$filters['sqlCond'][] = '';
@@ -5361,8 +5185,8 @@ class Lizt extends Base
 	{
 		$db = $this->getDb();
 		$table = $this->getTable();
-		$count = 'DISTINCT ' . $table->db_primary_key;
-		$totalSql = 'SELECT COUNT(' . $count . ') AS t FROM ' . $table->db_table_name . ' ' . $this->buildQueryJoin();
+		$count = 'DISTINCT ' . $table->get('list.db_primary_key');
+		$totalSql = 'SELECT COUNT(' . $count . ') AS t FROM ' . $table->get('list.db_table_name') . ' ' . $this->buildQueryJoin();
 		$totalSql .= ' ' . $this->buildQueryWhere($this->app->input->get('incfilters', 1));
 		$totalSql .= ' ' . $this->buildQueryGroupBy();
 		$totalSql = $this->pluginQuery($totalSql);
@@ -5389,13 +5213,13 @@ class Lizt extends Base
 	 * Require the correct pagenav class based on template
 	 *
 	 * @param   int  $total       total
-	 * @param   int  $limitstart  start
+	 * @param   int  $limitStart  start
 	 * @param   int  $limit       length of records to return
 	 *
 	 * @return  object	pageNav
 	 */
 
-	public function &getPagination($total = 0, $limitstart = 0, $limit = 0)
+	public function &getPagination($total = 0, $limitStart = 0, $limit = 0)
 	{
 		$db = Worker::getDbo();
 
@@ -5403,11 +5227,11 @@ class Lizt extends Base
 		{
 			if ($this->randomRecords)
 			{
-				$limitstart = $this->getRandomLimitStart();
+				$limitStart = $this->getRandomLimitStart();
 			}
 
 			$params = $this->getParams();
-			$this->nav = new Pagination($total, $limitstart, $limit);
+			$this->nav = new Pagination($total, $limitStart, $limit);
 
 			if ($limit == -1)
 			{
@@ -5420,7 +5244,7 @@ class Lizt extends Base
 			$this->nav->setId($this->getId());
 			$this->nav->showTotal = $params->get('show-total', false);
 			$item = $this->getTable();
-			$this->nav->startLimit = Worker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $this->isMambot);
+			$this->nav->startLimit = Worker::getMenuOrRequestVar('rows_per_page', $item->get('list.rows_per_page'), $this->isMambot);
 			$this->nav->showDisplayNum = $params->get('show_displaynum', true);
 		}
 
@@ -5441,35 +5265,36 @@ class Lizt extends Base
 		}
 
 		$db = $this->getDb();
-		$table = $this->getTable();
+		$item = $this->getTable();
 		/* $$$ rob @todo - do we need to add the join in here as well?
 		 * added + 1 as with 4 records to show 3 4th was not shown
 		*/
 		$query = $db->getQuery(true);
-		$query->select('FLOOR(RAND() * COUNT(*) + 1) AS ' . $db->quoteName('offset'))->from($db->quoteName($table->db_table_name));
+		$query->select('FLOOR(RAND() * COUNT(*) + 1) AS ' . $db->qn('offset'))
+			->from($db->qn($item->get('list.db_table_name')));
 		$query = $this->buildQueryWhere(true, $query);
 		$db->setQuery($query);
-		$limitstart = $db->loadResult();
+		$limitStart = $db->loadResult();
 
 		/*$$$ rob 11/01/2011 cant do this as we dont know what the total is yet
 		 $$$ rob ensure that the limitstart + limit isn't greater than the total
-		if ($limitstart + $limit > $total) {
-		$limitstart = $total - $limit;
+		if ($limitStart + $limit > $total) {
+		$limitStart = $total - $limit;
 		}
 		$$$ rob 25/02/2011 if you only have say 3 reocrds then above random will show 1 2 or 3 records
 		so decrease the random start num by the table row dispaly num
 		going to favour records at the beginning of the table though
 		*/
-		$limitstart -= $table->rows_per_page;
+		$limitStart -= $item->get('list.rows_per_page');
 
-		if ($limitstart < 0)
+		if ($limitStart < 0)
 		{
-			$limitstart = 0;
+			$limitStart = 0;
 		}
 
-		$this->randomLimitStart = $limitstart;
+		$this->randomLimitStart = $limitStart;
 
-		return $limitstart;
+		return $limitStart;
 	}
 
 	/**
@@ -5489,7 +5314,7 @@ class Lizt extends Base
 
 			// Check to see if any list filter plugins require a Go button, like radius search
 			$pluginManager = Worker::getPluginManager();
-			$listPlugins = $pluginManager->getPlugInGroup('list');
+			$pluginManager->getPlugInGroup('list');
 
 			$pluginManager->runPlugins('requireFilterSubmit', $this, 'list');
 			$res = $pluginManager->data;
@@ -5547,7 +5372,7 @@ class Lizt extends Base
 	 * @return  string
 	 */
 
-	protected function getKeyIndetifier($data)
+	protected function getKeyIdentifier($data)
 	{
 		return '&rowid=' . $this->getSlug($data);
 	}
@@ -5586,15 +5411,17 @@ class Lizt extends Base
 		{
 			$this->joinsToThisKey = array();
 			$db = Worker::getDbo(true);
-			$table = $this->getTable();
+			$item = $this->getTable();
 
-			if ($table->id == 0)
+			if ($item->get('id') == '')
 			{
 				$this->joinsToThisKey = array();
 			}
 			else
 			{
-				$usersConfig = JComponentHelper::getParams('com_fabrik');
+				// FIXME - not ok for 3.5
+				$this->joinsToThisKey = array();
+				/*$usersConfig = JComponentHelper::getParams('com_fabrik');
 				$query = $db->getQuery(true);
 
 				// Select the required fields from the table.
@@ -5612,7 +5439,7 @@ class Lizt extends Base
 				$query->where('el.published = 1 AND g.published = 1');
 				$query
 				->where(
-						"(plugin = 'databasejoin' AND el.params like '%\"join_db_name\":\"" . $table->db_table_name
+						"(plugin = 'databasejoin' AND el.params like '%\"join_db_name\":\"" . $table->get('list.db_table_name')
 						. "\"%'
 						AND el.params like  '%\"join_conn_id\":\"" . $table->connection_id . "%') OR (plugin = 'cascadingdropdown' AND \n"
 						. " el.params like '\"%cascadingdropdown_table\":\"" . $table->id . "\"%' \n"
@@ -5641,7 +5468,7 @@ class Lizt extends Base
 				catch (RuntimeException $e)
 				{
 					throw new ErrorException('getJoinsToThisKey: ' . $e->getMessage(), 500);
-				}
+				}*/
 			}
 		}
 
@@ -5677,7 +5504,7 @@ class Lizt extends Base
 		{
 			$key = "{$join->list_id}-{$join->form_id}-{$join->element_id}";
 
-			// $$$ rob required for releated form links. otherwise links for forms not listed first in the admin options wherent being rendered
+			// $$$ rob required for related form links. otherwise links for forms not listed first in the admin options wherent being rendered
 			$this->linksToThisKey[] = isset($linkedForms->$key) ? $join : false;
 		}
 
@@ -5785,7 +5612,7 @@ class Lizt extends Base
 			return $this->hasRequiredElementFilters;
 		}
 
-		$filters = $this->getFilterArray();
+		$this->getFilterArray();
 		$elements = $this->getElements();
 		$this->hasRequiredElementFilters = false;
 
@@ -5820,11 +5647,11 @@ class Lizt extends Base
 	protected function gotOptionalFilters()
 	{
 		$filters = $this->getFilterArray();
-		$ftypes = ArrayHelper::getValue($filters, 'search_type', array());
+		$types = ArrayHelper::getValue($filters, 'search_type', array());
 
-		foreach ($ftypes as $i => $ftype)
+		foreach ($types as $i => $type)
 		{
-			if ($ftype != 'prefilter')
+			if ($type != 'prefilter')
 			{
 				return true;
 			}
@@ -5847,8 +5674,7 @@ class Lizt extends Base
 		}
 
 		$filters = $this->getFilterArray();
-		$elements = $this->getElements();
-		$required = array();
+		$this->getElements();
 
 		// If no required filters, then by definition we have them all
 		if (!$this->hasRequiredElementFilters())
@@ -6109,10 +5935,10 @@ class Lizt extends Base
 
 	public function getAdvancedSearchURL()
 	{
-		$table = $this->getTable();
+		$item = $this->getTable();
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&amp;view=list&amp;layout=_advancedsearch&amp;tmpl=component&amp;listid='
-				. $table->id . '&amp;nextview=' . $this->app->input->get('view', 'list');
+				. $item->get('id') . '&amp;nextview=' . $this->app->input->get('view', 'list');
 
 		// Defines if we are in a module or in the component.
 		$url .= '&amp;scope=' . $this->app->scope;
@@ -6418,11 +6244,11 @@ class Lizt extends Base
 				if (is_object($elModel))
 				{
 					$name = $elModel->getFullName(true, false);
-					$pName = $elModel->isJoin() ? $db->quoteName($elModel->getJoinModel()->getJoin()->table_join . '___params') : '';
+					$pName = $elModel->isJoin() ? $db->qn($elModel->getJoinModel()->getJoin()->table_join . '___params') : '';
 
 					foreach ($asfields as $f)
 					{
-						if ((strstr($f, $db->quoteName($name)) || strstr($f, $db->quoteName($name . '_raw'))
+						if ((strstr($f, $db->qn($name)) || strstr($f, $db->qn($name . '_raw'))
 							|| ($elModel->isJoin() && strstr($f, $pName))))
 						{
 							$newfields[] = $f;
@@ -6471,11 +6297,11 @@ class Lizt extends Base
 		$groups = $formModel->getGroupsHiarachy();
 		$groupHeadings = array();
 
-		$orderbys = json_decode($item->order_by, true);
+		$orderBys = json_decode($item->order_by, true);
 
-		if (!isset($orderbys))
+		if (!isset($orderBys))
 		{
-			$orderbys = array();
+			$orderBys = array();
 		}
 
 		// Responsive element classes
@@ -6575,7 +6401,7 @@ class Lizt extends Base
 
 					if ($class === '')
 					{
-						if (in_array($key, $orderbys))
+						if (in_array($key, $orderBys))
 						{
 							if ($item->order_dir === 'desc')
 							{
@@ -7155,7 +6981,7 @@ class Lizt extends Base
 
 				if ($element->show_in_list_summary)
 				{
-					$aHeadings[] = $table->db_table_name . '___' . $element->name;
+					$aHeadings[] = $table->get('list.db_table_name') . '___' . $element->name;
 				}
 			}
 		}
@@ -7398,11 +7224,11 @@ class Lizt extends Base
 				unset($oRecord->$primaryKey);
 			}
 
-			$ok = $this->insertObject($table->db_table_name, $oRecord, $primaryKey, false);
+			$ok = $this->insertObject($table->get('list.db_table_name'), $oRecord, $primaryKey, false);
 		}
 		else
 		{
-			$ok = $this->updateObject($table->db_table_name, $oRecord, $primaryKey, true);
+			$ok = $this->updateObject($table->get('list.db_table_name'), $oRecord, $primaryKey, true);
 		}
 
 		$this->_tmpSQL = $fabrikDb->getQuery();
@@ -7470,7 +7296,7 @@ class Lizt extends Base
 			}
 			else
 			{
-				$val = $db->quote($v);
+				$val = $db->q($v);
 			}
 
 			if (in_array($k, $this->encrypt))
@@ -7478,7 +7304,7 @@ class Lizt extends Base
 				$val = "AES_ENCRYPT($val, '$secret')";
 			}
 
-			$tmp[] = $db->quoteName($k) . '=' . $val;
+			$tmp[] = $db->qn($k) . '=' . $val;
 		}
 
 		$db->setQuery(sprintf($fmtsql, implode(",", $tmp), $where));
@@ -7510,7 +7336,7 @@ class Lizt extends Base
 	{
 		$db = $this->getDb();
 		$secret = $this->config->get('secret');
-		$fmtsql = 'INSERT INTO ' . $db->quoteName($table) . ' ( %s ) VALUES ( %s ) ';
+		$fmtsql = 'INSERT INTO ' . $db->qn($table) . ' ( %s ) VALUES ( %s ) ';
 		$fields = array();
 		$values = array();
 
@@ -7527,8 +7353,8 @@ class Lizt extends Base
 				continue;
 			}
 
-			$fields[] = $db->quoteName($k);
-			$val = $db->quote($v);
+			$fields[] = $db->qn($k);
+			$val = $db->q($v);
 
 			if (in_array($k, $this->encrypt))
 			{
@@ -7566,7 +7392,7 @@ class Lizt extends Base
 	 * @param   array   &$data           List data
 	 * @param   object  &$oRecord        To bind to table row
 	 * @param   int     $isJoin          Is record join record
-	 * @param   int     $rowid           Row id
+	 * @param   int     $rowId           Row id
 	 * @param   JTable  $joinGroupTable  Join group table
 	 *
 	 * @since	1.0.6
@@ -7576,7 +7402,7 @@ class Lizt extends Base
 	 * @return  void
 	 */
 
-	protected function addDefaultDataFromRO(&$data, &$oRecord, $isJoin, $rowid, $joinGroupTable)
+	protected function addDefaultDataFromRO(&$data, &$oRecord, $isJoin, $rowId, $joinGroupTable)
 	{
 		// $$$ rob since 1.0.6 : 10 June 08
 		// Get the current record - not that which was posted
@@ -7591,7 +7417,7 @@ class Lizt extends Base
 			* OK for now, as we should catch RO data from the encrypted vars check
 			* later in this method.
 			*/
-			if (empty($rowid))
+			if (empty($rowId))
 			{
 				$this->origData = $origdata = array();
 			}
@@ -7828,9 +7654,8 @@ class Lizt extends Base
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('cacheDoCalculations: start') : null;
 
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$listModel->setId($listId);
-		$db = Worker::getDbo();
 		$formModel = $listModel->getFormModel();
 
 		JDEBUG ? $profiler->mark('cacheDoCalculations, getGroupsHiarachy: start') : null;
@@ -8188,7 +8013,7 @@ class Lizt extends Base
 	{
 		if (empty($table))
 		{
-			$table = $this->getTable()->db_table_name;
+			$table = $this->getTable()->get('list.db_table_name');
 		}
 		if (!isset($this->indexes))
 		{
@@ -8197,7 +8022,7 @@ class Lizt extends Base
 		if (!array_key_exists($table, $this->indexes))
 		{
 			$db = $this->getDb();
-			$db->setQuery('SHOW INDEXES FROM ' . $db->quoteName($table));
+			$db->setQuery('SHOW INDEXES FROM ' . $db->qn($table));
 			$this->indexes[$table] = $db->loadObjectList();
 		}
 
@@ -8240,7 +8065,7 @@ class Lizt extends Base
 		// $$$ rob 28/02/2011 if index in joined table we need to use that the make the key on
 		if (!strstr($field, '___'))
 		{
-			$table = $this->getTable()->db_table_name;
+			$table = $this->getTable()->get('list.db_table_name');
 		}
 		else
 		{
@@ -8273,8 +8098,8 @@ class Lizt extends Base
 		}
 
 		$this->dropIndex($field, $prefix, $type, $table);
-		$query = ' ALTER TABLE ' . $db->quoteName($table) . ' ADD INDEX ' . $db->quoteName("fb_{$prefix}_{$field}_{$type}") . ' ('
-				. $db->quoteName($field) . ' ' . $size . ')';
+		$query = ' ALTER TABLE ' . $db->qn($table) . ' ADD INDEX ' . $db->qn("fb_{$prefix}_{$field}_{$type}") . ' ('
+				. $db->qn($field) . ' ' . $size . ')';
 		$db->setQuery($query);
 
 		try
@@ -8305,7 +8130,7 @@ class Lizt extends Base
 	public function dropIndex($field, $prefix = '', $type = 'INDEX', $table = '')
 	{
 		$db = $this->getDb();
-		$table = $table == '' ? $this->getTable()->db_table_name : $table;
+		$table = $table == '' ? $this->getTable()->get('list.db_table_name') : $table;
 		$field = FabrikString::shortColName($field);
 
 		if ($field == '')
@@ -8313,7 +8138,7 @@ class Lizt extends Base
 			return;
 		}
 
-		$db->setQuery("SHOW INDEX FROM " . $db->quoteName($table));
+		$db->setQuery("SHOW INDEX FROM " . $db->qn($table));
 		$dbIndexes = $db->loadObjectList();
 
 		if (is_array($dbIndexes))
@@ -8322,7 +8147,7 @@ class Lizt extends Base
 			{
 				if ($index->Key_name == "fb_{$prefix}_{$field}_{$type}")
 				{
-					$db->setQuery("ALTER TABLE " . $db->quoteName($table) . " DROP INDEX " . $db->quoteName("fb_{$prefix}_{$field}_{$type}"));
+					$db->setQuery("ALTER TABLE " . $db->qn($table) . " DROP INDEX " . $db->qn("fb_{$prefix}_{$field}_{$type}"));
 
 					try
 					{
@@ -8351,7 +8176,7 @@ class Lizt extends Base
 	public function dropColumnNameIndex($field, $table = '')
 	{
 		$db = $this->getDb();
-		$table = $table == '' ? $this->getTable()->db_table_name : $table;
+		$table = $table == '' ? $this->getTable()->get('list.db_table_name') : $table;
 		$field = FabrikString::shortColName($field);
 
 		if ($field == '')
@@ -8359,12 +8184,12 @@ class Lizt extends Base
 			return;
 		}
 
-		$db->setQuery("SHOW INDEX FROM " . $db->quoteName($table) . ' WHERE Column_name = ' . $db->quote($field));
+		$db->setQuery("SHOW INDEX FROM " . $db->qn($table) . ' WHERE Column_name = ' . $db->q($field));
 		$dbIndexes = $db->loadObjectList();
 
 		foreach ($dbIndexes as $index)
 		{
-			$db->setQuery(" ALTER TABLE " . $db->quoteName($table) . " DROP INDEX " . $db->quoteName($index->Key_name));
+			$db->setQuery(" ALTER TABLE " . $db->qn($table) . " DROP INDEX " . $db->qn($index->Key_name));
 			$db->execute();
 		}
 	}
@@ -8394,7 +8219,7 @@ class Lizt extends Base
 				if ((int) $join->list_id !== 0)
 				{
 					$query->clear();
-					$query->delete($db->quoteName($join->table_join))->where($db->quoteName($join->table_join_key) . ' IN (' . $val . ')');
+					$query->delete($db->qn($join->table_join))->where($db->qn($join->table_join_key) . ' IN (' . $val . ')');
 					$db->setQuery($query);
 					$db->execute();
 				}
@@ -8426,7 +8251,7 @@ class Lizt extends Base
 
 		if ($key == '')
 		{
-			$key = $table->db_primary_key;
+			$key = $table->get('list.db_primary_key');
 
 			if ($key == '')
 			{
@@ -8438,7 +8263,7 @@ class Lizt extends Base
 
 		foreach ($val as &$v)
 		{
-			$v = $db->quote($v);
+			$v = $db->q($v);
 		}
 
 		$val = implode(',', $val);
@@ -8503,7 +8328,7 @@ class Lizt extends Base
 
 			foreach ($val as &$v)
 			{
-				$v = $db->quote($v);
+				$v = $db->q($v);
 			}
 
 			$val = implode(',', $val);
@@ -8545,7 +8370,7 @@ class Lizt extends Base
 		}
 
 		$query = $db->getQuery(true);
-		$query->delete($db->quoteName($table->db_table_name))->where($key . ' IN (' . $val . ')');
+		$query->delete($db->qn($table->get('list.db_table_name')))->where($key . ' IN (' . $val . ')');
 		$db->setQuery($query);
 
 		if (!$db->execute())
@@ -8585,7 +8410,7 @@ class Lizt extends Base
 		$db = $this->getDb();
 		$query = $db->getQuery(true);
 		$table = $this->getTable();
-		$query->delete($db->quoteName($table->db_table_name));
+		$query->delete($db->qn($table->get('list.db_table_name')));
 		$db->setQuery($query);
 
 		if (!$db->execute())
@@ -8621,11 +8446,11 @@ class Lizt extends Base
 
 		foreach ($joinModels as $joinModel)
 		{
-			$db->setQuery("TRUNCATE " . $db->quoteName($joinModel->getJoin()->table_join));
+			$db->setQuery("TRUNCATE " . $db->qn($joinModel->getJoin()->table_join));
 			$db->execute();
 		}
 
-		$db->setQuery("TRUNCATE " . $db->quoteName($item->db_table_name));
+		$db->setQuery("TRUNCATE " . $db->qn($item->get('list.db_table_name')));
 		$db->execute();
 
 		// 3.0 clear filters (resets limitstart so that subsequently added records are shown)
@@ -8869,9 +8694,10 @@ class Lizt extends Base
 
 	protected function viewDetailsLink(&$row, $view = null)
 	{
+		// FIXME links incorrect
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$Itemid = Worker::itemId();
-		$keyIdentifier = $this->getKeyIndetifier($row);
+		$keyIdentifier = $this->getKeyIdentifier($row);
 		$table = $this->getTable();
 		$view = 'details';
 		$customLink = $this->getCustomLink('url', 'details');
@@ -8888,7 +8714,7 @@ class Lizt extends Base
 
 			if ($this->app->isAdmin())
 			{
-				$link .= 'index.php?option=com_' . $package . '&task=' . $view . '.view&formid=' . $table->form_id . '&listid=' . $this->getId() . $keyIdentifier;
+				$link .= 'index.php?option=com_' . $package . '&task=' . $view . '.view&id=' . $this->getId() . $keyIdentifier;
 			}
 			else
 			{
@@ -8918,7 +8744,7 @@ class Lizt extends Base
 	protected function makeCustomLink($link, $row)
 	{
 		$link = htmlspecialchars($link);
-		$keyIdentifier = $this->getKeyIndetifier($row);
+		$keyIdentifier = $this->getKeyIdentifier($row);
 		$row = ArrayHelper::fromObject($row);
 		$link = $this->parseMessageForRowHolder($link, $row);
 
@@ -8983,7 +8809,7 @@ class Lizt extends Base
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$Itemid = Worker::itemId();
-		$keyIdentifier = $this->getKeyIndetifier($row);
+		$keyIdentifier = $this->getKeyIdentifier($row);
 		$table = $this->getTable();
 		$customLink = $this->getCustomLink('url', 'edit');
 
@@ -8991,7 +8817,7 @@ class Lizt extends Base
 		{
 			if ($this->app->isAdmin())
 			{
-				$url = 'index.php?option=com_' . $package . '&task=form.view&formid=' . $table->form_id . $keyIdentifier;
+				$url = 'index.php?option=com_' . $package . '&task=form.view&id=' . $this->getId() . $keyIdentifier;
 			}
 			else
 			{
@@ -9019,7 +8845,7 @@ class Lizt extends Base
 	{
 		$db = Worker::getDbo();
 		$genTable = $this->getGenericTableName();
-		$sql = "DROP TABLE IF EXISTS " . $db->quoteName($genTable);
+		$sql = "DROP TABLE IF EXISTS " . $db->qn($genTable);
 
 		return $sql;
 	}
@@ -9034,7 +8860,7 @@ class Lizt extends Base
 	{
 		$table = $this->getTable();
 
-		return str_replace($this->app->get('dbprefix'), '#__', $table->db_table_name);
+		return str_replace($this->app->get('dbprefix'), '#__', $table->get('list.db_table_name'));
 	}
 
 	/**
@@ -9129,8 +8955,9 @@ class Lizt extends Base
 		* in fact this wasnt the problem, but rather the $sql var becomes too large to hold in memory
 		* going to try saving to a file on the server and then compressing that and sending it as a header for download
 		*/
+		$tableName = $table->get('list.db_table_name');
 		$query = $db->getQuery(true);
-		$query->select($table->db_primary_key)->from($table->db_table_name);
+		$query->select($table->get('list.db_primary_key'))->from($tableName);
 		$db->setQuery($query);
 		$keys = $db->loadColumn();
 		$sql = "";
@@ -9142,17 +8969,17 @@ class Lizt extends Base
 			foreach ($keys as $id)
 			{
 				$query->clear();
-				$query->select('*')->from($table->db_table_name)->where($table->db_primary_key = $id);
+				$query->select('*')->from($tableName)->where($tableName . ' = ' . $id);
 				$db->setQuery($query);
 				$row = $db->loadObject();
-				$fmtsql = "\t<query>INSERT INTO " . $table->db_table_name . " ( %s ) VALUES ( %s )</query>";
+				$fmtsql = "\t<query>INSERT INTO " . $tableName . " ( %s ) VALUES ( %s )</query>";
 				$values = array();
 				$fields = array();
 
 				foreach ($row as $k => $v)
 				{
-					$fields[] = $db->quoteName($k);
-					$values[] = $db->quote($v);
+					$fields[] = $db->qn($k);
+					$values[] = $db->q($v);
 				}
 
 				$sql .= sprintf($fmtsql, implode(",", $fields), implode(",", $values));
@@ -9294,6 +9121,7 @@ class Lizt extends Base
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$fabrikDb = $this->getDb();
 		$cursor = $input->getInt('cursor', 1);
+		$db = $this->getDb();
 		$this->getConnection();
 		$this->outputFormat = 'json';
 		$nav = $this->getPagination(1, $cursor, 1);
@@ -9310,14 +9138,14 @@ class Lizt extends Base
 			// Get the row id
 			$table = $this->getTable();
 			$query = $db->getQuery(true);
-			$query->select($table->db_primary_key)->from($table->db_table_name);
+			$query->select($table->get('list.db_primary_key'))->from($table->get('list.db_table_name'));
 			$query = $this->buildQueryJoin($query);
 			$query = $this->buildQueryOrder($query);
 			$fabrikDb->setQuery($query, $nav->limitstart, $nav->limit);
-			$rowid = $fabrikDb->loadResult();
-			$input->set('rowid', $rowid);
-			$formid = $input->getInt('formid');
-			$this->app->redirect('index.php?option=' . $package . '&view=form&formid=' . $formid . '&rowid=' . $rowid . '&format=raw');
+			$rowId = $fabrikDb->loadResult();
+			$input->set('rowid', $rowId);
+			$formId = $input->getInt('formid');
+			$this->app->redirect('index.php?option=' . $package . '&view=form&formid=' . $formId . '&rowid=' . $rowId . '&format=raw');
 		}
 
 		return json_encode($data);
@@ -9451,12 +9279,12 @@ class Lizt extends Base
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$db = $listModel->getDb();
 		$el = $listModel->getFormModel()->getElement($col);
-		$col = $db->quoteName($col);
+		$col = $db->qn($col);
 		$el->encryptFieldName($col);
-		$tablename = $table->db_table_name;
-		$tablename = FabrikString::safeColName($tablename);
+		$tableName = $table->get('list.db_table_name');
+		$tableName = FabrikString::safeColName($tableName);
 		$query = $db->getQuery(true);
-		$query->select('DISTINCT(' . $col . ')')->from($tablename);
+		$query->select('DISTINCT(' . $col . ')')->from($tableName);
 		$query = $listModel->buildQueryJoin($query);
 		$query = $listModel->buildQueryWhere(false, $query);
 		$query = $listModel->pluginQuery($query);
@@ -9717,7 +9545,6 @@ class Lizt extends Base
 	public function getAdvancedElementFilter()
 	{
 		$input = $this->app->input;
-		$element = $input->get('element');
 		$elementid = $input->getId('elid');
 		$pluginManager = Worker::getPluginManager();
 		$className = $input->get('plugin');
@@ -9851,7 +9678,7 @@ class Lizt extends Base
 		if (empty($addurl_url))
 		{
 			$formModel = $this->getFormModel();
-			$formid = $formModel->getForm()->id;
+			$formId = $formModel->getForm()->id;
 			$qs['option'] = 'com_' . $package;
 
 			if ($this->app->isAdmin())
@@ -10300,7 +10127,7 @@ class Lizt extends Base
 								// $$$ hugh - might be a view, so Hail Mary attempt to get PK
 								$query = $db->getQuery(true);
 								$query->select('db_primary_key')->from('#__fabrik_lists')
-								->where('db_table_name = ' . $db->quote($join_table_name));
+								->where('db_table_name = ' . $db->q($join_table_name));
 								$db->setQuery($query);
 								$join_pk = $db->loadResult();
 
@@ -10524,7 +10351,9 @@ class Lizt extends Base
 	{
 		$db = $this->getDb();
 		$table = $this->getTable();
-		$query = "UPDATE $table->db_table_name SET $key = COALESCE($key, 0)  + $dir WHERE $table->db_primary_key = " . $db->quote($rowId);
+		$tableName = $table->get('list.db_table_name');
+		$pk = $table->get('list.db_primary_key');
+		$query = "UPDATE $tableName SET $key = COALESCE($key, 0)  + $dir WHERE $pk = " . $db->q($rowId);
 		$db->setQuery($query);
 
 		return $db->execute();
@@ -10547,14 +10376,15 @@ class Lizt extends Base
 			$this->set('params', $params);
 
 			// Load state from the request.
-			$pk = $input->getInt('listid', $params->get('listid'));
+			$pk = $input->getString('listid', $params->get('listid'));
 		}
 		else
 		{
-			$pk = $input->getInt('listid');
+			$pk = $input->getString('id');
 		}
 
-		$this->set('list.id', $pk);
+		$this->set('id', $pk);
+
 		$offset = $input->getInt('limitstart');
 		$this->set('list.offset', $offset);
 	}
@@ -10616,14 +10446,14 @@ class Lizt extends Base
 		// $data = array_shift($data);
 		$table = $this->getTable();
 
-		$update = $update == '' ? $col . ' = ' . $db->quote($val) : $update;
+		$update = $update == '' ? $col . ' = ' . $db->q($val) : $update;
 		$colBits = explode('.', $col);
 		$tbl = array_shift($colBits);
 
 		$joinFound = false;
 		ArrayHelper::toInteger($ids);
 		$ids = implode(',', $ids);
-		$dbk = $k = $table->db_primary_key;
+		$dbk = $k = $table->get('list.db_primary_key');
 		$joins = $this->getJoins();
 
 		// If the update element is in a join replace the key and table name with the join table's name and key
@@ -10675,7 +10505,7 @@ class Lizt extends Base
 
 		if (!$joinFound)
 		{
-			$db_table_name = $table->db_table_name;
+			$db_table_name = $table->get('list.db_table_name');
 			$query = $db->getQuery(true);
 			$query->update($db_table_name)->set($update)->where($dbk . ' IN (' . $ids . ')');
 			$db->setQuery($query);
@@ -10706,9 +10536,9 @@ class Lizt extends Base
 		$table = $this->getTable();
 		$query = $db->getQuery(true);
 		$query
-			->update($db->quoteName($table->db_table_name))
-			->set($db->quoteName($field) . ' = ' . $db->quote($val))
-			->where($table->db_primary_key . ' = ' . $db->quote($id));
+			->update($db->qn($table->get('list.db_table_name')))
+			->set($db->qn($field) . ' = ' . $db->q($val))
+			->where($table->get('list.db_primary_key') . ' = ' . $db->q($id));
 		$db->setQuery($query);
 		$db->execute();
 	}
@@ -11209,8 +11039,7 @@ class Lizt extends Base
 		$field = array_shift($field);
 		$db = $this->getDb();
 		$k = $this->getTable()->db_primary_key;
-		$shortKey = FabrikString::shortColName($k);
-		$tbl = $this->getTable()->db_table_name;
+		$tbl = $this->getTable()->get('list.db_table_name');
 
 		// Get the primary keys and ordering values for the selection.
 		$query = $db->getQuery(true);
@@ -11238,7 +11067,7 @@ class Lizt extends Base
 				$query = $db->getQuery(true);
 				$query->update($tbl);
 				$query->set($field . ' = ' . ($i + 1));
-				$query->where($k . ' = ' . $db->quote($row->id));
+				$query->where($k . ' = ' . $db->q($row->id));
 				$db->setQuery($query);
 				$db->execute();
 			}
@@ -11453,9 +11282,9 @@ class Lizt extends Base
 		list($tableName, $tabsField) = explode('___', $tabsField);
 		$table = $this->getTable();
 
-		if ($tableName != $table->db_table_name)
+		if ($tableName != $table->get('list.db_table_name'))
 		{
-			$this->app->enqueueMessage(sprintf(FText::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->db_table_name), 'error');
+			$this->app->enqueueMessage(sprintf(FText::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->get('list.db_table_name')), 'error');
 
 			return;
 		}
@@ -11474,13 +11303,13 @@ class Lizt extends Base
 			$db = $this->getDb();
 			$query = $db->getQuery(true);
 			$query->select(array($tabsField, 'Count(' . $tabsField . ') as count'))
-				->from($db->quoteName($table->db_table_name))
+				->from($db->qn($table->get('list.db_table_name')))
 				->group($tabsField)
 				->order($tabsField);
 		}
 		else
 		{
-			$this->app->enqueueMessage(sprintf(FText::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->db_table_name), 'error');
+			$this->app->enqueueMessage(sprintf(FText::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->get('list.db_table_name')), 'error');
 			$joinTable = $elementModel->getJoinModel()->getJoin();
 			$fullFk = $joinTable->table_join . '___' . $joinTable->table_join_key;		
 			return;			
@@ -11705,9 +11534,9 @@ class Lizt extends Base
 			if (count($elementModels) > 0)
 			{
 				$group = $groupModel->getGroup();
-				$groupLabel = $w->parseMessageForPlaceHolder($group->label, array(), false);
-				$cols[$group->id]['name'] = $groupLabel;
-				$cols[$group->id]['elements'] = array();
+				$groupLabel = $w->parseMessageForPlaceHolder($group->get('label'), array(), false);
+				$cols[$group->get('id')]['name'] = $groupLabel;
+				$cols[$group->get('id')]['elements'] = array();
 
 				foreach ($elementModels as $key => $elementModel)
 				{
@@ -11719,7 +11548,7 @@ class Lizt extends Base
 						continue;
 					}
 
-					$cols[$group->id]['elements'][$elementModel->getFullName(true, false)] = $elementModel->getElement()->label;
+					$cols[$group->get('id')]['elements'][$elementModel->getFullName(true, false)] = $elementModel->getElement()->label;
 				}
 			}
 		}

@@ -66,25 +66,11 @@ class FabrikFEModelForm extends FabModelForm
 	public $aJoinGroupIds = array();
 
 	/**
-	 * If editable if 0 then show view only version of form
-	 *
-	 * @var bol true
-	 */
-	public $editable = true;
-
-	/**
 	 * Validation rule classes
 	 *
 	 * @var array
 	 */
 	protected $validationRuleClasses = null;
-
-	/**
-	 * The form running as a mambot or module(true)
-	 *
-	 * @var bool
-	 */
-	public $isMambot = false;
 
 	/**
 	 * Join objects for the form
@@ -99,13 +85,6 @@ class FabrikFEModelForm extends FabModelForm
 	 * @var string
 	 */
 	public $joinTableElementStep = '___';
-
-	/**
-	 * Parameters
-	 *
-	 * @var JRegistry
-	 */
-	protected $params = null;
 
 	/**
 	 * Row id to submit
@@ -142,13 +121,6 @@ class FabrikFEModelForm extends FabModelForm
 	 * @var array
 	 */
 	public $formData = null;
-
-	/**
-	 * Form errors
-	 *
-	 * @var array
-	 */
-	public $errors = array();
 
 	/**
 	 * Uploader helper
@@ -370,38 +342,6 @@ class FabrikFEModelForm extends FabModelForm
 	}
 
 	/**
-	 * Checks if the params object has been created and if not creates and returns it
-	 *
-	 * @return  object  params
-	 */
-
-	public function getParams()
-	{
-		if (!isset($this->params))
-		{
-			$form = $this->getForm();
-			$this->params = new JRegistry($form->params);
-		}
-
-		return $this->params;
-	}
-
-	/**
-	 * Should the form load up rowid=-1 usekey=foo
-	 *
-	 * @param   string  $priority  Request priority menu or request
-	 *
-	 * @return boolean
-	 */
-
-	protected function isUserRowId($priority = 'menu')
-	{
-		$rowId = Worker::getMenuOrRequestVar('rowid', '', $this->isMambot, $priority);
-
-		return $rowId === '-1' || $rowId === ':1';
-	}
-
-	/**
 	 * Makes sure that the form is not viewable based on the list's access settings
 	 *
 	 * Also sets the form's editable state, if it can record in to a db table
@@ -468,68 +408,6 @@ class FabrikFEModelForm extends FabModelForm
 		}
 
 		return $ret;
-	}
-
-	/**
-	 * Get the template name
-	 *
-	 * @since 3.0
-	 *
-	 * @return string tmpl name
-	 */
-
-	public function getTmpl()
-	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$params = $this->getParams();
-		$item = $this->getForm();
-		$tmpl = '';
-		$default = 'bootstrap';
-		$document = JFactory::getDocument();
-
-		if ($document->getType() === 'pdf')
-		{
-			$tmpl = $params->get('pdf_template', '') !== '' ? $params->get('pdf_template') : $default;
-		}
-		else
-		{
-			if ($app->isAdmin())
-			{
-				$tmpl = $this->isEditable() ? $params->get('admin_form_template') : $params->get('admin_details_template');
-				$tmpl = $tmpl == '' ? $default : $tmpl;
-			}
-
-			if ($tmpl == '')
-			{
-				if ($this->isEditable())
-				{
-					$tmpl = $item->form_template == '' ? $default : $item->form_template;
-				}
-				else
-				{
-					$tmpl = $item->view_only_template == '' ? $default : $item->view_only_template;
-				}
-			}
-		}
-
-	$tmpl = Worker::getMenuOrRequestVar('fabriklayout', $tmpl, $this->isMambot);
-
-		// Finally see if the options are overridden by a querystring var
-		$baseTmpl = $tmpl;
-		$tmpl = $input->get('layout', $tmpl);
-
-		// Test it exists - otherwise revert to baseTmpl tmpl
-		$folder = $this->isEditable() ? 'form' : 'details';
-
-		if (!JFolder::exists(JPATH_SITE . '/components/com_fabrik/views/' . $folder . '/tmpl/' . $tmpl))
-		{
-			$tmpl = $baseTmpl;
-		}
-
-		$this->isEditable() ? $item->form_template = $tmpl : $item->view_only_template = $tmpl;
-
-		return $tmpl;
 	}
 
 	/**
@@ -2593,110 +2471,6 @@ echo "form get errors";
 	}
 	
 	/**
-	 * Are we creating a new record or editing an existing one?
-	 * Put here to ensure compat when we go from 3.0 where rowid = 0 = new, to row id '' = new
-	 *
-	 * @since   3.0.9
-	 *
-	 * @return  boolean
-	 */
-
-	public function isNewRecord()
-	{
-		return $this->getRowId() === '';
-	}
-
-	/**
-	 * Get the current records row id
-	 * setting a rowid of -1 will load in the current users record (used in
-	 * conjunction with usekey variable
-	 *
-	 * setting a rowid of -2 will load in the last created record
-	 *
-	 * @return  string  rowid
-	 */
-
-	public function getRowId()
-	{
-		if (isset($this->rowId))
-		{
-			return $this->rowId;
-		}
-
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$user = JFactory::getUser();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-
-		// $$$rob if we show a form module when in a fabrik form component view - we shouldn't use
-		// the request rowid for the mambot as that value is destined for the component
-		if ($this->isMambot && $input->get('option') == 'com_' . $package)
-		{
-			$this->rowId = $usersConfig->get('rowid');
-		}
-		else
-		{
-			$this->rowId = Worker::getMenuOrRequestVar('rowid', $usersConfig->get('rowid'), $this->isMambot);
-
-			if ($this->rowId == -2)
-			{
-				// If the default was set to -2 (load last row) then a pagination form plugin's row id should override menu settings
-				$this->rowId = Worker::getMenuOrRequestVar('rowid', $usersConfig->get('rowid'), $this->isMambot, 'request');
-			}
-		}
-
-		if ($this->getListModel()->getParams()->get('sef-slug', '') !== '')
-		{
-			$this->rowId = explode(':', $this->rowId);
-			$this->rowId = array_shift($this->rowId);
-		}
-		// $$$ hugh - for some screwed up reason, when using SEF, rowid=-1 ends up as :1
-		// $$$ rob === compare as otherwise 0 == ":1" which meant that the users record was loaded
-		if ($this->isUserRowId())
-		{
-			$this->rowId = '-1';
-		}
-		// Set rowid to -1 to load in the current users record
-		switch ($this->rowId)
-		{
-			case '-1':
-				// New rows (no logged in user) should be ''
-				$this->rowId = $user->get('id') == 0 ? '' : $user->get('id');
-				break;
-			case '-2':
-				// Set rowid to -2 to load in the last recorded record
-				$this->rowId = $this->getMaxRowId();
-				break;
-		}
-
-		/**
-		 * $$$ hugh - added this as a Hail Mary sanity check, make sure
-		 * rowId is an empty string if for whatever reason it's still null,
-		 * as we have code in various place that checks for $this->rowId === ''
-		 * to detect adding new form.  So if at this point rowid is null, we have
-		 * to assume it's a new form, and set rowid to empty string.
-		 */
-		if (is_null($this->rowId))
-		{
-			$this->rowId = '';
-		}
-
-		/**
-		 * $$$ hugh - there's a couple of places, like calendar viz, that add &rowid=0 to
-		 * query string for new form, so check for that and set to empty string.
-		 */
-		if ($this->rowId === '0')
-		{
-			$this->rowId = '';
-		}
-
-		Worker::getPluginManager()->runPlugins('onSetRowId', $this);
-
-		return $this->rowId;
-	}
-
-	/**
 	 * Collates data to write out the form
 	 *
 	 * @return  mixed  bool
@@ -2772,59 +2546,6 @@ echo "form get errors";
 		$fabrikDb->setQuery("SELECT MAX($k) FROM " . FabrikString::safeColName($item->db_table_name) . $listModel->buildQueryWhere());
 
 		return $fabrikDb->loadResult();
-	}
-
-	/**
-	 * Does the form contain user errors
-	 *
-	 * @return  bool
-	 */
-
-	public function hasErrors()
-	{
-		$errorsFound = false;
-
-		foreach ($this->errors as $field => $errors)
-		{
-			if (!empty($errors))
-			{
-				foreach ($errors as $error)
-				{
-					if (!empty($error[0]))
-					{
-						$errorsFound = true;
-					}
-				}
-			}
-		}
-
-		if ($this->saveMultiPage(false))
-		{
-			$sessionRow = $this->getSessionData();
-			/*
-			 * Test if its a resumed paged form
-			 * if so _arErrors will be filled so check all elements had no errors
-			 */
-			$multiPageErrors = false;
-
-			if ($sessionRow->data != '')
-			{
-				foreach ($this->errors as $err)
-				{
-					if (!empty($err[0]))
-					{
-						$multiPageErrors = true;
-					}
-				}
-
-				if (!$multiPageErrors)
-				{
-					$errorsFound = false;
-				}
-			}
-		}
-
-		return $errorsFound;
 	}
 
 	/**
@@ -3063,49 +2784,6 @@ echo "form get errors";
 		JDEBUG ? $profiler->mark('queryselect: getData() end') : null;
 
 		return $this->data;
-	}
-
-	/**
-	 * Checks if user is logged in and form multipage settings to determine
-	 * if the form saves to the session table on multipage navigation
-	 *
-	 * @param   bool  $useSessionOn  Return true if JSession contains session.on - used in confirmation
-	 * plugin to re-show the previously entered form data. Not used in $this->hasErrors() otherwise logged in users
-	 * can not get the confirmation plugin to work
-	 *
-	 * @return  bool
-	 */
-
-	public function saveMultiPage($useSessionOn = true)
-	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$params = $this->getParams();
-		$session = JFactory::getSession();
-
-		// Set in plugins such as confirmation plugin
-		$pluginManager = Worker::getPluginManager();
-		$pluginManager->runPlugins('usesSession', $this, 'form');
-
-		if (in_array(true, $pluginManager->data))
-		{
-			if ($session->get('com_' . $package . '.form.' . $this->getId() . '.' . $this->getRowId() . '.session.on') == true && $useSessionOn)
-			{
-				return true;
-			}
-		}
-
-		$save = (int) $params->get('multipage_save', 0);
-		$user = JFactory::getUser();
-
-		if ($user->get('id') !== 0)
-		{
-			return $save === 0 ? false : true;
-		}
-		else
-		{
-			return $save === 2 ? true : false;
-		}
 	}
 
 	/**
@@ -4723,17 +4401,6 @@ echo "form get errors";
 		}
 
 		$this->setState('form.id', $pk);
-	}
-
-	/**
-	 * Is the form editable
-	 *
-	 * @return  bool
-	 */
-
-	public function isEditable()
-	{
-		return $this->editable;
 	}
 
 	/**

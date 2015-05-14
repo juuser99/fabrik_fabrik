@@ -10,6 +10,13 @@
 
 namespace Fabrik\Helpers;
 
+use \JFactory as JFactory;
+use \JHtml as JHtml;
+use \stdClass as stdClass;
+use \FabrikString as FabrikString;
+use \JPaginationObject as JPaginationObject;
+
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -188,7 +195,7 @@ class Pagination extends \JPagination
 	 * @return   string  HTML link
 	 */
 
-	protected function _item_active(JPaginationObject $item)
+	protected function _item_active(c $item)
 	{
 		$app = JFactory::getApplication();
 

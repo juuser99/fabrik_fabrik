@@ -8,22 +8,23 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
+use Fabrik\Admin\Models\Base as Base;
+use \JRegistry as JRegistry;
 
 /**
  * Fabrik Join Model
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikFEModelJoin extends FabModel
+class Join extends Base
 {
 	/**
 	 * Join table
@@ -98,9 +99,11 @@ class FabrikFEModelJoin extends FabModel
 
 	public function getJoin()
 	{
+		// FIXME
 		if (!isset($this->join))
 		{
-			$this->join = FabTable::getInstance('join', 'FabrikTable');
+			$this->join = new JRegistry;
+			/*$this->join = FabTable::getInstance('join', 'FabrikTable');
 
 			if (isset($this->data))
 			{
@@ -111,7 +114,7 @@ class FabrikFEModelJoin extends FabModel
 				$this->join->load($this->id);
 			}
 
-			$this->paramsType($this->join);
+			$this->paramsType($this->join);*/
 		}
 
 		return $this->join;
@@ -257,6 +260,8 @@ class FabrikFEModelJoin extends FabModel
 
 	public function deleteAll($groupId)
 	{
+		// FIXME
+		throw new \Exception('join delete all not implemented for 3.5');
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->delete(' #__fabrik_elements')->where('group_id = ' . (int) $groupId);

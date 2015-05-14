@@ -419,16 +419,6 @@ class Lizt extends View implements ModelFormLiztInterface
 	}
 
 	/**
-	 * Get the list's join objects
-	 *
-	 * @return  array
-	 */
-
-	protected function getJoins()
-	{
-	}
-
-	/**
 	 * Set the form model
 	 *
 	 * @param   object $model form model
@@ -803,6 +793,24 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		return $orderBys;
+	}
+
+	/**
+	 * Checks if the params object has been created and if not creates and returns it
+	 *
+	 * @return  object	params
+	 */
+
+	public function getParams()
+	{
+		$item = $this->getItem();
+
+		if (!isset($this->params))
+		{
+			$this->params = new JRegistry($item->get('params'));
+		}
+
+		return $this->params;
 	}
 
 }

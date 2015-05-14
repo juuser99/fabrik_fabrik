@@ -8,21 +8,28 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Admin\Models\Base as Base;
+use \JFactory as JFactory;
+use \JProfiler as JProfiler;
+use \JFilterInput as JFilterInput;
+use \FabrikString as FabrikString;
+use \FabrikHelperHTML as FabrikHelperHTML;
 
 /**
  * List filter model
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    3.5
  */
-
-class FabrikFEModelListfilter extends FabModel
+class ListFilter extends Base
 {
 	/**
 	 * Request
@@ -267,7 +274,7 @@ class FabrikFEModelListfilter extends FabModel
 		{
 			$fromFormId = $app->getUserState('com_' . $package . '.searchform.fromForm');
 
-			if ($fromFormId != $this->listModel->getFormModel()->getForm()->id)
+			if ($fromFormId != $this->listModel->getFormModel()->getItem()->get('id'))
 			{
 				$v = $app->getUserState('com_' . $package . '.searchform.form' . $fromFormId . '.searchall');
 			}
@@ -349,10 +356,10 @@ class FabrikFEModelListfilter extends FabModel
 			return;
 		}
 
-		$listid = $input->getInt('listid', -1);
+		$listId = $input->getInt('listid', -1);
 
 		// Check that we actually have the correct list id (or -1 if filter from viz)
-		if ($this->listModel->getTable()->id == $listid || $listid == -1)
+		if ($this->listModel->getTable()->id == $listId || $listId == -1)
 		{
 			if ($this->listModel->getParams()->get('search-mode-advanced'))
 			{
@@ -791,7 +798,7 @@ class FabrikFEModelListfilter extends FabModel
 		$key = 'com_' . $package . '.searchform.fromForm';
 		$fromFormId = $app->getUserState($key);
 
-		if ($fromFormId != $formModel->getId())
+		if ($fromFormId != $formModel->get('id'))
 		{
 			$search = $app->getUserState('com_' . $package . '.searchform.form' . $fromFormId . '.searchall');
 
@@ -857,7 +864,7 @@ class FabrikFEModelListfilter extends FabModel
 
 			if ($fromFormId != $formModel->get('id'))
 			{
-				$fromForm = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+				$fromForm = $this->getFormModel();
 				$fromForm->setId($fromFormId);
 				$fromFormParams = $fromForm->getParams();
 				/**
@@ -1442,7 +1449,7 @@ class FabrikFEModelListfilter extends FabModel
 		$fromFormId = $this->getSearchFormId();
 		$formModel = $this->listModel->getFormModel();
 
-		if (!is_null($fromFormId) && $fromFormId !== $formModel->getId())
+		if (!is_null($fromFormId) && $fromFormId !== $formModel->get('id'))
 		{
 			return;
 		}

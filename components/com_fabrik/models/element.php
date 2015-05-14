@@ -23,10 +23,10 @@ use \stdClass as stdClass;
 use \JRegistry as JRegistry;
 use \JTable as JTable;
 use \FabTable as FabTable;
-
-jimport('joomla.application.component.model');
-jimport('joomla.filesystem.file');
-
+use \FabrikString as FabrikString;
+use \JPath as JPath;
+use \FabrikHelperHTML as FabrikHelperHTML;
+use \JFolder as JFolder;
 /**
  * Fabrik Element Model
  *
@@ -671,16 +671,16 @@ class Element extends Plugin
 	 * Overwritten in database join element to allow for building the join
 	 * to the table containing the stored values required labels
 	 *
-	 * @param   string  $jkey   key
+	 * @param   string  $jKey   key
 	 * @param   bool    $addAs  add 'AS' to select sub query
 	 *
 	 * @return  string  sub query
 	 */
 
-	public function buildQueryElementConcat($jkey, $addAs = true)
+	public function buildQueryElementConcat($jKey, $addAs = true)
 	{
-		$jointable = $this->getJoinModel()->getJoin()->table_join;
-		$dbtable = $this->actualTableName();
+		$joinTable = $this->getJoinModel()->getJoin()->table_join;
+		$dbTable = $this->actualTableName();
 		$db = JFactory::getDbo();
 		$table = $this->getListModel()->getTable();
 
@@ -688,8 +688,8 @@ class Element extends Plugin
 
 		// $pkfeld = $table->db_primary_key;
 		$pkfield = $this->groupConcactJoinKey();
-		$fullElName = $db->quoteName($dbtable . '___' . $this->element->name);
-		$sql = '(SELECT GROUP_CONCAT(' . $jkey . ' SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $jointable . ' WHERE parent_id = '
+		$fullElName = $db->qn($dbTable . '___' . $this->element->name);
+		$sql = '(SELECT GROUP_CONCAT(' . $jKey . ' SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $joinTable . ' WHERE parent_id = '
 				. $pkfield . ')';
 
 		if ($addAs)
@@ -713,14 +713,14 @@ class Element extends Plugin
 
 	protected function buildQueryElementConcatId()
 	{
-		$jointable = $this->getJoinModel()->getJoin()->table_join;
-		$dbtable = $this->actualTableName();
+		$joinTable = $this->getJoinModel()->getJoin()->table_join;
+		$dbTable = $this->actualTableName();
 		$db = JFactory::getDbo();
 		$table = $this->getListModel()->getTable();
-		$fullElName = $db->quoteName($dbtable . '___' . $this->element->name . '_raw');
+		$fullElName = $db->qn($dbTable . '___' . $this->element->name . '_raw');
 		$pkField = $this->groupConcactJoinKey();
 
-		return '(SELECT GROUP_CONCAT(id SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $jointable . ' WHERE parent_id = ' . $pkField
+		return '(SELECT GROUP_CONCAT(id SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $joinTable . ' WHERE parent_id = ' . $pkField
 		. ') AS ' . $fullElName; 
 		// Jaanus: joined group pk set in groupConcactJoinKey()
 	}
@@ -754,31 +754,31 @@ class Element extends Plugin
 
 	public function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
-		$dbtable = $this->actualTableName();
+		$dbTable = $this->actualTableName();
 		$db = Worker::getDbo();
-		$table = $this->getListModel()->getTable();
-		$fullElName = ArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___' . $this->element->name));
-		$fName = $dbtable . '.' . $this->element->name;
-		$k = $db->quoteName($fName);
-		$secret = JFactory::getConfig()->get('secret');
+		$item = $this->getListModel()->getItem();
+		$fullElName = ArrayHelper::getValue($opts, 'alias', $db->qn($dbTable . '___' . $this->element->name));
+		$fName = $dbTable . '.' . $this->element->name;
+		$k = $db->qn($fName);
+		$secret = $this->config->get('secret');
 
 		if ($this->encryptMe())
 		{
-			$k = 'AES_DECRYPT(' . $k . ', ' . $db->quote($secret) . ')';
+			$k = 'AES_DECRYPT(' . $k . ', ' . $db->q($secret) . ')';
 		}
 
 		if ($this->isJoin())
 		{
-			$jkey = $this->element->name;
+			$jKey = $this->element->name;
 
 			if ($this->encryptMe())
 			{
-				$jkey = 'AES_DECRYPT(' . $jkey . ', ' . $db->quote($secret) . ')';
+				$jKey = 'AES_DECRYPT(' . $jKey . ', ' . $db->q($secret) . ')';
 			}
 
-			$jointable = $this->getJoinModel()->getJoin()->table_join;
+			$joinTable = $this->getJoinModel()->getJoin()->table_join;
 			$fullElName = ArrayHelper::getValue($opts, 'alias', $k);
-			$str = $this->buildQueryElementConcat($jkey);
+			$str = $this->buildQueryElementConcat($jKey);
 		}
 		else
 		{
@@ -790,7 +790,7 @@ class Element extends Plugin
 			$str = $k . ' AS ' . $fullElName;
 		}
 
-		if ($table->db_primary_key == $fullElName)
+		if ($item->get('list.db_primary_key') == $fullElName)
 		{
 			array_unshift($aFields, $fullElName);
 			array_unshift($aAsFields, $fullElName);
@@ -803,11 +803,11 @@ class Element extends Plugin
 				$aAsFields[] = $fullElName;
 			}
 
-			$k = $db->quoteName($dbtable . '.' . $this->element->name);
+			$k = $db->qn($dbTable . '.' . $this->element->name);
 
 			if ($this->encryptMe())
 			{
-				$k = 'AES_DECRYPT(' . $k . ', ' . $db->quote($secret) . ')';
+				$k = 'AES_DECRYPT(' . $k . ', ' . $db->q($secret) . ')';
 			}
 
 			if ($this->isJoin())
@@ -817,8 +817,8 @@ class Element extends Plugin
 				$aFields[] = $str;
 				$aAsFields[] = $fullElName;
 
-				$as = $db->quoteName($dbtable . '___' . $this->element->name . '___params');
-				$str = '(SELECT GROUP_CONCAT(params SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $jointable . ' WHERE parent_id = '
+				$as = $db->qn($dbTable . '___' . $this->element->name . '___params');
+				$str = '(SELECT GROUP_CONCAT(params SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $joinTable . ' WHERE parent_id = '
 						. $pkField . ') AS ' . $as; 
 						// Jaanus: joined group pk set in groupConcactJoinKey()
 				$aFields[] = $str;
@@ -826,7 +826,7 @@ class Element extends Plugin
 			}
 			else
 			{
-				$fullElName = $db->quoteName($dbtable . '___' . $this->element->name . '_raw');
+				$fullElName = $db->qn($dbTable . '___' . $this->element->name . '_raw');
 
 				if ($this->calcSelectModifier)
 				{
@@ -928,7 +928,7 @@ class Element extends Plugin
 		$key = $view == 'form' ? 'view' : 'listview';
 		$prop = $view == 'form' ? 'view_access' : 'list_view_access';
 		$params = $this->getParams();
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!is_object($this->access) || !array_key_exists($key, $this->access))
 		{
@@ -1012,7 +1012,7 @@ class Element extends Plugin
 					}
 				}
 
-				$user = JFactory::getUser();
+				$user = $this->user;
 				$groups = $user->getAuthorisedViewLevels();
 				$this->access->use = in_array($viewLevel, $groups);
 			}
@@ -1034,7 +1034,7 @@ class Element extends Plugin
 
 		if (!is_object($this->access) || !array_key_exists('filter', $this->access))
 		{
-			$user = JFactory::getUser();
+			$user = $this->user;
 			$groups = $user->getAuthorisedViewLevels();
 
 			// $$$ hugh - fix for where certain elements got created with 0 as the
@@ -3873,9 +3873,9 @@ class Element extends Plugin
 
 		if ($this->encryptMe())
 		{
-			$secret = JFactory::getConfig()->getValue('secret');
-			$label = 'AES_DECRYPT(' . $label . ', ' . $fabrikDb->quote($secret) . ')';
-			$id = 'AES_DECRYPT(' . $id . ', ' . $fabrikDb->quote($secret) . ')';
+			$secret = $this->config->getValue('secret');
+			$label = 'AES_DECRYPT(' . $label . ', ' . $fabrikDb->q($secret) . ')';
+			$id = 'AES_DECRYPT(' . $id . ', ' . $fabrikDb->q($secret) . ')';
 		}
 
 		$origTable = $tableName == '' ? $origTable : $tableName;
@@ -3884,15 +3884,15 @@ class Element extends Plugin
 		 * http://localhost/fabrik2.0.x/index.php?option=com_fabrik&view=table&listid=12&calculations=0&resetfilters=0&Itemid=255&lang=en
 		 * so added test for initial fromtable in join str and if found use origtable
 		 */
-		if (strstr($joinStr, 'JOIN ' . $fabrikDb->quoteName($fromTable)))
+		if (strstr($joinStr, 'JOIN ' . $fabrikDb->qn($fromTable)))
 		{
-			$sql = 'SELECT DISTINCT(' . $label . ') AS ' . $fabrikDb->quoteName('text') . ', ' . $id . ' AS ' . $fabrikDb->quoteName('value')
-			. ' FROM ' . $fabrikDb->quoteName($origTable) . ' ' . $joinStr . "\n";
+			$sql = 'SELECT DISTINCT(' . $label . ') AS ' . $fabrikDb->qn('text') . ', ' . $id . ' AS ' . $fabrikDb->qn('value')
+			. ' FROM ' . $fabrikDb->qn($origTable) . ' ' . $joinStr . "\n";
 		}
 		else
 		{
-			$sql = 'SELECT DISTINCT(' . $label . ') AS ' . $fabrikDb->quoteName('text') . ', ' . $id . ' AS ' . $fabrikDb->quoteName('value')
-			. ' FROM ' . $fabrikDb->quoteName($fromTable) . ' ' . $joinStr . "\n";
+			$sql = 'SELECT DISTINCT(' . $label . ') AS ' . $fabrikDb->qn('text') . ', ' . $id . ' AS ' . $fabrikDb->qn('value')
+			. ' FROM ' . $fabrikDb->qn($fromTable) . ' ' . $joinStr . "\n";
 		}
 
 		if (!$this->isJoin())
@@ -4172,7 +4172,7 @@ class Element extends Plugin
 			}
 			else
 			{
-				$value = $db->quote($value[0]) . ' AND ' . $db->quote($value[1]);
+				$value = $db->q($value[0]) . ' AND ' . $db->q($value[1]);
 			}
 
 			$condition = 'BETWEEN';
@@ -4183,7 +4183,7 @@ class Element extends Plugin
 			{
 				foreach ($value as &$v)
 				{
-					$v = $db->quote($v);
+					$v = $db->q($v);
 				}
 
 				$value = ' (' . implode(',', $value) . ')';
@@ -4210,7 +4210,7 @@ class Element extends Plugin
 	{
 		if ($condition == 'REGEXP')
 		{
-			$value = preg_quote($value);
+			$value = preg_q($value);
 		}
 
 		/**
@@ -4224,7 +4224,7 @@ class Element extends Plugin
 		{
 			$value = str_replace("\\", "\\\\\\", $value);
 
-			// $$$rob check things haven't been double quoted twice (occurs now that we are doing preg_quote() above to fix searches on '*'
+			// $$$rob check things haven't been double quoted twice (occurs now that we are doing preg_q() above to fix searches on '*'
 			$value = str_replace("\\\\\\\\\\\\", "\\\\\\", $value);
 		}
 	}
@@ -4291,29 +4291,29 @@ class Element extends Plugin
 					$condition = "<>";
 
 					// 2 = subquery so don't quote
-					$value = ($eval == FABRIKFILTER_QUERY) ? '(' . $value . ')' : $db->quote($value);
+					$value = ($eval == FABRIKFILTER_QUERY) ? '(' . $value . ')' : $db->q($value);
 					break;
 				case 'equals':
 				case '=':
 					$condition = "=";
-					$value = ($eval == FABRIKFILTER_QUERY) ? '(' . $value . ')' : $db->quote($value);
+					$value = ($eval == FABRIKFILTER_QUERY) ? '(' . $value . ')' : $db->q($value);
 					break;
 				case 'begins':
 				case 'begins with':
 					$condition = "LIKE";
-					$value = $eval == FABRIKFILTER_QUERY ? '(' . $value . ')' : $db->quote($value . '%');
+					$value = $eval == FABRIKFILTER_QUERY ? '(' . $value . ')' : $db->q($value . '%');
 					break;
 				case 'ends':
 				case 'ends with':
 					// @TODO test this with subquery
 					$condition = "LIKE";
-					$value = $eval == FABRIKFILTER_QUERY ? '(' . $value . ')' : $db->quote('%' . $value);
+					$value = $eval == FABRIKFILTER_QUERY ? '(' . $value . ')' : $db->q('%' . $value);
 					break;
 				case 'contains':
 				case 'like':
 					// @TODO test this with subquery
 					$condition = "LIKE";
-					$value = $eval == FABRIKFILTER_QUERY ? '(' . $value . ')' : $db->quote('%' . $value . '%');
+					$value = $eval == FABRIKFILTER_QUERY ? '(' . $value . ')' : $db->q('%' . $value . '%');
 					break;
 				case '>':
 				case '&gt;':
@@ -4337,12 +4337,12 @@ class Element extends Plugin
 					break;
 				case 'in':
 					$condition = 'IN';
-					$value = FabrikString::safeQuote($value, true);
+					$value = FabrikString::safeq($value, true);
 					$value = ($eval == FABRIKFILTER_QUERY) ? '(' . $value . ')' : '(' . $value . ')';
 					break;
 				case 'not_in':
 					$condition = 'NOT IN';
-					$value = FabrikString::safeQuote($value, true);
+					$value = FabrikString::safeq($value, true);
 					$value = ($eval == FABRIKFILTER_QUERY) ? '(' . $value . ')' : '(' . $value . ')';
 					break;
 			}
@@ -4361,7 +4361,7 @@ class Element extends Plugin
 					{
 						if (!is_numeric($value))
 						{
-							$value = $db->quote($value);
+							$value = $db->q($value);
 						}
 					}
 					break;
@@ -4437,7 +4437,7 @@ class Element extends Plugin
 				if ($this->isJoin())
 				{
 					// Query the joined table concatenating into one field
-					$jointable = $this->getJoinModel()->getJoin()->table_join;
+					$joinTable = $this->getJoinModel()->getJoin()->table_join;
 					//$pk = $this->getListModel()->getTable()->db_primary_key; 
 					// Jaanus: joined group pk set in groupConcactJoinKey()
 					$pk = $this->groupConcactJoinKey(); 
@@ -4447,7 +4447,7 @@ class Element extends Plugin
 					 */
 					// $pk = $this->getListModel()->getTable()->db_primary_key;
 					$pk = $this->groupConcactJoinKey();
-					$key = "(SELECT GROUP_CONCAT(id SEPARATOR '" . GROUPSPLITTER . "') FROM $jointable WHERE parent_id = $pk)";
+					$key = "(SELECT GROUP_CONCAT(id SEPARATOR '" . GROUPSPLITTER . "') FROM $joinTable WHERE parent_id = $pk)";
 					$value = str_replace("'", '', $value);
 					$query = "($key = '$value' OR $key LIKE '$value" . GROUPSPLITTER . "%' OR
 					$key LIKE '" . GROUPSPLITTER . "$value" . GROUPSPLITTER . "%' OR
@@ -4477,8 +4477,8 @@ class Element extends Plugin
 		if ($this->encryptMe())
 		{
 			$db = Worker::getDbo();
-			$secret = JFactory::getConfig()->get('secret');
-			$key = 'AES_DECRYPT(' . $key . ', ' . $db->quote($secret) . ')';
+			$secret = $this->config->get('secret');
+			$key = 'AES_DECRYPT(' . $key . ', ' . $db->q($secret) . ')';
 		}
 	}
 
@@ -4783,11 +4783,11 @@ class Element extends Plugin
 		{
 			if (!empty($whereSQL))
 			{
-				$whereSQL .= " AND $name = " . $db->quote($count_condition);
+				$whereSQL .= " AND $name = " . $db->q($count_condition);
 			}
 			else
 			{
-				$whereSQL = "WHERE $name = " . $db->quote($count_condition);
+				$whereSQL = "WHERE $name = " . $db->q($count_condition);
 			}
 		}
 
@@ -5763,7 +5763,7 @@ class Element extends Plugin
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$this->_cnnId = $input->getInt('cid', 0);
-		$tbl = $db->quoteName($input->get('table'));
+		$tbl = $db->qn($input->get('table'));
 		$fieldDropDown = $listModel->getFieldsDropDown($this->_cnnId, $tbl, '-', false, 'params[join_val_column]');
 		$fieldDropDown2 = $listModel->getFieldsDropDown($this->_cnnId, $tbl, '-', false, 'params[join_key_column]');
 		echo "$('addJoinVal').innerHTML = '$fieldDropDown';";
@@ -6130,7 +6130,7 @@ class Element extends Plugin
 		$query = $db->getQuery(true);
 
 		// FIXME 3.5 - no longer stored in db
-		$query->update('#__fabrik_elements')->set('params = ' . $db->quote($element->params))->where('id = ' . (int) $element->id);
+		$query->update('#__fabrik_elements')->set('params = ' . $db->q($element->params))->where('id = ' . (int) $element->id);
 		$db->setQuery($query);
 		$res = $db->execute();
 
@@ -6146,7 +6146,7 @@ class Element extends Plugin
 
 	public function getDefaultProperties()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 		$now = JFactory::getDate()->toSql();
 		$this->setId(0);
 		//$item = $this->getElement();
@@ -6481,7 +6481,7 @@ class Element extends Plugin
 		$query = $db->getQuery(true);
 		$tableName = $listModel->getTable()->db_table_name;
 		$query->select('DISTINCT(' . $name . ') AS value, ' . $name . ' AS text')->from($tableName);
-		$query->where($name . ' LIKE ' . $db->quote(addslashes('%' . $search . '%')));
+		$query->where($name . ' LIKE ' . $db->q(addslashes('%' . $search . '%')));
 		$query = $listModel->buildQueryJoin($query);
 		$query = $listModel->buildQueryWhere(false, $query);
 		$query = $listModel->pluginQuery($query);
@@ -6760,7 +6760,8 @@ class Element extends Plugin
 		}
 
 		$listModel = $this->getListModel();
-		$this->actualTable = $listModel->getTable()->db_table_name;
+
+		$this->actualTable = $listModel->getItem()->get('list.db_table_name');
 
 		return $this->actualTable;
 	}
@@ -6849,23 +6850,26 @@ class Element extends Plugin
 
 	public function updateJoinedPks($oldName, $newName)
 	{
+		// FIXME
+		throw new \Exception('element model update joined pks not done for 3.5');
 		$db = $this->getListModel()->getDb();
 		$item = $this->getListModel()->getTable();
 		$query = $db->getQuery(true);
 
 		// Update linked lists id.
-		$query->update('#__fabrik_joins')->set('table_key = ' . $db->quote($newName))
-		->where('join_from_table = ' . $db->quote($item->db_table_name))->where('table_key = ' . $db->quote($oldName));
+		$tableName = $item->get('list.db_table_name');
+		$query->update('#__fabrik_joins')->set('table_key = ' . $db->q($newName))
+		->where('join_from_table = ' . $db->q($tableName))->where('table_key = ' . $db->q($oldName));
 		$db->setQuery($query);
 		$db->execute();
 
 		// Update join pk parameter
 		$query->clear();
-		$query->select('id')->from('#__fabrik_joins')->where('table_join = ' . $db->quote($item->db_table_name));
+		$query->select('id')->from('#__fabrik_joins')->where('table_join = ' . $db->q($tableName));
 		$db->setQuery($query);
 		$ids = $db->loadColumn();
-		$teskPk = $db->quoteName($item->db_table_name . '.' . $oldName);
-		$newPk = $db->quoteName($item->db_table_name . '.' . $newName);
+		$teskPk = $db->qn($tableName . '.' . $oldName);
+		$newPk = $db->qn($tableName . '.' . $newName);
 
 		foreach ($ids as $id)
 		{
@@ -6918,12 +6922,12 @@ class Element extends Plugin
 
 	public function encryptColumn()
 	{
-		$secret = JFactory::getConfig()->get('secret');
+		$secret = $this->config->get('secret');
 		$listModel = $this->getListModel();
 		$db = $listModel->getDb();
 		$tbl = $this->actualTableName();
 		$name = $this->getElement()->name;
-		$db->setQuery("UPDATE $tbl SET " . $name . " = AES_ENCRYPT(" . $name . ", " . $db->quote($secret) . ")");
+		$db->setQuery("UPDATE $tbl SET " . $name . " = AES_ENCRYPT(" . $name . ", " . $db->q($secret) . ")");
 		$db->execute();
 	}
 
@@ -6937,12 +6941,12 @@ class Element extends Plugin
 	public function decryptColumn()
 	{
 		// @TODO this query looks right but when going from encrypted blob to decrypted field the values are set to null
-		$secret = JFactory::getConfig()->get('secret');
+		$secret = $this->config->get('secret');
 		$listModel = $this->getListModel();
 		$db = $listModel->getDb();
 		$tbl = $this->actualTableName();
 		$name = $this->getElement()->name;
-		$db->setQuery("UPDATE $tbl SET " . $name . " = AES_DECRYPT(" . $name . ", " . $db->quote($secret) . ")");
+		$db->setQuery("UPDATE $tbl SET " . $name . " = AES_DECRYPT(" . $name . ", " . $db->q($secret) . ")");
 		$db->execute();
 	}
 
@@ -7476,7 +7480,7 @@ class Element extends Plugin
 			$parentId = $formData[$k];
 			if (!empty($parentId))
 			{
-				$query->delete($join->table_join)->where('parent_id = ' . $db->quote($parentId));
+				$query->delete($join->table_join)->where('parent_id = ' . $db->q($parentId));
 				$db->setQuery($query);
 				$db->execute();
 			}

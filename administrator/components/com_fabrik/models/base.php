@@ -10,6 +10,7 @@
  */
 namespace Fabrik\Admin\Models;
 
+use GCore\Libs\Arr;
 use \JForm as JForm;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
@@ -30,6 +31,7 @@ use \JComponentHelper as JComponentHelper;
 use Fabrik\Admin\Helpers\Fabrik as Fabrik;
 use Joomla\String\Inflector;
 use \JFile as JFile;
+use \FabrikHelperHTML as FabrikHelperHTML;
 
 /**
  * Fabrik Base Admin Model
@@ -67,6 +69,13 @@ class Base extends \JModelBase
 	 * @var object model
 	 */
 	protected $formModel = null;
+
+	/**
+	 * Joins
+	 *
+	 * @var array
+	 */
+	private $joins = null;
 
 	/**
 	 * Concat string to create full element names
@@ -145,6 +154,16 @@ class Base extends \JModelBase
 	}
 
 	/**
+	 * Get the list id
+	 *
+	 * @return  string  list id
+	 */
+	public function getId()
+	{
+		return $this->get('id');
+	}
+
+	/**
 	 * Get the item -
 	 * if no id set load data template
 	 *
@@ -156,7 +175,7 @@ class Base extends \JModelBase
 	{
 		if (is_null($id))
 		{
-			$id = $this->get('id', '');
+			$id = $this->getId();
 		}
 
 		// @TODO - save & load from session?
@@ -213,6 +232,87 @@ class Base extends \JModelBase
 		$items = $this->getItems();
 
 		return new \JPagination(count($items), 0, 0);
+	}
+
+	/**
+	 * Get published elements to show in list
+	 *
+	 * @return  array
+	 */
+
+	public function getPublishedListElements()
+	{
+		if (!isset($this->publishedListElements))
+		{
+			$this->publishedListElements = array();
+		}
+
+
+		$input = $this->app->input;
+		$params = $this->getParams();
+
+		// $$$ rob fabrik_show_in_list set in admin module params (will also be set in menu items and content plugins later on)
+		// its an array of element ids that should be show. Overrides default element 'show_in_list' setting.
+		$showInList = (array) $input->get('fabrik_show_in_list', array(), 'array');
+		$sig = empty($showInList) ? 0 : implode('.', $showInList);
+
+		if (!array_key_exists($sig, $this->publishedListElements))
+		{
+			$this->publishedListElements[$sig] = array();
+			$elements = $this->getMyElements();
+
+			foreach ($elements as $elementModel)
+			{
+				$element = $elementModel->getElement();
+
+				if ($params->get('list_view_and_query', 1) == 1 && $element->published == 1 && $elementModel->canView('list'))
+				{
+					if (empty($showInList))
+					{
+						if ($element->show_in_list_summary)
+						{
+							$this->publishedListElements[$sig][] = $elementModel;
+						}
+					}
+					else
+					{
+						if (in_array($element->id, $showInList))
+						{
+							$this->publishedListElements[$sig][] = $elementModel;
+						}
+					}
+				}
+			}
+		}
+
+		return $this->publishedListElements[$sig];
+	}
+
+	/**
+	 * Get joins
+	 *
+	 * @return array join objects (table rows - not table objects or models)
+	 */
+	public function &getJoins()
+	{
+		if (!isset($this->joins))
+		{
+			$item = $this->getItem();
+			// FIXME - load element joins as well - and order them after the list joins.
+			$this->joins = (array) $item->get('database.joins');
+			$this->_makeJoinAliases($this->joins);
+
+			foreach ($this->joins as &$join)
+			{
+				if (is_string($join->params))
+				{
+					$join->params = new JRegistry($join->params);
+					$this->setJoinPk($join);
+				}
+			}
+		}
+
+		return $this->joins;
 	}
 
 	/**
@@ -575,6 +675,58 @@ class Base extends \JModelBase
 		}
 
 		return $this->formModel;
+	}
+
+	/**
+	 * Get the groups list model
+	 *
+	 * @return  object	list model
+	 */
+	public function getListModel()
+	{
+		return $this->getFormModel()->getlistModel();
+	}
+
+	/**
+	 * Get an element
+	 *
+	 * @param   string  $searchName  Name to search for
+	 * @param   bool    $checkInt    Check search name against element id
+	 * @param   bool    $checkShort  Check short element name
+	 *
+	 * @return  mixed  ok: element model not ok: false
+	 */
+	public function getElement($searchName, $checkInt = false, $checkShort = true)
+	{
+		$groups = $this->getFormModel()->getGroupsHiarachy();
+
+		foreach ($groups as $gid => $groupModel)
+		{
+
+			$elementModels = $groupModel->getMyElements();
+
+			foreach ($elementModels as $elementModel)
+			{
+				$element = $elementModel->getElement();
+
+				if ($searchName == $element->name && $checkShort)
+				{
+					return $elementModel;
+				}
+
+				if ($searchName == $elementModel->getFullName(true, false))
+				{
+					return $elementModel;
+				}
+
+				if ($searchName == $elementModel->getFullName(false, false))
+				{
+					return $elementModel;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1595,6 +1747,115 @@ class Base extends \JModelBase
 		}
 
 		return $return;
+	}
+
+	/**
+	 * As you may be joining to multiple versions of the same db table we need
+	 * to set the various database name alaises that our SQL query will use
+	 *
+	 * @param   array  &$joins  joins
+	 *
+	 * @return  void
+	 */
+	protected function _makeJoinAliases(&$joins)
+	{
+		$prefix = $this->app->get('dbprefix');
+		$table = $this->getItem();
+		$aliases = array($table->get('list.db_table_name'));
+		$tableGroups = array();
+
+		// Build up the alias and $tableGroups array first
+		foreach ($joins as &$join)
+		{
+			$join->canUse = true;
+
+			if ($join->table_join == '#__users' || $join->table_join == $prefix . 'users')
+			{
+				if (!$this->inJDb())
+				{
+					/* $$$ hugh - changed this to pitch an error and bang out, otherwise if we just set canUse to false, our getData query
+					 * is just going to blow up, with no useful warning msg.
+					* This is basically a bandaid for corner case where user has (say) host name in J!'s config, and IP address in
+					* our connection details, or vice versa, which is not uncommon for 'locahost' setups,
+					* so at least I'll know what the problem is when they post in the forums!
+					*/
+
+					$join->canUse = false;
+				}
+			}
+			// $$$ rob Check for repeat elements In list view we don't need to add the join
+			// as the element data is concatenated into one row. see elementModel::getAsField_html()
+			$opts = json_decode($join->params);
+
+			if (isset($opts->type) && $opts->type == 'repeatElement')
+			{
+				$join->canUse = false;
+			}
+
+			$tableJoin = str_replace('#__', $prefix, $join->table_join);
+
+			if (in_array($tableJoin, $aliases))
+			{
+				$base = $tableJoin;
+				$a = $base;
+				$c = 0;
+
+				while (in_array($a, $aliases))
+				{
+					$a = $base . '_' . $c;
+					$c++;
+				}
+
+				$join->table_join_alias = $a;
+			}
+			else
+			{
+				$join->table_join_alias = $tableJoin;
+			}
+
+			$aliases[] = str_replace('#__', $prefix, $join->table_join_alias);
+
+			if (!array_key_exists($join->group_id, $tableGroups))
+			{
+				if ($join->element_id == 0)
+				{
+					$tableGroups[$join->group_id] = $join->table_join_alias;
+				}
+			}
+		}
+
+		foreach ($joins as &$join)
+		{
+			// If they are element joins add in this table's name as the calling joining table.
+			if ($join->join_from_table == '')
+			{
+				$join->join_from_table = $table->get('list.db_table_name');
+			}
+
+			/*
+			 * Test case:
+			* you have a table that joins to a 2nd table
+			* in that 2nd table there is a database join element
+			* that 2nd elements key needs to point to the 2nd tables name and not the first
+			*
+			* e.g. when you want to create a n-n relationship
+			*
+			* events -> (table join) events_artists -> (element join) artist
+			*/
+
+			$join->keytable = $join->join_from_table;
+
+			if (array_key_exists($join->group_id, $tableGroups))
+			{
+				if ($join->element_id != 0)
+				{
+					$join->keytable = $tableGroups[$join->group_id];
+					$join->join_from_table = $join->keytable;
+				}
+			}
+		}
+
+		FabrikHelperHTML::debug($joins, 'joins');
 	}
 
 }

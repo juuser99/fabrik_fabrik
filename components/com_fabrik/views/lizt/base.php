@@ -20,6 +20,9 @@ use \JProfiler as JProfiler;
 use \JFactory as JFactory;
 use \JRegistry as JRegistry;
 use \FabrikHelperHTML as FabrikHelperHTML;
+use \FText as FText;
+use \stdClass as stdClass;
+use \FabrikString as FabrikString;
 
 /**
  * Base List view class
@@ -44,12 +47,12 @@ class Base extends \Fabrik\Admin\Views\Html
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$Itemid = Worker::itemId();
+		$itemId = Worker::itemId();
 		$model = $this->model;
 		$params = $model->getParams();
 		$item = $model->getTable();
-		$listref = $model->getRenderContext();
-		$listid = $model->getId();
+		$listRef = $model->getRenderContext();
+		$listId = $model->getId();
 		$formModel = $model->getFormModel();
 		$elementsNotInTable = $formModel->getElementsNotInTable();
 		$toggleCols = (bool) $params->get('toggle_cols', false);
@@ -96,7 +99,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$origRows = $this->rows;
 		$this->rows = array(array());
 
-		$tmpItemid = !isset($Itemid) ? 0 : $Itemid;
+		$tmpItemid = !isset($itemId) ? 0 : $itemId;
 
 		$this->_row = new stdClass;
 		$script = array();
@@ -109,8 +112,8 @@ class Base extends \Fabrik\Admin\Views\Html
 		$opts->links = array('detail' => $params->get('detailurl', ''), 'edit' => $params->get('editurl', ''), 'add' => $params->get('addurl', ''));
 		$opts->filterMethod = $this->filter_action;
 		$opts->advancedFilters = $model->getAdvancedFilterValues();
-		$opts->form = 'listform_' . $listref;
-		$this->listref = $listref;
+		$opts->form = 'listform_' . $listRef;
+		$this->listref = $listRef;
 		$opts->headings = $model->jsonHeadings();
 		$labels = $this->headings;
 
@@ -122,7 +125,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$opts->labels = $labels;
 		$opts->primaryKey = $item->db_primary_key;
 		$opts->Itemid = $tmpItemid;
-		$opts->listRef = $listref;
+		$opts->listRef = $listRef;
 		$opts->formid = $model->getFormModel()->getId();
 		$opts->canEdit = $model->canEdit() ? "1" : "0";
 		$opts->canView = $model->canView() ? "1" : "0";
@@ -251,10 +254,10 @@ class Base extends \Fabrik\Admin\Views\Html
 		JText::script('COM_FABRIK_LIST_SHORTCUTS_FILTER');
 
 		$script[] = "window.addEvent('domready', function () {";
-		$script[] = "\tvar list = new FbList('$listid',";
+		$script[] = "\tvar list = new FbList('$listId',";
 		$script[] = "\t" . $opts;
 		$script[] = "\t);";
-		$script[] = "\tFabrik.addBlock('list_{$listref}', list);";
+		$script[] = "\tFabrik.addBlock('list_{$listRef}', list);";
 
 		// Add in plugin objects
 		$params = $model->getParams();
@@ -318,12 +321,13 @@ class Base extends \Fabrik\Admin\Views\Html
 		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
 		//$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
 
-		$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
+		//$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		//$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
 		$user = JFactory::getUser();
 		$document = JFactory::getDocument();
 		$item = $model->getTable();
 		$data = $model->render();
+
 		$w = new Worker;
 
 		// Add in some styling short cuts
@@ -363,7 +367,7 @@ class Base extends \Fabrik\Admin\Views\Html
 				$rowclass = $elementModel->setRowClass($data);
 			}
 		}
-
+		echo "<pre>";print_r($data);echo "</pre>";
 		$this->rows = $data;
 		reset($this->rows);
 
@@ -393,19 +397,19 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		// Deprecated (keep in case people use them in old templates)
 		$this->table = new stdClass;
-		$this->table->label = FabrikString::translate($w->parseMessageForPlaceHolder($item->label, $_REQUEST));
-		$this->table->intro = $params->get('show_into', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($item->introduction));
+		$this->table->label = FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.label'), $_REQUEST));
+		$this->table->intro = $params->get('show_into', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.introduction')));
 		$this->table->outro = $params->get('show_outro', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($params->get('outro')));
-		$this->table->id = $item->id;
+		$this->table->id = $item->get('id');
 		$this->table->renderid = $model->getRenderContext();
-		$this->table->db_table_name = $item->db_table_name;
+		$this->table->db_table_name = $item->get('list.db_table_name');
 
 		// End deprecated
 		$this->list = $this->table;
 		$this->list->class = $model->htmlClass();
-		$this->group_by = $item->group_by;
+		$this->group_by = $item->get('list.group_by');
 		$this->form = new stdClass;
-		$this->form->id = $item->form_id;
+		$this->form->id = $item->get('list.form_id');
 		$this->renderContext = $model->getRenderContext();
 		$this->formid = 'listform_' . $this->renderContext;
 		$form = $model->getFormModel();
@@ -821,7 +825,7 @@ class Base extends \Fabrik\Admin\Views\Html
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$Itemid = Worker::itemId();
+		$itemId = Worker::itemId();
 		$model = $this->getModel();
 		$item = $model->getTable();
 
@@ -843,7 +847,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$this->hiddenFields[] = '<input type="hidden" name="view" value="' . $view . '" />';
 		$this->hiddenFields[] = '<input type="hidden" name="listid" value="' . $item->id . '"/>';
 		$this->hiddenFields[] = '<input type="hidden" name="listref" value="' . $this->renderContext . '"/>';
-		$this->hiddenFields[] = '<input type="hidden" name="Itemid" value="' . $Itemid . '"/>';
+		$this->hiddenFields[] = '<input type="hidden" name="Itemid" value="' . $itemId . '"/>';
 
 		// Removed in favour of using list_{id}_limit dropdown box
 		$this->hiddenFields[] = '<input type="hidden" name="fabrik_referrer" value="' . $reffer . '" />';

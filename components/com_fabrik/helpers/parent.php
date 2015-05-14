@@ -23,6 +23,7 @@ use \Fabrik\Admin\Models\Connection as Connection;
 use \JModelLegacy as JModelLegacy;
 use \Joomla\Registry\Registry as JRegistry;
 use \Fabrik\Models\PluginManager as PluginManager;
+use \JCache as JCache;
 
 /**
  * Generic tools that all models use
@@ -1684,7 +1685,7 @@ class Worker
 
 		try
 		{
-			$dt = new DateTime($d);
+			$dt = new \DateTime($d);
 		}
 		catch (Exception $e)
 		{
@@ -1970,7 +1971,6 @@ class Worker
 	 *
 	 * @return  JCache
 	 */
-
 	public static function getCache($listModel = null)
 	{
 		$app = JFactory::getApplication();
