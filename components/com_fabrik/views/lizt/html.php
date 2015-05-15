@@ -10,9 +10,10 @@
 
 namespace Fabrik\Views\Lizt;
 
-
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \JFactory as JFactory;
 
 /**
  * HTML Fabrik List view class
@@ -33,7 +34,7 @@ class Html extends Base
 	{
 		if (parent::render() !== false)
 		{
-			$model = $this->getModel();
+			$model = $this->model;
 			$this->tabs = $model->loadTabs();
 			$app = JFactory::getApplication();
 

@@ -97,6 +97,7 @@ class Base extends \JModelBase
 		parent::__construct($state);
 		$this->app  = $this->state->get('app', JFactory::getApplication());
 		$this->user = $this->state->get('user', JFactory::getUser());
+		$this->config = $this->state->get('config', JFactory::getConfig());
 
 		if ($this->name === '')
 		{

@@ -8,23 +8,25 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.view');
+use \JFactory as JFactory;
+use \FText as FText;
+use \JProfiler as JProfiler;
 
 /**
  * Base Form view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.6
+ * @since       3.5
  */
-
-class FabrikViewFormBase extends JViewLegacy
+class Base extends \Fabrik\Admin\Views\Html
 {
 	/**
 	 * Is the view rendering inside the Fabrik Joomla content plugin
@@ -43,12 +45,9 @@ class FabrikViewFormBase extends JViewLegacy
 	/**
 	 * Main setup routine for displaying the form/detail view
 	 *
-	 * @param   string  $tpl  template
-	 *
 	 * @return  void
 	 */
-
-	public function display($tpl = null)
+	public function render()
 	{
 		$profiler = JProfiler::getInstance('Application');
 		$app = JFactory::getApplication();
@@ -66,7 +65,6 @@ class FabrikViewFormBase extends JViewLegacy
 		$this->isMultiPage = $model->isMultiPage();
 		list($this->plugintop, $this->pluginbottom, $this->pluginend) = $model->getFormPluginHTML();
 		$listModel = $model->getlistModel();
-		$table = $listModel->noTable() ? null : $listModel->getTable();
 
 		if (!$model->canPublish())
 		{
@@ -83,7 +81,7 @@ class FabrikViewFormBase extends JViewLegacy
 
 		if ($this->access == 0)
 		{
-			JError::raiseWarning(500, FText::_('JERROR_ALERTNOAUTHOR'));
+			$app->enqueueMessage(FText::_('JERROR_ALERTNOAUTHOR'), 'error');
 
 			return false;
 		}
@@ -191,11 +189,12 @@ class FabrikViewFormBase extends JViewLegacy
 
 	public function output()
 	{
-		$app = JFactory::getApplication();
+		echo "outpyt";exit;
 		$w = new Worker;
 		$text = $this->loadTemplate();
 		$model = $this->getModel();
 		$params = $model->getParams();
+		echo "<pre>";print_r($params);exit;
 
 		if ($params->get('process-jplugins', 2) == 1 || ($params->get('process-jplugins', 2) == 2 && $model->isEditable() === false))
 		{

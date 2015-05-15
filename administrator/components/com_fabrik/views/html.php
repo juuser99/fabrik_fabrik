@@ -49,4 +49,34 @@ class Html Extends \JViewHtml
 
 		JHTML::stylesheet('administrator/components/com_fabrik/headings.css');
 	}
+
+	/**
+	 * Load a template file
+	 *
+	 * @param string $template
+	 *
+	 * @return string
+	 */
+	public function loadTemplate($template = '')
+	{
+		$file = $template === '' ? $this->layout : $this->layout . '_' . $template;
+		$this->_template = $this->getPath($file);
+		ob_start();
+
+		// Include the requested template filename in the local scope
+		// (this will execute the view logic).
+		include $this->_template;
+
+		// Done with the requested template; get the buffer and
+		// clear it.
+		$this->_output = ob_get_contents();
+		ob_end_clean();
+
+		return $this->_output;
+	}
+
+	public function getModel()
+	{
+		return $this->model;
+	}
 }

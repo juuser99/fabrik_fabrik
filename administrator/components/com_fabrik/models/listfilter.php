@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Models;
+namespace Fabrik\Admin\Models;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

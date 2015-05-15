@@ -1,6 +1,6 @@
 <?php
 /**
- * Fabrik Admin Lizt Controller
+ * Fabrik Admin Form Controller
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
@@ -15,12 +15,12 @@ namespace Fabrik\Admin\Controllers;
 defined('_JEXEC') or die('Restricted access');
 
 /**
- * Fabrik Lizt Controller
+ * Fabrik Form Controller
  *
  * @package  Fabrik
  * @since    3.5
  */
-class Lizt extends Controller
+class Form extends Controller
 {
 	/**
 	 * Execute the controller.
@@ -35,18 +35,23 @@ class Lizt extends Controller
 	*/
 	public function execute()
 	{
-		$layout = $this->input->get('layout');
+		$layout = $this->input->get('layout', '');
 
-		if ($layout !== 'view')
+		if ($layout !== '')
 		{
 			return parent::execute();
 		}
 
-		$model = new \Fabrik\Admin\Models\Lizt;
+		// Render the form itself
+		$model = new \Fabrik\Admin\Models\Form;
 		$paths = new \SplPriorityQueue;
-		// FIXME - dont hard wire bootstrap tmpl!
-		$paths->insert(JPATH_SITE . '/components/com_fabrik/views/lizt/tmpl/bootstrap', 'normal');
-		$view = new \Fabrik\Views\Lizt\Html($model, $paths);
+
+		// FIXME - dont hardwire bootstrap template
+		$paths->insert(JPATH_SITE . '/components/com_fabrik/views/form/tmpl/bootstrap', 'normal');
+
+		// FIXME - what about other views than HTML?
+		$view = new \Fabrik\Views\Form\Html($model, $paths);
+
 		$view->setLayout('default');
 
 		// Render our view.

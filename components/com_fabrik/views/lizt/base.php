@@ -26,6 +26,7 @@ use \FabrikString as FabrikString;
 use \JRoute as JRoute;
 use \JHtml as JHtml;
 use \JFile as JFile;
+use \JText as JText;
 
 /**
  * Base List view class
@@ -37,6 +38,40 @@ use \JFile as JFile;
 class Base extends \Fabrik\Admin\Views\Html
 {
 	public $isMambot = null;
+
+	/**
+	 * Admin table picker select list
+	 *
+	 * @var string
+	 */
+	public $tablePicker = '';
+
+	/**
+	 * Can the user delete
+	 *
+	 * @var bool
+	 */
+	public $canDelete = false;
+
+	/**
+	 * Current row
+	 *
+	 * @var stdClass
+	 */
+	public $_row = null;
+
+	/**
+	 * Does the list have buttons
+	 *
+	 * @var bool
+	 */
+	public $hasButtons = false;
+	/**
+	 * Data
+	 *
+	 * @var array
+	 */
+	public $rows = array();
 
 	/**
 	 * Get JS objects
@@ -86,17 +121,17 @@ class Base extends \Fabrik\Admin\Views\Html
 		FabrikHelperHTML::addToFrameWork($src, 'media/com_fabrik/js/list');
 		$model->getCustomJsAction($src);
 
-		$tmpl = $model->getTmpl();
-		$this->tmpl = $tmpl;
+		$template = $model->getTmpl();
+		$this->tmpl = $template;
 
 		$model->getListCss();
 
 		// Check for a custom js file and include it if it exists
-		$aJsPath = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $tmpl . '/javascript.js';
+		$aJsPath = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $template . '/javascript.js';
 
 		if (JFile::exists($aJsPath))
 		{
-			$src[] = 'components/com_fabrik/views/list/tmpl/' . $tmpl . '/javascript.js';
+			$src[] = 'components/com_fabrik/views/list/tmpl/' . $template . '/javascript.js';
 		}
 
 		$origRows = $this->rows;
@@ -126,7 +161,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		}
 
 		$opts->labels = $labels;
-		$opts->primaryKey = $item->db_primary_key;
+		$opts->primaryKey = $item->get('list.db_primary_key');
 		$opts->Itemid = $tmpItemid;
 		$opts->listRef = $listRef;
 		$opts->formid = $model->getFormModel()->getId();
@@ -168,7 +203,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		}
 
 		/**
-		 * Added the $nodata object as we now weed something to pass in just to keep editLabel
+		 * Added the $noData object as we now weed something to pass in just to keep editLabel
 		 * and viewLabel happy, after adding placeholder replacement to the labels for a Pro user,
 		 * because the tooltips said we did that, which we never actually did.
 		 *
@@ -180,13 +215,13 @@ class Base extends \Fabrik\Admin\Views\Html
 		 *
 		 * But for now, it's too corner case to worry about!
 		 */
-		$nodata = new stdClass();
-		$opts->popup_edit_label = $model->editLabel($nodata);
-		$opts->popup_view_label = $model->viewLabel($nodata);
+		$noData = new stdClass();
+		$opts->popup_edit_label = $model->editLabel($noData);
+		$opts->popup_view_label = $model->viewLabel($noData);
 		$opts->popup_add_label = $model->addLabel();
 		$opts->limitLength = $model->limitLength;
 		$opts->limitStart = $model->limitStart;
-		$opts->tmpl = $tmpl;
+		$opts->tmpl = $template;
 		$csvOpts = new stdClass;
 		$csvOpts->excel = (int) $params->get('csv_format');
 		$csvOpts->inctabledata = (int) $params->get('csv_include_data');
@@ -263,17 +298,15 @@ class Base extends \Fabrik\Admin\Views\Html
 		$script[] = "\tFabrik.addBlock('list_{$listRef}', list);";
 
 		// Add in plugin objects
-		$params = $model->getParams();
 		$pluginManager = Worker::getPluginManager();
-		$c = 0;
 
 		$pluginManager->runPlugins('onLoadJavascriptInstance', $model, 'list');
-		$aObjs = $pluginManager->data;
+		$pluginJs = $pluginManager->data;
 
-		if (!empty($aObjs))
+		if (!empty($pluginJs))
 		{
 			$script[] = "list.addPlugins([\n";
-			$script[] = "\t" . implode(",\n  ", $aObjs);
+			$script[] = "\t" . implode(",\n  ", $pluginJs);
 			$script[] = "]);";
 		}
 
@@ -286,7 +319,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$model = $this->model;
 		$script[] = $model->getElementJs($src);
 
-		// End domready wrapper
+		// End domReady wrapper
 		$script[] = '})';
 		$script = implode("\n", $script);
 		FabrikHelperHTML::iniRequireJS($shim);
@@ -320,12 +353,12 @@ class Base extends \Fabrik\Admin\Views\Html
 		$model = $this->model;
 
 		// Force front end templates
-		$tmpl = $model->getTmpl();
-		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
-		//$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
+		//$template = $model->getTmpl();
+		//$this->_basePath = COM_FABRIK_FRONTEND . '/views';
+		//$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $template);
 
 		//$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
-		//$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
+		//$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $template);
 		$user = JFactory::getUser();
 		$document = JFactory::getDocument();
 		$item = $model->getTable();
@@ -338,7 +371,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$form = $model->getFormModel();
 		$nav = $model->getPagination();
 
-		foreach ($data as $groupk => $group)
+		foreach ($data as $groupkKey => $group)
 		{
 			$num_rows = 1;
 
@@ -347,12 +380,12 @@ class Base extends \Fabrik\Admin\Views\Html
 				$o = new stdClass;
 
 				// $$$ rob moved merge wip code to FabrikModelTable::formatForJoins() - should contain fix for pagination
-				$o->data = $data[$groupk][$i];
+				$o->data = $data[$groupkKey][$i];
 				$o->cursor = $num_rows + $nav->limitstart;
 				$o->total = $nav->total;
 				$o->id = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
 				$o->class = 'fabrik_row oddRow' . $c;
-				$data[$groupk][$i] = $o;
+				$data[$groupkKey][$i] = $o;
 				$c = 1 - $c;
 				$num_rows++;
 			}
@@ -367,7 +400,7 @@ class Base extends \Fabrik\Admin\Views\Html
 			foreach ($elementModels as $elementModel)
 			{
 				$elementModel->setContext($groupModel, $form, $model);
-				$rowclass = $elementModel->setRowClass($data);
+				$elementModel->setRowClass($data);
 			}
 		}
 		echo "<pre>";print_r($data);echo "</pre>";
@@ -440,7 +473,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		}
 
 		$this->emptyLink = $model->canEmpty() ? '#' : '';
-		$this->csvImportLink = $this->showCSVImport ? JRoute::_('index.php?option=com_' . $package . '&view=import&filetype=csv&listid=' . $item->id) : '';
+		$this->csvImportLink = $this->showCSVImport ? JRoute::_('index.php?option=com_' . $package . '&view=import&filetype=csv&listid=' . $item->get('id')) : '';
 		$this->showAdd = $model->canAdd();
 
 		if ($this->showAdd)
@@ -464,8 +497,8 @@ class Base extends \Fabrik\Admin\Views\Html
 
 			if ($this->rssLink != '')
 			{
-				$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
-				$document->addHeadLink($this->rssLink, 'alternate', 'rel', $attribs);
+				$attributes = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
+				$document->addHeadLink($this->rssLink, 'alternate', 'rel', $attributes);
 			}
 		}
 
@@ -615,7 +648,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$profiler = JProfiler::getInstance('Application');
 		$text = $this->loadTemplate();
 		JDEBUG ? $profiler->mark('template loaded') : null;
-		$model = $this->getModel();
+		$model = $this->model;
 		$params = $model->getParams();
 
 		if ($params->get('process-jplugins'))
@@ -637,7 +670,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	protected function buttons()
 	{
-		$model = $this->getModel();
+		$model = $this->model;
 		$this->buttons = new stdClass;
 		$buttonProperties = array('class' => 'fabrikTip', 'opts' => "{notice:true}",
 			'title' => '<span>' . FText::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
@@ -900,7 +933,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$model = $this->getModel();
+		$model = $this->model;
 		$id = $model->getState('list.id');
 		$this->tmpl = $model->getTmpl();
 		$model->setRenderContext($id);

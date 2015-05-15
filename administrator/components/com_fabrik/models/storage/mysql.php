@@ -530,12 +530,12 @@ class MySql
 	/**
 	 * Internal function: add a key to the table
 	 *
-	 * @param   string $fieldName     primary key column name
-	 * @param   bool   $autoIncrement is the column auto incrementing
-	 * @param   string $type          the primary keys column type (if autoincrement true then int(6) is always used as
+	 * @param   string $fieldName     Primary key column name
+	 * @param   bool   $autoIncrement Is the column auto incrementing
+	 * @param   string $type          The primary keys column type (if autoincrement true then int(6) is always used as
 	 *                                the type)
 	 *
-	 * @return  mixed  false / JError
+	 * @return  boolean
 	 */
 	public function addKey($fieldName, $autoIncrement, $type = "INT(6)")
 	{
@@ -547,6 +547,12 @@ class MySql
 			return false;
 		}
 
+		if (strstr($fieldName, '.'))
+		{
+			$fieldName = explode('.', $fieldName);
+			$fieldName = array_pop($fieldName);
+		}
+
 		$fieldName = $this->db->qn($fieldName);
 		$sql       = 'ALTER TABLE ' . $this->db->qn($this->table) . ' ADD PRIMARY KEY (' . $fieldName . ')';
 
@@ -555,10 +561,9 @@ class MySql
 
 		if ($this->db->execute())
 		{
-
 			if ($autoIncrement)
 			{
-				// Add the autoinc
+				// Add the auto-increment
 				$sql = 'ALTER TABLE ' . $this->db->qn($this->table) . ' CHANGE ' . $fieldName . ' ' . $fieldName . ' ' . $type . ' NOT NULL AUTO_INCREMENT';
 				$this->db->setQuery($sql);
 				$result = $result && $this->db->execute();

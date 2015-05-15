@@ -8,35 +8,30 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.view');
-require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
 
 /**
  * HTML Form view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.6
+ * @since       3.5
  */
-
-class FabrikViewForm extends FabrikViewFormBase
+class Html extends Base
 {
 	/**
 	 * Main setup routine for displaying the form/detail view
 	 *
-	 * @param   string  $tpl  template
-	 *
 	 * @return  void
 	 */
-
-	public function display($tpl = null)
+	public function render()
 	{
-		if (parent::display($tpl) !== false)
+		if (parent::render() !== false)
 		{
 			$this->output();
 			$app = JFactory::getApplication();

@@ -21,6 +21,10 @@ use \Joomla\Registry\Registry as JRegistry;
 use \JComponentHelper as JComponentHelper;
 use \JFactory as JFactory;
 use \JFolder as JFolder;
+use \JProfiler as JProfiler;
+use \JFilterInput as JFilterInput;
+use \FabrikString as FabrikString;
+use \FabrikHelperHTML as FabrikHelperHTML;
 
 interface ModelFormFormInterface
 {
@@ -575,6 +579,474 @@ class Form extends View implements ModelFormFormInterface
 		}
 
 		return $this->elementsNotInList;
+	}
+
+	/**
+	 * Collates data to write out the form
+	 *
+	 * @return  mixed  bool
+	 */
+	public function render()
+	{
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$profiler = JProfiler::getInstance('Application');
+		JDEBUG ? $profiler->mark('formmodel render: start') : null;
+
+		// $$$rob required in paolo's site when rendering modules with ajax option turned on
+		$this->listModel = null;
+		$this->setRowId($this->getRowId());
+
+		/*
+		 * $$$ hugh - need to call this here as we set $this->editable here, which is needed by some plugins
+		 * , this means that getData() is being called from checkAccessFromListSettings(),
+		 * so plugins running onBeforeLoad will have to unset($formModel->_data) if they want to
+		 * do something funky like change the rowid being loaded.  Not a huge problem, but caught me out
+		 * when a custom PHP onBeforeLoad plugin I'd written for a client suddenly broke.
+		 */
+		$this->checkAccessFromListSettings();
+		$pluginManager = Worker::getPluginManager();
+		$res = $pluginManager->runPlugins('onBeforeLoad', $this);
+
+		if (in_array(false, $res))
+		{
+			return false;
+		}
+
+		JDEBUG ? $profiler->mark('form model render: getData start') : null;
+		$data = $this->getData();
+		JDEBUG ? $profiler->mark('form model render: getData end') : null;
+		$res = $pluginManager->runPlugins('onLoad', $this);
+
+		if (in_array(false, $res))
+		{
+			return false;
+		}
+
+		JDEBUG ? $profiler->mark('formmodel render end') : null;
+
+		$session = JFactory::getSession();
+		$session->set('com_' . $package . '.form.' . $this->getId() . '.data', $this->data);
+
+		// $$$ rob return res - if its false the the form will not load
+		return $res;
+	}
+
+	/**
+	 * Set row id
+	 *
+	 * @param   string  $id  primary key value
+	 *
+	 * @since   3.0.7
+	 *
+	 * @return  void
+	 */
+	public function setRowId($id)
+	{
+		$this->rowId = $id;
+	}
+
+	/**
+	 * Makes sure that the form is not viewable based on the list's access settings
+	 *
+	 * Also sets the form's editable state, if it can record in to a db table
+	 *
+	 * @return  int  0 = no access, 1 = view only , 2 = full form view, 3 = add record only
+	 */
+	public function checkAccessFromListSettings()
+	{
+		$item = $this->getItem();
+
+		if ($item->get('list.record_in_database') == 0)
+		{
+			return 2;
+		}
+
+		$listModel = $this->getListModel();
+
+		if (!is_object($listModel))
+		{
+			return 2;
+		}
+
+		$data = $this->getData();
+		$ret = 0;
+
+		if ($listModel->canViewDetails())
+		{
+			$ret = 1;
+		}
+
+		$isUserRowId = $this->isUserRowId();
+
+		// New form can we add?
+		if ($this->getRowId() === '' || $isUserRowId)
+		{
+			// If they can edit can they also add
+			if ($listModel->canAdd())
+			{
+				$ret = 3;
+			}
+			// $$$ hugh - corner case for rowid=-1, where they DON'T have add perms, but DO have edit perms
+			elseif ($isUserRowId && $listModel->canEdit($data))
+			{
+				$ret = 2;
+			}
+		}
+		else
+		{
+			// Editing from - can we edit
+			if ($listModel->canEdit($data))
+			{
+				$ret = 2;
+			}
+		}
+		// If no access (0) or read only access (1) set the form to not be editable
+		$editable = ($ret <= 1) ? false : true;
+		$this->setEditable($editable);
+
+		if ($this->app->input->get('view', 'form') == 'details')
+		{
+			$this->setEditable(false);
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Populate the Model state
+	 *
+	 * @return  void
+	 */
+	protected function populateState()
+	{
+		$input = $this->app->input;
+
+		if (!$this->app->isAdmin())
+		{
+			// Load the menu item / component parameters.
+			$params = $this->app->getParams();
+			$this->setState('params', $params);
+
+			// Load state from the request.
+			$pk = $input->getString('id', $params->get('id'));
+		}
+		else
+		{
+			$pk = $input->getString('id');
+		}
+
+		$this->set('id', $pk);
+	}
+
+	/**
+	 * Main method to get the data to insert into the form
+	 *
+	 * @return  array  Form's data
+	 */
+	public function getData()
+	{
+		// If already set return it. If not was causing issues with the juser form plugin
+		// when it tried to modify the form->data info, from within its onLoad method, when sync user option turned on.
+
+		if (isset($this->data))
+		{
+			return $this->data;
+		}
+
+		$this->getRowId();
+		$input = $this->app->input;
+		$profiler = JProfiler::getInstance('Application');
+		JDEBUG ? $profiler->mark('formmodel getData: start') : null;
+		$this->data = array();
+		$f = JFilterInput::getInstance();
+
+		/*
+		 * $$$ hugh - we need to remove any elements from the query string,
+		 * if the user doesn't have access, otherwise ACL's on elements can
+		 * be bypassed by just setting value on form load query string!
+		 */
+
+		$clean_request = $f->clean($_REQUEST, 'array');
+
+		foreach ($clean_request as $key => $value)
+		{
+			$test_key = FabrikString::rtrimword($key, '_raw');
+			$elementModel = $this->getElement($test_key, false, false);
+
+			if ($elementModel !== false)
+			{
+				if (!$elementModel->canUse())
+				{
+					unset($clean_request[$key]);
+				}
+			}
+		}
+
+		$data = $clean_request;
+		$item = $this->getItem();
+		$aGroups = $this->getGroupsHiarachy();
+		JDEBUG ? $profiler->mark('formmodel getData: groups loaded') : null;
+
+		if (!$item->get('list.record_in_database'))
+		{
+			FabrikHelperHTML::debug($data, 'form:getData from $_REQUEST');
+			$data = $f->clean($_REQUEST, 'array');
+		}
+		else
+		{
+			JDEBUG ? $profiler->mark('formmodel getData: start get list model') : null;
+			$listModel = $this->getListModel();
+			JDEBUG ? $profiler->mark('formmodel getData: end get list model') : null;
+			$fabrikDb = $listModel->getDb();
+			JDEBUG ? $profiler->mark('formmodel getData: db created') : null;
+			$this->aJoinObjs = $listModel->getJoins();
+			JDEBUG ? $profiler->mark('formmodel getData: joins loaded') : null;
+
+			if ($this->hasErrors())
+			{
+				// $$$ hugh - if we're a mambot, reload the form session state we saved in
+				// process() when it banged out.
+				if ($this->isMambot)
+				{
+					$sessionRow = $this->getSessionData();
+					$this->sessionModel->last_page = 0;
+
+					if ($sessionRow->data != '')
+					{
+						$data = ArrayHelper::toObject(unserialize($sessionRow->data), 'stdClass', false);
+						JFilterOutput::objectHTMLSafe($data);
+						$data = array($data);
+						FabrikHelperHTML::debug($data, 'form:getData from session (form in Mambot and errors)');
+					}
+				}
+				else
+				{
+					// $$$ rob - use setFormData rather than $_GET
+					// as it applies correct input filtering to data as defined in article manager parameters
+					$data = $this->setFormData();
+					$data = ArrayHelper::toObject($data, 'stdClass', false);
+
+					// $$$rob ensure "<tags>text</tags>" that are entered into plain text areas are shown correctly
+					JFilterOutput::objectHTMLSafe($data);
+					$data = ArrayHelper::fromObject($data);
+					FabrikHelperHTML::debug($data, 'form:getData from POST (form not in Mambot and errors)');
+				}
+			}
+			else
+			{
+				$sessionLoaded = false;
+
+				// Test if its a resumed paged form
+				if ($this->saveMultiPage())
+				{
+					$sessionRow = $this->getSessionData();
+					JDEBUG ? $profiler->mark('formmodel getData: session data loaded') : null;
+
+					if ($sessionRow->data != '')
+					{
+						$sessionLoaded = true;
+						/*
+						 * $$$ hugh - this chunk should probably go in setFormData, but don't want to risk any side effects just now
+						 * problem is that later failed validation, non-repeat join element data is not formatted as arrays,
+						 * but from this point on, code is expecting even non-repeat join data to be arrays.
+						 */
+						$tmp_data = unserialize($sessionRow->data);
+						$groups = $this->getGroupsHiarachy();
+
+						foreach ($groups as $groupModel)
+						{
+							if ($groupModel->isJoin() && !$groupModel->canRepeat())
+							{
+								foreach ($tmp_data['join'][$groupModel->getJoinId()] as &$el)
+								{
+									$el = array($el);
+								}
+							}
+						}
+
+						$bits = $data;
+						$bits = array_merge($tmp_data, $bits);
+						$data = array(ArrayHelper::toObject($bits));
+						FabrikHelperHTML::debug($data, 'form:getData from session (form not in Mambot and no errors');
+					}
+				}
+
+				if (!$sessionLoaded)
+				{
+					/* Only try and get the row data if its an active record
+					 * use !== '' as rowid may be alphanumeric.
+					 * Unlike 3.0 rowId does equal '' if using rowid=-1 and user not logged in
+					 */
+					$usekey = Worker::getMenuOrRequestVar('usekey', '', $this->isMambot);
+
+					if (!empty($usekey) || $this->rowId !== '')
+					{
+						// $$$ hugh - once we have a few join elements, our select statements are
+						// getting big enough to hit default select length max in MySQL.
+						$listModel->setBigSelects();
+
+						// Otherwise lets get the table record
+						$opts = $input->get('task') == 'form.inlineedit' ? array('ignoreOrder' => true) : array();
+						$sql = $this->buildQuery($opts);
+						$fabrikDb->setQuery($sql);
+						FabrikHelperHTML::debug($fabrikDb->getQuery(), 'form:render');
+						$rows = $fabrikDb->loadObjectList();
+
+						if (is_null($rows))
+						{
+							JError::raiseWarning(500, $fabrikDb->getErrorMsg());
+						}
+
+						JDEBUG ? $profiler->mark('formmodel getData: rows data loaded') : null;
+
+						// $$$ rob Ack above didn't work for joined data where there would be n rows returned for "this rowid = $this->rowId  \n";
+						if (!empty($rows))
+						{
+							// Only do this if the query returned some rows (it wont if usekey on and userid = 0 for example)
+							$data = array();
+
+							foreach ($rows as &$row)
+							{
+								if (empty($data))
+								{
+									// If loading in a rowid=-1 set the row id to the actual row id
+									$this->rowId = isset($row->__pk_val) ? $row->__pk_val : $this->rowId;
+								}
+
+								$row = empty($row) ? array() : ArrayHelper::fromObject($row);
+								$request = $clean_request;
+								$request = array_merge($row, $request);
+								$data[] = ArrayHelper::toObject($request);
+							}
+						}
+
+						FabrikHelperHTML::debug($data, 'form:getData from querying rowid= ' . $this->rowId . ' (form not in Mambot and no errors)');
+
+						// If empty data return and trying to edit a record then show error
+						JDEBUG ? $profiler->mark('formmodel getData: empty test') : null;
+
+						// Was empty($data) but that is never empty. Had issue where list prefilter meant record was not loaded, but no message shown in form
+						if (empty($rows) && $this->rowId != '')
+						{
+							// $$$ hugh - special case when using -1, if user doesn't have a record yet
+							if ($this->isUserRowId())
+							{
+								return;
+							}
+							else
+							{
+								// If no key found set rowid to 0 so we can insert a new record.
+								if (empty($usekey) && !$this->isMambot && in_array($input->get('view'), array('form', 'details')))
+								{
+									$this->rowId = '';
+									/**
+									 * runtime exception is a little obtuse for people getting here from legitimate links,
+									 * like from an email, but aren't logged in so run afoul of a pre-filter, etc
+									 * So do the 3.0 thing, and raise a warning
+									 */
+									//throw new RuntimeException(FText::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
+									JError::raiseWarning(500, FText::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
+								}
+								else
+								{
+									// If we are using usekey then there's a good possibility that the record
+									// won't yet exist - so in this case suppress this error message
+									$this->rowId = '';
+								}
+							}
+						}
+					}
+				}
+				// No need to setJoinData if you are correcting a failed validation
+				if (!empty($data))
+				{
+					$this->setJoinData($data);
+				}
+			}
+		}
+
+		$this->data = $data;
+		FabrikHelperHTML::debug($data, 'form:data');
+		JDEBUG ? $profiler->mark('queryselect: getData() end') : null;
+
+		return $this->data;
+	}
+
+	/**
+	 * Is the page a multipage form?
+	 *
+	 * @return  bool
+	 */
+	public function isMultiPage()
+	{
+		$groups = $this->getGroupsHiarachy();
+
+		foreach ($groups as $groupModel)
+		{
+			$params = $groupModel->getParams();
+
+			if ($params->get('split_page'))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Query all active form plugins to see if they inject custom html into the top
+	 * or bottom of the form
+	 *
+	 * @return  array  plugin top html, plugin bottom html (inside <form>) plugin end (after form)
+	 */
+
+	public function getFormPluginHTML()
+	{
+		$pluginManager = Worker::getPluginManager();
+		$pluginManager->getPlugInGroup('form');
+
+		$pluginManager->runPlugins('getBottomContent', $this, 'form');
+		$pluginBottom = implode("<br />", array_filter($pluginManager->data));
+
+		$pluginManager->runPlugins('getTopContent', $this, 'form');
+		$pluginTop = implode("<br />", array_filter($pluginManager->data));
+
+		// Inserted after the form's closing </form> tag
+		$pluginManager->runPlugins('getEndContent', $this, 'form');
+		$pluginEnd = implode("<br />", array_filter($pluginManager->data));
+
+		return array($pluginTop, $pluginBottom, $pluginEnd);
+	}
+
+	/**
+	 * Determines if the form can be published
+	 *
+	 * @return  bool  true if publish dates are ok
+	 */
+	public function canPublish()
+	{
+		$db = Worker::getDbo();
+		$item = $this->getItem();
+		$nullDate = $db->getNullDate();
+		$up = $item->get('form.publish_up');
+		$down = $item->get('form.publish_down');
+		$publishUp = JFactory::getDate($up)->toUnix();
+		$publishDown = JFactory::getDate($down)->toUnix();
+		$now = JFactory::getDate()->toUnix();
+
+		if ($item->get('form.published') == '1')
+		{
+			if ($now >= $publishUp || $up == '' || $up == $nullDate)
+			{
+				if ($now <= $publishDown ||$down == '' || $down == $nullDate)
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 }

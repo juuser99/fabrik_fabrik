@@ -28,6 +28,7 @@ use \JPath as JPath;
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \JFolder as JFolder;
 use \FText as FText;
+use \JFile as JFile;
 
 /**
  * Fabrik Element Model

@@ -203,7 +203,8 @@ class Controller extends \JControllerBase
 		else
 		{
 			$viewName   = $app->input->getWord('view', 'home');
-			$layoutName = $app->input->getWord('layout', 'bootstrap');
+			//$layoutName = $app->input->getWord('layout', 'bootstrap');
+			$layoutName = $app->input->getWord('layout', '');
 		}
 
 		return array($viewName, $layoutName);

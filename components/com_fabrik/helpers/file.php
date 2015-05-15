@@ -11,6 +11,8 @@ namespace Fabrik\Helpers;
 
 defined('JPATH_BASE') or die;
 
+use \JLoader as JLoader;
+use \JPath as JPath;
 /**
  * Base class for rendering a display layout
  * loaded from from a layout file

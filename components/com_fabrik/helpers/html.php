@@ -609,28 +609,29 @@ EOD;
 	 *
 	 * @return  mixed	html select list or error
 	 */
-
 	public static function tableList($sel = '')
 	{
 		$files = JFolder::files(JPATH_COMPONENT_ADMINISTRATOR . '/models/views/',  '.json', false, true);
+		$rows = array();
 
 		foreach ($files as $file)
 		{
 			$json = file_get_contents($file);
 			$item = new JRegistry(json_decode($json));
 
-			if ($item->get('published'))
+			if ($item->get('list.published'))
 			{
 				$rows[] = (object) array('id' => $item->get('id'), 'label' => $item->get('list.label'));
 			}
 		}
+
 		return JHTML::_('select.genericlist', $rows, 'fabrik__swaptable', 'class="inputbox" size="1" ', 'id', 'label', $sel);
 	}
 
 	/**
 	 * Fabrik script to load in a style sheet
 	 * takes into account if you are viewing the page in raw format
-	 * if so sends js code back to webpage to inject css file into document head
+	 * if so sends js code back to web page to inject css file into document head
 	 * If not raw format then apply standard J stylesheet
 	 *
 	 * @param   string  $file     stylesheet URL
