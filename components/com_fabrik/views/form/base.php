@@ -18,6 +18,15 @@ use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
 use \FText as FText;
 use \JProfiler as JProfiler;
+use \FabrikHelperHTML as FabrikHelperHTML;
+use \JComponentHelper as JComponentHelper;
+use \stdClass as stdClass;
+use \FabrikString as FabrikString;
+use \JText as JText;
+use \JRoute as JRoute;
+use \JHtml as JHtml;
+use \JFilterInput as JFilterInput;
+
 
 /**
  * Base Form view class
@@ -53,9 +62,11 @@ class Base extends \Fabrik\Admin\Views\Html
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$w = new Worker;
-		$model = $this->getModel('form');
+		$model = $this->getModel();
+
 		$model->isMambot = $this->isMambot;
-		$form = $model->getForm();
+		$item = $model->getItem();
+		$form = $item->get('form');
 
 		if ($model->render() === false)
 		{
@@ -124,8 +135,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		{
 			$package = $app->getUserState('com_fabrik.package', 'fabrik');
 			$context = 'com_' . $package . '.form.' . $form->id . '.' . $this->rowid . '.';
-			$session = JFactory::getSession();
-			$model->errors = $session->get($context . 'errors', array());
+			$model->errors = $model->session->get($context . 'errors', array());
 			$clearErrors = true;
 		}
 
@@ -159,7 +169,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$this->form = $form;
 		JDEBUG ? $profiler->mark('form view: form assigned as ref') : null;
 		$list = new stdClass;
-		$list->id = $form->record_in_database ? $model->getListModel()->getTable()->id : 0;
+		$list->id = $form->record_in_database ? $model->getItem()->get('id') : '';
 		$this->list = $list;
 		JDEBUG ? $profiler->mark('form view: before getRelatedTables()') : null;
 		$this->linkedTables = $model->getRelatedTables();
@@ -167,10 +177,10 @@ class Base extends \Fabrik\Admin\Views\Html
 		$this->setMessage();
 
 		$folder = $model->isEditable() ? 'form' : 'details';
-		$this->addTemplatePath($this->_basePath . '/' . $folder . '/tmpl/' . $tmpl);
+		$this->paths->insert($this->_basePath . '/' . $folder . '/tmpl/' . $tmpl, 1);
 
 		$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
-		$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/'. $folder. '/'.  $tmpl);
+		$this->paths->insert($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/' . $folder. '/' . $tmpl, 1);
 
 		// If rendered as a module (non ajax) and we have inserted the session errors, clear them from the session.
 		if ($clearErrors)
@@ -189,12 +199,10 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	public function output()
 	{
-		echo "outpyt";exit;
 		$w = new Worker;
 		$text = $this->loadTemplate();
 		$model = $this->getModel();
 		$params = $model->getParams();
-		echo "<pre>";print_r($params);exit;
 
 		if ($params->get('process-jplugins', 2) == 1 || ($params->get('process-jplugins', 2) == 2 && $model->isEditable() === false))
 		{
@@ -507,7 +515,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		foreach ($groups as $groupModel)
 		{
-			$groupId = $groupModel->getGroup()->id;
+			$groupId = $groupModel->getGroup()->get('id');
 			$groupedJs->$groupId = array();
 
 			if (!$groupModel->canView('form'))
@@ -613,14 +621,13 @@ class Base extends \Fabrik\Admin\Views\Html
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$form = $model->getForm();
 		$params = $model->getParams();
-		$listModel = $model->getlistModel();
-		$table = $listModel->getTable();
+		$item = $model->getItem();
 		$opts = new stdClass;
 		$opts->admin = $app->isAdmin();
 		$opts->ajax = $model->isAjax();
 		$opts->ajaxValidation = (bool) $params->get('ajax_validations');
 		$opts->showLoader = (bool) $params->get('show_loader_on_submit', '0');
-		$key = FabrikString::safeColNameToArrayKey($table->db_primary_key);
+		$key = FabrikString::safeColNameToArrayKey($item->get('list.db_primary_key'));
 		$opts->primaryKey = $key;
 		$opts->error = @$form->origerror;
 		$opts->pages = $model->getPages();
@@ -647,7 +654,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$opts->rowid = (string) $model->getRowId();
 
 		// 3.0 needed for ajax requests
-		$opts->listid = (int) $this->get('ListModel')->getId();
+		$opts->listid = (int) $item->get('id');
 
 		$errorIcon = $fbConfig->get('error_icon', 'exclamation-sign') . '.png';
 		$this->errorIcon = FabrikHelperHTML::image($errorIcon, 'form', $this->tmpl);
@@ -698,7 +705,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		foreach ($groups as $groupModel)
 		{
-			if ($groupModel->getGroup()->is_join)
+			if ($groupModel->getGroup()->get('is_join'))
 			{
 				$joinParams = $groupModel->getJoinModel()->getJoin()->params;
 
@@ -967,8 +974,8 @@ class Base extends \Fabrik\Admin\Views\Html
 			$c = $groupModel->repeatTotal;
 
 			// Used for validations
-			$fields[] = '<input type="hidden" name="fabrik_repeat_group[' . $group->id . ']" value="' . $c . '" id="fabrik_repeat_group_'
-					. $group->id . '_counter" />';
+			$fields[] = '<input type="hidden" name="fabrik_repeat_group[' . $group->get('id') . ']" value="' . $c . '" id="fabrik_repeat_group_'
+					. $group->get('id') . '_counter" />';
 		}
 
 		// $$$ hugh - testing social_profile_hash stuff

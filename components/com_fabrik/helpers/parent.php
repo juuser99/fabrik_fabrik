@@ -20,10 +20,10 @@ use \JDatabaseDriver as JDatabaseDriver;
 use \JComponentHelper as JComponentHelper;
 use \JForm as JForm;
 use \Fabrik\Admin\Models\Connection as Connection;
-use \JModelLegacy as JModelLegacy;
 use \Joomla\Registry\Registry as JRegistry;
 use \Fabrik\Models\PluginManager as PluginManager;
 use \JCache as JCache;
+use \JUri as JUri;
 
 /**
  * Generic tools that all models use

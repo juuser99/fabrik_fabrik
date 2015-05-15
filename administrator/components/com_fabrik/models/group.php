@@ -16,7 +16,10 @@ use Fabrik\Helpers\ArrayHelper;
 use \JRegistry as JRegistry;
 use \JForm as JForm;
 use \Fabrik\Models\Join as Join;
-
+use \stdClass as stdClass;
+use Joomla\String\String as String;
+use FText as FText;
+use \FabrikString as FabrikString;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -35,13 +38,6 @@ interface ModelGroupInterface
  */
 class Group extends Base implements ModelGroupInterface
 {
-	/**
-	 * Parameters
-	 *
-	 * @var JRegistry
-	 */
-	protected $params = null;
-
 	/**
 	 * The prefix to use with controller messages.
 	 *
@@ -69,6 +65,76 @@ class Group extends Base implements ModelGroupInterface
 	 * @var bool
 	 */
 	protected $canView = null;
+
+	/**
+	 * Parameters
+	 *
+	 * @var JRegistry
+	 */
+	protected $params = null;
+
+	/**
+	 * Id of group to load
+	 *
+	 * @var int
+	 */
+	protected $id = null;
+
+	/**
+	 * Form model
+	 *
+	 * @var FabrikFEModelForm
+	 */
+	protected $form = null;
+
+	/**
+	 * List model
+	 *
+	 * @var FabrikFEModelList
+	 */
+	protected $table = null;
+
+	/**
+	 * Element plugins
+	 *
+	 * @var array
+	 */
+	public $elements = null;
+
+	/**
+	 * Published element plugins
+	 *
+	 * @var array
+	 */
+	public $publishedElements = null;
+
+	/**
+	 * Published element plugins shown in the list
+	 *
+	 * @var array
+	 */
+	protected $publishedListElements = null;
+
+	/**
+	 * How many times the group's data is repeated
+	 *
+	 * @var int
+	 */
+	public $repeatTotal = null;
+
+	/**
+	 * Form ids that the group is in (maximum of one value)
+	 *
+	 * @var array
+	 */
+	protected $formsIamIn = null;
+
+	/**
+	 * Can the group be edited (if false, will override element ACL's and make all elements read only)
+	 *
+	 * @var bool
+	 */
+	protected $canEdit = null;
 
 	/**
 	 * Take an array of forms ids and return the corresponding group ids
@@ -911,5 +977,1005 @@ class Group extends Base implements ModelGroupInterface
 		}
 
 		return $this->publishedElements[$sig];
+	}
+
+	/**
+	 * Method to set the group id
+	 *
+	 * @param   int  $id  group ID number
+	 *
+	 * @return  void
+	 */
+
+	public function setId($id)
+	{
+		// Set new group ID
+		$this->id = $id;
+	}
+
+	/**
+	 * Get group id
+	 *
+	 * @return int
+	 */
+
+	public function getId()
+	{
+		return $this->get('id');
+	}
+
+	/**
+	 * Can the user edit the group
+	 *
+	 * @return   bool
+	 */
+
+	public function canEdit()
+	{
+		/**
+		 * First cut at this code, need to add actual ACL setting for edit
+		 *
+		 * Mostly needed so people can run plugins on this hook, to set groups to read only
+		 */
+		if (!is_null($this->canEdit))
+		{
+			return $this->canEdit;
+		}
+
+		$params = $this->getParams();
+		$this->canEdit = true;
+
+		// If group show is type 5, then always read only.
+		if (in_array($params->get('repeat_group_show_first', '1'), array('2','5')))
+		{
+			$this->canEdit = false;
+
+			return $this->canEdit;
+		}
+
+		$formModel = $this->getFormModel();
+		$pluginCanEdit = Worker::getPluginManager()->runPlugins('onCanEditGroup', $formModel, 'form', $this);
+
+		if (empty($pluginCanEdit))
+		{
+			$pluginCanEdit = true;
+		}
+		else
+		{
+			$pluginCanEdit = !in_array(false, $pluginCanEdit);
+		}
+
+		$this->canEdit = $pluginCanEdit;
+
+		return $this->canEdit;
+	}
+
+	/**
+	 * Get an array of forms that the group is in
+	 * NOTE: now a group can only belong to one form
+	 *
+	 * @return  array  form ids
+	 */
+
+	public function getFormsIamIn()
+	{
+		if (!isset($this->formsIamIn))
+		{
+			$db = Worker::getDbo(true);
+			$query = $db->getQuery(true);
+			$query->select('form_id')->from('#__fabrik_formgroup')->where('group_id = ' . (int) $this->getId());
+			$db->setQuery($query);
+			$this->formsIamIn = $db->loadColumn();
+			$db->execute();
+		}
+
+		return $this->formsIamIn;
+	}
+
+	/**
+	 * Randomise the element list (note the array is the pre-rendered elements)
+	 *
+	 * @param   array  &$elements  form views processed/formatted list of elements that the form template uses
+	 *
+	 * @return  void
+	 */
+
+	public function randomiseElements(&$elements)
+	{
+		if ($this->getParams()->get('random', false) == true)
+		{
+			$keys = array_keys($elements);
+			shuffle($keys);
+
+			foreach ($keys as $key)
+			{
+				$new[$key] = $elements[$key];
+			}
+
+			$elements = $new;
+		}
+	}
+
+	/**
+	 * Set the element column css allows for group column settings to be applied
+	 *
+	 * @param   object  &$element  Pre-render element properties
+	 * @param   int     $rowIx     Current key when looping over elements.
+	 *
+	 * @since 	Fabrik 3.0.5.2
+	 *
+	 * @return  int  the next column count
+	 */
+
+	public function setColumnCss(&$element, $rowIx)
+	{
+		$params = $this->getParams();
+		$colcount = (int) $params->get('group_columns');
+
+		if ($colcount === 0)
+		{
+			$colcount = 1;
+		}
+
+		$element->offset = $params->get('group_offset', 0);
+
+		// Bootstrap grid formatting
+		if ($colcount === 1) // Single column
+		{
+			$element->startRow = true;
+			$element->endRow = 1;
+			$element->span = ' span12';
+			$element->column = ' style="clear:both;width:100%;"';
+			$rowIx = -1;
+
+			return $rowIx;
+		}
+
+		// Multi-column
+		$widths = $params->get('group_column_widths', '');
+		$w = floor((100 - ($colcount * 6)) / $colcount) . '%';
+
+		if ($widths !== '')
+		{
+			$widths = explode(',', $widths);
+			$w = ArrayHelper::getValue($widths, ($rowIx) % $colcount, $w);
+		}
+
+		$element->column = ' style="float:left;width:' . $w . ';';
+		$element->startRow = 0;
+		$element->endRow = 0;
+
+		/**
+		 * Hidden fields at start of row will be grouped on a separate row to avoid
+		 * issues with css selector :first-child.
+		 * $rowIx == -1 indicates a new row to distinguish it from
+		 * $rowIx = 0 which indicates hidden fields already processed at start of row.
+		 **/
+		if ($rowIx === 0 && !$element->hidden)
+		{
+			// Previous element must have been hidden - so set end of row on that and new row on this
+			$this->setColumnCssLastElement->endRow = 1;
+			$rowIx = -1;
+		}
+
+		if ($rowIx < 0)
+		{
+			$rowIx = 0;
+			$element->startRow = 1;
+			$element->column .= "clear:both;";
+		}
+
+		$element->column .= '" ';
+		$spans = $this->columnSpans();
+		$spanKey = $rowIx % $colcount;
+		$element->span = $element->hidden ? '' : ArrayHelper::getValue($spans, $spanKey, 'span' . floor(12 / $colcount));
+
+		if (!$element->hidden)
+		{
+			$rowIx++;
+		}
+
+		if ($rowIx !== 0 && ($rowIx % $colcount === 0))
+		{
+			$element->endRow = 1;
+
+			// Reset rowIx to indicate a new row.
+			$rowIx = -1;
+		}
+
+		// Save this so we can set endRow on previous element if it was hidden and this element isn't.
+		$this->setColumnCssLastElement = $element;
+
+		return $rowIx;
+	}
+
+	/**
+	 * Work out the bootstrap column spans for the group
+	 * Assigned to each element in setColumnCss()
+	 * Looks at the property group_column_widths which accepts either % or 1-12 as values
+	 *
+	 * @since 3.0b
+	 *
+	 * @return  array
+	 */
+
+	public function columnSpans()
+	{
+		$params = $this->getParams();
+		$widths = $params->get('group_column_widths', '');
+
+		if (trim($widths) === '')
+		{
+			return;
+		}
+
+		$widths = explode(',', $widths);
+
+		foreach ($widths as &$w)
+		{
+			if ($w == '')
+			{
+				$w = 6;
+			}
+
+			if (strstr($w, '%'))
+			{
+				$w = (int) str_replace('%', '', $w);
+				$w = floor(($w / 100) * 12);
+			}
+
+			$w = ' span' . $w;
+		}
+
+		return $widths;
+	}
+
+	/**
+	 * Alias to getFormModel()
+	 *
+	 * @deprecated
+	 *
+	 * @return object form model
+	 */
+
+	public function getForm()
+	{
+		return $this->getFormModel();
+	}
+
+	/**
+	 * Get the groups form model
+	 *
+	 * @return object form model
+	 */
+
+	public function getFormModel()
+	{
+		if (!isset($this->form))
+		{
+			$formids = $this->getFormsIamIn();
+			$formid = empty($formids) ? 0 : $formids[0];
+			$this->form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+			$this->form->setId($formid);
+			$this->form->getForm();
+			$this->form->getlistModel();
+		}
+
+		return $this->form;
+	}
+
+	/**
+	 * Can the user add a repeat group
+	 *
+	 * @since   3.0.1
+	 *
+	 * @return  bool
+	 */
+
+	public function canAddRepeat()
+	{
+		$params = $this->getParams();
+		$ok = $this->canRepeat();
+
+		if ($ok)
+		{
+			$user = JFactory::getUser();
+			$groups = $user->getAuthorisedViewLevels();
+			$ok = in_array($params->get('repeat_add_access', 1), $groups);
+		}
+
+		return $ok;
+	}
+
+	/**
+	 * Can the user delete a repeat group
+	 *
+	 * @since   3.0.1
+	 *
+	 * @return  bool
+	 */
+
+	public function canDeleteRepeat()
+	{
+		$ok = false;
+
+		if ($this->canRepeat())
+		{
+			$params = $this->getParams();
+			$row = $this->getFormModel()->getData();
+			$ok = Worker::canUserDo($params, $row, 'repeat_delete_access_user');
+
+			if ($ok === -1)
+			{
+				$user = JFactory::getUser();
+				$groups = $user->getAuthorisedViewLevels();
+				$ok = in_array($params->get('repeat_delete_access', 1), $groups);
+			}
+		}
+
+		return $ok;
+	}
+
+	/**
+	 * Is the group a repeat group
+	 *
+	 * @return  bool
+	 */
+
+	public function canCopyElementValues()
+	{
+		$params = $this->getParams();
+
+		return $params->get('repeat_copy_element_values', '0') === '1';
+	}
+
+	/**
+	 * Get the group's join_id
+	 *
+	 * @return  mixed   join_id, or false if not a join
+	 */
+
+	public function getJoinId()
+	{
+		if (!$this->isJoin())
+		{
+			return false;
+		}
+
+		return $this->getGroup()->join_id;
+	}
+
+	/**
+	 * Make a group object to be used in the form view. Object contains
+	 * group display properties
+	 *
+	 * @param   object  &$formModel  form model
+	 *
+	 * @return  object	group display properties
+	 */
+	public function getGroupProperties(&$formModel)
+	{
+		$w = new Worker;
+		$input = $this->app->input;
+		$group = new stdClass;
+		$groupTable = $this->getGroup();
+		$params = $this->getParams();
+		$view = $input->get('view');
+
+		if (!isset($this->editable))
+		{
+			$this->editable = $formModel->isEditable();
+		}
+
+		if ($this->editable)
+		{
+			// If all of the groups elements are not editable then set the group to uneditable
+			$elements = $this->getPublishedElements();
+			$editable = false;
+
+			foreach ($elements as $element)
+			{
+				if ($element->canUse())
+				{
+					$editable = true;
+				}
+			}
+
+			if (!$editable)
+			{
+				$this->editable = false;
+			}
+		}
+
+		$group->editable = $this->editable;
+		$group->canRepeat = $params->get('repeat_group_button', '0');
+		$showGroup = $params->def('repeat_group_show_first', '1');
+		$pages = $formModel->getPages();
+		$startPage = isset($formModel->sessionModel->last_page) ? $formModel->sessionModel->last_page : 0;
+		/**
+		 * $$$ hugh - added array_key_exists for (I think!) corner case where group properties have been
+		 * changed to remove (or change) paging, but user still has session state set.  So it was throwing
+		 * a PHP 'undefined index' notice.
+		 */
+
+		if (array_key_exists($startPage, $pages) && is_array($pages[$startPage])
+			&& !in_array($groupTable->get('id'), $pages[$startPage]) || $showGroup == -1 || $showGroup == 0 || ($view == 'form' && $showGroup == -2) || ($view == 'details' && $showGroup == -3))
+		{
+			$groupTable->set('css', $groupTable->get('css') . ";display:none;");
+		}
+
+		$group->css = trim(str_replace(array("<br />", "<br>"), "", $groupTable->get('css')));
+		$group->id = $groupTable->get('id');
+
+		$label = $input->getString('group' . $group->id . '_label', $groupTable->get('label'));
+
+		if (String::stristr($label, "{Add/Edit}"))
+		{
+			$replace = $formModel->isNewRecord() ? FText::_('COM_FABRIK_ADD') : FText::_('COM_FABRIK_EDIT');
+			$label = str_replace("{Add/Edit}", $replace, $label);
+		}
+
+		$groupTable->set('label', $label);
+		$group->title = $w->parseMessageForPlaceHolder($groupTable->get('label'), $formModel->data, false);
+		$group->title = FText::_($group->title);
+		$group->name = $groupTable->get('name');
+		$group->displaystate = ($group->canRepeat == 1 && $formModel->isEditable()) ? 1 : 0;
+		$group->maxRepeat = (int) $params->get('repeat_max');
+		$group->minRepeat = $params->get('repeat_min', '') === '' ? 1 : (int) $params->get('repeat_min', '');
+		$group->showMaxRepeats  = $params->get('show_repeat_max', '0') == '1';
+		$group->minMaxErrMsg = $params->get('repeat_error_message', '');
+		$group->minMaxErrMsg = FText::_($group->minMaxErrMsg);
+		$group->canAddRepeat = $this->canAddRepeat();
+		$group->canDeleteRepeat = $this->canDeleteRepeat();
+		$group->intro = $text = FabrikString::translate($params->get('intro'));
+		$group->outro = FText::_($params->get('outro'));
+		$group->columns = $params->get('group_columns', 1);
+		$group->splitPage = $params->get('split_page', 0);
+		$group->showLegend = $this->showLegend($group);
+		$group->labels = $params->get('labels_above', -1);
+		$group->dlabels = $params->get('labels_above_details', -1);
+
+		if ($this->canRepeat())
+		{
+			$group->tmpl = $params->get('repeat_template', 'repeatgroup');
+		}
+		else
+		{
+			$group->tmpl = 'group';
+		}
+
+		return $group;
+	}
+
+	/**
+	 * Copies a group, form group and its elements
+	 * (when copying a table (and hence a group) the groups join is copied in table->copyJoins)
+	 *
+	 * @param  array  &$ids  Ids to copy
+	 * @param  array  $names  Old to new name map.
+	 *
+	 * @throws \Exception
+	 *
+	 * @return  boolean    True if successful, false if an error occurs. (was an array of new element id's keyed on original elements that have been copied in < 3.5)
+	 */
+	public function copy(&$ids, $names)
+	{
+		// FIXME - copy needs to be updated for 3.5
+		throw new \Exception('form copy needs to be updated for 3.5');
+		$input = $this->app->input;
+		$elements = $this->getMyElements();
+		$group = $this->getGroup();
+
+		// NewGroupNames set in table copy
+		$newNames = $input->get('newGroupNames', array(), 'array');
+
+		if (array_key_exists($group->id, $newNames))
+		{
+			$group->name = $newNames[$group->id];
+		}
+
+		$group->id = null;
+		$group->store();
+		$newElements = array();
+
+		foreach ($elements as $element)
+		{
+			$origElementId = $element->getElement()->id;
+			$copy = $element->copyRow($origElementId, $element->getElement()->label, $group->id);
+			$newElements[$origElementId] = $copy->id;
+		}
+
+		$this->elements = null;
+		$elements = $this->getMyElements();
+
+		// Create form group
+		$formid = isset($this->_newFormid) ? $this->_newFormid : $this->getFormModel()->getId();
+		$formGroup = FabTable::getInstance('FormGroup', 'FabrikTable');
+		$formGroup->form_id = $formid;
+		$formGroup->group_id = $group->id;
+		$formGroup->ordering = 999999;
+		$formGroup->store();
+		$formGroup->reorder(" form_id = '$formid'");
+
+		return $newElements;
+	}
+
+	/**
+	 * Resets published element cache
+	 *
+	 * @return  void
+	 */
+
+	public function resetPublishedElements()
+	{
+		unset($this->publishedElements);
+		unset($this->publishedListElements);
+		unset($this->elements);
+	}
+
+	/**
+	 * Get the records master Insert Id - need better description...
+	 *
+	 * @return  string
+	 */
+
+	protected function masterInsertId()
+	{
+		$formModel = $this->getFormModel();
+		$joinModel = $this->getJoinModel();
+		$formData =& $formModel->formDataWithTableName;
+		$joinToPk = $joinModel->getJoinedToTablePk();
+
+		return $formData[$joinToPk];
+	}
+
+	/**
+	 * Part of process()
+	 * Set foreign key's value to the main records insert id
+	 *
+	 * @return  void
+	 */
+
+	protected function setForeignKey()
+	{
+		$formModel = $this->getFormModel();
+		$formData =& $formModel->formDataWithTableName;
+		$joinModel = $this->getJoinModel();
+		$masterInsertId = $this->masterInsertId();
+		$fk_name = $joinModel->getForeignKey();
+		$fks = array($fk_name, $fk_name . '_raw');
+
+		foreach ($fks as $fk)
+		{
+			if ($this->canRepeat() && array_key_exists($fk, $formData))
+			{
+				if (array_key_exists($fk, $formData))
+				{
+					if (is_array($formData[$fk]))
+					{
+						foreach ($formData[$fk] as $k => $v)
+						{
+							$formData[$fk][$k] = $masterInsertId;
+						}
+					}
+					else
+					{
+						$formData[$fk] = $masterInsertId;
+					}
+				}
+			}
+			else
+			{
+				$formData[$fk] = $masterInsertId;
+			}
+		}
+
+		/**
+		 *
+		 * $$$ hugh - added the clearDefaults method and need to call it here, otherwise if any pre-processing
+		 * has already called the element model's getValue(), the change we just made to formdata won't get picked up
+		 * during the row store processing, as getValue() will return the cached default.
+		 */
+
+		$elementModel = $formModel->getElement($fk_name);
+		$elementModel->clearDefaults();
+	}
+
+	/**
+	 *
+	 *
+	 */
+
+	public function fkOnParent()
+	{
+		/*
+		 * $$$ hugh - if $pkField is same-same as FK, then this is a one-to-one join in which the FK is
+		* on the "parent", so it's ...
+		*
+		* parent.child_id (FK) => child.id (PK)
+		*
+		* ... rather than ...
+		*
+		* parent.id (PK) <= child.parent_id (FK)
+		*
+		* ... which means it needs different handling, like we don't set the FK value in the child, rather
+		* we have to go back and update the FK value in the parent after writing the child row.
+		*/
+
+		// @TODO - handle joins which don't involve the parent!
+
+		$joinModel = $this->getJoinModel();
+		$pkField = $joinModel->getForeignID();
+		$fk = $joinModel->getForeignKey();
+
+		return $pkField === $fk;
+	}
+
+	/**
+	 * Get the number of times the group was repeated when the user fills
+	 * in the form
+	 *
+	 * @todo whats the difference between this and @link(repeatCount)
+	 *
+	 * @return  int
+	 */
+
+	protected function repeatTotals()
+	{
+		$input = $this->app->input;
+		$repeatTotals = $input->get('fabrik_repeat_group', array(0), 'post', 'array');
+
+		return (int) ArrayHelper::getValue($repeatTotals, $this->getGroup()->id, 0);
+	}
+
+	/**
+	 * Group specific form submission code - deals with saving joined data.
+	 *
+	 * @param   int  $parentId  insert ID of parent table
+	 *
+	 * @return  void
+	 */
+
+	public function process($parentId = null)
+	{
+		if (!$this->isJoin())
+		{
+			return;
+		}
+
+		$canRepeat = $this->canRepeat();
+		$repeats = $this->repeatTotals();
+		$joinModel = $this->getJoinModel();
+		$pkField = $joinModel->getForeignID();
+		$fk = $joinModel->getForeignKey();
+
+		$fkOnParent = $this->fkOnParent();
+
+		$listModel = $this->getListModel();
+		$item = $this->getGroup();
+		$formModel = $this->getFormModel();
+		$formData =& $formModel->formDataWithTableName;
+
+		if (!$fkOnParent)
+		{
+			$this->setForeignKey();
+		}
+
+		$elementModels = $this->getMyElements();
+		$list = $listModel->getTable();
+		$tblName = $list->db_table_name;
+		$tblPk = $list->db_primary_key;
+
+		// Set the list's table name to the join table, needed for storeRow()
+		$join = $joinModel->getJoin();
+		$list->db_table_name = $join->table_join;
+		$list->db_primary_key = $joinModel->getForeignID('.');
+		$usedKeys = array();
+
+		$insertId = false;
+
+		if (!$fkOnParent)
+		{
+			/*
+			 * It's a "normal" join, with the FK on the child, which may or may not repeat
+			 */
+			for ($i = 0; $i < $repeats; $i ++)
+			{
+				$data = array();
+
+				foreach ($elementModels as $elementModel)
+				{
+					$elementModel->onStoreRow($data, $i);
+				}
+
+				if ($formModel->copyingRow())
+				{
+					$pk = '';
+
+					if ($canRepeat)
+					{
+						$formData[$pkField][$i] = '';
+					}
+					else
+					{
+						$formData[$pkField] = '';
+					}
+
+				}
+				else
+				{
+					$pk = $canRepeat ? ArrayHelper::getValue($formData[$pkField], $i, '') : $formData[$pkField];
+
+					// Say for some reason the pk was set as a dbjoin!
+					if (is_array($pk))
+					{
+						$pk = array_shift($pk);
+					}
+				}
+
+				$insertId = $listModel->storeRow($data, $pk, true, $item);
+
+				// Update key
+				if ($canRepeat)
+				{
+					$formData[$pkField][$i] = $insertId;
+				}
+				else
+				{
+					$formData[$pkField] = $insertId;
+				}
+
+				$usedKeys[] = $insertId;
+			}
+
+			// Delete any removed groups
+			$this->deleteRepeatGroups($usedKeys);
+		}
+		else
+		{
+			/*
+			 * It's an abnormal join!  FK is on the parent.  Can't repeat, and the $pk needs to be derived differently
+			 */
+
+			$data = array();
+
+			foreach ($elementModels as $elementModel)
+			{
+				$elementModel->onStoreRow($data, 0);
+			}
+
+			/*
+			 * Although we use getPrimaryKey(), it's not really the primary key, 'cos the relationship is flipped
+			 * when we're in $fkOnParent mode!  So it's actually the FK field on the parent table.
+			 */
+			$fkField = $joinModel->getPrimaryKey('___');
+			$pk = ArrayHelper::getValue($formData, $fkField . '_raw', ArrayHelper::getValue($formData, $fkField, ''));
+
+			if (is_array($pk))
+			{
+				$pk = array_shift($pk);
+			}
+
+			// storeRow treats 0 or '0' differently to empty string!  So if empty(), specifically set to empty string
+			if (empty($pk))
+			{
+				$pk = '';
+			}
+
+			$insertId = $listModel->storeRow($data, $pk, true, $item);
+		}
+
+		// Reset the list's table name
+		$list->db_table_name = $tblName;
+		$list->db_primary_key = $tblPk;
+
+		/*
+		 * If the FK is on the parent, we (may) need to update the parent row with the FK value
+		 * for the joined row we just upserted.
+		 */
+		if ($fkOnParent && !empty($insertId))
+		{
+			/*
+			 * Only bother doing this is the FK isn't there or has been changed.  Again, don't be
+			 * confused by using getPrimaryKey, it's really the FK 'cos the relationship is flipped
+			 * from a "normal" join, with the FK on the parent.
+			 */
+			$fkField = $joinModel->getPrimaryKey('___');
+			if (!array_key_exists($fkField, $formData) || $formData[$fkField] != $insertId)
+			{
+				$formData[$fkField] = $insertId;
+				$formData[$fkField . '_raw'] = $insertId;
+				$fkField = $joinModel->getPrimaryKey('.');
+				$listModel->updateRow($parentId, $fkField, $insertId);
+			}
+		}
+
+	}
+
+	/**
+	 * When storing a joined group. Delete any deselected repeating joined records
+	 *
+	 * @param   array  $usedKeys  Keys saved in store()
+	 *
+	 * @return  bool
+	 */
+	private function deleteRepeatGroups($usedKeys = array())
+	{
+		if (!$this->canRepeat())
+		{
+			/*
+			 * If the group can not be repeated then the user could not have deleted a
+			 * repeat group.
+			 */
+			return true;
+		}
+
+		/*
+		 * If we are copying a row, everything is new, leave old groups alone
+		 */
+
+		$formModel = $this->getFormModel();
+
+		if ($formModel->copyingRow())
+		{
+			return true;
+		}
+
+		$listModel = $this->getListModel();
+		$list = $listModel->getTable();
+		$joinModel = $this->getJoinModel();
+		$join = $joinModel->getJoin();
+		$db = $listModel->getDb();
+		$query = $db->getQuery(true);
+		$masterInsertId = $this->masterInsertId();
+		$query->delete($db->qn($list->db_table_name));
+		$pk = $join->params->get('pk');
+
+		/*
+		 * Get the original row ids. We can ONLY delete from within this set. This
+		 * allows us to respect and prefilter that was applied to the list's data.
+		 */
+		$groupid = $this->getId();
+
+		/**
+		 * $$$ hugh - nooooo, on AJAX submit, request array hasn't been urldecoded, but formData has.
+		 * So in the request it's still hex-ified JSON.  Leaving this line and comment in here as a
+		 * reminder to self we may have other places this happens.
+		 * $origGroupRowsIds = $input->get('fabrik_group_rowids', array(), 'array');
+		 */
+
+		$origGroupRowsIds = ArrayHelper::getValue($formModel->formData, 'fabrik_group_rowids', array());
+		$origGroupRowsIds = ArrayHelper::getValue($origGroupRowsIds, $groupid, array());
+		$origGroupRowsIds = json_decode($origGroupRowsIds);
+
+		/*
+		 * Find out which keys were origionally in the form, but were not submitted
+		 * i.e. those keys whose records were removed
+		 */
+
+		if (!$formModel->isNewRecord())
+		{
+			$keysToDelete = array_diff($origGroupRowsIds, $usedKeys);
+		}
+
+		// Nothing to delete - return
+		if (empty($keysToDelete))
+		{
+			return true;
+		}
+
+		if (is_array($masterInsertId))
+		{
+			foreach ($masterInsertId as &$mid)
+			{
+				if (is_array($mid))
+				{
+					$mid = array_unshift($mid);
+				}
+
+				$mid = $db->quote($mid);
+			}
+
+			$query->where($db->qn($join->table_join_key) . ' IN (' . implode(', ', $masterInsertId) . ')');
+		}
+		else
+		{
+			$query->where($db->qn($join->table_join_key) . ' = ' . $db->quote($masterInsertId));
+		}
+
+		$query->where($pk . 'IN (' . implode(',', $db->q($keysToDelete)) . ') ');
+		$db->setQuery($query);
+
+		return $db->execute();
+	}
+
+	/**
+	 * Test if the group can repeat and if the fk element is published
+	 *
+	 * @since   3.1rc1
+	 *
+	 * @return boolean
+	 */
+
+	public function fkPublished()
+	{
+		if ($this->canRepeat())
+		{
+			return true;
+		}
+
+		$joinTable = $this->getJoinModel()->getJoin();
+		$fullFk = $joinTable->table_join . '___' . $joinTable->table_join_key;
+		$elementModels = $this->getPublishedElements();
+
+		foreach ($elementModels as $elementModel)
+		{
+			if ($elementModel->getFullName(true, false) === $fullFk)
+			{
+				return true;
+			}
+		}
+
+		JError::raiseWarning(E_ERROR, JText::sprintf('COM_FABRIK_JOINED_DATA_BUT_FK_NOT_PUBLISHED', $fullFk));
+
+		return false;
+	}
+
+	/**
+	 * Get the number of times the group was repeated based on the form's current data
+	 *
+	 * @since   3.1rc1
+	 *
+	 * @return number
+	 */
+
+	public function repeatCount()
+	{
+		$data = $this->getFormModel()->getData();
+		$elementModels = $this->getPublishedElements();
+		reset($elementModels);
+		$tmpElement = current($elementModels);
+
+		if (!empty($elementModels))
+		{
+			$smallerElHTMLName = $tmpElement->getFullName(true, false);
+			$d = ArrayHelper::getValue($data, $smallerElHTMLName, 1);
+
+			if (is_object($d))
+			{
+				$d = ArrayHelper::fromObject($d);
+			}
+
+			$repeatGroup = count($d);
+		}
+		else
+		{
+			// No published elements - not sure if setting repeatGroup to 0 is right though
+			$repeatGroup = 0;
+		}
+
+		return $repeatGroup;
+	}
+
+	/**
+	 * Should the group legend be shown
+	 *
+	 * @param   object  $group  Group properties
+	 *
+	 * @return boolean
+	 */
+	private function showLegend($group)
+	{
+		$allHidden = true;
+
+		foreach ($this->elements as $elementModel)
+		{
+			$allHidden &= $elementModel->isHidden();
+		}
+		if ((!$allHidden || !empty($group->intro)) && trim($group->title) !== '') {
+			return true;
+		}
+
+		return false;
 	}
 }

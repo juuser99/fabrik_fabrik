@@ -98,6 +98,7 @@ class Base extends \JModelBase
 		$this->app  = $this->state->get('app', JFactory::getApplication());
 		$this->user = $this->state->get('user', JFactory::getUser());
 		$this->config = $this->state->get('config', JFactory::getConfig());
+		$this->session = $this->state->get('session', $session = JFactory::getSession());
 
 		if ($this->name === '')
 		{
@@ -883,6 +884,7 @@ class Base extends \JModelBase
 	 */
 	public function loadForm($name, $options = array())
 	{
+
 		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
 		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
 		JForm::addFormPath(JPATH_COMPONENT . '/model/form');
@@ -895,6 +897,7 @@ class Base extends \JModelBase
 
 		$form  = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
 		$item  = $this->getItem();
+
 		$class = $this->getKlass();
 		$data       = $this->getItem()->get($class);
 

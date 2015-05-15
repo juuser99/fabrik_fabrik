@@ -29,6 +29,8 @@ use \FabrikHelperHTML as FabrikHelperHTML;
 use \JFolder as JFolder;
 use \FText as FText;
 use \JFile as JFile;
+use \JFactory as JFactory;
+use \JComponentHelper as JComponentHelper;
 
 /**
  * Fabrik Element Model
@@ -685,11 +687,9 @@ class Element extends Plugin
 		$joinTable = $this->getJoinModel()->getJoin()->table_join;
 		$dbTable = $this->actualTableName();
 		$db = JFactory::getDbo();
-		$table = $this->getListModel()->getTable();
 
 		// Jaanus: joined group pk? set in groupConcactJoinKey()
 
-		// $pkfeld = $table->db_primary_key;
 		$pkfield = $this->groupConcactJoinKey();
 		$fullElName = $db->qn($dbTable . '___' . $this->element->name);
 		$sql = '(SELECT GROUP_CONCAT(' . $jKey . ' SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $joinTable . ' WHERE parent_id = '
@@ -740,9 +740,9 @@ class Element extends Plugin
 	{
 		$group = $this->getGroupModel()->getGroup();
 		$name = $this->getFullName(true, false);
-		$rawname = $name . '_raw';
+		$rawName = $name . '_raw';
 
-		return array($name, $rawname);
+		return array($name, $rawName);
 	}
 
 	/**
@@ -867,7 +867,7 @@ class Element extends Plugin
 		}
 		else
 		{
-			$pkField = $table->db_primary_key;
+			$pkField = $table->get('list.db_primary_key');
 		}
 
 		return $pkField;
@@ -2741,7 +2741,7 @@ class Element extends Plugin
 			}
 			else
 			{
-				$fullName = $table->db_table_name . '___' . $element->name;
+				$fullName = $table->get('list.db_table_name') . '___' . $element->name;
 			}
 
 			// Change the id for detailed view elements
@@ -2785,7 +2785,7 @@ class Element extends Plugin
 		}
 		else
 		{
-			$fullName = $table->db_table_name . '___' . $element->name;
+			$fullName = $table->get('list.db_table_name') . '___' . $element->name;
 		}
 
 		if ($groupModel->canRepeat())
@@ -3812,7 +3812,7 @@ class Element extends Plugin
 		$fabrikDb = $listModel->getDb();
 		$table = $listModel->getTable();
 		$element = $this->getElement();
-		$origTable = $table->db_table_name;
+		$origTable = $table->get('list.db_table_name');
 		$elName = $this->getFullName(true, false);
 		$params = $this->getParams();
 		$elName2 = $this->getFullName(false, false);
@@ -4441,14 +4441,8 @@ class Element extends Plugin
 				{
 					// Query the joined table concatenating into one field
 					$joinTable = $this->getJoinModel()->getJoin()->table_join;
-					//$pk = $this->getListModel()->getTable()->db_primary_key; 
+
 					// Jaanus: joined group pk set in groupConcactJoinKey()
-					$pk = $this->groupConcactJoinKey(); 
-					/**
-					 *  Jaanus: joined group pk?
-					 *  set in groupConcactJoinKey()
-					 */
-					// $pk = $this->getListModel()->getTable()->db_primary_key;
 					$pk = $this->groupConcactJoinKey();
 					$key = "(SELECT GROUP_CONCAT(id SEPARATOR '" . GROUPSPLITTER . "') FROM $joinTable WHERE parent_id = $pk)";
 					$value = str_replace("'", '', $value);
@@ -4643,11 +4637,13 @@ class Element extends Plugin
 		$name = $this->getFullName(false, false);
 		$groupModel = $this->getGroup();
 		$roundTo = (int) $this->getParams()->get('avg_round');
+		$table = FabrikString::safeColName($item->get('list.db_table_name'));
+		$pk = $item->get('list.db_primary_key');
 
 		if ($groupModel->isJoin())
 		{
 			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-			return "SELECT ROUND(AVG($name), $roundTo) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			return "SELECT ROUND(AVG($name), $roundTo) AS value, $label FROM " . $table
 			. " $joinSQL $whereSQL";
 		}
 		else
@@ -4659,7 +4655,7 @@ class Element extends Plugin
 			$distinct = $this->getListModel()->isView() && trim($joinSQL) == '' ? '': 'DISTINCT';
 
 			return "SELECT ROUND(AVG(value), $roundTo) AS value, label
-			FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			FROM (SELECT " . $distinct . " $pk, $name AS value, $label FROM " . $table
 			. " $joinSQL $whereSQL) AS t";
 		}
 	}
@@ -4681,11 +4677,13 @@ class Element extends Plugin
 		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false);
 		$groupModel = $this->getGroup();
+		$table = FabrikString::safeColName($item->get('list.db_table_name'));
+		$pk = $item->get('list.db_primary_key');
 
 		if ($groupModel->isJoin())
 		{
 			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-			return "SELECT SUM($name) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT SUM($name) AS value, $label FROM " . $table . " $joinSQL $whereSQL";
 		}
 		else
 		{
@@ -4696,7 +4694,7 @@ class Element extends Plugin
 			$distinct = $this->getListModel()->isView() && trim($joinSQL) == '' ? '': 'DISTINCT';
 
 			return "SELECT SUM(value) AS value, label
-			FROM (SELECT " . $distinct. " $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			FROM (SELECT " . $distinct. " $pk, $name AS value, $label FROM " . $table
 			. " $joinSQL $whereSQL) AS t";
 		}
 	}
@@ -4719,6 +4717,7 @@ class Element extends Plugin
 		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false);
 		$groupModel = $this->getGroup();
+		$table = FabrikString::safeColName($item->get('list.db_table_name'));
 
 		if ($groupModel->isJoin())
 		{
@@ -4726,7 +4725,7 @@ class Element extends Plugin
 			// $custom_query = sprintf($custom_query, $name);
 			$custom_query = str_replace('%s', $name, $custom_query);
 
-			return "SELECT $custom_query AS value, $label AS label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT $custom_query AS value, $label AS label FROM " . $table . " $joinSQL $whereSQL";
 		}
 		else
 		{
@@ -4734,8 +4733,8 @@ class Element extends Plugin
 			// $custom_query = sprintf($custom_query, 'value');
 			$custom_query = str_replace('%s', 'value', $custom_query);
 
-			return 'SELECT ' . $custom_query . ' AS value, label FROM (SELECT DISTINCT ' . FabrikString::safeColName($item->db_table_name)
-			. '.*, ' . $name . ' AS value, ' . $label . ' AS label FROM ' . FabrikString::safeColName($item->db_table_name)
+			return 'SELECT ' . $custom_query . ' AS value, label FROM (SELECT DISTINCT ' . $table
+			. '.*, ' . $name . ' AS value, ' . $label . ' AS label FROM ' . $table
 			. ' ' . $joinSQL . ' ' . $whereSQL . ') AS t';
 		}
 	}
@@ -4755,8 +4754,9 @@ class Element extends Plugin
 		$item = $listModel->getTable();
 		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->buildQueryWhere();
+		$table = FabrikString::safeColName($item->get('list.db_table_name'));
 
-		return 'SELECT ' . $this->getFullName(false, false, false) . ' AS value, ' . $label . ' FROM ' . FabrikString::safeColName($item->db_table_name)
+		return 'SELECT ' . $this->getFullName(false, false, false) . ' AS value, ' . $label . ' FROM ' . $table
 		. ' ' . $joinSQL . ' ' . $whereSQL;
 	}
 
@@ -4795,17 +4795,19 @@ class Element extends Plugin
 		}
 
 		$groupModel = $this->getGroup();
+		$table = FabrikString::safeColName($item->get('list.db_table_name'));
+		$pk = $item->get('list.db_primary_key');
 
 		if ($groupModel->isJoin())
 		{
 			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-			return "SELECT COUNT($name) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT COUNT($name) AS value, $label FROM " . $table . " $joinSQL $whereSQL";
 		}
 		else
 		{
 			// Need to do first query to get distinct records as if we are doing left joins the sum is too large
 			$query = "SELECT COUNT(value) AS value, label
-			FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			FROM (SELECT DISTINCT $pk, $name AS value, $label FROM " . $table
 			. " $joinSQL $whereSQL) AS t";
 		}
 
@@ -5510,7 +5512,7 @@ class Element extends Plugin
 		}
 		else
 		{
-			$opts->joinid = (int) $groupModel->getGroup()->join_id;
+			$opts->joinid = (int) $groupModel->getGroup()->get('join_id');
 		}
 
 		return $opts;
@@ -6482,7 +6484,7 @@ class Element extends Plugin
 		$listModel = $elementModel->getListModel();
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
-		$tableName = $listModel->getTable()->db_table_name;
+		$tableName = $listModel->getTable()->get('list.db_table_name');
 		$query->select('DISTINCT(' . $name . ') AS value, ' . $name . ' AS text')->from($tableName);
 		$query->where($name . ' LIKE ' . $db->q(addslashes('%' . $search . '%')));
 		$query = $listModel->buildQueryJoin($query);
@@ -6521,7 +6523,7 @@ class Element extends Plugin
 		}
 		else
 		{
-			$name = $table->db_table_name;
+			$name = $table->get('list.db_table_name');
 		}
 
 		return $name;
@@ -7289,17 +7291,16 @@ class Element extends Plugin
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
 		$formData =& $this->getFormModel()->formDataWithTableName;
-		$tableName = $listModel->getTable()->db_table_name;
 
 		// I set this to raw for cdd.
 		$name = $this->getFullName(true, false);
-		$rawname = $name . '_raw';
+		$rawName = $name . '_raw';
 		$shortName = $this->getElement()->name;
 
 		$join = $this->getJoin();
 
 		// The submitted element's values
-		$d = ArrayHelper::getValue($formData, $rawname, ArrayHelper::getValue($formData, $name));
+		$d = ArrayHelper::getValue($formData, $rawName, ArrayHelper::getValue($formData, $name));
 		$allJoinValues = Worker::JSONtoData($d, true);
 
 		if ($groupModel->isJoin())
@@ -7359,7 +7360,7 @@ class Element extends Plugin
 				$record->$shortName = $fkVal;
 				$record->params = ArrayHelper::getValue($allParams, $jIndex);
 
-				// Stop notice with fileupload where fkVal is an array
+				// Stop notice with file-upload where fkVal is an array
 				if (array_key_exists($fkVal, $ids))
 				{
 					$record->id = $ids[$fkVal]->id;
@@ -7377,10 +7378,10 @@ class Element extends Plugin
 
 					if (!$this->allowDuplicates)
 					{
-						$newid = new stdClass;
-						$newid->id = $lastInsertId;
-						$newid->$shortName = $record->$shortName;
-						$ids[$record->$shortName] = $newid;
+						$newId = new stdClass;
+						$newId->id = $lastInsertId;
+						$newId->$shortName = $record->$shortName;
+						$ids[$record->$shortName] = $newId;
 					}
 
 					$idsToKeep[$parentId][] = $lastInsertId;
@@ -7392,7 +7393,7 @@ class Element extends Plugin
 
 				if (!$ok)
 				{
-					throw new RuntimeException('Didn\'t save dbjoined repeat element');
+					throw new RuntimeException('Didn\'t save database joined repeat element');
 				}
 			}
 

@@ -16,8 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \JEventDispatcher as JEventDispatcher;
+use \JPluginHelper as JPluginHelper;
 
-jimport('joomla.application.component.model');
 
 /**
  * Fabrik Element Validator Model

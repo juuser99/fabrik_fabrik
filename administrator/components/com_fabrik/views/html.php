@@ -75,6 +75,11 @@ class Html Extends \JViewHtml
 		return $this->_output;
 	}
 
+	/**
+	 * Get model
+	 *
+	 * @return JModel
+	 */
 	public function getModel()
 	{
 		return $this->model;

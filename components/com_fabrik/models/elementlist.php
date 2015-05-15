@@ -17,6 +17,7 @@ use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \JPath as JPath;
+use \FabrikHelperHTML as FabrikHelperHTML;
 
 /**
  * Fabrik Element List Model

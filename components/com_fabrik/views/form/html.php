@@ -13,8 +13,6 @@ namespace Fabrik\Views\Form;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Worker;
-
 /**
  * HTML Form view class
  *
@@ -34,7 +32,7 @@ class Html extends Base
 		if (parent::render() !== false)
 		{
 			$this->output();
-			$app = JFactory::getApplication();
+			$app = $this->model->app;
 
 			if (!$app->isAdmin())
 			{
