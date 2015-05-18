@@ -406,7 +406,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 			{
 				// $$$ hugh - escape the key so preg_replace won't puke if key contains /
 				$key = str_replace('/', '\/', $key);
-				$msg = preg_replace("/\{$key\}/", $db->quote(urldecode($val)), $msg);
+				$msg = preg_replace("/\{$key\}/", $db->q(urldecode($val)), $msg);
 			}
 		}
 
@@ -499,7 +499,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 		$x_axis_label = (array) $params->get('fusion_x_axis_label');
 		$chartElements = (array) $params->get('fusionchart_elementList');
 		$chartColours = (array) $params->get('fusionchart_elcolour');
-		$listid = (array) $params->get('fusionchart_table');
+		$listId = (array) $params->get('fusionchart_table');
 		$chartCumulatives = (array) $params->get('fusionchart_cumulative');
 		$elTypes = (array) $params->get('fusionchart_element_type');
 		$this->setAxisLabels();
@@ -520,7 +520,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 		$tmodels = array();
 		$labelStep = 0;
 
-		foreach ($listid as $tid)
+		foreach ($listId as $tid)
 		{
 			$this->min[$this->c] = 0;
 			$this->max[$this->c] = 0;
@@ -528,7 +528,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 			if (!array_key_exists($tid, $tmodels))
 			{
 				$listModel = null;
-				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+				$listModel = new \Fabrik\Admin\Models\Lizt;
 				$listModel->setId($tid);
 				$tmodels[$tid] = $listModel;
 			}

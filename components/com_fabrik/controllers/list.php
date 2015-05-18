@@ -169,11 +169,11 @@ class Lizt extends Controller
 		$input      = $this->input;
 		$model      = $this->getModel('list', 'FabrikFEModel');
 		$ids        = $input->get('ids', array(), 'array');
-		$listid     = $input->getInt('listid');
-		$limitstart = $input->getInt('limitstart' . $listid);
-		$length     = $input->getInt('limit' . $listid);
+		$listId     = $input->getInt('listid');
+		$limitstart = $input->getInt('limitstart' . $listId);
+		$length     = $input->getInt('limit' . $listId);
 
-		$model->setId($listid);
+		$model->setId($listId);
 		$oldtotal = $model->getTotalRecords();
 
 		try
@@ -190,12 +190,12 @@ class Lizt extends Controller
 
 		$total = $oldtotal - count($ids);
 
-		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listid, 'string');
+		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listId, 'string');
 
 		// $$$ hugh - for some reason fabrik_referrer is sometimes empty, so a little defensive coding ...
 		if (empty($ref))
 		{
-			$ref = $input->server->get('HTTP_REFERER', 'index.php?option=com_' . $package . '&view=list&listid=' . $listid, '', 'string');
+			$ref = $input->server->get('HTTP_REFERER', 'index.php?option=com_' . $package . '&view=list&listid=' . $listId, '', 'string');
 		}
 
 		if ($total >= $limitstart)
@@ -207,7 +207,7 @@ class Lizt extends Controller
 				$newlimitstart = 0;
 			}
 
-			$ref     = str_replace('limitstart' . $listid . '=  . $limitstart', 'limitstart' . $listid . '=' . $newlimitstart, $ref);
+			$ref     = str_replace('limitstart' . $listId . '=  . $limitstart', 'limitstart' . $listId . '=' . $newlimitstart, $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
 			$this->app->setUserState($context . 'limitstart', $newlimitstart);
 		}

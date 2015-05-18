@@ -35,7 +35,7 @@ class FabrikViewCsv extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$this->listid = $app->input->get('listid', 0);
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($this->listid);
 		$this->setModel($listModel, true);
 		$this->table = $listModel->getTable();
@@ -81,11 +81,11 @@ class FabrikViewCsv extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$model = $this->getModel();
-		$listid = $model->getId();
+		$listId = $model->getId();
 		$script = array();
 		$opts = new stdClass;
 		$opts->admin = $app->isAdmin();
-		$opts->form = 'listform_' . $listid;
+		$opts->form = 'listform_' . $listId;
 		$opts->headings = $model->jsonHeadings();
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $model->getHeadings();
 		$labels = $this->headings;
@@ -134,8 +134,8 @@ class FabrikViewCsv extends JViewLegacy
 		$srcs[] = 'media/com_fabrik/js/list-plugin.js';
 		$srcs[] = 'media/com_fabrik/js/list.js';
 
-		$script[] = 'var list = new FbList(' . $listid . ',' . $opts . ');';
-		$script[] = 'Fabrik.addBlock(\'list_' . $listid . '\', list);';
+		$script[] = 'var list = new FbList(' . $listId . ',' . $opts . ');';
+		$script[] = 'Fabrik.addBlock(\'list_' . $listId . '\', list);';
 		FabrikHelperHTML::script($srcs, implode("\n", $script));
 	}
 }

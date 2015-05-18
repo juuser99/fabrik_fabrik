@@ -10,9 +10,7 @@
  */
 namespace Fabrik\Admin\Models;
 
-use GCore\Libs\Arr;
 use \JForm as JForm;
-use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use \JDate as Date;
 use \FText as FText;
@@ -88,11 +86,11 @@ class Base extends \JModelBase
 	/**
 	 * Instantiate the model.
 	 *
-	 * @param   Registry $state The model state.
+	 * @param   JRegistry $state The model state.
 	 *
 	 * @since   12.1
 	 */
-	public function __construct(Registry $state = null)
+	public function __construct(JRegistry $state = null)
 	{
 		parent::__construct($state);
 		$this->app  = $this->state->get('app', JFactory::getApplication());
@@ -172,7 +170,7 @@ class Base extends \JModelBase
 	 *
 	 * @param  string $id
 	 *
-	 * @return Registry
+	 * @return JRegistry
 	 */
 	public function getItem($id = null)
 	{
@@ -194,7 +192,7 @@ class Base extends \JModelBase
 
 		$item = json_decode($json);
 
-		return new Registry($item);
+		return new JRegistry($item);
 
 		return $item;
 	}
@@ -268,18 +266,18 @@ class Base extends \JModelBase
 			{
 				$element = $elementModel->getElement();
 
-				if ($params->get('list_view_and_query', 1) == 1 && $element->published == 1 && $elementModel->canView('list'))
+				if ($params->get('list_view_and_query', 1) == 1 && $element->get('published') == 1 && $elementModel->canView('list'))
 				{
 					if (empty($showInList))
 					{
-						if ($element->show_in_list_summary)
+						if ($element->get('show_in_list_summary'))
 						{
 							$this->publishedListElements[$sig][] = $elementModel;
 						}
 					}
 					else
 					{
-						if (in_array($element->id, $showInList))
+						if (in_array($element->get('id'), $showInList))
 						{
 							$this->publishedListElements[$sig][] = $elementModel;
 						}
@@ -590,7 +588,7 @@ class Base extends \JModelBase
 	{
 		$map       = array();
 		$formModel = $this->getFormModel();
-		$groups    = $formModel->getGroupsHiarachy();
+		$groups    = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -615,7 +613,7 @@ class Base extends \JModelBase
 				}
 
 				$map[$element->getFullName(false, false)] = $size;
-				$map[$element->getElement()->id]          = $size;
+				$map[$element->getElement()->get('id')]          = $size;
 			}
 		}
 
@@ -665,14 +663,15 @@ class Base extends \JModelBase
 	}
 
 	/**
-	 * Load up a front end form model - used in saving the list
+	 * Load up the form model
 	 *
-	 * @return  object  front end form model
+	 * @return  Form  Form Model
 	 */
 	public function getFormModel()
 	{
 		if (is_null($this->formModel) || $this->formModel->get('id') !== $this->get('id'))
 		{
+			echo "load new form model<br>";
 			$this->formModel = new Form;
 			$this->formModel->set('id', $this->get('id'));
 		}
@@ -687,7 +686,14 @@ class Base extends \JModelBase
 	 */
 	public function getListModel()
 	{
-		return $this->getFormModel()->getlistModel();
+		if (isset($this->listModel))
+		{
+			return $this->listModel;
+		}
+
+		$this->listModel = $this->getFormModel()->getlistModel();
+
+		return $this->listModel;
 	}
 
 	/**
@@ -701,7 +707,7 @@ class Base extends \JModelBase
 	 */
 	public function getElement($searchName, $checkInt = false, $checkShort = true)
 	{
-		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 
 		foreach ($groups as $gid => $groupModel)
 		{
@@ -712,7 +718,7 @@ class Base extends \JModelBase
 			{
 				$element = $elementModel->getElement();
 
-				if ($searchName == $element->name && $checkShort)
+				if ($searchName == $element->get('name') && $checkShort)
 				{
 					return $elementModel;
 				}
@@ -765,7 +771,7 @@ class Base extends \JModelBase
 	public function getElementOptions($useStep = false, $key = 'name', $show_in_list_summary = false, $incRaw = false,
 		$filter = array(), $labelMethod = '', $noJoins = false)
 	{
-		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 		$aEls   = array();
 
 		foreach ($groups as $gid => $groupModel)
@@ -782,18 +788,18 @@ class Base extends \JModelBase
 			{
 				$el = $elementModel->getElement();
 
-				if (!empty($filter) && !in_array($el->plugin, $filter))
+				if (!empty($filter) && !in_array($el->get('plugin'), $filter))
 				{
 					continue;
 				}
 
-				if ($show_in_list_summary == true && $el->show_in_list_summary != 1)
+				if ($show_in_list_summary == true && $el->get('show_in_list_summary') != 1)
 				{
 					continue;
 				}
 
 				$val   = $el->$key;
-				$label = strip_tags($prefix . $el->label);
+				$label = strip_tags($prefix . $el->get('label'));
 
 				if ($labelMethod !== '')
 				{
@@ -815,7 +821,7 @@ class Base extends \JModelBase
 						 * on following line.  Not sure if getrawColumn is right thing to use here though,
 						 * like, it adds filed quotes, not sure if we need them.
 						 */
-						if ($elementModel->getElement()->published != 0)
+						if ($elementModel->getElement()->get('published') != 0)
 						{
 							$rawValue = $elementModel->getRawColumn($useStep);
 
@@ -1542,7 +1548,7 @@ class Base extends \JModelBase
 		$aOldJoins       = $db->loadObjectList();
 		$params          = $data['params'];
 		$aOldJoinsToKeep = array();
-		$joinModel       = JModelLegacy::getInstance('Join', 'FabrikFEModel');
+		$joinModel       = new \Fabrik\Admin\Models\Join;
 		$joinIds         = ArrayHelper::getValue($params, 'join_id', array());
 		$joinTypes       = ArrayHelper::getValue($params, 'join_type', array());
 		$joinTableFrom   = ArrayHelper::getValue($params, 'join_from_table', array());
@@ -1747,7 +1753,7 @@ class Base extends \JModelBase
 	public function getInternalRepeatJoins()
 	{
 		$return = array();
-		$groupModels = $this->getFormGroupElementData();
+		$groupModels = $this->getGroupsHierarchy();
 
 		// Remove any groups that were set to be repeating and hence were storing in their own db table.
 		foreach ($groupModels as $groupModel)

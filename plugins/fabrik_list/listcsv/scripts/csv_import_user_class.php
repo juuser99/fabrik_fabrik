@@ -127,7 +127,7 @@ class ImportCSVCreateUser
 			return false;
 		}
 
-		$query->select('*')->from('#__users')->where('username = ' . $db->quote($userdata['username']));
+		$query->select('*')->from('#__users')->where('username = ' . $db->q($userdata['username']));
 		$db->setQuery($query);
 		$existing_user = $db->loadObject();
 
@@ -140,7 +140,7 @@ class ImportCSVCreateUser
 		{
 			$query->clear();
 			$query->select('*')->from('#__users')
-			->where('username != ' . $db->quote($userdata['username']) . ' AND email = ' . $db->quote($userdata['email']));
+			->where('username != ' . $db->q($userdata['username']) . ' AND email = ' . $db->q($userdata['email']));
 			$db->setQuery($query);
 			$existing_email = $db->loadObject();
 

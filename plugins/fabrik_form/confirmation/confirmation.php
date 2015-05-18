@@ -116,10 +116,10 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 		$form = $formModel->getForm();
 
 		// Save the posted form data to the form session, for retrieval later
-		$sessionModel = JModelLegacy::getInstance('Formsession', 'FabrikFEModel');
+		$sessionModel = new \Fabrik\Admin\Models\FormSession;
 		$sessionModel->setFormId($formModel->getId());
-		$rowid = $input->get('rowid', 0);
-		$sessionModel->setRowId($rowid);
+		$rowId = $input->get('rowid', 0);
+		$sessionModel->setRowId($rowId);
 		$sessionModel->savePage($formModel);
 
 		// Tell the form model that it's data is loaded from the session
@@ -144,7 +144,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 		$input->set('fabrik_confirmation', 1);
 
 		// Set the element access to read only??
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -154,7 +154,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 			{
 				// $$$ rob 20/04/2012 unset the element access otherwise previously cached acl is used.
 				$elementModel->clearAccess();
-				$elementModel->getElement()->access = -1;
+				$elementModel->getElement()->set('access', -1);
 			}
 		}
 

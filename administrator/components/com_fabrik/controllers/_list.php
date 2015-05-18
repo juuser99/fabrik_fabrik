@@ -68,7 +68,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function copy()
 	{
 		$cid = $this->input->get('cid', array(0), 'array');
-		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 
 		if (count($cid) > 0)
 		{
@@ -118,7 +118,7 @@ class FabrikAdminControllerList extends FabControllerForm
 			$cid = $this->input->getInt('listid', $cid);
 
 			// Grab the model and set its id
-			$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+			$model = new \Fabrik\Admin\Models\Lizt;
 			$model->setState('list.id', $cid);
 		}
 
@@ -162,7 +162,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		$document = JFactory::getDocument();
 		$cid = $this->input->get('cid', array(0), 'array');
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$model->setState('list.id', $cid[0]);
 		$formModel = $model->getFormModel();
 		$viewType = $document->getType();
@@ -185,7 +185,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$id = $this->input->getInt('listid');
 		$model->setId($id);
 		$this->input->set('cid', $id);
@@ -217,7 +217,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$id = $this->input->get('listid');
 		$model->setId($id);
 		$this->input->set('cid', $id);
@@ -238,16 +238,16 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$listid = $this->input->getInt('listid');
-		$model->setId($listid);
+		$model = new \Fabrik\Admin\Models\Lizt;
+		$listId = $this->input->getInt('listid');
+		$model->setId($listId);
 		$ids = $this->input->get('ids', array(), 'array');
-		$limitstart = $this->input->getInt('limitstart' . $listid);
-		$length = $this->input->getInt('limit' . $listid);
+		$limitstart = $this->input->getInt('limitstart' . $listId);
+		$length = $this->input->getInt('limit' . $listId);
 		$oldtotal = $model->getTotalRecords();
 		$ok = $model->deleteRows($ids);
 		$total = $oldtotal - count($ids);
-		$ref = 'index.php?option=com_fabrik&task=list.view&cid=' . $listid;
+		$ref = 'index.php?option=com_fabrik&task=list.view&cid=' . $listId;
 
 		if ($total >= $limitstart)
 		{
@@ -258,9 +258,9 @@ class FabrikAdminControllerList extends FabControllerForm
 				$newlimitstart = 0;
 			}
 
-			$ref = str_replace('limitstart' . $listid . '=' . $limitstart, 'limitstart' . $listid . '=' . $newlimitstart, $ref);
+			$ref = str_replace('limitstart' . $listId . '=' . $limitstart, 'limitstart' . $listId . '=' . $newlimitstart, $ref);
 			$context = 'com_fabrik.list' . $model->getRenderContext() . '.list.';
-			$this->app->setUserState($context . 'limitstart' . $listid, $newlimitstart);
+			$this->app->setUserState($context . 'limitstart' . $listId, $newlimitstart);
 		}
 
 		if ($this->input->get('format') == 'raw')
@@ -286,8 +286,8 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$model->truncate();
-		$listid = $this->input->getInt('listid');
-		$ref = $this->input->get('fabrik_referrer', 'index.php?option=com_fabrik&view=list&cid=' . $listid, 'string');
+		$listId = $this->input->getInt('listid');
+		$ref = $this->input->get('fabrik_referrer', 'index.php?option=com_fabrik&view=list&cid=' . $listId, 'string');
 		$this->setRedirect($ref);
 	}
 

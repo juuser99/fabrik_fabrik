@@ -211,8 +211,8 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 								{
 									$map_value = "($lat,$long):$geocode_zoom_level";
 									$query->clear();
-									$query->update($table_name)->set($geocode_map_element . ' = ' . $db->quote($map_value))
-									->where($primary_key . ' = ' . $db->quote($row->$primary_key_element));
+									$query->update($table_name)->set($geocode_map_element . ' = ' . $db->q($map_value))
+									->where($primary_key . ' = ' . $db->q($row->$primary_key_element));
 									$db->setQuery($query);
 									$db->execute();
 									$total_encoded++;

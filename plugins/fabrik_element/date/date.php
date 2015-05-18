@@ -306,15 +306,15 @@ class PlgFabrik_ElementDate extends ElementList
 
 		$class = 'fabrikinput inputbox inout ' . $params->get('bootstrap_class', 'input-small');
 		$element->width = (int) $element->width < 0 ? 1 : (int) $element->width;
-		$calopts = array('class' => $class, 'size' => $element->width, 'maxlength' => '19');
+		$calOpts = array('class' => $class, 'size' => $element->width, 'maxlength' => '19');
 
 		if ($params->get('date_allow_typing_in_field', true) == false)
 		{
-			$calopts['readonly'] = 'readonly';
+			$calOpts['readonly'] = 'readonly';
 		}
 
 		$str[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
-		$str[] = $this->calendar($date, $name, $id . '_cal', $format, $calopts, $repeatCounter);
+		$str[] = $this->calendar($date, $name, $id . '_cal', $format, $calOpts, $repeatCounter);
 
 		if ($params->get('date_showtime', 0) && !$element->hidden)
 		{
@@ -883,23 +883,6 @@ class PlgFabrik_ElementDate extends ElementList
 			}
 
 			$this->watchElement = $this->getFormModel()->getElement($watch, true);
-
-			if (!$this->watchElement)
-			{
-				// This element is a child element, so $watch is in the parent element (in another form)
-				$pluginManager = Worker::getPluginManager();
-				$parent = $pluginManager->getElementPlugin($watch);
-
-				// These are the possible watch elements
-				$children = $parent->getElementDescendents();
-
-				// Match the possible element ids with the current form's element ids
-				$elids = $this->getFormModel()->getElementIds();
-				$matched = array_values(array_intersect($elids, $children));
-
-				// Load the matched element
-				$this->watchElement = $pluginManager->getElementPlugin($matched[0]);
-			}
 		}
 
 		return $this->watchElement;
@@ -1373,7 +1356,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$listModel = $this->getListModel();
 		$db = $listModel->getDb();
 
-		return $db->quote($db->getNullDate());
+		return $db->q($db->getNullDate());
 	}
 
 	/**
@@ -1742,7 +1725,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$params = $elementModel->getParams();
 		$format = $params->get('date_table_format');
 		$elementModel->strftimeTFormatToMySQL($format);
-		$search = $db->quote('%' . addslashes($search) . '%');
+		$search = $db->q('%' . addslashes($search) . '%');
 		$query->select('DISTINCT(' . $name . ') AS value, ' . $name . ' AS text')->from($table->db_table_name)
 			->where($name . ' LIKE ' . $search . ' OR DATE_FORMAT(' . $name . ', "' . $format . '" ) LIKE ' . $search);
 		$db->setQuery($query);
@@ -1904,7 +1887,7 @@ class PlgFabrik_ElementDate extends ElementList
 		// $value[1] = $date->toSql(true);
 		$value[1] = $date->toSql($store_as_local);
 
-		$value = $db->quote($value[0]) . ' AND ' . $db->quote($value[1]);
+		$value = $db->q($value[0]) . ' AND ' . $db->q($value[1]);
 		$condition = 'BETWEEN';
 
 		return array($value, $condition);
@@ -2453,7 +2436,7 @@ class PlgFabrik_ElementDate extends ElementList
 
 		if ($params->get('date_allow_typing_in_field', true) == false)
 		{
-			$calopts['readonly'] = 'readonly';
+			$calOpts['readonly'] = 'readonly';
 		}
 
 		return $calOpts;

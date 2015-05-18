@@ -38,13 +38,13 @@ class PlgFabrik_ElementIp extends Element
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 
-		$rowid = $this->app->input->get('rowid', false);
+		$rowId = $this->app->input->get('rowid', false);
 		/**
 		 * @TODO when editing a form with joined repeat group the rowid will be set but
 		 * the record is in fact new
 		 */
 
-		if ($params->get('ip_update_on_edit') || !$rowid || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
+		if ($params->get('ip_update_on_edit') || !$rowId || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
 		{
 			$ip = $_SERVER['REMOTE_ADDR'];
 		}

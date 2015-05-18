@@ -211,12 +211,6 @@ class PlgSystemFabrik extends JPlugin
 
 		if ($app->isAdmin())
 		{
-			// Load in front end model path
-			if ($input->get('option') !== 'com_acymailing')
-			{
-				JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
-			}
-
 			require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/fabrik.php';
 		}
 
@@ -278,7 +272,6 @@ class PlgSystemFabrik extends JPlugin
 
 		$input = $app->input;
 		define('COM_FABRIK_SEARCH_RUN', true);
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
 		$db = Worker::getDbo(true);
 
@@ -340,13 +333,13 @@ class PlgSystemFabrik extends JPlugin
 		$usage = array();
 		$memSafety = 0;
 
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;;
 		$app = JFactory::getApplication();
 
 		foreach ($ids as $id)
 		{
 			// Re-ini the list model (was using reset() but that was flaky)
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			$listModel = new \Fabrik\Admin\Models\Lizt;
 
 			// $$$ geros - http://fabrikar.com/forums/showthread.php?t=21134&page=2
 			$key = 'com_' . $package . '.list' . $id . '.filter.searchall';

@@ -42,7 +42,7 @@ class FabrikModelNotification extends JModelLegacy
 			$rows = $this->getRows();
 		}
 
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;;
 
 		foreach ($rows as &$row)
 		{
@@ -50,11 +50,11 @@ class FabrikModelNotification extends JModelLegacy
 			 * {observer_name, creator_name, event, record url
 			 * dear %s, %s has %s on %s
 			 */
-			list($listid, $formid, $rowid) = explode('.', $row->reference);
+			list($listId, $formid, $rowId) = explode('.', $row->reference);
 
-			$listModel->setId($listid);
-			$data = $listModel->getRow($rowid);
-			$row->url = JRoute::_('index.php?option=com_fabrik&view=details&listid=' . $listid . '&formid=' . $formid . '&rowid=' . $rowid);
+			$listModel->setId($listId);
+			$data = $listModel->getRow($rowId);
+			$row->url = JRoute::_('index.php?option=com_fabrik&view=details&listid=' . $listId . '&formid=' . $formid . '&rowid=' . $rowId);
 			$row->title = $row->url;
 
 			foreach ($data as $key => $value)

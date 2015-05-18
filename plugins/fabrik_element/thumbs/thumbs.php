@@ -156,17 +156,17 @@ class PlgFabrik_ElementThumbs extends Element
 		$db = Worker::getDbo();
 		$elementId = $this->getElement()->id;
 
-		$sql = isset($this->special) ? " AND special = " . $db->quote($this->special) : '';
+		$sql = isset($this->special) ? " AND special = " . $db->q($this->special) : '';
 
 		$db
 			->setQuery(
 				"SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId . " AND formid = " . (int) $formId . " AND row_id = "
-					. $db->quote($rowId) . " AND element_id = " . (int) $elementId . $sql . " AND thumb = 'up'");
+					. $db->q($rowId) . " AND element_id = " . (int) $elementId . $sql . " AND thumb = 'up'");
 		$resup = $db->loadResult();
 		$db
 			->setQuery(
 				"SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId . " AND formid = " . (int) $formId . " AND row_id = "
-					. $db->quote($rowId) . " AND element_id = " . (int) $elementId . $sql . " AND thumb = 'down'");
+					. $db->q($rowId) . " AND element_id = " . (int) $elementId . $sql . " AND thumb = 'down'");
 
 		$resdown = $db->loadResult();
 
@@ -189,11 +189,11 @@ class PlgFabrik_ElementThumbs extends Element
 		{
 			$query = $db->getQuery(true);
 			$query->select('COUNT(thumb) AS up, row_id')->from('#__fabrik_thumbs')
-			->where('listid = ' . (int) $listId . ' AND formid = ' . (int) $formId . ' AND thumb = ' . $db->quote($dir));
+			->where('listid = ' . (int) $listId . ' AND formid = ' . (int) $formId . ' AND thumb = ' . $db->q($dir));
 
 			if (isset($this->special))
 			{
-				$query->where('special = ' . $db->quote($this->special));
+				$query->where('special = ' . $db->q($this->special));
 			}
 
 			$query->group('row_id');
@@ -340,7 +340,7 @@ class PlgFabrik_ElementThumbs extends Element
 
 		$query->select('thumb')->from('#__fabrik_thumbs')
 		->where('listid = ' . (int) $listId . ' AND formid = ' . (int) $formId . ' AND row_id = '
-		. $db->quote($rowId) . ' AND element_id = ' . (int) $elementId . ' AND user_id = ' . $db->quote($user_id)
+		. $db->q($rowId) . ' AND element_id = ' . (int) $elementId . ' AND user_id = ' . $db->q($user_id)
 			);
 		$db->setQuery($query);
 		$ret = $db->loadResult();
@@ -420,8 +420,8 @@ class PlgFabrik_ElementThumbs extends Element
 		$userId = $this->getUserId($listId, $rowId);
 		$db = Worker::getDbo();
 		$query = $db->getQuery(true);
-		$query->delete('#__fabrik_thumbs')->where('user_id = ' . $db->quote($userId))
-		->where('listid = ' . $listId . ' AND row_id = ' . $rowId . ' AND thumb = ' . $db->quote($thumb));
+		$query->delete('#__fabrik_thumbs')->where('user_id = ' . $db->q($userId))
+		->where('listid = ' . $listId . ' AND row_id = ' . $rowId . ' AND thumb = ' . $db->q($thumb));
 		$db->setQuery($query);
 		$db->execute();
 		$elementId = $this->getElement()->id;
@@ -480,18 +480,18 @@ class PlgFabrik_ElementThumbs extends Element
 			"INSERT INTO #__fabrik_thumbs
 				(user_id, listid, formid, row_id, thumb, date_created, element_id, special)
 				values (
-					" . $db->quote($userId) . ",
-					" . $db->quote($listId) . ",
-					" . $db->quote($formId) . ",
-					" . $db->quote($rowId) . ",
-					" . $db->quote($thumb) . ",
-					" . $db->quote($date) . ",
-					" . $db->quote($elementId) . ",
-					" . $db->quote($special) . "
+					" . $db->q($userId) . ",
+					" . $db->q($listId) . ",
+					" . $db->q($formId) . ",
+					" . $db->q($rowId) . ",
+					" . $db->q($thumb) . ",
+					" . $db->q($date) . ",
+					" . $db->q($elementId) . ",
+					" . $db->q($special) . "
 				)
 				ON DUPLICATE KEY UPDATE
-					date_created = " . $db->quote($date) . ",
-					thumb = " . $db->quote($thumb)
+					date_created = " . $db->q($date) . ",
+					thumb = " . $db->q($thumb)
 		);
 
 		try
@@ -531,11 +531,11 @@ class PlgFabrik_ElementThumbs extends Element
 				->setQuery(
 					"UPDATE " . $this->getlistModel()->getTable()->db_table_name . "
 	                    SET " . $this->getElement()->name . " = ((SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId
-						. " AND formid = " . (int) $formId . " AND row_id = " . $db->quote($rowId) . " AND element_id = " . (int) $elementId
+						. " AND formid = " . (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
 						. " AND thumb = 'up') - (SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId . " AND formid = "
-						. (int) $formId . " AND row_id = " . $db->quote($rowId) . " AND element_id = " . (int) $elementId
+						. (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
 						. " AND thumb = 'down'))
-	                    WHERE " . $this->getlistModel()->getTable()->db_primary_key . " = " . $db->quote($rowId) . "
+	                    WHERE " . $this->getlistModel()->getTable()->db_primary_key . " = " . $db->q($rowId) . "
 	                        LIMIT 1");
 
 			try

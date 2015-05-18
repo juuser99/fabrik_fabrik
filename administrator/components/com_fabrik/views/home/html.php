@@ -48,7 +48,6 @@ class Html extends \Fabrik\Admin\Views\Html
 
 	public function render()
 	{
-
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::script($srcs);
 		$db = Worker::getDbo(true);
@@ -62,6 +61,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		Fabrik::addSubmenu('home');
 
 		$this->sidebar = JHtmlSidebar::render();
+		$this->setLayout('bootstrap');
 
 		return parent::render();
 	}

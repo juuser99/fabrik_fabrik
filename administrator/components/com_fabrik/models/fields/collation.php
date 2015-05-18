@@ -85,7 +85,7 @@ class JFormFieldCollation extends JFormFieldList
 	protected function getOptions()
 	{
 		$db = JFactory::getDbo();
-		$db->setQuery('SHOW COLLATION WHERE ' . $db->quoteName('Compiled') . ' = ' . $db->quote('Yes'));
+		$db->setQuery('SHOW COLLATION WHERE ' . $db->quoteName('Compiled') . ' = ' . $db->q('Yes'));
 		$rows = $db->loadObjectList();
 		sort($rows);
 		require_once COM_FABRIK_FRONTEND . '/helpers/image.php';

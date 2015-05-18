@@ -81,9 +81,9 @@ class PlgFabrik_ElementGoogleometer extends Element
 	private function getDataElement()
 	{
 		$params = $this->getParams();
-		$elementid = (int) $params->get('googleometer_element');
+		$elementId = (int) $params->get('googleometer_element');
 		$element = Worker::getPluginManager()->getPlugIn('', 'element');
-		$element->setId($elementid);
+		$element->setId($elementId);
 
 		return $element;
 	}
@@ -99,7 +99,7 @@ class PlgFabrik_ElementGoogleometer extends Element
 		$listModel = $this->getlistModel();
 		$db = $listModel->getDb();
 		$element = $this->getDataElement();
-		$name = $db->quoteName($element->getElement()->name);
+		$name = $db->qn($element->getElement()->get('name'));
 		$query = $db->getQuery(true);
 		$query->select('MIN(' . $name . ') AS min, MAX(' . $name . ') AS max')
 		->from($listModel->getTable()->db_table_name);

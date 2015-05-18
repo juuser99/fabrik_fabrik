@@ -107,17 +107,17 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 	/**
 	 * Get notification reference
 	 *
-	 * @param   int  $listid  Default list id
+	 * @param   int  $listId  Default list id
 	 *
 	 * @return string
 	 */
 
-	protected function getRef($listid = 0)
+	protected function getRef($listId = 0)
 	{
 		$db = Worker::getDbo();
 		$input = $this->app->input;
 
-		return $db->quote($input->getInt('listid', $listid) . '.' . $input->getInt('formid', 0) . '.' . $input->get('rowid', '', 'string'));
+		return $db->q($input->getInt('listid', $listId) . '.' . $input->getInt('formid', 0) . '.' . $input->get('rowid', '', 'string'));
 	}
 
 	/**
@@ -144,7 +144,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 
 			if ($add)
 			{
-				$fields[] = 'reason = ' . $db->quote($why);
+				$fields[] = 'reason = ' . $db->q($why);
 				$query->insert('#__fabrik_notification')->set($fields);
 				$db->setQuery($query);
 				$ok = true;
@@ -253,9 +253,9 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		 * see which new events have been generated and notify subscribers of said events.
 		 */
 		$db = Worker::getDbo();
-		$event = $rowId == '' ? $db->quote(FText::_('RECORD_ADDED')) : $db->quote(FText::_('RECORD_UPDATED'));
+		$event = $rowId == '' ? $db->q(FText::_('RECORD_ADDED')) : $db->q(FText::_('RECORD_UPDATED'));
 		$date = JFactory::getDate();
-		$date = $db->quote($date->toSql());
+		$date = $db->q($date->toSql());
 		$ref = $this->getRef();
 		$msg = $notify ? FText::_('PLG_CRON_NOTIFICATION_ADDED') : FText::_('PLG_CRON_NOTIFICATION_REMOVED');
 		$this->app->enqueueMessage($msg);

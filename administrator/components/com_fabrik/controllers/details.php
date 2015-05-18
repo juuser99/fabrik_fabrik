@@ -1,6 +1,6 @@
 <?php
 /**
- * Fabrik Admin Form Controller
+ * Fabrik Admin Details Controller
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
@@ -12,18 +12,18 @@
 namespace Fabrik\Admin\Controllers;
 
 // No direct access
-use Fabrik\Admin\Models\Form as Model;
+use Fabrik\Admin\Models\Form;
 use Fabrik\Views\Form\Html;
 
 defined('_JEXEC') or die('Restricted access');
 
 /**
- * Fabrik Form Controller
+ * Fabrik Details Controller
  *
  * @package  Fabrik
  * @since    3.5
  */
-class Form extends Controller
+class Details extends Controller
 {
 	/**
 	 * Execute the controller.
@@ -44,10 +44,11 @@ class Form extends Controller
 		}
 
 		// Render the form itself
-		$model = new Model;
+		$model = new Form;
+		$model->setEditable(false);
 		$paths = new \SplPriorityQueue;
 
-		// FIXME - dont hardwire bootstrap template
+		// FIXME - don't hard-wire bootstrap template
 		$paths->insert(JPATH_SITE . '/components/com_fabrik/views/form/tmpl/bootstrap', 'normal');
 
 		// FIXME - what about other views than HTML?

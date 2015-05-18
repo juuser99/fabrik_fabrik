@@ -36,7 +36,7 @@ class FabrikAdminViewemailform extends JViewLegacy
 	{
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::script($srcs);
-		$model = JModelLegacy::getInstance('form', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Form;
 		$app = JFactory::getApplication();
 		$input = $app->input;
 

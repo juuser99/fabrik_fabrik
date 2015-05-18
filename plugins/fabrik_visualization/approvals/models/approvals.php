@@ -48,7 +48,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 		{
 			$asfields = array();
 			$fields = array();
-			$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+			$listModel = new \Fabrik\Admin\Models\Lizt;
 			$listModel->setId($ids[$x]);
 			$item = $listModel->getTable();
 			$formModel = $listModel->getFormModel();
@@ -61,7 +61,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 			$this->asField($formModel, $users[$x], $asfields, array('alias' => 'user'));
 			$this->asField($formModel, $contents[$x], $asfields, array('alias' => 'content'));
 
-			$query->select($db->quote($item->label) . " AS type, " . $item->db_primary_key . ' AS pk, ' . implode(',', $asfields))
+			$query->select($db->q($item->label) . " AS type, " . $item->db_primary_key . ' AS pk, ' . implode(',', $asfields))
 				->from($db->quoteName($item->db_table_name));
 			$query = $listModel->buildQueryJoin($query);
 			$query->where(str_replace('___', '.', $approveEls[$x]) . ' = 0');
@@ -100,7 +100,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 
 		if ($elementModel)
 		{
-			if ($elementModel->getElement()->published <> 1)
+			if ($elementModel->getElement()->get('published') <> 1)
 			{
 				throw new RuntimeException('Approval ' . $fieldName . ' element must be published', 500);
 			}
@@ -149,18 +149,18 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 		$ids = (array) $params->get('approvals_table');
 		$approveEls = (array) $params->get('approvals_approve_element');
 
-		foreach ($ids as $key => $listid)
+		foreach ($ids as $key => $listId)
 		{
-			if ($listid == $input->getInt('listid'))
+			if ($listId == $input->getInt('listid'))
 			{
-				$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+				$listModel = new \Fabrik\Admin\Models\Lizt;
 				$listModel->setId($input->getInt('listid'));
 				$item = $listModel->getTable();
 				$db = $listModel->getDbo();
 				$query = $db->getQuery(true);
 				$el = FabrikString::safeColName($approveEls[$key]);
-				$query->update($db->quoteName($item->db_table_name))->set($el . ' = ' . $db->quote($v))
-					->where($item->db_primary_key . ' = ' . $db->quote($input->get('rowid')));
+				$query->update($db->quoteName($item->db_table_name))->set($el . ' = ' . $db->q($v))
+					->where($item->db_primary_key . ' = ' . $db->q($input->get('rowid')));
 				$db->setQuery($query);
 				$db->execute();
 			}

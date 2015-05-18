@@ -191,7 +191,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$className = ArrayHelper::getValue($classNames, $c);
 		$eval = ArrayHelper::getValue($evals, $c);
 
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($listId);
 
 		$eventdata = array();
@@ -319,13 +319,13 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$totals = array();
 		$where = $app->input->get('where', array(), 'array');
 
-		foreach ($lists as $listid)
+		foreach ($lists as $listId)
 		{
-			$where = ArrayHelper::getValue($where, $listid, '');
-			$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$listModel->setId($listid);
+			$where = ArrayHelper::getValue($where, $listId, '');
+			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel->setId($listId);
 			$listModel->setPluginQueryWhere('timeline', $where);
-			$totals[$listid] = $listModel->getTotalRecords();
+			$totals[$listId] = $listModel->getTotalRecords();
 		}
 
 		return $totals;

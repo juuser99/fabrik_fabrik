@@ -282,7 +282,7 @@ class PlgFabrik_ElementCalc extends Element
 
 	protected function swapValuesForLabels(&$d)
 	{
-		$groups = $this->getForm()->getGroupsHiarachy();
+		$groups = $this->getForm()->getGroupsHierarchy();
 
 		foreach (array_keys($groups) as $gkey)
 		{
@@ -547,7 +547,7 @@ class PlgFabrik_ElementCalc extends Element
 	protected function setStoreDatabaseFormat(&$data, $repeatCounter = 0)
 	{
 		$formModel = $this->getFormModel();
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -555,7 +555,6 @@ class PlgFabrik_ElementCalc extends Element
 
 			foreach ($elementModels as $elementModel)
 			{
-				$element = $elementModel->getElement();
 				$fullkey = $elementModel->getFullName(true, false);
 				$value = $data[$fullkey];
 
@@ -722,7 +721,7 @@ class PlgFabrik_ElementCalc extends Element
 		$this->loadMeForAjax();
 		$params = $this->getParams();
 
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;;
 		$listModel->setId($listId);
 		$data = $listModel->getData();
 		$return = new stdClass;

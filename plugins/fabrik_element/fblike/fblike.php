@@ -242,9 +242,9 @@ class PlgFabrik_ElementFblike extends Element
 	{
 		$input = $this->app->input;
 		$this->loadMeForAjax();
-		$listid = $input->getInt('listid');
-		$list = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$list->setId($listid);
+		$listId = $input->getInt('listid');
+		$list = new \Fabrik\Admin\Models\Lizt;
+		$list->setId($listId);
 		$rowId = $input->get('row_id');
 		$direction = $input->get('direction', '+');
 		$field = $this->getFullName(false, false, false);

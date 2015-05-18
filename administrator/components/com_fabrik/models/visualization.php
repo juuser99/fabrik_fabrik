@@ -16,9 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
-use \JModelLegacy as JModelLegacy;
 use \FText as FText;
-use \Fabrik\Models\PluginManager as PluginManager;
 
 interface ModelVisualizationInterface
 {

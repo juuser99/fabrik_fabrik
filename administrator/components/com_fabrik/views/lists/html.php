@@ -52,6 +52,25 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected $state;
 
 	/**
+	 * Sidebar
+	 *
+	 * @var string
+	 */
+	public $sidebar;
+
+	/**
+	 * Selected lists
+	 *
+	 * @var array
+	 */
+	public $lists = array();
+
+	/**
+	 * @var \JForm
+	 */
+	public $form = null;
+
+	/**
 	 * Render the view
 	 *
 	 * @return void
@@ -68,7 +87,7 @@ class Html extends \Fabrik\Admin\Views\Html
 				break;
 
 			case 'confirmdelete':
-				return $this->confirmdelete();
+				return $this->confirmDelete();
 
 				break;
 			case 'import':
@@ -88,6 +107,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->sidebar = JHtmlSidebar::render();
 
 		FabrikHelperHTML::iniRequireJS();
+		$this->setLayout('bootstrap');
 
 		return parent::render();
 	}
@@ -99,7 +119,6 @@ class Html extends \Fabrik\Admin\Views\Html
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
 
@@ -211,6 +230,11 @@ class Html extends \Fabrik\Admin\Views\Html
 		JToolBarHelper::cancel('lizt.cancel', 'JTOOLBAR_CANCEL');
 	}
 
+	/**
+	 * Confirm copy page
+	 *
+	 * @return string
+	 */
 	protected function confirmCopy()
 	{
 		$this->addConfirmCopyToolbar();
@@ -240,24 +264,17 @@ class Html extends \Fabrik\Admin\Views\Html
 	 * Show a screen asking if the user wants to delete the lists forms/groups/elements
 	 * and if they want to drop the underlying database table
 	 *
-	 * @param   string $tpl Template
-	 *
 	 * FIXME - test this
 	 *
 	 * @return  string
 	 */
-	protected function confirmdelete($tpl = null)
+	protected function confirmDelete()
 	{
-		$this->form  = $this->get('ConfirmDeleteForm', 'list');
+		$this->form  = $this->model->getConfirmDeleteForm('list');
 		$model       = $this->getModel('lists');
 		$this->items = $model->getDbTableNames();
 		$this->addConfirmDeleteToolbar();
-		$v = new JVersion;
-
-		if ($v->RELEASE > 2.5)
-		{
-			$this->setLayout('confirmdeletebootstrap');
-		}
+		$this->setLayout('confirmdeletebootstrap');
 
 		return parent::render();
 	}
@@ -265,13 +282,11 @@ class Html extends \Fabrik\Admin\Views\Html
 	/**
 	 * Show a screen allowing the user to import a csv file to create a fabrik table.
 	 *
-	 * @param   string $tpl Template
-	 *
 	 * FIXME - test this
 	 *
 	 * @return  string
 	 */
-	protected function import($tpl = null)
+	protected function import()
 	{
 		$this->form = $this->get('ImportForm');
 		$this->addImportToolBar();

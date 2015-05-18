@@ -42,7 +42,6 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 	 *
 	 * @return  string	The field input markup.
 	 */
-
 	protected function getGroups()
 	{
 		$this->app = JFactory::getApplication();
@@ -58,8 +57,7 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 		$sel = new stdClass;
 		$sel->value = '';
 		$sel->text = FText::_('COM_FABRIK_PLEASE_SELECT');
-
-		array_unshift($options, $sel);
+		$options[''][] = $sel;
 
 		foreach ($items as $item)
 		{

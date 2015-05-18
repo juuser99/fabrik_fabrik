@@ -21,7 +21,7 @@ use \JComponentHelper as JComponentHelper;
 use \JForm as JForm;
 use \Fabrik\Admin\Models\Connection as Connection;
 use \Joomla\Registry\Registry as JRegistry;
-use \Fabrik\Models\PluginManager as PluginManager;
+use \Fabrik\Admin\Models\PluginManager as PluginManager;
 use \JCache as JCache;
 use \JUri as JUri;
 
@@ -1457,7 +1457,7 @@ class Worker
 	 *
 	 * @param   mixed  $cnnId         If null then loads the fabrik default connection, if an int then loads the specified connection by its id
 	 *
-	 * @return  JDatabase object
+	 * @return  JDatabaseDriver object
 	 */
 
 	public static function getDbo($loadJoomlaDb = false, $cnnId = null)

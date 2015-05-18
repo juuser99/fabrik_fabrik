@@ -104,7 +104,6 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 	public function onajax_getAutoFill()
 	{
 		$input = $this->app->input;
-		$model = JModelLegacy::getInstance('form', 'FabrikFEModel');
 		$cnn = (int) $input->getInt('cnn');
 		$element = $input->get('observe');
 		$value = $input->get('v', '', 'string');
@@ -116,13 +115,13 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 			// No connection selected so query current forms' table data
 			$formId = $input->getInt('formid');
 			$input->set($element, $value, 'get');
-			$model = JModelLegacy::getInstance('form', 'FabrikFEModel');
+			$model =  new \Fabrik\Admin\Models\Form;
 			$model->setId($formId);
 			$listModel = $model->getlistModel();
 		}
 		else
 		{
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			$listModel = new \Fabrik\Admin\Models\Lizt;
 			$listModel->setId($input->getInt('table'));
 		}
 
@@ -138,7 +137,7 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 				$elname = $fk->getElement()->name;
 				$table = $listModel->getTable();
 				$query = $db->getQuery(true);
-				$query->select($table->db_primary_key)->from($table->db_table_name)->where($elname . ' = ' . $db->quote($value));
+				$query->select($table->db_primary_key)->from($table->db_table_name)->where($elname . ' = ' . $db->q($value));
 				$db->setQuery($query);
 				$value = $db->loadResult();
 			}

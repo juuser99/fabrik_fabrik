@@ -11,6 +11,7 @@
 namespace Fabrik\Admin\Controllers;
 
 // No direct access
+use JFactory;
 use Joomla\String\Inflector;
 use Joomla\Utilities\ArrayHelper;
 use \JText as JText;
@@ -43,7 +44,7 @@ class Controller extends \JControllerBase
 		$app = $this->getApplication();
 
 		// Get the document object.
-		$document = \JFactory::getDocument();
+		$document = JFactory::getDocument();
 
 		// Route tasks
 		$viewFormat = $document->getType();
@@ -133,6 +134,7 @@ class Controller extends \JControllerBase
 			default:
 				break;
 		}
+
 		$view->setLayout($layoutName);
 
 		// Render our view.
@@ -203,7 +205,6 @@ class Controller extends \JControllerBase
 		else
 		{
 			$viewName   = $app->input->getWord('view', 'home');
-			//$layoutName = $app->input->getWord('layout', 'bootstrap');
 			$layoutName = $app->input->getWord('layout', '');
 		}
 

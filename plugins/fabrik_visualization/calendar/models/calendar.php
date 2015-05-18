@@ -227,7 +227,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 			for ($i = 0; $i < count($tables); $i++)
 			{
-				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+				$listModel = new \Fabrik\Admin\Models\Lizt;
 
 				if ($tables[$i] != 'undefined')
 				{
@@ -319,11 +319,11 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$this->setupEvents();
 		$filter = JFilterInput::getInstance();
 		$request = $filter->clean($_REQUEST, 'array');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
 
-		foreach ($this->events as $listid => $record)
+		foreach ($this->events as $listId => $record)
 		{
-			$listModel->setId($listid);
+			$listModel->setId($listId);
 			$table = $listModel->getTable();
 			$formModel = $listModel->getFormModel();
 
@@ -355,7 +355,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 			foreach ($lists as $id)
 			{
-				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+				$listModel = new \Fabrik\Admin\Models\Lizt;
 				$listModel->setId($id);
 
 				if (!$listModel->canAdd())
@@ -386,7 +386,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 		foreach ($lists as $id)
 		{
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			$listModel = new \Fabrik\Admin\Models\Lizt;
 			$listModel->setId($id);
 
 			if ($listModel->canDelete())
@@ -420,11 +420,11 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$input = $app->input;
 		$where = $input->get('where', array(), 'array');
 
-		foreach ($this->events as $listid => $record)
+		foreach ($this->events as $listId => $record)
 		{
-			$this_where = ArrayHelper::getValue($where, $listid, '');
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-			$listModel->setId($listid);
+			$this_where = ArrayHelper::getValue($where, $listId, '');
+			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel->setId($listId);
 
 			if (!$listModel->canView())
 			{
@@ -479,7 +479,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 				$query = $listModel->buildQuerySelect('list', $query);
 				$status = trim($data['status']) !== '' ? FabrikString::safeColName($data['status']) : "''";
 				$query->select($pk . ' AS id, ' . $pk . ' AS rowid, ' . $startdate . ' AS startdate, ' . $enddate . ' AS enddate')
-					->select('"" AS link, ' . $label . ' AS label, ' . $db->quote($data['colour']) . ' AS colour, 0 AS formid')
+					->select('"" AS link, ' . $label . ' AS label, ' . $db->q($data['colour']) . ' AS colour, 0 AS formid')
 				->select($status . ' AS status')
 				->order($startdate . ' ASC');
 				$query = $listModel->buildQueryJoin($query);
@@ -590,10 +590,10 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$aLegend = "$ref.addLegend([";
 		$jsevents = array();
 
-		foreach ($this->events as $listid => $record)
+		foreach ($this->events as $listId => $record)
 		{
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-			$listModel->setId($listid);
+			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel->setId($listId);
 			$table = $listModel->getTable();
 
 			foreach ($record as $data)
@@ -652,14 +652,16 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$id = $input->getInt('id');
-		$listid = $input->getInt('listid');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listId = $input->getInt('listid');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 		$list = $listModel->getTable();
 		$tableDb = $listModel->getDb();
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . $listid);
+
+		// FIXME for 3.5
+		$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . $listId);
 		$db->setQuery($query);
 		$tablename = $db->loadResult();
 		$query = $tableDb->getQuery(true);

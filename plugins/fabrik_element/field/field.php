@@ -620,10 +620,10 @@ class PlgFabrik_ElementField extends Element
 		 * YAY!!!  w00t!!  We have a rowid.  Whoop de freakin' doo!!
 		 */
 		
-		$elementid = $this->getId();
+		$elementId = $this->getId();
 		$src = COM_FABRIK_LIVESITE
 		. 'index.php?option=com_' . $package . '&amp;view=pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
-				. 'format=raw&amp;element_id=' . $elementid . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+				. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 		$layout = $this->getLayout('qr');
 		$displayData = new stdClass;

@@ -169,7 +169,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		// $$$ rob add in subscription variables
 		if ($this->isSubscription($params))
 		{
-			$subTable = JModelLegacy::getInstance('List', 'FabrikFEModel');
+			$subTable = new \Fabrik\Admin\Models\Lizt;
 			$subTable->setId((int) $params->get('paypal_subs_table'));
 
 			$idEl = FabrikString::safeColName($params->get('paypal_subs_id', ''));
@@ -179,9 +179,9 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 			$subDb = $subTable->getDb();
 			$query = $subDb->getQuery(true);
-			$query->select('*, ' . $durationEl . ' AS p3, ' . $durationPerEl . ' AS t3, ' . $subDb->quote($item_raw) . ' AS item_number')
+			$query->select('*, ' . $durationEl . ' AS p3, ' . $durationPerEl . ' AS t3, ' . $subDb->q($item_raw) . ' AS item_number')
 			->from($subTable->getTable()->db_table_name)
-			->where($idEl . ' = ' . $subDb->quote($item_raw));
+			->where($idEl . ' = ' . $subDb->q($item_raw));
 			$subDb->setQuery($query);
 			$sub = $subDb->loadObject();
 
@@ -310,7 +310,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 				else
 				{
 					$query->select($shipping_select)->from($shipping_table)
-					->where(FabrikString::shortColName($params->get('paypal_shippingdata_id')) . ' = ' . $db->quote($shipping_userid));
+					->where(FabrikString::shortColName($params->get('paypal_shippingdata_id')) . ' = ' . $db->q($shipping_userid));
 
 					$db->setQuery($query);
 					$user_shippingdata = $db->loadObject();
@@ -560,9 +560,8 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		 */
 		$input = $this->app->input;
 		$formid = $input->getInt('formid');
-		$rowid = $input->getString('rowid', '', 'string');
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$rowId = $input->getString('rowid', '', 'string');
+		$formModel = new \Fabrik\Admin\Models\Form;
 		$formModel->setId($formid);
 		$params = $formModel->getParams();
 		$ret_msg = (array) $params->get('paypal_return_msg', array());
@@ -572,7 +571,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		{
 			$w = new Worker;
 			$listModel = $formModel->getlistModel();
-			$row = $listModel->getRow($rowid);
+			$row = $listModel->getRow($rowId);
 			$ret_msg = $w->parseMessageForPlaceHolder($ret_msg, $row);
 
 			if (String::stristr($ret_msg, '[show_all]'))
@@ -621,11 +620,10 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		// Lets try to load in the custom returned value so we can load up the form and its parameters
 		$custom = $input->get('custom', '', 'string');
-		list($formid, $rowid, $ipn_value) = explode(":", $custom);
+		list($formid, $rowId, $ipn_value) = explode(":", $custom);
 
 		// Pretty sure they are added but double add
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$formModel = new \Fabrik\Admin\Models\Form;
 		$formModel->setId($formid);
 		$listModel = $formModel->getlistModel();
 		$params = $formModel->getParams();
@@ -741,7 +739,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 						{
 							$query->clear();
 							$query->select($ipn_status_field)->from($table->db_table_name)
-							->where($db->quoteName($ipn_txn_field) . ' = ' . $db->quote($txn_id));
+							->where($db->quoteName($ipn_txn_field) . ' = ' . $db->q($txn_id));
 							$db->setQuery($query);
 							$txn_result = $db->loadResult();
 
@@ -836,7 +834,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 								foreach ($set_list as $set_field => $set_value)
 								{
-									$set_value = $db->quote($set_value);
+									$set_value = $db->q($set_value);
 									$set_field = $db->quoteName($set_field);
 									$set_array[] = "$set_field = $set_value";
 								}
@@ -844,7 +842,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 								$query->clear();
 								$query->update($table->db_table_name)
 								->set(implode(',', $set_array))
-								->where($table->db_primary_key . ' = ' . $db->quote($rowid));
+								->where($table->db_primary_key . ' = ' . $db->q($rowId));
 								$db->setQuery($query);
 
 								if (!$db->execute())
@@ -865,7 +863,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 							else
 							{
 								$status = 'form.paypal.ipnfailure.set_list_empty';
-								$err_msg = 'no IPN status fields found on form for rowid: ' . $rowid;
+								$err_msg = 'no IPN status fields found on form for rowid: ' . $rowId;
 							}
 						}
 					}

@@ -105,7 +105,7 @@ class Fabrik
 	 *
 	 * @since    1.6
 	 *
-	 * @return    JObject
+	 * @return    \JObject
 	 */
 
 	public static function getActions($categoryId = 0)

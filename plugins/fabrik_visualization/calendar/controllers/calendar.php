@@ -43,7 +43,6 @@ class FabrikControllerVisualizationcalendar extends FabrikControllerVisualizatio
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		parent::display();
 
 		return $this;
@@ -114,7 +113,7 @@ class FabrikControllerVisualizationcalendar extends FabrikControllerVisualizatio
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$listid = $input->getInt('listid');
+		$listId = $input->getInt('listid');
 		$viewName = 'calendar';
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel($viewName);
@@ -124,9 +123,9 @@ class FabrikControllerVisualizationcalendar extends FabrikControllerVisualizatio
 		$config = JFactory::getConfig();
 		$prefix = $config->get('dbprefix');
 
-		if (array_key_exists($listid, $model->events))
+		if (array_key_exists($listId, $model->events))
 		{
-			$datefield = $model->events[$listid][0]['startdate'];
+			$datefield = $model->events[$listId][0]['startdate'];
 		}
 		else
 		{
@@ -134,16 +133,16 @@ class FabrikControllerVisualizationcalendar extends FabrikControllerVisualizatio
 		}
 
 		$datefield = FabrikString::safeColNameToArrayKey($datefield);
-		$rowid = $input->getString('rowid', '', 'string');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$rowId = $input->getString('rowid', '', 'string');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 		$table = $listModel->getTable();
 		$input->set('view', 'form');
 		$input->set('formid', $table->form_id);
 		$input->set('tmpl', 'component');
 		$input->set('ajax', '1');
 		$nextView = $input->get('nextview', 'form');
-		$link = 'index.php?option=com_' . $package . '&view=' . $nextView . '&formid=' . $table->form_id . '&rowid=' . $rowid . '&tmpl=component&ajax=1';
+		$link = 'index.php?option=com_' . $package . '&view=' . $nextView . '&formid=' . $table->form_id . '&rowid=' . $rowId . '&tmpl=component&ajax=1';
 		$link .= '&' . $prefix . 'fabrik_calendar_events___visualization_id=' . $input->getInt($prefix . 'fabrik_calendar_events___visualization_id');
 		$link .= '&fabrik_window_id=' . $input->get('fabrik_window_id');
 

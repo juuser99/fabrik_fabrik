@@ -148,7 +148,7 @@ class FabrikTableList extends FabTable
 				return false;
 			}
 			// Add the search tuple to the query.
-			$query->where($this->_tbl . '.' . $this->_db->quoteName($field) . ' = ' . $this->_db->quote($value));
+			$query->where($this->_tbl . '.' . $this->_db->quoteName($field) . ' = ' . $this->_db->q($value));
 		}
 
 		$this->_db->setQuery($query);

@@ -17,7 +17,7 @@ var CronAdmin = new Class({
 
 	initialize: function (options) {
 		plugins = [];
-		this.parent(plugins);
+		this.parent(plugins, options);
 		this.setOptions(options);
 		this.watchSelector();
 	},
@@ -40,7 +40,8 @@ var CronAdmin = new Class({
 			url: 'index.php',
 			'data': {
 				'option': 'com_fabrik',
-				'task': 'cron.getPluginHTML',
+				'view': 'plugin',
+				'type': 'cron',
 				'format': 'raw',
 				'plugin': e.target.get('value')
 			},

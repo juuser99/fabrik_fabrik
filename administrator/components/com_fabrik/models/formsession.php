@@ -8,22 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
-
-jimport('joomla.application.component.model');
 
 /**
  * Fabrik Form Session Model
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikFEModelFormsession extends FabModel
+class FormSession extends JModelBase
 {
 	/**
 	 * User id
@@ -51,7 +50,7 @@ class FabrikFEModelFormsession extends FabModel
 	 *
 	 * @var string
 	 */
-	protected $rowid = null;
+	protected $rowId = null;
 
 	/**
 	 * Status message
@@ -366,7 +365,7 @@ class FabrikFEModelFormsession extends FabModel
 		$db = $row->getDBO();
 		$row->hash = $hash;
 		$query = $db->getQuery(true);
-		$query->delete($db->quoteName($row->getTableName()))->where('hash = ' . $db->quote($hash));
+		$query->delete($db->quoteName($row->getTableName()))->where('hash = ' . $db->q($hash));
 		$db->setQuery($query);
 		$this->removeCookie();
 		$this->row = $row;

@@ -199,7 +199,7 @@ class PlgContentFabrik extends JPlugin
 		$origLayout = $input->get('layout');
 		$origFFlayout = $input->get('flayout');
 		$layoutFound = false;
-		$rowid = '';
+		$rowId = '';
 		$usekey = '';
 		$limit = false;
 		$session = JFactory::getSession();
@@ -244,7 +244,7 @@ class PlgContentFabrik extends JPlugin
 
 						// Set the rowid in the session so that print pages can grab it again
 						$session->set('fabrik.plgcontent.rowid', $row);
-						$rowid = $row;
+						$rowId = $row;
 					}
 					break;
 				case 'element':
@@ -254,7 +254,7 @@ class PlgContentFabrik extends JPlugin
 					break;
 				case 'table':
 				case 'list':
-					$listid = $m[1];
+					$listId = $m[1];
 					break;
 				case 'limit':
 					$limit = $m[1];
@@ -290,7 +290,7 @@ class PlgContentFabrik extends JPlugin
 		// Get the rowid in the session so that print pages can use it
 
 		// Commented out - was messing with element rendering and seems to general to be correct. IE what if more than one content plugin being used
-		// $rowid = $session->get('fabrik.plgcontent.rowid', $rowid);
+		// $rowId = $session->get('fabrik.plgcontent.rowid', $rowId);
 		if ($viewName == 'table')
 		{
 			// Some backwards compat with fabrik 2
@@ -351,17 +351,17 @@ class PlgContentFabrik extends JPlugin
 		if ($element !== false)
 		{
 			// Special case for rendering element data
-			$controller = $this->getController('list', $listid);
-			$model = $this->getModel($controller, 'list', $listid);
+			$controller = $this->getController('list', $listId);
+			$model = $this->getModel($controller, 'list', $listId);
 
 			if (!$model)
 			{
 				return;
 			}
 
-			$model->setId($listid);
+			$model->setId($listId);
 			$formModel = $model->getFormModel();
-			$groups = $formModel->getGroupsHiarachy();
+			$groups = $formModel->getGroupsHierarchy();
 
 			foreach ($groups as $groupModel)
 			{
@@ -385,7 +385,7 @@ class PlgContentFabrik extends JPlugin
 				throw new RuntimeException('You are trying to embed an element called ' . $element . ' which is not present in the list');
 			}
 
-			if ($rowid === '')
+			if ($rowId === '')
 			{
 				$rows = $model->getData();
 				$group = array_shift($rows);
@@ -395,7 +395,7 @@ class PlgContentFabrik extends JPlugin
 			else
 			{
 				$this->_setRequest($unused);
-				$row = $model->getRow($rowid, false, true);
+				$row = $model->getRow($rowId, false, true);
 
 				if (substr($element, String::strlen($element) - 4, Jtring::strlen($element)) !== '_raw')
 				{
@@ -412,7 +412,7 @@ class PlgContentFabrik extends JPlugin
 
 				// Set row id for things like user element
 				$origRowid = $input->get('rowid');
-				$input->set('rowid', $rowid);
+				$input->set('rowid', $rowId);
 
 				$defaultdata = (array) $defaultdata;
 				unset($activeEl->defaults);
@@ -469,9 +469,9 @@ class PlgContentFabrik extends JPlugin
 		$viewType = $document->getType();
 		$cacheKey = $id;
 
-		if ($rowid !== '')
+		if ($rowId !== '')
 		{
-			$cacheKey .= '.' . $rowid;
+			$cacheKey .= '.' . $rowId;
 		}
 
 		$controller = $this->getController($viewName, $cacheKey);
@@ -513,7 +513,7 @@ class PlgContentFabrik extends JPlugin
 
 				// $$$ rob - flayout is used in form/details view when _isMamot = true
 				$input->set('flayout', $input->get('layout'));
-				$input->set('rowid', $rowid);
+				$input->set('rowid', $rowId);
 				break;
 			case 'csv':
 			case 'table':
@@ -752,8 +752,6 @@ class PlgContentFabrik extends JPlugin
 
 		if (!isset($controller->_model))
 		{
-			$modelpaths = JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', $prefix);
-
 			if (!$controller->_model = $controller->getModel($viewName, $prefix))
 			{
 				throw new RuntimeException('Fabrik Content Plug-in: could not create model');
@@ -906,8 +904,6 @@ class PlgContentFabrik extends JPlugin
 		require_once COM_FABRIK_FRONTEND . '/controllers/list.php';
 		require_once COM_FABRIK_FRONTEND . '/controllers/visualization.php';
 		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
 		// $$$rob looks like including the view does something to the layout variable
 		$layout = $input->get('layout', 'bootstrap');

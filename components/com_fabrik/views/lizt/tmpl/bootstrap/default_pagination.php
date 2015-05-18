@@ -99,7 +99,7 @@ function fabrik_pagination_list_footer($list, $paginator)
 
 if (!function_exists('fabrik_pagination_item_active'))
 {
-	function fabrik_pagination_item_active(&$item, $listid)
+	function fabrik_pagination_item_active(&$item, $listId)
 	{
 		return '<a title="' . $item->text . '" href="' . $item->link . '">' . $item->text . '</a>';
 	}

@@ -14,6 +14,7 @@ namespace Fabrik\Admin\Controllers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Models\Lizt;
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
@@ -109,7 +110,7 @@ class Plugin extends Controller
 
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$c = 0;
 
 		foreach ($rows as $row)

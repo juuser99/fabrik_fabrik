@@ -138,11 +138,11 @@ class PlgFabrik_ElementDigsig extends Element
 		$package   = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formModel = $this->getFormModel();
 		$formid    = $formModel->getId();
-		$elementid = $this->getId();
+		$elementId = $this->getId();
 
 		$link = COM_FABRIK_LIVESITE
 			. 'index.php?option=com_' . $package . '&amp;view=pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
-			. 'format=raw&amp;element_id=' . $elementid . '&amp;formid=' . $formid . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+			. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formid . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 		$layoutData         = new stdClass;
 		$layoutData->width  = $params->get('digsig_list_width', '200');

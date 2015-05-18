@@ -79,14 +79,14 @@ class PlgFabrik_ElementRating extends Element
 	{
 		$params = $this->getParams();
 		$formid = $this->getFormModel()->getId();
-		$listid = $this->getListModel()->getId();
+		$listId = $this->getListModel()->getId();
 		$row_id = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
 
 		if ($params->get('rating-mode') !== 'creator-rating')
 		{
 			$d = $this->getListModel()->getData();
 			$ids = ArrayHelper::getColumn($d, '__pk_val');
-			list($data, $total) = $this->getRatingAverage($data, $listid, $formid, $row_id, $ids);
+			list($data, $total) = $this->getRatingAverage($data, $listId, $formid, $row_id, $ids);
 		}
 
 		$data = Worker::JSONtoData($data, true);
@@ -156,12 +156,12 @@ class PlgFabrik_ElementRating extends Element
 		else
 		{
 			$list = $this->getlistModel()->getTable();
-			$listid = $list->id;
+			$listId = $list->id;
 			$formid = $list->form_id;
 			$d = $this->getListModel()->getData();
 			$ids = ArrayHelper::getColumn($d, '__pk_val');
 			$row_id = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
-			list($avg, $total) = $this->getRatingAverage($data, $listid, $formid, $row_id, $ids);
+			list($avg, $total) = $this->getRatingAverage($data, $listId, $formid, $row_id, $ids);
 
 			return $avg;
 		}
@@ -171,7 +171,7 @@ class PlgFabrik_ElementRating extends Element
 	 * Get average rating
 	 *
 	 * @param   mixed  $data    String/int
-	 * @param   int    $listid  List id
+	 * @param   int    $listId  List id
 	 * @param   int    $formid  Form id
 	 * @param   int    $row_id  Row id
 	 * @param   array  $ids     Row ids
@@ -179,7 +179,7 @@ class PlgFabrik_ElementRating extends Element
 	 * @return array(int average rating, int total)
 	 */
 
-	protected function getRatingAverage($data, $listid, $formid, $row_id, $ids = array())
+	protected function getRatingAverage($data, $listId, $formid, $row_id, $ids = array())
 	{
 		if (empty($ids))
 		{
@@ -190,11 +190,11 @@ class PlgFabrik_ElementRating extends Element
 		{
 			ArrayHelper::toInteger($ids);
 			$db = Worker::getDbo(true);
-			$elementid = $this->getElement()->id;
+			$elementId = $this->getElement()->id;
 
 			$query = $db->getQuery(true);
 			$query->select('row_id, AVG(rating) AS r, COUNT(rating) AS total')->from(' #__fabrik_ratings')
-				->where(array('rating <> -1', 'listid = ' . (int) $listid, 'formid = ' . (int) $formid, 'element_id = ' . (int) $elementid))
+				->where(array('rating <> -1', 'listid = ' . (int) $listId, 'formid = ' . (int) $formid, 'element_id = ' . (int) $elementId))
 				->where('row_id IN (' . implode(',', $ids) . ')')->group('row_id');
 
 			// Do this  query so that list view only needs one query to load up all ratings
@@ -214,7 +214,7 @@ class PlgFabrik_ElementRating extends Element
 	/**
 	 * Get creator ids
 	 *
-	 * @param   int    $listid  int list id
+	 * @param   int    $listId  int list id
 	 * @param   int    $formid  int form id
 	 * @param   int    $row_id  int row id
 	 * @param   array  $ids     all row ids
@@ -222,7 +222,7 @@ class PlgFabrik_ElementRating extends Element
 	 * @return  int  user id
 	 */
 
-	protected function getCreatorId($listid, $formid, $row_id, $ids = array())
+	protected function getCreatorId($listId, $formid, $row_id, $ids = array())
 	{
 		if (!isset($this->creatorIds))
 		{
@@ -233,10 +233,10 @@ class PlgFabrik_ElementRating extends Element
 
 			ArrayHelper::toInteger($ids);
 			$db = Worker::getDbo(true);
-			$elementid = $this->getElement()->id;
+			$elementId = $this->getElement()->id;
 			$query = $db->getQuery(true);
 			$query->select('row_id, user_id')->from('#__fabrik_ratings')
-				->where(array('rating <> -1', 'listid = ' . (int) $listid, 'formid = ' . (int) $formid, 'element_id = ' . (int) $elementid))
+				->where(array('rating <> -1', 'listid = ' . (int) $listId, 'formid = ' . (int) $formid, 'element_id = ' . (int) $elementId))
 				->where('row_id IN (' . implode(',', $ids) . ')')->group('row_id');
 
 			// Do this  query so that table view only needs one query to load up all ratings
@@ -287,10 +287,10 @@ class PlgFabrik_ElementRating extends Element
 		}
 
 		$list = $this->getListModel()->getTable();
-		$listid = $list->id;
+		$listId = $list->id;
 		$formid = $list->form_id;
-		$creatorid = $this->getCreatorId($listid, $formid, $row_id, $ids);
-		$userId = $this->getStoreUserId($listid, $row_id);
+		$creatorid = $this->getCreatorId($listId, $formid, $row_id, $ids);
+		$userId = $this->getStoreUserId($listId, $row_id);
 		$this->canRate = ($creatorid == $userId || $row_id == 0);
 
 		return $this->canRate;
@@ -365,19 +365,19 @@ class PlgFabrik_ElementRating extends Element
 	{
 		$input = $this->app->input;
 		$params = $this->getParams();
-		$listid = $input->getInt('listid');
+		$listId = $input->getInt('listid');
 		$formid = $input->getInt('formid');
 		$row_id = $input->get('rowid', '', 'string');
 
-		if (empty($listid))
+		if (empty($listId))
 		{
 			$formModel = $this->getFormModel();
-			$listid = $formModel->getListModel()->getId();
+			$listId = $formModel->getListModel()->getId();
 		}
 		
 		if ($params->get('rating-mode') == 'user-rating')
 		{
-			list($val, $total) = $this->getRatingAverage($val, $listid, $formid, $row_id);
+			list($val, $total) = $this->getRatingAverage($val, $listId, $formid, $row_id);
 		}
 
 		return $val;
@@ -396,11 +396,11 @@ class PlgFabrik_ElementRating extends Element
 		$this->loadMeForAjax();
 		$listModel = $this->getListModel();
 		$list = $listModel->getTable();
-		$listid = $list->id;
+		$listId = $list->id;
 		$formid = $listModel->getFormModel()->getId();
 		$row_id = $input->get('row_id');
 		$rating = $input->getInt('rating');
-		$this->doRating($listid, $formid, $row_id, $rating);
+		$this->doRating($listId, $formid, $row_id, $rating);
 
 		if ($input->get('mode') == 'creator-rating')
 		{
@@ -411,27 +411,27 @@ class PlgFabrik_ElementRating extends Element
 			$element = $this->getElement();
 			$query = $db->getQuery(true);
 			$query->update($list->db_table_name)
-			->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->quote($row_id));
+			->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->q($row_id));
 			$db->setQuery($query);
 			$db->execute();
 		}
 
-		$this->getRatingAverage('', $listid, $formid, $row_id);
+		$this->getRatingAverage('', $listId, $formid, $row_id);
 		echo $this->avg;
 	}
 
 	/**
 	 * Get cookie name
 	 *
-	 * @param   int     $listid  List id
+	 * @param   int     $listId  List id
 	 * @param   string  $row_id  Row id
 	 *
 	 * @return string  Hashed cookie name.
 	 */
 
-	private function getCookieName($listid, $row_id)
+	private function getCookieName($listId, $row_id)
 	{
-		$cookieName = "rating-table_{$listid}_row_{$row_id}" . $_SERVER['REMOTE_ADDR'];
+		$cookieName = "rating-table_{$listId}_row_{$row_id}" . $_SERVER['REMOTE_ADDR'];
 		jimport('joomla.utilities.utility');
 
 		return JApplication::getHash($cookieName);
@@ -467,7 +467,7 @@ class PlgFabrik_ElementRating extends Element
 	/**
 	 * Main method to store a rating
 	 *
-	 * @param   int     $listid  List id
+	 * @param   int     $listId  List id
 	 * @param   int     $formid  Form id
 	 * @param   string  $row_id  Row reference
 	 * @param   int     $rating  Rating
@@ -475,23 +475,23 @@ class PlgFabrik_ElementRating extends Element
 	 * @return  void
 	 */
 
-	private function doRating($listid, $formid, $row_id, $rating)
+	private function doRating($listId, $formid, $row_id, $rating)
 	{
 		$this->createRatingTable();
 		$db = Worker::getDbo(true);
 		$tzoffset = $this->config->get('offset');
 		$date = JFactory::getDate('now', $tzoffset);
-		$strDate = $db->quote($date->toSql());
-		$userId = $db->quote($this->getStoreUserId($listid, $row_id));
-		$elementid = (int) $this->getElement()->id;
+		$strDate = $db->q($date->toSql());
+		$userId = $db->q($this->getStoreUserId($listId, $row_id));
+		$elementId = (int) $this->getElement()->id;
 		$formid = (int) $formid;
-		$listid = (int) $listid;
+		$listId = (int) $listId;
 		$rating = (int) $rating;
-		$row_id = $db->quote($row_id);
+		$row_id = $db->q($row_id);
 		$db
 			->setQuery(
 				"INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
-		values ($userId, $listid, $formid, $row_id, $rating, $strDate, $elementid)
+		values ($userId, $listId, $formid, $row_id, $rating, $strDate, $elementId)
 			ON DUPLICATE KEY UPDATE date_created = $strDate, rating = $rating"
 		);
 
@@ -501,19 +501,19 @@ class PlgFabrik_ElementRating extends Element
 	/**
 	 * Get the stored user id
 	 *
-	 * @param   int     $listid  List id
+	 * @param   int     $listId  List id
 	 * @param   string  $row_id  Row reference
 	 *
 	 * @return Mixed string/int
 	 */
 
-	private function getStoreUserId($listid, $row_id)
+	private function getStoreUserId($listId, $row_id)
 	{
 		$userId = (int) $this->user->get('id');
 
 		if ($userId === 0)
 		{
-			$hash = $this->getCookieName($listid, $row_id);
+			$hash = $this->getCookieName($listId, $row_id);
 
 			// Set cookie
 			$lifetime = time() + 365 * 24 * 60 * 60;
@@ -546,14 +546,14 @@ class PlgFabrik_ElementRating extends Element
 		$element = $this->getElement();
 		$data = $this->getFormModel()->data;
 		$listModel = $this->getlistModel();
-		$listid = $listModel->getTable()->id;
+		$listId = $listModel->getTable()->id;
 		$formid = $listModel->getFormModel()->getId();
 		$row_id = $input->get('rowid', '', 'string');
 		$value = $this->getValue($data, $repeatCounter);
 
 		if ($params->get('rating-mode') != 'creator-rating')
 		{
-			list($value, $total) = $this->getRatingAverage($value, $listid, $formid, $row_id);
+			list($value, $total) = $this->getRatingAverage($value, $listId, $formid, $row_id);
 		}
 
 		$opts = new stdClass;
@@ -566,7 +566,7 @@ class PlgFabrik_ElementRating extends Element
 		$opts->mode = $params->get('rating-mode');
 		$opts->view = $input->get('view');
 		$opts->rating = $value;
-		$opts->listid = $listid;
+		$opts->listid = $listId;
 
 		JText::script('PLG_ELEMENT_RATING_NO_RATING');
 

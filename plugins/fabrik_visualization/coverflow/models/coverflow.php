@@ -49,13 +49,13 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 		$titles = (array) $params->get('coverflow_title');
 		$subtitles = (array) $params->get('coverflow_subtitle');
 
-		$listids = (array) $params->get('coverflow_table');
+		$listIds = (array) $params->get('coverflow_table');
 		$eventdata = array();
 
-		foreach ($listids as $listid)
+		foreach ($listIds as $listId)
 		{
-			$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$listModel->setId($listid);
+			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel->setId($listId);
 			$list = $listModel->getTable();
 			$nav = $listModel->getPagination(0, 0, 0);
 			$image = $images[$c];

@@ -91,10 +91,10 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 		$dateElement = $params->get('media_published_elementList', '');
 		$dateElementRaw = $dateElement . '_raw';
 
-		$listid = $params->get('media_table');
+		$listId = $params->get('media_table');
 
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 		$list = $listModel->getTable();
 		$form = $listModel->getFormModel();
 		/*

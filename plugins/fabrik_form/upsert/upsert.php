@@ -58,7 +58,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		$table = $this->getTableName();
 		$pk = FabrikString::safeColName($params->get('primary_key'));
 
-		$rowid = $params->get('row_value', '');
+		$rowId = $params->get('row_value', '');
 
 		// Used for updating previously added records. Need previous pk val to ensure new records are still created.
 		$origData = $formModel->getOrigData();
@@ -69,12 +69,12 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 			$this->data['origid'] = $origData->__pk_val;
 		}
 
-		$rowid = $w->parseMessageForPlaceholder($rowid, $this->data, false);
-		$upsertRowExists = $this->upsertRowExists($table, $pk, $rowid);
+		$rowId = $w->parseMessageForPlaceholder($rowId, $this->data, false);
+		$upsertRowExists = $this->upsertRowExists($table, $pk, $rowId);
 		$fields = $this->upsertData($upsertRowExists);
 		$query->set($fields);
 
-		if ($rowid === '')
+		if ($rowId === '')
 		{
 			$query->insert($table);
 		}
@@ -82,7 +82,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		{
 			if ($upsertRowExists)
 			{
-				$query->update($table)->where($pk . ' = ' . $rowid);
+				$query->update($table)->where($pk . ' = ' . $rowId);
 			}
 			else
 			{
@@ -140,8 +140,8 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 				if ($row_value == '{origid}')
 				{				
 					$fk = FabrikString::safeColName($params->get('primary_key'));
-					$rowid = $formModel->getInsertId();
-					$fields[] = $fk . ' = ' . $upsert_db->quote($rowid);
+					$rowId = $formModel->getInsertId();
+					$fields[] = $fk . ' = ' . $upsert_db->q($rowId);
 				}
 			}
 		}
@@ -173,7 +173,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 			
 			if (!preg_match('#^\((.*)\)$#', $v))
 			{
-				$v = $upsert_db->quote($v);
+				$v = $upsert_db->q($v);
 			}
 			else
 			{
@@ -213,9 +213,9 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	protected function getTableName()
 	{
 		$params = $this->getParams();
-		$listid = $params->get('table');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listId = $params->get('table');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 
 		return $listModel->getTable()->db_table_name;
 	}

@@ -176,7 +176,7 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 
 		$total = count($rows);
 
-		switch ($element->plugin)
+		switch ($element->get('plugin'))
 		{
 			case 'checkbox':
 				$data = $this->checkbox($rows, $labels);

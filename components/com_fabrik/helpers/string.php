@@ -720,7 +720,7 @@ class FabrikString extends String
 
 	/**
 	 * DB value quote a single string or an array of strings, first checking to see if they are
-	 * already quoted.  Which the J! $db->quote() doesn't do, unfortunately.
+	 * already quoted.  Which the J! $db->q() doesn't do, unfortunately.
 	 * Does NOT modify the input.  Does not quote if value starts with SELECT.
 	 *
 	 * @param unknown $values
@@ -771,7 +771,7 @@ class FabrikString extends String
 			if (!preg_match("#^'.*'$#", $value))
 			{
 				$db = JFactory::getDbo();
-				$value = $db->quote($value);
+				$value = $db->q($value);
 			}
 
 		}
@@ -795,7 +795,7 @@ class FabrikString extends String
 		
 	/**
 	 * DB name quote a single string or an array of strings, first checking to see if they are
-	 * already quoted.  Which the J! $db->quote() doesn't do, unfortunately.
+	 * already quoted.  Which the J! $db->q() doesn't do, unfortunately.
 	 * Does NOT modify the input.  Does not quote if value starts with CONCAT.
 	 *
 	 * @param unknown $values

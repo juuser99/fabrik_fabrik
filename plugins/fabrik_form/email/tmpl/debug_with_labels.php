@@ -36,7 +36,7 @@ function tryForLabel($formModel, $key, $raw, $info)
 	$thisRaw = false;
 	if ($elementModel)
 	{
-		$label = $elementModel->getElement()->label;
+		$label = $elementModel->getElement()->get('label');
 	}
 	else
 	{
@@ -45,9 +45,10 @@ function tryForLabel($formModel, $key, $raw, $info)
 			$thisRaw = true;
 			$key = substr($key, 0, strlen($key) - 4);
 			$elementModel = $formModel->getElement($key);
+
 			if ($elementModel)
 			{
-				$label = $elementModel->getElement()->label . ' (raw)';
+				$label = $elementModel->getElement()->get('label') . ' (raw)';
 			}
 		}
 	}

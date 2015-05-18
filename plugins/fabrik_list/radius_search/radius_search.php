@@ -548,7 +548,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 
 		// Increase z-index with advanced class
 		$opts['menuclass'] = 'auto-complete-container advanced';
-		$listid = $model->get('id');
+		$listId = $model->get('id');
 		$formid = $model->getFormModel()->get('id');
 
 		if ($params->get('place', 1) == 1)

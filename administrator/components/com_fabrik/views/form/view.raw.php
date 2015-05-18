@@ -55,7 +55,7 @@ class FabrikAdminViewForm extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
-		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Form;
 		$model->render();
 
 		if (!$model->canPublish())
@@ -76,7 +76,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		}
 
 		$model->getJoinGroupIds();
-		$groups = $model->getGroupsHiarachy();
+		$groups = $model->getGroupsHierarchy();
 		$gkeys = array_keys($groups);
 		$JSONarray = array();
 		$JSONHtml = array();

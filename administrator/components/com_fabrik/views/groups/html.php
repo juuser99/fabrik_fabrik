@@ -13,6 +13,7 @@ namespace Fabrik\Admin\Views\Groups;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use FabrikHelperHTML;
 use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
@@ -67,8 +68,8 @@ class Html extends \Fabrik\Admin\Views\Html
 		Fabrik::addSubmenu('groups');
 
 		$this->sidebar = JHtmlSidebar::render();
-
-		\FabrikHelperHTML::iniRequireJS();
+		$this->setLayout('bootstrap');
+		FabrikHelperHTML::iniRequireJS();
 
 		return parent::render();
 	}

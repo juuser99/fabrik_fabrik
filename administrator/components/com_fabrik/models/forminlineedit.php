@@ -8,34 +8,32 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-require_once 'fabrikmodelform.php';
-require_once COM_FABRIK_FRONTEND . '/helpers/element.php';
+use \Fabrik\Admin\Models\Base as Base;
+use Fabrik\Admin\Models\Form;
 
 /**
  * Fabrik Form Model
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikFEModelFormInlineEdit extends FabModelForm
+class FormInlineEdit extends Base
 {
 	/**
 	 * Render the inline edit interface
 	 *
 	 * @return void
 	 */
-
 	public function render()
 	{
-		$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$this->formModel = new Form;
+		$input = $this->app->input;
 
 		// Need to render() with all element ids in case canEditRow plugins etc. use the row data.
 		$elids = $input->get('elementid', array(), 'array');
@@ -49,19 +47,19 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 		$this->groups = $this->formModel->getGroupView();
 
 		// Main trigger element's id
-		$elementid = $input->getInt('elid');
+		$elementId = $input->getInt('elid');
 
 		$html = $this->inlineEditMarkUp() ;
 		echo implode("\n", $html);
 
 		$srcs = array();
 		$repeatCounter = 0;
-		$elementids = (array) $input->get('elementid', array(), 'array');
+		$elementIds = (array) $input->get('elementid', array(), 'array');
 		$eCounter = 0;
 		$onLoad = array();
-		$onLoad[] = "Fabrik.inlineedit_$elementid = {'elements': {}};";
+		$onLoad[] = "Fabrik.inlineedit_$elementId = {'elements': {}};";
 
-		foreach ($elementids as $id)
+		foreach ($elementIds as $id)
 		{
 			$elementModel = $this->formModel->getElement($id, true);
 			$elementModel->getElement();
@@ -74,11 +72,11 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 			{
 				$onLoad[] = "o.select();";
 				$onLoad[] = "o.focus();";
-				$onLoad[] = "Fabrik.inlineedit_$elementid.token = '" . JSession::getFormToken() . "';";
+				$onLoad[] = "Fabrik.inlineedit_$elementId.token = '" . JSession::getFormToken() . "';";
 			}
 
 			$eCounter++;
-			$onLoad[] = "Fabrik.inlineedit_$elementid.elements[$id] = o";
+			$onLoad[] = "Fabrik.inlineedit_$elementId.elements[$id] = o";
 		}
 
 		$onLoad[] = "Fabrik.fireEvent('fabrik.list.inlineedit.setData');";
@@ -94,8 +92,7 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 	 */
 	protected function inlineEditMarkUp()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$html = array();
 		$html[] = '<div class="modal">';
 		$html[] = ' <div class="modal-header"><h3>' . FText::_('COM_FABRIK_EDIT') . '</h3></div>';
@@ -161,36 +158,34 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 	 *
 	 * @return string
 	 */
-
 	public function showResults()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$listModel = $this->formModel->getListModel();
-		$listid = $listModel->getId();
+		$listId = $listModel->getId();
 		$listModel->clearCalculations();
 		$listModel->doCalculations();
-		$elementid = $input->getInt('elid');
+		$elementId = $input->getInt('elid');
 
-		if ($elementid === 0)
+		if ($elementId === 0)
 		{
 			return;
 		}
 
-		$elmentModel = $this->formModel->getElement($elementid, true);
+		$elementModel = $this->formModel->getElement($elementId, true);
 
-		if (!$elmentModel)
+		if (!$elementModel)
 		{
 			return;
 		}
 
-		$rowid = $input->get('rowid');
-		$listModel->setId($listid);
+		$rowId = $input->get('rowid');
+		$listModel->setId($listId);
 
 		// If the inline edit stored a element join we need to reset back the table
 		$listModel->clearTable();
 		$listModel->getTable();
-		$data = $listModel->getRow($rowid);
+		$data = $listModel->getRow($rowId);
 
 		// For a change in the element which means its no longer shown in the list due to prefilter. We may want to remove the row from the list as well?
 		if (!is_object($data))
@@ -200,7 +195,7 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 
 		$key = $input->get('element');
 		$html = '';
-		$html .= $elmentModel->renderListData($data->$key, $data);
+		$html .= $elementModel->renderListData($data->$key, $data);
 		$listRef = 'list_' . $input->get('listref');
 		$doCalcs = "\nFabrik.blocks['" . $listRef . "'].updateCals(" . json_encode($listModel->getCalculations()) . ")";
 		$html .= '<script type="text/javascript">';

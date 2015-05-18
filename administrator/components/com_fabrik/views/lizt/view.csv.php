@@ -34,9 +34,8 @@ class FabrikAdminViewList extends JViewLegacy
 		$app = JFactory::getApplication();
 		$input = $app->input;
 
-		// JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-		$exporter = JModelLegacy::getInstance('Csvexport', 'FabrikFEModel');
-		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$exporter = new \Fabrik\Admin\Models\CsvExport;
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$model->setId($input->getInt('listid'));
 		$model->setOutPutFormat('csv');
 		$exporter->model =& $model;

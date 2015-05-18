@@ -39,9 +39,9 @@ class FabrikHelperElement
 		$pluginManager = Worker::getPluginManager();
 		$groupModel = $baseElement->getGroupModel();
 		$elementModel = $pluginManager->getPlugIn('internalid', 'element');
-		$elementModel->getElement()->name = 'id';
+		$elementModel->getElement()->set('name', 'id');
 		$elementModel->getParams()->set('repeat', $baseElement->isJoin());
-		$elementModel->getElement()->group_id = $groupModel->getId();
+		$elementModel->getElement()->set('group_id', $groupModel->getId());
 		$elementModel->setGroupModel($baseElement->getGroupModel());
 		$elementModel->_joinModel = $groupModel->getJoinModel();
 
@@ -62,9 +62,9 @@ class FabrikHelperElement
 		$pluginManager = Worker::getPluginManager();
 		$groupModel = $baseElement->getGroupModel();
 		$elementModel = $pluginManager->getPlugIn('field', 'element');
-		$elementModel->getElement()->name = 'parent_id';
+		$elementModel->getElement()->set('name', 'parent_id');
 		$elementModel->getParams()->set('repeat', $baseElement->isJoin());
-		$elementModel->getElement()->group_id = $groupModel->getId();
+		$elementModel->getElement()->set('group_id', $groupModel->getId());
 		$elementModel->setGroupModel($baseElement->getGroupModel());
 		$elementModel->_joinModel = $groupModel->getJoinModel();
 
@@ -87,8 +87,8 @@ class FabrikHelperElement
 		$pluginManager = Worker::getPluginManager();
 		$model = $pluginManager->getElementPlugin($elementId);
 		$listModel = $model->getListModel();
-		$listid = $listModel->getId();
-		$key = 'com_fabrik.list' . $listid . '_com_fabrik_' . $listid . '.filter';
+		$listId = $listModel->getId();
+		$key = 'com_fabrik.list' . $listId . '_com_fabrik_' . $listId . '.filter';
 		$filters = ArrayHelper::fromObject($app->getUserState($key));
 		$elementIds = (array) ArrayHelper::getValue($filters, 'elementid', array());
 		$index = array_search($elementId, $elementIds);

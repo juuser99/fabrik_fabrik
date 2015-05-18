@@ -99,7 +99,7 @@ class Crons extends \JControllerBase
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 		$adminListModel = JModelLegacy::getInstance('List', 'FabrikAdminModel');
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new \Fabrik\Admin\Models\PluginManager;
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$c = 0;
 		$log = FabTable::getInstance('Log', 'FabrikTable');

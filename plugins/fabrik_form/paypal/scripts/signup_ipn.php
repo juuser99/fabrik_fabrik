@@ -78,22 +78,22 @@ class fabrikPayPalIPN
 		// Get the 'custom' values from the IPN call, which we provide by default
 		// when redirecting the original form submission to PayPal.
 		$custom = $request['custom'];
-		list($formid, $rowid, $ipn_value) = explode(":", $custom);
+		list($formid, $rowId, $ipn_value) = explode(":", $custom);
 		$amount_paid = $request['mc_gross'];
 		$db = $listModel->getDb();
 		// See if we can find the corresponding row from our registration table,
 		// and fetch our userid element from it.  The PayPal plugin will have written
 		// the newly created userid in to it during the original form submission.
-		$db->setQuery("SELECT `userid` FROM `registration_individual` WHERE `id` = " . $db->quote($rowid));
+		$db->setQuery("SELECT `userid` FROM `registration_individual` WHERE `id` = " . $db->q($rowId));
 		$userid = $db->loadResult();
 		if (!empty($userid) && (int) $userid > 42)
 		{
 			// If we found the userid, and it is in the normal user range, set the 'block' field in J!'s
 			// user table to 0.
-			$db->setQuery("UPDATE `#__users` SET `block` = '0' WHERE `id` = " . $db->quote($userid));
+			$db->setQuery("UPDATE `#__users` SET `block` = '0' WHERE `id` = " . $db->q($userid));
 			$db->execute();
 			// Also set the block field in our registration table to 0.
-			$db->setQuery("UPDATE `registration_individual` SET `block` = '0' WHERE `id` = " . $db->quote($rowid));
+			$db->setQuery("UPDATE `registration_individual` SET `block` = '0' WHERE `id` = " . $db->q($rowId));
 			$db->execute();
 		}
 		return 'ok';
@@ -150,15 +150,15 @@ class fabrikPayPalIPN
 	function payment_status_Reversed($listModel, $request, &$set_list, &$err_msg)
 	{
 		$custom = $request['custom'];
-		list($formid, $rowid, $ipn_value) = explode(":", $custom);
+		list($formid, $rowId, $ipn_value) = explode(":", $custom);
 		$db = $listModel->getDb();
-		$db->setQuery("SELECT `userid` FROM `registration_individual` WHERE `id` = " . $db->quote($rowid));
+		$db->setQuery("SELECT `userid` FROM `registration_individual` WHERE `id` = " . $db->q($rowId));
 		$userid = $db->loadResult();
 		if (!empty($userid) && (int) $userid > 42)
 		{
-			$db->setQuery("UPDATE `#__users` SET `block` = '1' WHERE `id` = " . $db->quote($userid));
+			$db->setQuery("UPDATE `#__users` SET `block` = '1' WHERE `id` = " . $db->q($userid));
 			$db->execute();
-			$db->setQuery("UPDATE `registration_individual` SET `block` = '1' WHERE `id` = " . $db->quote($rowid));
+			$db->setQuery("UPDATE `registration_individual` SET `block` = '1' WHERE `id` = " . $db->q($rowId));
 			$db->execute();
 		}
 		return 'ok';

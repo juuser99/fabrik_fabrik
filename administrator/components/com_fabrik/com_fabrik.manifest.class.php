@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 class Com_FabrikInstallerScript
 {
 	/**
-	 * Dirvers
+	 * Drivers
 	 *
 	 * @var array
 	 */
@@ -76,8 +76,8 @@ class Com_FabrikInstallerScript
 	{
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('extension_id, params')->from('#__extensions')->where('name = ' . $db->quote('fabrik'))
-			->where('type = ' . $db->quote('component'));
+		$query->select('extension_id, params')->from('#__extensions')->where('name = ' . $db->q('fabrik'))
+			->where('type = ' . $db->q('component'));
 		$db->setQuery($query);
 		$row = $db->loadObject();
 		$opts = new stdClass;
@@ -89,7 +89,7 @@ class Com_FabrikInstallerScript
 		{
 			$json = $row->params;
 			$query = $db->getQuery(true);
-			$query->update('#__extensions')->set('params = ' . $db->quote($json))->where('extension_id = ' . (int) $row->extension_id);
+			$query->update('#__extensions')->set('params = ' . $db->q($json))->where('extension_id = ' . (int) $row->extension_id);
 			$db->setQuery($query);
 
 			if (!$db->execute())
@@ -118,55 +118,55 @@ class Com_FabrikInstallerScript
 
 		foreach ($docTypes as $docType)
 		{
-			$dest = 'libraries/joomla/document/' . $docType;
+			$destination = 'libraries/joomla/document/' . $docType;
 
-			if (!JFolder::exists(JPATH_ROOT . '/' . $dest))
+			if (!JFolder::exists(JPATH_ROOT . '/' . $destination))
 			{
-				JFolder::create(JPATH_ROOT . '/' . $dest);
+				JFolder::create(JPATH_ROOT . '/' . $destination);
 			}
 			// $$$ hugh - have to use false as last arg (use_streams) on JFolder::copy(), otherwise
 			// it bypasses FTP layer, and will fail if web server does not have write access to J! folders
-			$moveRes = JFolder::copy($componentFrontend . '/' . $docType, $dest, JPATH_SITE, true, false);
+			$moveRes = JFolder::copy($componentFrontend . '/' . $docType, $destination, JPATH_SITE, true, false);
 
 			if ($moveRes !== true)
 			{
-				echo "<p style=\"color:red\">failed to moved " . $componentFrontend . '/fabrikfeed to ' . $dest . '</p>';
+				echo "<p style=\"color:red\">failed to moved " . $componentFrontend . '/fabrikfeed to ' . $destination . '</p>';
 
 				return false;
 			}
 		}
 
-		$dest = 'libraries/joomla/database/database';
+		$destination = 'libraries/joomla/database/database';
 		$driverInstallLoc = $componentFrontend . '/dbdriver/';
-		$moveRes = JFolder::copy($driverInstallLoc, $dest, JPATH_SITE, true, false);
+		$moveRes = JFolder::copy($driverInstallLoc, $destination, JPATH_SITE, true, false);
 
 		if ($moveRes !== true)
 		{
-			echo "<p style=\"color:red\">failed to moved " . $driverInstallLoc . ' to ' . $dest . '</p>';
+			echo "<p style=\"color:red\">failed to moved " . $driverInstallLoc . ' to ' . $destination . '</p>';
 
 			return false;
 		}
 
 		// Joomla 3.0 db drivers and queries
-		$dest = 'libraries/joomla/database/driver';
+		$destination = 'libraries/joomla/database/driver';
 		$driverInstallLoc = $componentFrontend . '/driver/';
 
-		$moveRes = JFolder::copy($driverInstallLoc, $dest, JPATH_SITE, true, false);
+		$moveRes = JFolder::copy($driverInstallLoc, $destination, JPATH_SITE, true, false);
 
 		if ($moveRes !== true)
 		{
-			echo "<p style=\"color:red\">failed to moved " . $driverInstallLoc . ' to ' . $dest . '</p>';
+			echo "<p style=\"color:red\">failed to moved " . $driverInstallLoc . ' to ' . $destination . '</p>';
 
 			return false;
 		}
 
-		$dest = 'libraries/joomla/database/query';
+		$destination = 'libraries/joomla/database/query';
 		$driverInstallLoc = $componentFrontend . '/query/';
-		$moveRes = JFolder::copy($driverInstallLoc, $dest, JPATH_SITE, true, false);
+		$moveRes = JFolder::copy($driverInstallLoc, $destination, JPATH_SITE, true, false);
 
 		if ($moveRes !== true)
 		{
-			echo "<p style=\"color:red\">failed to moved " . $driverInstallLoc . ' to ' . $dest . '</p>';
+			echo "<p style=\"color:red\">failed to moved " . $driverInstallLoc . ' to ' . $destination . '</p>';
 
 			return false;
 		}
@@ -175,7 +175,7 @@ class Com_FabrikInstallerScript
 	}
 
 	/**
-	 * Run when the component is unistalled.
+	 * Run when the component is uninstalled.
 	 *
 	 * @param   object  $parent  installer object
 	 *
@@ -186,30 +186,30 @@ class Com_FabrikInstallerScript
 	{
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
-		$dest = JPATH_SITE . '/libraries/joomla/document/fabrikfeed';
+		$destination = JPATH_SITE . '/libraries/joomla/document/fabrikfeed';
 
-		if (JFolder::exists($dest))
+		if (JFolder::exists($destination))
 		{
-			if (!JFolder::delete($dest))
+			if (!JFolder::delete($destination))
 			{
 				return false;
 			}
 		}
 
-		$dest = JPATH_SITE . '/libraries/joomla/database/database';
+		$destination = JPATH_SITE . '/libraries/joomla/database/database';
 
 		foreach ($this->drivers as $driver)
 		{
-			if (JFile::exists($dest . '/' . $driver))
+			if (JFile::exists($destination . '/' . $driver))
 			{
-				JFile::delete($dest . '/' . $driver);
+				JFile::delete($destination . '/' . $driver);
 			}
 		}
 	}
 
 	/**
 	 * God knows why but install component, uninstall component and install
-	 * again and component_id is set to 0 for the menu items grrrrr
+	 * again and component_id is set to 0 for the menu items!
 	 *
 	 * @return  void
 	 */
@@ -340,6 +340,5 @@ here to install sample data</a></p>
 		// An example of setting a redirect to a new location after the install is completed
 		// $parent->getParent()->set('redirect_url', 'http://www.google.com');
 
-		// $upgrade = JModelLegacy::getInstance('Upgrade', 'FabrikModel');
 	}
 }

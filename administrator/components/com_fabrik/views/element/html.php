@@ -87,7 +87,6 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->js = $model->getJs();
 
 		$this->addToolbar();
-		$this->parent = $model->getParent();
 		JText::script('COM_FABRIK_ERR_ELEMENT_JS_ACTION_NOT_DEFINED');
 
 		$srcs = FabrikHelperHTML::framework();

@@ -56,8 +56,11 @@ $states = array(
 	}
 
 	Joomla.submitbutton = function (task) {
-		task = task.split('.')[1];
-		jQuery('input[name=view]').val(task);
+		debugger;
+		task = task.split('.');
+		//task = task.split('.')[1];
+		jQuery('input[name=view]').val(task[0]);
+		jQuery('input[name=layout]').val(task[1]);
 		Joomla.submitform(task);
 	}
 
@@ -246,6 +249,7 @@ $states = array(
 			</table>
 
 			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="layout" value="" />
 			<input type="hidden" name="view" value="" />
 			<input type="hidden" name="boxchecked" value="0" />
 			<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />

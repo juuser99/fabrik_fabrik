@@ -103,7 +103,7 @@ class FabrikTableGroup extends FabTable
 
 		foreach ($keys as $field => $value)
 		{
-			$query->where($db->quoteName('#__fabrik_groups') . '.' . $db->quoteName($field) . ' = ' . $db->quote($value));
+			$query->where($db->quoteName('#__fabrik_groups') . '.' . $db->quoteName($field) . ' = ' . $db->q($value));
 		}
 
 		$query->where(" (( element_id = 0 OR is_join = 0) OR element_id IS NULL)");

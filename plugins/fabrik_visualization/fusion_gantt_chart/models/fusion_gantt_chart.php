@@ -64,9 +64,9 @@ class FabrikModelFusion_Gantt_Chart extends FabrikFEModelVisualization
 		$this->fc->setChartParams($chartP);
 
 		// Setting Param string
-		$listid = $params->get('fusion_gantt_chart_table');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listId = $params->get('fusion_gantt_chart_table');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 		$db = $listModel->getDB();
 		$table = $listModel->getTable()->db_table_name;

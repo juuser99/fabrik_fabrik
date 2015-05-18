@@ -85,15 +85,15 @@ class PlgFabrik_FormReceipt extends PlgFabrik_Form
 			}
 		}
 
-		$rowid = $input->get('rowid');
+		$rowId = $input->get('rowid');
 		$w = new Worker;
 		$form = $formModel->getForm();
 		$data = $this->getProcessData();
 		$message = $params->get('receipt_message');
 		$editURL = COM_FABRIK_LIVESITE . "index.php?option=com_" . $package . "&amp;view=form&amp;fabrik=" . $formModel->get('id') . "&amp;rowid="
-			. $rowid;
+			. $rowId;
 		$viewURL = COM_FABRIK_LIVESITE . "index.php?option=com_" . $package . "&amp;view=details&amp;fabrik=" . $formModel->get('id') . "&amp;rowid="
-			. $rowid;
+			. $rowId;
 		$editlink = "<a href=\"$editURL\">" . FText::_('EDIT') . "</a>";
 		$viewlink = "<a href=\"$viewURL\">" . FText::_('VIEW') . "</a>";
 		$message = str_replace('{fabrik_editlink}', $editlink, $message);

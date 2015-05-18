@@ -32,15 +32,14 @@ class Drop extends Controller
 	 *                   finish execution. A controller might return false if some precondition for
 	 *                   the controller to run has not been satisfied.
 	 *
-	 * @since   12.1
-	 * @throws  LogicException
-	 * @throws  RuntimeException
+	 * @since   3.5
 	 */
 	public function execute()
 	{
 		$app   = $this->getApplication();
 		$model = new Lists;
 		$ids   = $app->input->get('cid', array(), 'array');
-		$model->delete($ids);
+
+		return $model->delete($ids);
 	}
 }

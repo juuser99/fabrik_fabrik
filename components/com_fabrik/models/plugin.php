@@ -150,7 +150,6 @@ class Plugin extends \JPlugin
 	 * @param   object  &$subject  The object to observe
 	 * @param   array   $config    An array that holds the plugin configuration
 	 */
-
 	public function __construct(&$subject, $config = array())
 	{
 		parent::__construct($subject, $config);
@@ -177,6 +176,7 @@ class Plugin extends \JPlugin
 			$formName = 'com_fabrik.' . $formType;
 			$controlName = 'jform';
 			$this->jform = new JForm($formName, array('control' => $controlName));
+			$this->jform->model = $this;
 		}
 
 		return $this->jform;
@@ -734,7 +734,7 @@ class Plugin extends \JPlugin
 		$showAll = $input->getBool('showall', false);
 
 		// Should we highlight the PK as a recommended option
-		$highlightpk = $input->getBool('highlightpk');
+		$highlightPk = $input->getBool('highlightpk');
 
 		// Only used if showall = false, includes validations as separate entries
 		$incCalculations = $input->get('calcs', false);
@@ -774,7 +774,7 @@ class Plugin extends \JPlugin
 							$c->value = $r->Field;
 							$c->label = $r->Field;
 
-							if ($highlightpk && $r->Key === 'PRI')
+							if ($highlightPk && $r->Key === 'PRI')
 							{
 								$c->label .= ' [' . FText::_('COM_FABRIK_RECOMMENDED') . ']';
 								array_unshift($arr, $c);
@@ -797,16 +797,16 @@ class Plugin extends \JPlugin
 				* $keyType 1 = $element->id;
 				* $keyType 2 = tablename___elementname
 				*/
-				$model = new Lizt;//JModelLegacy::getInstance('List', 'FabrikFEModel');
+				$model = new Lizt;
 
 				$model->set('id', $tid);
 
 				$table = $model->getItem();
 
 				$db = $model->getDb();
-				$groups = $model->getGroupsHiarachy();
+				$groups = $model->getGroupsHierarchy();
 				$published = $input->get('published', false);
-				$showintable = $input->get('showintable', false);
+				$showInTable = $input->get('showintable', false);
 
 				foreach ($groups as $g => $groupModel)
 				{
@@ -834,7 +834,7 @@ class Plugin extends \JPlugin
 					{
 						$element = $eVal->getElement();
 
-						if ($showintable == true && $element->show_in_list_summary == 0)
+						if ($showInTable == true && $element->show_in_list_summary == 0)
 						{
 							continue;
 						}
@@ -866,7 +866,7 @@ class Plugin extends \JPlugin
 						$c->label = $label;
 
 						// Show hightlight primary key and shift to top of options
-						if ($highlightpk && $table->db_primary_key === $db->quoteName($eVal->getFullName(false, false)))
+						if ($highlightPk && $table->db_primary_key === $db->quoteName($eVal->getFullName(false, false)))
 						{
 							$c->label .= ' [' . FText::_('COM_FABRIK_RECOMMENDED') . ']';
 							array_unshift($arr, $c);

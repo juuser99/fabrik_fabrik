@@ -248,7 +248,7 @@ class FabrikFEModelExport
 
 			foreach ($this->tables as $listModel)
 			{
-				$groups = $listModel->_oForm->getGroupsHiarachy();
+				$groups = $listModel->_oForm->getGroupsHierarchy();
 				$i = 0;
 
 				foreach ($groups as $groupModel)
@@ -275,7 +275,7 @@ class FabrikFEModelExport
 					foreach ($elementModels as $elementModel)
 					{
 						$element = $elementModel->getElement();
-						$vars = get_object_vars($element);
+						$vars = get_object_vars($element->toObject());
 						$strElementXML .= "\t<element>\n";
 
 						foreach ($vars as $key => $val)
@@ -457,7 +457,7 @@ class FabrikFEModelExport
 	protected function _csvExport()
 	{
 		initGzip();
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;;
 		$id = $this->tableIds[0];
 		$listModel->setId($id);
 		$listModel->setOutPutFormat('csv');
@@ -472,7 +472,7 @@ class FabrikFEModelExport
 		$elementData = $fabrikDb->loadObjectList();
 		$aFilter = array();
 		$listModel->getForm();
-		$listModel->getFormGroupElementData();
+		$listModel->getGroupsHierarchy();
 
 		$listModel->getParams();
 		$limitLength = $listModel->getTotalRecords();

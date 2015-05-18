@@ -861,13 +861,6 @@ class Lizt extends View implements ModelFormLiztInterface
 	public function getFEModel()
 	{
 		throw new Error ('list admin model trying to load front end model - no no - its now all in admin model');
-		/*if (is_null($this->feListModel))
-		{
-			$this->feListModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$this->feListModel->set('list.id', $this->get('list.id'));
-		}
-
-		return $this->feListModel;*/
 	}
 
 	/**
@@ -1033,11 +1026,11 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			if ($type == '')
 			{
-				$objType = strtotime($value) == false ? "VARCHAR(255)" : "DATETIME";
+				$type = strtotime($value) == false ? "VARCHAR(255)" : "DATETIME";
 
 				if (strstr($value, "\n"))
 				{
-					$objType = 'TEXT';
+					$type = 'TEXT';
 				}
 			}
 			else
@@ -1045,21 +1038,21 @@ class Lizt extends View implements ModelFormLiztInterface
 				switch (String::strtolower($type))
 				{
 					case 'integer':
-						$objType = 'INT';
+						$type = 'INT';
 						break;
 					case 'datetime':
-						$objType = "DATETIME";
+						$type = "DATETIME";
 						break;
 					case 'float':
-						$objType = "DECIMAL(10,2)";
+						$type = "DECIMAL(10,2)";
 						break;
 					default:
-						$objType = "VARCHAR(255)";
+						$type = "VARCHAR(255)";
 						break;
 				}
 			}
 
-			$data[$child->getName()] = $objType;
+			$data[$child->getName()] = $type;
 		}
 
 		if (empty($data))
@@ -1070,9 +1063,9 @@ class Lizt extends View implements ModelFormLiztInterface
 		$db    = $this->_db;
 		$query = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName($name) . ' (';
 
-		foreach ($data as $fname => $objType)
+		foreach ($data as $fname => $type)
 		{
-			$query .= $db->qn($fname) . " $objType, \n";
+			$query .= $db->qn($fname) . " $type, \n";
 		}
 
 		$query .= ' primary key (' . $key . '))';
@@ -1390,7 +1383,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		// Get a list of plugins
 		$pluginKeys = $filterModel->getPluginFilterKeys();
-		$elementids = ArrayHelper::getValue($this->filters, 'elementid', array());
+		$elementIds = ArrayHelper::getValue($this->filters, 'elementid', array());
 		$sqlCond = ArrayHelper::getValue($this->filters, 'sqlCond', array());
 		$raws = ArrayHelper::getValue($this->filters, 'raw', array());
 
@@ -1400,7 +1393,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$condition = String::strtoupper($this->filters['condition'][$i]);
 			$key = $this->filters['key'][$i];
 			$filterEval = $this->filters['eval'][$i];
-			$elid = ArrayHelper::getValue($elementids, $i);
+			$elid = ArrayHelper::getValue($elementIds, $i);
 			$key2 = array_key_exists('key2', $this->filters) ? ArrayHelper::getValue($this->filters['key2'], $i, '') : '';
 
 			/* $$$ rob see if the key is a raw filter
@@ -1936,7 +1929,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		catch (Exception $e)
 		{
 			$item = $this->getTable();
-			$msg = 'Fabrik has generated an incorrect query for the list ' . $item->label . ': <br /><br /><pre>' . $e->getMessage() . '</pre>';
+			$msg = 'Fabrik has generated an incorrect query for the list ' . $item->label . ':' . $e->getMessage();
 			throw new RuntimeException($msg, 500);
 		}
 
@@ -2028,7 +2021,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	protected function addLabels(&$data)
 	{
 		$form = $this->getFormModel();
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 		$ec = count($data);
 
 		foreach ($groups as $groupModel)
@@ -2109,7 +2102,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$this->_aLinkElements = array();
 
 		// $$$ hugh - temp foreach fix
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 		$ec = count($data);
 
 		foreach ($groups as $groupModel)
@@ -2330,8 +2323,6 @@ class Lizt extends View implements ModelFormLiztInterface
 				// Done each row as its result can change
 				$canEdit = $this->canEdit($row);
 				$canView = $this->canView($row);
-				$canDelete = $this->canDelete($row);
-				$nextview = $canEdit ? 'form' : 'details';
 				$pKeyVal = array_key_exists($tmpKey, $row) ? $row->$tmpKey : '';
 				$pkCheck = array();
 				$pkCheck[] = '<div style="display:none">';
@@ -2761,7 +2752,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			return $this->recordCounts[$k];
 		}
 
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$listModel->setId($element->list_id);
 		$db = $listModel->getDb();
 		$elementModel = $listModel->getFormModel()->getElement($element->element_id, true);
@@ -2917,7 +2908,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!array_key_exists($id, $this->facettables))
 		{
-			$this->facettables[$id] = JModelLegacy::getInstance('List', 'FabrikFEModel');
+			$this->facettables[$id] = new Lizt;
 			$this->facettables[$id]->setId($id);
 		}
 
@@ -3088,7 +3079,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$params = $elementModel->getParams();
 		$customLink = trim($params->get('custom_link', ''));
 
-		if ($this->outputFormat == 'csv' || ($element->link_to_detail == 0 && $customLink == ''))
+		if ($this->outputFormat == 'csv' || ($element->get('ink_to_detail') == 0 && $customLink == ''))
 		{
 			return $data;
 		}
@@ -3155,12 +3146,12 @@ class Lizt extends View implements ModelFormLiztInterface
 			// 3.0 get either edit or view link - as viewDetailslInk now always returns the view details link
 			if ($this->canEdit($row))
 			{
-				$this->_aLinkElements[] = $element->name;
+				$this->_aLinkElements[] = $element->get('name');
 				$link = $this->editLink($row);
 			}
 			elseif ($this->canViewDetails($row))
 			{
-				$this->_aLinkElements[] = $element->name;
+				$this->_aLinkElements[] = $element->get('name');
 				$link = $this->viewDetailsLink($row);
 			}
 		}
@@ -3530,7 +3521,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$db = $this->getDb();
 		$form = $this->getFormModel();
 		$table = $this->getTable();
-		$form->getGroupsHiarachy();
+		$form->getGroupsHierarchy();
 		JDEBUG ? $profiler->mark('queryselect: fields load start') : null;
 		$fields = $this->getAsFields($mode);
 		$pk = FabrikString::safeColName($table->get('list.db_primary_key'));
@@ -3667,7 +3658,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		foreach ($elements as $element)
 		{
-			$context = 'com_' . $package . '.list' . $this->getRenderContext() . '.order.' . $element->getElement()->id;
+			$context = 'com_' . $package . '.list' . $this->getRenderContext() . '.order.' . $element->getElement()->get('id');
 
 			if ($clearOrdering)
 			{
@@ -3676,7 +3667,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			else
 			{
 				// $$$tom Added single-ordering option
-				if (!$singleOrdering || ($singleOrdering && $element->getElement()->id == $input->getInt('orderby')))
+				if (!$singleOrdering || ($singleOrdering && $element->getElement()->get('id') == $input->getInt('orderby')))
 				{
 					$dir = $session->get($context);
 
@@ -4086,7 +4077,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	public function buildQueryGroupBy($query = false)
 	{
-		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 		$pluginManager = Worker::getPluginManager();
 
 		foreach ($groups as $groupModel)
@@ -4172,7 +4163,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -4419,7 +4410,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$form = $this->getFormModel();
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -4454,7 +4445,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$form = $this->getFormModel();
 		$table = $this->getTable();
 		$aJoinObjs = $this->getJoins();
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 		$gkeys = array_keys($groups);
 		$opts = array('inc_raw' => false);
 		$mode = $this->getParams()->get('search-mode-advanced');
@@ -4530,7 +4521,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$table = $this->getTable();
 		$aJoinObjs = $this->getJoins();
 		$this->temp_db_key_addded = false;
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		$gkeys = array_keys($groups);
 
@@ -5051,7 +5042,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		if (!isset($this->_joinsNoCdd))
 		{
 			$form = $this->getFormModel();
-			$form->getGroupsHiarachy();
+			$form->getGroupsHierarchy();
 			$ignore = array('PlgFabrik_ElementCascadingdropdown');
 			$ids = $form->getElementIds($ignore);
 			$db = Worker::getDbo(true);
@@ -5188,12 +5179,10 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	public function shouldUpdateElement(&$elementModel, $origColName = null)
 	{
-		$db = Worker::getDbo();
 		$return = array(false, '', '', '', '', false);
 		$element = $elementModel->getElement();
 		$pluginManager = Worker::getPluginManager();
-		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
+		$basePlugIn = $pluginManager->getPlugIn($element->get('plugin'), 'element');
 		$fabrikDb = $this->getDb();
 		$group = $elementModel->getGroup();
 		$dropKey = false;
@@ -5232,33 +5221,33 @@ class Lizt extends View implements ModelFormLiztInterface
 		$basePlugIn->setGroupModel($elementModel->getGroupModel());
 
 		// The element type AFTER saving
-		$objtype = $elementModel->getFieldDescription();
-		$dbdescriptions = $this->storage->getDBFields($tableName, 'Field');
+		$type = $elementModel->getFieldDescription();
+		$descriptions = $this->storage->getDBFields($tableName, 'Field');
 
 		if (!$this->canAlterFields() && !$this->canAddFields())
 		{
-			$objtype = $dbdescriptions[$origColName]->Type;
+			$type = $descriptions[$origColName]->Type;
 		}
 
-		if (is_null($objtype))
+		if (is_null($type))
 		{
 			return $return;
 		}
 
-		$existingfields = array_keys($dbdescriptions);
-		$lastfield = $existingfields[count($existingfields) - 1];
+		$existingFields = array_keys($descriptions);
+		$lastField = $existingFields[count($existingFields) - 1];
 		$tableName = FabrikString::safeColName($tableName);
-		$lastfield = FabrikString::safeColName($lastfield);
+		$lastField = FabrikString::safeColName($lastField);
 		$altered = false;
 
-		if (!array_key_exists($element->name, $dbdescriptions))
+		if (!array_key_exists($element->get('name'), $descriptions))
 		{
 			if ($origColName == '')
 			{
 				if ($this->canAddFields())
 				{
 					$fabrikDb
-						->setQuery("ALTER TABLE $tableName ADD COLUMN " . FabrikString::safeColName($element->name) . " $objtype AFTER $lastfield");
+						->setQuery("ALTER TABLE $tableName ADD COLUMN " . FabrikString::safeColName($element->get('name')) . " $type AFTER $lastField");
 
 					try
 					{
@@ -5276,7 +5265,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			// return $return;
 		}
 
-		$thisFieldDesc = ArrayHelper::getValue($dbdescriptions, $origColName, new stdClass);
+		$thisFieldDesc = ArrayHelper::getValue($descriptions, $origColName, new stdClass);
 
 		/* $$$ rob the Default property for timestamps when they are set to CURRENT_TIMESTAMP
 		 * doesn't show up from getDBFields()  - so presuming a timestamp field will always default
@@ -5305,23 +5294,23 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 		/* $$$ hugh 2012/05/13 - tweaking things a little so we don't care about certain differences in type.
-		 * Initally, just integer types and signed vs unsigned.  So if the existing column is TINYINT(3) UNSIGNED
+		 * Initially, just integer types and signed vs unsigned.  So if the existing column is TINYINT(3) UNSIGNED
 		* and we think it's INT(3), i.e. that's what getFieldDescription() returns, let's treat those as functionally
 		* the same, and not change anything.  Ideally we should turn this into some kind of element model method, so
 		* we would do something like $base_existingDef = $elementModel->baseFieldDescription($existingDef), and (say) the
 		* field element, if passed "TINYINT(3) UNSIGNED" would return "INT(3)".  But for now, just tweak it here.
 		*/
-		$objtypeUpper = ' ' . String::strtoupper(trim($objtype)) . ' ';
-		$objtypeUpper = str_replace(' NOT NULL ', ' ', $objtypeUpper);
-		$objtypeUpper = str_replace(' UNSIGNED ', ' ', $objtypeUpper);
-		$objtypeUpper = str_replace(array(' INTEGER', ' TINYINT', ' SMALLINT', ' MEDIUMINT', ' BIGINT'), ' INT', $objtypeUpper);
-		$objtypeUpper = trim($objtypeUpper);
+		$typeUpper = ' ' . String::strtoupper(trim($type)) . ' ';
+		$typeUpper = str_replace(' NOT NULL ', ' ', $typeUpper);
+		$typeUpper = str_replace(' UNSIGNED ', ' ', $typeUpper);
+		$typeUpper = str_replace(array(' INTEGER', ' TINYINT', ' SMALLINT', ' MEDIUMINT', ' BIGINT'), ' INT', $typeUpper);
+		$typeUpper = trim($typeUpper);
 		$existingDef = ' ' . String::strtoupper(trim($existingDef)) . ' ';
 		$existingDef = str_replace(' UNSIGNED ', ' ', $existingDef);
 		$existingDef = str_replace(array(' INTEGER', ' TINYINT', ' SMALLINT', ' MEDIUMINT', ' BIGINT'), ' INT', $existingDef);
 		$existingDef = trim($existingDef);
 
-		if ($element->name == $origColName && $existingDef == $objtypeUpper)
+		if ($element->name == $origColName && $existingDef == $typeUpper)
 		{
 			// No changes to the element name or field type
 			return $return;
@@ -5335,18 +5324,18 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$return[4] = $existingDef;
-		$existingfields = array_keys($dbdescriptions);
-		$lastfield = $existingfields[count($existingfields) - 1];
+		$existingFields = array_keys($descriptions);
+		$lastField = $existingFields[count($existingFields) - 1];
 		$tableName = FabrikString::safeColName($tableName);
-		$lastfield = FabrikString::safeColName($lastfield);
+		$lastField = FabrikString::safeColName($lastField);
 
-		if (empty($origColName) || !in_array($origColName, $existingfields) || ($this->app->input->get('task') === 'save2copy' && $this->canAddFields()))
+		if (empty($origColName) || !in_array($origColName, $existingFields) || ($this->app->input->get('task') === 'save2copy' && $this->canAddFields()))
 		{
 			if (!$altered)
 			{
-				if (!in_array($element->name, $existingfields))
+				if (!in_array($element->get('name'), $existingFields))
 				{
-					$fabrikDb->setQuery("ALTER TABLE $tableName ADD COLUMN " . FabrikString::safeColName($element->name) . " $objtype AFTER $lastfield");
+					$fabrikDb->setQuery("ALTER TABLE $tableName ADD COLUMN " . FabrikString::safeColName($element->get('name')) . " $type AFTER $lastField");
 
 					try
 					{
@@ -5355,7 +5344,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					catch (RuntimeException $e)
 					{
 						// Don't throw error for attempting to re-add an existing db column
-						if (!array_key_exists($element->name, $dbdescriptions))
+						if (!array_key_exists($element->get('name'), $descriptions))
 						{
 							throw new ErrorException('alter structure: ' . $fabrikDb->getErrorMsg(), 500);
 						}
@@ -5369,17 +5358,17 @@ class Lizt extends View implements ModelFormLiztInterface
 			// really want to do this
 			if ($this->canAlterFields())
 			{
-				$origColName = $origColName == null ? $fabrikDb->qn($element->name) : $fabrikDb->qn($origColName);
+				$origColName = $origColName == null ? $fabrikDb->qn($element->get('name')) : $fabrikDb->qn($origColName);
 
-				if (String::strtolower($objtype) == 'blob')
+				if (String::strtolower($type) == 'blob')
 				{
 					$dropKey = true;
 				}
 
-				$q = 'ALTER TABLE ' . $tableName . ' CHANGE ' . $origColName . ' ' . FabrikString::safeColName($element->name) . ' ' . $objtype . ' ';
-				$testColName = $tableName . '.' . FabrikString::safeColName($element->name);
+				$q = 'ALTER TABLE ' . $tableName . ' CHANGE ' . $origColName . ' ' . FabrikString::safeColName($element->get('name')) . ' ' . $type . ' ';
+				$testColName = $tableName . '.' . FabrikString::safeColName($element->get('name'));
 
-				if (FabrikString::safeColName($primaryKey) == $tableName . '.' . FabrikString::safeColName($element->name) && $table->auto_inc)
+				if (FabrikString::safeColName($primaryKey) == $tableName . '.' . FabrikString::safeColName($element->get('name')) && $table->auto_inc)
 				{
 					if (!stripos($q, ' NOT NULL'))
 					{
@@ -5396,7 +5385,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				$return[0] = true;
 				$return[1] = $q;
 				$return[2] = $origColName;
-				$return[3] = $objtypeUpper;
+				$return[3] = $typeUpper;
 				$return[5] = $dropKey;
 
 				return $return;
@@ -5419,49 +5408,49 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$element = $elementModel->getElement();
 		$pluginManager = Worker::getPluginManager();
-		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
+		$basePlugIn = $pluginManager->getPlugIn($element->get('plugin'), 'element');
 		$fabrikDb = $this->getDb();
 		$table = $this->getTable();
 		$tableName = $table->get('list.db_table_name');
 
 		// $$$ rob base plugin needs to know group info for date fields in non-join repeat groups
 		$basePlugIn->setGroupModel($elementModel->getGroupModel());
-		$objtype = $elementModel->getFieldDescription();
-		$dbdescriptions = $this->storage->getDBFields($tableName);
+		$type = $elementModel->getFieldDescription();
+		$descriptions = $this->storage->getDBFields($tableName);
 
 		if (!$this->canAlterFields())
 		{
-			foreach ($dbdescriptions as $f)
+			foreach ($descriptions as $f)
 			{
 				if ($f->Field == $origColName)
 				{
-					$objtype = $f->Type;
+					$type = $f->Type;
 				}
 			}
 		}
 
-		if (!is_null($objtype))
+		if (!is_null($type))
 		{
-			foreach ($dbdescriptions as $dbdescription)
+			foreach ($descriptions as $description)
 			{
-				$fieldname = String::strtolower($dbdescription->Field);
+				$fieldName = String::strtolower($description->Field);
 
-				if (String::strtolower($element->name) == $fieldname && String::strtolower($dbdescription->Type) == String::strtolower($objtype))
+				if (String::strtolower($element->get('name')) == $fieldName && String::strtolower($description->Type) == String::strtolower($type))
 				{
 					return;
 				}
 
-				$existingfields[] = $fieldname;
+				$existingFields[] = $fieldName;
 			}
 
-			$lastfield = $fieldname;
-			$element->name = FabrikString::safeColName($element->name);
+			$lastField = $fieldName;
+			$element->set('name', FabrikString::safeColName($element->get('name')));
 			$tableName = FabrikString::safeColName($tableName);
-			$lastfield = FabrikString::safeColName($lastfield);
+			$lastField = FabrikString::safeColName($lastField);
 
-			if (empty($origColName) || !in_array(String::strtolower($origColName), $existingfields))
+			if (empty($origColName) || !in_array(String::strtolower($origColName), $existingFields))
 			{
-				$fabrikDb->setQuery("ALTER TABLE $tableName ADD COLUMN $element->name $objtype AFTER $lastfield");
+				$fabrikDb->setQuery("ALTER TABLE $tableName ADD COLUMN " . $element->get('name') . " $type AFTER $lastField");
 
 				try
 				{
@@ -5478,11 +5467,11 @@ class Lizt extends View implements ModelFormLiztInterface
 				{
 					if ($origColName == null)
 					{
-						$origColName = $element->name;
+						$origColName = $element->get('name');
 					}
 
 					$origColName = FabrikString::safeColName($origColName);
-					$fabrikDb->setQuery("ALTER TABLE $tableName CHANGE $origColName $element->name $objtype");
+					$fabrikDb->setQuery("ALTER TABLE $tableName CHANGE $origColName " . $element->get('name') . ' ' . $type);
 
 					try
 					{
@@ -5800,7 +5789,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpFilter), false);
 				}
 
-				if ($elementModel && $elementModel->getElement()->published == 0)
+				if ($elementModel && $elementModel->getElement()->get('published') == 0)
 				{
 					// Include the JLog class.
 					jimport('joomla.log.log');
@@ -5833,7 +5822,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				$filters['key2'][] = '';
 				$filters['required'][] = 0;
 				$filters['hidden'][] = false;
-				$filters['elementid'][] = $elementModel !== false ? $elementModel->getElement()->id : 0;
+				$filters['elementid'][] = $elementModel !== false ? $elementModel->getElement()->get('id') : 0;
 				$filters['raw'][] = $raw;
 				$this->prefilters = true;
 			}
@@ -5901,18 +5890,6 @@ class Lizt extends View implements ModelFormLiztInterface
 		$total = $db->loadResult();
 
 		return $total;
-	}
-
-	/**
-	 * Load in the elements for the table's form
-	 * If no form loaded for the list object then one is loaded
-	 *
-	 * @return  array	element objects
-	 */
-
-	public function getFormGroupElementData()
-	{
-		return $this->getFormModel()->getGroupsHiarachy();
 	}
 
 	/**
@@ -6037,7 +6014,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			// No list plugins expressed a preference, so check for range filters
 			$form = $this->getFormModel();
-			$groups = $form->getGroupsHiarachy();
+			$groups = $form->getGroupsHierarchy();
 
 			foreach ($groups as $groupModel)
 			{
@@ -6046,13 +6023,14 @@ class Lizt extends View implements ModelFormLiztInterface
 				foreach ($elementModels as $elementModel)
 				{
 					$element = $elementModel->getElement();
+					$filterType = $element->get('filter_type', '');
 
-					if (isset($element->filter_type) && $element->filter_type <> '')
+					if ($element->get('filter_type') <> '')
 					{
-						if ($elementModel->canView() && $elementModel->canUseFilter() && $element->show_in_list_summary == '1')
+						if ($elementModel->canView() && $elementModel->canUseFilter() && $element->get('show_in_list_summary') == '1')
 						{
 							// $$$ rob does need to check auto-compelte otherwise submission occurs without the value selected.
-							if ($element->filter_type == 'range' || $element->filter_type == 'auto-complete')
+							if ($filterType == 'range' || $filterType == 'auto-complete')
 							{
 								$this->real_filter_action = 'submitform';
 
@@ -6326,8 +6304,9 @@ class Lizt extends View implements ModelFormLiztInterface
 			// Don't do with = as this foobars up the last elementModel
 			$elementModel = $elements[$kk];
 			$element = $elementModel->getElement();
+			$filterType = $element->get('filter_type', '');
 
-			if ($element->filter_type <> '' && $element->filter_type != 'null')
+			if ($element->filter_type <> '')
 			{
 				if ($elementModel->canView() && $elementModel->canUseFilter())
 				{
@@ -6490,7 +6469,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$opts->advancedSearch = $this->getAdvancedSearchOpts();
 		$opts->advancedSearch->controller = $type;
 		$opts = json_encode($opts);
-		$fscript = "\tFabrik.filter_{$container} = new FbListFilter($opts);\n";
+		$filterScript = "\tFabrik.filter_{$container} = new FbListFilter($opts);\n";
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$filters = $this->getFilterArray();
 		$params = $this->getParams();
@@ -6530,7 +6509,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		 * will sometimes skip a group
 		* $groups = $this->getFormGroupElementData();
 		*/
-		$groups = $this->getFormGroupElementData();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -6542,18 +6521,18 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$element = $elementModel->getElement();
 
-				/*$$ rob added as some filter_types were null, have to double check that this doesnt
-				 * mess with showing the readonly values from search forms
-				*/
-				if (isset($element->filter_type) && $element->filter_type <> '' && $element->filter_type != 'null')
+				$filterType = $element->get('filter_type', '');
+
+				if ($filterType <> '')
 				{
 					if ($elementModel->canView('list') && $elementModel->canUseFilter())
 					{
+						$formId = $element->get('form_id', '');
 						/* $$$ rob in faceted browsing somehow (not sure how!) some elements from the faceted table get inserted into elementModels
 						 * with their form id set - so test if its been set and if its not the same as the current form id
 						* if so then ignore
 						*/
-						if (isset($element->form_id) && (int) $element->form_id !== 0 && $element->form_id !== $this->getFormModel()->getId())
+						if ($formId !== '' && $formId !== $this->getFormModel()->getId())
 						{
 							continue;
 						}
@@ -6562,7 +6541,7 @@ class Lizt extends View implements ModelFormLiztInterface
 						$o = new stdClass;
 						$o->name = $elementModel->getFullName(true, false);
 						$o->filter = $elementModel->getFilter($counter, true);
-						$fscript .= $elementModel->filterJS(true, $container);
+						$filterScript .= $elementModel->filterJS(true, $container);
 						$o->required = $elementModel->getParams()->get('filter_required');
 						$o->label = $elementModel->getListHeading();
 						$aFilters[] = $o;
@@ -6572,8 +6551,8 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		$fscript .= 'Fabrik.filter_' . $container . ".update();\n";
-		$this->filterJs = $fscript;
+		$filterScript .= 'Fabrik.filter_' . $container . ".update();\n";
+		$this->filterJs = $filterScript;
 
 		// Check for search form filters - if they exists create hidden elements for them
 		$keys = ArrayHelper::getValue($filters, 'key', array());
@@ -6592,7 +6571,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 				if ($elementModel)
 				{
-					$elementModel->getElement()->filter_type = 'hidden';
+					$elementModel->getElement()->set('filter_type', 'hidden');
 					$o->filter .= $elementModel->getFilter($counter, true);
 				}
 
@@ -6730,7 +6709,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					$firstFilter = $elementModel->getFilter(0, false);
 				}
 
-				$fieldNames[] = JHTML::_('select.option', $elName, strip_tags(FText::_($element->label)));
+				$fieldNames[] = JHTML::_('select.option', $elName, strip_tags(FText::_($element->get('label'))));
 			}
 		}
 
@@ -6999,7 +6978,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 		$groupHeadings = array();
 
 		$orderBys = (array) $item->get('list.order_by');
@@ -7049,14 +7028,14 @@ class Lizt extends View implements ModelFormLiztInterface
 				$element = $elementModel->getElement();
 
 				// If we define the elements to show in the list - e.g in admin list module then only show those elements
-				if (!empty($showInList) && !in_array($element->id, $showInList))
+				if (!empty($showInList) && !in_array($element->get('id'), $showInList))
 				{
 					continue;
 				}
 
 				$groupHeadings[$groupHeadingKey]++;
 				$key = $elementModel->getFullName(true, false);
-				$compsitKey = !empty($showInList) ? array_search($element->id, $showInList) . ':' . $key : $key;
+				$compsitKey = !empty($showInList) ? array_search($element->get('id'), $showInList) . ':' . $key : $key;
 				$orderKey = $elementModel->getOrderbyFullName(false);
 				$elementParams = $elementModel->getParams();
 				$label = $elementModel->getListHeading();
@@ -7134,7 +7113,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				$aTableHeadings[$compsitKey] = $heading;
 
 				// Check responsive class
-				$responsiveKey = array_search($element->id, $listClasses->responsive_elements);
+				$responsiveKey = array_search($element->get('id'), $listClasses->responsive_elements);
 				$responsiveClass = $responsiveKey !== false ? ArrayHelper::getValue($listClasses->responsive_class, $responsiveKey, '') : '';
 
 				if ($responsiveClass !== '')
@@ -7574,7 +7553,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$aMedians = array();
 		$aCounts = array();
 		$aCustoms = array();
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -7674,7 +7653,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$aHeadings = array();
 		$table = $this->getTable();
 		$formModel = $this->getFormModel();
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -7684,9 +7663,9 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$element = $elementModel->getElement();
 
-				if ($element->show_in_list_summary)
+				if ($element->get('show_in_list_summary'))
 				{
-					$aHeadings[] = $table->get('list.db_table_name') . '___' . $element->name;
+					$aHeadings[] = $table->get('list.db_table_name') . '___' . $element->get('name');
 				}
 			}
 		}
@@ -7748,7 +7727,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (is_array($rowId))
 		{
-			$rowId = array_unshift($rowId);
+			$rowId = array_shift($rowId);
 		}
 
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
@@ -7767,14 +7746,14 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($isJoin)
 		{
-			$this->getFormGroupElementData();
+			$this->getGroupsHierarchy();
 		}
 
 		$oRecord = new stdClass;
 		$aBindData = array();
 		$noRepeatFields = array();
 		$c = 0;
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -7806,7 +7785,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					foreach ($elementModels as $elementModel)
 					{
 						$element = $elementModel->getElement();
-						$key = $element->name;
+						$key = $element->get('name');
 						$fullkey = $elementModel->getFullName(true, false);
 
 						// For radio buttons and dropdowns otherwise nothing is stored for them??
@@ -8143,7 +8122,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$form = $formModel->getForm();
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		/* $$$ hugh - seems like there's no point in doing this chunk if there is no
 		 $origdata to work with?  Not sure if there's ever a valid reason for doing so,
@@ -8178,7 +8157,7 @@ class Lizt extends View implements ModelFormLiztInterface
 								continue;
 							}
 
-							$key = $element->name;
+							$key = $element->get('name');
 
 							// $$$ hugh - allow submission plugins to override RO data
 							// TODO - test this for joined data
@@ -8276,7 +8255,7 @@ class Lizt extends View implements ModelFormLiztInterface
 						 * $$$ hugh - I have a feeling this test is a Bad Thing <tm> as it is using short keys,
 						 * so if two joined groups share the same element name(s) ...
 						 */
-						if ($element->name == $key)
+						if ($element->get('name') == $key)
 						{
 							// Don't overwrite if something has been entered
 
@@ -8339,7 +8318,6 @@ class Lizt extends View implements ModelFormLiztInterface
 	 *
 	 * @return  void
 	 */
-
 	public function doCalculations()
 	{
 		$cache = Worker::getCache($this);
@@ -8363,8 +8341,8 @@ class Lizt extends View implements ModelFormLiztInterface
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 
-		JDEBUG ? $profiler->mark('cacheDoCalculations, getGroupsHiarachy: start') : null;
-		$groups = $formModel->getGroupsHiarachy();
+		JDEBUG ? $profiler->mark('cacheDoCalculations, getGroupsHierarchy: start') : null;
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -8372,7 +8350,6 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			foreach ($elementModels as $elementModel)
 			{
-				$element = $elementModel->getElement();
 				$params = $elementModel->getParams();
 				$update = false;
 
@@ -8431,13 +8408,12 @@ class Lizt extends View implements ModelFormLiztInterface
 	}
 
 	/**
-	 * Check to see if prefilter should be applied
+	 * Check to see if pre-filter should be applied
 	 *
 	 * @param   int  $gid  view access level to check against
 	 *
 	 * @return  bool  Must apply filter
 	 */
-
 	protected function mustApplyFilter($gid)
 	{
 		return in_array($gid, $this->user->getAuthorisedViewLevels());
@@ -9040,7 +9016,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$this->rowsToDelete = $rows;
-		$groupModels = $this->getFormGroupElementData();
+		$groupModels = $this->getGroupsHierarchy();
 
 		foreach ($groupModels as $groupModel)
 		{
@@ -9178,7 +9154,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	public function fieldExists($field, $ignore = array())
 	{
 		$field = String::strtolower($field);
-		$groupModels = $this->getFormGroupElementData();
+		$groupModels = $this->getGroupsHierarchy();
 
 		foreach ($groupModels as $groupModel)
 		{
@@ -9191,7 +9167,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				{
 					$element = $elementModel->getElement();
 
-					if (String::strtolower($element->name) == $field && !in_array($element->id, $ignore))
+					if (String::strtolower($element->get('name')) == $field && !in_array($element->get('id'), $ignore))
 					{
 						return true;
 					}
@@ -9403,7 +9379,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$itemId = Worker::itemId();
 		$keyIdentifier = $this->getKeyIdentifier($row);
-		$table = $this->getTable();
+		$item = $this->getItem();
 		$view = 'details';
 		$customLink = $this->getCustomLink('url', 'details');
 
@@ -9417,15 +9393,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				$link .= COM_FABRIK_LIVESITE;
 			}
 
-			if ($this->app->isAdmin())
-			{
-				$link .= 'index.php?option=com_' . $package . '&task=' . $view . '.view&id=' . $this->getId() . $keyIdentifier;
-			}
-			else
-			{
-				$link .= 'index.php?option=com_' . $package . '&view=' . $view . '&formid=' . $table->form_id . $keyIdentifier . '&Itemid=' . $itemId;
-			}
-
+			$link .= 'index.php?option=com_' . $package . '&view=' . $view . '&id=' . $item->get('id') . $keyIdentifier . '&Itemid=' . $itemId;
 			$link = JRoute::_($link);
 		}
 		else
@@ -9476,7 +9444,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	}
 
 	/**
-	 * Get a custome link
+	 * Get a custom link
 	 *
 	 * @param   string  $type  link type
 	 * @param   string  $mode  edit/details link
@@ -9977,7 +9945,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	public static function columnData($listId, $col, $distinct = true, $opts = array())
 	{
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$listModel->setId($listId);
 		$listModel->filters = ArrayHelper::getValue($opts, 'filters');
 		$table = $listModel->getTable();
@@ -10068,7 +10036,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	public function getElementsOfType($plugin)
 	{
 		$found = array();
-		$groups = $this->getFormGroupElementData();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -10078,7 +10046,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$element = $elementModel->getElement();
 
-				if ($element->plugin == $plugin)
+				if ($element->get('plugin') == $plugin)
 				{
 					$found[] = $elementModel;
 				}
@@ -10111,7 +10079,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			$this->elements[$sig] = array();
 			$found = array();
-			$groups = $this->getFormGroupElementData();
+			$groups = $this->getGroupsHierarchy();
 
 			foreach (array_keys($groups) as $gid)
 			{
@@ -10122,7 +10090,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				{
 					$element = $elementModel->getElement();
 
-					if ($element->published == 0 && $onlyPublished)
+					if ($element->get('published') == 0 && $onlyPublished)
 					{
 						continue;
 					}
@@ -10150,7 +10118,7 @@ class Lizt extends View implements ModelFormLiztInterface
 							$this->elements[$sig][$dbkey] = $elementModel;
 							break;
 						case 'id':
-							$this->elements[$sig][$element->id] = $elementModel;
+							$this->elements[$sig][$element->get('id')] = $elementModel;
 							break;
 						default:
 							$this->elements[$sig][] = $elementModel;
@@ -10179,7 +10147,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$form = $this->getFormModel();
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		foreach ($groups as $group)
 		{
@@ -10189,7 +10157,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$element = $elementModel->getElement();
 
-				if ($element->show_in_list_summary && $elementModel->requiresLightBox())
+				if ($element->get('show_in_list_summary') && $elementModel->requiresLightBox())
 				{
 					return true;
 				}
@@ -10208,7 +10176,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	public function requiresSlideshow()
 	{
 		$form = $this->getFormModel();
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		foreach ($groups as $group)
 		{
@@ -10218,7 +10186,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$element = $elementModel->getElement();
 
-				if ($element->show_in_list_summary && $elementModel->requiresSlideshow())
+				if ($element->get('show_in_list_summary') && $elementModel->requiresSlideshow())
 				{
 					return true;
 				}
@@ -10250,11 +10218,11 @@ class Lizt extends View implements ModelFormLiztInterface
 	public function getAdvancedElementFilter()
 	{
 		$input = $this->app->input;
-		$elementid = $input->getId('elid');
+		$elementId = $input->getId('elid');
 		$pluginManager = Worker::getPluginManager();
 		$className = $input->get('plugin');
 		$plugin = $pluginManager->getPlugIn($className, 'element');
-		$plugin->setId($elementid);
+		$plugin->setId($elementId);
 		$el = $plugin->getElement();
 
 		if ($this->app->input->get('context') == 'visualization')
@@ -10439,7 +10407,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$form = $this->getFormModel();
 		$script = '';
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 		$run = array();
 
 		foreach ($groups as $groupModel)
@@ -10450,9 +10418,9 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$element = $elementModel->getElement();
 
-				if (!in_array($element->plugin, $run))
+				if (!in_array($element->get('plugin'), $run))
 				{
-					$run[] = $element->plugin;
+					$run[] = $element->get('plugin');
 					$elementModel->tableJavascriptClass($srcs);
 				}
 
@@ -10704,7 +10672,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$this->_aLinkElements = array();
 
 		// $$$ hugh - temp foreach fix
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 		$ec = count($data);
 
 		foreach ($groups as $groupModel)
@@ -11369,7 +11337,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	protected function setElementTmpl()
 	{
 		$tmpl = $this->getTmpl();
-		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 		$params = $this->getParams();
 
 		foreach ($groups as $groupModel)
@@ -11854,7 +11822,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$ids = array();
 		$form = $this->getFormModel();
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -11881,7 +11849,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$form = $this->getFormModel();
 		$alwaysRender = array();
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -12191,7 +12159,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$w = new Worker;
 		$formModel = $this->getFormModel();
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 		$showInList = $this->showInList();
 		$cols = array();
 
@@ -12216,12 +12184,12 @@ class Lizt extends View implements ModelFormLiztInterface
 					$element = $elementModel->getElement();
 
 					// If we define the elements to show in the list - e.g in admin list module then only show those elements
-					if (!empty($showInList) && !in_array($element->id, $showInList))
+					if (!empty($showInList) && !in_array($element->get('id'), $showInList))
 					{
 						continue;
 					}
 
-					$cols[$group->get('id')]['elements'][$elementModel->getFullName(true, false)] = $elementModel->getElement()->label;
+					$cols[$group->get('id')]['elements'][$elementModel->getFullName(true, false)] = $elementModel->getElement()->get('label');
 				}
 			}
 		}

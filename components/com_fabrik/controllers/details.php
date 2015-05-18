@@ -455,17 +455,17 @@ class FabrikControllerDetails extends FabrikController
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$ids = array($this->input->get('rowid', 0, 'string'));
 
-		$listid = $this->input->getInt('listid');
-		$limitstart = $this->input->getInt('limitstart' . $listid);
-		$length = $this->input->getInt('limit' . $listid);
+		$listId = $this->input->getInt('listid');
+		$limitstart = $this->input->getInt('limitstart' . $listId);
+		$length = $this->input->getInt('limit' . $listId);
 
 		$oldtotal = $model->getTotalRecords();
-		$model->setId($listid);
+		$model->setId($listId);
 		$model->deleteRows($ids);
 
 		$total = $oldtotal - count($ids);
 
-		$ref = $this->input->get('fabrik_referrer', "index.php?option=com_' . $package . '&view=table&listid=$listid", 'string');
+		$ref = $this->input->get('fabrik_referrer', "index.php?option=com_' . $package . '&view=table&listid=$listId", 'string');
 
 		if ($total >= $limitstart)
 		{
@@ -476,7 +476,7 @@ class FabrikControllerDetails extends FabrikController
 				$newlimitstart = 0;
 			}
 
-			$ref = str_replace("limitstart$listid=$limitstart", "limitstart$listid=$newlimitstart", $ref);
+			$ref = str_replace("limitstart$listId=$limitstart", "limitstart$listId=$newlimitstart", $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
 			$this->app->setUserState($context . 'limitstart', $newlimitstart);
 		}

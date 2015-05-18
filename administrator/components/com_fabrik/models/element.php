@@ -14,10 +14,13 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Exception;
+use JDate;
+use JEventDispatcher;
 use Joomla\String\String;
 use \JPluginHelper as JPluginHelper;
-use \JModelLegacy as JModelLegacy;
 use \FText as FText;
+use RuntimeException;
 use \stdClass as stdClass;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
@@ -25,7 +28,7 @@ use \JText as JText;
 use \JComponentHelper as JComponentHelper;
 use \JForm as JForm;
 use \Joomla\Registry\Registry as JRegistry;
-use \Fabrik\Models\PluginManager as PluginManager;
+use \FabrikString as FabrikString;
 
 interface ModelElementFormInterface
 {
@@ -76,18 +79,6 @@ class Element extends Base implements ModelElementFormInterface
 		'#__update_categories', '#__update_sites', '#__update_sites_extensions', '#__updates', '#__user_profiles', '#__user_usergroup_map',
 		'#__usergroups', '#__users', '#__viewlevels', '#__weblinks');
 
-	/**
-	 * Get elements
-	 *
-	 * @deprecated since 3.1b2
-	 *
-	 * @return array
-	 */
-
-	public function getElements()
-	{
-		return array();
-	}
 
 	/**
 	 * Toggle adding / removing the element from the list view
@@ -247,11 +238,11 @@ class Element extends Base implements ModelElementFormInterface
 
 	public function getPluginHTML($plugin = null)
 	{
-		$item = $this->getItem();
+		$item = $this->getElement();
 
 		if (is_null($plugin))
 		{
-			$plugin = isset($item->plugin) ? $item->plugin : '';
+			$plugin = $item->get('plugin', '');
 		}
 		// FIXME - not showing plugin options when you load the form.
 // Should not be setting input directly in a model - poor design
@@ -266,7 +257,8 @@ class Element extends Base implements ModelElementFormInterface
 		else
 		{
 			$plugin = $pluginManager->getPlugIn($plugin, 'Element');
-			$str    = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
+			$plugin->setModel($this);
+			$str = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
 		}
 
 		return $str;
@@ -290,7 +282,9 @@ class Element extends Base implements ModelElementFormInterface
 	 *
 	 * @param   array $data The data to validate.
 	 *
-	 * @return mixed  false or data
+	 * @throws RunTimeException
+	 *
+	 * @return array  data
 	 */
 	public function validate($data)
 	{
@@ -305,43 +299,44 @@ class Element extends Base implements ModelElementFormInterface
 
 		$db           = Worker::getDbo(true);
 		$elementModel = $this->getElementPluginModel($data);
-		$nameChanged  = $data['name'] !== $elementModel->getElement()->name;
-		$elementModel->getElement()->bind($data);
+		$nameChanged  = $data['name'] !== $elementModel->getElement()->get('name');
+		$elementModel->getElement()->loadArray($data);
 		$listModel = $elementModel->getListModel();
 
-		if ($data['id'] == '')
+		if ($data['id'] == '0')
 		{
 			// Have to forcefully set group id otherwise listmodel id is blank
-			$elementModel->getElement()->group_id = $data['group_id'];
+			/*$elementModel->getElement()->set('group_id', $data['group_id']);
+			echo "<pre>";print_r($elementModel->getElement());*/
 
 			if ($listModel->canAddFields() === false && $listModel->noTable() === false)
 			{
-				$this->setError(FText::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
+				throw new RuntimeException(FText::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
 			}
 
 			if (Worker::isReserved($data['name']))
 			{
-				$this->setError(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
+				throw new RuntimeException(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
 			}
 		}
 		else
 		{
 			if ($listModel->canAlterFields() === false && $nameChanged && $listModel->noTable() === false)
 			{
-				$this->setError(FText::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
+				throw new RuntimeException(FText::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
 			}
 
 			if ($nameChanged && Worker::isReserved($data['name'], false))
 			{
-				$this->setError(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
+				throw new RuntimeException(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
 			}
 		}
 
-		$listModel = $elementModel->getListModel();
 		/**
 		 * Test for duplicate names
 		 * unlinking produces this error
 		 */
+
 		if (!$input->get('unlink', false) && (int) $data['id'] === 0)
 		{
 			$query = $db->getQuery(true);
@@ -356,12 +351,12 @@ class Element extends Base implements ModelElementFormInterface
 			{
 				if ($listModel->fieldExists($data['name'], $ignore))
 				{
-					$this->setError(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
+					throw new Exception(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
 				}
 			}
 			else
 			{
-				$joinListModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+				$joinListModel = new Join;
 				$joinListModel->setId($joinTblId);
 				$joinEls = $joinListModel->getElements();
 
@@ -375,14 +370,14 @@ class Element extends Base implements ModelElementFormInterface
 
 				if ($joinListModel->fieldExists($data['name'], $ignore))
 				{
-					$this->setError(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
+					throw new Exception(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
 				}
 			}
 		}
 		// Strip <p> tag from label
 		$data['label'] = String::str_ireplace(array('<p>', '</p>'), '', $data['label']);
 
-		return count($this->getErrors()) == 0 ? $data : false;
+		return $data;
 	}
 
 	/**
@@ -392,12 +387,12 @@ class Element extends Base implements ModelElementFormInterface
 	 *
 	 * @return  object  element model
 	 */
-
 	private function getElementPluginModel($data)
 	{
 		$pluginManager = new PluginManager;
 		$id            = $data['id'];
 		$elementModel  = $pluginManager->getPlugIn($data['plugin'], 'element');
+		$elementModel->setModel($this);
 		/**
 		 * $$$ rob f3 - need to bind the data in here otherwise validate fails on dup name test (as no group_id set)
 		 * $$$ rob 29/06/2011 removed as you can't then test name changes in validate() so now bind should be done after
@@ -424,64 +419,33 @@ class Element extends Base implements ModelElementFormInterface
 		if ($config->get('fbConf_wysiwyg_label', 0) == 0)
 		{
 			// Ensure the data is in the same format as when saved by the wysiwyg element e.g. < becomes &lt;
-			$data['label'] = htmlspecialchars($data->label);
+			$data['label'] = htmlspecialchars($data['label']);
 		}
 
-		jimport('joomla.utilities.date');
-		$user                  = JFactory::getUser();
-		$input                 = $this->app->input;
-		$new                   = $data['id'] == 0 ? true : false;
-		$params                = $data['params'];
-		$data['name']          = FabrikString::iclean($data['name']);
-		$name                  = $data['name'];
-		$params['validations'] = ArrayHelper::getValue($data, 'validationrule', array());
-		$elementModel          = $this->getElementPluginModel($data);
-		$elementModel->getElement()->bind($data);
-		$origId = $input->getInt('id');
-		$row    = $elementModel->getElement();
+		$input        = $this->app->input;
+		$new          = $data['id'] == 0 ? true : false;
+		$data['name'] = FabrikString::iclean($data['name']);
+		$name         = $data['name'];
+		$elementModel = $this->getElementPluginModel($data);
+		$row          = $elementModel->getElement()->loadArray($data);
+		$row->set('params.validations', ArrayHelper::getValue($data, 'validationrule', array()));
 
 		if ($new)
 		{
-			// Have to forcefully set group id otherwise listmodel id is blank
-			$elementModel->getElement()->group_id = $data['group_id'];
+			$row->set('id', uniqid());
 		}
+		$origId = $input->getString('id');
 
 		$listModel = $elementModel->getListModel();
-		$item      = $listModel->getTable();
+		$this->listModel = $listModel;
+		$item      = $listModel->getItem();
 
-		// Are we updating the name of the primary key element?
-
-		if ($row->name === FabrikString::shortColName($item->db_primary_key))
-		{
-			if ($name !== $row->name)
-			{
-				// Yes we are so update the table
-				$item->db_primary_key = str_replace($row->name, $name, $item->db_primary_key);
-				$item->store();
-			}
-		}
-
-		$jsons = array('sub_values', 'sub_labels', 'sub_initial_selection');
-
-		foreach ($jsons as $json)
-		{
-			if (array_key_exists($json, $data))
-			{
-				$data[$json] = json_encode($data[$json]);
-			}
-		}
 		// Only update the element name if we can alter existing columns, otherwise the name and field name become out of sync
-		$data['name'] = ($listModel->canAlterFields() || $new || $listModel->noTable()) ? $name : $input->get('name_orig', '');
+		$name = ($listModel->canAlterFields() || $new || $listModel->noTable()) ? $name : $input->get('name_orig', '');
+		$row->set('name', $name);
+		$this->prepareSaveListPrimaryKey($item, $row);
 
-		$ar = array('published', 'use_in_page_title', 'show_in_list_summary', 'link_to_detail', 'can_order', 'filter_exact_match');
-
-		foreach ($ar as $a)
-		{
-			if (!array_key_exists($a, $data))
-			{
-				$data[$a] = 0;
-			}
-		}
+		$this->prepareSaveDefaults($row);
 
 		/**
 		 * $$$ rob - test for change in element type
@@ -489,27 +453,145 @@ class Element extends Base implements ModelElementFormInterface
 		 * entry from the #__fabrik_joins table
 		 */
 		$elementModel->beforeSave($row);
+		$this->prepareSaveDates($row);
+		$this->prepareSaveValidations($elementModel, $row);
 
-		// Unlink linked elements
-		if ($input->get('unlink') == 'on')
+		// FIXME - ordering of elements
+
+		$origName = $input->get('name_orig', '');
+		list($update, $q, $oldName, $newDesc, $origDesc) = $listModel->shouldUpdateElement($elementModel, $origName);
+
+		if ($update && $input->get('task') !== 'save2copy')
 		{
-			$data['parent_id'] = 0;
-		}
+			$origPlugin = $input->get('plugin_orig');
+			$prefix     = $this->config->get('dbprefix');
+			$tableName  = $listModel->getItem()->get('list.db_table_name');
+			$hasPrefix  = (strstr($tableName, $prefix) === false) ? false : true;
+			$tableName  = str_replace($prefix, '#__', $tableName);
 
-		$datenow = new JDate;
+			if (in_array($tableName, $this->core))
+			{
+				$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
+			}
+			else
+			{
+				if ($hasPrefix)
+				{
+					$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
+				}
+			}
 
-		if ($row->id != 0)
-		{
-			$data['modified']    = $datenow->toSql();
-			$data['modified_by'] = $user->get('id');
+			$this->app->setUserState('com_fabrik.confirmUpdate', 1);
+
+			$this->app->setUserState('com_fabrik.plugin_orig', $origPlugin);
+			$this->app->setUserState('com_fabrik.q', $q);
+			$this->app->setUserState('com_fabrik.newdesc', $newDesc);
+			$this->app->setUserState('com_fabrik.origDesc', $origDesc);
+
+			$this->app->setUserState('com_fabrik.origplugin', $origPlugin);
+			$this->app->setUserState('com_fabrik.oldname', $oldName);
+			$this->app->setUserState('com_fabrik.newname', $data['name']);
+			$this->app->setUserState('com_fabrik.origtask', $input->get('task'));
+			$this->app->setUserState('com_fabrik.plugin', $data['plugin']);
+			$task = $input->get('task');
+			$url  = 'index.php?option=com_fabrik&view=element&layout=confirmupdate&id=' . $origId . '&origplugin=' . $origPlugin . '&origtask='
+				. $task . '&plugin=' . $row->get('plugin');
+			$this->app->setUserState('com_fabrik.redirect', $url);
 		}
 		else
 		{
-			$data['created']          = $datenow->toSql();
-			$data['created_by']       = $user->get('id');
-			$data['created_by_alias'] = $user->get('username');
+			$this->app->setUserState('com_fabrik.confirmUpdate', 0);
 		}
 
+		if ($item->get('list.db_table_name', '') !== '')
+		{
+			$this->updateIndexes($elementModel, $listModel, $row);
+		}
+
+
+		$this->updateJavascript($row);
+		$elementModel->setId($row->get('id'));
+		$this->createRepeatElement($elementModel, $row);
+
+		// If new, check if the element's db table is used by other tables and if so add the element  to each of those tables' groups
+		if ($new)
+		{
+			$this->addElementToOtherDbTables($elementModel, $row);
+		}
+
+		$elementModel->onSave($data);
+
+		parent::cleanCache('com_fabrik');
+
+		$groupKey = $this->groupKey($row->get('group_id'));
+		$fields = $item->get("form.groups.$groupKey.fields");
+		$fields->$name = $row->toObject();
+		$item->set("form.groups.$groupKey.fields", $fields);
+		$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $item->get('view') . '.json';
+		$output = json_encode($item->toObject(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+		file_put_contents($file, $output);
+		return true;
+	}
+
+	protected function groupKey($groupId)
+	{
+		$item = $this->getListModel()->getItem();
+		$groups = $item->get('form.groups');
+
+		foreach ($groups as $groupKey => $group)
+		{
+			if ($group->id === $groupId)
+			{
+				return $groupKey;
+			}
+		}
+	}
+
+	protected function prepareSaveListPrimaryKey(&$item, $row)
+	{
+		// Are we updating the name of the primary key element?
+		if ($row->get('name') === FabrikString::shortColName($item->get('list.db_primary_key')))
+		{
+			$pk = $item->get('list.db_primary_key');
+			$bits = explode('.', $pk);
+			$bits[1] = $row->get('name');
+			$pk = join('.', $pk);
+			$item->set('list.db_primary_key', $pk);
+		}
+
+	}
+
+	protected function prepareSaveDefaults(&$row)
+	{
+		$ar = array('published', 'use_in_page_title', 'show_in_list_summary', 'link_to_detail', 'can_order', 'filter_exact_match');
+
+		foreach ($ar as $a)
+		{
+			$row->set($a, 0);
+		}
+	}
+
+	protected function prepareSaveDates(&$row)
+	{
+		jimport('joomla.utilities.date');
+		$user    = $this->user;
+		$dateNow = new JDate;
+
+		if ($row->get('id') != 0)
+		{
+			$row->set('modified', $dateNow->toSql());
+			$row->set('modified_by', $user->get('id'));
+		}
+		else
+		{
+			$row->set('created', $dateNow->toSql());
+			$row->set('created_by', $user->get('id'));
+			$row->set('created_by_alias', $user->get('username'));
+		}
+	}
+
+	protected function prepareSaveValidations($elementModel, &$row)
+	{
 		/**
 		 * $$$ hugh
 		 * This insane chunk of code is needed because the validation rule params are not in sequential,
@@ -539,7 +621,7 @@ class Element extends Base implements ModelElementFormInterface
 			$plugin_form = $plugin->getJForm();
 			JForm::addFormPath(JPATH_SITE . '/plugins/fabrik_validationrule/' . $plugin->get('pluginName'));
 			$xmlFile = JPATH_SITE . '/plugins/fabrik_validationrule/' . $plugin->get('pluginName') . '/forms/fields.xml';
-			$xml     = $plugin->jform->loadFile($xmlFile, false);
+			$plugin->jform->loadFile($xmlFile, false);
 
 			foreach ($plugin_form->getFieldsets() as $fieldset)
 			{
@@ -563,121 +645,25 @@ class Element extends Base implements ModelElementFormInterface
 				}
 			}
 		}
-
-		$data['params'] = json_encode($params);
-		$row->params    = $data['params'];
-		$cond           = 'group_id = ' . (int) $row->group_id;
-
-		if ($new)
-		{
-			$data['ordering'] = $row->getNextOrder($cond);
-		}
-
-		$row->reorder($cond);
-		/**
-		 * $$$ hugh - shouldn't updateChildIds() happen AFTER we save the main row?
-		 * Same place we do updateJavascript()?
-		 */
-		$this->updateChildIds($row);
-		$elementModel->getElement()->bind($data);
-		$origName = $input->get('name_orig', '');
-		list($update, $q, $oldName, $newDesc, $origDesc) = $listModel->shouldUpdateElement($elementModel, $origName);
-
-		if ($update && $input->get('task') !== 'save2copy')
-		{
-			$origPlugin = $input->get('plugin_orig');
-			$prefix     = $this->config->get('dbprefix');
-			$tableName  = $listModel->getTable()->db_table_name;
-			$hasPrefix  = (strstr($tableName, $prefix) === false) ? false : true;
-			$tableName  = str_replace($prefix, '#__', $tableName);
-
-			if (in_array($tableName, $this->core))
-			{
-				$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
-			}
-			else
-			{
-				if ($hasPrefix)
-				{
-					$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
-				}
-			}
-
-			$this->app->setUserState('com_fabrik.confirmUpdate', 1);
-
-			$this->app->setUserState('com_fabrik.plugin_orig', $origPlugin);
-			$this->app->setUserState('com_fabrik.q', $q);
-			$this->app->setUserState('com_fabrik.newdesc', $newDesc);
-			$this->app->setUserState('com_fabrik.origDesc', $origDesc);
-
-			$this->app->setUserState('com_fabrik.origplugin', $origPlugin);
-			$this->app->setUserState('com_fabrik.oldname', $oldName);
-			$this->app->setUserState('com_fabrik.newname', $data['name']);
-			$this->app->setUserState('com_fabrik.origtask', $input->get('task'));
-			$this->app->setUserState('com_fabrik.plugin', $data['plugin']);
-			$task = $input->get('task');
-			$url  = 'index.php?option=com_fabrik&view=element&layout=confirmupdate&id=' . (int) $origId . '&origplugin=' . $origPlugin . '&origtask='
-				. $task . '&plugin=' . $row->plugin;
-			$this->app->setUserState('com_fabrik.redirect', $url);
-		}
-		else
-		{
-			$this->app->setUserState('com_fabrik.confirmUpdate', 0);
-		}
-
-		if ((int) $listModel->getTable()->id !== 0)
-		{
-			$this->updateIndexes($elementModel, $listModel, $row);
-		}
-
-		$return = parent::save($data);
-
-		if ($return)
-		{
-			$this->updateJavascript($data);
-			$elementModel->setId($this->get($this->getName() . '.id'));
-			$row->id    = $elementModel->getId();
-			$data['id'] = $row->id;
-			$this->createRepeatElement($elementModel, $row);
-
-			// If new, check if the element's db table is used by other tables and if so add the element  to each of those tables' groups
-			if ($new)
-			{
-				$this->addElementToOtherDbTables($elementModel, $row);
-			}
-
-			if (!$elementModel->onSave($data))
-			{
-				$this->setError(FText::_('COM_FABRIK_ERROR_SAVING_ELEMENT_PLUGIN_OPTIONS'));
-
-				return false;
-			}
-		}
-
-		parent::cleanCache('com_fabrik');
-
-		return $return;
-		/**
-		 * used for prefab
-		 * return $elementModel;
-		 */
 	}
 
 	/**
 	 * When saving an element, it may need to be added to other Fabrik lists
 	 * If those lists point to the same database table.
 	 *
-	 * @param   object $elementModel element
-	 * @param   object $row          item
+	 * @param   object    $elementModel element
+	 * @param   JRegistry $row          item
 	 *
 	 * @return  void
 	 */
 
 	private function addElementToOtherDbTables($elementModel, $row)
 	{
+		// FIXME for 3.5
+		return;
 		$db            = Worker::getDbo(true);
 		$list          = $elementModel->getListModel()->getTable();
-		$origElid      = $row->id;
+		$origElid      = $row->get('id');
 		$tmpgroupModel = $elementModel->getGroup();
 		$config        = JComponentHelper::getParams('com_fabrik');
 
@@ -696,10 +682,10 @@ class Element extends Base implements ModelElementFormInterface
 		$query->join('INNER', '#__fabrik_forms AS f ON l.form_id = f.id');
 		$query->join('LEFT', '#__fabrik_formgroup AS fg ON f.id = fg.form_id');
 		$query->join('LEFT', '#__fabrik_groups AS g ON fg.group_id = g.id');
-		$query->where("db_table_name = " . $db->quote($dbname) . " AND l.id !=" . (int) $list->id . " AND is_join = 0");
+		$query->where("db_table_name = " . $db->q($dbname) . " AND l.id !=" . (int) $list->id . " AND is_join = 0");
 
 		$db->setQuery($query);
-		$othertables = $db->loadObjectList('id');
+		$otherTables = $db->loadObjectList('id');
 
 		/**
 		 * $$$ rob 20/02/2012 if you have 2 lists, counters, regions and then you join regions to countries to get a new group "countries - [regions]"
@@ -710,12 +696,12 @@ class Element extends Base implements ModelElementFormInterface
 		$query->select('DISTINCT(l.id) AS id, l.db_table_name, l.label, l.form_id, l.label AS form_label, fg.group_id AS group_id')
 			->from('#__fabrik_joins AS j')->join('LEFT', '#__fabrik_formgroup AS fg ON fg.group_id = j.group_id')
 			->join('LEFT', '#__fabrik_forms AS f ON fg.form_id = f.id')->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id')
-			->where('j.table_join = ' . $db->quote($dbname) . ' AND j.list_id <> 0 AND j.element_id = 0 AND list_id <> ' . (int) $list->id);
+			->where('j.table_join = ' . $db->q($dbname) . ' AND j.list_id <> 0 AND j.element_id = 0 AND list_id <> ' . (int) $list->id);
 		$db->setQuery($query);
 		$joinedLists = $db->loadObjectList('id');
-		$othertables = array_merge($joinedLists, $othertables);
+		$otherTables = array_merge($joinedLists, $otherTables);
 
-		if (!empty($othertables))
+		if (!empty($otherTables))
 		{
 			/**
 			 * $$$ hugh - we use $row after this, so we need to work on a copy, otherwise
@@ -723,21 +709,22 @@ class Element extends Base implements ModelElementFormInterface
 			 */
 			$rowCopy = clone ($row);
 
-			foreach ($othertables as $listid => $t)
+			foreach ($otherTables as $listId => $t)
 			{
-				$rowCopy->id        = 0;
-				$rowCopy->parent_id = $origElid;
-				$rowCopy->group_id  = $t->group_id;
-				$rowCopy->name      = str_replace('`', '', $rowCopy->name);
+				$rowCopy->set('id', 0);
+				$rowCopy->set('group_id', $t->group_id);
+				$rowCopy->set('name', str_replace('`', '', $rowCopy->name));
 
 				if ($config->get('unpublish_clones', false))
 				{
-					$rowCopy->published = 0;
+					$rowCopy->set('published', 0);
 				}
 
+				// FIXME cant store JRegistry
 				$rowCopy->store();
 
 				// Copy join records
+				// FIXME
 				$join = $this->getTable('join');
 
 				if ($join->load(array('element_id' => $origElid)))
@@ -745,7 +732,7 @@ class Element extends Base implements ModelElementFormInterface
 					$join->id = 0;
 					unset($join->id);
 					$join->element_id = $rowCopy->id;
-					$join->list_id    = $listid;
+					$join->list_id    = $listId;
 					$join->store();
 				}
 			}
@@ -753,95 +740,18 @@ class Element extends Base implements ModelElementFormInterface
 	}
 
 	/**
-	 * Update child elements
-	 *
-	 * @param   object &$row element
-	 *
-	 * @return  mixed
-	 */
-
-	private function updateChildIds(&$row)
-	{
-		if ((int) $row->id === 0)
-		{
-			// New element so don't update child ids
-
-			return;
-		}
-
-		$ids           = $this->getElementDescendents($row->id);
-		$ignore        = array(
-			'_tbl',
-			'_tbl_key',
-			'_db',
-			'id',
-			'group_id',
-			'created',
-			'created_by',
-			'parent_id',
-			'ordering',
-			'published',
-			'checked_out_time',
-			'show_in_list_summary'
-		);
-		$pluginManager = new PluginManager;
-
-		foreach ($ids as $id)
-		{
-			$plugin = $pluginManager->getElementPlugin($id);
-			$leave  = $plugin->getFixedChildParameters();
-			$item   = $plugin->getElement();
-
-			foreach ($row as $key => $val)
-			{
-				if (!in_array($key, $ignore))
-				{
-					if ($key == 'params')
-					{
-						$origParams = json_decode($item->params);
-						$newParams  = json_decode($val);
-
-						foreach ($newParams as $pKey => $pVal)
-						{
-							if (!in_array($pKey, $leave))
-							{
-								$origParams->$pKey = $pVal;
-							}
-						}
-
-						$val = json_encode($origParams);
-					}
-					else
-					{
-						// $$$rob - i can't replicate bug #138 but this should fix things anyway???
-						if ($key == 'name')
-						{
-							$val = str_replace("`", '', $val);
-						}
-					}
-
-					$item->$key = $val;
-				}
-			}
-
-			$item->store();
-		}
-
-		return true;
-	}
-
-	/**
 	 * Update table indexes based on element settings
 	 *
-	 * @param   object &$elementModel element model
-	 * @param   object &$listModel    list model
-	 * @param   object &$row          element item
+	 * @param   object    &$elementModel element model
+	 * @param   object    &$listModel    list model
+	 * @param   JRegistry &$row          element item
 	 *
 	 * @return  void
 	 */
-
 	private function updateIndexes(&$elementModel, &$listModel, &$row)
 	{
+		return;
+		// FIXME for 3.5
 		if ($elementModel->getGroup()->isJoin())
 		{
 			return;
@@ -854,20 +764,20 @@ class Element extends Base implements ModelElementFormInterface
 
 		if ($elementModel->getParams()->get('can_order'))
 		{
-			$listModel->addIndex($row->name, 'order', 'INDEX', $size);
+			$listModel->addIndex($row->get('name'), 'order', 'INDEX', $size);
 		}
 		else
 		{
-			$listModel->dropIndex($row->name, 'order', 'INDEX');
+			$listModel->dropIndex($row->get('name'), 'order', 'INDEX');
 		}
 
-		if ($row->filter_type != '')
+		if ($row->get('filter_type', '') !== '')
 		{
-			$listModel->addIndex($row->name, 'filter', 'INDEX', $size);
+			$listModel->addIndex($row->get('name'), 'filter', 'INDEX', $size);
 		}
 		else
 		{
-			$listModel->dropIndex($row->name, 'filter', 'INDEX');
+			$listModel->dropIndex($row->get('name'), 'filter', 'INDEX');
 		}
 	}
 
@@ -875,21 +785,22 @@ class Element extends Base implements ModelElementFormInterface
 	 * Delete old javascript actions for the element
 	 * & add new javascript actions
 	 *
-	 * @param   array $data to save
+	 * @param   JRegistry $row to save
 	 *
 	 * @return void
 	 */
 
-	protected function updateJavascript($data)
+	protected function updateJavascript($row)
 	{
+		// FIXME for 3.5
 		/**
 		 * $$$ hugh - 2012/04/02
 		 * updated to apply js changes to descendants as well.  NOTE that this means
 		 * all descendants (i.e. children of children, etc.), not just direct children.
 		 */
-		$input   = $this->app->input;
+		return;
+		/*$input   = $this->app->input;
 		$this_id = $this->get($this->getName() . '.id');
-		$ids     = $this->getElementDescendents($this_id);
 		$ids[]   = $this_id;
 		$db      = Worker::getDbo(true);
 		$query   = $db->getQuery(true);
@@ -926,38 +837,13 @@ class Element extends Base implements ModelElementFormInterface
 				$query = $db->getQuery(true);
 				$query->insert('#__fabrik_jsactions');
 				$query->set('element_id = ' . (int) $id);
-				$query->set('action = ' . $db->quote($jsAction));
-				$query->set('code = ' . $db->quote($code));
+				$query->set('action = ' . $db->q($jsAction));
+				$query->set('code = ' . $db->q($code));
 				$query->set('params = \'' . $params . "'");
 				$db->setQuery($query);
 				$db->execute();
 			}
-		}
-	}
-
-	/**
-	 * Take an array of group ids and return the corresponding element
-	 * used in list publish code
-	 *
-	 * @param   array $ids group ids
-	 *
-	 * @return  array  element ids
-	 */
-
-	public function swapGroupToElementIds($ids = array())
-	{
-		if (empty($ids))
-		{
-			return array();
-		}
-
-		ArrayHelper::toInteger($ids);
-		$db    = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		ArrayHelper::toInteger($ids);
-		$query->select('id')->from('#__fabrik_elements')->where('group_id IN (' . implode(',', $ids) . ')');
-
-		return $db->setQuery($query)->loadColumn();
+		}*/
 	}
 
 	/**
@@ -1136,8 +1022,8 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Get the name of the repeated elements table
 	 *
-	 * @param   object $elementModel element model
-	 * @param   object $row          element item
+	 * @param   object    $elementModel element model
+	 * @param   JRegistry $row          element item
 	 *
 	 * @return  string    table name
 	 */
@@ -1161,48 +1047,12 @@ class Element extends Base implements ModelElementFormInterface
 			$origTableName = $listModel->getTable()->db_table_name;
 		}
 
-		return $origTableName . '_repeat_' . str_replace('`', '', $row->name);
+		return $origTableName . '_repeat_' . str_replace('`', '', $row->get('name'));
 	}
 
 	public function getElement()
 	{
 		return $this->element;
-	}
-
-	/**
-	 * Gets the element's parent element
-	 *
-	 * @return  mixed    0 if no parent, object if exists.
-	 */
-
-	public function getParent()
-	{
-		// FIXME
-		return 0;
-		$item            = $this->getItem();
-		$item->parent_id = (int) $item->parent_id;
-
-		if ($item->parent_id === 0)
-		{
-			$parent = 0;
-		}
-		else
-		{
-			$db    = Worker::getDbo(true);
-			$query = $db->getQuery(true);
-			$query->select('*')->from('#__fabrik_elements')->where('id = ' . (int) $item->parent_id);
-			$db->setQuery($query);
-			$parent = $db->loadObject();
-
-			if (is_null($parent))
-			{
-				// Perhaps the parent element was deleted?
-				$parent          = 0;
-				$item->parent_id = 0;
-			}
-		}
-
-		return $parent;
 	}
 
 	/**
@@ -1218,37 +1068,6 @@ class Element extends Base implements ModelElementFormInterface
 	protected function getReorderConditions($table)
 	{
 		return array('group_id = ' . $table->group_id);
-	}
-
-	/**
-	 * Recursively get all linked children of an element
-	 *
-	 * @param   int $id element id
-	 *
-	 * @return  array
-	 */
-
-	protected function getElementDescendents($id = 0)
-	{
-		if (empty($id))
-		{
-			$id = $this->get($this->getName() . '.id');
-		}
-
-		$db    = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		$query->select('id')->from('#__fabrik_elements')->where('parent_id = ' . (int) $id);
-		$db->setQuery($query);
-		$kids     = $db->loadObjectList();
-		$all_kids = array();
-
-		foreach ($kids as $kid)
-		{
-			$all_kids[] = $kid->id;
-			$all_kids   = array_merge($this->getElementDescendents($kid->id), $all_kids);
-		}
-
-		return $all_kids;
 	}
 
 	/**
@@ -1275,7 +1094,7 @@ class Element extends Base implements ModelElementFormInterface
 		$this->aValidations = array();
 
 		$dispatcher = JEventDispatcher::getInstance();
-		$ok         = JPluginHelper::importPlugin('fabrik_validationrule');
+		JPluginHelper::importPlugin('fabrik_validationrule');
 
 		foreach ($usedPlugins as $usedPlugin)
 		{
@@ -1331,6 +1150,12 @@ class Element extends Base implements ModelElementFormInterface
 					$form->bind($field);
 				}
 			}
+		}
+
+		if (!$this->element)
+		{
+			$field         = array('id' => 0, 'checked_out' => '', 'name' => '', 'plugin' => '');
+			$this->element = new JRegistry($field);
 		}
 
 		$form->model = $this;

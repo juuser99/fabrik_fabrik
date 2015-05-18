@@ -426,7 +426,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 			foreach ($obsValue as &$v)
 			{
-				$v = $db->quote($v);
+				$v = $db->q($v);
 			}
 
 			$where = $obsName . ' IN (' . implode(',', $obsValue) . ')';
@@ -436,7 +436,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 			if (is_array($ids))
 			{
-				array_walk($ids, create_function('&$val', '$db = $this->db;$val = $db->quote($val);'));
+				array_walk($ids, create_function('&$val', '$db = $this->db;$val = $db->q($val);'));
 				$this->autocomplete_where = empty($ids) ? '1 = -1' : $key . ' IN (' . implode(',', $ids) . ')';
 			}
 		}
@@ -459,7 +459,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 	protected function _replaceAjaxOptsWithDbJoinOpts(&$opts)
 	{
-		$groups = $this->getFormModel()->getGroupsHiarachy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 		$watch = $this->getWatchFullName();
 
 		foreach ($groups as $groupModel)
@@ -680,23 +680,6 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			}
 
 			$this->watchElement = $this->getFormModel()->getElement($watch, true);
-
-			if (!$this->watchElement)
-			{
-				// This element is a child element, so $watch is in the parent element (in another form)
-				$pluginManager = Worker::getPluginManager();
-				$parent = $pluginManager->getElementPlugin($watch);
-
-				// These are the possible watch elements
-				$children = $parent->getElementDescendents();
-
-				// Match the possible element ids with the current form's element ids
-				$elids = $this->getFormModel()->getElementIds();
-				$matched = array_values(array_intersect($elids, $children));
-
-				// Load the matched element
-				$this->watchElement = $pluginManager->getElementPlugin($matched[0]);
-			}
 		}
 
 		return $this->watchElement;
@@ -729,7 +712,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$params = $this->getParams();
 		$watch = $this->getWatchFullName();
 		$whereVal = null;
-		$groups = $this->getForm()->getGroupsHiarachy();
+		$groups = $this->getForm()->getGroupsHierarchy();
 		$formModel = $this->getFormModel();
 		$watchElement = $this->getWatchElement();
 
@@ -848,7 +831,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			}
 			else
 			{
-				$where .= $whereKey . ' = ' . $db->quote($whereVal);
+				$where .= $whereKey . ' = ' . $db->q($whereVal);
 			}
 		}
 
@@ -888,7 +871,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$key = $this->queryKey();
 		$orderBy = 'text';
 		$tables = $this->getFormModel()->getLinkedFabrikLists($params->get('join_db_name'));
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;;
 		$val = $params->get('cascadingdropdown_label_concat');
 
 		if (!empty($val))
@@ -908,7 +891,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 				$listModel->setId($tid);
 				$listModel->getTable();
 				$formModel = $this->getForm();
-				$formModel->getGroupsHiarachy();
+				$formModel->getGroupsHierarchy();
 				$orderBy = $val;
 
 				// See if any of the tables elements match the db joins val/text
@@ -1142,7 +1125,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$params = $this->getParams();
 		$observer = $params->get('cascadingdropdown_observe');
 		$formModel = $this->getForm();
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -1152,7 +1135,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			{
 				$element = $elementModel->getElement();
 
-				if ($observer == $element->name)
+				if ($observer == $element->get('name'))
 				{
 					return $elementModel;
 				}
@@ -1232,20 +1215,6 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		{
 			return JError::raiseWarning(500, $element->getError());
 		}
-	}
-
-	/**
-	 * Return an array of parameter names which should not get updated if a linked element's parent is saved
-	 * notably any parameter which references another element id should be returned in this array
-	 * called from admin element model updateChildIds()
-	 * see cascadingdropdown element for example
-	 *
-	 * @return  array	parameter names to not alter
-	 */
-
-	public function getFixedChildParameters()
-	{
-		return array('cascadingdropdown_observe');
 	}
 
 	/**

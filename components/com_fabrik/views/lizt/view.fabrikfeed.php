@@ -76,7 +76,7 @@ class FabrikViewList extends FabrikViewListBase
 
 		// Get headings
 		$aTableHeadings = array();
-		$groupModels = $formModel->getGroupsHiarachy();
+		$groupModels = $formModel->getGroupsHierarchy();
 		$titleEl = $params->get('feed_title');
 		$dateEl = (int) $params->get('feed_date');
 
@@ -98,7 +98,7 @@ class FabrikViewList extends FabrikViewListBase
 
 				if ($elParams->get('show_in_rss_feed') == '1')
 				{
-					$heading = $element->label;
+					$heading = $element->get('label');
 
 					if ($elParams->get('show_label_in_rss_feed') == '1')
 					{
@@ -113,7 +113,7 @@ class FabrikViewList extends FabrikViewListBase
 					$aTableHeadings[$heading]['dbField'] = $element->name;
 
 					// $$$ hugh - adding enclosure stuff for podcasting
-					if ($element->plugin == 'fileupload' || $elParams->get('use_as_rss_enclosure', '0') == '1')
+					if ($element->get('plugin') == 'fileupload' || $elParams->get('use_as_rss_enclosure', '0') == '1')
 					{
 						$aTableHeadings[$heading]['enclosure'] = true;
 					}
@@ -128,11 +128,11 @@ class FabrikViewList extends FabrikViewListBase
 		foreach ($aJoinsToThisKey as $element)
 		{
 			$element = $elementModel->getElement();
-			$elParams = new JRegistry($element->attribs);
+			$elParams = $elementModel->getParams();
 
 			if ($elParams->get('show_in_rss_feed') == '1')
 			{
-				$heading = $element->label;
+				$heading = $element->get('label');
 
 				if ($elParams->get('show_label_in_rss_feed') == '1')
 				{
@@ -143,8 +143,8 @@ class FabrikViewList extends FabrikViewListBase
 					$aTableHeadings[$heading]['label'] = '';
 				}
 
-				$aTableHeadings[$heading]['colName'] = $element->db_table_name . "___" . $element->name;
-				$aTableHeadings[$heading]['dbField'] = $element->name;
+				$aTableHeadings[$heading]['colName'] = $element->get('db_table_name') . "___" . $element->get('name');
+				$aTableHeadings[$heading]['dbField'] = $element->get('name');
 
 				// $$$ hugh - adding enclosure stuff for podcasting
 				if ($element->plugin == 'fileupload' || $elParams->get('use_as_rss_enclosure', '0') == '1')

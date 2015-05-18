@@ -143,7 +143,7 @@ class FabrikTableForm extends FabTable
 				return false;
 			}
 			// Add the search tuple to the query.
-			$query->where($this->_db->quoteName($this->_tbl) . '.' . $this->_db->quoteName($field) . ' = ' . $this->_db->quote($value));
+			$query->where($this->_db->quoteName($this->_tbl) . '.' . $this->_db->quoteName($field) . ' = ' . $this->_db->q($value));
 		}
 
 		$query->join('LEFT', '#__fabrik_lists AS l ON l.form_id = ' . $this->_tbl . '.id');

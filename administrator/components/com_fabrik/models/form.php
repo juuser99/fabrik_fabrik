@@ -14,6 +14,8 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Models\FormSession;
+use Fabrik\Admin\Models\Lizt;
 use Joomla\Utilities\ArrayHelper;
 use \JForm as JForm;
 use Fabrik\Helpers\Worker;
@@ -512,7 +514,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  string  rowid
 	 */
-
 	public function getRowId()
 	{
 		if (isset($this->rowId))
@@ -796,7 +797,7 @@ class Form extends View implements ModelFormFormInterface
 		if (!isset($this->elementsNotInList))
 		{
 			$this->elementsNotInList = array();
-			$groups = $this->getGroupsHiarachy();
+			$groups = $this->getGroupsHierarchy();
 
 			foreach ($groups as $group)
 			{
@@ -807,8 +808,9 @@ class Form extends View implements ModelFormFormInterface
 					if ($elementModel->canView() || $elementModel->canUse())
 					{
 						$element = $elementModel->getElement();
+						$show = $element->get('show_in_list_summary', '');
 
-						if (!isset($element->show_in_list_summary) || !$element->show_in_list_summary)
+						if ($show)
 						{
 							$this->elementsNotInList[] = $element;
 						}
@@ -829,7 +831,7 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$profiler = JProfiler::getInstance('Application');
-		JDEBUG ? $profiler->mark('formmodel render: start') : null;
+		JDEBUG ? $profiler->mark('form model render: start') : null;
 
 		// $$$rob required in paolo's site when rendering modules with ajax option turned on
 		$this->listModel = null;
@@ -894,7 +896,7 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$item = $this->getItem();
 
-		if ($item->get('list.record_in_database') == 0)
+		if ($item->get('form.record_in_database') == 0)
 		{
 			return 2;
 		}
@@ -1022,10 +1024,10 @@ class Form extends View implements ModelFormFormInterface
 
 		$data = $clean_request;
 		$item = $this->getItem();
-		$aGroups = $this->getGroupsHiarachy();
+		$aGroups = $this->getGroupsHierarchy();
 		JDEBUG ? $profiler->mark('formmodel getData: groups loaded') : null;
 
-		if (!$item->get('list.record_in_database'))
+		if (!$item->get('form.record_in_database'))
 		{
 			FabrikHelperHTML::debug($data, 'form:getData from $_REQUEST');
 			$data = $f->clean($_REQUEST, 'array');
@@ -1089,7 +1091,7 @@ class Form extends View implements ModelFormFormInterface
 						 * but from this point on, code is expecting even non-repeat join data to be arrays.
 						 */
 						$tmp_data = unserialize($sessionRow->data);
-						$groups = $this->getGroupsHiarachy();
+						$groups = $this->getGroupsHierarchy();
 
 						foreach ($groups as $groupModel)
 						{
@@ -1211,14 +1213,15 @@ class Form extends View implements ModelFormFormInterface
 	}
 
 	/**
-	 * Is the page a multipage form?
+	 * Is the page a multi-page form?
 	 *
 	 * @return  bool
 	 */
 	public function isMultiPage()
 	{
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
+		/* @var $groupModel \Fabrik\Admin\Models\Group */
 		foreach ($groups as $groupModel)
 		{
 			$params = $groupModel->getParams();
@@ -1383,21 +1386,22 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return	string	Browser title
 	 */
-
 	public function getPageTitle($title = '')
 	{
 		$title = $title == '' ? $this->getLabel() : $title;
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
+		/* @var $groupModel \Fabrik\Admin\Models\Group */
 		foreach ($groups as $groupModel)
 		{
 			$elementModels = $groupModel->getPublishedElements();
 
+			/* @var $elementModel \Fabrik\Plugins\Element */
 			foreach ($elementModels as $elementModel)
 			{
 				$element = $elementModel->getElement();
 
-				if ($element->use_in_page_title == '1')
+				if ($element->get('use_in_page_title') == '1')
 				{
 					$title .= ' ' . $elementModel->getTitlePart($this->data);
 				}
@@ -1425,7 +1429,7 @@ class Form extends View implements ModelFormFormInterface
 		}
 
 		$arJoinGroupIds = array();
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -1461,7 +1465,7 @@ class Form extends View implements ModelFormFormInterface
 		$j = new JRegistry;
 		$aJsActions = array();
 		$aElIds = array();
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -1473,8 +1477,8 @@ class Form extends View implements ModelFormFormInterface
 				 * which we should now be doing ... and getParent() causes an extra table lookup for every child
 				 * element on the form.
 				 */
-				$aJsActions[$elementModel->getElement()->id] = array();
-				$aElIds[] = (int) $elementModel->getElement()->id;
+				$aJsActions[$elementModel->getElement()->get('id')] = array();
+				$aElIds[] = $elementModel->getElement()->get('id');
 			}
 		}
 
@@ -1595,7 +1599,7 @@ class Form extends View implements ModelFormFormInterface
 
 	public function getFormEncType()
 	{
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -1626,7 +1630,7 @@ class Form extends View implements ModelFormFormInterface
 
 	public function runElementPlugins($method, $data)
 	{
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -1775,7 +1779,7 @@ class Form extends View implements ModelFormFormInterface
 		$item = $this->getItem();
 		$pluginManager = Worker::getPluginManager();
 
-		$sessionModel = JModelLegacy::getInstance('Formsession', 'FabrikFEModel');
+		$sessionModel = new FormSession;
 		$sessionModel->setFormId($this->getId());
 		$sessionModel->setRowId($this->rowId);
 		/* $$$ rob rowId can be updated by juser plugin so plugin can use check (for new/edit)
@@ -1783,8 +1787,8 @@ class Form extends View implements ModelFormFormInterface
 		 */
 		$this->origRowId = $this->rowId;
 
-		JDEBUG ? $profiler->mark('process, getGroupsHiarachy: start') : null;
-		$this->getGroupsHiarachy();
+		JDEBUG ? $profiler->mark('process, getGroupsHierarchy: start') : null;
+		$this->getGroupsHierarchy();
 
 		if ($item->get('form.record_in_database') == '1')
 		{
@@ -2228,9 +2232,10 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$input = $this->app->input;
 		$repeatTotals = $input->get('fabrik_repeat_group', array(0), 'post', 'array');
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		// Currently this is just used by calculation elements
+		/* @var $groupModel \Fabrik\Admin\Models\Group */
 		foreach ($groups as $groupModel)
 		{
 			$group = $groupModel->getGroup();
@@ -2276,7 +2281,7 @@ class Form extends View implements ModelFormFormInterface
 
 				foreach ($elements as $elementModel)
 				{
-					$name = $elementModel->getElement()->name;
+					$name = $elementModel->getElement()->get('name');
 					$data[$name] = '';
 					$data[$name . '_raw'] = '';
 				}
@@ -2375,6 +2380,7 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$groupModels = $this->getGroups();
 
+		/* @var $groupModel \Fabrik\Admin\Models\Group */
 		foreach ($groupModels as $groupModel)
 		{
 			// Jaanus: if group is visible
@@ -2397,12 +2403,14 @@ class Form extends View implements ModelFormFormInterface
 
 	protected function processElements()
 	{
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
+		/* @var $groupModel \Fabrik\Admin\Models\Group */
 		foreach ($groups as $groupModel)
 		{
 			$elementModels = $groupModel->getPublishedElements();
 
+			/* @var $elementModel \Fabrik\Plugins\Element */
 			foreach ($elementModels as $elementModel)
 			{
 				$elementModel->onFinalStoreRow($this->formData);
@@ -2415,7 +2423,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return void
 	 */
-
 	public function processToDB()
 	{
 		$profiler = JProfiler::getInstance('Application');
@@ -2423,7 +2430,6 @@ class Form extends View implements ModelFormFormInterface
 
 		$pluginManager = Worker::getPluginManager();
 		$listModel = $this->getListModel();
-		$item = $listModel->getTable();
 		$origId = $this->prepareForCopy();
 		$this->formData = $listModel->removeTableNameFromSaveData($this->formData, '___');
 
@@ -2457,15 +2463,15 @@ class Form extends View implements ModelFormFormInterface
 	/**
 	 * Saves the form data to the database
 	 *
-	 * @param   int  $rowId  If '' then insert a new row - otherwise update this row id
+	 * @param   mixed  $rowId  If '' then insert a new row - otherwise update this row id
 	 *
 	 * @return	mixed	insert id (or rowid if updating existing row) if ok, else string error message
 	 */
 
 	protected function submitToDatabase($rowId = '')
 	{
-		$this->getGroupsHiarachy();
-		$groups = $this->getGroupsHiarachy();
+		$this->getGroupsHierarchy();
+		$groups = $this->getGroupsHierarchy();
 		$listModel = $this->getListModel();
 		$listModel->encrypt = array();
 		$data = array();
@@ -2484,7 +2490,7 @@ class Form extends View implements ModelFormFormInterface
 			{
 				if ($elementModel->encryptMe())
 				{
-					$listModel->encrypt[] = $elementModel->getElement()->name;
+					$listModel->encrypt[] = $elementModel->getElement()->get('name');
 				}
 				// Following line added to fix importcsv where data from first row is used for every row.
 				$elementModel->defaults = null;
@@ -2561,7 +2567,7 @@ class Form extends View implements ModelFormFormInterface
 	{
 		if (array_key_exists('fabrik_vars', $_REQUEST) && array_key_exists('querystring', $_REQUEST['fabrik_vars']))
 		{
-			$groups = $this->getGroupsHiarachy();
+			$groups = $this->getGroupsHierarchy();
 			$crypt = Worker::getCrypt();
 			$w = new Worker;
 
@@ -2571,8 +2577,6 @@ class Form extends View implements ModelFormFormInterface
 
 				foreach ($elementModels as $elementModel)
 				{
-					$element = $elementModel->getElement();
-
 					foreach ($_REQUEST['fabrik_vars']['querystring'] as $key => $encrypted)
 					{
 						if ($elementModel->getFullName(true, false) == $key)
@@ -2668,7 +2672,7 @@ class Form extends View implements ModelFormFormInterface
 
 	protected function copyToFromRaw(&$post, $direction = 'toraw', $override = false)
 	{
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 		$input = $this->app->input;
 
 		foreach ($groups as $groupModel)
@@ -2774,7 +2778,7 @@ class Form extends View implements ModelFormFormInterface
 		// Add in raw fields - the data is already in raw format so just copy the values
 		$this->copyToRaw($post);
 
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 		$repeatTotals = $input->get('fabrik_repeat_group', array(0), 'array');
 		$ajaxPost = $input->getBool('fabrik_ajax');
 		$joindata = array();
@@ -2799,7 +2803,6 @@ class Form extends View implements ModelFormFormInterface
 				}
 
 				$elDbVals = array();
-				$element = $elementModel->getElement();
 				$validation_rules = $elementModel->validator->findAll();
 
 				// $$ rob incorrect for ajax validation on joined elements
@@ -2964,8 +2967,8 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . $this->getRowId() . '.';
-		echo "form get errors";
-		// Store errors in local array as clearErrors() removes $this->errors
+		// Store errors in loca
+		//l array as clearErrors() removes $this->errors
 		$errors = array();
 
 		if (empty($this->errors))
@@ -3152,7 +3155,7 @@ class Form extends View implements ModelFormFormInterface
 	public function getElementIds($ignore = array(), $opts = array())
 	{
 		$aEls = array();
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -3198,7 +3201,7 @@ class Form extends View implements ModelFormFormInterface
 		{
 			$element = $elementModel->getElement();
 
-			if (!(ArrayHelper::getValue($opts, 'includePublised', true) && $element->published == 0))
+			if (!(ArrayHelper::getValue($opts, 'includePublised', true) && $element->get('published') == 0))
 			{
 				$aEls[] = (int) $element->id;
 			}
@@ -3323,7 +3326,7 @@ class Form extends View implements ModelFormFormInterface
 			$data[0] = new stdClass;
 		}
 
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 		/**
 		 * $$$ hugh - adding the "PK's seen" stuff, otherwise we end up adding multiple
 		 * rows when we have multiple repeat groups.  For instance, if we had two repeated
@@ -3456,7 +3459,7 @@ class Form extends View implements ModelFormFormInterface
 	protected function getSessionData()
 	{
 		$params = $this->getParams();
-		$this->sessionModel = JModelLegacy::getInstance('Formsession', 'FabrikFEModel');
+		$this->sessionModel = new FormSession;
 		$this->sessionModel->setFormId($this->getId());
 		$this->sessionModel->setRowId($this->rowId);
 		$useCookie = (int) $params->get('multipage_save', 0) === 2 ? true : false;
@@ -3645,7 +3648,7 @@ class Form extends View implements ModelFormFormInterface
 	 */
 	public function hasElement($searchName, $checkInt = false, $checkShort = true)
 	{
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -3662,7 +3665,7 @@ class Form extends View implements ModelFormFormInterface
 
 				if ($checkInt)
 				{
-					if ($searchName == $element->id)
+					if ($searchName == $element->get('id'))
 					{
 						$this->currentElement = $elementModel;
 
@@ -3670,7 +3673,7 @@ class Form extends View implements ModelFormFormInterface
 					}
 				}
 
-				if ($searchName == $element->name && $checkShort)
+				if ($searchName == $element->get('name') && $checkShort)
 				{
 					$this->currentElement = $elementModel;
 
@@ -3739,7 +3742,7 @@ class Form extends View implements ModelFormFormInterface
 
 		$this->pages = new stdClass;
 		$pageCounter = 0;
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 		$c = 0;
 
 		foreach ($groups as $groupModel)
@@ -3813,7 +3816,7 @@ class Form extends View implements ModelFormFormInterface
 
 	protected function _reduceDataForXRepeatedJoins()
 	{
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 		$listModel = $this->getListModel();
 		$pkField = '';
 
@@ -4141,7 +4144,7 @@ class Form extends View implements ModelFormFormInterface
 		}
 
 		$listModel = $this->getListModel();
-		$referringTable = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$referringTable = new Lizt;
 
 		// $$$ rob - not sure that referring_table is anything other than the form's table id
 		// but for now just defaulting to that if no other variable found (e.g when links in sef urls)
@@ -4277,7 +4280,7 @@ class Form extends View implements ModelFormFormInterface
 
 		/*
 		$horiz = true;
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $gkey => $groupModel)
 		{
@@ -4568,7 +4571,7 @@ class Form extends View implements ModelFormFormInterface
 		$this->readOnlyVals = array();
 
 		// $$$ hugh - temp foreach fix
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $gkey => $groupModel)
 		{
@@ -4864,7 +4867,7 @@ class Form extends View implements ModelFormFormInterface
 			 * Not sure if we need to actually unset the group published elements list,
 			 * but for the moment I'm just using a Big Hammer to get the content plugin working!
 			 */
-			$groups = $this->getGroupsHiarachy();
+			$groups = $this->getGroupsHierarchy();
 
 			foreach ($groups as $groupModel)
 			{
@@ -5200,7 +5203,8 @@ class Form extends View implements ModelFormFormInterface
 
 	public function jsKey()
 	{
-		$key = $this->isEditable() ? 'form_' . $this->getId() : 'details_' . $this->getId();
+		$id = FabrikString::clean($this->getId());
+		$key = $this->isEditable() ? 'form_' . $id : 'details_' . $id;
 
 		if ($this->getRowId() != '')
 		{
@@ -5221,7 +5225,7 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$accessibleData = $this->data;
 
-		$groups = $this->getGroupsHiarachy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{

@@ -39,23 +39,6 @@ JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 </script>
 <form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 
-	<?php
-	if ($this->item->parent_id != 0)
-	{
-		?>
-		<div id="system-message" class="alert alert-notice">
-			<strong><?php echo FText::_('COM_FABRIK_ELEMENT_PROPERTIES_LINKED_TO') ?>: <?php echo $this->parent->label ?></strong>
-
-			<p>
-				<a href="#" id="swapToParent" class="element_<?php echo $this->parent->id ?>"><span class="icon-pencil"></span>
-					<?php echo FText::_('COM_FABRIK_EDIT') . ' ' . $this->parent->label ?></a></p>
-
-			<label><?php echo FText::_('COM_FABRIK_OR')?> <span class="icon-magnet"></span>
-				<input id="unlink" name="unlink" id="unlinkFromParent" type="checkbox"> <?php echo FText::_('COM_FABRIK_UNLINK') ?>
-			</label>
-		</div>
-	<?php
-	} ?>
 	<div class="row-fluid" id="elementFormTable">
 
 		<div class="span2">

@@ -63,10 +63,9 @@ class FabrikControllerForm extends FabrikController
 	 *
 	 * @return  null
 	 */
-
 	public function inlineedit()
 	{
-		$model = JModelLegacy::getInstance('FormInlineEdit', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\FormInlineEdit;
 		$model->render();
 	}
 
@@ -113,14 +112,7 @@ class FabrikControllerForm extends FabrikController
 		// If we can't edit the record redirect to details view
 		if ($model->checkAccessFromListSettings() <= 1)
 		{
-			if ($this->app->isAdmin())
-			{
-				$url = 'index.php?option=com_fabrik&task=details.view&formid=' . $input->getInt('formid') . '&rowid=' . $input->get('rowid', '', 'string');
-			}
-			else
-			{
-				$url = 'index.php?option=com_' . $package . '&view=details&formid=' . $input->getInt('formid') . '&rowid=' . $input->get('rowid', '', 'string');
-			}
+			$url = 'index.php?option=com_' . $package . '&view=details&formid=' . $input->getInt('formid') . '&rowid=' . $input->get('rowid', '', 'string');
 
 			$msg = $model->aclMessage();
 			$this->setRedirect(JRoute::_($url), $msg, 'notice');
@@ -559,17 +551,17 @@ class FabrikControllerForm extends FabrikController
 		$model   = $this->getModel('list', 'FabrikFEModel');
 		$ids     = array($input->get('rowid', 0));
 
-		$listid     = $input->getInt('listid');
-		$limitstart = $input->getInt('limitstart' . $listid);
-		$length     = $input->getInt('limit' . $listid);
+		$listId     = $input->getInt('listid');
+		$limitstart = $input->getInt('limitstart' . $listId);
+		$length     = $input->getInt('limit' . $listId);
 
 		$oldtotal = $model->getTotalRecords();
-		$model->setId($listid);
+		$model->setId($listId);
 		$ok = $model->deleteRows($ids);
 
 		$total = $oldtotal - count($ids);
 
-		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listid, 'string');
+		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listId, 'string');
 
 		if ($total >= $limitstart)
 		{
@@ -580,14 +572,14 @@ class FabrikControllerForm extends FabrikController
 				$newlimitstart = 0;
 			}
 
-			$ref     = str_replace("limitstart$listid=$limitstart", "limitstart$listid=$newlimitstart", $ref);
+			$ref     = str_replace("limitstart$listId=$limitstart", "limitstart$listId=$newlimitstart", $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
 			$this->app->setUserState($context . 'limitstart', $newlimitstart);
 		}
 
 		if ($input->get('format') == 'raw')
 		{
-			$app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listid . '&format=raw');
+			$app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listId . '&format=raw');
 		}
 		else
 		{

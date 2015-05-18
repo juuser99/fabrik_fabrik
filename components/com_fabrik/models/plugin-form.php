@@ -287,7 +287,7 @@ class PlgFabrik_Form extends Plugin
 		$model->emailData = array();
 
 		// $$$ hugh - temp foreach fix
-		$groups = $model->getGroupsHiarachy();
+		$groups = $model->getGroupsHierarchy();
 
 		foreach ($groups as $gkey => $groupModel)
 		{

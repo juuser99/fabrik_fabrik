@@ -42,7 +42,7 @@ class FabrikViewCron extends JViewLegacy
 		$visualization = $model->getVisualization();
 		$pluginParams = $model->getPluginParams();
 
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikModel');
+		$pluginManager = new \Fabrik\Admin\Models\PluginManager;
 		$plugin = $pluginManager->getPlugIn($visualization->plugin, 'visualization');
 		$plugin->_row = $visualization;
 

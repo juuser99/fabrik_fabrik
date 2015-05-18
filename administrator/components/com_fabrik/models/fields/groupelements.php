@@ -44,7 +44,7 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 		$rows[FText::_('COM_FABRIK_ELEMENTS')] = array();
 
 		// Get available element types
-		$groups = $model->getFormModel()->getGroupsHiarachy();
+		$groups = $model->getFormModel()->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{

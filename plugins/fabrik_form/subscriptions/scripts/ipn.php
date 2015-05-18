@@ -561,7 +561,7 @@ class FabrikSubscriptionsIPN
 	{
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('subscr_id')->from('#__fabrik_subs_invoices')->where('id = ' . $db->quote($inv));
+		$query->select('subscr_id')->from('#__fabrik_subs_invoices')->where('id = ' . $db->q($inv));
 		$db->setQuery($query);
 		$subid = (int) $db->loadResult();
 		if ($subid === 0)

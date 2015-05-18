@@ -13,12 +13,14 @@ namespace Fabrik\Plugins;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Exception;
+use Fabrik\Admin\Models\Form;
+use Fabrik\Admin\Models\Group;
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Validator;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
-use \JModelLegacy as JModelLegacy;
 use \stdClass as stdClass;
 use \JRegistry as JRegistry;
 use \JTable as JTable;
@@ -38,7 +40,6 @@ use \JComponentHelper as JComponentHelper;
  * @package  Fabrik
  * @since    3.0
  */
-
 class Element extends Plugin
 {
 	/**
@@ -204,13 +205,6 @@ class Element extends Plugin
 	protected $iconsSet = false;
 
 	/**
-	 * Parent element row - if no parent returns element
-	 *
-	 * @var object
-	 */
-	protected $parent = null;
-
-	/**
 	 * Actual table name (table or joined tables db table name)
 	 *
 	 * @var string
@@ -303,18 +297,14 @@ class Element extends Plugin
 	 *
 	 * @param   bool  $force  default false - force load the element
 	 *
-	 * @return  object  element table
+	 * @return  JRegistry  element table
 	 */
 
 	public function &getElement($force = false)
 	{
 		if (!$this->element || $force)
 		{
-			// FIXME - no longer loading from table!
-			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$row = FabTable::getInstance('Element', 'FabrikTable');
-			$row->load($this->id);
-			$this->element = $row;
+			$this->element = $this->getModel()->getElement();
 
 			// 3.1 reset the params at the same time. Seems to be required for ajax autocomplete
 			if ($force)
@@ -328,43 +318,17 @@ class Element extends Plugin
 	}
 
 	/**
-	 * Get parent element
-	 *
-	 * @return  object  element table
-	 */
-
-	public function getParent()
-	{
-		if (!isset($this->parent))
-		{
-			$element = $this->getElement();
-
-			if ((int) $element->parent_id !== 0)
-			{
-				$this->parent = FabTable::getInstance('element', 'FabrikTable');
-				$this->parent->load($element->parent_id);
-			}
-			else
-			{
-				$this->parent = $element;
-			}
-		}
-
-		return $this->parent;
-	}
-
-	/**
 	 * Bind data to the _element variable - if possible we should run one query to get all the forms
 	 * element data and then iterate over that, creating an element plugin for each row
 	 * and bind each record to that plugins _element. This is instead of using getElement() which
 	 * reloads in the element increasing the number of queries run
 	 *
-	 * @param   stdClass  &$row
+	 * @param   JRegistry  &$row
 	 *
-	 * @return  object  element table
+	 * @return  JRegistry  element info
 	 */
 
-	public function bindToElement(stdClass &$row)
+	public function bindToElement(JRegistry &$row)
 	{
 		$this->element = $row;
 
@@ -417,20 +381,19 @@ class Element extends Plugin
 	public function &getGroup($groupId = null)
 	{
 		// @todo ensure that the element is always loaded inside a group context.
-		/*if (is_null($groupId))
+		if (is_null($groupId))
 		{
 			$element = $this->getElement();
-			$groupId = $element->group_id;
+			$groupId = $element->get('group_id');
 		}
 
-		echo "group id = $groupId";exit;
 		if (is_null($this->group) || $this->group->getId() != $groupId)
 		{
-			$model = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+			$model = new Group;
 			$model->setId($groupId);
-			$model->getGroup();
+			$group = $model->getGroup();
 			$this->group = $model;
-		}*/
+		}
 
 		return $this->group;
 	}
@@ -460,7 +423,7 @@ class Element extends Plugin
 
 	public function setGroupModel($group)
 	{
-		$this->_group = $group;
+		$this->group = $group;
 	}
 
 	/**
@@ -488,7 +451,7 @@ class Element extends Plugin
 		{
 			$listModel = $this->getListModel();
 			$table = $listModel->getTable();
-			$this->form = JModelLegacy::getInstance('form', 'FabrikFEModel');
+			$this->form = new Form;
 			$this->form->setId($table->form_id);
 			$this->form->getForm();
 		}
@@ -691,7 +654,7 @@ class Element extends Plugin
 		// Jaanus: joined group pk? set in groupConcactJoinKey()
 
 		$pkfield = $this->groupConcactJoinKey();
-		$fullElName = $db->qn($dbTable . '___' . $this->element->name);
+		$fullElName = $db->qn($dbTable . '___' . $this->element->get('name'));
 		$sql = '(SELECT GROUP_CONCAT(' . $jKey . ' SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $joinTable . ' WHERE parent_id = '
 				. $pkfield . ')';
 
@@ -720,7 +683,7 @@ class Element extends Plugin
 		$dbTable = $this->actualTableName();
 		$db = JFactory::getDbo();
 		$table = $this->getListModel()->getTable();
-		$fullElName = $db->qn($dbTable . '___' . $this->element->name . '_raw');
+		$fullElName = $db->qn($dbTable . '___' . $this->element->get('name') . '_raw');
 		$pkField = $this->groupConcactJoinKey();
 
 		return '(SELECT GROUP_CONCAT(id SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $joinTable . ' WHERE parent_id = ' . $pkField
@@ -760,8 +723,8 @@ class Element extends Plugin
 		$dbTable = $this->actualTableName();
 		$db = Worker::getDbo();
 		$item = $this->getListModel()->getItem();
-		$fullElName = ArrayHelper::getValue($opts, 'alias', $db->qn($dbTable . '___' . $this->element->name));
-		$fName = $dbTable . '.' . $this->element->name;
+		$fullElName = ArrayHelper::getValue($opts, 'alias', $db->qn($dbTable . '___' . $this->element->get('name')));
+		$fName = $dbTable . '.' . $this->element->get('name');
 		$k = $db->qn($fName);
 		$secret = $this->config->get('secret');
 
@@ -1923,7 +1886,7 @@ class Element extends Plugin
 		$listModel = $this->getListModel();
 		$element = $this->getElement();
 
-		$key = $element->name . '.' . $groupModel->get('id') . '_' . $formModel->get('id') . '_' . $useStep . '_'
+		$key = $element->get('name') . '.' . $groupModel->get('id') . '_' . $formModel->get('id') . '_' . $useStep . '_'
 				. $incRepeatGroup;
 
 		if (isset($this->fullNames[$key]))
@@ -1940,11 +1903,11 @@ class Element extends Plugin
 		{
 			$joinModel = $groupModel->getJoinModel();
 			$join = $joinModel->getJoin();
-			$fullName = $join->table_join . $thisStep . $element->name;
+			$fullName = $join->table_join . $thisStep . $element->get('name');
 		}
 		else
 		{
-			$fullName = $dbTableName . $thisStep . $element->name;
+			$fullName = $dbTableName . $thisStep . $element->get('name');
 		}
 
 		if ($groupModel->canRepeat() == 1 && $incRepeatGroup)
@@ -1990,15 +1953,15 @@ class Element extends Plugin
 	 *
 	 * @param   int     $id       Element id to copy
 	 * @param   string  $copytxt  Feedback msg
-	 * @param   int     $groupid  Group model id
+	 * @param   int     $groupId  Group model id
 	 * @param   string  $name     New element name
 	 *
 	 * @return  mixed	Error or new row
 	 */
-
-	public function copyRow($id, $copytxt = 'Copy of %s', $groupid = null, $name = null)
+	public function copyRow($id, $copytxt = 'Copy of %s', $groupId = null, $name = null)
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
+		// FIXME - not ok for 3.5
 		$rule = FabTable::getInstance('Element', 'FabrikTable');
 
 		if ($rule->load((int) $id))
@@ -2006,9 +1969,9 @@ class Element extends Plugin
 			$rule->id = null;
 			$rule->label = sprintf($copytxt, $rule->label);
 
-			if (!is_null($groupid))
+			if (!is_null($groupId))
 			{
-				$rule->group_id = $groupid;
+				$rule->group_id = $groupId;
 			}
 
 			if (!is_null($name))
@@ -2016,8 +1979,8 @@ class Element extends Plugin
 				$rule->name = $name;
 			}
 
-			$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
-			$groupModel->setId($groupid);
+			$groupModel = new Group;
+			$groupModel->setId($groupId);
 			$groupListModel = $groupModel->getListModel();
 
 			// $$$ rob - if its a joined group then it can have the same element names
@@ -2030,13 +1993,11 @@ class Element extends Plugin
 			}
 
 			$date = JFactory::getDate();
-			$tz = new DateTimeZone($app->getCfg('offset'));
+			$tz = new DateTimeZone($app->get('offset'));
 			$date->setTimezone($tz);
 			$rule->created = $date->toSql();
 			$params = $rule->params == '' ? new stdClass : json_decode($rule->params);
-			$params->parent_linked = 1;
 			$rule->params = json_encode($params);
-			$rule->parent_id = $id;
 			$config = JComponentHelper::getParams('com_fabrik');
 
 			if ($config->get('unpublish_clones', false))
@@ -2044,14 +2005,7 @@ class Element extends Plugin
 				$rule->published = 0;
 			}
 
-			if (!$rule->store())
-			{
-				return JError::raiseWarning($rule->getError());
-			}
-		}
-		else
-		{
-			return JError::raiseWarning(500, $rule->getError());
+			$rule->store();
 		}
 
 		/**
@@ -2815,7 +2769,7 @@ class Element extends Plugin
 	{
 		if (!isset($this->params))
 		{
-			$this->params = new JRegistry($this->getElement()->params);
+			$this->params = new JRegistry($this->getElement()->get('params'));
 		}
 
 		return $this->params;
@@ -2889,15 +2843,8 @@ class Element extends Plugin
 	{
 		$jsStr = '';
 		$allJsActions = $this->getFormModel()->getJsActions();
-		/**
-		 * $$$ hugh - only needed getParent when we weren't saving changes to parent params to child
-		 * which we should now be doing ... and getParent() causes an extra table lookup for every child
-		 * element on the form.
-		 * $element = $this->getParent();
-		*/
 		$jsControllerKey = "\tFabrik.blocks['" . $jsControllerKey . "']";
 		$element = $this->getElement();
-		$form = $this->form->getForm();
 		$w = new Worker;
 
 		if (array_key_exists($element->id, $allJsActions))
@@ -4034,10 +3981,10 @@ class Element extends Plugin
 		}
 
 		// If querying via the querystring - then the condition and eval should be looked up against that key
-		$elementids = ArrayHelper::getValue($filters, 'elementid', array());
+		$elementIds = ArrayHelper::getValue($filters, 'elementid', array());
 
 		// Check that there is an element filter for this element in the element ids.
-		$filterIndex = array_search($this->getId(), $elementids);
+		$filterIndex = array_search($this->getId(), $elementIds);
 
 		$hidden = $hidden ? 1 : 0;
 		$table = $this->getListModel()->getTable();
@@ -4596,13 +4543,6 @@ class Element extends Plugin
 
 	public function getLabelForValue($v, $defaultLabel = null, $forceCheck = false)
 	{
-		/**
-		 * $$$ hugh - only needed getParent when we weren't saving changes to parent params to child
-		 * which we should now be doing ... and getParent() causes an extra table lookup for every child
-		 * element on the form.
-		 * $element = $this->getParent();
-		 */
-		$element = $this->getElement();
 		$params = $this->getParams();
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
@@ -4937,7 +4877,6 @@ class Element extends Plugin
 	public function sum(&$listModel)
 	{
 		$db = $listModel->getDb();
-		$app = JFactory::getApplication();
 		$params = $this->getParams();
 		$item = $listModel->getTable();
 		$splitSum = $params->get('sum_split', '');
@@ -5080,7 +5019,6 @@ class Element extends Plugin
 		list($groupBys, $groupByLabels) = $this->calcGroupBys('sum_split', $listModel);
 		$split = empty($groupBys) ? false : true;
 		$format = $this->getFormatString();
-		$res = '';
 		$calcLabel = $params->get('median_label', FText::_('COM_FABRIK_MEDIAN'));
 		$results = array();
 
@@ -5613,7 +5551,7 @@ class Element extends Plugin
 
 	public function beforeSave(&$row)
 	{
-		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = \JFilterInput::getInstance(null, null, 1, 1);
 		$post = $safeHtmlFilter->clean($_POST, 'array');
 		$post = $post['jform'];
 		$dbjoinEl = (is_subclass_of($this, 'PlgFabrik_ElementDatabasejoin') || get_class($this) == 'PlgFabrik_ElementDatabasejoin');
@@ -5638,6 +5576,7 @@ class Element extends Plugin
 
 	protected function deleteJoins($id)
 	{
+		// FIXME for 3.5
 		// $$$ hugh - bail if no $id specified
 		if (empty($id))
 		{
@@ -5764,7 +5703,7 @@ class Element extends Plugin
 	public function ajax_loadTableFields()
 	{
 		$db = Worker::getDbo();
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$this->_cnnId = $input->getInt('cid', 0);
@@ -6710,37 +6649,6 @@ class Element extends Plugin
 	}
 
 	/**
-	 * Recursively get all linked children of an element
-	 *
-	 * @param   int  $id  element id
-	 *
-	 * @return  array
-	 */
-
-	protected function getElementDescendents($id = 0)
-	{
-		if (empty($id))
-		{
-			$id = $this->id;
-		}
-
-		$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		$query->select('id')->from('#__fabrik_elements')->where('parent_id = ' . (int) $id);
-		$db->setQuery($query);
-		$kids = $db->loadObjectList();
-		$all_kids = array();
-
-		foreach ($kids as $kid)
-		{
-			$all_kids[] = $kid->id;
-			$all_kids = array_merge($this->getElementDescendents($kid->id), $all_kids);
-		}
-
-		return $all_kids;
-	}
-
-	/**
 	 * Get the actual table name to use when building select queries
 	 * so if in a joined group get the joined to table's name otherwise return the
 	 * table's db table name
@@ -6832,10 +6740,9 @@ class Element extends Plugin
 	{
 		if (is_null($this->joinModel))
 		{
-			$this->joinModel = JModelLegacy::getInstance('Join', 'FabrikFEModel');
-
-			// $$$ rob ensure we load the join by asking for the parents id, but then ensure we set the element id back to this elements id
-			$this->joinModel->getJoinFromKey('element_id', $this->getParent()->id);
+			// FIXME - update join model for 3.5
+			$this->joinModel = new \Fabrik\Admin\Models\Join;
+			$this->joinModel->getJoinFromKey('element_id');
 			$this->joinModel->getJoin()->element_id = $this->getElement()->id;
 		}
 
@@ -6850,13 +6757,15 @@ class Element extends Plugin
 	 *
 	 * @since	3.0.6
 	 *
+	 * @throws Exception
+	 *
 	 * @return  void
 	 */
 
 	public function updateJoinedPks($oldName, $newName)
 	{
 		// FIXME
-		throw new \Exception('element model update joined pks not done for 3.5');
+		throw new Exception('element model update joined pks not done for 3.5');
 		$db = $this->getListModel()->getDb();
 		$item = $this->getListModel()->getTable();
 		$query = $db->getQuery(true);
@@ -6996,7 +6905,6 @@ class Element extends Plugin
 	 *
 	 * @return  object  plugin manager
 	 */
-
 	public function getPluginManager()
 	{
 		return Worker::getPluginManager();
@@ -7033,11 +6941,11 @@ class Element extends Plugin
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$this->form = JModelLegacy::getInstance('form', 'FabrikFEModel');
+		$this->form = new Form;
 		$formId = $input->getInt('formid');
 		$this->form->setId($formId);
 		$this->setId($input->getInt('element_id'));
-		$this->list = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$this->list = new Lizt;
 		$this->list->loadFromFormId($formId);
 		$table = $this->list->getTable(true);
 		$table->form_id = $formId;
@@ -7119,20 +7027,6 @@ class Element extends Plugin
 	public function preFormatFormJoins($data, $row)
 	{
 		return $data;
-	}
-
-	/**
-	 * Return an array of parameter names which should not get updated if a linked element's parent is saved
-	 * notably any parameter which references another element id should be returned in this array
-	 * called from admin element model updateChildIds()
-	 * see cascadingdropdown element for example
-	 *
-	 * @return  array	parameter names to not alter
-	 */
-
-	public function getFixedChildParameters()
-	{
-		return array();
 	}
 
 	/**
@@ -7275,9 +7169,10 @@ class Element extends Plugin
 	 *
 	 * @since  3.1rc1
 	 *
+	 * @throws RuntimeException
+	 *
 	 * @return  void
 	 */
-
 	public function onFinalStoreRow(&$data)
 	{
 		if (!$this->isJoin())

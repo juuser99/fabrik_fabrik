@@ -36,8 +36,8 @@ class FabrikViewList extends FabrikViewListBase
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$session = JFactory::getSession();
-		$exporter = JModelLegacy::getInstance('Csvexport', 'FabrikFEModel');
-		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$exporter = new \Fabrik\Admin\Models\CsvExport;
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$model->setId($input->getInt('listid'));
 
 		if (!parent::access($model))

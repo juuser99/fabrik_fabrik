@@ -150,7 +150,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			if ($gcal_userid_element_long)
 			{
 				$query = $db->getQuery(true);
-				$query->select('id')->from('#__users')->whre('email = ' . $db->quote('$gcal_email'));
+				$query->select('id')->from('#__users')->whre('email = ' . $db->q('$gcal_email'));
 				$db->setQuery($query);
 				$our_userid = $db->loadResult();
 
@@ -376,7 +376,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					$gcal_id = $this->_getGcalShortId($retEvent->id->text);
 					$our_id = $event->__pk_val;
 					$query = $db->getQuery(true);
-					$query->update($table_name)->set($gcal_id_element . ' = ' . $db->quote($gcal_id))->where($table->db_primary_key . ' = ' . $db->quote($our_id));
+					$query->update($table_name)->set($gcal_id_element . ' = ' . $db->q($gcal_id))->where($table->db_primary_key . ' = ' . $db->q($our_id));
 					$db->setQuery($query);
 					$db->execute();
 				}

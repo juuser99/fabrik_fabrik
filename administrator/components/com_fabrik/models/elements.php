@@ -266,8 +266,8 @@ class Elements extends Base implements ModelElementsInterface
 		$user = \JFactory::getUser();
 		$levels = implode(',', $user->getAuthorisedViewLevels());
 		$query = $db->getQuery(true);
-		$query->select('element AS value, element AS text')->from('#__extensions')->where('enabled >= 1')->where('type =' . $db->quote('plugin'))
-			->where('state >= 0')->where('access IN (' . $levels . ')')->where('folder = ' . $db->quote('fabrik_element'))->order('text');
+		$query->select('element AS value, element AS text')->from('#__extensions')->where('enabled >= 1')->where('type =' . $db->q('plugin'))
+			->where('state >= 0')->where('access IN (' . $levels . ')')->where('folder = ' . $db->q('fabrik_element'))->order('text');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 

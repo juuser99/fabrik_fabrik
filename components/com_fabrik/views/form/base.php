@@ -364,16 +364,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		if ($this->showPDF)
 		{
 			Worker::canPdf();
-
-			if ($app->isAdmin())
-			{
-				$this->pdfURL = 'index.php?option=com_' . $package . '&task=details.view&format=pdf&formid=' . $model->getId() . '&rowid=' . $model->getRowId();
-			}
-			else
-			{
-				$this->pdfURL = 'index.php?option=com_' . $package . '&view=details&formid=' . $model->getId() . '&rowid=' . $model->getRowId() . '&format=pdf';
-			}
-
+			$this->pdfURL = 'index.php?option=com_' . $package . '&view=details&formid=' . $model->getId() . '&rowid=' . $model->getRowId() . '&format=pdf';
 			$this->pdfURL = JRoute::_($this->pdfURL);
 			$this->pdfLink = '<a href="' . $this->pdfURL . '">' . FabrikHelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties) . '</a>';
 		}
@@ -397,7 +388,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$model = $this->getModel();
 		$aLoadedElementPlugins = array();
 		$jsActions = array();
-		$bkey = $model->jsKey();
+		$bkey = $this->model->jsKey();
 		$srcs = FabrikHelperHTML::framework();
 		$shim = array();
 
@@ -424,7 +415,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		// $$$ hugh - yet another one where if we =, the $groups array pointer get buggered up and it
 		// skips a group
-		$groups = $model->getGroupsHiarachy();
+		$groups = $model->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -439,12 +430,10 @@ class Base extends \Fabrik\Admin\Views\Html
 					$aWYSIWYGNames[] = $res;
 				}
 
-				$eparams = $elementModel->getParams();
-
 				// Load in once the element js class files
 				$element = $elementModel->getElement();
 
-				if (!in_array($element->plugin, $aLoadedElementPlugins))
+				if (!in_array($element->get('plugin'), $aLoadedElementPlugins))
 				{
 					/* $$$ hugh - certain elements, like fileupload, need to load different JS files
 					 * on a per-element basis, so as a test fix, I modified the fileupload's formJavaScriptClass to return false,
@@ -473,9 +462,6 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		FabrikHelperHTML::iniRequireJS($shim);
 		$actions = trim(implode("\n", $jsActions));
-		$listModel = $model->getlistModel();
-		$table = $listModel->getTable();
-		$form = $model->getForm();
 		FabrikHelperHTML::windows('a.fabrikWin');
 		FabrikHelperHTML::tips('.hasTip', array(), "$('$bkey')");
 		$model->getFormCss();
@@ -505,11 +491,11 @@ class Base extends \Fabrik\Admin\Views\Html
 		$script[] = "\t\tFabrik.addBlock('$bkey', $bkey);";
 		$script[] = "\t}"; */
 
-		$script[] = "\t\tvar $bkey = Fabrik.form('$bkey', " . $model->getId() . ", $opts);";
+		$script[] = "\t\tvar $bkey = Fabrik.form('$bkey', '" . $model->getId() . "', $opts);";
 
 		// Instantiate js objects for each element
 		$vstr = "\n";
-		$groups = $model->getGroupsHiarachy();
+		$groups = $model->getGroupsHierarchy();
 		$script[] = "\tFabrik.blocks['{$bkey}'].addElements(";
 		$groupedJs = new stdClass;
 
@@ -701,7 +687,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$opts->join_group_ids = array();
 		$opts->group_repeats = array();
 		$opts->group_joins_ids = array();
-		$groups = $model->getGroupsHiarachy();
+		$groups = $model->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -953,7 +939,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		$format = $model->isAjax() ? 'raw' : 'html';
 		$fields[] = '<input type="hidden" name="format" value="' . $format . '" />';
-		$groups = $model->getGroupsHiarachy();
+		$groups = $model->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{

@@ -399,7 +399,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		if (!$this->getFormModel()->getForm()->record_in_database)
 		{
 			// Db join in form not recording to db
-			$joinModel = JModelLegacy::getInstance('Join', 'FabrikFEModel');
+			$joinModel = new \Fabrik\Admin\Models\Join;
 			$this->join = $joinModel->getJoinFromKey('element_id', $element->id);
 
 			return $this->join;
@@ -493,8 +493,8 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		->join('LEFT', '#__fabrik_formgroup AS fg ON fg.group_id = el.group_id')
 		->join('LEFT', '#__fabrik_forms AS f ON f.id = fg.form_id')
 		->join('LEFT', ' #__fabrik_tables AS t ON t.form_id = f.id')
-		->where('plugin = ' . $db->quote('databasejoin'))
-		->where('join_db_name = ' . $db->quote($table->db_table_name))
+		->where('plugin = ' . $db->q('databasejoin'))
+		->where('join_db_name = ' . $db->q($table->db_table_name))
 		->where('join_conn_id = ' . (int) $table->connection_id);
 		$db->setQuery($query);
 
@@ -557,7 +557,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 				foreach ($value as $v)
 				{
-					$quoteV[] = $db->quote($v);
+					$quoteV[] = $db->q($v);
 				}
 
 				$this->autocomplete_where = $this->getJoinValueColumn() . ' IN (' . implode(', ', $quoteV) . ')';
@@ -1397,17 +1397,17 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 				if ($frontEndSelect && $this->isEditable())
 				{
 					$forms = $this->getLinkedForms();
-					$popupform = (int) $params->get('databasejoin_popupform');
-					$popuplistid = (empty($popupform) || !isset($forms[$popupform])) ? '' : $forms[$popupform]->listid;
+					$popupForm = (int) $params->get('databasejoin_popupform');
+					$popupListId = (empty($popupForm) || !isset($forms[$popupForm])) ? '' : $forms[$popupForm]->listid;
 					JText::script('PLG_ELEMENT_DBJOIN_SELECT');
 
-					if ($app->isAdmin())
+					if ($this->app->isAdmin())
 					{
-						$chooseUrl = 'index.php?option=com_fabrik&amp;task=list.view&amp;listid=' . $popuplistid . '&amp;tmpl=component&amp;ajax=1';
+						$chooseUrl = 'index.php?option=com_fabrik&amp;task=list.view&amp;listid=' . $popupListId . '&amp;tmpl=component&amp;ajax=1';
 					}
 					else
 					{
-						$chooseUrl = 'index.php?option=com_' . $package . '&amp;view=list&amp;listid=' . $popuplistid . '&amp;tmpl=component&amp;ajax=1';
+						$chooseUrl = 'index.php?option=com_' . $package . '&amp;view=list&amp;listid=' . $popupListId . '&amp;tmpl=component&amp;ajax=1';
 					}
 
 					$html[] = '<a href="' . $chooseUrl . '" class="toggle-selectoption btn" title="' . FText::_('COM_FABRIK_SELECT') . '">'
@@ -1417,10 +1417,10 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 				if ($frontEndAdd && $this->isEditable())
 				{
 					JText::script('PLG_ELEMENT_DBJOIN_ADD');
-					$popupform = (int) $params->get('databasejoin_popupform');
+					$popupForm = (int) $params->get('databasejoin_popupform');
 					$addURL = 'index.php?option=com_fabrik';
 					$addURL .= $app->isAdmin() ? '&amp;task=form.view' : '&amp;view=form';
-					$addURL .= '&amp;tmpl=component&amp;ajax=1&amp;formid=' . $popupform;
+					$addURL .= '&amp;tmpl=component&amp;ajax=1&amp;formid=' . $popupForm;
 					$html[] = '<a href="' . $addURL . '" title="' . FText::_('COM_FABRIK_ADD') . '" class="toggle-addoption btn">';
 					$html[] = FabrikHelperHTML::image('plus.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SELECT'))) . '</a>';
 				}
@@ -1495,24 +1495,23 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
-		$popupformid = (int) $params->get('databasejoin_popupform');
+		$popupFormId = (int) $params->get('databasejoin_popupform');
 
-		if ($popupformid === 0)
+		if ($popupFormId === 0)
 		{
 			return false;
 		}
 
 		$db = $this->getDb();
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__fabrik_lists')->where('form_id =' . $popupformid);
+		$query->select('id')->from('#__fabrik_lists')->where('form_id =' . $popupFormId);
 		$db->setQuery($query);
-		$listid = $db->loadResult();
+		$listId = $db->loadResult();
 
-		$itemId = Worker::itemId($listid);
-		$task = $app->isAdmin() ? 'task=details.view' : 'view=details';
-		$url = 'index.php?option=com_' . $package . '&' . $task . '&formid=' . $popupformid . '&listid=' . $listid;
+		$itemId = Worker::itemId($listId);
+		$url = 'index.php?option=com_' . $package . '&view=details&formid=' . $popupFormId . '&listid=' . $listId;
 
-		if (!$app->isAdmin())
+		if (!$this->app->isAdmin())
 		{
 			$url .= '&Itemid=' . $itemId;
 		}
@@ -1756,7 +1755,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$query = $db->getQuery(true);
 			$query->select('f.id AS value, f.label AS text, l.id AS listid')->from('#__fabrik_forms AS f')
 			->join('LEFT', '#__fabrik_lists As l ON f.id = l.form_id')
-			->where('f.published = 1 AND l.db_table_name = ' . $db->quote($params->get('join_db_name')))->order('f.label');
+			->where('f.published = 1 AND l.db_table_name = ' . $db->q($params->get('join_db_name')))->order('f.label');
 			$db->setQuery($query);
 			$this->linkedForms = $db->loadObjectList('value');
 		}
@@ -2812,18 +2811,18 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$table = $params->get('join_db_name');
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$forms = $this->getLinkedForms();
-		$popupform = (int) $params->get('databasejoin_popupform');
-		$popuplistid = (empty($popupform) || !isset($forms[$popupform])) ? '' : $forms[$popupform]->listid;
+		$popupForm = (int) $params->get('databasejoin_popupform');
+		$popupListId = (empty($popupForm) || !isset($forms[$popupForm])) ? '' : $forms[$popupForm]->listid;
 		$opts->id = $this->id;
 		$opts->fullName = $this->getFullName(true, false);
 		$opts->key = $table . '___' . $params->get('join_key_column');
 		$opts->label = $table . '___' . $this->getLabelParamVal();
 		$opts->formid = $this->getForm()->getForm()->id;
-		$opts->listid = $popuplistid;
+		$opts->listid = $popupListId;
 		$opts->listRef = '_com_fabrik_' . $opts->listid;
 		$opts->value = $arSelected;
 		$opts->defaultVal = $this->getDefaultValue($data);
-		$opts->popupform = $popupform;
+		$opts->popupform = $popupForm;
 		$opts->windowwidth = $params->get('join_popupwidth', 360);
 		$opts->displayType = $this->getDisplayType();
 		$opts->show_please_select = $params->get('database_join_show_please_select') === "1";
@@ -2963,15 +2962,6 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	{
 		// Load join based on this element id
 		$this->updateFabrikJoin($data, $this->id, $tableJoin, $keyCol, $label);
-		$children = $this->getElementDescendents($this->id);
-
-		foreach ($children as $id)
-		{
-			$elementModel = Worker::getPluginManager()->getElementPlugin($id);
-			$data['group_id'] = $elementModel->getElement()->group_id;
-			$data['id'] = $id;
-			$this->updateFabrikJoin($data, $id, $tableJoin, $keyCol, $label);
-		}
 	}
 
 	/**
@@ -3183,7 +3173,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		}
 		else
 		{
-			$query->where($key . ' = ' . $db->quote($v));
+			$query->where($key . ' = ' . $db->q($v));
 		}
 
 		$db->setQuery($query);
@@ -3223,7 +3213,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	}
 
 	/**
-	 * Cache method to populate autocomplete options
+	 * Cache method to populate auto-complete options
 	 *
 	 * @param   plgFabrik_Element  $elementModel  element model
 	 * @param   string             $search        search string
@@ -3292,20 +3282,20 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		{
 			case 'contains':
 			default:
-				$where = $field . ' LIKE ' . $db->quote('%' . $search . '%');
+				$where = $field . ' LIKE ' . $db->q('%' . $search . '%');
 				break;
 			case 'words':
 				$words = array_filter(explode(' ', $search));
 
 				foreach ($words as &$word)
 				{
-					$word = $db->quote('%' . $word . '%');
+					$word = $db->q('%' . $word . '%');
 				}
 
 				$where = $field . ' LIKE ' . implode(' AND ' . $field . ' LIKE ', $words);
 				break;
 			case 'starts_with':
-				$where = $field . ' LIKE ' . $db->quote($search . '%');
+				$where = $field . ' LIKE ' . $db->q($search . '%');
 				break;
 		}
 

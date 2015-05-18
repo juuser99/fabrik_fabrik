@@ -138,7 +138,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 		{
 			$db = $this->db;
 			$query = $db->getQuery(true);
-			$query->select('COUNT(id)')->from('#__extensions')->where('name = ' . $db->quote($c));
+			$query->select('COUNT(id)')->from('#__extensions')->where('name = ' . $db->q($c));
 			$db->seQuery($query);
 			$found = $db->loadResult();
 			$this->components[$c] = $found;
@@ -166,7 +166,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 		$field = $params->get('notes_where_element');
 		$value = $params->get('notes_where_value');
 		$fk = $params->get('join_fk_column', '');
-		$rowid = $this->getFormModel()->getRowId();
+		$rowId = $this->getFormModel()->getRowId();
 		$where = array();
 
 		// Jaanus: here we can choose whether WHERE has to have single or (if field is the same as FK then only) custom (single or multiple) criteria,
@@ -174,7 +174,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 		{
 			if ($field != '' && $field !== $fk)
 			{
-				$where[] = $db->quoteName($field) . ' = ' . $db->quote($value);
+				$where[] = $db->quoteName($field) . ' = ' . $db->q($value);
 			}
 			else
 			{
@@ -182,9 +182,9 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 			}
 		}
 		// Jaanus: when we choose WHERE field to be the same as FK then WHERE criteria is automatically FK = rowid, custom criteria(s) above may be added
-		if ($fk !== '' && $field === $fk && $rowid != '')
+		if ($fk !== '' && $field === $fk && $rowId != '')
 		{
-			$where[] = $db->quoteName($fk) . ' = ' . $rowid;
+			$where[] = $db->quoteName($fk) . ' = ' . $rowId;
 		}
 
 		if ($this->loadRow != '')
@@ -348,12 +348,12 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 		$col = $params->get('join_val_column');
 		$key = $db->quoteName($params->get('join_key_column'));
 		$v = $input->get('v', '', '', 'string');
-		$rowid = $this->getFormModel()->getRowId();
+		$rowId = $this->getFormModel()->getRowId();
 
-		// Jaanus - avoid inserting data when the form is 'new' not submitted ($rowid == '')
-		if ($rowid !== '')
+		// Jaanus - avoid inserting data when the form is 'new' not submitted ($rowId == '')
+		if ($rowId !== '')
 		{
-			$query->insert($table)->set($col . ' = ' . $db->quote($v));
+			$query->insert($table)->set($col . ' = ' . $db->q($v));
 			$user = $params->get('userid', '');
 
 			if ($user !== '')
@@ -365,7 +365,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 
 			if ($fk !== '')
 			{
-				$query->set($db->quoteName($fk) . ' = ' . $db->quote($input->get('rowid')));
+				$query->set($db->quoteName($fk) . ' = ' . $db->q($input->get('rowid')));
 			}
 
 			$db->setQuery($query);

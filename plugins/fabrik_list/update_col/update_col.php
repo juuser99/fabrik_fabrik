@@ -512,8 +512,8 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			if ($elementModel->canUse($this, 'list') && $element->plugin !== 'internalid')
 			{
 				$elName = $elementModel->getFilterFullName();
-				$options[] = '<option value="' . $elName . '" data-id="' . $element->id . '" data-plugin="' . $element->plugin . '">'
-					. strip_tags($element->label) . '</option>';
+				$options[] = '<option value="' . $elName . '" data-id="' . $element->get('id') . '" data-plugin="' . $element->get('plugin') . '">'
+					. strip_tags($element->get('label')) . '</option>';
 			}
 		}
 

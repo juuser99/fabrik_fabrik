@@ -49,7 +49,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 
 		$formModel = $listModel->getFormModel();
 		$adminListModel->setFormModel($formModel);
-		$groupId = current(array_keys($formModel->getGroupsHiarachy()));
+		$groupId = current(array_keys($formModel->getGroupsHierarchy()));
 		$plugins = $this->input->get('plugin', array(), 'array');
 		$pluginManager = Worker::getPluginManager();
 		$elementModel = $pluginManager->getPlugIn('field', 'element');
@@ -147,9 +147,9 @@ class FabrikAdminControllerImport extends FabControllerForm
 		$session = JFactory::getSession();
 		$model = $this->getModel('Importcsv', 'FabrikFEModel');
 		$model->import();
-		$listid = $this->input->getInt('fabrik_list', $this->input->get('listid'));
+		$listId = $this->input->getInt('fabrik_list', $this->input->get('listid'));
 
-		if ($listid == 0)
+		if ($listId == 0)
 		{
 			$plugins = $this->input->get('plugin', array(), 'array');
 			$createElements = $this->input->get('createElements', array(), 'array');
@@ -189,7 +189,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 			$headings = $session->get('com_fabrik.matchedHeadings');
 			$model->matchedHeadings = $this->addElements($model, $headings);
 			$model->listModel = null;
-			$this->input->set('listid', $listid);
+			$this->input->set('listid', $listId);
 		}
 
 		$model->insertData();

@@ -227,7 +227,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 
 	public static function cacheResults($listId)
 	{
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($listId);
 		$data = $listModel->getData();
 

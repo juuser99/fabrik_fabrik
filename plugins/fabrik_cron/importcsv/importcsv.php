@@ -69,7 +69,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 		// Get site's database
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($tableName));
+		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->q($tableName));
 		$db->setQuery($query);
 		$id = $db->loadResult();
 
@@ -144,25 +144,25 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 			}
 
 			Worker::log('plg.cron.cronimportcsv.information', "Starting import: $full_csvfile:  ");
-			$clsImportCSV = JModelLegacy::getInstance('Importcsv', 'FabrikFEModel');
+			$clsImportCSV = new \Fabrik\Admin\Models\CsvImport;
 
 			if ($useTableName)
 			{
-				$listid = $this->getListIdFromFileName(basename($full_csvfile));
+				$listId = $this->getListIdFromFileName(basename($full_csvfile));
 			}
 			else
 			{
 				$table = &$listModel->getTable();
-				$listid = $table->id;
+				$listId = $table->id;
 			}
 
-			if (empty($listid))
+			if (empty($listId))
 			{
-				Worker::log('plg.cron.cronimportcsv.warning', "List with id $listid does not exist");
+				Worker::log('plg.cron.cronimportcsv.warning', "List with id $listId does not exist");
 				continue;
 			}
 
-			$input->set('listid', $listid);
+			$input->set('listid', $listId);
 
 			// Grab the CSV file, need to strip import root off path first
 			$csvfile = str_replace(FABRIK_CSV_IMPORT_ROOT, '', $full_csvfile);

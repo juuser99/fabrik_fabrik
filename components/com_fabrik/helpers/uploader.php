@@ -58,7 +58,7 @@ class UploaderHelper extends \JObject
 
 	public function upload()
 	{
-		$groups = $this->form->getGroupsHiarachy();
+		$groups = $this->form->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{

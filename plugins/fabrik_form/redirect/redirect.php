@@ -251,7 +251,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 		if ($this->data['append_jump_url'] == '1')
 		{
-			$groups = $formModel->getGroupsHiarachy();
+			$groups = $formModel->getGroupsHierarchy();
 
 			foreach ($groups as $group)
 			{
@@ -270,9 +270,9 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 					{
 						$element = $elementModel->getElement();
 
-						if (array_key_exists($element->name, $tmpData))
+						if (array_key_exists($element->get('name'), $tmpData))
 						{
-							$this->_appendQS($queryvars, $element->name, $tmpData[$element->name]);
+							$this->_appendQS($queryvars, $element->get('name'), $tmpData[$element->name]);
 						}
 					}
 				}
@@ -362,7 +362,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			 * in the short format whilst we compare the full name in the code below
 			 */
 			$tmpData = $formModel->formDataWithTableName;
-			$groups = $formModel->getGroupsHiarachy();
+			$groups = $formModel->getGroupsHierarchy();
 
 			foreach ($groups as $group)
 			{
@@ -370,7 +370,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 				foreach ($elements as $element)
 				{
-					if ($element->getElement()->name == 'fabrik_list_filter_all')
+					if ($element->getElement()->get('name') == 'fabrik_list_filter_all')
 					{
 						continue;
 					}
@@ -385,7 +385,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 					if (array_key_exists($name, $tmpData))
 					{
 						$value = $tmpData[$name];
-						$match = $element->getElement()->filter_exact_match;
+						$match = $element->getElement()->get('filter_exact_match');
 
 						if (!is_array($value))
 						{
@@ -421,7 +421,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 								$store['full_words_only'][] = false;
 								$store['match'][] = $match;
 								$store['hidden'][] = 0;
-								$store['elementid'][] = $element->getElement()->id;
+								$store['elementid'][] = $element->getElement()->get('id');
 							}
 
 							$c++;
@@ -437,10 +437,10 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			// Check for special fabrik_list_filter_all element!
 			$searchAll = $input->get($listModel->getTable()->db_table_name . '___fabrik_list_filter_all');
 
-			$app->setUserState($key . '.form' . $id . '.searchall', $searchAll);
-			$app->setUserState($key . '.form' . $id . '.filters', $store);
+			$this->app->setUserState($key . '.form' . $id . '.searchall', $searchAll);
+			$this->app->setUserState($key . '.form' . $id . '.filters', $store);
 
-			$app->setUserState($key. '.fromForm', $id);
+			$this->app->setUserState($key. '.fromForm', $id);
 		}
 	}
 

@@ -220,8 +220,8 @@ class FabrikViewCalendar extends JViewLegacy
 
 		if ($o != null)
 		{
-			$listid = $o->id;
-			$options[] = JHTML::_('select.option', $listid, FText::_('PLG_VISUALIZATION_CALENDAR_STANDARD_EVENT'));
+			$listId = $o->id;
+			$options[] = JHTML::_('select.option', $listId, FText::_('PLG_VISUALIZATION_CALENDAR_STANDARD_EVENT'));
 		}
 
 		$model->getEvents();

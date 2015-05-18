@@ -41,7 +41,7 @@ class FabrikViewImport extends JViewLegacy
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$this->listid = $input->getInt('listid', 0);
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($this->listid);
 		$this->table = $listModel->getTable();
 		$this->form = $this->get('Form');

@@ -69,11 +69,11 @@ class JFormFieldListfields extends JFormFieldList
 		 * 27/08/2011 - changed from default table-element to id - for juser form plugin - might cause havoc
 		 * else where but loading elements by id as default seems more robust (and is the default behaviour in f2.1
 		 */
-		$valueformat = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
+		$valueFormat = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
 		$onlylistfields = (int) ArrayHelper::getValue($this->element, 'onlylistfields', 0);
 		$showRaw = (bool) ArrayHelper::getValue($this->element, 'raw', false);
 		$labelMethod = (string) ArrayHelper::getValue($this->element, 'label_method');
-		$nojoins = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
+		$noJoins = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
 		$mode = (string) ArrayHelper::getValue($this->element, 'mode', false);
 		$useStep = (bool) ArrayHelper::getValue($this->element, 'usestep', false);
 
@@ -84,7 +84,7 @@ class JFormFieldListfields extends JFormFieldList
 				$pluginManager = Worker::getPluginManager();
 				$elementModel = $pluginManager->getElementPlugin($id);
 				$element = $elementModel->getElement();
-				$res = $this->loadFromGroupId($element->group_id);
+				$res = $this->loadFromGroupId($element->get('group_id'));
 				break;
 			case 'visualization':
 			case 'element':
@@ -141,8 +141,8 @@ class JFormFieldListfields extends JFormFieldList
 				if ($id !== 0)
 				{
 					$formModel = $listModel->getFormModel();
-					$valfield = $valueformat == 'tableelement' ? 'name' : 'id';
-					$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $nojoins);
+					$valfield = $valueFormat == 'tableelement' ? 'name' : 'id';
+					$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 				}
 				else
 				{
@@ -160,20 +160,20 @@ class JFormFieldListfields extends JFormFieldList
 				}
 
 				$formModel = $this->form->model;
-				$valfield = $valueformat == 'tableelement' ? 'name' : 'id';
-				$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $nojoins);
+				$valfield = $valueFormat == 'tableelement' ? 'name' : 'id';
+				$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 
-				$jsres = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $nojoins);
+				$jsres = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 				array_unshift($jsres, JHTML::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT')));
 				$this->js($jsres);
 				break;
 			case 'group':
-				$valfield = $valueformat == 'tableelement' ? 'name' : 'id';
+				$valfield = $valueFormat == 'tableelement' ? 'name' : 'id';
 				$id = $this->form->getValue('id');
-				$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+				$groupModel = new \Fabrik\Admin\Models\Group;
 				$groupModel->setId($id);
 				$formModel = $groupModel->getFormModel();
-				$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $nojoins);
+				$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 				break;
 			default:
 				return FText::_('The ListFields element is only usable by lists and elements');
@@ -193,7 +193,7 @@ class JFormFieldListfields extends JFormFieldList
 					// Element already contains correct key
 					if ($controller != 'element')
 					{
-						$s->value = $valueformat == 'tableelement' ? $o->table_name . '.' . $o->text : $o->value;
+						$s->value = $valueFormat == 'tableelement' ? $o->table_name . '.' . $o->text : $o->value;
 					}
 					else
 					{
@@ -220,7 +220,7 @@ class JFormFieldListfields extends JFormFieldList
 			$this->value = str_replace('`', '', $this->value);
 
 			// Some elements were stored as names but subsequently changed to ids (need to check for old values an substitute with correct ones)
-			if ($valueformat == 'id' && !is_numeric($this->value) && $this->value != '')
+			if ($valueFormat == 'id' && !is_numeric($this->value) && $this->value != '')
 			{
 				if ($formModel)
 				{
@@ -321,19 +321,19 @@ class JFormFieldListfields extends JFormFieldList
 	{
 		$input = $this->app->input;
 		$controller = $input->get('view', $input->get('task'));
-		$valueformat = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
+		$valueFormat = (string) ArrayHelper::getValue($this->element, 'valueformat', 'id');
 		$onlylistfields = (int) ArrayHelper::getValue($this->element, 'onlylistfields', 0);
 		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
 		$labelMethod = (string) ArrayHelper::getValue($this->element, 'label_method');
-		$nojoins = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
+		$noJoins = (bool) ArrayHelper::getValue($this->element, 'nojoins', false);
 
 		$bits = array();
 		$showRaw = (bool) ArrayHelper::getValue($this->element, 'raw', false);
-		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+		$groupModel = new \Fabrik\Admin\Models\Group;
 		$groupModel->setId($groupId);
-		$optskey = $valueformat == 'tableelement' ? 'name' : 'id';
+		$optsKey = $valueFormat == 'tableelement' ? 'name' : 'id';
 		$useStep = (bool) ArrayHelper::getValue($this->element, 'usestep', false);
-		$res = $groupModel->getForm()->getElementOptions($useStep, $optskey, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $nojoins);
+		$res = $groupModel->getFormModel()->getElementOptions($useStep, $optsKey, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 		$hash = $controller . '.' . implode('.', $bits);
 
 		if (array_key_exists($hash, $this->results))

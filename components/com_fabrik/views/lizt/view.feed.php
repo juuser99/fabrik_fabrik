@@ -62,7 +62,7 @@ class FabrikViewList extends JViewLegacy
 
 		// Get headings
 		$aTableHeadings = array();
-		$groupModels = $formModel->getGroupsHiarachy();
+		$groupModels = $formModel->getGroupsHierarchy();
 
 		foreach ($groupModels as $groupModel)
 		{

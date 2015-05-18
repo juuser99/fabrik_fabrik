@@ -52,6 +52,12 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected $state;
 
 	/**
+	 * Sidebar html
+	 *
+	 * @var string
+	 */
+	public $sidebar = '';
+	/**
 	 * Render the view
 	 *
 	 * @return  string
@@ -67,6 +73,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		Fabrik::addSubmenu('crons');
 
 		$this->sidebar = JHtmlSidebar::render();
+		$this->setLayout('bootstrap');
 
 		FabrikHelperHTML::iniRequireJS();
 

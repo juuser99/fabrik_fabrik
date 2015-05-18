@@ -13,6 +13,8 @@ namespace Fabrik\Admin\Views\Forms;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use FabrikHelperHTML;
+use JFactory;
 use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
@@ -38,7 +40,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	/**
 	 * Pagination
 	 *
-	 * @var  JPagination
+	 * @var  \JPagination
 	 */
 	protected $pagination;
 
@@ -48,6 +50,13 @@ class Html extends \Fabrik\Admin\Views\Html
 	 * @var object
 	 */
 	protected $state;
+
+	/**
+	 * Sidebar html
+	 *
+	 * @var string
+	 */
+	public $sidebar = '';
 
 	/**
 	 * Render the view
@@ -60,14 +69,14 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->items = $this->model->getItems();
 		$this->pagination = $this->model->getPagination();
 		$this->state = $this->model->getState();
-		//$this->packageOptions = $this->get('PackageOptions');
 
 		$this->addToolbar();
 		Fabrik::addSubmenu('forms');
 
 		$this->sidebar = JHtmlSidebar::render();
 
-		\FabrikHelperHTML::iniRequireJS();
+		FabrikHelperHTML::iniRequireJS();
+		$this->setLayout('bootstrap');
 		return parent::render();
 	}
 
@@ -79,7 +88,6 @@ class Html extends \Fabrik\Admin\Views\Html
 
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
 
@@ -103,7 +111,7 @@ class Html extends \Fabrik\Admin\Views\Html
 			}
 		}
 
-		if (\JFactory::getUser()->authorise('core.manage', 'com_checkin'))
+		if (JFactory::getUser()->authorise('core.manage', 'com_checkin'))
 		{
 			JToolBarHelper::custom('forms.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
 		}

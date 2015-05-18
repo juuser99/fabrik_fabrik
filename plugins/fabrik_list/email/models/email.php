@@ -154,7 +154,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			$tableEmail = $params->get('emailtable_to_table_email');
 			$tableName = $params->get('emailtable_to_table_name');
 
-			$toTableModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			$toTableModel = new \Fabrik\Admin\Models\Lizt;
 			$toTableModel->setId($table);
 			$toDb = $toTableModel->getDb();
 

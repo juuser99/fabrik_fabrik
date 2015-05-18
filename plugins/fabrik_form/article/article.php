@@ -525,7 +525,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 		if ($elementModel = $formModel->getElement($params->get('meta_store'), true))
 		{
-			$key = $elementModel->getElement()->name;
+			$key = $elementModel->getElement()->get('name');
 			$val = json_encode($store);
 			$listModel = $formModel->getListModel();
 

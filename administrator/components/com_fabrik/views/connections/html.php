@@ -68,6 +68,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		Fabrik::addSubmenu('connections');
 
 		$this->sidebar = JHtmlSidebar::render();
+		$this->setLayout('bootstrap');
 
 		FabrikHelperHTML::iniRequireJS();
 

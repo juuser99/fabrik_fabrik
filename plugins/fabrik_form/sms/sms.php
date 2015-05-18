@@ -127,7 +127,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 		}
 
 		$message = "";
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -136,7 +136,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 			foreach ($elementModels as $elementModel)
 			{
 				$element = $elementModel->getElement();
-				$element->label = strip_tags($element->label);
+				$element->set('label', strip_tags($element->get('label'));
 
 				if (!array_key_exists($element->name, $data))
 				{
@@ -144,7 +144,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 				}
 				else
 				{
-					$elName = $element->name;
+					$elName = $element->get('name');
 				}
 
 				$key = $elName;
@@ -169,7 +169,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 						}
 
 						$val = FabrikString::rtrimword($val, '<br />');
-						$message .= $element->label . ': ' . $val . "\r\n";
+						$message .= $element->get('label') . ': ' . $val . "\r\n";
 					}
 				}
 			}

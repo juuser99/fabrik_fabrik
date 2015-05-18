@@ -33,14 +33,14 @@ class FabrikAdminViewList extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$model->setId($input->getInt('listid'));
 		$this->setModel($model, true);
 		$item = $model->getTable();
 		$params = $model->getParams();
 		$model->render();
 		$this->emptyDataMessage = $params->get('empty_data_msg');
-		$rowid = $input->getString('rowid', '', 'string');
+		$rowId = $input->getString('rowid', '', 'string');
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
 		$data = $model->getData();
 		$nav = $model->getPagination();
@@ -80,7 +80,7 @@ class FabrikAdminViewList extends JViewLegacy
 		}
 
 		// $$$ hugh - heading[3] doesn't exist any more?  Trying [0] instead.
-		$d = array('id' => $item->id, 'rowid' => $rowid, 'model' => 'list', 'data' => $data,
+		$d = array('id' => $item->id, 'rowid' => $rowId, 'model' => 'list', 'data' => $data,
 				'headings' => $this->headings,
 				'formid' => $model->getTable()->form_id,
 				'lastInsertedRow' => JFactory::getSession()->get('lastInsertedRow', 'test'));

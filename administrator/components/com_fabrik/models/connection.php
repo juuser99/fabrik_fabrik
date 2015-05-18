@@ -16,7 +16,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use GCore\Libs\Arr;
 use Joomla\Utilities\ArrayHelper;
-use \JModelLegacy as JModelLegacy;
 use \FText as FText;
 use \stdClass as stdClass;
 use Fabrik\Helpers\Worker;

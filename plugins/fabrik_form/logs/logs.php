@@ -237,7 +237,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 							$log_elements = explode(',', str_replace(' ', '', $log_elements));
 						}
 
-						$groups = $formModel->getGroupsHiarachy();
+						$groups = $formModel->getGroupsHierarchy();
 
 						foreach ($groups as $groupModel)
 						{
@@ -253,7 +253,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 								{
 									if ($newData[$c]->$fullName != $origData[$c]->$fullName)
 									{
-										$result_compare .= FText::_('COMPARE_DATA_CHANGE_ON') . ' ' . $element->label . ' ' . $sep_compare
+										$result_compare .= FText::_('COMPARE_DATA_CHANGE_ON') . ' ' . $element->get('label') . ' ' . $sep_compare
 										. FText::_('COMPARE_DATA_FROM') . ' ' . $origData[0]->$fullName . ' ' . $sep_compare
 										. FText::_('COMPARE_DATA_TO') . ' ' . $newData[$c]->$fullName . ' ' . $sep_2compare;
 									}
@@ -411,35 +411,35 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 			$clabelsCreateDb[] = $db->quoteName('ip') . " varchar(32) NOT NULL";
 			$clabelsDb[] = $db->quoteName('ip');
-			$cdataDb[] = $params->get('logs_record_ip') == '1' ? $db->quote($_SERVER['REMOTE_ADDR']) : $db->quote('');
+			$cdataDb[] = $params->get('logs_record_ip') == '1' ? $db->q($_SERVER['REMOTE_ADDR']) : $db->q('');
 
 			$clabelsCreateDb[] = $db->quoteName('referer') . " varchar(255) NOT NULL";
 			$clabelsDb[] = $db->quoteName('referer');
-			$cdataDb[] = $params->get('logs_record_referer') == '1' ? $db->quote($http_referrer) : $db->quote('');
+			$cdataDb[] = $params->get('logs_record_referer') == '1' ? $db->q($http_referrer) : $db->q('');
 
 			$clabelsCreateDb[] = $db->quoteName('user_agent') . " varchar(255) NOT NULL";
 			$clabelsDb[] = $db->quoteName('user_agent');
-			$cdataDb[] = $params->get('logs_record_useragent') == '1' ? $db->quote($_SERVER['HTTP_USER_AGENT']) : $db->quote('');
+			$cdataDb[] = $params->get('logs_record_useragent') == '1' ? $db->q($_SERVER['HTTP_USER_AGENT']) : $db->q('');
 
 			$clabelsCreateDb[] = $db->quoteName('data_comparison') . " TEXT NOT NULL";
 			$clabelsDb[] = $db->quoteName('data_comparison');
-			$cdataDb[] = $params->get('compare_data') == '1' ? $db->quote($result_compare) : $db->quote('');
+			$cdataDb[] = $params->get('compare_data') == '1' ? $db->q($result_compare) : $db->q('');
 
 			$clabelsCreateDb[] = $db->quoteName('rowid') . " INT(11) NOT NULL";
 			$clabelsDb[] = $db->quoteName('rowid');
-			$cdataDb[] = $db->quote($rowId);
+			$cdataDb[] = $db->q($rowId);
 
 			$clabelsCreateDb[] = $db->quoteName('userid') . " INT(11) NOT NULL";
 			$clabelsDb[] = $db->quoteName('userid');
-			$cdataDb[] = $db->quote((int) $userId);
+			$cdataDb[] = $db->q((int) $userId);
 
 			$clabelsCreateDb[] = $db->quoteName('tableid') . " INT(11) NOT NULL";
 			$clabelsDb[] = $db->quoteName('tableid');
-			$cdataDb[] = $db->quote($formModel->getTableModel()->getId());
+			$cdataDb[] = $db->q($formModel->getTableModel()->getId());
 
 			$clabelsCreateDb[] = $db->quoteName('formid') . " INT(11) NOT NULL";
 			$clabelsDb[] = $db->quoteName('formid');
-			$cdataDb[] = $db->quote($formModel->getId());
+			$cdataDb[] = $db->q($formModel->getId());
 
 			$clabels_createdb = implode(", ", $clabelsCreateDb);
 			$clabels_db = implode(", ", $clabelsDb);
@@ -684,8 +684,8 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 			if ($params->get('record_in') == '')
 			{
 				$in_db = "INSERT INTO $rdb (" . $db->quoteName('referring_url') . ", " . $db->quoteName('message_type') . ", "
-					. $db->quoteName('message') . ") VALUES (" . $db->quote($http_referrer) . ", " . $db->quote($messageType) . ", "
-						. $db->quote($message) . ");";
+					. $db->quoteName('message') . ") VALUES (" . $db->q($http_referrer) . ", " . $db->q($messageType) . ", "
+						. $db->q($message) . ");";
 				$db->setQuery($in_db);
 				$db->execute();
 			}

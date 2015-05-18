@@ -130,8 +130,8 @@ class JFormFieldTextorwysiwyg extends JFormFieldText
 					$query = $db->getQuery(true);
 					$query->select('element');
 					$query->from('#__extensions');
-					$query->where('element = ' . $db->quote($element));
-					$query->where('folder = ' . $db->quote('editors'));
+					$query->where('element = ' . $db->q($element));
+					$query->where('folder = ' . $db->q('editors'));
 					$query->where('enabled = 1');
 
 					// Check of the editor exists.

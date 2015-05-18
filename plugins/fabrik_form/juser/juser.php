@@ -90,7 +90,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		$elementModel = Worker::getPluginManager()->getElementPlugin($params->get($pname));
 
-		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
+		return $short ? $elementModel->getElement()->get('name') : $elementModel->getFullName();
 	}
 
 	/**
@@ -170,7 +170,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 						foreach ($fields as $key => $val)
 						{
-							$query->set($fabrikDb->quoteName($key) . ' = ' . $fabrikDb->quote($val));
+							$query->set($fabrikDb->quoteName($key) . ' = ' . $fabrikDb->q($val));
 						}
 
 						$fabrikDb->setQuery($query);
@@ -708,8 +708,8 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			foreach ($sendEmail as $userid)
 			{
 				$messages[] = "(" . $userid . ", " . $userid . ", '" . $now->toSql() . "', "
-					. $db->quote(FText::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')) . ", "
-					. $db->quote(JText::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', false, $data['username'])) . ")";
+					. $db->q(FText::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')) . ", "
+					. $db->q(JText::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', false, $data['username'])) . ")";
 			}
 
 			$q .= implode(',', $messages);
@@ -1055,7 +1055,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		// Check for existing username
 		$query = $db->getQuery(true);
-		$query->select('COUNT(*)')->from('#__users')->where('username = ' . $db->quote($post['username']))->where('id != ' . (int) $userId);
+		$query->select('COUNT(*)')->from('#__users')->where('username = ' . $db->q($post['username']))->where('id != ' . (int) $userId);
 		$db->setQuery($query);
 		$xid = (int) $db->loadResult();
 
@@ -1067,7 +1067,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		// Check for existing email
 		$query->clear();
-		$query->select('COUNT(*)')->from('#__users')->where('email = ' . $db->quote($post['email']))->where('id != ' . (int) $userId);
+		$query->select('COUNT(*)')->from('#__users')->where('email = ' . $db->q($post['email']))->where('id != ' . (int) $userId);
 		$db->setQuery($query);
 		$xid = (int) $db->loadResult();
 

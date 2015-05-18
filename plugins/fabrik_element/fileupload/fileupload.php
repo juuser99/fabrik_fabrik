@@ -2648,7 +2648,7 @@ class PlgFabrik_ElementFileupload extends Element
 							$join = $this->getJoinModel()->getJoin();
 							$query = $db->getQuery(true);
 							$query->select('*')->from($db->quoteName($join->table_join))
-								->where($db->quoteName('parent_id') . ' = ' . $db->quote($row->__pk_val));
+								->where($db->quoteName('parent_id') . ' = ' . $db->q($row->__pk_val));
 							$db->setQuery($query);
 							$imageRows = $db->loadObjectList('id');
 
@@ -2941,7 +2941,7 @@ class PlgFabrik_ElementFileupload extends Element
 			$pk = $listModel->getTable()->db_primary_key;
 			$fabrikDb = $listModel->getDb();
 			list($table_name, $element_name) = explode('.', $hit_counter);
-			$sql = "UPDATE $table_name SET $element_name = COALESCE($element_name,0) + 1 WHERE $pk = " . $fabrikDb->quote($rowId);
+			$sql = "UPDATE $table_name SET $element_name = COALESCE($element_name,0) + 1 WHERE $pk = " . $fabrikDb->q($rowId);
 			$fabrikDb->setQuery($sql);
 			$fabrikDb->execute();
 		}
@@ -3059,7 +3059,7 @@ class PlgFabrik_ElementFileupload extends Element
 		{
 			// Use getString as if we have edited a record, added a file and deleted it the id is alphanumeric and not found in db.
 			$query->delete($db->quoteName($join->table_join))
-			->where($db->quoteName('id') . ' = ' . $db->quote($input->getString('recordid')));
+			->where($db->quoteName('id') . ' = ' . $db->q($input->getString('recordid')));
 			$db->setQuery($query);
 
 			JLog::add('Delete join image entry: ' . $db->getQuery() . '; user = ' . $this->user->get('id'), JLog::WARNING, 'com_fabrik.element.fileupload');

@@ -123,7 +123,7 @@ class FabrikControllerPlugin extends FabrikController
 
 		$db->setQuery($query);
 		$rows      = $db->loadObjectList();
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$c         = 0;
 
 		foreach ($rows as $row)

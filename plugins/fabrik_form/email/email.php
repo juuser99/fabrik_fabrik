@@ -485,7 +485,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$params = $this->getParams();
 		$data = $this->getProcessData();
 		$formModel = $this->getModel();
-		$groups = $formModel->getGroupsHiarachy();
+		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -627,7 +627,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$ignore = $this->getDontEmailKeys();
 		$message = "";
 		$formModel = $this->getModel();
-		$groupModels = $formModel->getGroupsHiarachy();
+		$groupModels = $formModel->getGroupsHierarchy();
 
 		foreach ($groupModels as &$groupModel)
 		{
@@ -638,7 +638,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 				$element = $elementModel->getElement();
 
 				// @TODO - how about adding a 'renderEmail()' method to element model, so specific element types  can render themselves?
-				$key = (!array_key_exists($element->name, $data)) ? $elementModel->getFullName(true, false) : $element->name;
+				$key = (!array_key_exists($element->get('name'), $data)) ? $elementModel->getFullName(true, false) : $element->get('name');
 
 				if (!in_array($key, $ignore))
 				{
@@ -671,7 +671,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 						$val = " - ";
 					}
 					// Don't add a second ":"
-					$label = trim(strip_tags($element->label));
+					$label = trim(strip_tags($element->get('label')));
 					$message .= $label;
 
 					if (strlen($label) != 0 && String::strpos($label, ':', String::strlen($label) - 1) === false)

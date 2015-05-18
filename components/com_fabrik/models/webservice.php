@@ -222,7 +222,7 @@ abstract class FabrikWebService
 		$query->select($item->db_primary_key . ' AS id, ' . $fk)->from($item->db_table_name);
 		$db->setQuery($query);
 		$ids = $db->loadObjectList($fk);
-		$formModel->getGroupsHiarachy();
+		$formModel->getGroupsHierarchy();
 		$this->updateCount = 0;
 		$this->addedCount = 0;
 

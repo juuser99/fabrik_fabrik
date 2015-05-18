@@ -126,7 +126,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		if (!empty($updates) && trim($field) != '')
 		{
 			// Do any update found
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			$listModel = new \Fabrik\Admin\Models\Lizt;
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
 			$field = $params->get('cronemail-updatefield');
@@ -140,7 +140,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 			$field = str_replace('___', '.', $field);
 			$fabrikDb = $listModel->getDb();
 			$query = $fabrikDb->getQuery(true);
-			$query->update($table->db_table_name)->set($field . ' = ' . $fabrikDb->quote($value))
+			$query->update($table->db_table_name)->set($field . ' = ' . $fabrikDb->q($value))
 				->where($table->db_primary_key . ' IN (' . implode(',', $updates) . ')');
 			$this->log .= "\n update query: $query";
 			$fabrikDb->setQuery($query);

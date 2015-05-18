@@ -77,12 +77,12 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		 *  $$$ rob - if embedding a form inside a details view then rowid is true (for the detailed view) but we are still showing a new form
 		 *  so take a look at the element form's rowId and not app input
 		 */
-		$rowid = $this->getFormModel()->rowId;
+		$rowId = $this->getFormModel()->rowId;
 		/**
 		 * @TODO when editing a form with joined repeat group the rowid will be set but
 		 * the record is in fact new
 		 */
-		if ($params->get('update_on_edit') || !$rowid || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
+		if ($params->get('update_on_edit') || !$rowId || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
 		{
 			// Set user to logged in user
 			if ($this->isEditable())
@@ -156,7 +156,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 				/* $$$ hugh - hmmm, might not necessarily be a new row.  So corner case check for
 				 * editing a row, where user element is not set yet, and 'update on edit' is No.
 				 */
-				if ($rowid && empty($id) && !$params->get('update_on_edit'))
+				if ($rowId && empty($id) && !$params->get('update_on_edit'))
 				{
 					$user = JFactory::getUser(0);
 				}
@@ -422,7 +422,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 						$query = $db->getQuery(true)
 						->select($db->quoteName('id'))
 						->from($db->quoteName('#__users'))
-						->where($db->quoteName('email') . ' = ' . $db->quote($userid));
+						->where($db->quoteName('email') . ' = ' . $db->q($userid));
 						$db->setQuery($query, 0, 1);
 
 						$new_userid = (int) $db->loadResult();

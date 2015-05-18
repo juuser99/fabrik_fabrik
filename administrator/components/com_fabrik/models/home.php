@@ -214,7 +214,7 @@ class Home extends \JModelBase
 		}
 
 		echo "<li>Groups added to 'Contact Us' form</li>";
-		$listModel = JModelLegacy::getInstance('List', 'FabrikAdminModel');
+		$listModel = new Lizt;
 		$list = $this->getTable('List');
 		$list->label = "Contact Us Data";
 		$list->introduction = "This table stores the data submitted in the contact us form";
@@ -233,7 +233,7 @@ class Home extends \JModelBase
 		$list->store();
 		echo "<li>Table for 'Contact Us' created</li></div>";
 		$form->store();
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$formModel = new Form;
 		$formModel->setId($form->id);
 		$formModel->form = $form;
 

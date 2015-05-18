@@ -15,7 +15,7 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use \JRegistry as JRegistry;
 use \JForm as JForm;
-use \Fabrik\Models\Join as Join;
+use \Fabrik\Admin\Models\Join as Join;
 use \stdClass as stdClass;
 use Joomla\String\String as String;
 use FText as FText;
@@ -83,16 +83,9 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Form model
 	 *
-	 * @var FabrikFEModelForm
+	 * @var \Fabrik\Admin\Models\Form
 	 */
 	protected $form = null;
-
-	/**
-	 * List model
-	 *
-	 * @var FabrikFEModelList
-	 */
-	protected $table = null;
 
 	/**
 	 * Element plugins
@@ -225,7 +218,7 @@ class Group extends Base implements ModelGroupInterface
 	{
 		if ($data['id'] == 0)
 		{
-			$user                     = JFactory::getUser();
+			$user                     = $this->user;
 			$data['created_by']       = $user->get('id');
 			$data['created_by_alias'] = $user->get('username');
 			$data['created']          = JFactory::getDate()->toSql();
@@ -325,7 +318,7 @@ class Group extends Base implements ModelGroupInterface
 
 	private function checkFKIndex($data)
 	{
-		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+		$groupModel = new Group;
 		$groupModel->setId($data['id']);
 		$listModel = $groupModel->getListModel();
 		$item      = FabTable::getInstance('Group', 'FabrikTable');
@@ -365,7 +358,7 @@ class Group extends Base implements ModelGroupInterface
 
 	public function makeJoinedGroup(&$data)
 	{
-		$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+		$groupModel = new Group;
 		$groupModel->setId($data['id']);
 		$listModel          = $groupModel->getListModel();
 		$db                 = $listModel->getDb();
@@ -378,7 +371,7 @@ class Group extends Base implements ModelGroupInterface
 
 		foreach ($elements as $element)
 		{
-			$fname = $element->getElement()->name;
+			$fname = $element->getElement()->get('name');
 			/**
 			 * if we are making a repeat group from the primary group then we don't want to
 			 * overwrite the repeat group tables id definition with that of the main tables
@@ -578,15 +571,13 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Set the context in which the element occurs
 	 *
-	 * @param   object  $formModel  Form model
-	 * @param   object  $listModel  List model
+	 * @param   object  $formModel  Form model (as of 3.5 this also contains the list model)
 	 *
 	 * @return void
 	 */
-	public function setContext($formModel, $listModel)
+	public function setContext($formModel)
 	{
 		$this->form = $formModel;
-		$this->table = $listModel;
 	}
 
 	/**
@@ -619,7 +610,7 @@ class Group extends Base implements ModelGroupInterface
 
 		if (is_null($this->joinModel))
 		{
-			$this->joinModel = new Join;//JModelLegacy::getInstance('Join', 'FabrikFEModel');
+			$this->joinModel = new Join;
 			/*echo "join id = " . $group->get('join_id');exit;
 			$this->joinModel->setId($group->get('join_id'));
 			$js = $this->getListModel()->getJoins();
@@ -647,6 +638,21 @@ class Group extends Base implements ModelGroupInterface
 	 */
 	public function getGroup()
 	{
+		if (isset($this->group))
+		{
+			$form = $this->getListModel();
+			$item = $form->getItem();
+			$groups = $item->get('form.groups');
+
+			foreach ($groups as $group)
+			{
+				if ($group->id == $this->get('id'))
+				{
+					$this->group = new JRegistry($group);
+					return $this->group;
+				}
+			}
+		}
 		return $this->group;
 	}
 
@@ -859,7 +865,7 @@ class Group extends Base implements ModelGroupInterface
 				 * also we need them in addDefaultDataFromRO()
 				 * if ($element->published == 1 && $elementModel->canView())
 				 */
-				if ($element->published == 1)
+				if ($element->get('published') == 1)
 				{
 					$full_name = $elementModel->getFullName(true, false);
 
@@ -875,12 +881,12 @@ class Group extends Base implements ModelGroupInterface
 						continue;
 					}
 
-					$showThisInList = $element->primary_key || $params->get('include_in_list_query', 1) == 1
-						|| (empty($showInList) && $element->show_in_list_summary) || in_array($element->id, $showInList);
+					$showThisInList = $element->get('primary_key') || $params->get('include_in_list_query', 1) == 1
+						|| (empty($showInList) && $element->get('show_in_list_summary')) || in_array($element->get('id'), $showInList);
 
 					if ($showThisInList)
 					{
-						if ($element->primary_key || $full_name == $join_id)
+						if ($element->get('primary_key') || $full_name == $join_id)
 						{
 							$table_pk_included = true;
 						}
@@ -905,7 +911,7 @@ class Group extends Base implements ModelGroupInterface
 						$this->listQueryElements[$sig][] = $elementModel;
 						$element_included = true;
 					}
-					elseif ($element->primary_key || $full_name == $join_id)
+					elseif ($element->get('primary_key') || $full_name == $join_id)
 					{
 						if ($element_included)
 						{
@@ -966,9 +972,9 @@ class Group extends Base implements ModelGroupInterface
 			{
 				$element = $elementModel->getELement();
 
-				if ($element->published == 1)
+				if ($element->get('published') == 1)
 				{
-					if (empty($ids) || in_array($element->id, $ids))
+					if (empty($ids) || in_array($element->get('id'), $ids))
 					{
 						$this->publishedElements[$sig][] = $elementModel;
 					}
@@ -990,7 +996,7 @@ class Group extends Base implements ModelGroupInterface
 	public function setId($id)
 	{
 		// Set new group ID
-		$this->id = $id;
+		$this->set('id', $id);
 	}
 
 	/**
@@ -1051,23 +1057,32 @@ class Group extends Base implements ModelGroupInterface
 	}
 
 	/**
-	 * Get an array of forms that the group is in
+	 * Get an array of View Ids that the group is in
 	 * NOTE: now a group can only belong to one form
 	 *
 	 * @return  array  form ids
 	 */
-
 	public function getFormsIamIn()
 	{
 		if (!isset($this->formsIamIn))
 		{
-			$db = Worker::getDbo(true);
-			$query = $db->getQuery(true);
-			$query->select('form_id')->from('#__fabrik_formgroup')->where('group_id = ' . (int) $this->getId());
-			$db->setQuery($query);
-			$this->formsIamIn = $db->loadColumn();
-			$db->execute();
+			$this->formsIamIn = array();
+			$views = $this->getViews();
+
+			foreach ($views as $view)
+			{
+				$groups = $view->form->groups;
+
+				foreach ($groups as $group)
+				{
+					if ($group->id === $this->getId())
+					{
+						$this->formsIamIn[] = $view->id;
+					}
+				}
+			}
 		}
+		$this->formsIamIn = array_unique($this->formsIamIn);
 
 		return $this->formsIamIn;
 	}
@@ -1248,15 +1263,15 @@ class Group extends Base implements ModelGroupInterface
 	 *
 	 * @return object form model
 	 */
-
 	public function getFormModel()
 	{
 		if (!isset($this->form))
 		{
-			$formids = $this->getFormsIamIn();
-			$formid = empty($formids) ? 0 : $formids[0];
-			$this->form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-			$this->form->setId($formid);
+			$formIds = $this->getFormsIamIn();
+			print_r($formIds);
+			$formId = empty($formIds) ? '' : $formIds[0];
+			$this->form = new Form;
+			$this->form->set('id', $formId);
 			$this->form->getForm();
 			$this->form->getlistModel();
 		}
@@ -1279,7 +1294,7 @@ class Group extends Base implements ModelGroupInterface
 
 		if ($ok)
 		{
-			$user = JFactory::getUser();
+			$user = $this->user;
 			$groups = $user->getAuthorisedViewLevels();
 			$ok = in_array($params->get('repeat_add_access', 1), $groups);
 		}
@@ -1307,8 +1322,7 @@ class Group extends Base implements ModelGroupInterface
 
 			if ($ok === -1)
 			{
-				$user = JFactory::getUser();
-				$groups = $user->getAuthorisedViewLevels();
+				$groups = $this->user->getAuthorisedViewLevels();
 				$ok = in_array($params->get('repeat_delete_access', 1), $groups);
 			}
 		}
@@ -1480,8 +1494,8 @@ class Group extends Base implements ModelGroupInterface
 
 		foreach ($elements as $element)
 		{
-			$origElementId = $element->getElement()->id;
-			$copy = $element->copyRow($origElementId, $element->getElement()->label, $group->id);
+			$origElementId = $element->getElement()->get('id');
+			$copy = $element->copyRow($origElementId, $element->getElement()->get('label'), $group->id);
 			$newElements[$origElementId] = $copy->id;
 		}
 
@@ -1489,13 +1503,13 @@ class Group extends Base implements ModelGroupInterface
 		$elements = $this->getMyElements();
 
 		// Create form group
-		$formid = isset($this->_newFormid) ? $this->_newFormid : $this->getFormModel()->getId();
+		$formId = isset($this->_newFormid) ? $this->_newFormid : $this->getFormModel()->getId();
 		$formGroup = FabTable::getInstance('FormGroup', 'FabrikTable');
-		$formGroup->form_id = $formid;
+		$formGroup->form_id = $formId;
 		$formGroup->group_id = $group->id;
 		$formGroup->ordering = 999999;
 		$formGroup->store();
-		$formGroup->reorder(" form_id = '$formid'");
+		$formGroup->reorder(" form_id = '$formId'");
 
 		return $newElements;
 	}
@@ -1873,14 +1887,14 @@ class Group extends Base implements ModelGroupInterface
 					$mid = array_unshift($mid);
 				}
 
-				$mid = $db->quote($mid);
+				$mid = $db->q($mid);
 			}
 
 			$query->where($db->qn($join->table_join_key) . ' IN (' . implode(', ', $masterInsertId) . ')');
 		}
 		else
 		{
-			$query->where($db->qn($join->table_join_key) . ' = ' . $db->quote($masterInsertId));
+			$query->where($db->qn($join->table_join_key) . ' = ' . $db->q($masterInsertId));
 		}
 
 		$query->where($pk . 'IN (' . implode(',', $db->q($keysToDelete)) . ') ');
@@ -1977,5 +1991,15 @@ class Group extends Base implements ModelGroupInterface
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the groups list model
+	 *
+	 * @return  object	list model
+	 */
+	public function getListModel()
+	{
+		return $this->getFormModel()->getlistModel();
 	}
 }

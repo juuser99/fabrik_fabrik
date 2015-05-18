@@ -77,7 +77,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
 		$input  = $this->app->input;
-		$model  = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$model  = new \Fabrik\Admin\Models\Lizt;
 		$listId = $input->getInt('listid');
 		$model->setId($listId);
 		$ids        = $input->get('ids', array(), 'array');
@@ -124,7 +124,7 @@ class FabrikAdminControllerList extends FabControllerForm
 			$cid = (int) $input->get('listid', $cid);
 
 			// Grab the model and set its id
-			$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+			$model = new \Fabrik\Admin\Models\Lizt;
 			$model->setState('list.id', $cid);
 		}
 
@@ -183,7 +183,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
 		$input = $this->app->input;
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$id    = $input->getInt('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
@@ -216,7 +216,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$id    = $this->app->input->getInt('listid');
 		$model->setId($id);
 		$this->app->input->set('cid', $id);

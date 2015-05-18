@@ -435,16 +435,16 @@ class FabrikModelChart extends FabrikFEModelVisualization
 			$tmodels = array();
 			$this->tableData = array();
 			$params = $this->getParams();
-			$listid = (array) $params->get('chart_table');
+			$listId = (array) $params->get('chart_table');
 			$chartWheres = (array) $params->get('chart_where');
 			$c = 0;
 
-			foreach ($listid as $lid)
+			foreach ($listId as $lid)
 			{
 				if (!array_key_exists($lid, $tmodels))
 				{
 					$listModel = null;
-					$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+					$listModel = new \Fabrik\Admin\Models\Lizt;
 					$listModel->setId($lid);
 					$tmodels[$lid] = $listModel;
 				}
@@ -608,10 +608,10 @@ class FabrikModelChart extends FabrikFEModelVisualization
 			$this->calcfound = false;
 			$params = $this->getParams();
 			$chartElements = (array) $params->get('chart_elementList');
-			$listid = (array) $params->get('chart_table');
+			$listId = (array) $params->get('chart_table');
 			$calc_prefixes = array('sum___', 'avg___', 'med___', 'cnt___');
 
-			for ($c = 0; $c < count($listid); $c++)
+			for ($c = 0; $c < count($listId); $c++)
 			{
 				$column = $chartElements[$c];
 				$pref = substr($column, 0, 6);

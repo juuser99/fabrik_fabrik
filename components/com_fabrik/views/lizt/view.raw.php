@@ -48,7 +48,7 @@ class FabrikViewList extends FabrikViewListBase
 
 		$table = $model->getTable();
 		$params = $model->getParams();
-		$rowid = $input->getString('rowid', '', 'string');
+		$rowId = $input->getString('rowid', '', 'string');
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
 		$data = $model->render();
 		$this->emptyDataMessage = $this->get('EmptyDataMsg');
@@ -94,7 +94,7 @@ class FabrikViewList extends FabrikViewListBase
 			}
 		}
 
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -107,7 +107,7 @@ class FabrikViewList extends FabrikViewListBase
 			}
 		}
 
-		$d = array('id' => $table->id, 'listRef' => $input->get('listref'), 'rowid' => $rowid, 'model' => 'list', 'data' => $data,
+		$d = array('id' => $table->id, 'listRef' => $input->get('listref'), 'rowid' => $rowId, 'model' => 'list', 'data' => $data,
 			'headings' => $this->headings, 'formid' => $model->getTable()->form_id,
 			'lastInsertedRow' => JFactory::getSession()->get('lastInsertedRow', 'test'));
 

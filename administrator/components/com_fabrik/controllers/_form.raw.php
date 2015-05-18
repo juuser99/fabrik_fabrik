@@ -64,15 +64,12 @@ class FabrikAdminControllerForm extends FabControllerForm
 		$input = $this->app->input;
 		$document = JFactory::getDocument();
 		$viewName = $input->get('view', 'form');
-		$viewType = $document->getType();
 
 		// For now lets route this to the html view.
 		$view = $this->getView($viewName, 'html');
 
-		if ($model = JModelLegacy::getInstance('Form', 'FabrikFEModel'))
-		{
-			$view->setModel($model, true);
-		}
+		$model = new \Fabrik\Admin\Models\Form;
+		$view->setModel($model, true);
 
 		$model->setId($input->get('formid', 0));
 		$this->isMambot = $input->get('_isMambot', 0);
@@ -188,8 +185,8 @@ class FabrikAdminControllerForm extends FabControllerForm
 
 		if ($input->getInt('packageId', 0) !== 0)
 		{
-			$rowid = $input->getString('rowid', '', 'string');
-			echo json_encode(array('msg' => $msg, 'rowid' => $rowid));
+			$rowId = $input->getString('rowid', '', 'string');
+			echo json_encode(array('msg' => $msg, 'rowid' => $rowId));
 
 			return;
 		}

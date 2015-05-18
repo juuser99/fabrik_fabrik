@@ -717,8 +717,8 @@ class ListFilter extends Base
 				$filters['value'][$key] = $newsearch;
 				$filters['condition'][$key] = $condition;
 				$filters['join'][$key] = 'OR';
-				$filters['no-filter-setup'][$key] = ($element->filter_type == '') ? 1 : 0;
-				$filters['hidden'][$key] = ($element->filter_type == '') ? 1 : 0;
+				$filters['no-filter-setup'][$key] = ($element->get('filter_type') == '') ? 1 : 0;
+				$filters['hidden'][$key] = ($element->get('filter_type') == '') ? 1 : 0;
 				$filters['key'][$key] = $k;
 				$filters['key2'][$key] = $k2;
 				$filters['search_type'][$key] = 'searchall';
@@ -744,8 +744,8 @@ class ListFilter extends Base
 				$filters['value'][] = $newsearch;
 				$filters['condition'][] = $condition;
 				$filters['join'][] = 'OR';
-				$filters['no-filter-setup'][] = ($element->filter_type == '') ? 1 : 0;
-				$filters['hidden'][] = ($element->filter_type == '') ? 1 : 0;
+				$filters['no-filter-setup'][] = ($element->get('filter_type') == '') ? 1 : 0;
+				$filters['hidden'][] = ($element->get('filter_type')== '') ? 1 : 0;
 				$filters['key'][] = $k;
 				$filters['key2'][] = $k2;
 				$filters['search_type'][] = 'searchall';
@@ -768,7 +768,7 @@ class ListFilter extends Base
 				 */
 				$filters['grouped_to_previous'][] = 1;
 				$filters['label'][] = $elementModel->getListHeading();
-				$filters['elementid'][] = $element->id;
+				$filters['elementid'][] = $element->get('id');
 				$filters['raw'][] = false;
 			}
 
@@ -936,11 +936,11 @@ class ListFilter extends Base
 						$filters['value'][] = $searchfilters['value'][$i];
 						$filters['condition'][] = $elementModel->getDefaultFilterCondition();
 						$filters['join'][] = $join;
-						$filters['no-filter-setup'][] = ($element->filter_type == '') ? 1 : 0;
-						$filters['hidden'][] = ($element->filter_type == '') ? 1 : 0;
+						$filters['no-filter-setup'][] = ($$element->get('filter_type') == '') ? 1 : 0;
+						$filters['hidden'][] = ($element->get('filter_type') == '') ? 1 : 0;
 						$filters['key'][] = $key;
 						$filters['search_type'][] = 'search';
-						$filters['match'][] = $element->filter_exact_match;
+						$filters['match'][] = $element->get('filter_exact_match');
 						$filters['full_words_only'][] = $elparams->get('full_words_only');
 						$filters['eval'][] = $eval;
 						$filters['required'][] = $elparams->get('filter_required');
@@ -955,11 +955,11 @@ class ListFilter extends Base
 						$filters['value'][$index] = $searchfilters['value'][$i];
 						$filters['condition'][$index] = $elementModel->getDefaultFilterCondition();
 						$filters['join'][$index] = $join;
-						$filters['no-filter-setup'][$index] = ($element->filter_type == '') ? 1 : 0;
-						$filters['hidden'][$index] = ($element->filter_type == '') ? 1 : 0;
+						$filters['no-filter-setup'][$index] = ($element->get('filter_type') == '') ? 1 : 0;
+						$filters['hidden'][$index] = ($element->get('filter_type') == '') ? 1 : 0;
 						$filters['key'][$index] = $key;
 						$filters['search_type'][$index] = 'search';
-						$filters['match'][$index] = $element->filter_exact_match;
+						$filters['match'][$index] = $element->get('filter_exact_match');
 						$filters['full_words_only'][$index] = $elparams->get('full_words_only');
 						$filters['eval'][$index] = $eval;
 						$filters['required'][$index] = $elparams->get('filter_required');
@@ -969,7 +969,7 @@ class ListFilter extends Base
 						$filters['raw'][$index] = false;
 					}
 
-					$filters['elementid'][] = $element->id;
+					$filters['elementid'][] = $element->get('id');
 				}
 			}
 
@@ -1139,12 +1139,12 @@ class ListFilter extends Base
 		$filters['value'][] = $value;
 		$filters['condition'][] = urldecode($condition);
 		$filters['join'][] = $join;
-		$filters['no-filter-setup'][] = ($element->filter_type == '') ? 1 : 0;
-		$filters['hidden'][] = ($element->filter_type == '') ? 1 : 0;
+		$filters['no-filter-setup'][] = ($element->get('filter_type') == '') ? 1 : 0;
+		$filters['hidden'][] = ($$element->get('filter_type') == '') ? 1 : 0;
 		$filters['key'][] = $key;
 		$filters['key2'][] = '';
 		$filters['search_type'][] = $filterType;
-		$filters['match'][] = $element->filter_exact_match;
+		$filters['match'][] = $element->get('filter_exact_match');
 		$filters['full_words_only'][] = $elparams->get('full_words_only');
 		$filters['eval'][] = $eval;
 		$filters['required'][] = $elparams->get('filter_required');
@@ -1384,8 +1384,8 @@ class ListFilter extends Base
 				$filters['value'][] = $value;
 				$filters['condition'][] = urldecode($condition);
 				$filters['join'][] = $joinMode;
-				$filters['no-filter-setup'][] = ($element->filter_type == '') ? 1 : 0;
-				$filters['hidden'][] = ($element->filter_type == '') ? 1 : 0;
+				$filters['no-filter-setup'][] = ($element->get('filter_type')== '') ? 1 : 0;
+				$filters['hidden'][] = ($element->get('filter_type') == '') ? 1 : 0;
 				/*
 				 * $$$ hugh - need to check for magic quotes, otherwise filter keys for
 				 * CONCAT's get munged into things like CONCAT(last_name,\', \',first_name)
@@ -1401,7 +1401,7 @@ class ListFilter extends Base
 				}
 
 				$filters['search_type'][] = ArrayHelper::getValue($request['search_type'], $i, 'normal');
-				$filters['match'][] = $element->filter_exact_match;
+				$filters['match'][] = $element->get('filter_exact_match');
 				$filters['full_words_only'][] = $elparams->get('full_words_only');
 				$filters['eval'][] = $eval;
 				$filters['required'][] = $elparams->get('filter_required');
@@ -1586,9 +1586,9 @@ class ListFilter extends Base
 
 					$element = $elementModel->getElement();
 					$elparams = $elementModel->getParams();
-					$noFiltersSetup = ($element->filter_type == '') ? 1 : 0;
-					$hidden = ($element->filter_type == '') ? 1 : 0;
-					$match = $element->filter_exact_match;
+					$noFiltersSetup = ($element->get('filter_type') == '') ? 1 : 0;
+					$hidden = ($element->get('filter_type')== '') ? 1 : 0;
+					$match = $element->get('filter_exact_match');
 					$fullWordsOnly = $elparams->get('full_words_only');
 					$required = $elparams->get('filter_required');
 					$access = $elparams->get('filter_access');

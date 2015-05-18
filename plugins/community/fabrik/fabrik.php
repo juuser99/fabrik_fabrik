@@ -34,7 +34,7 @@ class plgCommunityFabrik extends CApplications
 
 		$view = $this->params->get('fabrik_view');
 		$id = $this->params->get('fabrik_view_id');
-		$rowid = $this->params->get('fabrik_row_id');
+		$rowId = $this->params->get('fabrik_row_id');
 		$usekey = $this->params->get('fabrik_usekey');
 		$layout = $this->params->get('fabrik_layout');
 		$additional = $this->params->get('fabrik_additional');
@@ -46,7 +46,7 @@ class plgCommunityFabrik extends CApplications
 			$className = 'plgCommunityFabrik';
 			$callback = array($className, '_getFabrikHTML');
 
-			$content = $cache->call($callback, $view, $id, $rowid, $usekey, $layout, $element, $additional, $this->userparams, $user->id);
+			$content = $cache->call($callback, $view, $id, $rowId, $usekey, $layout, $element, $additional, $this->userparams, $user->id);
 		}else{
 			$content = "<div class=\"icon-nopost\"><img src='".JURI::base()."components/com_community/assets/error.gif' alt=\"\" /></div>";
 			$content .= "<div class=\"content-nopost\">".JText::_('Fabrik view details not set.')."</div>";
@@ -55,18 +55,18 @@ class plgCommunityFabrik extends CApplications
 		return $content;
 	}
 
-	static function _getFabrikHTML($view, $id, $rowid, $usekey, $layout, $element, $additional, $params, $userId) {
+	static function _getFabrikHTML($view, $id, $rowId, $usekey, $layout, $element, $additional, $params, $userId) {
 		require_once( JPATH_BASE.'/plugins/community/fabrik/fabrik/api_class.php');
 		$jsFabrik = new jsFabrik();
 		$plugin_cmd = '';
 		switch ($view) {
 			case 'form':
 			case 'details':
-				if (empty($rowid) || $rowid == '-2') {
-					$rowid = $userId;
+				if (empty($rowId) || $rowId == '-2') {
+					$rowId = $userId;
 				}
 				$usekey = (empty($usekey)) ? '' : " usekey=$usekey";
-				$plugin_cmd = "fabrik view=$view id=$id rowid=$rowid$usekey";
+				$plugin_cmd = "fabrik view=$view id=$id rowid=$rowId$usekey";
 				break;
 			case 'table':
 			case 'list':
@@ -76,11 +76,11 @@ class plgCommunityFabrik extends CApplications
 				$plugin_cmd = "fabrik view=$view id=$id profileid=$userId";
 				break;
 			case 'element':
-				if (empty($rowid) || $rowid == '-2') {
-					$rowid = $userId;
+				if (empty($rowId) || $rowId == '-2') {
+					$rowId = $userId;
 				}
 				$usekey = (empty($usekey)) ? '' : " usekey=$usekey";
-				$plugin_cmd = "fabrik view=$view table=$id row=$rowid$usekey element=$element";
+				$plugin_cmd = "fabrik view=$view table=$id row=$rowId$usekey element=$element";
 				break;
 			default:
 				return 'no such view!';

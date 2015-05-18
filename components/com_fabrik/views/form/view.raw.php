@@ -84,7 +84,7 @@ class FabrikViewForm extends JViewLegacy
 			$model->setEditable(false);
 		}
 
-		$groups = $model->getGroupsHiarachy();
+		$groups = $model->getGroupsHierarchy();
 		$gkeys = array_keys($groups);
 		$JSONarray = array();
 		$JSONHtml = array();

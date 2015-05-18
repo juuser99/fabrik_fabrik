@@ -120,11 +120,11 @@ class PlgFabrik_ElementAttending extends Element
 		$this->loadMeForAjax();
 		$listModel = $this->getListModel();
 		$list      = $listModel->getTable();
-		$listid    = $list->id;
+		$listId    = $list->id;
 		$formid    = $listModel->getFormModel()->getId();
 		$rowId    = $input->get('row_id');
 		$rating    = $input->getInt('rating');
-		$this->doRating($listid, $formid, $rowId, $rating);
+		$this->doRating($listId, $formid, $rowId, $rating);
 
 		if ($input->get('mode') == 'creator-rating')
 		{
@@ -135,19 +135,19 @@ class PlgFabrik_ElementAttending extends Element
 			$element = $this->getElement();
 			$query   = $db->getQuery(true);
 			$query->update($list->db_table_name)
-				->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->quote($rowId));
+				->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->q($rowId));
 			$db->setQuery($query);
 			$db->execute();
 		}
 
-		$this->getRatingAverage('', $listid, $formid, $rowId);
+		$this->getRatingAverage('', $listId, $formid, $rowId);
 		echo $this->avg;
 	}
 
 	/**
 	 * Main method to store a rating
 	 *
-	 * @param   int    $listid List id
+	 * @param   int    $listId List id
 	 * @param   int    $formid Form id
 	 * @param   string $rowId Row reference
 	 * @param   int    $rating Rating
@@ -155,23 +155,23 @@ class PlgFabrik_ElementAttending extends Element
 	 * @return  void
 	 */
 
-	private function doRating($listid, $formid, $rowId, $rating)
+	private function doRating($listId, $formid, $rowId, $rating)
 	{
 		$this->createRatingTable();
 		$db        = Worker::getDbo(true);
 		$tzoffset  = $this->config->get('offset');
 		$date      = JFactory::getDate('now', $tzoffset);
-		$strDate   = $db->quote($date->toSql());
+		$strDate   = $db->q($date->toSql());
 		$userid    = $this->user->get('id');
-		$elementid = (int) $this->getElement()->id;
+		$elementId = (int) $this->getElement()->id;
 		$formid    = (int) $formid;
-		$listid    = (int) $listid;
+		$listId    = (int) $listId;
 		$rating    = (int) $rating;
-		$rowId    = $db->quote($rowId);
+		$rowId    = $db->q($rowId);
 		$db
 			->setQuery(
 				"INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
-		values ($userid, $listid, $formid, $rowId, $rating, $strDate, $elementid)
+		values ($userid, $listId, $formid, $rowId, $rating, $strDate, $elementId)
 			ON DUPLICATE KEY UPDATE date_created = $strDate, rating = $rating"
 			);
 		$db->execute();

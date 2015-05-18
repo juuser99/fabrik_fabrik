@@ -76,10 +76,10 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		$infoElement = $params->get('media_info_elementList', '');
 		$noteElement = $params->get('media_note_elementList', '');
 
-		$listid = $params->get('media_table');
+		$listId = $params->get('media_table');
 
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 		$list = $listModel->getTable();
 		$form = $listModel->getFormModel();
 		/* remove filters?
@@ -262,9 +262,9 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		if (!isset($this->listModel))
 		{
 			$params = $this->getParams();
-			$listid = $params->get('slideshow_viz_table');
-			$this->listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$this->listModel->setId($listid);
+			$listId = $params->get('slideshow_viz_table');
+			$this->listModel = new \Fabrik\Admin\Models\Lizt;
+			$this->listModel->setId($listId);
 		}
 
 		return $this->listModel;

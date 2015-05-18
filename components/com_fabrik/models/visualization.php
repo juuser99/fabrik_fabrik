@@ -174,7 +174,7 @@ class FabrikFEModelVisualization extends JModelLegacy
 		{
 			if (!array_key_exists($id, $this->tables))
 			{
-				$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+				$listModel = new \Fabrik\Admin\Models\Lizt;
 				$listModel->setId($id);
 				$listModel->getTable();
 				$this->tables[$id] = $listModel;

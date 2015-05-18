@@ -37,7 +37,7 @@ class ListHelper
 	public static function getElements($listModel, $filter = array())
 	{
 		$found = array();
-		$groups = $listModel->getFormGroupElementData();
+		$groups = $listModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -50,7 +50,7 @@ class ListHelper
 
 				foreach ($filter as $key => $val)
 				{
-					if ($item->$key != $val)
+					if ($item->get($key) != $val)
 					{
 						$ok = false;
 					}

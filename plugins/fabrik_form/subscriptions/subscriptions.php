@@ -216,8 +216,8 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 		$db = $this->db;
 		$query = $db->getQuery(true);
-		$query->select('cost, label, plan_name, duration AS p3, period_unit AS t3, ' . $db->quote($item_raw) . ' AS item_number ')
-		->from('#__fabrik_subs_plan_billing_cycle')->where('id = ' . $db->quote($item_raw));
+		$query->select('cost, label, plan_name, duration AS p3, period_unit AS t3, ' . $db->q($item_raw) . ' AS item_number ')
+		->from('#__fabrik_subs_plan_billing_cycle')->where('id = ' . $db->q($item_raw));
 
 		$db->setQuery($query);
 		$sub = $db->loadObject();
@@ -353,7 +353,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('*')->from('#__fabrik_subs_subscriptions')->where('userid = ' . (int) $this->user->get('id'))
-			->where('status = ' . $db->quote('Pending'))
+			->where('status = ' . $db->q('Pending'))
 			->order('signup_date DESC');
 			$db->setQuery($query);
 			$pendingSubs = $db->loadObjectList();
@@ -537,8 +537,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		$input = $this->app->input;
 		$formid = $input->getInt('formid');
 		$rowId = $input->getString('rowid', '', 'string');
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$formModel = new \Fabrik\Admin\Models\Form;
 		$formModel->setId($formid);
 		$params = $formModel->getParams();
 		$ret_msg = (array) $params->get('subscriptions_return_msg');
@@ -598,8 +597,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		$mail = JFactory::getMailer();
 
 		// Pretty sure they are added but double add
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$formModel = new \Fabrik\Admin\Models\Form;
 		$formModel->setId($formid);
 		$listModel = $formModel->getlistModel();
 		$params = $formModel->getParams();
@@ -701,7 +699,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 					{
 						$query = $db->getQuery(true);
 						$query->select($ipn_status_field)->from('#__fabrik_subs_invoices')
-						->where($db->quoteName($ipn_txn_field) . ' = ' . $db->quote($txn_id));
+						->where($db->quoteName($ipn_txn_field) . ' = ' . $db->q($txn_id));
 						$db->setQuery($query);
 						$txn_result = $db->loadResult();
 
@@ -780,13 +778,13 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 
 									foreach ($set_list as $set_field => $set_value)
 									{
-										$set_value = $db->quote($set_value);
+										$set_value = $db->q($set_value);
 										$set_field = $db->quoteName($set_field);
 										$set_array[] = "$set_field = $set_value";
 									}
 
 									$query = $db->getQuery(true);
-									$query->update('#__fabrik_subs_invoices')->set(implode(',', $set_array))->where('id = ' . $db->quote($invoiceId));
+									$query->update('#__fabrik_subs_invoices')->set(implode(',', $set_array))->where('id = ' . $db->q($invoiceId));
 									$db->setQuery($query);
 
 									if (!$db->execute())

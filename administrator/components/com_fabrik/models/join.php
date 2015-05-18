@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Models;
+namespace Fabrik\Admin\Models;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -335,8 +335,8 @@ class Join extends Base
 
 		$db = Worker::getDbo();
 		$dbname = $join->table_join;
-		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $db->quote($table->db_table_name)
-		. " AND table_type = 'view' AND table_schema = " . $db->quote($dbname);
+		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $db->q($table->db_table_name)
+		. " AND table_type = 'view' AND table_schema = " . $db->q($dbname);
 		$db->setQuery($sql);
 		$row = $db->loadObjectList();
 		$this->isView = empty($row) ? 0 : 1;

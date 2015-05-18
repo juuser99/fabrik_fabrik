@@ -200,17 +200,17 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $this->app->input;
 		$formid = $input->getInt('formid');
-		$rowid = $input->get('rowid', '', 'string');
+		$rowId = $input->get('rowid', '', 'string');
 		$mode = $input->get('mode', 'details');
-		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$model =  new \Fabrik\Admin\Models\Form;
 		$model->setId($formid);
 		$this->setModel($model);
-		$model->rowId = $rowid;
+		$model->rowId = $rowId;
 		$ids = $this->getNavIds();
 		$url = COM_FABRIK_LIVESITE
 			. 'index.php?option=com_' . $package . '&format=raw&g=form&view=pluginAjax&plugin=paginate&method=xRecord&formid=' . $formid
-			. '&rowid=' . $rowid;
-		$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&view=' . $mode . '&formid=' . $formid . '&rowid=' . $rowid . '&format=raw';
+			. '&rowid=' . $rowId;
+		$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&view=' . $mode . '&formid=' . $formid . '&rowid=' . $rowId . '&format=raw';
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_URL, $url);

@@ -176,7 +176,7 @@ class Html extends \Fabrik\Admin\Views\Html
 			$row->formid    = $table->form_id;
 			$row->label     = $table->label;
 			$row->formlabel = $formModel->getForm()->label;
-			$groups         = $formModel->getGroupsHiarachy();
+			$groups         = $formModel->getGroupsHierarchy();
 			$row->groups    = array();
 
 			foreach ($groups as $group)

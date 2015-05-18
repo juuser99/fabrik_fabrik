@@ -9,8 +9,8 @@ $data = $data[0][0];
 
 $db = Worker::getDbo();
 
-$location = $db->quote("(".$data->gate_user___latitude .",".$data->gate_user___longitude."):4");
-$time = $db->quote($data->gate_user___time_stamp_raw);
+$location = $db->q("(".$data->gate_user___latitude .",".$data->gate_user___longitude."):4");
+$time = $db->q($data->gate_user___time_stamp_raw);
 $db->setQuery("SELECT COUNT(*) FROM moose_location WHERE location = $location AND time_date = $time");
 $count = (int) $db->loadResult();
 

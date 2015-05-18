@@ -16,10 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
-use \JModelLegacy as JModelLegacy;
 use \FabrikString as FabrikString;
 use \FText as FText;
-use \Fabrik\Models\PluginManager as PluginManager;
+use \Fabrik\Admin\Models\PluginManager as PluginManager;
 
 interface CronInterface
 {
@@ -73,7 +72,7 @@ class Cron extends Base implements CronInterface
 
 		if (is_null($plugin))
 		{
-			$plugin = $item->plugin ? $item->plugin : $this->state->get('plugin');
+			$plugin = $item->get('plugin', $this->state->get('plugin'));
 		}
 
 		JPluginHelper::importPlugin('fabrik_cron');

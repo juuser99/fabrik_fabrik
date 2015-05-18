@@ -14,9 +14,7 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Fabrik\Admin\Models\Lizt as Lizt;
 use Fabrik\Helpers\ArrayHelper;
-use \Fabrik\Models\PluginManager as PluginManager;
 use \JForm as JForm;
 
 interface PluginInterface

@@ -63,8 +63,8 @@ class DiscreteBarChart
 		$labelColumn = $params->get('label_field');
 		$valueColumn = $params->get('value_field');
 
-		$listid = $this->getListId();
-		list($rows, $labelColumn, $valueColumn) = $listid? $this->listQuery($listid) : $this->dbQuery();
+		$listId = $this->getListId();
+		list($rows, $labelColumn, $valueColumn) = $listId? $this->listQuery($listId) : $this->dbQuery();
 		$return = array();
 		$values = array();
 
@@ -103,7 +103,7 @@ class DiscreteBarChart
 		$db = Worker::getDbo(false, $params->get('conn_id'));
 		$table = $params->get('tbl');
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quote($table));
+		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->q($table));
 		$db->setQuery($query);
 		$this->listid = $db->loadResult();
 
@@ -151,11 +151,11 @@ class DiscreteBarChart
 	/**
 	 * Get rows from list
 	 *
-	 * @param   int  $listid  List id
+	 * @param   int  $listId  List id
 	 *
 	 * @return array($rows, $labelColumn, $valueColumn)
 	 */
-	protected function listQuery($listid)
+	protected function listQuery($listId)
 	{
 		$params = $this->params;
 		$db = Worker::getDbo(false, $params->get('conn_id'));
@@ -164,8 +164,8 @@ class DiscreteBarChart
 		$labelColumn = $params->get('label_field');
 		$valueColumn = $params->get('value_field');
 		$calc = $params->get('value_calc', '');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 
 		$listModel->pluginQueryGroupBy = array($params->get('label_field'));

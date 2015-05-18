@@ -681,7 +681,7 @@ class PlgFabrik_ElementBirthday extends Element
 				$endDate->setDate($endYear + 1, $thisMonth, $thisDay)->setTime(23, 59, 59);
 				$value[1] = $endDate->toSql();
 
-				$value = $db->quote($value[0]) . ' AND ' . $db->quote($value[1]);
+				$value = $db->q($value[0]) . ' AND ' . $db->q($value[1]);
 			}
 
 			$condition = 'BETWEEN';
@@ -692,7 +692,7 @@ class PlgFabrik_ElementBirthday extends Element
 			{
 				foreach ($value as &$v)
 				{
-					$v = $db->quote($v);
+					$v = $db->q($v);
 				}
 
 				$value = ' (' . implode(',', $value) . ')';

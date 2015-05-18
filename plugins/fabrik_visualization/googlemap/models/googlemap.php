@@ -268,7 +268,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$params = $this->getParams();
 		$templates = (array) $params->get('fb_gm_detailtemplate');
 		$templates_nl2br = (array) $params->get('fb_gm_detailtemplate_nl2br');
-		$listids = (array) $params->get('googlemap_table');
+		$listIds = (array) $params->get('googlemap_table');
 
 		// Images for file system
 		$aIconImgs = (array) $params->get('fb_gm_iconimage');
@@ -290,15 +290,15 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$this->recordCount = 0;
 
 		$maxMarkers = $params->get('fb_gm_markermax', 0);
-		$recLimit = count($listids) == 1 ? $maxMarkers : 0;
+		$recLimit = count($listIds) == 1 ? $maxMarkers : 0;
 		$limitMessageShown = false;
 		$limitMessage = $params->get('fb_gm_markermax_message');
 		$groupedIcons = array();
 		$lc = 0;
 
-		foreach ($listids as $listid)
+		foreach ($listIds as $listId)
 		{
-			$listModel = $this->getlistModel($listid);
+			$listModel = $this->getlistModel($listId);
 
 			$template = ArrayHelper::getValue($templates, $c, '');
 			/**
@@ -321,7 +321,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 			$listModel->_randomRecords = ($params->get('fb_gm_random_marker') == 1 && $recLimit != 0) ? true : false;
 
 			// Used in list model setLimits
-			$input->set('limit' . $listid, $recLimit);
+			$input->set('limit' . $listId, $recLimit);
 			$listModel->setLimits();
 			$nav = $listModel->getPagination(0, 0, $recLimit);
 			$data = $listModel->getData();
@@ -482,7 +482,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 						}
 						else
 						{
-							$groupedIcons[] = array($v[0], $v[1], $html, $iconImg, $width, $height, 'groupkey' => $groupKey, 'listid' => $listid,
+							$groupedIcons[] = array($v[0], $v[1], $html, $iconImg, $width, $height, 'groupkey' => $groupKey, 'listid' => $listId,
 								'title' => $title, 'groupClass' => 'type' . $gClass);
 						}
 					}
@@ -494,7 +494,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 							$iconImg = $uri->getScheme() . '://www.google.com/mapfiles/marker' . String::strtoupper($letters[$c]) . '.png';
 						}
 
-						$icons[$v[0] . $v[1]] = array($v[0], $v[1], $html, $iconImg, $width, $height, 'groupkey' => $groupKey, 'listid' => $listid,
+						$icons[$v[0] . $v[1]] = array($v[0], $v[1], $html, $iconImg, $width, $height, 'groupkey' => $groupKey, 'listid' => $listId,
 							'title' => $title, 'groupClass' => 'type' . $gClass);
 					}
 

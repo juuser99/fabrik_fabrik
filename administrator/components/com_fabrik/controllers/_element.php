@@ -108,7 +108,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
 		$input = $this->input;
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new \Fabrik\Admin\Models\PluginManager;
 		$model = $pluginManager->getPlugIn('field', 'element');
 		$id = $input->getInt('id');
 		$model->setId($id);
@@ -147,7 +147,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 	public function cancelUpdateStructure()
 	{
 		JSession::checkToken() or die('Invalid Token');
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new \Fabrik\Admin\Models\PluginManager;
 		$input = $this->app->input;
 		$model = $pluginManager->getPlugIn('field', 'element');
 		$model->setId($input->getInt('id'));
@@ -200,7 +200,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 		$input = $this->app->input;
 		$jform = $input->get('jform', array(), 'array');
 		$id = (int) ArrayHelper::getValue($jform, 'id', 0);
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = new \Fabrik\Admin\Models\PluginManager;
 		$className = $input->post->get('plugin', 'field');
 		$elementModel = $pluginManager->getPlugIn($className, 'element');
 		$elementModel->setId($id);

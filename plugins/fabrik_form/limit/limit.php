@@ -124,7 +124,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 
 		if (!empty($fkVal))
 		{
-			$query->where($db->quoteName($fk) . ' = ' . $db->quote($fkVal), 'AND');
+			$query->where($db->quoteName($fk) . ' = ' . $db->q($fkVal), 'AND');
 		}
 
 		$db->setQuery($query);
@@ -140,9 +140,9 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	protected function limit()
 	{
 		$params = $this->getParams();
-		$listid = (int) $params->get('limit_table');
+		$listId = (int) $params->get('limit_table');
 
-		if ($listid === 0)
+		if ($listId === 0)
 		{
 			// Use the limit setting supplied in the admin params
 			$limit = (int) $params->get('limit_length');
@@ -165,9 +165,9 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	protected function limitQuery()
 	{
 		$params = $this->getParams();
-		$listid = (int) $params->get('limit_table');
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listId = (int) $params->get('limit_table');
+		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel->setId($listId);
 		$dbTable = $listModel->getTable()->db_table_name;
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);

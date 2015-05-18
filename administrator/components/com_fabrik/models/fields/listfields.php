@@ -405,10 +405,6 @@ class JFormFieldListfields extends JFormFieldList
 
 		$bits    = array();
 		$showRaw = Worker::toBoolean($this->getAttribute('raw', false), false);
-		/*$groupModel = new Group;//JModelLegacy::getInstance('Group', 'FabrikFEModel');
-		echo "group id = $groupId";
-		$groupModel->setId($groupId);*/
-
 		$formModel = $this->form->model->getFormModel();
 		$optsKey   = $valueFormat == 'tableelement' ? 'name' : 'id';
 		$useStep   = Worker::toBoolean($this->getAttribute('usestep', false), false);

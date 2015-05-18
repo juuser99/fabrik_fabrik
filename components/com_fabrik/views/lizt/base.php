@@ -391,7 +391,7 @@ class Base extends \Fabrik\Admin\Views\Html
 			}
 		}
 
-		$groups = $form->getGroupsHiarachy();
+		$groups = $form->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{

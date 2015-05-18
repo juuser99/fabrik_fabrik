@@ -30,6 +30,7 @@ $cName = $input->getCmd('controller');
 /*echo "<Pre>";print_r($_POST);
 echo $cName;exit;*/
 // Check for plugin views (e.g. list email plugin's "email form"
+
 if (String::strpos($cName, '.') != false)
 {
 	// @todo - recheck this for 3.5
@@ -61,7 +62,7 @@ if (String::strpos($cName, '.') != false)
 else
 {
 	// Do we have a custom controller - if not load the main controller.
-	$view = $input->get('view', 'Controller') !== '' ? $input->get('view', 'Controller') : $input->get->get('view', 'Controller');
+	$view = $input->get('view', 'Controller') !== '' ? $input->get('view', 'Home') : $input->get->get('view', 'Home');
 	$input->set('view', $view);
 	$view                = String::ucfirst($view);
 	$base                = 'Fabrik\Admin\Controllers';

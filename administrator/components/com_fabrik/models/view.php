@@ -36,7 +36,7 @@ class View extends Base
 	 *
 	 * @return  array  element objects
 	 */
-	public function getGroupsHiarachy()
+	public function getGroupsHierarchy()
 	{
 		if (!isset($this->groups))
 		{
@@ -58,15 +58,14 @@ class View extends Base
 		if (!isset($this->groups))
 		{
 			$this->groups = new \stdClass;
-			$listModel = $this->getListModel();
 			$groupModel = new Group;
 			$groupData = $this->getPublishedGroups();
 
-			foreach ($groupData as $id => $data)
+			foreach ($groupData as $data)
 			{
 				$thisGroup = clone ($groupModel);
-				$thisGroup->set('id', $id);
-				$thisGroup->setContext($this, $listModel);
+				$thisGroup->set('id', $data->id);
+				$thisGroup->setContext($this);
 				$thisGroup->setGroup($data);
 
 				if ($data->published == 1)
@@ -83,7 +82,7 @@ class View extends Base
 	/**
 	 * Get the View Models list model
 	 *
-	 * @return  \Fabrik\Admin\Models\List
+	 * @return  \Fabrik\Admin\Models\Lizt
 	 */
 	public function getListModel()
 	{
@@ -147,13 +146,13 @@ class View extends Base
 		{
 			// FIXME - workout what to do with this in json view
 			/*$listModel = $this->getListModel();
-			$listid = (int) $listModel->getId();
+			$listId = (int) $listModel->getId();
 
-			if (is_object($listModel) && $listid !== 0)
+			if (is_object($listModel) && $listId !== 0)
 			{
 				$query = $db->getQuery(true);
 				$query->select('g.id, j.id AS joinid')->from('#__fabrik_joins AS j')
-					->join('INNER', '#__fabrik_groups AS g ON g.id = j.group_id')->where('list_id = ' . $listid . ' AND g.published = 1');
+					->join('INNER', '#__fabrik_groups AS g ON g.id = j.group_id')->where('list_id = ' . $listId . ' AND g.published = 1');
 
 				// Added as otherwise you could potentially load a element joinid as a group join id. 3.1
 				$query->where('j.element_id = 0');
@@ -189,17 +188,17 @@ class View extends Base
 			$tableName = $item->get('list.db_table_name');
 			$exists = $this->storage->tableExists($tableName);
 			$fields = array();
-			$groups = $this->getGroupsHiarachy();
+			$groups = $this->getGroupsHierarchy();
 
 			foreach ($groups as $group)
 			{
 				foreach ($group->elements as $elementModel)
 				{
 					$element = $elementModel->getElement();
-					$fields[$element->name] = array(
-						'plugin' => $element->plugin,
+					$fields[$element->get('name')] = array(
+						'plugin' => $element->get('plugin'),
 						'field' => $elementModel->getFieldDescription(),
-						'primary_key' => $element->primary_key
+						'primary_key' => $element->get('primary_key')
 					);
 				}
 			}

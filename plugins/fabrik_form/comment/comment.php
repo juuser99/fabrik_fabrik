@@ -127,9 +127,9 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	public function getEndContent()
 	{
 		$formModel = $this->getModel();
-		$rowid = $formModel->getRowId();
+		$rowId = $formModel->getRowId();
 
-		if ($rowid == '')
+		if ($rowId == '')
 		{
 			return;
 		}
@@ -201,15 +201,15 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$jsfiles[] = 'plugins/fabrik_form/comment/inlineedit.js';
 
 		$thumbopts = $this->doThumbs() ? $thumbopts = $this->loadThumbJsOpts() : "{}";
-		$rowid = $input->get('rowid', '', 'string');
+		$rowId = $input->get('rowid', '', 'string');
 
-		if (strstr($rowid, ':'))
+		if (strstr($rowId, ':'))
 		{
 			// SLUG
-			$rowid = array_shift(explode(':', $rowid));
+			$rowId = array_shift(explode(':', $rowId));
 		}
 
-		$comments = $this->getComments($formModel->get('id'), $rowid);
+		$comments = $this->getComments($formModel->get('id'), $rowId);
 
 		$layout = $this->getLayout('layout');
 		$layoutData = new stdClass;
@@ -229,7 +229,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 		$opts = new stdClass;
 		$opts->formid = $formModel->get('id');
-		$opts->rowid = $rowid;
+		$opts->rowid = $rowId;
 		$opts->admin = $this->user->authorise('core.delete', 'com_fabrik');
 		$opts->label = '';
 
@@ -313,12 +313,12 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	 * Get the comments from the db
 	 *
 	 * @param   int     $formid  Form id
-	 * @param   string  $rowid   Row id
+	 * @param   string  $rowId   Row id
 	 *
 	 * @return  array	replies
 	 */
 
-	protected function getComments($formid, $rowid)
+	protected function getComments($formid, $rowId)
 	{
 		$formid = (int) $formid;
 		$db = Worker::getDbo();
@@ -333,7 +333,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 			$query->join('LEFT', '#__users AS u ON c.user_id = u.id');
 		}
 
-		$query->where('formid = ' . $formid . ' AND c.row_id = ' . $db->quote($rowid) . ' AND c.approved = 1')->order('c.time_date ASC');
+		$query->where('formid = ' . $formid . ' AND c.row_id = ' . $db->q($rowId) . ' AND c.approved = 1')->order('c.time_date ASC');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 		$main = array();
@@ -583,7 +583,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$db = Worker::getDbo();
 		$input = $this->app->input;
 		$id = $input->getInt('comment_id');
-		$comment = $db->quote($input->get('comment', '', 'string'));
+		$comment = $db->q($input->get('comment', '', 'string'));
 		$query = $db->getQuery(true);
 		$query->update('#__fabrik_comments')->set('comment = ' . $comment)->where('id = ' . $id);
 		$db->setQuery($query);
@@ -599,7 +599,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	private function setFormModel()
 	{
 		$input = $this->app->input;
-		$formModel = JModelLegacy::getInstance('form', 'FabrikFEModel');
+		$formModel =  new \Fabrik\Admin\Models\Form;
 		$formModel->setId($input->getInt('formid'));
 		$this->model = $formModel;
 
@@ -625,9 +625,9 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 		// @TODO this isn't set?
 		$row->url = $input->server->get('HTTP_REFERER', '', 'string');
-		$rowid = $input->get('rowid', '', 'string');
+		$rowId = $input->get('rowid', '', 'string');
 		$row->formid = $input->getInt('formid');
-		$row->row_id = $rowid;
+		$row->row_id = $rowId;
 
 		if ($user->get('id') != 0)
 		{
@@ -712,8 +712,8 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$db = Worker::getDbo();
 		$event = $db->q('COMMENT_ADDED');
 		$user_id = (int) $this->user->get('id');
-		$rowid = $input->get('rowid', '', 'string');
-		$ref = $db->q($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowid);
+		$rowId = $input->get('rowid', '', 'string');
+		$ref = $db->q($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowId);
 		$date = $db->q(JFactory::getDate()->toSql());
 		$query = $db->getQuery(true);
 		$query->insert('#__fabrik_notification_event')
@@ -750,12 +750,12 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$input = $this->app->input;
 		$db = Worker::getDbo();
 		$user_id = (int) $this->user->get('id');
-		$rowid = $input->get('rowid', '', 'string');
-		$label = $db->quote($input->get('label', '', 'string'));
-		$ref = $db->quote($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowid);
+		$rowId = $input->get('rowid', '', 'string');
+		$label = $db->q($input->get('label', '', 'string'));
+		$ref = $db->q($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowId);
 		$query = $db->getQuery(true);
 		$query->insert('#__fabrik_notification')
-		->set(array('reason = ' . $db->quote('commentor'), 'user_id = ' . $user_id, 'reference = ' . $ref, 'label = ' . $label));
+		->set(array('reason = ' . $db->q('commentor'), 'user_id = ' . $user_id, 'reference = ' . $ref, 'label = ' . $label));
 		$db->setQuery($query);
 
 		$onlySubscribed = (bool) $params->get('comment_allow_user_subscriptions_to_notifications');
@@ -788,7 +788,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 				if ($row->id != $user_id)
 				{
 					$query->clear();
-					$fields = array('reason = ' . $db->quote('admin observing a comment'), 'user_id = ' . $row->id, 'reference = ' . $ref,
+					$fields = array('reason = ' . $db->q('admin observing a comment'), 'user_id = ' . $row->id, 'reference = ' . $ref,
 						'label = ' . $label);
 					$query->insert('#__{package}_notification')->set($fields);
 					$db->setQuery($query);

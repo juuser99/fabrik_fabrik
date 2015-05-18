@@ -71,7 +71,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	 */
 	protected function buildModel($id)
 	{
-		$this->model = JModelLegacy::getInstance('form', 'FabrikFEModel');
+		$this->model = new \Fabrik\Admin\Models\Form;
 		$this->model->setId($id);
 		$form = $this->model->getForm();
 		$row = $this->getRow();
@@ -475,7 +475,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		$access_token = $connection->getAccessToken($_REQUEST['oauth_verifier']);
 
 		// Save the access token to the element params
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+		$formModel = new \Fabrik\Admin\Models\From;
 		$formModel->setId($input->getInt('formid'));
 		$row = $formModel->getForm();
 

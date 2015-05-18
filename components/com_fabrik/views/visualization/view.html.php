@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Fabrik\Models\PluginManager as PluginManager;
+use \Fabrik\Admin\Models\PluginManager as PluginManager;
 
 jimport('joomla.application.component.view');
 

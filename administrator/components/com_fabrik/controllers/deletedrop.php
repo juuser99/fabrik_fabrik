@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Deletedrop extends Controller
+class DeleteDrop extends Controller
 {
 	/**
 	 * Execute the controller.
@@ -32,9 +32,7 @@ class Deletedrop extends Controller
 	 *                   finish execution. A controller might return false if some precondition for
 	 *                   the controller to run has not been satisfied.
 	 *
-	 * @since   12.1
-	 * @throws  LogicException
-	 * @throws  RuntimeException
+	 * @since   3.5
 	 */
 	public function execute()
 	{
@@ -42,6 +40,7 @@ class Deletedrop extends Controller
 		$model = new Lists;
 		$ids   = $app->input->get('cid', array(), 'array');
 		$model->delete($ids);
-		$model->drop($ids);
+
+		return $model->drop($ids);
 	}
 }

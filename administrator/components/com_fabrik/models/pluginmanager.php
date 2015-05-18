@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Models;
+namespace Fabrik\Admin\Models;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -28,6 +28,7 @@ use \JHTML as JHTML;
 use \JPluginHelper as JPluginHelper;
 use \JProfiler as JProfiler;
 use \RuntimeException as RuntimeException;
+use Joomla\Registry\Registry as JRegistry;
 
 
 jimport('joomla.filesystem.file');
@@ -38,7 +39,7 @@ jimport('joomla.filesystem.file');
  * @package  Fabrik
  * @since    3.5
  */
-class PluginManager extends \JModelBase
+class PluginManager extends Base
 {
 	/**
 	 * plugins
@@ -134,7 +135,6 @@ class PluginManager extends \JModelBase
 	 *
 	 * @return  string  <ul>
 	 */
-
 	public function getList($group, $id)
 	{
 		$str = '<ul id="' . $id . '">';
@@ -166,7 +166,7 @@ class PluginManager extends \JModelBase
 		}
 
 		$query = $db->getQuery(true);
-		$folder = $db->quote('fabrik_' . $this->group);
+		$folder = $db->q('fabrik_' . $this->group);
 		$query->select('element AS value, name AS text')->from('#__extensions')->where('folder =' . $folder);
 		$db->setQuery($query);
 		$plugins = $db->loadObjectList();
@@ -181,7 +181,6 @@ class PluginManager extends \JModelBase
 	 *
 	 * @return  array	Plugins
 	 */
-
 	public function &getPlugInGroup($group)
 	{
 		if (array_key_exists($group, $this->plugIns))
@@ -396,8 +395,7 @@ class PluginManager extends \JModelBase
 	 */
 	public function getFormPlugins(&$model)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$profiler = JProfiler::getInstance('Application');
 
 		if (!isset($this->formPlugins))
@@ -447,7 +445,7 @@ class PluginManager extends \JModelBase
 					$listModel = $model->getListModel();
 
 					$pluginModel->setContext($groupModel, $model, $listModel);
-					$pluginModel->bindToElement($element);
+					$pluginModel->bindToElement(new JRegistry($element));
 					$groupModel->elements[$element->name] = $pluginModel;
 				}
 			}
@@ -556,9 +554,9 @@ class PluginManager extends \JModelBase
 
 		if ($type != 'list')
 		{
-			if (method_exists($parentModel, 'getGroupsHiarachy'))
+			if (method_exists($parentModel, 'getGroupsHierarchy'))
 			{
-				$groups = $parentModel->getGroupsHiarachy();
+				$groups = $parentModel->getGroupsHierarchy();
 
 				foreach ($groups as $groupModel)
 				{

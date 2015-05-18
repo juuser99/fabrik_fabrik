@@ -45,9 +45,7 @@ class Connections extends Controller
 	 *                   finish execution. A controller might return false if some precondition for
 	 *                   the controller to run has not been satisfied.
 	 *
-	 * @since   12.1
-	 * @throws  LogicException
-	 * @throws  RuntimeException
+	 * @since   3.5
 	 */
 	public function execute()
 	{
@@ -82,58 +80,4 @@ class Connections extends Controller
 				break;
 		}
 	}
-
-
-	/**
-	 * Method to set the home property for a list of items
-	 *
-	 * @since    1.6
-	 *
-	 * @return null
-	 */
-
-	/*public function setDefault()
-	{
-		// Check for request forgeries
-		JSession::checkToken() or die(FText::_('JINVALID_TOKEN'));
-		$input = $this->app->input;
-
-		// Get items to publish from the request.
-		$cid = $input->get('cid', array(), 'array');
-		$data = array('setDefault' => 1, 'unsetDefault' => 0);
-		$task = $this->getTask();
-		$value = ArrayHelper::getValue($data, $task, 0, 'int');
-
-		if ($value == 0)
-		{
-			$this->setMessage(FText::_('COM_FABRIK_CONNECTION_CANT_UNSET_DEFAULT'));
-		}
-
-		if (empty($cid))
-		{
-			$this->app->enqueueMessage(FText::_($this->text_prefix . '_NO_ITEM_SELECTED'), 'notice');
-		}
-		else
-		{
-			if ($value != 0)
-			{
-				$cid = $cid[0];
-
-				// Get the model.
-				$model = $this->getModel();
-
-				// Publish the items.
-				if (!$model->setDefault($cid, $value))
-				{
-					$this->app->enqueueMessage($model->getError(), 'error');
-				}
-				else
-				{
-					$this->setMessage(FText::_('COM_FABRIK_CONNECTION_SET_DEFAULT'));
-				}
-			}
-		}
-
-		$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
-	}*/
 }

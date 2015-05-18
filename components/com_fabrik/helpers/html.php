@@ -414,12 +414,12 @@ EOD;
 	 *
 	 * @param   object  $formModel  form model
 	 * @param   object  $params     parameters
-	 * @param   int     $rowid      row id
+	 * @param   int     $rowId      row id
 	 *
 	 * @return  string	print html icon/link
 	 */
 
-	public static function printIcon($formModel, $params, $rowid = '')
+	public static function printIcon($formModel, $params, $rowId = '')
 	{
 		$status = "status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=400,height=350,directories=no,location=no";
 		$link = self::printURL($formModel);
@@ -586,18 +586,18 @@ EOD;
 	/**
 	 * Get a list of condition options - used in advanced search
 	 *
-	 * @param   string  $listid  list ref
+	 * @param   string  $listId  list ref
 	 * @param   string  $sel     selected value
 	 *
 	 * @return  string	html select list
 	 */
 
-	public static function conditionList($listid, $sel = '')
+	public static function conditionList($listId, $sel = '')
 	{
 		$conditions = array();
 		$conditions[] = JHTML::_('select.option', 'AND', FText::_('COM_FABRIK_AND'));
 		$conditions[] = JHTML::_('select.option', 'OR', FText::_('COM_FABRIK_OR'));
-		$name = 'fabrik___filter[list_' . $listid . '][join][]';
+		$name = 'fabrik___filter[list_' . $listId . '][join][]';
 
 		return JHTML::_('select.genericlist', $conditions, $name, 'class="inputbox input-mini" size="1" ', 'value', 'text', $sel);
 	}
@@ -1654,7 +1654,7 @@ EOD;
 	 * Add autocomplete JS code to head
 	 *
 	 * @param   string  $htmlid     Of element to turn into autocomplete
-	 * @param   int     $elementid  Element id
+	 * @param   int     $elementId  Element id
 	 * @param   int     $formid     Form id
 	 * @param   string  $plugin     Plugin name
 	 * @param   array   $opts       * onSelection - function to run when option selected
@@ -1663,7 +1663,7 @@ EOD;
 	 * @return  void
 	 */
 
-	public static function autoComplete($htmlid, $elementid, $formid, $plugin = 'field', $opts = array())
+	public static function autoComplete($htmlid, $elementId, $formid, $plugin = 'field', $opts = array())
 	{
 		$input = JFactory::getApplication()->input;
 
@@ -1672,7 +1672,7 @@ EOD;
 			return;
 		}
 
-		$json = self::autoCompleteOptions($htmlid, $elementid, $formid, $plugin, $opts);
+		$json = self::autoCompleteOptions($htmlid, $elementId, $formid, $plugin, $opts);
 		$str = json_encode($json);
 		JText::script('COM_FABRIK_NO_RECORDS');
 		JText::script('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR');
@@ -1695,7 +1695,7 @@ EOD;
 	 * Gets auto complete js options (needed separate from autoComplete as db js class needs these values for repeat group duplication)
 	 *
 	 * @param   string  $htmlid     Element to turn into autocomplete
-	 * @param   int     $elementid  Element id
+	 * @param   int     $elementId  Element id
 	 * @param   int     $formid     Form id
 	 * @param   string  $plugin     Plugin type
 	 * @param   array   $opts       * onSelection - function to run when option selected
@@ -1704,7 +1704,7 @@ EOD;
 	 * @return  array	Autocomplete options (needed for elements so when duplicated we can create a new FabAutocomplete object
 	 */
 
-	public static function autoCompleteOptions($htmlid, $elementid, $formid, $plugin = 'field', $opts = array())
+	public static function autoCompleteOptions($htmlid, $elementId, $formid, $plugin = 'field', $opts = array())
 	{
 		$json = new stdClass;
 
@@ -1718,7 +1718,7 @@ EOD;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$json->url = 'index.php?option=com_' . $package . '&format=raw';
 		$json->url .= '&view=pluginAjax';
-		$json->url .= '&g=element&element_id=' . $elementid
+		$json->url .= '&g=element&element_id=' . $elementId
 			. '&formid=' . $formid . '&plugin=' . $plugin . '&method=autocomplete_options&package=' . $package;
 		$c = ArrayHelper::getValue($opts, 'onSelection');
 

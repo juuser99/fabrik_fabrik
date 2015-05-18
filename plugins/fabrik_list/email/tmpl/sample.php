@@ -29,7 +29,7 @@ foreach ($data as $name => $value)
 	}
 
 	$element = $elementModel->getElement();
-	$label = $element->label;
+	$label = $element->get('label');
 	$fval = $elementModel->renderListData($val, $row);
 	echo "$name : $label : $value : $fval<br />\n";
 }

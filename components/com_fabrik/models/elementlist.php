@@ -260,7 +260,7 @@ class ElementList extends Element
 			foreach ($originalValue as $v2)
 			{
 				$v2 = str_replace("/", "\\\\/", $v2);
-				$str[] = '(' . $key . $partialComparison . $db->quote('%"' . $v2 . '"%') . $glue . $key . $comparison . $db->quote($v2) . ') ';
+				$str[] = '(' . $key . $partialComparison . $db->q('%"' . $v2 . '"%') . $glue . $key . $comparison . $db->q($v2) . ') ';
 			}
 
 			$str = '(' . implode($glue, $str) . ')';
@@ -288,8 +288,8 @@ class ElementList extends Element
 					$condition2 = $condition == '=' ? 'LIKE' : 'NOT LIKE';
 					$glue = $condition == '=' ? 'OR' : 'AND';
 					$db = Worker::getDbo();
-					$str = "($key $condition $value " . " $glue $key $condition2 " . $db->quote('["' . $originalValue . '"%') . " $glue $key $condition2 "
-					. $db->quote('%"' . $originalValue . '"%') . " $glue $key $condition2 " . $db->quote('%"' . $originalValue . '"]') . ")";
+					$str = "($key $condition $value " . " $glue $key $condition2 " . $db->q('["' . $originalValue . '"%') . " $glue $key $condition2 "
+					. $db->q('%"' . $originalValue . '"%') . " $glue $key $condition2 " . $db->q('%"' . $originalValue . '"]') . ")";
 					break;
 				default:
 					$str = " $key $condition $value ";
@@ -1074,12 +1074,6 @@ class ElementList extends Element
 
 	public function notreadyyet_getLabelForValue($v, $defaultLabel = '')
 	{
-		/**
-		 * $$$ hugh - only needed getParent when we weren't saving changes to parent params to child
-		 * which we should now be doing ... and getParent() causes an extra table lookup for every child
-		 * element on the form.
-		 * $element = $this->getParent();
-		 */
 		$element = $this->getElement();
 		$params = $this->getParams();
 		$values = $this->getSubOptionValues();

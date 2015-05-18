@@ -143,7 +143,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 
 	protected function buildQueryWhere($data = array(), $incWhere = true, $thisTableAlias = null, $opts = array(), $query = false)
 	{
-		$rowid = $this->getFormModel()->getRowId();
+		$rowId = $this->getFormModel()->getRowId();
 		$db = $this->getDb();
 		$join = $this->getJoin();
 		$fk = $db->quoteName($join->table_join_alias . '.' . $join->table_join_key);
@@ -163,7 +163,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 		}
 		else
 		{
-			$where = $fk . ' = ' . $db->quote($rowid);
+			$where = $fk . ' = ' . $db->q($rowId);
 		}
 
 		$params->set('database_join_where_sql',  $where);
@@ -349,10 +349,10 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 			// New tag added
 			if (strstr($tagId, '#fabrik#'))
 			{
-				$tagId = $db->quote(str_replace('#fabrik#', '', $tagId));
+				$tagId = $db->q(str_replace('#fabrik#', '', $tagId));
 				$query = $db->getQuery(true);
 				$query->insert('#__tags')->set('level = 1, published = 1, parent_id = 1, created_user_id = ' . (int) $this->user->get('id'))
-				->set('created_time = ' . $db->quote($date->toSql()), ', language = "*", version = 1')
+				->set('created_time = ' . $db->q($date->toSql()), ', language = "*", version = 1')
 				->set('path = ' . $tagId . ', title = ' . $tagId . ', alias = ' . $tagId);
 				$db->setQuery($query);
 				$db->execute();
