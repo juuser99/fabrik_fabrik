@@ -420,9 +420,9 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 					{
 						$db = $this->db;
 						$query = $db->getQuery(true)
-						->select($db->quoteName('id'))
-						->from($db->quoteName('#__users'))
-						->where($db->quoteName('email') . ' = ' . $db->q($userid));
+						->select($db->qn('id'))
+						->from($db->qn('#__users'))
+						->where($db->qn('email') . ' = ' . $db->q($userid));
 						$db->setQuery($query, 0, 1);
 
 						$new_userid = (int) $db->loadResult();
@@ -574,22 +574,22 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 			if (ArrayHelper::getValue($opts, 'inc_raw', true))
 			{
-				$aFields[] = $k . ' AS ' . $db->quoteName($fullElName . '_raw');
-				$aAsFields[] = $db->quoteName($fullElName . '_raw');
+				$aFields[] = $k . ' AS ' . $db->qn($fullElName . '_raw');
+				$aAsFields[] = $db->qn($fullElName . '_raw');
 			}
 
-			$aFields[] = $k2 . ' AS ' . $db->quoteName($fullElName);
-			$aAsFields[] = $db->quoteName($fullElName);
+			$aFields[] = $k2 . ' AS ' . $db->qn($fullElName);
+			$aAsFields[] = $db->qn($fullElName);
 		}
 		else
 		{
-			$k = $db->quoteName($table) . '.' . $db->quoteName($element->name);
+			$k = $db->qn($table) . '.' . $db->qn($element->name);
 
 			// Its not so revert back to selecting the id
-			$aFields[] = $k . ' AS ' . $db->quoteName($fullElName . '_raw');
-			$aAsFields[] = $db->quoteName($fullElName . '_raw');
-			$aFields[] = $k . ' AS ' . $db->quoteName($fullElName);
-			$aAsFields[] = $db->quoteName($fullElName);
+			$aFields[] = $k . ' AS ' . $db->qn($fullElName . '_raw');
+			$aAsFields[] = $db->qn($fullElName . '_raw');
+			$aFields[] = $k . ' AS ' . $db->qn($fullElName);
+			$aAsFields[] = $db->qn($fullElName);
 		}
 	}
 
@@ -732,15 +732,16 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		$tabletype = $this->getLabelOrConcatVal();
 		$join = $this->getJoin();
 		$joinTableName = FabrikString::safeColName($join->table_join_alias);
+		$filterType = $element->get('filter_type');
 
 		// If filter type isn't set was blowing up in switch below 'cos no $rows
 		// so added '' to this test.  Should probably set $element->filter_type to a default somewhere.
-		if (in_array($element->filter_type, array('range', 'dropdown', '', 'checkbox')))
+		if (in_array($filterType, array('range', 'dropdown', '', 'checkbox')))
 		{
 			$rows = $this->filterValueList($normal, '', $joinTableName . '.' . $tabletype, '', false);
 			$rows = (array) $rows;
 
-			if ($element->filter_type !== 'checkbox')
+			if ($filterType !== 'checkbox')
 			{
 				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
 			}
@@ -748,7 +749,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		$class = $this->filterClass();
 
-		switch ($element->filter_type)
+		switch ($filterType)
 		{
 			case 'checkbox':
 				$return[] = $this->checkboxFilter($rows, $default, $v);
@@ -764,8 +765,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			case 'multiselect':
 			default:
 				$max = count($rows) < 7 ? count($rows) : 7;
-				$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
-				$v = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
+				$size = $filterType === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
+				$v = $filterType === 'multiselect' ? $v . '[]' : $v;
 				$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" ' . $size, 'value', 'text', $default, $htmlid);
 				break;
 
@@ -876,7 +877,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 			if (!array_key_exists($key, $get))
 			{
-				$key = $db->quoteName($joinTableName . '.id');
+				$key = $db->qn($joinTableName . '.id');
 				$this->encryptFieldName($key);
 
 				return $key . ' ' . $condition . ' ' . $value;
@@ -885,17 +886,15 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if ($type == 'advanced')
 		{
-			$key = $db->quoteName($joinTableName . '.id');
+			$key = $db->qn($joinTableName . '.id');
 			$this->encryptFieldName($key);
 
 			return $key . ' ' . $condition . ' ' . $value;
 		}
 
-		$params = $this->getParams();
-
 		if ($type != 'prefilter')
 		{
-			switch ($element->filter_type)
+			switch ($element->get('filter_type'))
 			{
 				case 'range':
 				case 'dropdown':
@@ -907,18 +906,18 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 					break;
 			}
 
-			$k = $db->quoteName($joinTableName . '.' . $tabletype);
+			$k = $db->qn($joinTableName . '.' . $tabletype);
 		}
 		else
 		{
 			if ($this->_rawFilter)
 			{
-				$k = $db->quoteName($joinTableName . '.id');
+				$k = $db->qn($joinTableName . '.id');
 			}
 			else
 			{
 				$tabletype = $this->getLabelOrConcatVal();
-				$k = $db->quoteName($joinTableName . '.' . $tabletype);
+				$k = $db->qn($joinTableName . '.' . $tabletype);
 			}
 		}
 
@@ -1016,7 +1015,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		$join = $this->getJoin();
 		$db = Worker::getDbo();
 
-		return $db->quoteName($join->table_join_alias) . '.id';
+		return $db->qn($join->table_join_alias) . '.id';
 	}
 
 	/**

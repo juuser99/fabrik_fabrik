@@ -25,6 +25,10 @@ use \JFactory as JFactory;
 
 class Html extends Base
 {
+	private $state = null;
+	private $document = null;
+	private $tabs = null;
+
 	/**
 	 * Display the template
 	 *
@@ -32,8 +36,10 @@ class Html extends Base
 	 */
 	public function render()
 	{
+		echo "render";
 		if (parent::render() !== false)
 		{
+			echo "here";
 			$model = $this->model;
 			$this->tabs = $model->loadTabs();
 			$app = JFactory::getApplication();
@@ -41,22 +47,22 @@ class Html extends Base
 			if (!$app->isAdmin() && isset($this->params))
 			{
 				$this->state = $this->get('State');
-				$stateparams = $this->state->get('params');
+				$stateParams = $this->state->get('params');
 				$this->document = JFactory::getDocument();
 
-				if ($stateparams->get('menu-meta_description'))
+				if ($stateParams->get('menu-meta_description'))
 				{
-					$this->document->setDescription($stateparams->get('menu-meta_description'));
+					$this->document->setDescription($stateParams->get('menu-meta_description'));
 				}
 
-				if ($stateparams->get('menu-meta_keywords'))
+				if ($stateParams->get('menu-meta_keywords'))
 				{
-					$this->document->setMetadata('keywords', $stateparams->get('menu-meta_keywords'));
+					$this->document->setMetadata('keywords', $stateParams->get('menu-meta_keywords'));
 				}
 
-				if ($stateparams->get('robots'))
+				if ($stateParams->get('robots'))
 				{
-					$this->document->setMetadata('robots', $stateparams->get('robots'));
+					$this->document->setMetadata('robots', $stateParams->get('robots'));
 				}
 			}
 

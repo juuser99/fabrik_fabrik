@@ -673,6 +673,7 @@ class Base extends \JModelBase
 		{
 			echo "load new form model<br>";
 			$this->formModel = new Form;
+
 			$this->formModel->set('id', $this->get('id'));
 		}
 
@@ -1543,6 +1544,7 @@ class Base extends \JModelBase
 			return;
 		}
 		// $$$ hugh - added "AND element_id = 0" to avoid fallout from "random join and group deletion" issue from May 2012
+		// FIXME - jsonify
 		$query->select('*')->from('#__fabrik_joins')->where('list_id = ' . (int) $this->get('list.id') . ' AND element_id = 0');
 		$db->setQuery($query);
 		$aOldJoins       = $db->loadObjectList();

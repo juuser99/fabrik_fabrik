@@ -260,7 +260,8 @@ class FabrikFEModelVisualization extends JModelLegacy
 
 		foreach ($listModels as $listModel)
 		{
-			$filters[$listModel->getId()] = $listModel->buildQueryWhere();
+			$query = $listModel->getDb()->getQuery(true);
+			$filters[$listModel->getId()] = (string) $listModel->buildQueryWhere(true, $query);
 		}
 
 		return $filters;

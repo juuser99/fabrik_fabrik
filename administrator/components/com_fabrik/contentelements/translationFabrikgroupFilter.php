@@ -53,6 +53,7 @@ class TranslationFabrikGroupFilter extends translationFilter
 		$groupOptions[] = JHTML::_('select.option', '-1', FText::_('All Groups'));
 		$groupOptions[] = JHTML::_('select.option', '0', FText::_('Uncategorized'));
 
+		// FIXME - jsonify
 		$query = $db->getQuery(true);
 		$query->select("DISTINCT e.group_id, g.name, g.id")->from("#__fabrik_groups as g, #__" . $this->tableName . " as e")
 		->where("e." . $this->filterField . " = g.id")

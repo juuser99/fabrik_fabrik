@@ -1062,7 +1062,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$formId = $formModel->get('id');
 
 		// 3.1 Cdd filter set up elsewhere
-		if ($element->filter_type == 'dropdown')
+		if ($element->get('filter_type') == 'dropdown')
 		{
 			$default = $this->getDefaultFilterVal($normal);
 			$filterid = $this->getHTMLId() . 'value';
@@ -1074,8 +1074,9 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			$opts->def = $default;
 			$opts->filterobj = 'Fabrik.filter_' . $container;
 			$opts = json_encode($opts);
+			$plugin = $element->get('plugin');
 
-			return "Fabrik.filter_{$container}.addFilter('$element->plugin', new CascadeFilter('$observerId', $opts));\n";
+			return "Fabrik.filter_{$container}.addFilter('$plugin', new CascadeFilter('$observerId', $opts));\n";
 		}
 	}
 

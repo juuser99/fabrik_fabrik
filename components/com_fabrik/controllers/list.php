@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use \Fabrik\Models\Lizt as Model;
 use \JFactory as JFactory;
+use \JURI as JURI;
 
 /**
  * Fabrik List Controller
@@ -51,26 +52,21 @@ class Lizt extends Controller
 		// Register the layout paths for the view
 		$paths = new \SplPriorityQueue;
 		$paths->insert(JPATH_COMPONENT . '/views/' . $viewName . '/tmpl', 'normal');
+
 		// Push a model into the view
-		echo "new...";
-		$modelClass = 'Fabrik\Models\\Lizt';// . ucfirst($viewName);
-		echo " $modelClass <br>";
-		$model = new $modelClass;
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$viewClass  = 'Fabrik\Views\Lizt\\' . ucfirst($viewFormat);
 		$view = new $viewClass($model);
 		$view->setLayout($layout);
-
-
-
 		$view->setModel($model, true);
 
 		// Display the view
-		$view->error = $this->getError();
+		//$view->error = $this->getError();
 
 		/**
 		 * F3 cache with raw view gives error
 		 * $$$ hugh - added list_disable_caching option, to disable caching on a per list basis, due to some funky behavior
-		 * with pre-filtered lists and user ID's, which should be handled by the ID being in the $cacheid, but happens anyway.
+		 * with pre-filtered lists and user ID's, which should be handled by the ID being in the $cacheId, but happens anyway.
 		 * $$$ hugh @TODO - we really shouldn't cache for guests (user ID 0), unless we can come up with a way of creating a unique
 		 * cache ID for guests.  We can't use their IP, as it could be two different machines behind a NAT'ing firewall.
 		 */
@@ -78,7 +74,7 @@ class Lizt extends Controller
 			|| in_array($input->get('format'), array('raw', 'csv', 'pdf', 'json', 'fabrikfeed'))
 		)
 		{
-			$view->display();
+			$view->render();
 		}
 		else
 		{
@@ -86,9 +82,9 @@ class Lizt extends Controller
 			$user    = JFactory::getUser();
 			$uri     = JURI::getInstance();
 			$uri     = $uri->toString(array('path', 'query'));
-			$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache   = JFactory::getCache('com_fabrik', 'view');
-			$cache->get($view, 'display', $cacheid);
+			$cache->get($view, 'render', $cacheId);
 		}
 	}
 
@@ -167,14 +163,14 @@ class Lizt extends Controller
 		JSession::checkToken() or die('Invalid Token');
 		$package    = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$input      = $this->input;
-		$model      = $this->getModel('list', 'FabrikFEModel');
+		$model      = new \Fabrik\Admin\Models\Lizt;
 		$ids        = $input->get('ids', array(), 'array');
 		$listId     = $input->getInt('listid');
-		$limitstart = $input->getInt('limitstart' . $listId);
+		$limitStart = $input->getInt('limitstart' . $listId);
 		$length     = $input->getInt('limit' . $listId);
 
 		$model->setId($listId);
-		$oldtotal = $model->getTotalRecords();
+		$oldTotal = $model->getTotalRecords();
 
 		try
 		{
@@ -188,7 +184,7 @@ class Lizt extends Controller
 			$ids     = array();
 		}
 
-		$total = $oldtotal - count($ids);
+		$total = $oldTotal - count($ids);
 
 		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listId, 'string');
 
@@ -198,18 +194,18 @@ class Lizt extends Controller
 			$ref = $input->server->get('HTTP_REFERER', 'index.php?option=com_' . $package . '&view=list&listid=' . $listId, '', 'string');
 		}
 
-		if ($total >= $limitstart)
+		if ($total >= $limitStart)
 		{
-			$newlimitstart = $limitstart - $length;
+			$newLimitStart = $limitStart - $length;
 
-			if ($newlimitstart < 0)
+			if ($newLimitStart < 0)
 			{
-				$newlimitstart = 0;
+				$newLimitStart = 0;
 			}
 
-			$ref     = str_replace('limitstart' . $listId . '=  . $limitstart', 'limitstart' . $listId . '=' . $newlimitstart, $ref);
+			$ref     = str_replace('limitstart' . $listId . '=  . $limitStart', 'limitstart' . $listId . '=' . $newLimitStart, $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
-			$this->app->setUserState($context . 'limitstart', $newlimitstart);
+			$this->app->setUserState($context . 'limitstart', $newLimitStart);
 		}
 
 		if ($input->get('format') == 'raw')
@@ -233,7 +229,7 @@ class Lizt extends Controller
 
 	public function doempty()
 	{
-		$model = $this->getModel('list', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$model->truncate();
 		$this->display();
 	}
@@ -250,7 +246,7 @@ class Lizt extends Controller
 		$input   = $this->input;
 		$cid     = $input->get('cid', array(0), 'array');
 		$cid     = $cid[0];
-		$model   = $this->getModel('list', 'FabrikFEModel');
+		$model   = new \Fabrik\Admin\Models\Lizt;
 		$model->setId($input->getInt('listid', $cid));
 		/**
 		 * $$$ rob need to ask the model to get its data here as if the plugin calls $model->getData
@@ -262,7 +258,7 @@ class Lizt extends Controller
 		// If showing n tables in article page then ensure that only activated table runs its plugin
 		if ($input->getInt('id') == $model->get('id') || $input->get('origid', '') == '')
 		{
-			$msgs = $model->processPlugin();
+			$messages = $model->processPlugin();
 
 			if ($input->get('format') == 'raw')
 			{
@@ -270,11 +266,11 @@ class Lizt extends Controller
 				$model->setRenderContext($model->getId());
 				$context = 'com_' . $package . '.list' . $model->getRenderContext() . '.msg';
 				$session = JFactory::getSession();
-				$session->set($context, implode("\n", $msgs));
+				$session->set($context, implode("\n", $messages));
 			}
 			else
 			{
-				foreach ($msgs as $msg)
+				foreach ($messages as $msg)
 				{
 					$this->app->enqueueMessage($msg);
 				}
@@ -311,7 +307,7 @@ class Lizt extends Controller
 	public function elementFilter()
 	{
 		$id    = $this->input->getInt('id');
-		$model = $this->getModel('list', 'FabrikFEModel');
+		$model = new \Fabrik\Admin\Models\Lizt;
 		$model->setId($id);
 		echo $model->getAdvancedElementFilter();
 	}

@@ -61,6 +61,7 @@ class Com_FabrikInstallerScript
 		$row->description = 'site database';
 		$row->published = 1;
 		$row->default = 1;
+		// FIXME - jsonify
 		$res = $db->insertObject('#__fabrik_connections', $row, 'id');
 
 		return $res;

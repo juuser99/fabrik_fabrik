@@ -299,9 +299,8 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	public function getFilter($counter = 0, $normal = true)
 	{
 		$listModel = $this->getlistModel();
-		$table = $listModel->getTable();
 		$elName = $this->getFullName(true, false);
-		$htmlid = $this->getHTMLId() . 'value';
+		$htmlId = $this->getHTMLId() . 'value';
 		$elName = FabrikString::safeColName($elName);
 		$v = 'fabrik___filter[list_' . $listModel->getRenderContext() . '][value]';
 		$v .= ($normal) ? '[' . $counter . ']' : '[]';
@@ -311,13 +310,13 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		$element = $this->getElement();
 		$class = $this->filterClass();
 
-		if ($element->filter_type == 'hidden')
+		if ($element->get('filter_type') == 'hidden')
 		{
-			$return[] = '<input type="text" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="' . $htmlid . '" />';
+			$return[] = '<input type="text" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="' . $htmlId . '" />';
 		}
 		else
 		{
-			$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" size="1" ', 'value', 'text', $default, $htmlid);
+			$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" size="1" ', 'value', 'text', $default, $htmlId);
 		}
 
 		if ($normal)

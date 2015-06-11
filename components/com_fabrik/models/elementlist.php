@@ -213,7 +213,7 @@ class ElementList extends Element
 		$this->encryptFieldName($key);
 		$glue = 'OR';
 
-		if ($element->filter_type == 'checkbox' || $element->filter_type == 'multiselect')
+		if ($element->get('filter_type') == 'checkbox' || $element->filter_type == 'multiselect')
 		{
 			$str = array();
 
@@ -313,7 +313,7 @@ class ElementList extends Element
 	{
 		$element = $this->getElement();
 
-		if ($element->filter_type === 'checkbox')
+		if ($element->get('filter_type') === 'checkbox')
 		{
 			$listModel = $this->getListModel();
 			$v = 'fabrik___filter[list_' . $listModel->getRenderContext() . '][value]';
@@ -348,8 +348,9 @@ class ElementList extends Element
 		$params = $this->getParams();
 		$class = $this->filterClass();
 		$v = $this->filterName($counter, $normal);
+		$filterType = $element->filter_type;
 
-		if (in_array($element->filter_type, array('range', 'dropdown', '', 'checkbox', 'multiselect')))
+		if (in_array($filterType, array('range', 'dropdown', '', 'checkbox', 'multiselect')))
 		{
 			$rows = $this->filterValueList($normal);
 
@@ -358,7 +359,7 @@ class ElementList extends Element
 				ArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
 			}
 
-			if (!in_array('', $values) && !in_array($element->filter_type, array('checkbox', 'multiselect')))
+			if (!in_array('', $values) && !in_array($filterType, array('checkbox', 'multiselect')))
 			{
 				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
 			}
@@ -368,7 +369,7 @@ class ElementList extends Element
 		$size = $params->get('filter_length', 20);
 		$return = array();
 
-		switch ($element->filter_type)
+		switch ($filterType)
 		{
 			case 'range':
 				if (!is_array($default))
@@ -387,9 +388,9 @@ class ElementList extends Element
 			case 'dropdown':
 			case 'multiselect':
 			default:
-				$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="7"' : 'size="1"';
+				$size = $filterType === 'multiselect' ? 'multiple="multiple" size="7"' : 'size="1"';
 				$attribs = 'class="' . $class . '" ' . $size;
-				$v = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
+				$v = $filterType === 'multiselect' ? $v . '[]' : $v;
 				$return[] = JHTML::_('select.genericlist', $rows, $v, $attribs, 'value', 'text', $default, $htmlid);
 				break;
 

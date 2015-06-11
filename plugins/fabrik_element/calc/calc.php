@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\Element as Element;
+use \Fabrik\Admin\Models\Lizt as LiztModel;
 
 /**
  * Plugin element to render field with PHP calculated value
@@ -572,13 +573,12 @@ class PlgFabrik_ElementCalc extends Element
 	/**
 	 * Get sum query
 	 *
-	 * @param   object  &$listModel  List model
-	 * @param   array   $labels      Label
+	 * @param   LiztModel  &$listModel  List model
+	 * @param   array      $labels      Label
 	 *
 	 * @return string
 	 */
-
-	protected function getSumQuery(&$listModel, $labels = array())
+	protected function getSumQuery(LiztModel &$listModel, $labels = array())
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
 		$name = $this->getElement()->name;
@@ -588,13 +588,15 @@ class PlgFabrik_ElementCalc extends Element
 		{
 			$db = $listModel->getDb();
 			$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
-			$name = $this->getFullName(false, false);
 			$table = $listModel->getTable();
-			$joinSQL = $listModel->buildQueryJoin();
-			$whereSQL = $listModel->buildQueryWhere();
+			$query = $db->getQuery(true);
+			$name = $this->getFullName(false, false);
+			$query = $listModel->buildQueryJoin($query);
+			$query = $listModel->buildQueryWhere(true, $query);
+			$query->select('SEC_TO_TIME(SUM(TIME_TO_SEC(' . $name . '))) AS value, ' . $label)
+				->from($db->qn($table->db_table_name));
 
-			return "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC($name))) AS value, $label FROM " . $db->quoteName($table->db_table_name)
-				. " $joinSQL $whereSQL";
+			return (string) $query;
 		}
 		else
 		{
@@ -605,13 +607,13 @@ class PlgFabrik_ElementCalc extends Element
 	/**
 	 * Build the query for the avg calculation
 	 *
-	 * @param   model  &$listModel  list model
-	 * @param   array  $labels      Labels
+	 * @param   LiztModel  &$listModel  list model
+	 * @param   array      $labels      Labels
 	 *
 	 * @return  string	sql statement
 	 */
 
-	protected function getAvgQuery(&$listModel, $labels = array())
+	protected function getAvgQuery(LiztModel &$listModel, $labels = array())
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
 		$name = $this->getElement()->name;
@@ -620,14 +622,16 @@ class PlgFabrik_ElementCalc extends Element
 		if ($field !== false && $field->Type == 'time')
 		{
 			$db = $listModel->getDb();
+			$query = $db->getQuery(true);
 			$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 			$name = $this->getFullName(false, false);
 			$table = $listModel->getTable();
-			$joinSQL = $listModel->buildQueryJoin();
-			$whereSQL = $listModel->buildQueryWhere();
+			$query = $listModel->buildQueryJoin($query);
+			$query = $listModel->buildQueryWhere(true, $query);
+			$query->select('SEC_TO_TIME(AVG(TIME_TO_SEC(' . $name . '))) AS value, ' . $label)
+				->from($db->qn($table->db_table_name));
 
-			return "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC($name))) AS value, $label FROM " . $db->quoteName($table->db_table_name)
-				. " $joinSQL $whereSQL";
+			return (string) $query;
 		}
 		else
 		{
@@ -638,13 +642,13 @@ class PlgFabrik_ElementCalc extends Element
 	/**
 	 * Get a query for our median query
 	 *
-	 * @param   object  &$listModel  List
-	 * @param   array   $labels      Label
+	 * @param   LiztModel  &$listModel  List
+	 * @param   array      $labels      Label
 	 *
 	 * @return string
 	 */
 
-	protected function getMedianQuery(&$listModel, $labels = array())
+	protected function getMedianQuery(LiztModel &$listModel, $labels = array())
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
 		$name = $this->getElement()->name;
@@ -653,14 +657,16 @@ class PlgFabrik_ElementCalc extends Element
 		if ($field !== false && $field->Type == 'time')
 		{
 			$db = $listModel->getDb();
+			$query = $db->getQuery(true);
 			$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 			$name = $this->getFullName(false, false);
 			$table = $listModel->getTable();
-			$joinSQL = $listModel->buildQueryJoin();
-			$whereSQL = $listModel->buildQueryWhere();
+			$query = $listModel->buildQueryJoin($query);
+			$query = $listModel->buildQueryWhere(true, $query);
+			$query->select('SEC_TO_TIME(TIME_TO_SEC(' . $name . ')) AS value, ' . $label)
+				->from($db->qn($table->db_table_name));
 
-			return "SELECT SEC_TO_TIME(TIME_TO_SEC($name)) AS value, $label FROM " . $db->quoteName($table->db_table_name)
-				. " $joinSQL $whereSQL";
+			return (string) $query;
 		}
 		else
 		{

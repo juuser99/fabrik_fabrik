@@ -73,6 +73,8 @@ class Base extends \Fabrik\Admin\Views\Html
 	 */
 	public $rows = array();
 
+	protected $buttons = null;
+
 	/**
 	 * Get JS objects
 	 *
@@ -643,6 +645,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	protected function output()
 	{
+		echo "output";
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$profiler = JProfiler::getInstance('Application');

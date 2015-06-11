@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Plugins\Element as Element;
+use \Fabrik\Admin\Models\Lizt as LiztModel;
 
 /**
  * Plugin element to render a user controllable stopwatch timer
@@ -118,67 +119,72 @@ class PlgFabrik_ElementTimer extends Element
 	/**
 	 * Get sum query
 	 *
-	 * @param   object  &$listModel  List model
-	 * @param   array   $labels      Label
+	 * @param   LiztModel  &$listModel  List model
+	 * @param   array     $labels      Label
 	 *
 	 * @return string
 	 */
-
-	protected function getSumQuery(&$listModel, $labels = array())
+	protected function getSumQuery(LiztModel &$listModel, $labels = array())
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$table = $listModel->getTable();
-		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->buildQueryWhere();
+		$db = $listModel->getDb();
+		$query = $db->getQuery(true);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
 
 		// $$$rob not actually likely to work due to the query easily exceeding MySQL's TIMESTAMP_MAX_VALUE value but the query in itself is correct
-		return "SELECT DATE_FORMAT(FROM_UNIXTIME(SUM(UNIX_TIMESTAMP($name))), '%H:%i:%s') AS value, $label FROM
-		`$table->db_table_name` $joinSQL $whereSQL";
+		$query->select('DATE_FORMAT(FROM_UNIXTIME(SUM(UNIX_TIMESTAMP(' . $name . '))), \'%H:%i:%s\') AS value, ' . $label)
+		->from($db->qn($table->db_table_name));
+
+		return (string) $query;
 	}
 
 	/**
 	 * Build the query for the avg calculation
 	 *
-	 * @param   model  &$listModel  list model
-	 * @param   array  $labels      Labels
+	 * @param   LiztModel  &$listModel  list model
+	 * @param   array      $labels      Labels
 	 *
 	 * @return  string	sql statement
 	 */
-
-	protected function getAvgQuery(&$listModel, $labels = array())
+	protected function getAvgQuery(LiztModel &$listModel, $labels = array())
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
-		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->buildQueryWhere();
+		$query = $db->getQuery(true);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
+		$query->select('DATE_FORMAT(FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(' . $name . '))), \'%H:%i:%s\') AS value, ' . $label)
+			->from($db->qn($table->db_table_name));
 
-		return "SELECT DATE_FORMAT(FROM_UNIXTIME(AVG(UNIX_TIMESTAMP($name))), '%H:%i:%s') AS value, $label FROM " .
-		$db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
+		return(string) $query;
 	}
 
 	/**
 	 * Get a query for our median query
 	 *
-	 * @param   object  &$listModel  List
-	 * @param   array   $labels      Label
+	 * @param   LiztModel  &$listModel  List
+	 * @param   array     $labels      Label
 	 *
 	 * @return string
 	 */
-
-	protected function getMedianQuery(&$listModel, $labels = array())
+	protected function getMedianQuery(LiztModel &$listModel, $labels = array())
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$table = $listModel->getTable();
 		$db = $listModel->getDbo();
-		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->buildQueryWhere();
+		$query = $db->getQuery(true);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
+		$query->select('DATE_FORMAT(FROM_UNIXTIME((UNIX_TIMESTAMP(' . $name . '))), \'%H:%i:%s\') AS value, ' . $label)
+			->from($db->qn($table->db_table_name));
 
-		return "SELECT DATE_FORMAT(FROM_UNIXTIME((UNIX_TIMESTAMP($name))), '%H:%i:%s') AS value, $label FROM
-		" . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
+		return (string) $query;
 	}
 
 	/**

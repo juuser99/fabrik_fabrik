@@ -340,6 +340,8 @@ class Element extends Base implements ModelElementFormInterface
 		if (!$input->get('unlink', false) && (int) $data['id'] === 0)
 		{
 			$query = $db->getQuery(true);
+
+			// FIXME - jsonify
 			$query->select('t.id')->from('#__fabrik_joins AS j');
 			$query->join('INNER', '#__fabrik_lists AS t ON j.table_join = t.db_table_name');
 			$query->where('group_id = ' . (int) $data['group_id'] . ' AND element_id = 0');
@@ -677,6 +679,8 @@ class Element extends Base implements ModelElementFormInterface
 		}
 
 		$query = $db->getQuery(true);
+
+		// FIXME - jsonify
 		$query->select("DISTINCT(l.id) AS id, db_table_name, l.label, l.form_id, l.label AS form_label, g.id AS group_id");
 		$query->from("#__fabrik_lists AS l");
 		$query->join('INNER', '#__fabrik_forms AS f ON l.form_id = f.id');
@@ -693,6 +697,7 @@ class Element extends Base implements ModelElementFormInterface
 		 */
 
 		$query->clear();
+		// FIXME - jsonify
 		$query->select('DISTINCT(l.id) AS id, l.db_table_name, l.label, l.form_id, l.label AS form_label, fg.group_id AS group_id')
 			->from('#__fabrik_joins AS j')->join('LEFT', '#__fabrik_formgroup AS fg ON fg.group_id = j.group_id')
 			->join('LEFT', '#__fabrik_forms AS f ON fg.form_id = f.id')->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id')
@@ -973,6 +978,8 @@ class Element extends Base implements ModelElementFormInterface
 		{
 			$jdb   = Worker::getDbo(true);
 			$query = $jdb->getQuery(true);
+
+			// FIXME - jsonify
 			$query->delete('#__fabrik_joins')->where('element_id = ' . (int) $row->id);
 			$jdb->setQuery($query);
 			$jdb->execute();

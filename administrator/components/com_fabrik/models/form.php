@@ -399,6 +399,7 @@ class Form extends View implements ModelFormFormInterface
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		ArrayHelper::toInteger($currentGroups);
+
 		$query->delete('#__fabrik_formgroup')->where('form_id = ' . (int) $formId);
 
 		if (!empty($currentGroups))
@@ -412,6 +413,7 @@ class Form extends View implements ModelFormFormInterface
 		$db->execute();
 
 		// Get previously saved form groups
+		// FIXME - jsonify
 		$query->clear()->select('id, group_id')->from('#__fabrik_formgroup')->where('form_id = ' . (int) $formId);
 		$db->setQuery($query);
 		$groupIds = $db->loadObjectList('group_id');
@@ -427,11 +429,13 @@ class Form extends View implements ModelFormFormInterface
 
 				if (array_key_exists($group_id, $groupIds))
 				{
+					// FIXME - jsonify
 					$query->update('#__fabrik_formgroup')
 					->set('ordering = ' . $orderId)->where('id =' . $groupIds[$group_id]->id);
 				}
 				else
 				{
+					// FIXME - jsonify
 					$query->insert('#__fabrik_formgroup')
 					->set(array('form_id =' . (int) $formId, 'group_id = ' . $group_id, 'ordering = ' . $orderId));
 				}
@@ -965,7 +969,7 @@ class Form extends View implements ModelFormFormInterface
 		{
 			// Load the menu item / component parameters.
 			$params = $this->app->getParams();
-			$this->setState('params', $params);
+			$this->set('params', $params);
 
 			// Load state from the request.
 			$pk = $input->getString('id', $params->get('id'));
@@ -1485,6 +1489,7 @@ class Form extends View implements ModelFormFormInterface
 		if (!empty($aElIds))
 		{
 			$query = $db->getQuery(true);
+			// FIXME - jsonify
 			$query->select('*')->from('#__fabrik_jsactions')->where('element_id IN (' . implode(',', $aElIds) . ')');
 			$db->setQuery($query);
 			$res = $db->loadObjectList();
@@ -1561,6 +1566,8 @@ class Form extends View implements ModelFormFormInterface
 		$params = $this->getParams();
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
+
+		// FIXME - jsonify
 		$query
 			->select(
 				'*, #__fabrik_groups.params AS gparams, #__fabrik_elements.id as element_id
@@ -3283,15 +3290,16 @@ class Form extends View implements ModelFormFormInterface
 		}
 
 		$listModel = $this->getListModel();
-		$fabrikDb = $listModel->getDb();
+		$db = $listModel->getDb();
 		$item = $this->getItem();
-		$k = $fabrikDb->quoteName($item->get('list.db_primary_key'));
+		$k = $db->qn($item->get('list.db_primary_key'));
+		$table = $db->qn($item->get('list.db_table_name'));
+		$query = $db->getQuery(true);
+		$query->select('MAX(' . $k . ')')->from($table);
+		$query = $listModel->buildQueryWhere(true, $query);
+		$db->setQuery($query);
 
-		// @TODO JQuery this
-		$table = FabrikString::safeColName($item->get('list.db_table_name'));
-		$fabrikDb->setQuery("SELECT MAX($k) FROM " . $table . $listModel->buildQueryWhere());
-
-		return $fabrikDb->loadResult();
+		return $db->loadResult();
 	}
 
 	/**
@@ -3518,8 +3526,10 @@ class Form extends View implements ModelFormFormInterface
 
 		$listModel = $this->getListModel();
 		$item = $this->getItem();
-		$sql = $listModel->buildQuerySelect('form');
-		$sql .= $listModel->buildQueryJoin();
+		$query = $this->getDb()->getQuery();
+		$query = $listModel->buildQuerySelect('form', $query);
+		$query = $listModel->buildQueryJoin($query);
+		//$sql = (string) $query;
 		$emptyRowId = $this->rowId === '' ? true : false;
 		$random = $input->get('random');
 		$useKey = Worker::getMenuOrRequestVar('usekey', '', $this->isMambot, 'var');
@@ -3547,11 +3557,11 @@ class Form extends View implements ModelFormFormInterface
 		// I don't THINK this will have any untoward side effects, but ...
 		if ((!$random && !$emptyRowId) || !empty($useKey))
 		{
-			$sql .= ' WHERE ';
+			$sql .= '';
 
 			if (!empty($useKey))
 			{
-				$sql .= "(";
+				$sql .= '(';
 				$parts = array();
 
 				for ($k = 0; $k < count($useKey); $k++)
@@ -3579,29 +3589,31 @@ class Form extends View implements ModelFormFormInterface
 
 				$sql .= implode(' AND ', $parts);
 				$sql .= ')';
+
+				$query->where($sql);
 			}
 			else
 			{
-				$sql .= ' ' . $item->get('list.db_primary_key') . ' = ' . $db->q($this->rowId);
+				$query->where($item->get('list.db_primary_key') . ' = ' . $db->q($this->rowId));
 			}
 		}
 		else
 		{
 			if ($viewPk != '')
 			{
-				$sql .= ' WHERE ' . $viewPk . ' ';
+				$query->where($viewPk);
 			}
 			elseif ($random)
 			{
 				// $$$ rob Should this not go after prefilters have been applied ?
-				$sql .= ' ORDER BY RAND() LIMIT 1 ';
+				$query->order('RAND() LIMIT 1');
 			}
 		}
 		// Get pre-filter conditions from table and apply them to the record
 		// the false, ignores any filters set by the table
-		$where = $listModel->buildQueryWhere(false);
+		$query = $listModel->buildQueryWhere(true, $query);
 
-		if (strstr($sql, 'WHERE'))
+		/*if (strstr($sql, 'WHERE'))
 		{
 			// Do it this way as queries may contain sub-queries which we want to keep the where
 			$firstWord = String::substr($where, 0, 5);
@@ -3610,7 +3622,7 @@ class Form extends View implements ModelFormFormInterface
 			{
 				$where = String::substr_replace($where, 'AND', 0, 5);
 			}
-		}
+		}*/
 		// Set rowId to -2 to indicate random record
 		if ($random)
 		{
@@ -3619,22 +3631,22 @@ class Form extends View implements ModelFormFormInterface
 
 		// $$$ rob ensure that all prefilters are wrapped in brackets so that
 		// only one record is loaded by the query - might need to set $word = and?
-		if (trim($where) != '')
+		/*if (trim($where) != '')
 		{
 			$where = explode(' ', $where);
 			$word = array_shift($where);
 			$sql .= $word . ' (' . implode(' ', $where) . ')';
-		}
+		}*/
 
 		if (!$random && ArrayHelper::getValue($opts, 'ignoreOrder', false) === false)
 		{
 			// $$$ rob if showing joined repeat groups we want to be able to order them as defined in the table
-			$sql .= $listModel->buildQueryOrder();
+			$query = $listModel->buildQueryOrder($query);
 		}
 
-		$this->query = $sql;
+		$this->query = (string) $query;
 
-		return $sql;
+		return $this->query;
 	}
 
 	/**

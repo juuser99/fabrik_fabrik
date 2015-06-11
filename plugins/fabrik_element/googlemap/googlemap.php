@@ -790,13 +790,13 @@ class PlgFabrik_ElementGooglemap extends Element
 
 	public function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
-		$dbtable = $this->actualTableName();
+		$dbTable = $this->actualTableName();
 		$db = Worker::getDbo();
 		$listModel = $this->getlistModel();
 		$table = $listModel->getTable();
-		$fullElName = ArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->element->name);
-		$dbtable = $db->quoteName($dbtable);
-		$str = $dbtable . '.' . $db->quoteName($this->element->name) . ' AS ' . $db->quoteName($fullElName);
+		$fullElName = ArrayHelper::getValue($opts, 'alias', $dbTable . '___' . $this->element->get('name'));
+		$dbTable = $db->qn($dbTable);
+		$str = $dbTable . '.' . $db->qn($this->element->name) . ' AS ' . $db->qn($fullElName);
 
 		if ($table->db_primary_key == $fullElName)
 		{
@@ -808,7 +808,7 @@ class PlgFabrik_ElementGooglemap extends Element
 			$aFields[] = $str;
 			$aAsFields[] = $db->quoteName($fullElName);
 			$rawName = $fullElName . '_raw';
-			$aFields[] = $dbtable . '.' . $db->quoteName($this->element->name) . ' AS ' . $db->quoteName($rawName);
+			$aFields[] = $dbTable . '.' . $db->qn($this->element->get('name')) . ' AS ' . $db->qn($rawName);
 			$aAsFields[] = $db->quoteName($rawName);
 		}
 	}
@@ -827,7 +827,7 @@ class PlgFabrik_ElementGooglemap extends Element
 		{
 			$params = $this->getParams();
 
-			// $$$ hugh - added parens around lat,long for consistency!
+			// $$$ hugh - added parenthesis around lat,long for consistency!
 			$this->default = '(' . $params->get('fb_gm_lat') . ',' . $params->get('fb_gm_long') . ')' . ':' . $params->get('fb_gm_zoomlevel');
 		}
 

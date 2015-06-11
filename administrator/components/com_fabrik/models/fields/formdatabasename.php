@@ -46,6 +46,7 @@ class JFormFieldFormDatabaseName extends JFormFieldText
 	{
 		if ($this->form->getValue('record_in_database'))
 		{
+			// FIXME - jsonify
 			$db = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$id = (int) $this->form->getValue('id');

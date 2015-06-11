@@ -15,6 +15,7 @@ use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\ElementList as ElementList;
+use \Fabrik\Admin\Models\Lizt as LiztModel;
 
 /**
  * Plugin element to render date picker
@@ -305,8 +306,8 @@ class PlgFabrik_ElementDate extends ElementList
 		}
 
 		$class = 'fabrikinput inputbox inout ' . $params->get('bootstrap_class', 'input-small');
-		$element->width = (int) $element->width < 0 ? 1 : (int) $element->width;
-		$calOpts = array('class' => $class, 'size' => $element->width, 'maxlength' => '19');
+		$element->set('width', (int) $element->get('width') < 0 ? 1 : (int) $element->get('width'));
+		$calOpts = array('class' => $class, 'size' => $element->get('width'), 'maxlength' => '19');
 
 		if ($params->get('date_allow_typing_in_field', true) == false)
 		{
@@ -1551,7 +1552,7 @@ class PlgFabrik_ElementDate extends ElementList
 		 */
 		$max = count($rows) < 7 ? count($rows) : 7;
 		$fType = $this->getFilterType();
-		$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
+		$size = $element->get('filter_type') === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
 		$v = $fType === 'multiselect' ? $v . '[]' : $v;
 
 		jimport('joomla.utilities.date');
@@ -1932,46 +1933,49 @@ class PlgFabrik_ElementDate extends ElementList
 	/**
 	 * Build the query for the avg calculation
 	 *
-	 * @param   model  &$listModel  list model
-	 * @param   array  $labels      Labels
+	 * @param   LiztModel  &$listModel  list model
+	 * @param   array      $labels      Labels
 	 *
 	 * @return  string	sql statement
 	 */
-
-	protected function getAvgQuery(&$listModel, $labels = array())
+	protected function getAvgQuery(LiztModel &$listModel, $labels = array())
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
-		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->buildQueryWhere();
+		$query = $db->getQuery(true);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
+		$query->select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(' . $name . '))) AS value, ' . $label)
+			->from($db->qn($table->db_table_name));
 
-		return 'SELECT FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(' . $name . '))) AS value, ' . $label . ' FROM '
-			. $db->quoteName($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
+		return (string) $query;
 	}
 
 	/**
 	 * Get sum query
 	 *
-	 * @param   object  &$listModel  List model
-	 * @param   array   $labels      Label
+	 * @param   LiztModel  &$listModel  List model
+	 * @param   array     $labels      Label
 	 *
 	 * @return string
 	 */
-
-	protected function getSumQuery(&$listModel, $labels = array())
+	protected function getSumQuery(LiztModel &$listModel, $labels = array())
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
-		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->buildQueryWhere();
+		$query = $db->getQuery(true);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
-
 		// $$$rob not actually likely to work due to the query easily exceeding MySQL's TIMESTAMP_MAX_VALUE value but the query in itself is correct
-		return 'SELECT FROM_UNIXTIME(SUM(UNIX_TIMESTAMP(' . $name . '))) AS value, ' . $label . ' FROM '
-			. $db->quoteName($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
+
+		$query->select('FROM_UNIXTIME(SUM(UNIX_TIMESTAMP(' . $name . '))) AS value, ' . $label)
+			->from($db->qn($table->db_table_name));
+
+		return (string) $query;
 	}
 
 	/**
@@ -2408,7 +2412,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$opts->ids = $type == 'field' ? array($id) : array($id, $id2);
 		$opts->buttons = $type == 'field' ? array($id . '_cal_img') : array($id . '_cal_img', $id2 . '_cal_img');
 		$opts = json_encode($opts);
-		$script = 'Fabrik.filter_' . $container . '.addFilter(\'' . $element->plugin . '\', new DateFilter(' . $opts . '));' . "\n";
+		$script = 'Fabrik.filter_' . $container . '.addFilter(\'' . $element->get('plugin') . '\', new DateFilter(' . $opts . '));' . "\n";
 
 		if ($normal)
 		{

@@ -141,7 +141,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		// Make sure same connection as this table
 		$fullElName = ArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
 
-		if ($params->get('join_conn_id') == $connection->get('id') || $element->plugin != 'databasejoin')
+		if ($params->get('join_conn_id') == $connection->get('id') || $element->get('plugin') != 'databasejoin')
 		{
 			$join = $this->getJoin();
 
@@ -170,17 +170,17 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 			if (ArrayHelper::getValue($opts, 'inc_raw', true))
 			{
-				$aFields[] = $k . ' AS ' . $db->quoteName($fullElName . '_raw');
-				$aAsFields[] = $db->quoteName($fullElName . '_raw');
+				$aFields[] = $k . ' AS ' . $db->qn($fullElName . '_raw');
+				$aAsFields[] = $db->qn($fullElName . '_raw');
 			}
 
-			$aFields[] = $k2 . ' AS ' . $db->quoteName($fullElName);
-			$aAsFields[] = $db->quoteName($fullElName);
+			$aFields[] = $k2 . ' AS ' . $db->qn($fullElName);
+			$aAsFields[] = $db->qn($fullElName);
 		}
 		else
 		{
-			$aFields[] = $db->quoteName($table . '.' . $element->name) . ' AS ' . $db->quoteName($fullElName);
-			$aAsFields[] = $db->quoteName($fullElName);
+			$aFields[] = $db->qn($table . '.' . $element->name) . ' AS ' . $db->qn($fullElName);
+			$aAsFields[] = $db->qn($fullElName);
 		}
 	}
 
@@ -323,7 +323,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		// Depending on the plugin getJoinLabel() returns a params property or the actual name, so default to it if we cant find a property
 		$label = $params->get($label, $label);
 		$joinTableName = is_object($join) ? $join->table_join_alias : '';
-		$this->joinLabelCols[(int) $useStep] = $useStep ? $joinTableName . '___' . $label : $db->quoteName($joinTableName . '.' . $label);
+		$this->joinLabelCols[(int) $useStep] = $useStep ? $joinTableName . '___' . $label : $db->qn($joinTableName . '.' . $label);
 
 		return $this->joinLabelCols[(int) $useStep];
 	}
@@ -844,7 +844,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 		if (!strstr($val, 'CONCAT'))
 		{
-			$val = $db->quoteName($val);
+			$val = $db->qn($val);
 		}
 
 		$query->select('DISTINCT(' . $key . ') AS value, ' . $val . ' AS text');
@@ -856,7 +856,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$query->select($additionalFields);
 		}
 
-		$query->from($db->quoteName($table) . ' AS ' . $db->quoteName($join->table_join_alias));
+		$query->from($db->qn($table) . ' AS ' . $db->qn($join->table_join_alias));
 		$query = $this->buildQueryJoin($query);
 
 		/* $$$ hugh - let them specify an order by, i.e. don't append default if the $where already has an 'order by'
@@ -889,7 +889,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$w = new Worker;
 			$data = is_array($data) ? $data : array();
 			$desc = $w->parseMessageForPlaceHolder($desc, $data, false);
-			$desc = FabrikString::isConcat($desc) ? $desc : $db->quoteName($desc);
+			$desc = FabrikString::isConcat($desc) ? $desc : $db->qn($desc);
 			$desc = "REPLACE(" . $desc . ", '\n', '<br />')";
 			$query->select($desc . ' AS description');
 		}
@@ -1041,7 +1041,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		{
 			$mode = ArrayHelper::getValue($opts, 'mode', 'form');
 			$displayType = $params->get('database_join_display_type', 'dropdown');
-			$filterType = $element->filter_type;
+			$filterType = $element->get('filter_type');
 
 			if (($mode == 'filter' && $filterType == 'auto-complete')
 				|| ($mode == 'form' && $displayType == 'auto-complete')
@@ -1808,7 +1808,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$joinKey = $params->get('join_key_column');
 		}
 
-		$db->setQuery('DESCRIBE ' . $db->quoteName($dbName));
+		$db->setQuery('DESCRIBE ' . $db->qn($dbName));
 		$fields = $db->loadObjectList();
 
 		if (!$fields)
@@ -2015,10 +2015,10 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	 * Need to override this for joins, make sure exact match is applied
 	 * return  string
 	 */
-
 	protected function getFilterCondition()
 	{
-		$match = $this->isExactMatch(array('match' => $this->getElement()->filter_exact_match));
+		$match = $this->isExactMatch(array('match' => $this->getElement()->get('filter_exact_match')));
+
 		return($match == 1) ? '=' : 'contains';
 	}
 
@@ -2037,7 +2037,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$element = $this->getElement();
 
 		// Related data will pass a raw value in the query string but if the element filter is a field we need to change that to its label
-		if ($element->filter_type == 'field')
+		if ($element->get('filter_type') == 'field')
 		{
 			$default = $this->getLabelForValue($default);
 		}
@@ -2067,8 +2067,9 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$return = array();
 		$class = $this->filterClass();
 		$default = $this->getDefaultFilterVal($normal, $counter);
+		$filterType = $element->get('filter_type');
 
-		if (in_array($element->filter_type, array('range', 'dropdown', '', 'checkbox', 'multiselect')))
+		if (in_array($filterType, array('range', 'dropdown', '', 'checkbox', 'multiselect')))
 		{
 			$joinVal = $this->getJoinLabelColumn();
 			$incJoin = (trim($params->get($this->concatLabelParam)) == '' && trim($params->get('database_join_where_sql') == '')) ? false : true;
@@ -2097,7 +2098,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$this->unmergeFilterSplits($rows);
 			$this->reapplyFilterLabels($rows);
 
-			if (!in_array($element->filter_type, array('checkbox', 'multiselect')))
+			if (!in_array($filterType, array('checkbox', 'multiselect')))
 			{
 				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
 			}
@@ -2105,7 +2106,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 		$size = $params->get('filter_length', 20);
 
-		switch ($element->filter_type)
+		switch ($filterType)
 		{
 			case 'checkbox':
 				$return[] = $this->checkboxFilter($rows, $default, $v);
@@ -2115,8 +2116,8 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			case '':
 			case 'multiselect':
 				$max = count($rows) < 7 ? count($rows) : 7;
-				$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
-				$v = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
+				$size = $filterType === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
+				$v = $filterType === 'multiselect' ? $v . '[]' : $v;
 				$this->addSpaceToEmptyLabels($rows, 'text');
 				$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" ' . $size, "value", 'text', $default, $htmlid);
 				break;
@@ -2247,8 +2248,8 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$joinTable = $joinTableName;
 		}
 		// $$$ hugh - select all values for performance gain over selecting distinct records from recorded data
-		$sql = "SELECT DISTINCT( $joinVal ) AS text, $joinKey AS value \n FROM " . $fabrikDb->quoteName($joinTable) . ' AS '
-			. $fabrikDb->quoteName($joinTableName) . " \n ";
+		$sql = "SELECT DISTINCT( $joinVal ) AS text, $joinKey AS value \n FROM " . $fabrikDb->qn($joinTable) . ' AS '
+			. $fabrikDb->qn($joinTableName) . " \n ";
 		$where = $this->buildQueryWhere(array(), true, null, array('mode' => 'filter'));
 
 		// Ensure table prefilter is applied to query
@@ -2378,7 +2379,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$join = $this->getJoin();
 		$db = Worker::getDbo();
 
-		return $db->quoteName($join->table_join_alias . '.' . $this->getJoinValueFieldName());
+		return $db->qn($join->table_join_alias . '.' . $this->getJoinValueFieldName());
 	}
 
 	/**
@@ -2410,7 +2411,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 	public function getFilterValue($value, $condition, $eval)
 	{
-		$fType = $this->getElement()->filter_type;
+		$fType = $this->getElement()->get('filter_type');
 
 		if ($fType == 'auto-complete')
 		{
@@ -2461,7 +2462,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 				*/
 				if (!$this->_rawFilter)
 				{
-					$k = $db->quoteName($params->get('join_db_name')) . '.' . $db->quoteName($this->getLabelParamVal());
+					$k = $db->qn($params->get('join_db_name')) . '.' . $db->qn($this->getLabelParamVal());
 				}
 				else
 				{
@@ -2487,7 +2488,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 					if (!strstr($key, 'CONCAT'))
 					{
-						$key = FabrikString::safeColName($join->table_join_alias) . '.' . $db->quoteName($key);
+						$key = FabrikString::safeColName($join->table_join_alias) . '.' . $db->qn($key);
 					}
 				}
 			}
@@ -2502,27 +2503,27 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			if (!$group->isJoin() && $group->canRepeat())
 			{
 				// Deprecated I think - repeat groups are always joins.
-				$fval = $this->getElement()->filter_exact_match ? $originalValue : $value;
+				$fval = $this->getElement()->get('filter_exact_match') ? $originalValue : $value;
 				$str = " ($key = $fval OR $key LIKE \"$originalValue',%\"" . " OR $key LIKE \"%:'$originalValue',%\""
 				. " OR $key LIKE \"%:'$originalValue'\"" . " )";
 			}
 			else
 			{
 				$dbName = $this->getDbName();
-				$fType = $this->getElement()->filter_type;
+				$fType = $this->getElement()->get('filter_type');
 
 				if ($this->isJoin())
 				{
 					if ($fType == 'field')
 					{
-						$where = $db->quoteName($dbName . '.' . $this->getLabelParamVal());
+						$where = $db->qn($dbName . '.' . $this->getLabelParamVal());
 					}
 					else
 					{
-						$where = $db->quoteName($dbName . '.' . $this->getJoinValueFieldName());
+						$where = $db->qn($dbName . '.' . $this->getJoinValueFieldName());
 					}
 
-					$groupBy = $db->quoteName($dbName . '.parent_id');
+					$groupBy = $db->qn($dbName . '.parent_id');
 					$rows = $this->checkboxRows($groupBy, $condition, $value, $where);
 					$joinIds = array_keys($rows);
 
@@ -2545,7 +2546,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 					if ($fType === 'auto-complete')
 					{
 						// If autocomplete then we should search on the element's column, not the joined label column http://fabrikar.com/forums/showthread.php?t=29977
-						$key = $db->quoteName($this->getFullName(false, false));
+						$key = $db->qn($this->getFullName(false, false));
 					}
 
 					$str = "$key $condition $value";
@@ -2575,8 +2576,8 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$db = $this->getDb();
 		$query = $db->getQuery(true);
 		$join = $this->getJoinModel()->getJoin();
-		$jointable = $db->quoteName($join->table_join);
-		$shortName = $db->quoteName($this->getElement()->name);
+		$jointable = $db->qn($join->table_join);
+		$shortName = $db->qn($this->getElement()->name);
 
 		if (is_null($groupBy))
 		{
@@ -2584,8 +2585,8 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		}
 
 		$to = $this->getDbName();
-		$key = $db->quoteName($to . '.' . $this->getJoinValueFieldName());
-		$label = $db->quoteName($to . '.' . $this->getLabelParamVal());
+		$key = $db->qn($to . '.' . $this->getJoinValueFieldName());
+		$label = $db->qn($to . '.' . $this->getLabelParamVal());
 		$v = $jointable . '.' . $shortName;
 		$query->select($jointable . '.id AS id');
 
@@ -3021,7 +3022,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$join_pk = $join->table_join;
 		$join_pk .= '.' . $pk[0]['colname'];
 		$db = Worker::getDbo(true);
-		$join_pk = $db->quoteName($join_pk);
+		$join_pk = $db->qn($join_pk);
 
 		$o = new stdClass;
 		$l = 'join-label';
@@ -3486,7 +3487,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$jointable = $this->getJoinModel()->getJoin()->table_join;
 		$parentKey = $this->buildQueryParentKey();
 		$fullElName = $this->getFullName(true, false) . '_id';
-		$str .= ", (SELECT GROUP_CONCAT(" . $this->element->name . " SEPARATOR '" . GROUPSPLITTER . "') FROM $jointable WHERE " . $jointable
+		$str .= ", (SELECT GROUP_CONCAT(" . $this->element->get('name') . " SEPARATOR '" . GROUPSPLITTER . "') FROM $jointable WHERE " . $jointable
 		. ".parent_id = " . $parentKey . ") AS $fullElName";
 
 		return $str;

@@ -84,4 +84,9 @@ class Html Extends \JViewHtml
 	{
 		return $this->model;
 	}
+
+	public function setModel()
+	{
+		return $this->model;
+	}
 }

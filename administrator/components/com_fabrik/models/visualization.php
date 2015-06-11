@@ -55,7 +55,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 
 		if (is_null($plugin))
 		{
-			$plugin = $item->plugin;
+			$plugin = $item->get('plugin');
 		}
 
 		//$input->set('view', 'visualization');

@@ -834,7 +834,7 @@ class Plugin extends \JPlugin
 					{
 						$element = $eVal->getElement();
 
-						if ($showInTable == true && $element->show_in_list_summary == 0)
+						if ($showInTable == true && $element->get('show_in_list_summary') == 0)
 						{
 							continue;
 						}

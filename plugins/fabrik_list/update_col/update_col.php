@@ -337,7 +337,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		{
 			$elementModel = $this->getEmailElement();
 			$emailElement = $elementModel->getElement(true);
-			$emailWhich = $emailElement->plugin == 'user' ? 'user' : 'field';
+			$emailWhich = $emailElement->get('plugin') == 'user' ? 'user' : 'field';
 		}
 		else
 		{
@@ -509,7 +509,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		{
 			$element = $elementModel->getElement();
 
-			if ($elementModel->canUse($this, 'list') && $element->plugin !== 'internalid')
+			if ($elementModel->canUse($this, 'list') && $element->get('plugin') !== 'internalid')
 			{
 				$elName = $elementModel->getFilterFullName();
 				$options[] = '<option value="' . $elName . '" data-id="' . $element->get('id') . '" data-plugin="' . $element->get('plugin') . '">'

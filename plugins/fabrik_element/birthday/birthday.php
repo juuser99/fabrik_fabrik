@@ -650,7 +650,7 @@ class PlgFabrik_ElementBirthday extends Element
 		$db = Worker::getDbo();
 		$element = $this->getElement();
 
-		if ($element->filter_type === 'range' || strtoupper($condition) === 'BETWEEN')
+		if ($element->get('filter_type') === 'range' || strtoupper($condition) === 'BETWEEN')
 		{
 			if (strtotime($value[0]) > strtotime($value[1]))
 			{

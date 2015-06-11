@@ -425,8 +425,9 @@ class PluginManager extends Base
 
 				foreach ($elements as $element)
 				{
-					JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->name . '' . $element->plugin) : null;
-					require_once JPATH_PLUGINS . '/fabrik_element/' . $element->plugin . '/' . $element->plugin . '.php';
+					$plugin = $element->plugin;
+					JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->get('name') . '' . $plugin) : null;
+					require_once JPATH_PLUGINS . '/fabrik_element/' . $plugin . '/' . $plugin . '.php';
 					$class = 'PlgFabrik_Element' . $element->plugin;
 					$pluginModel = new $class($dispatcher, array());
 
@@ -435,11 +436,11 @@ class PluginManager extends Base
 						continue;
 					}
 
-					$pluginModel->xmlPath = COM_FABRIK_FRONTEND . '/plugins/' . $group . '/' . $element->plugin . '/' . $element->plugin . '.xml';
+					$pluginModel->xmlPath = COM_FABRIK_FRONTEND . '/plugins/' . $group . '/' . $plugin . '/' . $plugin . '.xml';
 					//$pluginModel->setId($element->id);
 
-					$langFile = 'plg_' . $folder . '_' . $element->plugin;
-					$langPath = $client->path . '/plugins/' . $folder . '/' . $element->plugin;
+					$langFile = 'plg_' . $folder . '_' . $plugin;
+					$langPath = $client->path . '/plugins/' . $folder . '/' . $plugin;
 					$lang->load($langFile, $langPath, null, false, false) || $lang->load($langFile, $langPath, $lang->getDefault(), false, false);
 
 					$listModel = $model->getListModel();

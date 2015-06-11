@@ -26,6 +26,7 @@ use Fabrik\Helpers\ArrayHelper;
 use \RuntimeException as RuntimeException;
 use \Joomla\Registry\Registry as JRegistry;
 use \JEventDispatcher as JEventDispatcher;
+use \JDatabaseQuery as JDatabaseQuery;
 
 
 use Joomla\Registry\Registry;
@@ -456,9 +457,9 @@ class Lizt extends View implements ModelFormLiztInterface
 	 *
 	 * @since 3.0.7
 	 *
-	 * @var array - string and/or JQueryBuilder section
+	 * @var JQueryBuilder
 	 */
-	public $orderBy = array();
+	public $orderBy = null;
 
 	/**
 	 * Tabs field to use
@@ -484,6 +485,11 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * @var string
 	 */
 	public $filterJs = null;
+
+	protected $selectedOrderFields = null;
+	protected $mainQuery = null;
+	//protected $orderBy = null;
+
 	/**
 	 * Instantiate the model.
 	 *
@@ -2038,8 +2044,8 @@ class Lizt extends View implements ModelFormLiztInterface
 					for ($i = 0; $i < $ec; $i++)
 					{
 						$thisRow = $data[$i];
-						$coldata = $thisRow->$col;
-						$data[$i]->$col = $elementModel->getLabelForValue($coldata, $coldata);
+						$colData = $thisRow->$col;
+						$data[$i]->$col = $elementModel->getLabelForValue($colData, $colData);
 					}
 				}
 			}
@@ -2123,8 +2129,8 @@ class Lizt extends View implements ModelFormLiztInterface
 						for ($i = 0; $i < count($data); $i++)
 						{
 							$thisRow = $data[$i];
-							$coldata = $thisRow->$col;
-							$data[$i]->$col = $elementModel->$method($coldata, $thisRow);
+							$colData = $thisRow->$col;
+							$data[$i]->$col = $elementModel->$method($colData, $thisRow);
 						}
 					}
 					else
@@ -2134,8 +2140,8 @@ class Lizt extends View implements ModelFormLiztInterface
 						for ($i = 0; $i < $ec; $i++)
 						{
 							$thisRow = $data[$i];
-							$coldata = $thisRow->$col;
-							$data[$i]->$col = $elementModel->renderListData($coldata, $thisRow);
+							$colData = $thisRow->$col;
+							$data[$i]->$col = $elementModel->renderListData($colData, $thisRow);
 							$rawCol = $col . '_raw';
 
 							// Rendering of accented characters in DomPDF
@@ -2150,7 +2156,7 @@ class Lizt extends View implements ModelFormLiztInterface
 							*/
 							if (!array_key_exists($rawCol, $thisRow))
 							{
-								$data[$i]->$rawCol = $elementModel->renderRawListData($coldata, $thisRow);
+								$data[$i]->$rawCol = $elementModel->renderRawListData($colData, $thisRow);
 								$data[$i]->$rawCol = htmlspecialchars_decode(htmlentities($data[$i]->$rawCol, ENT_NOQUOTES, 'UTF-8'), ENT_NOQUOTES);
 							}
 						}
@@ -2291,6 +2297,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$query = $db->getQuery(true);
+		// FIXME - not right!
 		$query->select('id, label, db_table_name')->from('#__fabrik_lists');
 		$db->setQuery($query);
 		$aTableNames = $db->loadObjectList('label');
@@ -3430,6 +3437,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$query = $this->buildQueryGroupBy($query);
+
 		$query = $this->buildQueryOrder($query);
 		$query = $this->pluginQuery($query);
 		$this->mainQuery = $query;
@@ -3508,13 +3516,13 @@ class Lizt extends View implements ModelFormLiztInterface
 	/**
 	 * Get the select part of the query
 	 *
-	 * @param   string         $mode   List/form - effects which elements are selected
-	 * @param   JQueryBuilder  $query  Querybuilder (false to return string)
+	 * @param   string          $mode   List/form - effects which elements are selected
+	 * @param   JDatabaseQuery  $query  Joomla Query builder
 	 *
 	 * @return  mixed  string if $query = false, otherwise $query
 	 */
 
-	public function buildQuerySelect($mode = 'list', $query = false)
+	public function buildQuerySelect($mode = 'list', JDatabaseQuery $query)
 	{
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('queryselect: start') : null;
@@ -3544,70 +3552,32 @@ class Lizt extends View implements ModelFormLiztInterface
 		$distinct = $params->get('distinct', true) ? 'DISTINCT' : '';
 
 		// $$$rob added raw as an option to fix issue in saving calendar data
+		$query->select($calc_found_rows . ' ' . $distinct . ' ' . $sfields);
+
 		if (trim($table->get('list.db_primary_key')) != '' && (in_array($this->outputFormat, array('raw', 'html', 'feed', 'pdf', 'phocapdf', 'csv', 'word', 'yql'))))
 		{
-			$sfields .= ', ';
-			$strPKey = $pk . ' AS ' . $db->qn('__pk_val') . "\n";
-
-			if ($query)
-			{
-				$query->select($calc_found_rows . ' ' . $distinct . ' ' . $sfields . $strPKey);
-			}
-			else
-			{
-				$sql = 'SELECT ' . $calc_found_rows . ' ' . $distinct . ' ' . $sfields . $strPKey;
-			}
-		}
-		else
-		{
-			if ($query)
-			{
-				$query->select($calc_found_rows . ' ' . $distinct . ' ' . $sfields);
-			}
-			else
-			{
-				$sql = 'SELECT ' . $calc_found_rows . ' ' . $distinct . ' ' . trim($sfields, ", \n") . "\n";
-			}
+			$query->select($pk . ' AS ' . $db->qn('__pk_val'));
 		}
 
-		if ($query)
-		{
-			$query->from($db->qn($table->get('list.db_table_name')));
-		}
-		else
-		{
-			$sql .= ' FROM ' . $db->qn($table->get('list.db_table_name')) . " \n";
-		}
-
+		$query->from($db->qn($table->get('list.db_table_name')));
 		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBuildQuerySelect', $this, 'list', $query);
 
-		return $query ? $query : $sql;
+		return $query;
 	}
 
 	/**
 	 * Get the part of the sql statement that orders the table data
 	 * Since 3.0.7 caches the results as calling orderBy twice when using single ordering in admin module anules the user selected order by
 	 *
-	 * @param   mixed  $query  False or a query object
+	 * @param   JDatabaseQuery  $query  False or a query object
+	 *
+	 * @throws ErrorException
 	 *
 	 * @return  mixed  string or query object - Ordering part of sql statement
 	 */
-	public function buildQueryOrder($query = false)
+	public function buildQueryOrder(JDatabaseQuery $query)
 	{
-		$sig = $query ? 1 : 0;
-
-		if (!isset($this->orderBy))
-		{
-			$this->orderBy = array();
-		}
-
-		if (array_key_exists($sig, $this->orderBy))
-		{
-			return $this->orderBy[$sig];
-		}
-
-		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
 		$input = $this->app->input;
 		$formModel = $this->getFormModel();
@@ -3625,17 +3595,9 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$this->order_dir = 'DESC';
 				$this->order_by = $dateCol;
+				$query->order($dateCol . ' DESC');
 
-				if (!$query)
-				{
-					return "\n" . ' ORDER BY ' . $dateCol . ' DESC';
-				}
-				else
-				{
-					$query->order($dateCol . ' DESC');
-
-					return $query;
-				}
+				return $query;
 			}
 		}
 
@@ -3651,14 +3613,14 @@ class Lizt extends View implements ModelFormLiztInterface
 		$elements = $this->getElements();
 
 		// Build the order by statement from the session
-		$strOrder = '';
+		$this->orderEls = $this->orderDirs = array();
+
 		$clearOrdering = (bool) $input->getInt('clearordering', false) && $input->get('task') !== 'order';
 		$singleOrdering = $this->singleOrdering();
-		$id = $this->getId();
 
 		foreach ($elements as $element)
 		{
-			$context = 'com_' . $package . '.list' . $this->getRenderContext() . '.order.' . $element->getElement()->get('id');
+			$context = 'com_fabrik.list' . $this->getRenderContext() . '.order.' . $element->getElement()->get('id');
 
 			if ($clearOrdering)
 			{
@@ -3673,28 +3635,23 @@ class Lizt extends View implements ModelFormLiztInterface
 
 					if ($dir != '' && $dir != '-' && trim($dir) != 'Array')
 					{
-						$strOrder == '' ? $strOrder = "\n ORDER BY " : $strOrder .= ',';
-						$strOrder .= FabrikString::safeNameq($element->getOrderByName(), false) . ' ' . $dir;
 						$orderByName = FabrikString::safeNameq($element->getOrderByName(), false);
 						$this->orderEls[] = $orderByName;
 						$this->orderDirs[] = $dir;
 						$element->getAsField_html($this->selectedOrderFields, $aAsFields);
 
-						if ($query)
-						{
-							$query->order($orderByName . ' ' . $dir);
-						}
+						$query->order($orderByName . ' ' . $dir);
 					}
 				}
 				else
 				{
 					$session->set($context, null);
-				};
+				}
 			}
 		}
 
 		// If nothing found in session use default ordering (or that set by querystring)
-		if ($strOrder == '')
+		if (empty($this->orderEls))
 		{
 			$orderBys = explode(',', $input->getString('order_by', $input->getString('orderby', '')));
 
@@ -3713,7 +3670,6 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				if (is_numeric($orderBy))
 				{
-
 					$elementModel = $formModel->getElement($orderBy, true);
 					$orderBy = $elementModel ? $elementModel->getOrderByName() : $orderBy;
 				}
@@ -3799,14 +3755,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 				if (!empty($bits))
 				{
-					if (!$query || !is_object($query))
-					{
-						$strOrder = "\n ORDER BY" . implode(',', $bits);
-					}
-					else
-					{
-						$query->order(implode(',', $bits));
-					}
+					$query->order(implode(',', $bits));
 				}
 			}
 		}
@@ -3819,25 +3768,17 @@ class Lizt extends View implements ModelFormLiztInterface
 		if ($groupOrderBy != '')
 		{
 			$groupOrderDir = $params->get('group_by_order_dir');
-			$strOrder == '' ? $strOrder = "\n ORDER BY " : $strOrder .= ',';
 			$orderBy = strstr($groupOrderBy, '_raw`') ? FabrikString::safeColNameToArrayKey($groupOrderBy) : FabrikString::safeColName($groupOrderBy);
 
-			if (!$query)
-			{
-				$strOrder .= $orderBy . ' ' . $groupOrderDir;
-			}
-			else
-			{
-				$query->order($orderBy . ' ' . $groupOrderDir);
-			}
+			$query->order($orderBy . ' ' . $groupOrderDir);
 
 			$this->orderEls[] = $orderBy;
 			$this->orderDirs[] = $groupOrderDir;
 		}
 
-		$this->orderBy[$sig] = $query === false ? $strOrder : $query;
+		$this->orderBy = $query;
 
-		return $this->orderBy[$sig];
+		return $this->orderBy;
 	}
 
 	/**
@@ -3894,21 +3835,19 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * Get the part of the sql query that creates the joins
 	 * used when building the table's data
 	 *
-	 * @param   mixed  $query  JQuery object or false
+	 * @param   JDatabaseQuery  $query  JQuery object or false
 	 *
 	 * @return  mixed  string or join query - join sql
 	 */
 
-	public function buildQueryJoin($query = false)
+	public function buildQueryJoin(JDatabaseQuery $query)
 	{
-		$db = Worker::getDbo();
-		$ref = $query ? '1' : '0';
-
-		if (isset($this->joinsSQL[$ref]))
+		if (!is_null($this->joinsSQL))
 		{
-			return $this->joinsSQL[$ref];
+			return $this->joinsSQL;
 		}
 
+		$db = Worker::getDbo();
 		$statements = array();
 		$table = $this->getTable();
 		$selectedTables[] = $table->get('list.db_table_name');
@@ -4020,13 +3959,10 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			return $query;
 		}
-		else
-		{
-			$return = implode(' ', $return);
-			$this->joinsSQL[$ref] = $return;
-		}
 
-		return $query == false ? $return : $query;
+		$this->joinsSQL = (string) $query;
+
+		return $query;
 	}
 
 	/**
@@ -4070,12 +4006,11 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * Get the part of the main query that provides a group by statement
 	 * only added by 'count' element plug-in at the moment
 	 *
-	 * @param   mixed  $query  false to return a mySQL string, JQuery object to append group statement to.
+	 * @param   JDatabaseQuery  $query
 	 *
-	 * @return  mixed  string if $query false, else JQuery object
+	 * @return  JDatabaseQuery
 	 */
-
-	public function buildQueryGroupBy($query = false)
+	public function buildQueryGroupBy(JDatabaseQuery $query)
 	{
 		$groups = $this->getFormModel()->getGroupsHierarchy();
 		$pluginManager = Worker::getPluginManager();
@@ -4097,44 +4032,35 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!empty($this->pluginQueryGroupBy))
 		{
-			if ($query === false)
-			{
-				return ' GROUP BY ' . implode(', ', $this->pluginQueryGroupBy);
-			}
-			else
-			{
-				$pluginManager->runPlugins('onBuildQueryGroupBy', $this, 'list', $query);
-				$query->group($this->pluginQueryGroupBy);
+			$pluginManager->runPlugins('onBuildQueryGroupBy', $this, 'list', $query);
+			$query->group($this->pluginQueryGroupBy);
 
-				return $query;
-			}
+			return $query;
 		}
 
 		$pluginManager->runPlugins('onBuildQueryGroupBy', $this, 'list', $query);
 
-		return $query === false ? '' : $query;
+		return $query;
 	}
 
 	/**
 	 * Get the part of the sql query that relates to the where statement
 	 *
-	 * @param   bool  $incFilters  if true the SQL contains any filters
-	 *                             if false only contains prefilter sql
-	 * @param   bool  $query       if false return the where as a string
-	 *                             if a db query object, set the where clause
+	 * @param   bool            $incFilters  if true the SQL contains any filters
+	 *                                       if false only contains prefilter sql
+	 * @param   JDatabaseQuery  $query       if false return the where as a string
+	 *                                       if a db query object, set the where clause
 	 * Paul 2013-07-20 Add join parameter to limit where clause to main table if needed
-	 * @param   bool  $doJoins     include where clauses for joins?
+	 * @param   bool            $doJoins     include where clauses for joins?
 	 *
-	 * @return  mixed	string if $query false, else JQuery object
+	 * @return  JDatabaseQuery
 	 */
-
-	public function buildQueryWhere($incFilters = true, $query = false, $doJoins = true)
+	public function buildQueryWhere($incFilters = true, JDatabaseQuery $query, $doJoins = true)
 	{
 		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBuildQueryWhere', $this, 'list');
 
-		$sig = !$query ? 'string' : 'query';
-		$sig .= (int) $incFilters;
+		$sig = (int) $incFilters;
 
 		if (isset($this->_whereSQL[$sig]))
 		{
@@ -4151,16 +4077,9 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($incFilters && !$this->gotAllRequiredFilters())
 		{
-			if (!$query)
-			{
-				return 'WHERE 1 = -1 ';
-			}
-			else
-			{
-				$query->where('1 = -1');
+			$query->where('1 = -1');
 
-				return $query;
-			}
+			return $query;
 		}
 
 		$groups = $this->getFormModel()->getGroupsHierarchy();
@@ -4183,40 +4102,25 @@ class Lizt extends View implements ModelFormLiztInterface
 			// $$$ hugh - testing hack for plugins to add WHERE clauses
 			if (!empty($this->pluginQueryWhere))
 			{
-				if (!$query)
-				{
-					return 'WHERE ' . implode(' AND ', $this->pluginQueryWhere);
-				}
-				else
-				{
-					$query->where(implode(' AND ', $this->pluginQueryWhere));
+				$query->where(implode(' AND ', $this->pluginQueryWhere));
 
-					return $query;
-				}
+				return $query;
 			}
 			else
 			{
-				return $query ? $query : '';
+				return $query;
 			}
 		}
 
-		$addWhere = $query == false ? true : false;
-		list($sqlNoFilter, $sql) = $this->_filtersToSQL($filters, $addWhere);
+		list($sqlNoFilter, $sql) = $this->_filtersToSQL($filters);
 		$this->_whereSQL[$sig] = array('0' => $sqlNoFilter, '1' => $sql);
 
-		if (!$query)
+		if (!empty($this->_whereSQL[$sig][$incFilters]))
 		{
-			return $this->_whereSQL[$sig][$incFilters];
+			$query->where($this->_whereSQL[$sig][$incFilters]);
 		}
-		else
-		{
-			if (!empty($this->_whereSQL[$sig][$incFilters]))
-			{
-				$query->where($this->_whereSQL[$sig][$incFilters]);
-			}
 
-			return $query;
-		}
+		return $query;
 	}
 
 	/**
@@ -4224,12 +4128,11 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * takes a filter array and returns the SQL
 	 *
 	 * @param   array  &$filters        filters
-	 * @param   bool   $startWithWhere  start the statement with 'where' (true is for j1.5 way of making queries, false for j1.6+)
 	 *
 	 * @return  array	nofilter, filter sql
 	 */
 
-	private function _filtersToSQL(&$filters, $startWithWhere = true)
+	private function _filtersToSQL(&$filters)
 	{
 		$prefilters = $this->groupFilterSQL($filters, 'prefilter');
 		$postFilters = $this->groupFilterSQL($filters);
@@ -4258,16 +4161,6 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			$sql[] = $pluginQueryWhere;
 			$prefilters[] = $pluginQueryWhere;
-		}
-		// Add in the where to the query
-		if (!empty($sql) && $startWithWhere)
-		{
-			array_unshift($sql, 'WHERE');
-		}
-
-		if (!empty($prefilters) && $startWithWhere)
-		{
-			array_unshift($prefilters, 'WHERE');
 		}
 
 		$sql = implode($sql, ' ');
@@ -5880,10 +5773,13 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$db = $this->getDb();
 		$table = $this->getTable();
+		$query = $db->getQuery(true);
 		$count = 'DISTINCT ' . $table->get('list.db_primary_key');
-		$totalSql = 'SELECT COUNT(' . $count . ') AS t FROM ' . $table->get('list.db_table_name') . ' ' . $this->buildQueryJoin();
-		$totalSql .= ' ' . $this->buildQueryWhere($this->app->input->get('incfilters', 1));
-		$totalSql .= ' ' . $this->buildQueryGroupBy();
+		$query->select('COUNT(' . $count . ') AS t ')->from($table->get('list.db_table_name'));
+		$query = $this->buildQueryJoin($query);
+		$query = $this->buildQueryWhere($this->app->input->get('incfilters', 1), $query);
+		$query = $this->buildQueryGroupBy($query);
+		$totalSql = (string) $query;
 		$totalSql = $this->pluginQuery($totalSql);
 		$db->setQuery($totalSql);
 		FabrikHelperHTML::debug($totalSql, 'table getJoinMergeTotalRecords');
@@ -6304,9 +6200,10 @@ class Lizt extends View implements ModelFormLiztInterface
 			// Don't do with = as this foobars up the last elementModel
 			$elementModel = $elements[$kk];
 			$element = $elementModel->getElement();
+			echo "<pre>";print_r($element);echo "</pre>";
 			$filterType = $element->get('filter_type', '');
 
-			if ($element->filter_type <> '')
+			if ($filterType <> '')
 			{
 				if ($elementModel->canView() && $elementModel->canUseFilter())
 				{
@@ -6668,7 +6565,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		foreach ($elements as $e)
 		{
 			$key = $e->getFilterFullName();
-			$arr[$key] = array('id' => $e->getId(), 'plugin' => $e->getElement()->plugin);
+			$arr[$key] = array('id' => $e->getId(), 'plugin' => $e->getElement()->get('plugin'));
 		}
 
 		$opts->elementMap = $arr;
@@ -7786,7 +7683,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					{
 						$element = $elementModel->getElement();
 						$key = $element->get('name');
-						$fullkey = $elementModel->getFullName(true, false);
+						$fullKey = $elementModel->getFullName(true, false);
 
 						// For radio buttons and dropdowns otherwise nothing is stored for them??
 						$postkey = array_key_exists($key . '_raw', $data) ? $key . '_raw' : $key;
@@ -8103,37 +8000,37 @@ class Lizt extends View implements ModelFormLiztInterface
 			*/
 			if (empty($rowId))
 			{
-				$this->origData = $origdata = array();
+				$this->origData = $origData = array();
 			}
 			else
 			{
 				$sql = $formModel->buildQuery();
 				$db = $this->getDb();
 				$db->setQuery($sql);
-				$origdata = $db->loadObject();
-				$origdata = ArrayHelper::fromObject($origdata);
-				$origdata = is_array($origdata) ? $origdata : array();
-				$this->origData = $origdata;
+				$origData = $db->loadObject();
+				$origData = ArrayHelper::fromObject($origData);
+				$origData = is_array($origData) ? $origData : array();
+				$this->origData = $origData;
 			}
 		}
 		else
 		{
-			$origdata = $this->origData;
+			$origData = $this->origData;
 		}
 
 		$form = $formModel->getForm();
 		$groups = $formModel->getGroupsHierarchy();
 
 		/* $$$ hugh - seems like there's no point in doing this chunk if there is no
-		 $origdata to work with?  Not sure if there's ever a valid reason for doing so,
+		 $origData to work with?  Not sure if there's ever a valid reason for doing so,
 		but it certainly breaks things like onCopyRow(), where (for instance) user
 		elements will get reset to 0 by this code.
 		*/
 		$repeatGroupCounts = $input->get('fabrik_repeat_group', array(), 'array');
 
-		if (!empty($origdata))
+		if (!empty($origData))
 		{
-			$gcounter = 0;
+			$gCounter = 0;
 
 			foreach ($groups as $groupModel)
 			{
@@ -8148,7 +8045,7 @@ class Lizt extends View implements ModelFormLiztInterface
 						if (!$elementModel->canUse())
 						{
 							$element = $elementModel->getElement();
-							$fullkey = $elementModel->getFullName(true, false);
+							$fullKey = $elementModel->getFullName(true, false);
 
 							// $$$ rob 24/01/2012 if a previous joined data set had a ro element then if we werent checkign that group is the
 							// same as the join group then the insert failed as data from other joins added into the current join
@@ -8161,18 +8058,18 @@ class Lizt extends View implements ModelFormLiztInterface
 
 							// $$$ hugh - allow submission plugins to override RO data
 							// TODO - test this for joined data
-							if ($formModel->updatedByPlugin($fullkey))
+							if ($formModel->updatedByPlugin($fullKey))
 							{
 								continue;
 							}
-							// Force a reload of the default value with $origdata
+							// Force a reload of the default value with $origData
 							unset($elementModel->defaults);
 							$default = array();
 							$repeatGroupCount = ArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
 
 							for ($repeatCount = 0; $repeatCount < $repeatGroupCount; $repeatCount++)
 							{
-								$def = $elementModel->getValue($origdata, $repeatCount);
+								$def = $elementModel->getValue($origData, $repeatCount);
 
 								if (is_array($def))
 								{
@@ -8192,13 +8089,13 @@ class Lizt extends View implements ModelFormLiztInterface
 					}
 				}
 
-				$gcounter++;
+				$gCounter++;
 			}
 		}
 
 		$copy = $input->getBool('Copy');
 
-		// Check crypted querystring vars (encrypted in form/view.html.php ) _cryptQueryString
+		// Check encrypted querystring vars (encrypted in form/view.html.php ) _cryptQueryString
 		if (array_key_exists('fabrik_vars', $_REQUEST) && array_key_exists('querystring', $_REQUEST['fabrik_vars']))
 		{
 			$crypt = Worker::getCrypt();
@@ -8264,7 +8161,6 @@ class Lizt extends View implements ModelFormLiztInterface
 							if (!$elementModel->canUse())
 							{
 								// Repeat groups
-								$default = array();
 								$repeatGroupCount = ArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
 
 								for ($repeatCount = 0; $repeatCount < $repeatGroupCount; $repeatCount++)
@@ -9494,7 +9390,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 			else
 			{
-				$url = 'index.php?option=com_' . $package . '&view=form&Itemid=' . $itemId . '&formid=' . $table->form_id . $keyIdentifier . '&listid='
+				$url = 'index.php?option=com_' . $package . '&view=form&Itemid=' . $itemId . '&formid=' . $table->get('form_id') . $keyIdentifier . '&listid='
 					. $this->getId();
 			}
 
@@ -10703,8 +10599,8 @@ class Lizt extends View implements ModelFormLiztInterface
 					for ($i = 0; $i < $ec; $i++)
 					{
 						$thisRow = $data[$i];
-						$coldata = $thisRow->$col;
-						$data[$i]->$col = $elementModel->preFormatFormJoins($coldata, $thisRow);
+						$colData = $thisRow->$col;
+						$data[$i]->$col = $elementModel->preFormatFormJoins($colData, $thisRow);
 					}
 				}
 			}
@@ -10735,12 +10631,10 @@ class Lizt extends View implements ModelFormLiztInterface
 			return;
 		}
 
-		$listId = $this->getTable()->id;
 		$dbprimaryKey = FabrikString::safeColNameToArrayKey($this->getTable()->db_primary_key);
 		$formModel = $this->getFormModel();
 		$db = $this->getDb();
 		FabrikHelperHTML::debug($data, 'render:before formatForJoins');
-		$count = count($data);
 
 		$last_pk = '';
 		$last_i = 0;
@@ -10761,17 +10655,17 @@ class Lizt extends View implements ModelFormLiztInterface
 		*/
 		foreach ($data[0] as $key => $val)
 		{
-			$shortkey = FabrikString::rtrimword($key, '_raw');
+			$shortKey = FabrikString::rtrimword($key, '_raw');
 			/* $$$ hugh - had to cache this stuff, because if you have a lot of rows and a lot of elements,
 			 * doing this many hundreds of times causes huge slowdown, exceeding max script execution time!
 			* And we really only need to do it once for the first row.
 			*/
-			if (!isset($can_repeats[$shortkey]))
+			if (!isset($can_repeats[$shortKey]))
 			{
-				$elementModel = $formModel->getElement($shortkey);
+				$elementModel = $formModel->getElement($shortKey);
 
 				// $$$ rob - testing for linking join which is repeat but linked join which is not - still need separate info from linked to join
-				// $can_repeats[$shortkey] = $elementModel ? ($elementModel->getGroup()->canRepeat()) : 0;
+				// $can_repeats[$shortKey] = $elementModel ? ($elementModel->getGroup()->canRepeat()) : 0;
 				if ($merge == 2 && $elementModel)
 				{
 					if ($elementModel->getGroup()->canRepeat() || $elementModel->getGroup()->isJoin())
@@ -10797,6 +10691,8 @@ class Lizt extends View implements ModelFormLiztInterface
 							{
 								// $$$ hugh - might be a view, so Hail Mary attempt to get PK
 								$query = $db->getQuery(true);
+
+								// FIXME - not right for json metafiles
 								$query->select('db_primary_key')->from('#__fabrik_lists')
 									->where('db_table_name = ' . $db->q($join_table_name));
 								$db->setQuery($query);
@@ -10811,10 +10707,10 @@ class Lizt extends View implements ModelFormLiztInterface
 						// Hopefully we now have the PK
 						if (isset($can_repeats_tables[$join_table_name]))
 						{
-							$can_repeats_keys[$shortkey] = $join_table_name . '___' . $can_repeats_tables[$join_table_name]['colname'];
+							$can_repeats_keys[$shortKey] = $join_table_name . '___' . $can_repeats_tables[$join_table_name]['colname'];
 						}
 
-						$crk_sk = $can_repeats_keys[$shortkey];
+						$crk_sk = $can_repeats_keys[$shortKey];
 
 						// Create the array if it doesn't exist
 						if (!isset($can_repeats_pk_vals[$crk_sk]))
@@ -10829,7 +10725,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					}
 				}
 
-				$can_repeats[$shortkey] = $elementModel ? ($elementModel->getGroup()->canRepeat() || $elementModel->getGroup()->isJoin()) : 0;
+				$can_repeats[$shortKey] = $elementModel ? ($elementModel->getGroup()->canRepeat() || $elementModel->getGroup()->isJoin()) : 0;
 			}
 		}
 
@@ -10843,18 +10739,18 @@ class Lizt extends View implements ModelFormLiztInterface
 				foreach ($data[$i] as $key => $val)
 				{
 					$origKey = $key;
-					$shortkey = FabrikString::rtrimword($key, '_raw');
+					$shortKey = FabrikString::rtrimword($key, '_raw');
 
-					if ($can_repeats[$shortkey])
+					if ($can_repeats[$shortKey])
 					{
 						if ($merge == 2
-							&& !isset($can_repeats_pk_vals[$can_repeats_keys[$shortkey]][$i])
-							&& isset($data[$i]->$can_repeats_keys[$shortkey]))
+							&& !isset($can_repeats_pk_vals[$can_repeats_keys[$shortKey]][$i])
+							&& isset($data[$i]->$can_repeats_keys[$shortKey]))
 						{
-							$can_repeats_pk_vals[$can_repeats_keys[$shortkey]][$i] = $data[$i]->$can_repeats_keys[$shortkey];
+							$can_repeats_pk_vals[$can_repeats_keys[$shortKey]][$i] = $data[$i]->$can_repeats_keys[$shortKey];
 						}
 
-						if ($origKey == $shortkey)
+						if ($origKey == $shortKey)
 						{
 							/* $$$ rob - this was just appending data with a <br> but as we do thie before the data is formatted
 							 * it was causing all sorts of issues for list rendering of links, dates etc. So now turn the data into
@@ -10864,11 +10760,11 @@ class Lizt extends View implements ModelFormLiztInterface
 
 							if ($merge == 2)
 							{
-								$pk_vals = array_count_values(array_filter($can_repeats_pk_vals[$can_repeats_keys[$shortkey]]));
+								$pk_vals = array_count_values(array_filter($can_repeats_pk_vals[$can_repeats_keys[$shortKey]]));
 
-								if (isset($data[$i]->$can_repeats_keys[$shortkey]))
+								if (isset($data[$i]->$can_repeats_keys[$shortKey]))
 								{
-									if ($pk_vals[$data[$i]->$can_repeats_keys[$shortkey]] > 1)
+									if ($pk_vals[$data[$i]->$can_repeats_keys[$shortKey]] > 1)
 									{
 										$do_merge = false;
 									}
@@ -10923,13 +10819,13 @@ class Lizt extends View implements ModelFormLiztInterface
 					foreach ($data[$i] as $key => $val)
 					{
 						$origKey = $key;
-						$shortkey = FabrikString::rtrimword($key, '_raw');
+						$shortKey = FabrikString::rtrimword($key, '_raw');
 
-						if ($can_repeats[$shortkey]
-							&& !isset($can_repeats_pk_vals[$can_repeats_keys[$shortkey]][$i])
-							&& isset($data[$i]->$can_repeats_keys[$shortkey]))
+						if ($can_repeats[$shortKey]
+							&& !isset($can_repeats_pk_vals[$can_repeats_keys[$shortKey]][$i])
+							&& isset($data[$i]->$can_repeats_keys[$shortKey]))
 						{
-							$can_repeats_pk_vals[$can_repeats_keys[$shortkey]][$i] = $data[$i]->$can_repeats_keys[$shortkey];
+							$can_repeats_pk_vals[$can_repeats_keys[$shortKey]][$i] = $data[$i]->$can_repeats_keys[$shortKey];
 						}
 					}
 				}
@@ -11284,7 +11180,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 			else
 			{
-				$this->tmpl = $input->get('layout', $item->template);
+				$this->tmpl = $input->get('layout', $item->get('list.template'));
 
 				if ($this->app->scope !== 'mod_fabrik_list')
 				{

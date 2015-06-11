@@ -52,6 +52,8 @@ class FabrikModelUpgrade extends FabModelAdmin
 	{
 		$db = JFactory::getDbo(true);
 		$query = $db->getQuery(true);
+
+		// FIXME - jsonify
 		$query->select('db_table_name, connection_id')->from('#__fabrik_tables');
 		$db->setQuery($query);
 		$tables = $db->loadObjectList('db_table_name') + $this->getFabrikTables();
@@ -113,6 +115,9 @@ class FabrikModelUpgrade extends FabModelAdmin
 		}
 		
 		$db = JFactory::getDbo(true);
+
+		// FIXME - jsonify
+
 		$updates = array('#__fabrik_elements', '#__fabrik_cron', '#__fabrik_forms', '#__fabrik_groups', '#__fabrik_joins', '#__fabrik_jsactions',
 			'#__fabrik_tables', '#__fabrik_visualizations');
 

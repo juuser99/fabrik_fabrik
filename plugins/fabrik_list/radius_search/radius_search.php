@@ -548,13 +548,13 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 
 		// Increase z-index with advanced class
 		$opts['menuclass'] = 'auto-complete-container advanced';
-		$listId = $model->get('id');
-		$formid = $model->getFormModel()->get('id');
+		$formId = $model->getFormModel()->get('id');
 
 		if ($params->get('place', 1) == 1)
 		{
 			$el = $this->getPlaceElement();
-			FabrikHelperHTML::autoComplete("radius_search_place{$this->renderOrder}", $el->getElement()->id, $formid, $el->getElement()->plugin, $opts);
+			$element = $el->getElement();
+			FabrikHelperHTML::autoComplete("radius_search_place{$this->renderOrder}", $element->get('id'), $formId, $element->get('plugin'), $opts);
 		}
 
 		if ($params->get('myloc', 1) == 1)

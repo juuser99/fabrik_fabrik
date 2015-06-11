@@ -76,7 +76,8 @@ class FabrikViewCalendar extends JViewLegacy
 
 		// Get all list where statements - which are then included in the ajax call to ensure we get the correct data set loaded
 		$urlfilters = new stdClass;
-		$urlfilters->where = $model->buildQueryWhere();
+		$query = $model->getDb()->getQuery(true);
+		$urlfilters->where = (string) $model->buildQueryWhere(true, $query);
 
 		$urls = new stdClass;
 

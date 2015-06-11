@@ -160,7 +160,7 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 						if (is_object($val))
 						{
 							$val->formJavascriptClass($srcs, '', $shim);
-							$els[$key]->plugins[$field] = $val->getElement()->id;
+							$els[$key]->plugins[$field] = $val->getElement()->get('id');
 						}
 					}
 				}
@@ -177,7 +177,7 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 					$els[$key] = new stdClass;
 					$els[$key]->elid = $val->getId();
 					$els[$key]->plugins = array();
-					$els[$key]->plugins[$key] = $val->getElement()->id;
+					$els[$key]->plugins[$key] = $val->getElement()->get('id');
 
 					// Load in all element js classes
 					$val->formJavascriptClass($srcs, '', $shim);
