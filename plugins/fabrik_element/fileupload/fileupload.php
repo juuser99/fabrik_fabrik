@@ -2073,7 +2073,7 @@ class PlgFabrik_ElementFileupload extends Element
 		$use_wip = $params->get('upload_use_wip', '0') == '1';
 		$device_capture = $params->get('ul_device_capture', '0');
 
-		if ($element->hidden == '1')
+		if ($element->get('hidden') == '1')
 		{
 			return $this->getHiddenField($name, $data[$name], $id);
 		}

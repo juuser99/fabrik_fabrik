@@ -180,7 +180,7 @@ class PlgFabrik_ElementField extends Element
 				$value = $this->getReadOnlyOutput($value, $value);
 			}
 
-			return ($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
+			return ($element->get('hidden') == '1') ? "<!-- " . $value . " -->" : $value;
 		}
 
 		/* stop "'s from breaking the content out of the field.

@@ -228,7 +228,7 @@ class PlgFabrik_ElementBirthday extends Element
 				$layout = $this->getLayout('detail');
 				$layoutData = new stdClass;
 				$layoutData->text =  $this->replaceWithIcons($detailValue);
-				$layoutData->hidden = $element->hidden;
+				$layoutData->hidden = $element->get('hidden');
 
 				return $layout->render($layoutData);
 			}

@@ -13,6 +13,9 @@ namespace Fabrik\Views\Form;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use JFactory;
+use \Fabrik\Helpers\Worker;
+
 /**
  * HTML Form view class
  *
@@ -36,28 +39,28 @@ class Html extends Base
 
 			if (!$app->isAdmin())
 			{
-				$this->state = $this->get('State');
-				$this->document = JFactory::getDocument();
+				$this->state = $this->model->getState();
+				$doc = JFactory::getDocument();
 				$model = $this->getModel();
-				$this->params = $this->state->get('params');
+				$params = $this->state->get('params');
 				$row = $model->getData();
 				$w = new Worker;
 
-				if ($this->params->get('menu-meta_description'))
+				if ($params->get('menu-meta_description'))
 				{
-					$desc = $w->parseMessageForPlaceHolder($this->params->get('menu-meta_description'), $row);
-					$this->document->setDescription($desc);
+					$desc = $w->parseMessageForPlaceHolder($params->get('menu-meta_description'), $row);
+					$doc->setDescription($desc);
 				}
 
-				if ($this->params->get('menu-meta_keywords'))
+				if ($params->get('menu-meta_keywords'))
 				{
-					$keywords = $w->parseMessageForPlaceHolder($this->params->get('menu-meta_keywords'), $row);
-					$this->document->setMetadata('keywords', $keywords);
+					$keywords = $w->parseMessageForPlaceHolder($params->get('menu-meta_keywords'), $row);
+					$doc->setMetadata('keywords', $keywords);
 				}
 
-				if ($this->params->get('robots'))
+				if ($params->get('robots'))
 				{
-					$this->document->setMetadata('robots', $this->params->get('robots'));
+					$doc->setMetadata('robots', $params->get('robots'));
 				}
 			}
 		}

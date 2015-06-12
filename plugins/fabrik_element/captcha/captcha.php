@@ -170,7 +170,7 @@ class PlgFabrik_ElementCaptcha extends Element
 
 		if (!$this->isEditable())
 		{
-			if ($element->hidden == '1')
+			if ($element->get('hidden') == '1')
 			{
 				return '<!-- ' . stripslashes($value) . ' -->';
 			}
@@ -286,7 +286,7 @@ class PlgFabrik_ElementCaptcha extends Element
 				$type .= ' elementErrorHighlight';
 			}
 
-			if ($element->hidden == '1')
+			if ($element->get('hidden') == '1')
 			{
 				$type = 'hidden';
 			}

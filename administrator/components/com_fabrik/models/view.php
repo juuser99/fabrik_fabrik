@@ -88,12 +88,10 @@ class View extends Base
 	{
 		if (!isset($this->listModel))
 		{
-			echo "get list model id = " . $this->get('id') . "<br>";
 			$this->listModel = new Lizt;
 			$this->listModel->set('id', $this->get('id'));
 			$this->listModel->setFormModel($this);
 			$this->listModel->getParams();
-			echo "end get list model<br>";
 		}
 
 		return $this->listModel;
@@ -139,7 +137,6 @@ class View extends Base
 	 *
 	 * @return  array
 	 */
-
 	private function mergeGroupsWithJoins($groups)
 	{
 		$db = Worker::getDbo(true);

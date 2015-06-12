@@ -109,7 +109,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$params = $model->getParams();
 		$this->setTitle($w, $params, $model);
 		FabrikHelperHTML::debug($params->get('note'), 'note');
-		$params->def('icons', $app->getCfg('icons'));
+		$params->def('icons', $app->get('icons'));
 		$params->set('popup', ($input->get('tmpl') == 'component') ? 1 : 0);
 
 		$this->editable = $model->isEditable();
@@ -381,11 +381,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	protected function _addJavascript($listId)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$pluginManager = Worker::getPluginManager();
-		$input = $app->input;
-		$document = JFactory::getDocument();
 		$model = $this->getModel();
 		$aLoadedElementPlugins = array();
 		$jsActions = array();
@@ -520,7 +516,7 @@ class Base extends \Fabrik\Admin\Views\Html
 			{
 				$element = $elementModel->getElement();
 
-				if ($element->published == 0)
+				if ($element->get('published') == 0)
 				{
 					continue;
 				}
@@ -602,11 +598,12 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	protected function jsOpts()
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$input = $app->input;
 		$model = $this->getModel();
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
-		$form = $model->getForm();
+		$item = $model->getItem();
+		$form = $item->get('form');
 		$params = $model->getParams();
 		$item = $model->getItem();
 		$opts = new stdClass;

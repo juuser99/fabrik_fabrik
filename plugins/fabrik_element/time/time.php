@@ -111,7 +111,7 @@ class PlgFabrik_ElementTime extends Element
 
 				$value = $this->replaceWithIcons($detailvalue);
 
-				return ($element->hidden == '1') ? "<!-- " . $detailvalue . " -->" : $detailvalue;
+				return ($element->get('hidden') == '1') ? "<!-- " . $detailvalue . " -->" : $detailvalue;
 			}
 			else
 			{

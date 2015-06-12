@@ -74,7 +74,7 @@ class PlgFabrik_ElementJSPeriodical extends Element
 		$layoutData->attributes = $this->inputProperties($repeatCounter);;
 		$layoutData->value = $this->getValue($data, $repeatCounter);;
 		$layoutData->isEditable = $this->isEditable();
-		$layoutData->hidden = $this->getElement()->hidden  == '1';
+		$layoutData->hidden = $this->getElement()->get('hidden')  == '1';
 
 		return $layout->render($layoutData);
 	}

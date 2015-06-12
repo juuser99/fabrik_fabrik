@@ -79,13 +79,13 @@ class PlgFabrik_ElementTimer extends Element
 
 		if (!$this->isEditable())
 		{
-			return ($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
+			return ($element->get('hidden') == '1') ? "<!-- " . $value . " -->" : $value;
 		}
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->id = $id;
-		$layoutData->type = $element->hidden ? 'hidden' : 'text';
+		$layoutData->type = $element->get('hidden') ? 'hidden' : 'text';
 		$layoutData->name = $name;
 		$layoutData->value = $value;
 		$layoutData->size = $size;

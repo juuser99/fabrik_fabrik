@@ -271,7 +271,7 @@ class PlgFabrik_ElementTextarea extends Element
 		$id = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
 
-		if ($element->hidden == '1')
+		if ($element->get('hidden') == '1')
 		{
 			return $this->getHiddenField($name, $this->getValue($data, $repeatCounter), $id);
 		}

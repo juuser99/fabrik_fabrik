@@ -71,7 +71,7 @@ class PlgFabrik_ElementSpotify extends Element
 
 			if (!$this->isEditable())
 			{
-				return ($element->hidden == '1') ? '<!-- ' . $value . ' -->' : $value;
+				return ($element->get('hidden') == '1') ? '<!-- ' . $value . ' -->' : $value;
 			}
 
 			$bits['class'] = "fabrikinput inputbox $type";

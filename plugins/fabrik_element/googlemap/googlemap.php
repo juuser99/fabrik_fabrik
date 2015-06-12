@@ -734,7 +734,7 @@ class PlgFabrik_ElementGooglemap extends Element
 		}
 		else
 		{
-			if ($element->hidden == '1')
+			if ($element->get('hidden') == '1')
 			{
 				return $this->getHiddenField($name, $data[$name], $id);
 			}

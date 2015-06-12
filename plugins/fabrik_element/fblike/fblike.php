@@ -166,7 +166,7 @@ class PlgFabrik_ElementFblike extends Element
 		$url = $params->get('fblike_url');
 		$w = new Worker;
 		$url = $w->parseMessageForPlaceHolder($url, $data);
-		$this->getElement()->hidden = true;
+		$this->getElement()->set('hidden', true);
 
 		return $str . $this->_render($url);
 	}

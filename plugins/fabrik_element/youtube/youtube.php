@@ -95,7 +95,7 @@ class PlgFabrik_ElementYoutube extends Element
 
 			if (!$this->isEditable())
 			{
-				return ($element->hidden == '1') ? '<!-- ' . $value . ' -->' : $value;
+				return ($element->get('hidden') == '1') ? '<!-- ' . $value . ' -->' : $value;
 			}
 
 			$layout = $this->getLayout('form');

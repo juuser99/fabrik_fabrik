@@ -171,7 +171,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		$layoutData->name = $name;
 		$layoutData->id = $html_id;
 		$layoutData->isEditable = $this->isEditable();
-		$layoutData->hidden = $element->hidden;
+		$layoutData->hidden = $element->get('hidden');
 		$layoutData->input = parent::render($data, $repeatCounter);
 		$layoutData->readOnly = is_a($user, 'JUser') ? $user->get($displayParam) : '';
 		$layoutData->value = is_a($user, 'JUser') ? $user->get('id') : '';
@@ -357,7 +357,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		if ($input->getString('rowid', '', 'string') == '' && !$this->getListModel()->importingCSV)
 		{
 			// $$$ rob if we cant use the element or its hidden force the use of current logged in user
-			if (!$this->canUse() || $this->getElement()->hidden == 1)
+			if (!$this->canUse() || $this->getElement()->get('hidden') == 1)
 			{
 				$user = $this->user;
 				$data[$element->name] = $user->get('id');
@@ -441,7 +441,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if ($updateOnEdit == 1)
 		{
-			$updateOnEdit = !$this->canUse() || $this->getElement()->hidden == 1;
+			$updateOnEdit = !$this->canUse() || $this->getElement()->get('hidden') == 1;
 		}
 
 		if ($updateOnEdit == 2)

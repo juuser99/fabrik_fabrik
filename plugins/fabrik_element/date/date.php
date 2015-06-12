@@ -298,7 +298,7 @@ class PlgFabrik_ElementDate extends ElementList
 		}
 
 		// Build HTML widget
-		if ($params->get('date_showtime', 0) && !$element->hidden)
+		if ($params->get('date_showtime', 0) && !$element->get('hidden'))
 		{
 			// Can't have names as simply [] as json only picks up the last one
 			$timeElName = $name . '[time]';
@@ -317,7 +317,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$str[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
 		$str[] = $this->calendar($date, $name, $id . '_cal', $format, $calOpts, $repeatCounter);
 
-		if ($params->get('date_showtime', 0) && !$element->hidden)
+		if ($params->get('date_showtime', 0) && !$element->get('hidden'))
 		{
 			$this->timeButton($timeElName, $time, $str);
 		}
@@ -830,11 +830,11 @@ class PlgFabrik_ElementDate extends ElementList
 		$element = $this->getElement();
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts->hidden = (bool) $this->getElement()->hidden;
+		$opts->hidden = (bool) $this->getElement()->get('hidden');
 
 		// Used uniquely in reset();
 		$opts->defaultVal = $this->getFrontDefaultValue();
-		$opts->showtime = (!$element->hidden && $params->get('date_showtime', 0)) ? true : false;
+		$opts->showtime = (!$element->get('hidden') && $params->get('date_showtime', 0)) ? true : false;
 		$opts->timelabel = FText::_('time');
 		$opts->typing = (bool) $params->get('date_allow_typing_in_field', true);
 		$opts->timedisplay = $params->get('date_timedisplay', 1);
