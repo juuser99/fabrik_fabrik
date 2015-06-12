@@ -349,6 +349,8 @@ class Base extends \Fabrik\Admin\Views\Html
 		$profiler = JProfiler::getInstance('Application');
 		$app      = $this->app;
 		$input    = $app->input;
+
+		/* @var $model \Fabrik\Admin\Models\Lizt */
 		$model    = $this->model;
 
 		// Force front end templates
@@ -435,7 +437,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$this->table->label         = FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.label'), $_REQUEST));
 		$this->table->intro         = $params->get('show_into', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.introduction')));
 		$this->table->outro         = $params->get('show_outro', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($params->get('outro')));
-		$this->table->id            = $item->get('id');
+		$this->table->id            = \JFilterInput::getInstance()->clean($item->get('id'), 'WORD');
 		$this->table->renderid      = $model->getRenderContext();
 		$this->table->db_table_name = $item->get('list.db_table_name');
 

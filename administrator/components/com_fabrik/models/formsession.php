@@ -14,6 +14,12 @@ namespace Fabrik\Admin\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use \JFactory;
+use \JTable;
+use \JApplicationHelper;
+use \JCryptKey;
+use \JCrypt;
+use \JCryptCipherSimple;
 
 /**
  * Fabrik Form Session Model
@@ -22,7 +28,7 @@ use Fabrik\Helpers\ArrayHelper;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class FormSession extends JModelBase
+class FormSession extends \JModelBase
 {
 	/**
 	 * User id
@@ -210,7 +216,7 @@ class FormSession extends JModelBase
 			jimport('joomla.utilities.utility');
 
 			// Create the encryption key, apply extra hardening using the user agent string
-			$key = JApplication::getHash(@$_SERVER['HTTP_USER_AGENT']);
+			$key = JApplicationHelper::getHash(@$_SERVER['HTTP_USER_AGENT']);
 			$key = new JCryptKey('simple', $key, $key);
 			$this->crypt = new JCrypt(new JCryptCipherSimple, $key);
 		}
@@ -255,14 +261,14 @@ class FormSession extends JModelBase
 			if ($this->canUseCookie())
 			{
 				$crypt = $this->getCrypt();
-				$cookiekey = $this->getCookieKey();
-				$cookieval = ArrayHelper::getValue($_COOKIE, $cookiekey, '');
+				$cookieKey = $this->getCookieKey();
+				$cookieVal = ArrayHelper::getValue($_COOKIE, $cookieKey, '');
 
-				if ($cookieval !== '')
+				if ($cookieVal !== '')
 				{
 					$this->status = FText::_('COM_FABRIK_LOADING_FROM_COOKIE');
 					$this->statusid = _FABRIKFORMSESSION_LOADED_FROM_COOKIE;
-					$hash = $crypt->decrypt($cookieval);
+					$hash = $crypt->decrypt($cookieVal);
 				}
 			}
 		}
@@ -340,7 +346,8 @@ class FormSession extends JModelBase
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$session->clear('com_' . $package . '.form.' . $this->getFormId() . '.session.on');
 		$user = JFactory::getUser();
-		$row = $this->getTable('Formsession', 'FabrikTable');
+
+		$row = JTable::getInstance('Formsession', 'FabrikTable');
 		$hash = '';
 
 		if ((int) $user->get('id') !== 0)
@@ -352,20 +359,20 @@ class FormSession extends JModelBase
 			if ($this->useCookie)
 			{
 				$crypt = $this->getCrypt();
-				$cookiekey = (int) $user->get('id') . ":" . $this->getFormId() . ":" . $this->getRowId();
-				$cookieval = ArrayHelper::getValue($_COOKIE, $cookiekey, '');
+				$cookieKey = (int) $user->get('id') . ":" . $this->getFormId() . ":" . $this->getRowId();
+				$cookieVal = ArrayHelper::getValue($_COOKIE, $cookieKey, '');
 
-				if ($cookieval !== '')
+				if ($cookieVal !== '')
 				{
-					$hash = $crypt->decrypt($cookieval);
+					$hash = $crypt->decrypt($cookieVal);
 				}
 			}
 		}
 
-		$db = $row->getDBO();
+		$db = JFactory::getDbo();
 		$row->hash = $hash;
 		$query = $db->getQuery(true);
-		$query->delete($db->quoteName($row->getTableName()))->where('hash = ' . $db->q($hash));
+		$query->delete($db->qn($row->getTableName()))->where('hash = ' . $db->q($hash));
 		$db->setQuery($query);
 		$this->removeCookie();
 		$this->row = $row;

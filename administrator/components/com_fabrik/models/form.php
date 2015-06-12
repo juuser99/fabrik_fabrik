@@ -30,6 +30,7 @@ use \stdClass as stdClass;
 use \JFile as JFile;
 use \JUri;
 use \JRoute;
+use \Fabrik\Helpers\UploaderHelper;
 
 interface ModelFormFormInterface
 {
@@ -2234,7 +2235,7 @@ class Form extends View implements ModelFormFormInterface
 		foreach ($groups as $groupModel)
 		{
 			$group = $groupModel->getGroup();
-			$repeatedGroupCount = ArrayHelper::getValue($repeatTotals, $group->id, 0, 'int');
+			$repeatedGroupCount = ArrayHelper::getValue($repeatTotals, $group->get('id'), 0, 'int');
 			$elementModels = $groupModel->getPublishedElements();
 
 			for ($c = 0; $c < $repeatedGroupCount; $c++)
@@ -2780,7 +2781,7 @@ class Form extends View implements ModelFormFormInterface
 
 		foreach ($groups as $groupModel)
 		{
-			$groupCounter = $groupModel->getGroup()->id;
+			$groupCounter = $groupModel->getGroup()->get('id');
 			$elementModels = $groupModel->getPublishedElements();
 			$elDbValues = array();
 

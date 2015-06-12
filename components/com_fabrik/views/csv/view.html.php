@@ -81,7 +81,7 @@ class FabrikViewCsv extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$model = $this->getModel();
-		$listId = $model->getId();
+		$listId = \JFilterInput::getInstance()->clean($model->getId(), 'WORD');
 		$script = array();
 		$opts = new stdClass;
 		$opts->admin = $app->isAdmin();

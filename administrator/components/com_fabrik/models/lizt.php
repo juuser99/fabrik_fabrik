@@ -6548,7 +6548,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			'class="inputbox key" size="1" ', 'value', 'text');
 		$opts->statementList = JHTML::_('select.genericlist', $statements, 'fabrik___filter[list_' . $listRef . '][condition][]',
 			'class="inputbox" size="1" ', 'value', 'text');
-		$opts->listid        = $list->id;
+		$opts->listid        = \JFilterInput::getInstance()->clean($list->get('id'), 'WORD');
 		$opts->listref       = $listRef;
 		$opts->ajax          = $this->isAjax();
 		$opts->counter       = count($this->getadvancedSearchRows()) - 1;

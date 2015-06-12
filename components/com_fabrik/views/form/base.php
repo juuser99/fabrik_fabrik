@@ -770,7 +770,7 @@ class Base extends Html
 		$row = ArrayHelper::toObject($model->data);
 		$canDelete = $listModel->canDelete($row);
 		$params = $model->getParams();
-		$task = 'form.process';
+		//$task = 'form.process';
 		$refer = $input->server->get('HTTP_REFERER', '', 'string');
 
 		// $$$rob - if returning from a failed validation then we should use the fabrik_referrer post var
@@ -783,7 +783,8 @@ class Base extends Html
 		$fields[] = '<input type="hidden" name="rowid" value="' . $this_rowid . '" />';
 		$fields[] = '<input type="hidden" name="Itemid" value="' . $Itemid . '" />';
 		$fields[] = '<input type="hidden" name="option" value="com_' . $package . '" />';
-		$fields[] = '<input type="hidden" name="task" value="' . $task . '" />';
+		//$fields[] = '<input type="hidden" name="task" value="' . $task . '" />';
+		$fields[] = '<input type="hidden" name="view" value="process" />';
 		$fields[] = '<input type="hidden" name="isMambot" value="' . $this->isMambot . '" />';
 		$fields[] = '<input type="hidden" name="formid" value="' . $model->get('id') . '" />';
 		$fields[] = '<input type="hidden" name="returntoform" value="0" />';

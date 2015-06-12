@@ -33,7 +33,7 @@ if (JDEBUG)
 
 $app   = JFactory::getApplication();
 $input = $app->input;
-
+JTable::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR . '/tables');
 $controllerName = $input->getCmd('view');
 
 // Check for a plugin controller

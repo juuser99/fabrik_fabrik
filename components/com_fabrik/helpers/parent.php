@@ -24,6 +24,8 @@ use \Joomla\Registry\Registry as JRegistry;
 use \Fabrik\Admin\Models\PluginManager as PluginManager;
 use \JCache as JCache;
 use \JUri as JUri;
+use \JAccess;
+use \JFilterInput;
 
 /**
  * Generic tools that all models use

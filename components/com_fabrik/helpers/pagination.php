@@ -97,9 +97,11 @@ class Pagination extends JPagination
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
+		$filter = \JFilterInput::getInstance();
+		$id = $filter->clean($id, 'WORD');
+		echo "set id = $id";
 		$this->id = $id;
 	}
 
@@ -112,7 +114,7 @@ class Pagination extends JPagination
 	 * @return	string	Pagination footer
 	 */
 
-	public function getListFooter($listRef = 0, $tmpl = 'default')
+	public function getListFooter($listRef = '0', $tmpl = 'default')
 	{
 		$app = JFactory::getApplication();
 		$this->listRef = $listRef;
@@ -214,12 +216,8 @@ class Pagination extends JPagination
 	 *
 	 * @since   11.1
 	 */
-
-	public function getPagesLinks($listRef = 0, $tmpl = 'default')
+	public function getPagesLinks($listRef = '0', $tmpl = 'default')
 	{
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-
 		// Build the page navigation list
 		$data = $this->_buildDataObject();
 
