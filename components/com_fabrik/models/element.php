@@ -311,7 +311,7 @@ class Element extends Plugin
 			if ($force)
 			{
 				unset($this->params);
-				$p = $this->getParams();
+				$this->getParams();
 			}
 		}
 
@@ -453,7 +453,7 @@ class Element extends Plugin
 			$listModel = $this->getListModel();
 			$table = $listModel->getTable();
 			$this->form = new Form;
-			$this->form->setId($table->form_id);
+			$this->form->setId($table->get('id'));
 			$this->form->getForm();
 		}
 

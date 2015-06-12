@@ -4545,7 +4545,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	 */
 	public function setId($id)
 	{
-		$this->set('id', $id);
+		parent::setId($id);
 		$this->renderContext = '';
 
 		// $$$ rob not sure why but we need this getState() here when assigning id from admin view

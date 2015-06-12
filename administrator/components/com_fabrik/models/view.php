@@ -225,4 +225,16 @@ class View extends Base
 			}
 		}
 	}
+
+	/**
+	 * Method to set the view model id
+	 *
+	 * @param   string $id ID
+	 *
+	 * @return  void
+	 */
+	public function setId($id)
+	{
+		$this->set('id', $id);
+	}
 }

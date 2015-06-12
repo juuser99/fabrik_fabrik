@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.1
+ * @since       3.5
  */
 class JSON extends Base
 {

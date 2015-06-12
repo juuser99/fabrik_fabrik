@@ -1055,7 +1055,16 @@ class Element extends Base implements ModelElementFormInterface
 		return $origTableName . '_repeat_' . str_replace('`', '', $row->get('name'));
 	}
 
-	public function getElement()
+	/**
+	 * Get an element
+	 *
+	 * @param   string $searchName Name to search for
+	 * @param   bool   $checkInt   Check search name against element id
+	 * @param   bool   $checkShort Check short element name
+	 *
+	 * @return  mixed  ok: element model not ok: false
+	 */
+	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
 	{
 		return $this->element;
 	}

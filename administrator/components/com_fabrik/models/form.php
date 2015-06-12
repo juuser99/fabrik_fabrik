@@ -3664,7 +3664,7 @@ class Form extends View implements ModelFormFormInterface
 
 		foreach ($groups as $groupModel)
 		{
-			$elementModels = $groupModel->getMyElements();
+			$groupModel->getMyElements();
 
 			if (!is_array($groupModel->elements))
 			{
@@ -3720,8 +3720,7 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  mixed  ok: element model not ok: false
 	 */
-
-	public function getElement($searchName, $checkInt = false, $checkShort = true)
+	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
 	{
 		return $this->hasElement($searchName, $checkInt, $checkShort) ? $this->currentElement : false;
 	}
@@ -3733,7 +3732,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  void
 	 */
-
 	public function setListModel(&$listModel)
 	{
 		$this->listModel = $listModel;

@@ -8,43 +8,41 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
+use \stdClass;
+use \JRoute;
+use \JFabrikFeedItem;
 
 /**
  * PDF Fabrik List view class, including closures
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikViewList extends FabrikViewListBase
+class Fabrikfeed extends Base
 {
 	/**
 	 * Display the Feed
 	 *
-	 * @param   sting  $tpl  template
-	 *
 	 * @return void
 	 */
-
-	public function display($tpl = null)
+	public function render()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$app     = $this->app;
+		$input   = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = Worker::itemId();
-		$user = JFactory::getUser();
-		$model = $this->getModel();
+		$itemId  = Worker::itemId();
+		$model   = $this->getModel();
 		$model->setOutPutFormat('feed');
-		
+
 		$app->allowCache(true);
 
 		if (!parent::access($model))
@@ -52,11 +50,8 @@ class FabrikViewList extends FabrikViewListBase
 			exit;
 		}
 
-		$document = JFactory::getDocument();
+		$document            = $this->doc;
 		$document->_itemTags = array();
-
-		// Get the active menu item
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
 
 		// $$$ hugh - modified this so you can enable QS filters on RSS links
 		// by setting &incfilters=1
@@ -70,21 +65,19 @@ class FabrikViewList extends FabrikViewListBase
 			return '';
 		}
 
-		$formModel = $model->getFormModel();
-		$form = $formModel->getForm();
+		$formModel       = $model->getFormModel();
 		$aJoinsToThisKey = $model->getJoinsToThisKey();
 
 		// Get headings
 		$aTableHeadings = array();
-		$groupModels = $formModel->getGroupsHierarchy();
-		$titleEl = $params->get('feed_title');
-		$dateEl = (int) $params->get('feed_date');
+		$groupModels    = $formModel->getGroupsHierarchy();
+		$titleEl        = $params->get('feed_title');
+		$dateEl         = (int) $params->get('feed_date');
 
-		//$imageEl = $formModel->getElement($imageEl, true);
 		$titleEl = $formModel->getElement($titleEl, true);
-		$dateEl = $formModel->getElement($dateEl, true);
-		$title = $titleEl === false ? '' : $titleEl->getFullName(true, false);
-		$date = $dateEl === false ? '' : $dateEl->getFullName(true, false);
+		$dateEl  = $formModel->getElement($dateEl, true);
+		$title   = $titleEl === false ? '' : $titleEl->getFullName(true, false);
+		$date    = $dateEl === false ? '' : $dateEl->getFullName(true, false);
 		$dateRaw = $date . '_raw';
 
 		foreach ($groupModels as $groupModel)
@@ -93,7 +86,7 @@ class FabrikViewList extends FabrikViewListBase
 
 			foreach ($elementModels as $elementModel)
 			{
-				$element = $elementModel->getElement();
+				$element  = $elementModel->getElement();
 				$elParams = $elementModel->getParams();
 
 				if ($elParams->get('show_in_rss_feed') == '1')
@@ -127,7 +120,7 @@ class FabrikViewList extends FabrikViewListBase
 
 		foreach ($aJoinsToThisKey as $element)
 		{
-			$element = $elementModel->getElement();
+			$element  = $elementModel->getElement();
 			$elParams = $elementModel->getParams();
 
 			if ($elParams->get('show_in_rss_feed') == '1')
@@ -158,30 +151,30 @@ class FabrikViewList extends FabrikViewListBase
 			}
 		}
 
-		$w = new Worker;
+		$w    = new Worker;
 		$rows = $model->getData();
 
-		$document->title = htmlentities($w->parseMessageForPlaceHolder($table->label, $_REQUEST), ENT_COMPAT, 'UTF-8');
-		$document->description = htmlspecialchars(trim(strip_tags($w->parseMessageForPlaceHolder($table->introduction, $_REQUEST))));
-		$document->link = JRoute::_('index.php?option=com_' . $package . '&view=list&listid=' . $table->id . '&Itemid=' . $Itemid);
+		$document->title       = htmlentities($w->parseMessageForPlaceHolder($table->get('list.label')), ENT_COMPAT, 'UTF-8');
+		$document->description = htmlspecialchars(trim(strip_tags($w->parseMessageForPlaceHolder($table->get('list.introduction')))));
+		$document->link        = JRoute::_('index.php?option=com_' . $package . '&view=list&listid=' . $table->get('id') . '&Itemid=' . $itemId);
 
 		$this->addImage($document, $params);
 
 		// Check for a custom css file and include it if it exists
-		$tmpl = $input->get('layout', $table->template);
-		$csspath = COM_FABRIK_FRONTEND . 'views/list/tmpl/' . $tmpl . '/feed.css';
+		$template = $input->get('layout', $table->get('list.template'));
+		$cssPath  = COM_FABRIK_FRONTEND . 'views/list/tmpl/' . $template . '/feed.css';
 
-		if (file_exists($csspath))
+		if (file_exists($cssPath))
 		{
-			$document->addStyleSheet(COM_FABRIK_LIVESITE . 'components/com_fabrik/views/list/tmpl/' . $tmpl . '/feed.css');
+			$document->addStyleSheet(COM_FABRIK_LIVESITE . 'components/com_fabrik/views/list/tmpl/' . $template . '/feed.css');
 		}
 
 		$view = $model->canEdit() ? 'form' : 'details';
 
 		// List of tags to look for in the row data
 		// If they are there don't put them in the desc but put them in as a separate item param
-		$rsstags = array(
-				'<georss:point>' => 'xmlns:georss="http://www.georss.org/georss"'
+		$rssTags = array(
+			'<georss:point>' => 'xmlns:georss="http://www.georss.org/georss"'
 		);
 
 		foreach ($rows as $group)
@@ -189,19 +182,19 @@ class FabrikViewList extends FabrikViewListBase
 			foreach ($group as $row)
 			{
 				// Get the content
-				$str2 = '';
-				$str = '';
-				$tstart = '<table style="margin-top:10px;padding-top:10px;">';
-				$title = '';
-				$item = new JFabrikFeedItem;
+				$str2       = '';
+				$str        = '';
+				$tstart     = '<table style="margin-top:10px;padding-top:10px;">';
+				$title      = '';
+				$item       = new JFabrikFeedItem;
 				$enclosures = array();
 
-				foreach ($aTableHeadings as $heading => $dbcolname)
+				foreach ($aTableHeadings as $heading => $dbColName)
 				{
-					if ($dbcolname['enclosure'])
+					if ($dbColName['enclosure'])
 					{
 						// $$$ hugh - diddling around trying to add enclosures
-						$colName = $dbcolname['colName'] . '_raw';
+						$colName       = $dbColName['colName'] . '_raw';
 						$enclosure_url = $row->$colName;
 
 						if (!empty($enclosure_url))
@@ -212,7 +205,7 @@ class FabrikViewList extends FabrikViewListBase
 							if (strstr($enclosure_url, 'http://') && !strstr($enclosure_url, COM_FABRIK_LIVESITE))
 							{
 								$enclosure_file = $enclosure_url;
-								$remote_file = true;
+								$remote_file    = true;
 							}
 							elseif (strstr($enclosure_url, COM_FABRIK_LIVESITE))
 							{
@@ -221,25 +214,23 @@ class FabrikViewList extends FabrikViewListBase
 							elseif (preg_match('#^' . COM_FABRIK_BASE . "#", $enclosure_url))
 							{
 								$enclosure_file = $enclosure_url;
-								$enclosure_url = str_replace(COM_FABRIK_BASE, '', $enclosure_url);
+								$enclosure_url  = str_replace(COM_FABRIK_BASE, '', $enclosure_url);
 							}
 							else
 							{
 								$enclosure_file = COM_FABRIK_BASE . $enclosure_url;
-								$enclosure_url = COM_FABRIK_LIVESITE . str_replace('\\', '/', $enclosure_url);
+								$enclosure_url  = COM_FABRIK_LIVESITE . str_replace('\\', '/', $enclosure_url);
 							}
 
 							if ($remote_file || (file_exists($enclosure_file) && !is_dir($enclosure_file)))
 							{
-								$enclosure_type = '';
-
 								if ($enclosure_type = Worker::getPodcastMimeType($enclosure_file))
 								{
 									$enclosure_size = $this->get_filesize($enclosure_file, $remote_file);
-									$enclosures[] = array(
-											'url' => $enclosure_url,
-											'length' => $enclosure_size,
-											'type' => $enclosure_type
+									$enclosures[]   = array(
+										'url' => $enclosure_url,
+										'length' => $enclosure_size,
+										'type' => $enclosure_type
 									);
 									/**
 									 * No need to insert the URL in the description, as feed readers should
@@ -254,23 +245,23 @@ class FabrikViewList extends FabrikViewListBase
 					if ($title == '')
 					{
 						// Set a default title
-						$title = $row->$dbcolname['colName'];
+						$title = $row->$dbColName['colName'];
 					}
 
 					// Rob - was stripping tags - but aren't they valid in the content?
-					$rsscontent = $row->$dbcolname['colName'];
-					$found = false;
+					$rssContent = $row->$dbColName['colName'];
+					$found      = false;
 
-					foreach ($rsstags as $rsstag => $namespace)
+					foreach ($rssTags as $rssTag => $namespace)
 					{
-						if (strstr($rsscontent, $rsstag))
+						if (strstr($rssContent, $rssTag))
 						{
-							$found = true;
-							$rsstag = String::substr($rsstag, 1, String::strlen($rsstag) - 2);
+							$found  = true;
+							$rssTag = String::substr($rssTag, 1, String::strlen($rssTag) - 2);
 
 							if (!strstr($document->_namespace, $namespace))
 							{
-								$document->_itemTags[] = $rsstag;
+								$document->_itemTags[] = $rssTag;
 								$document->_namespace .= $namespace . " ";
 							}
 
@@ -280,17 +271,17 @@ class FabrikViewList extends FabrikViewListBase
 
 					if ($found)
 					{
-						$item->{$rsstag} = $rsscontent;
+						$item->{$rssTag} = $rssContent;
 					}
 					else
 					{
-						if ($dbcolname['label'] == '')
+						if ($dbColName['label'] == '')
 						{
-							$str2 .= $rsscontent . "<br />\n";
+							$str2 .= $rssContent . "<br />\n";
 						}
 						else
 						{
-							$str .= "<tr><td>" . $dbcolname['label'] . ":</td><td>" . $rsscontent . "</td></tr>\n";
+							$str .= "<tr><td>" . $dbColName['label'] . ":</td><td>" . $rssContent . "</td></tr>\n";
 						}
 					}
 				}
@@ -300,8 +291,7 @@ class FabrikViewList extends FabrikViewListBase
 					$title = $row->$title;
 				}
 
-
-				if (ArrayHelper::getValue($dbcolname, 'label') != '')
+				if (ArrayHelper::getValue($dbColName, 'label') != '')
 				{
 					$str = $tstart . $str . "</table>";
 				}
@@ -311,11 +301,11 @@ class FabrikViewList extends FabrikViewListBase
 				}
 
 				// Url link to article
-				$link = JRoute::_('index.php?option=com_' . $package . '&view=' . $view . '&listid=' . $table->id . '&formid=' . $form->id
+				$link = JRoute::_('index.php?option=com_' . $package . '&view=' . $view . '&listid=' . $table->get('id')
 					. '&rowid=' . $row->slug
-					);
-				$guid = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&view=' . $view . '&listid=' . $table->id . '&formid='
-					. $form->id . '&rowid=' . $row->slug;
+				);
+				$guid = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&view=' . $view . '&listid=' . $table->get('id')
+					. '&rowid=' . $row->slug;
 
 				// Strip html from feed item description text
 				$author = @$row->created_by_alias ? @$row->created_by_alias : @$row->author;
@@ -327,9 +317,9 @@ class FabrikViewList extends FabrikViewListBase
 
 				// Load individual item creator class
 
-				$item->title = $title;
-				$item->link = $link;
-				$item->guid = $guid;
+				$item->title       = $title;
+				$item->link        = $link;
+				$item->guid        = $guid;
 				$item->description = $str;
 
 				// $$$ hugh - not quite sure where we were expecting $row->category to come from.  Comment out for now.
@@ -349,8 +339,8 @@ class FabrikViewList extends FabrikViewListBase
 	/**
 	 * Add <image> to document
 	 *
-	 * @param   object  $document  JDocument
-	 * @param   object  $params    JRegistry list parameters
+	 * @param   object $document JDocument
+	 * @param   object $params   JRegistry list parameters
 	 *
 	 * @return  document
 	 */
@@ -360,14 +350,14 @@ class FabrikViewList extends FabrikViewListBase
 
 		if ($imageSrc !== '')
 		{
-			$image = new stdClass;
-			$image->url = $imageSrc;
-			$image->title = $document->title;
-			$image->link = $document->link;
-			$image->width = '';
-			$image->height = '';
+			$image              = new stdClass;
+			$image->url         = $imageSrc;
+			$image->title       = $document->title;
+			$image->link        = $document->link;
+			$image->width       = '';
+			$image->height      = '';
 			$image->description = '';
-			$document->image = $image;
+			$document->image    = $image;
 		}
 
 		return $document;
@@ -376,8 +366,8 @@ class FabrikViewList extends FabrikViewListBase
 	/**
 	 * Get file size
 	 *
-	 * @param   string  $path    File path
-	 * @param   bool    $remote  Remote file, if true attempt to load file via Curl
+	 * @param   string $path   File path
+	 * @param   bool   $remote Remote file, if true attempt to load file via Curl
 	 *
 	 * @return mixed|number
 	 */

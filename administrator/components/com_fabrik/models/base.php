@@ -703,7 +703,7 @@ class Base extends \JModelBase
 	 *
 	 * @return  mixed  ok: element model not ok: false
 	 */
-	public function getElement($searchName, $checkInt = false, $checkShort = true)
+	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
 	{
 		$groups = $this->getFormModel()->getGroupsHierarchy();
 
