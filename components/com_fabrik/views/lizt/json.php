@@ -6,10 +6,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
 /**
  * List JSON view class
@@ -18,22 +18,19 @@ require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
  * @subpackage  Fabrik
  * @since       3.1
  */
-class FabrikViewlist extends FabrikViewListBase
+class JSON extends Base
 {
 	/**
 	 * Display a json object representing the table data.
 	 * Not used for updating fabrik list, use raw view for that, here in case you want to export the data to another application
 	 *
-	 * @param   string  $tpl  Template
-	 *
 	 * @return  void
 	 */
-
-	public function display($tpl = null)
+	public function render()
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$model = $this->getModel();
-		$model->setId($app->input->getInt('listid'));
+		$model->setId($app->input->getString('listid'));
 
 		if (!parent::access($model))
 		{

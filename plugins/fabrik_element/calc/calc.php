@@ -721,7 +721,7 @@ class PlgFabrik_ElementCalc extends Element
 	{
 		$input = $this->app->input;
 		$ids = $input->get('rows', array(), 'array');
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$elId = $input->getInt('element_id');
 		$this->setId($elId);
 		$this->loadMeForAjax();

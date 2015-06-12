@@ -365,7 +365,7 @@ class PlgFabrik_ElementRating extends Element
 	{
 		$input = $this->app->input;
 		$params = $this->getParams();
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$formid = $input->getInt('formid');
 		$row_id = $input->get('rowid', '', 'string');
 

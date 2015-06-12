@@ -67,7 +67,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 	{
 		$input     = $this->app->input;
 		$listModel = $this->getModel('list', 'FabrikFEModel');
-		$listModel->setId($input->getInt('listid'));
+		$listModel->setId($input->getString('listid'));
 		$rowId = $input->get('rowid', '', 'string');
 		$key   = $input->get('element');
 		$key   = array_pop(explode('___', $key));

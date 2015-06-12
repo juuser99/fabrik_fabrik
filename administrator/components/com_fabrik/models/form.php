@@ -4943,7 +4943,7 @@ class Form extends View implements ModelFormFormInterface
 			if (array_key_exists('apply', $this->formData))
 			{
 				$url = 'index.php?option=com_' . $package . '&view=form&formid=' . $input->getInt('formid') . '&rowid=' . $input->getString('rowid', '', 'string')
-					. '&listid=' . $input->getInt('listid');
+					. '&listid=' . $input->getString('listid');
 			}
 			else
 			{
@@ -4969,7 +4969,7 @@ class Form extends View implements ModelFormFormInterface
 					else
 					{
 						// No menu link so redirect back to list view
-						$url = 'index.php?option=com_' . $package . '&view=list&listid=' . $input->getInt('listid');
+						$url = 'index.php?option=com_' . $package . '&view=list&listid=' . $input->getString('listid');
 					}
 				}
 			}

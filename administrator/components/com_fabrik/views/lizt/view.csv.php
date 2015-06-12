@@ -36,7 +36,7 @@ class FabrikAdminViewList extends JViewLegacy
 
 		$exporter = new \Fabrik\Admin\Models\CsvExport;
 		$model = new \Fabrik\Admin\Models\Lizt;
-		$model->setId($input->getInt('listid'));
+		$model->setId($input->getString('listid'));
 		$model->setOutPutFormat('csv');
 		$exporter->model =& $model;
 		$input->set('limitstart' . $model->getId(), $input->getInt('start', 0));

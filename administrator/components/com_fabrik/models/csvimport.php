@@ -461,7 +461,7 @@ class CsvImport extends Base
 		if (!isset($this->listModel))
 		{
 			$this->listModel = new \Fabrik\Admin\Models\Lizt;
-			$this->listModel->setId($app->input->getInt('listid'));
+			$this->listModel->setId($app->input->getString('listid'));
 		}
 
 		return $this->listModel;
@@ -1169,7 +1169,7 @@ class CsvImport extends Base
 		}
 
 		// $$$ rob 13/03/2012 - reimporting into existing list - should return true
-		if ($input->getInt('listid') !== 0)
+		if ($input->getString('listid') !== '')
 		{
 			return true;
 		}

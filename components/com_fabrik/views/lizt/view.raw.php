@@ -39,7 +39,7 @@ class FabrikViewList extends FabrikViewListBase
 		$input = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$model = $this->getModel();
-		$model->setId($input->getInt('listid'));
+		$model->setId($input->getString('listid'));
 
 		if (!parent::access($model))
 		{

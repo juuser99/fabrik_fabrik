@@ -151,10 +151,10 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 
 		foreach ($ids as $key => $listId)
 		{
-			if ($listId == $input->getInt('listid'))
+			if ($listId == $input->getString('listid'))
 			{
 				$listModel = new \Fabrik\Admin\Models\Lizt;
-				$listModel->setId($input->getInt('listid'));
+				$listModel->setId($input->getString('listid'));
 				$item = $listModel->getTable();
 				$db = $listModel->getDbo();
 				$query = $db->getQuery(true);

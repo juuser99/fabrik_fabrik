@@ -186,7 +186,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
 		$model = new \Fabrik\Admin\Models\Lizt;
-		$id = $this->input->getInt('listid');
+		$id = $this->input->getString('listid');
 		$model->setId($id);
 		$this->input->set('cid', $id);
 		$model->setOrderByAndDir();
@@ -239,7 +239,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
 		$model = new \Fabrik\Admin\Models\Lizt;
-		$listId = $this->input->getInt('listid');
+		$listId = $this->input->getString('listid');
 		$model->setId($listId);
 		$ids = $this->input->get('ids', array(), 'array');
 		$limitstart = $this->input->getInt('limitstart' . $listId);
@@ -286,7 +286,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	{
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$model->truncate();
-		$listId = $this->input->getInt('listid');
+		$listId = $this->input->getString('listid');
 		$ref = $this->input->get('fabrik_referrer', 'index.php?option=com_fabrik&view=list&cid=' . $listId, 'string');
 		$this->setRedirect($ref);
 	}

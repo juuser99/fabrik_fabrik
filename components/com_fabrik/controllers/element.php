@@ -79,7 +79,7 @@ class FabrikControllerElement extends FabrikController
 	public function save()
 	{
 		$listModel = $this->getModel('list', 'FabrikFEModel');
-		$listModel->setId($this->input->getInt('listid'));
+		$listModel->setId($this->input->getString('listid'));
 		$rowId = $this->input->get('rowid');
 		$key   = $this->input->get('element');
 		$key   = array_pop(explode('___', $key));

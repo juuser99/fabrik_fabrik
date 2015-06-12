@@ -317,7 +317,7 @@ class FabrikControllerDetails extends FabrikController
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $this->input;
 		$formId = $input->getInt('formid');
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$rowId = $input->getString('rowid');
 
 		if (is_null($msg))
@@ -455,7 +455,7 @@ class FabrikControllerDetails extends FabrikController
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$ids = array($this->input->get('rowid', 0, 'string'));
 
-		$listId = $this->input->getInt('listid');
+		$listId = $this->input->getString('listid');
 		$limitstart = $this->input->getInt('limitstart' . $listId);
 		$length = $this->input->getInt('limit' . $listId);
 

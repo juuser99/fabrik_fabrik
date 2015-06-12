@@ -242,7 +242,7 @@ class PlgFabrik_ElementFblike extends Element
 	{
 		$input = $this->app->input;
 		$this->loadMeForAjax();
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$list = new \Fabrik\Admin\Models\Lizt;
 		$list->setId($listId);
 		$rowId = $input->get('row_id');

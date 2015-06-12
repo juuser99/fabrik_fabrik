@@ -107,7 +107,7 @@ class Lizt extends Controller
 		$input     = $this->input;
 		$modelName = $input->get('view', 'list');
 		$model     = $this->getModel($modelName, 'FabrikFEModel');
-		$model->setId($input->getInt('listid'));
+		$model->setId($input->getString('listid'));
 		$model->setOrderByAndDir();
 
 		// $$$ hugh - unset 'resetfilters' in case it was set on QS of original list load.
@@ -150,7 +150,7 @@ class Lizt extends Controller
 	{
 		$modelName = $this->input->get('view', 'list');
 		$model     = $this->getModel($modelName, 'FabrikFEModel');
-		$model->setId($this->input->getInt('listid'));
+		$model->setId($this->input->getString('listid'));
 		FabrikHelperHTML::debug('', 'list model: getRequestData');
 		$request = $model->getRequestData();
 		$model->storeRequestData($request);
@@ -173,7 +173,7 @@ class Lizt extends Controller
 		$input      = $this->input;
 		$model      = new \Fabrik\Admin\Models\Lizt;
 		$ids        = $input->get('ids', array(), 'array');
-		$listId     = $input->getInt('listid');
+		$listId     = $input->getString('listid');
 		$limitStart = $input->getInt('limitstart' . $listId);
 		$length     = $input->getInt('limit' . $listId);
 

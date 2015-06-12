@@ -78,7 +78,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		JSession::checkToken() or die('Invalid Token');
 		$input  = $this->app->input;
 		$model  = new \Fabrik\Admin\Models\Lizt;
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$model->setId($listId);
 		$ids        = $input->get('ids', array(), 'array');
 		$limitStart = $input->getInt('limitstart' . $listId);
@@ -184,7 +184,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		JSession::checkToken() or die('Invalid Token');
 		$input = $this->app->input;
 		$model = new \Fabrik\Admin\Models\Lizt;
-		$id    = $input->getInt('listid');
+		$id    = $input->getString('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
 		$model->setOrderByAndDir();
@@ -217,7 +217,7 @@ class FabrikAdminControllerList extends FabControllerForm
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
 		$model = new \Fabrik\Admin\Models\Lizt;
-		$id    = $this->app->input->getInt('listid');
+		$id    = $this->app->input->getString('listid');
 		$model->setId($id);
 		$this->app->input->set('cid', $id);
 		$request = $model->getRequestData();

@@ -652,7 +652,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$id = $input->getInt('id');
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($listId);
 		$list = $listModel->getTable();

@@ -551,7 +551,7 @@ class FabrikControllerForm extends FabrikController
 		$model   = $this->getModel('list', 'FabrikFEModel');
 		$ids     = array($input->get('rowid', 0));
 
-		$listId     = $input->getInt('listid');
+		$listId     = $input->getString('listid');
 		$limitstart = $input->getInt('limitstart' . $listId);
 		$length     = $input->getInt('limit' . $listId);
 

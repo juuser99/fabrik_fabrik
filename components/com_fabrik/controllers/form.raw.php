@@ -227,7 +227,7 @@ class FabrikControllerForm extends FabrikController
 		$input = $this->input;
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$formId = $input->getInt('formid');
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$rowId = $input->getString('rowid', '', 'string');
 
 		if (is_null($msg))

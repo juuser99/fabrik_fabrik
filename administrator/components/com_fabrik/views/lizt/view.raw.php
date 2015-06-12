@@ -34,7 +34,7 @@ class FabrikAdminViewList extends JViewLegacy
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$model = new \Fabrik\Admin\Models\Lizt;
-		$model->setId($input->getInt('listid'));
+		$model->setId($input->getString('listid'));
 		$this->setModel($model, true);
 		$item = $model->getTable();
 		$params = $model->getParams();

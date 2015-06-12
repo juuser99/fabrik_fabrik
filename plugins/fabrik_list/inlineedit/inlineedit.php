@@ -119,7 +119,7 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$listModel = new \Fabrik\Admin\Models\Lizt;
-		$listModel->setId($input->getInt('listid'));
+		$listModel->setId($input->getString('listid'));
 		$elements = $listModel->getElements('safecolname');
 		$pels = FabrikString::stripSpace($params->get('inline_editable_elements', ''));
 

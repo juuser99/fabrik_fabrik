@@ -42,7 +42,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 		$user = JFactory::getUser();
 		$c = 0;
 		$listModel = $this->getModel('List', 'FabrikFEModel');
-		$listModel->setId($this->input->getInt('listid'));
+		$listModel->setId($this->input->getString('listid'));
 		$item = $listModel->getTable();
 		$adminListModel = $this->getModel('List', 'FabrikAdminModel');
 		$adminListModel->loadFromFormId($item->form_id);

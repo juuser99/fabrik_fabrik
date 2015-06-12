@@ -308,7 +308,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 
 		if (array_key_exists('apply', $model->formData))
 		{
-			$page = 'index.php?option=com_fabrik&task=form.view&formid=' . $input->getInt('formid') . '&listid=' . $input->getInt('listid')
+			$page = 'index.php?option=com_fabrik&task=form.view&formid=' . $input->getInt('formid') . '&listid=' . $input->getString('listid')
 				. '&rowid=' . $input->getString('rowid', '', 'string');
 		}
 		else

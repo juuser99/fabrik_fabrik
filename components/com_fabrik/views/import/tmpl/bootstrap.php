@@ -16,7 +16,7 @@ JHtml::_('behavior.tooltip');
 FabrikHelperHTML::formvalidation();
 $action = JRoute::_('index.php?option=com_fabrik');
 $app = JFactory::getApplication();
-$listId = $app->input->getInt('listid');
+$listId = $app->input->getString('listid');
 ?>
 <form enctype="multipart/form-data" action="<?php echo $action ?>" method="post" name="adminForm" id="fabrik-form" class="form-validate">
 	<input type="hidden" name="listid" value="<?php echo $listId; ?>" />

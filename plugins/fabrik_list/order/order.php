@@ -110,7 +110,7 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 		$model = new \Fabrik\Admin\Models\Lizt;
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$model->setId($input->getInt('listid'));
+		$model->setId($input->getString('listid'));
 		$db = $model->getDb();
 		$direction = $input->get('direction');
 

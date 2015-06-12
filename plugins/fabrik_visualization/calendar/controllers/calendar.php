@@ -113,7 +113,7 @@ class FabrikControllerVisualizationcalendar extends FabrikControllerVisualizatio
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$listId = $input->getInt('listid');
+		$listId = $input->getString('listid');
 		$viewName = 'calendar';
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel($viewName);
