@@ -7,31 +7,33 @@
  * @since       3.0.5
  */
 
+namespace Fabrik\Views\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
-require_once COM_FABRIK_FRONTEND . '/views/list/view.base.php';
+use \JFolder;
+use \stdClass;
+use \JUri;
 
 /**
  * PDF List view
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.5
+ * @since       3.5
  */
-
-class FabrikViewList extends FabrikViewListBase
+class PDF extends Base
 {
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  Template
+	 * @throws RuntimeException
 	 *
 	 * @return  void
 	 */
 
-	public function display($tpl = null)
+	public function render()
 	{
 		if (!JFolder::exists(COM_FABRIK_BASE . '/libraries/dompdf'))
 		{
@@ -40,9 +42,9 @@ class FabrikViewList extends FabrikViewListBase
 			return;
 		}
 
-		if (parent::display($tpl) !== false)
+		if (parent::render() !== false)
 		{
-			$document = JFactory::getDocument();
+			$document = $this->doc;
 			$model = $this->getModel();
 			$params = $model->getParams();
 			$size = $params->get('pdf_size', 'A4');
@@ -86,7 +88,6 @@ class FabrikViewList extends FabrikViewListBase
 		parent::setTitle($w, $params, $model);
 
 		// Set the download file name based on the document title
-		$document = JFactory::getDocument();
-		$document->setName($document->getTitle());
+		$this->doc->setName($this->doc->getTitle());
 	}
 }

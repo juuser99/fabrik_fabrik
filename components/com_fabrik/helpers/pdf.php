@@ -15,6 +15,13 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.filesystem.file');
 
+use \JFactory;
+use \JFile;
+use \SimpleXMLElement;
+use \JUri;
+use \JComponentHelper;
+use \Exception;
+
 /**
  * PDF Set up helper
  *
@@ -32,9 +39,6 @@ class PDFHelper
 
 	public static function iniDomPdf()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-
 		$file = JPATH_LIBRARIES . '/dompdf/dompdf_config.inc.php';
 
 		if (!JFile::exists($file))
@@ -85,9 +89,9 @@ class PDFHelper
 			{
 				$uri = JUri::getInstance();
 				$base = $uri->getScheme() . '://' . $uri->getHost();
-				$imgs = $ok->xpath('//img');
+				$images = $ok->xpath('//img');
 
-				foreach ($imgs as &$img)
+				foreach ($images as &$img)
 				{
 					if (!strstr($img['src'], $base))
 					{
