@@ -16,8 +16,6 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use \Fabrik\Admin\Models\FormInlineEdit;
 use \JFactory;
-use \JRoute;
-
 
 /**
  * Fabrik From Controller
@@ -115,7 +113,6 @@ class Form extends Controller
 
 		// Render the form itself
 		$model = new \Fabrik\Admin\Models\Form;
-		echo "model set id $formId <br>";
 		$model->setId($formId);
 
 		$paths = new \SplPriorityQueue;

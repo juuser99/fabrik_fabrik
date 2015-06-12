@@ -148,7 +148,7 @@ class Connections extends Base implements ConnectionsInterface
 	/**
 	 * Get the JDatabase for the current connection.
 	 *
-	 * @return mixed
+	 * @return JDatabaseDriver
 	 * @throws RuntimeException
 	 */
 	public function getDb()

@@ -434,7 +434,7 @@ class PlgFabrik_ElementFileupload extends Element
 		$opts->winWidth = (int) $params->get('win_width', 400);
 		$opts->winHeight = (int) $params->get('win_height', 400);
 		$opts->elementShortName = $element->name;
-		$opts->listName = $this->getListModel()->getTable()->db_table_name;
+		$opts->listName = $this->getListModel()->getTable()->get('list.db_table_name');
 		$opts->useWIP = (bool) $params->get('upload_use_wip', '0') == '1';
 		$opts->page_url = COM_FABRIK_LIVESITE;
 
@@ -2938,7 +2938,7 @@ class PlgFabrik_ElementFileupload extends Element
 		{
 			JError::setErrorHandling(E_ALL, 'ignore');
 			$listModel = $this->getListModel();
-			$pk = $listModel->getTable()->db_primary_key;
+			$pk = $listModel->getTable()->get('list.db_primary_key');
 			$fabrikDb = $listModel->getDb();
 			list($table_name, $element_name) = explode('.', $hit_counter);
 			$sql = "UPDATE $table_name SET $element_name = COALESCE($element_name,0) + 1 WHERE $pk = " . $fabrikDb->q($rowId);

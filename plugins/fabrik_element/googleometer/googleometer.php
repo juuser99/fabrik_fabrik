@@ -102,7 +102,7 @@ class PlgFabrik_ElementGoogleometer extends Element
 		$name = $db->qn($element->getElement()->get('name'));
 		$query = $db->getQuery(true);
 		$query->select('MIN(' . $name . ') AS min, MAX(' . $name . ') AS max')
-		->from($listModel->getTable()->db_table_name);
+		->from($listModel->getTable()->get('list.db_table_name'));
 		$db->setQuery($query);
 		$range = $db->loadObject();
 

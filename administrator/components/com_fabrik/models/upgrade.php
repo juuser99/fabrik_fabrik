@@ -73,7 +73,7 @@ class FabrikModelUpgrade extends FabModelAdmin
 			}
 
 			$listModel->set('connection', $connModel);
-			$qTable = $cDb->quoteName('bkup_' . $item->db_table_name);
+			$qTable = $cDb->qn('bkup_' . $item->db_table_name);
 			$qItemTable = $cDb->quoteName($item->db_table_name);
 
 			// Drop the bkup table

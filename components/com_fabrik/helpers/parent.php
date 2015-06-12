@@ -1544,7 +1544,7 @@ class Worker
 	 *
 	 * @since 3.0b
 	 *
-	 * @return object  connection
+	 * @return \Fabrik\Admin\Models\Connection  connection
 	 */
 
 	public static function getConnection($item = null)

@@ -238,7 +238,7 @@ class PlgFabrik_ElementTime extends Element
 	/**
 	 * Get sum query
 	 *
-	 * @param   object  &$listModel  List model
+	 * @param   \Fabrik\Admin\Models\Lizt  &$listModel  List model
 	 * @param   array   $labels      Label
 	 *
 	 * @return string
@@ -255,13 +255,13 @@ class PlgFabrik_ElementTime extends Element
 
 		return 'SELECT SUM(substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60
 			+ substr(' . $name . ' FROM 7 FOR 2))  AS value, ' . $label . ' FROM '
-				. $db->quoteName($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
+				. $db->qn($table->get('list.db_table_name')) . ' ' . $joinSQL . ' ' . $whereSQL;
 	}
 
 	/**
 	 * Build the query for the avg calculation
 	 *
-	 * @param   model  &$listModel  list model
+	 * @param   \Fabrik\Admin\Models\Lizt  &$listModel  list model
 	 * @param   array  $labels      Labels
 	 *
 	 * @return  string	sql statement
@@ -280,7 +280,7 @@ class PlgFabrik_ElementTime extends Element
 		$valueSelect = 'substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60 + substr(' . $name . ' FROM 7 FOR 2)';
 
 		// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-		return "SELECT ROUND(AVG($valueSelect), $roundTo) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+		return "SELECT ROUND(AVG($valueSelect), $roundTo) AS value, $label FROM " . FabrikString::safeColName($item->get('list.db_table_name'))
 		. " $joinSQL $whereSQL";
 	}
 

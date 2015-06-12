@@ -64,7 +64,7 @@ class PlgFabrik_FormClone extends PlgFabrik_Form
 				$formModel->formData[$id_element->name . '_raw'] = $formModel->fullFormData['rowid'];
 				$listModel = $formModel->getlistModel();
 				$listModel->setFormModel($formModel);
-				$primaryKey = FabrikString::shortColName($listModel->getTable()->db_primary_key);
+				$primaryKey = FabrikString::shortColName($listModel->getTable()->get('list.db_primary_key'));
 				$formModel->formData[$primaryKey] = $formModel->fullFormData['rowid'];
 				$formModel->formData[$primaryKey . '_raw'] = $formModel->fullFormData['rowid'];
 				$listModel->storeRow($formModel->formData, $formModel->fullFormData['rowid']);

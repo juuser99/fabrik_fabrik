@@ -444,7 +444,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 			}
 			else
 			{
-				$pk = $listModel->getTable()->db_primary_key;
+				$pk = $listModel->getTable()->get('list.db_primary_key');
 			}
 	
 			$shortPk = FabrikString::shortColName($pk);

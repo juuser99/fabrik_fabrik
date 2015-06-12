@@ -147,19 +147,6 @@ class Element extends Base implements ModelElementFormInterface
 	{
 		$items = $this->element->get('jsevents', array());
 
-		/*$db = Worker::getDbo(true);
-		$query = $db->getQuery(true);
-		$id = (int) $this->getItem()->id;
-		$query->select('*')->from('#__fabrik_jsactions')->where('element_id = ' . $id)->order('id');
-		$db->setQuery($query);
-		$items = $db->loadObjectList();
-
-		for ($i = 0; $i < count($items); $i++)
-		{
-			$items[$i]->params = json_decode($items[$i]->params);
-			$items[$i]->params->js_e_value = htmlspecialchars_decode($items[$i]->params->js_e_value);
-		}*/
-
 		return $items;
 	}
 
@@ -669,11 +656,11 @@ class Element extends Base implements ModelElementFormInterface
 
 		if ($tmpgroupModel->isJoin())
 		{
-			$dbname = $tmpgroupModel->getJoinModel()->getJoin()->table_join;
+			$tableName = $tmpgroupModel->getJoinModel()->getJoin()->table_join;
 		}
 		else
 		{
-			$dbname = $list->db_table_name;
+			$tableName = $list->get('list.db_table_name');
 		}
 
 		$query = $db->getQuery(true);
@@ -684,7 +671,7 @@ class Element extends Base implements ModelElementFormInterface
 		$query->join('INNER', '#__fabrik_forms AS f ON l.form_id = f.id');
 		$query->join('LEFT', '#__fabrik_formgroup AS fg ON f.id = fg.form_id');
 		$query->join('LEFT', '#__fabrik_groups AS g ON fg.group_id = g.id');
-		$query->where("db_table_name = " . $db->q($dbname) . " AND l.id !=" . (int) $list->id . " AND is_join = 0");
+		$query->where("db_table_name = " . $db->q($tableName) . " AND l.id !=" . (int) $list->id . " AND is_join = 0");
 
 		$db->setQuery($query);
 		$otherTables = $db->loadObjectList('id');
@@ -699,7 +686,7 @@ class Element extends Base implements ModelElementFormInterface
 		$query->select('DISTINCT(l.id) AS id, l.db_table_name, l.label, l.form_id, l.label AS form_label, fg.group_id AS group_id')
 			->from('#__fabrik_joins AS j')->join('LEFT', '#__fabrik_formgroup AS fg ON fg.group_id = j.group_id')
 			->join('LEFT', '#__fabrik_forms AS f ON fg.form_id = f.id')->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id')
-			->where('j.table_join = ' . $db->q($dbname) . ' AND j.list_id <> 0 AND j.element_id = 0 AND list_id <> ' . (int) $list->id);
+			->where('j.table_join = ' . $db->q($tableName) . ' AND j.list_id <> 0 AND j.element_id = 0 AND list_id <> ' . (int) $list->id);
 		$db->setQuery($query);
 		$joinedLists = $db->loadObjectList('id');
 		$otherTables = array_merge($joinedLists, $otherTables);
@@ -989,7 +976,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 		else
 		{
-			$joinFromTable = $listModel->getTable()->db_table_name;
+			$joinFromTable = $listModel->getTable()->get('list.db_table_name');
 		}
 
 		$data = array('list_id' => $listModel->getTable()->id, 'element_id' => $row->id, 'join_from_table' => $joinFromTable,
@@ -1049,7 +1036,7 @@ class Element extends Base implements ModelElementFormInterface
 		}
 		else
 		{
-			$origTableName = $listModel->getTable()->db_table_name;
+			$origTableName = $listModel->getTable()->get('list.db_table_name');
 		}
 
 		return $origTableName . '_repeat_' . str_replace('`', '', $row->get('name'));

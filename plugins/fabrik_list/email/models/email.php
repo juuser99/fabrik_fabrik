@@ -160,7 +160,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 			$tableName  = FabrikString::safeColName($tableName);
 			$tableEmail = FabrikString::safeColName($tableEmail);
-			$emailTableTo_table       = $toDb->qn($toTableModel->getTable()->db_table_name);
+			$emailTableTo_table       = $toDb->qn($toTableModel->getTable()->get('list.db_table_name'));
 
 			$query = $toDb->getQuery(true);
 			$query->select($tableEmail . ' AS email, ' . $tableName . ' AS name')
@@ -291,7 +291,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 		$params      = $this->getParams();
 		$model       = $this->listModel;
-		$pk          = $model->getTable()->db_primary_key;
+		$pk          = $model->getTable()->get('list.db_primary_key');
 		$pk2         = FabrikString::safeColNameToArrayKey($pk) . '_raw';
 		$whereClause = '(' . $pk . ' IN (' . implode(',', $ids) . '))';
 		$cond        = $params->get('emailtable_condition');

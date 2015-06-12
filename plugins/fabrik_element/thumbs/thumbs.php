@@ -527,15 +527,17 @@ class PlgFabrik_ElementThumbs extends Element
 		// Name can be blank for comments
 		if ($name != '')
 		{
+			$pk = $db->qn($this->getlistModel()->getTable()->get('list.db_primary_key'));
+			$tableName = $db->qn($this->getlistModel()->getTable()->get('list.db_table_name'));
 			$db
 				->setQuery(
-					"UPDATE " . $this->getlistModel()->getTable()->db_table_name . "
+					"UPDATE " . $tableName . "
 	                    SET " . $this->getElement()->name . " = ((SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId
 						. " AND formid = " . (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
 						. " AND thumb = 'up') - (SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId . " AND formid = "
 						. (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
 						. " AND thumb = 'down'))
-	                    WHERE " . $this->getlistModel()->getTable()->db_primary_key . " = " . $db->q($rowId) . "
+	                    WHERE " . $pk . " = " . $db->q($rowId) . "
 	                        LIMIT 1");
 
 			try

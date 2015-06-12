@@ -94,7 +94,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 
 			// Grab the table model and find table name and PK
 			$table = $listModel->getTable();
-			$table_name = $table->db_table_name;
+			$table_name = $table->get('list.db_table_name');
 
 			/**
 			 * Reading the raw table ourselves leads to lots of issues, like with joined data,
@@ -348,9 +348,9 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					 */
 					if ($event->$gcal_end_date_element == '0000-00-00 00:00:00')
 					{
-						$startstamp = strtotime($event->$gcal_start_date_element_long);
-						$endstamp = $startstamp + (60 * 60);
-						$event->$gcal_end_date_element_long = strftime('%Y-%m-%d %H:%M:%S', $endstamp);
+						$startStamp = strtotime($event->$gcal_start_date_element_long);
+						$endStamp = $startStamp + (60 * 60);
+						$event->$gcal_end_date_element_long = strftime('%Y-%m-%d %H:%M:%S', $endStamp);
 					}
 
 					// Grab the end date, apply the tx offset, and format it for gcal
@@ -376,7 +376,8 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					$gcal_id = $this->_getGcalShortId($retEvent->id->text);
 					$our_id = $event->__pk_val;
 					$query = $db->getQuery(true);
-					$query->update($table_name)->set($gcal_id_element . ' = ' . $db->q($gcal_id))->where($table->db_primary_key . ' = ' . $db->q($our_id));
+					$pk = $db->qn($table->get('list.db_primary_key'));
+					$query->update($table_name)->set($gcal_id_element . ' = ' . $db->q($gcal_id))->where($pk . ' = ' . $db->q($our_id));
 					$db->setQuery($query);
 					$db->execute();
 				}

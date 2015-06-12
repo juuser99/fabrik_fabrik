@@ -466,7 +466,7 @@ class FabrikFEModelExport
 		header('Content-Disposition: attachment; filename="' . $table->label . '-export.csv"');
 		$aTable = ArrayHelper::fromObject($table);
 		$fabrikDb = &$listModel->getDb();
-		$table = $table->db_table_name;
+		$table = $table->get('list.db_table_name');
 		$sql = "SELECT * FROM $table";
 		$fabrikDb->setQuery($sql);
 		$elementData = $fabrikDb->loadObjectList();

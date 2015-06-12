@@ -250,7 +250,7 @@ class Home extends \JModelBase
 			'email' => array('plugin' => 'field', 'label' => 'Email', 'group_id' => $groupId),
 			'message' => array('plugin' => 'textarea', 'group_id' => $group2Id));
 
-		return $listModel->createDBTable($list->db_table_name, $elements);
+		return $listModel->createDBTable($list->get('list.db_table_name'), $elements);
 	}
 
 	/**
@@ -282,6 +282,7 @@ class Home extends \JModelBase
 	public function dropData()
 	{
 		// FIXME - 3.5 not working
+		throw new \Error('drop data not yet implemented for 3.5');
 		$connModel = new Connection;
 		$connModel->set('id', $item->connection_id);
 		$db = Worker::getDbo(true);

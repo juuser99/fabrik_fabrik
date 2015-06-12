@@ -473,8 +473,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 					}
 				}
 
-				$pk = $listModel->getTable()->db_primary_key;
-				$status = empty($data['status']) ? '""' : $data['status'];
+				$pk = $db->qn($listModel->getTable()->get('list.db_primary_key'));
 				$query = $db->getQuery(true);
 				$query = $listModel->buildQuerySelect('list', $query);
 				$status = trim($data['status']) !== '' ? FabrikString::safeColName($data['status']) : "''";
@@ -598,7 +597,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 			foreach ($record as $data)
 			{
-				$rubbish = $table->db_table_name . '___';
+				$rubbish = $table->get('list.db_table_name') . '___';
 				$colour = FabrikString::ltrimword($data['colour'], $rubbish);
 				$legend = FabrikString::ltrimword($data['legendtext'], $rubbish);
 				$label = (empty($legend)) ? $table->label : $legend;
@@ -663,9 +662,10 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		// FIXME for 3.5
 		$query->select('db_table_name')->from('#__fabrik_lists')->where('id = ' . $listId);
 		$db->setQuery($query);
-		$tablename = $db->loadResult();
+		$tableName = $db->loadResult();
 		$query = $tableDb->getQuery(true);
-		$query->delete(FabrikString::safeColName($tablename))->where($list->db_primary_key . ' = ' . $id);
+		$pk = $db->qn($list->get('list.db_primary_key'));
+		$query->delete(FabrikString::safeColName($tableName))->where($pk . ' = ' . $id);
 		$tableDb->setQuery($query);
 		$tableDb->execute();
 	}

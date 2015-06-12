@@ -410,8 +410,10 @@ class PlgFabrik_ElementRating extends Element
 			$db = $listModel->getDb();
 			$element = $this->getElement();
 			$query = $db->getQuery(true);
-			$query->update($list->db_table_name)
-			->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->q($row_id));
+			$pk = $db->qn($list->get('list.db_primary_key'));
+			$tableName = $db->qn($list->get('list.db_table_name'));
+			$query->update($tableName)
+				->set($element->name . '=' . $rating)->where($pk . ' = ' . $db->q($row_id));
 			$db->setQuery($query);
 			$db->execute();
 		}

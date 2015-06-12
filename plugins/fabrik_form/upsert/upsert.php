@@ -217,7 +217,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($listId);
 
-		return $listModel->getTable()->db_table_name;
+		return $listModel->getTable()->get('list.db_table_name');
 	}
 	
 	/**

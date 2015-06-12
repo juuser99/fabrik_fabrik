@@ -57,7 +57,7 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 		$listModel = $elementModel->getlistModel();
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
-		$lookuptable = $db->quoteName($table->db_table_name);
+		$lookuptable = $db->qn($table->get('list.db_table_name'));
 		$data = $db->q($data);
 		$query = $db->getQuery(true);
 		$cond = $params->get('isuniquevalue-caseinsensitive') == 1 ? 'LIKE' : '=';
@@ -75,13 +75,13 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 		 * true if we use:
 		 * $rowId = $input->get('rowid','');    or
 		 * $rowId = $input->get($pk,'');
-			$pk = FabrikString::safeColNameToArrayKey($table->db_primary_key);
 		 */
 		$rowId = $input->get('rowid', '');
 
 		if (!empty($rowId))
 		{
-			$query->where($table->db_primary_key . ' != ' . $db->q($rowId));
+			$pk = $db->qn($table->get('list.db_primary_key'));
+			$query->where($pk . ' != ' . $db->q($rowId));
 		}
 
 		$db->setQuery($query);

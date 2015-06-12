@@ -57,9 +57,9 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 
 		// Grab the table model and find table name and PK
 		$table = $listModel->getTable();
-		$table_name = $table->db_table_name;
-		$primary_key = $table->db_primary_key;
-		$primary_key_element = FabrikString::shortColName($table->db_primary_key);
+		$tableName = $table->get('list.db_table_name');
+		$primaryKey = $table->get('list.db_primary_key');
+		$primaryKeyElement = FabrikString::shortColName($table->get('list.db_primary_key'));
 
 		$connection = (int) $params->get('connection');
 
@@ -68,12 +68,12 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		 * because it can be arbitrarily filtered according to who happened to hit the page when cron
 		 * needed to run.
 		 */
-		$mydata = array();
+		$myData = array();
 		$db = Worker::getDbo(false, $connection);
 		$query = $db->getQuery(true);
-		$query->select('*')->from($table_name);
+		$query->select('*')->from($tableName);
 		$db->setQuery($query);
-		$mydata[0] = $db->loadObjectList();
+		$myData[0] = $db->loadObjectList();
 
 		// Grab all the params, like GMaps key, field names to use, etc.
 
@@ -103,7 +103,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		$total_encoded = 0;
 		$total_attempts = 0;
 
-		foreach ($mydata as $gkey => $group)
+		foreach ($myData as $gkey => $group)
 		{
 			if (is_array($group))
 			{
@@ -211,8 +211,8 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 								{
 									$map_value = "($lat,$long):$geocode_zoom_level";
 									$query->clear();
-									$query->update($table_name)->set($geocode_map_element . ' = ' . $db->q($map_value))
-									->where($primary_key . ' = ' . $db->q($row->$primary_key_element));
+									$query->update($tableName)->set($geocode_map_element . ' = ' . $db->q($map_value))
+									->where($primaryKey . ' = ' . $db->q($row->$primaryKeyElement));
 									$db->setQuery($query);
 									$db->execute();
 									$total_encoded++;

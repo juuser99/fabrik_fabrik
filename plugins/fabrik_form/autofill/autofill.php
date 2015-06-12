@@ -134,10 +134,13 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 				$fkid = $input->get('autofill_lookup_field', '');
 				$db = $listModel->getDb();
 				$fk = $listModel->getFormModel()->getElement($fkid, true);
-				$elname = $fk->getElement()->name;
+				$elementName = $fk->getElement()->name;
 				$table = $listModel->getTable();
 				$query = $db->getQuery(true);
-				$query->select($table->db_primary_key)->from($table->db_table_name)->where($elname . ' = ' . $db->q($value));
+				$tableName = $db->qn($table->get('list.db_primary_key'));
+				$query->select($tableName)
+					->from($db->qn($table->get('list.db_table_name')))
+					->where($elementName . ' = ' . $db->q($value));
 				$db->setQuery($query);
 				$value = $db->loadResult();
 			}

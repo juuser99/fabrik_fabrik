@@ -594,7 +594,7 @@ class PlgFabrik_ElementCalc extends Element
 			$query = $listModel->buildQueryJoin($query);
 			$query = $listModel->buildQueryWhere(true, $query);
 			$query->select('SEC_TO_TIME(SUM(TIME_TO_SEC(' . $name . '))) AS value, ' . $label)
-				->from($db->qn($table->db_table_name));
+				->from($db->qn($table->get('list.db_table_name')));
 
 			return (string) $query;
 		}
@@ -629,7 +629,7 @@ class PlgFabrik_ElementCalc extends Element
 			$query = $listModel->buildQueryJoin($query);
 			$query = $listModel->buildQueryWhere(true, $query);
 			$query->select('SEC_TO_TIME(AVG(TIME_TO_SEC(' . $name . '))) AS value, ' . $label)
-				->from($db->qn($table->db_table_name));
+				->from($db->qn($table->get('list.db_table_name')));
 
 			return (string) $query;
 		}
@@ -664,7 +664,7 @@ class PlgFabrik_ElementCalc extends Element
 			$query = $listModel->buildQueryJoin($query);
 			$query = $listModel->buildQueryWhere(true, $query);
 			$query->select('SEC_TO_TIME(TIME_TO_SEC(' . $name . ')) AS value, ' . $label)
-				->from($db->qn($table->db_table_name));
+				->from($db->qn($table->get('list.db_table_name')));
 
 			return (string) $query;
 		}

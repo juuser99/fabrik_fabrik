@@ -798,7 +798,7 @@ class PlgFabrik_ElementGooglemap extends Element
 		$dbTable = $db->qn($dbTable);
 		$str = $dbTable . '.' . $db->qn($this->element->name) . ' AS ' . $db->qn($fullElName);
 
-		if ($table->db_primary_key == $fullElName)
+		if ($table->get('list.db_primary_key') == $fullElName)
 		{
 			array_unshift($aFields, $fullElName);
 			array_unshift($aAsFields, $fullElName);

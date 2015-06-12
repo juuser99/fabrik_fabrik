@@ -140,8 +140,10 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 			$field = str_replace('___', '.', $field);
 			$fabrikDb = $listModel->getDb();
 			$query = $fabrikDb->getQuery(true);
-			$query->update($table->db_table_name)->set($field . ' = ' . $fabrikDb->q($value))
-				->where($table->db_primary_key . ' IN (' . implode(',', $updates) . ')');
+			$tbl = $fabrikDb->qn($table->get('list.db_table_name'));
+			$pk = $fabrikDb->qn($table->get('list.db_primary_key'));
+			$query->update($tbl)->set($field . ' = ' . $fabrikDb->q($value))
+				->where($pk . ' IN (' . implode(',', $updates) . ')');
 			$this->log .= "\n update query: $query";
 			$fabrikDb->setQuery($query);
 			$fabrikDb->execute();

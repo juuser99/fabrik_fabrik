@@ -133,10 +133,10 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		{
 			$listModel = $formModel->getlistModel();
 			$fabrikDb = $listModel->getDb();
-			$tableName = $listModel->getTable()->db_table_name;
+			$tableName = $listModel->getTable()->get('list.db_table_name');
 
 			$query = $fabrikDb->getQuery(true);
-			$query->select('COUNT(*)')->from($tableName);
+			$query->select('COUNT(*)')->from($fabrikDb->qn($tableName));
 
 			// Is there already any record in our F! table Users
 			$fabrikDb->setQuery($query);
@@ -274,7 +274,8 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			$db = $listModel->getDb();
 			$query = $db->getQuery(true);
 			$userIdField = FabrikString::safeColName($this->getFieldName('juser_field_userid'));
-			$query->select($userIdField)->from($listModel->getTable()->db_table_name);
+			$query->select($userIdField)
+				->from($db->qn($listModel->getTable()->get('list.db_table_name')));
 			$userIds = $db->setQuery($query)->loadColumn();
 
 			foreach ($userIds as $userId)
@@ -366,7 +367,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		 * but to still store any joined rows
 		 */
 		$prefix = $this->config->get('dbprefix');
-		$ftable = str_replace('#__', $prefix, $formModel->getlistModel()->getTable()->db_table_name);
+		$ftable = str_replace('#__', $prefix, $formModel->getlistModel()->getTable()->get('list.db_table_name'));
 		$jos_users = $prefix . 'users';
 
 		if ($ftable == $jos_users)

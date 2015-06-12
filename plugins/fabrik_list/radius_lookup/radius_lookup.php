@@ -89,7 +89,7 @@ class PlgFabrik_ListRadius_Lookup extends PlgFabrik_List
 		$listModel = new FabrikFEModelList();
 		$listModel->setId($params->get('radius_lookup_list'));
 		$listModel->setLimits(0, -1);
-		$key = $listModel->getTable()->db_primary_key;
+		$key = $listModel->getTable()->get('list.db_primary_key');
 		$listModel->setPluginQueryWhere('list.radius_lookup', $key . ' IN (' . implode(',', $ids) . ')');
 		$data = $listModel->getData();
 		$distanceField = $params->get('distance_field') . '_raw';

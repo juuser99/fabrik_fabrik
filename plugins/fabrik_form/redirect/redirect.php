@@ -353,7 +353,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$store = array();
 
-		$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->db_primary_key);
+		$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
 
 		if ($this->data['save_in_session'] == '1')
 		{
@@ -435,7 +435,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			$id = $formModel->get('id');
 
 			// Check for special fabrik_list_filter_all element!
-			$searchAll = $input->get($listModel->getTable()->db_table_name . '___fabrik_list_filter_all');
+			$searchAll = $input->get($listModel->getTable()->get('list.db_table_name') . '___fabrik_list_filter_all');
 
 			$this->app->setUserState($key . '.form' . $id . '.searchall', $searchAll);
 			$this->app->setUserState($key . '.form' . $id . '.filters', $store);

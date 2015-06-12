@@ -46,7 +46,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 
 		for ($x = 0; $x < count($ids); $x++)
 		{
-			$asfields = array();
+			$asFields = array();
 			$fields = array();
 			$listModel = new \Fabrik\Admin\Models\Lizt;
 			$listModel->setId($ids[$x]);
@@ -56,13 +56,15 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 			$db = $listModel->getDb();
 			$query = $db->getQuery(true);
 
-			$this->asField($formModel, $approveEls[$x], $asfields, array('alias' => 'approve'));
-			$this->asField($formModel, $titles[$x], $asfields, array('alias' => 'title'));
-			$this->asField($formModel, $users[$x], $asfields, array('alias' => 'user'));
-			$this->asField($formModel, $contents[$x], $asfields, array('alias' => 'content'));
+			$this->asField($formModel, $approveEls[$x], $asFields, array('alias' => 'approve'));
+			$this->asField($formModel, $titles[$x], $asFields, array('alias' => 'title'));
+			$this->asField($formModel, $users[$x], $asFields, array('alias' => 'user'));
+			$this->asField($formModel, $contents[$x], $asFields, array('alias' => 'content'));
 
-			$query->select($db->q($item->label) . " AS type, " . $item->db_primary_key . ' AS pk, ' . implode(',', $asfields))
-				->from($db->quoteName($item->db_table_name));
+			$pk = $db->qn($item->get('list.db_primary_key'));
+
+			$query->select($db->q($item->label) . " AS type, " . $pk . ' AS pk, ' . implode(',', $asFields))
+				->from($db->qn($item->get('list.db_table_name')));
 			$query = $listModel->buildQueryJoin($query);
 			$query->where(str_replace('___', '.', $approveEls[$x]) . ' = 0');
 			$db->setQuery($query, 0, 5);
@@ -86,14 +88,14 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 	 *
 	 * @param   JModel  $formModel  Form model
 	 * @param   string  $fieldName  Element full name
-	 * @param   array   &$asfields  As fields to append as statement to
+	 * @param   array   &$asFields  As fields to append as statement to
 	 * @param   array   $opts       Options
 	 *
 	 * @throws RuntimeException
 	 *
 	 * @return  void
 	 */
-	private function asField($formModel, $fieldName, &$asfields, $opts)
+	private function asField($formModel, $fieldName, &$asFields, $opts)
 	{
 		$elementModel = $formModel->getElement($fieldName);
 		$fields = array();
@@ -105,7 +107,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 				throw new RuntimeException('Approval ' . $fieldName . ' element must be published', 500);
 			}
 
-			$elementModel->getAsField_html($asfields, $fields, $opts);
+			$elementModel->getAsField_html($asFields, $fields, $opts);
 		}
 	}
 
@@ -159,8 +161,10 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 				$db = $listModel->getDbo();
 				$query = $db->getQuery(true);
 				$el = FabrikString::safeColName($approveEls[$key]);
-				$query->update($db->quoteName($item->db_table_name))->set($el . ' = ' . $db->q($v))
-					->where($item->db_primary_key . ' = ' . $db->q($input->get('rowid')));
+				$pk = $db->qn($item->get('list.db_primary_key'));
+				$query->update($db->qn($item->get('list.db_table_name')))
+					->set($el . ' = ' . $db->q($v))
+					->where($pk . ' = ' . $db->q($input->get('rowid')));
 				$db->setQuery($query);
 				$db->execute();
 			}

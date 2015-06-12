@@ -155,7 +155,7 @@ class Group extends Base implements ModelGroupInterface
 		$groupModel = new Group;
 		$groupModel->setId($data['id']);
 		$listModel     = $groupModel->getListModel();
-		$pk            = FabrikString::safeColName($listModel->getTable()->db_primary_key);
+		$pk            = FabrikString::safeColName($listModel->getTable()->get('list.db_primary_key'));
 		$elementModels = $groupModel->getMyElements();
 
 		foreach ($elementModels as $elementModel)
@@ -400,7 +400,7 @@ class Group extends Base implements ModelGroupInterface
 		}
 
 		$db->setQuery("show tables");
-		$newTableName   = $list->db_table_name . '_' . $data['id'] . '_repeat';
+		$newTableName   = $list->get('list.db_table_name') . '_' . $data['id'] . '_repeat';
 		$existingTables = $db->loadColumn();
 
 		if (!in_array($newTableName, $existingTables))
@@ -416,7 +416,7 @@ class Group extends Base implements ModelGroupInterface
 		}
 		else
 		{
-			if (trim($list->db_table_name) == '')
+			if (trim($list->get('list.db_table_name')) == '')
 			{
 				// New group not attached to a form
 				$this->setError(FText::_('COM_FABRIK_GROUP_CANT_MAKE_JOIN_NO_DB_TABLE'));
@@ -443,8 +443,10 @@ class Group extends Base implements ModelGroupInterface
 		}
 		// Create the join as well
 
-		$jdata = array('list_id' => $list->id, 'element_id' => 0, 'join_from_table' => $list->db_table_name, 'table_join' => $newTableName,
-			'table_key' => FabrikString::shortColName($list->db_primary_key), 'table_join_key' => 'parent_id', 'join_type' => 'left',
+		$pk = FabrikString::shortColName($list->get('list.db_primary_key'));
+		$jdata = array('list_id' => $list->id, 'element_id' => 0,
+			'join_from_table' => $list->get('list.db_table_name'), 'table_join' => $newTableName,
+			'table_key' => $pk, 'table_join_key' => 'parent_id', 'join_type' => 'left',
 			'group_id' => $data['id']);
 
 		// Load the matching join if found.
@@ -1676,13 +1678,13 @@ class Group extends Base implements ModelGroupInterface
 
 		$elementModels = $this->getMyElements();
 		$list = $listModel->getTable();
-		$tblName = $list->db_table_name;
-		$tblPk = $list->db_primary_key;
+		$tblName = $list->get('list.db_table_name');
+		$tblPk = $list->get('list.db_primary_key');
 
 		// Set the list's table name to the join table, needed for storeRow()
 		$join = $joinModel->getJoin();
-		$list->db_table_name = $join->table_join;
-		$list->db_primary_key = $joinModel->getForeignID('.');
+		$list->set('list.db_table_name', $join->table_join);
+		$list->set('list.db_primary_key', $joinModel->getForeignID('.'));
 		$usedKeys = array();
 
 		$insertId = false;
@@ -1779,8 +1781,8 @@ class Group extends Base implements ModelGroupInterface
 		}
 
 		// Reset the list's table name
-		$list->db_table_name = $tblName;
-		$list->db_primary_key = $tblPk;
+		$list->set('list.db_table_name', $tblName);
+		$list->set('list.db_primary_key', $tblPk);
 
 		/*
 		 * If the FK is on the parent, we (may) need to update the parent row with the FK value
@@ -1841,7 +1843,7 @@ class Group extends Base implements ModelGroupInterface
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
 		$masterInsertId = $this->masterInsertId();
-		$query->delete($db->qn($list->db_table_name));
+		$query->delete($db->qn($list->get('list.db_table_name')));
 		$pk = $join->params->get('pk');
 
 		/*
@@ -1995,7 +1997,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Get the groups list model
 	 *
-	 * @return  object	list model
+	 * @return  \Fabrik\Admin\Models\Lizt	list model
 	 */
 	public function getListModel()
 	{

@@ -335,7 +335,8 @@ class Join extends Base
 
 		$db = Worker::getDbo();
 		$dbname = $join->table_join;
-		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = " . $db->q($table->db_table_name)
+		$sql = " SELECT table_name, table_type, engine FROM INFORMATION_SCHEMA.tables " . "WHERE table_name = "
+			. $db->q($table->get('list.db_table_name'))
 		. " AND table_type = 'view' AND table_schema = " . $db->q($dbname);
 		$db->setQuery($sql);
 		$row = $db->loadObjectList();

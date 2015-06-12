@@ -180,8 +180,8 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 			$subDb = $subTable->getDb();
 			$query = $subDb->getQuery(true);
 			$query->select('*, ' . $durationEl . ' AS p3, ' . $durationPerEl . ' AS t3, ' . $subDb->q($item_raw) . ' AS item_number')
-			->from($subTable->getTable()->db_table_name)
-			->where($idEl . ' = ' . $subDb->q($item_raw));
+				->from($subDb->qn($subTable->getTable()->get('list.db_table_name')))
+				->where($idEl . ' = ' . $subDb->q($item_raw));
 			$subDb->setQuery($query);
 			$sub = $subDb->loadObject();
 
@@ -233,22 +233,22 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 
 		if ($shipping_table !== false)
 		{
-			$thisTable = $formModel->getTableModel()->getTable()->db_table_name;
-			$shipping_userid = $userid;
+			$thisTable = $formModel->getTableModel()->getTable()->get('list.db_table_name');
+			$shippingUserId = $userid;
 
 			/*
 			 * If the shipping table is the same as the form's table, and no user logged in
 			 * then use the shipping data entered into the form:
 			 * see http://fabrikar.com/forums/index.php?threads/paypal-shipping-address-without-joomla-userid.33229/
 			 */
-			if ($shipping_userid === 0 && $thisTable === $shipping_table)
+			if ($shippingUserId === 0 && $thisTable === $shipping_table)
 			{
-				$shipping_userid = $formModel->formData['id'];
+				$shippingUserId = $formModel->formData['id'];
 			}
 
-			if ($shipping_userid > 0)
+			if ($shippingUserId > 0)
 			{
-				$shipping_select = array();
+				$shippingSelect = array();
 
 				$db = Worker::getDbo();
 				$query = $db->getQuery(true);
@@ -256,66 +256,66 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 				if ($params->get('paypal_shippingdata_firstname'))
 				{
 					$shipping_first_name = FabrikString::shortColName($params->get('paypal_shippingdata_firstname'));
-					$shipping_select['first_name'] = $shipping_first_name;
+					$shippingSelect['first_name'] = $shipping_first_name;
 				}
 
 				if ($params->get('paypal_shippingdata_lastname'))
 				{
 					$shipping_last_name = FabrikString::shortColName($params->get('paypal_shippingdata_lastname'));
-					$shipping_select['last_name'] = $shipping_last_name;
+					$shippingSelect['last_name'] = $shipping_last_name;
 				}
 
 				if ($params->get('paypal_shippingdata_address1'))
 				{
 					$shipping_address1 = FabrikString::shortColName($params->get('paypal_shippingdata_address1'));
-					$shipping_select['address1'] = $shipping_address1;
+					$shippingSelect['address1'] = $shipping_address1;
 				}
 
 				if ($params->get('paypal_shippingdata_address2'))
 				{
 					$shipping_address2 = FabrikString::shortColName($params->get('paypal_shippingdata_address2'));
-					$shipping_select['address2'] = $shipping_address2;
+					$shippingSelect['address2'] = $shipping_address2;
 				}
 
 				if ($params->get('paypal_shippingdata_zip'))
 				{
 					$shipping_zip = FabrikString::shortColName($params->get('paypal_shippingdata_zip'));
-					$shipping_select['zip'] = $shipping_zip;
+					$shippingSelect['zip'] = $shipping_zip;
 				}
 
 				if ($params->get('paypal_shippingdata_state'))
 				{
 					$shipping_state = FabrikString::shortColName($params->get('paypal_shippingdata_state'));
-					$shipping_select['state'] = $shipping_state;
+					$shippingSelect['state'] = $shipping_state;
 				}
 
 				if ($params->get('paypal_shippingdata_city'))
 				{
 					$shipping_city = FabrikString::shortColName($params->get('paypal_shippingdata_city'));
-					$shipping_select['city'] = $shipping_city;
+					$shippingSelect['city'] = $shipping_city;
 				}
 
 				if ($params->get('paypal_shippingdata_country'))
 				{
 					$shipping_country = FabrikString::shortColName($params->get('paypal_shippingdata_country'));
-					$shipping_select['country'] = $shipping_country;
+					$shippingSelect['country'] = $shipping_country;
 				}
 
 				$query->clear();
 
-				if (empty($shipping_select) || $shipping_table == '')
+				if (empty($shippingSelect) || $shipping_table == '')
 				{
 					$app->enqueueMessage('No shipping lookup table or shipping fields selected');
 				}
 				else
 				{
-					$query->select($shipping_select)->from($shipping_table)
-					->where(FabrikString::shortColName($params->get('paypal_shippingdata_id')) . ' = ' . $db->q($shipping_userid));
+					$query->select($shippingSelect)->from($shipping_table)
+					->where(FabrikString::shortColName($params->get('paypal_shippingdata_id')) . ' = ' . $db->q($shippingUserId));
 
 					$db->setQuery($query);
 					$user_shippingdata = $db->loadObject();
 
-					foreach ($shipping_select as $opt => $val)
+					foreach ($shippingSelect as $opt => $val)
 					{
 						// $$$tom Since we test on the current userid, it always adds the &name=&street=....
 						// Even if those vars are empty...
@@ -738,8 +738,9 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 						if (!empty($ipn_txn_field) && !empty($ipn_status_field))
 						{
 							$query->clear();
-							$query->select($ipn_status_field)->from($table->db_table_name)
-							->where($db->quoteName($ipn_txn_field) . ' = ' . $db->q($txn_id));
+							$query->select($ipn_status_field)
+								->from($db->qn($table->get('list.db_table_name')))
+								->where($db->qn($ipn_txn_field) . ' = ' . $db->q($txn_id));
 							$db->setQuery($query);
 							$txn_result = $db->loadResult();
 
@@ -839,10 +840,12 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 									$set_array[] = "$set_field = $set_value";
 								}
 
+								$pk = $db->qn($table->get('list.db_primary_key'));
+								$tableName = $db->qn($table->get('list.db_table_name'));
 								$query->clear();
-								$query->update($table->db_table_name)
+								$query->update($tableName)
 								->set(implode(',', $set_array))
-								->where($table->db_primary_key . ' = ' . $db->q($rowId));
+								->where($pk . ' = ' . $db->q($rowId));
 								$db->setQuery($query);
 
 								if (!$db->execute())

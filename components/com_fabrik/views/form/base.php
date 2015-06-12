@@ -69,12 +69,11 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		$form = $item->get('form');
 
-echo "render start <br>";
 		if ($model->render() === false)
 		{
 			return false;
 		}
-echo "render end<br>";
+
 		$this->isMultiPage = $model->isMultiPage();
 		list($this->plugintop, $this->pluginbottom, $this->pluginend) = $model->getFormPluginHTML();
 		$listModel = $model->getlistModel();
@@ -90,9 +89,8 @@ echo "render end<br>";
 		}
 
 		$this->rowid = $model->getRowId();
-		echo "this rowid = $this->rowid";
 		$this->access = $model->checkAccessFromListSettings();
-echo "access = " . $this->access;exit;
+
 		if ($this->access == 0)
 		{
 			$app->enqueueMessage($model->aclMessage(), 'error');
@@ -802,7 +800,8 @@ echo "access = " . $this->access;exit;
 			// see http://fabrikar.com/forums/showthread.php?t=10297&page=5
 
 			$fields[] = '<input type="hidden" name="usekey" value="' . $usekey . '" />';
-			$pk_val = ArrayHelper::getValue($model->data, FabrikString::safeColNameToArrayKey($listModel->getTable()->db_primary_key));
+			$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
+			$pk_val = ArrayHelper::getValue($model->data, $pk);
 
 			if (empty($pk_val))
 			{
@@ -815,13 +814,13 @@ echo "access = " . $this->access;exit;
 		 * were last on page 4 of the (unfiltered) target table, and the search yields less than 4 pages,
 		 * we end up with a blank table 'cos the wrong LIMIT's are applied to the query
 		 */
-		$save_insessions = $params->get('save_insession', '');
+		$saveInSessions = $params->get('save_insession', '');
 
-		if (is_array($save_insessions))
+		if (is_array($saveInSessions))
 		{
-			foreach ($save_insessions as $save_insession)
+			foreach ($saveInSessions as $saveInSession)
 			{
-				if ($save_insession == '1')
+				if ($saveInSession == '1')
 				{
 					$fields[] = '<input type="hidden" name="limitstart" value="0" />';
 					break;

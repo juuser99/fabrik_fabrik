@@ -203,7 +203,7 @@ abstract class FabrikWebService
 	/**
 	 * Store the data obtained from get() in a list
 	 *
-	 * @param   object  $listModel  list model to store the data in
+	 * @param   \Fabrik\Admin\Models\Lizt  $listModel  list model to store the data in
 	 * @param   array   $data       data obtained from get()
 	 * @param   string  $fk         foreign key to map records in $data to the list models data.
 	 * @param   bool    $update     should existing matched rows be updated or not?
@@ -214,12 +214,12 @@ abstract class FabrikWebService
 	public function storeLocally($listModel, $data, $fk, $update)
 	{
 		$data = $this->map($data, $fk);
-		$item = $listModel->getTable();
 		$formModel = $listModel->getFormModel();
 		$db = $listModel->getDb();
 		$item = $listModel->getTable();
 		$query = $db->getQuery(true);
-		$query->select($item->db_primary_key . ' AS id, ' . $fk)->from($item->db_table_name);
+		$query->select($item->get('list.db_primary_key') . ' AS id, ' . $fk)
+			->from($item->get('list.db_table_name'));
 		$db->setQuery($query);
 		$ids = $db->loadObjectList($fk);
 		$formModel->getGroupsHierarchy();

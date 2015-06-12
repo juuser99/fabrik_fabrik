@@ -144,7 +144,9 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 		// Get the order for the last record in $result
 		$splitId = $dragDirection == 'up' ? array_shift($result) : array_pop($result);
 		$query = $db->getQuery(true);
-		$query->select($orderBy)->from($table->db_table_name)->where($table->db_primary_key . ' = ' . $splitId);
+		$query->select($orderBy)
+			->from($db->qn($table->get('list.db_table_name')))
+			->where($db->qn($table->get('list.db_primary_key')) . ' = ' . $splitId);
 		$db->setQuery($query);
 		$o = (int) $db->loadResult();
 
@@ -158,17 +160,16 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 		}
 
 		// Shift down the ordered records which have an order less than or equal the newly moved record
-		$query = "UPDATE " . $table->db_table_name . " SET " . $orderBy . ' = COALESCE(' . $orderBy . ', 1) - 1 ';
-		$query .= " WHERE " . $orderBy . ' ' . $compare . ' ' . $o . ' AND ' . $table->db_primary_key . ' <> ' . $dragged;
-		$query .= " AND " . $table->db_primary_key . ' IN  (' . implode(',', $db->q($order)) . ')';
+		$tableName = $db->qn($table->get('list.db_table_name'));
+		$pk = $db->qn($table->get('list.db_primary_key'));
+		$query = $db->getQuery(true);
+		$query->update($tableName)->set( $orderBy . ' = COALESCE(' . $orderBy . ', 1) - 1 ')
+			->where($orderBy . ' ' . $compare . ' ' . $o . ' AND ' . $pk . ' <> ' . $dragged)
+			->where($pk . ' IN  (' . implode(',', $db->q($order)) . ')');
 
 		$db->setQuery($query);
 
-		if (!$db->execute())
-		{
-			echo $db->getErrorMsg();
-		}
-		else
+		if ($db->execute())
 		{
 			// Shift up the ordered records which have an order greater than the newly moved record
 			if ($direction == 'desc')
@@ -180,22 +181,20 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 				$compare = $dragDirection == 'down' ? '>' : '>=';
 			}
 
-			$query = "UPDATE " . $table->db_table_name . " SET " . $orderBy . ' = COALESCE(' . $orderBy . ', 0) + 1';
-			$query .= " WHERE " . $orderBy . ' ' . $compare . ' ' . $o;
-
-			$query .= " AND " . $table->db_primary_key . ' IN  (' . implode(',', $db->q($order)) . ')';
+			$query->clear()->update($tableName)
+				->set($orderBy . ' = COALESCE(' . $orderBy . ', 0) + 1')
+				->where($orderBy . ' ' . $compare . ' ' . $o)
+				->where( $pk . ' IN  (' . implode(',', $db->q($order)) . ')');
 
 			$db->setQuery($query);
 
-			if (!$db->execute())
-			{
-				echo $db->getErrorMsg();
-			}
-			else
+			if ($db->execute())
 			{
 				// Change the order of the moved record
-				$query = "UPDATE " . $table->db_table_name . " SET " . $orderBy . ' = ' . $o;
-				$query .= " WHERE " . $table->db_primary_key . ' = ' . $dragged;
+				$query->clear()->update($tableName)
+					->set($orderBy  . ' = ' . $o)
+					->where($db->qn($table->get('list.db_primary_key')) . ' = ' . $dragged);
+
 				$db->setQuery($query);
 				$db->execute();
 			}

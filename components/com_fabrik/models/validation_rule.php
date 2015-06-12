@@ -33,7 +33,7 @@ class PlgFabrik_ValidationRule extends Plugin
 	/**
 	 * Validation rule's element model
 	 *
-	 * @var JModel
+	 * @var \Fabrik\Models\Element
 	 */
 	public $elementModel = null;
 

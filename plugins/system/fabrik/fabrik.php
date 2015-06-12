@@ -403,7 +403,7 @@ class PlgSystemFabrik extends JPlugin
 			// Set the table search mode to OR - this will search ALL fields with the search term
 			$params->set('search-mode', 'OR');
 
-			$allrows = $listModel->getData();
+			$allRows = $listModel->getData();
 			$elementModel = $listModel->getFormModel()->getElement($params->get('search_description', $table->label), true);
 			$descname = is_object($elementModel) ? $elementModel->getFullName() : '';
 
@@ -423,14 +423,11 @@ class PlgSystemFabrik extends JPlugin
 			}
 
 			$aAllowedList = array();
-			$pk = $table->db_primary_key;
 
-			foreach ($allrows as $group)
+			foreach ($allRows as $group)
 			{
 				foreach ($group as $oData)
 				{
-					$pkval = $oData->__pk_val;
-
 					if ($app->isAdmin() || $params->get('search_link_type') === 'form')
 					{
 						$href = $oData->fabrik_edit_url;
@@ -455,7 +452,7 @@ class PlgSystemFabrik extends JPlugin
 							$o->title = $table->label;
 						}
 
-						$o->_pkey = $table->db_primary_key;
+						$o->_pkey = $table->get('list.db_primary_key');
 						$o->section = $section;
 						$o->href = $href;
 

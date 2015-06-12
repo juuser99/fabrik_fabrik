@@ -54,7 +54,7 @@ class FabrikTableForm extends FabTable
 			$src['params'] = (string) $registry;
 		}
 
-		// Neded for form edit view where we see the database table anme and connection id
+		// Needed for form edit view where we see the database table anme and connection id
 		if (array_key_exists('db_table_name', $src))
 		{
 			$this->db_table_name = $src['db_table_name'];

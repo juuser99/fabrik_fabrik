@@ -452,7 +452,7 @@ class CsvImport extends Base
 	/**
 	 * Get the list model
 	 *
-	 * @return object table model
+	 * @return \Fabrik\Admin\Models\Lizt  List model
 	 */
 	public function getlistModel()
 	{
@@ -649,12 +649,13 @@ class CsvImport extends Base
 		$tableParams = $model->getParams();
 		$csvFullName = $tableParams->get('csvfullname', 0);
 
-		$key = FabrikString::shortColName($item->db_primary_key);
+		$key = FabrikString::shortColName($item->get('list.db_primary_key'));
 
-		// Get a list of exisitng primary key vals
+		// Get a list of existing primary key vals
 		$db = $model->getDb();
 		$query = $db->getQuery(true);
-		$query->select($item->db_primary_key)->from($item->db_table_name);
+		$query->select($db->qn($item->get('list.db_primary_key')))
+			->from($db->qn($item->get('list.db_table_name')));
 		$db->setQuery($query);
 		$aExistingKeys = $db->loadColumn();
 
@@ -724,8 +725,8 @@ class CsvImport extends Base
 			}
 			else
 			{
-				// If not overwriting ensusre the any existing PK's are removed and the form rowId set to ''
-				$pk = FabrikString::safeColNameToArrayKey($item->db_primary_key);
+				// If not overwriting ensure the any existing primary keys are removed and the form rowId set to ''
+				$pk = FabrikString::safeColNameToArrayKey($item->get('list.db_primary_key'));
 				$rawPk = $pk . '_raw';
 				unset($aRow[$pk]);
 				unset($aRow[$rawPk]);
@@ -741,8 +742,8 @@ class CsvImport extends Base
 			{
 				if (String::substr($k, String::strlen($k) - 4, String::strlen($k)) == '_raw')
 				{
-					$noneraw = String::substr($k, 0, strlen($k) - 4);
-					$aRow[$noneraw] = $val;
+					$noneRaw = String::substr($k, 0, strlen($k) - 4);
+					$aRow[$noneRaw] = $val;
 				}
 			}
 
@@ -809,9 +810,9 @@ class CsvImport extends Base
 		{
 			if (String::substr($k, String::strlen($k) - 4, String::strlen($k)) == '_raw')
 			{
-				$noneraw = String::substr($k, 0, String::strlen($k) - 4);
+				$noneRaw = String::substr($k, 0, String::strlen($k) - 4);
 
-				if (array_key_exists($noneraw, $aRow))
+				if (array_key_exists($noneRaw, $aRow))
 				{
 					// Complete madness for encoding issue with fileupload ajax + single upload max
 					preg_match('/params":"(.*)"\}\]/', $val, $matches);
@@ -821,7 +822,7 @@ class CsvImport extends Base
 						$replace = addSlashes($matches[1]);
 						$val = preg_replace('/params":"(.*)\}\]/', 'params":"' . $replace . '"}]', $val, -1, $c);
 					}
-					$aRow[$noneraw] = $val;
+					$aRow[$noneRaw] = $val;
 					unset($aRow[$k]);
 				}
 			}
@@ -922,7 +923,7 @@ class CsvImport extends Base
 		$model = $this->getListModel();
 		$app = JFactory::getApplication();
 		$table = $model->getTable();
-		$dbname = $table->db_table_name;
+		$tableName = $table->get('list.db_table_name');
 
 		foreach ($joinData as &$j)
 		{
@@ -930,7 +931,7 @@ class CsvImport extends Base
 			{
 				if (!is_array($v))
 				{
-					if (array_shift(explode('___', $k)) != $table->db_table_name)
+					if (array_shift(explode('___', $k)) != $table->get('list.db_table_name'))
 					{
 						unset($j[$k]);
 					}
@@ -940,20 +941,20 @@ class CsvImport extends Base
 
 		$formModel = $model->getFormModel();
 		$groups = $formModel->getGroupsHierarchy();
-		$groupids = array();
+		$groupIds = array();
 
 		foreach ($groups as $group)
 		{
 			if ($group->isJoin())
 			{
-				$groupids[$group->getGroup()->join_id] = $group->getGroup()->id;
+				$groupIds[$group->getGroup()->join_id] = $group->getGroup()->id;
 			}
 		}
 
 		foreach ($joinData as $data)
 		{
 			// Reset the table's name back to the main table
-			$table->db_table_name = $dbname;
+			$table->set('list.db_table_name', $tableName);
 			$fabrik_repeat_group = array();
 			$js = ArrayHelper::getValue($data, 'join', array());
 
@@ -970,8 +971,8 @@ class CsvImport extends Base
 					}
 				}
 
-				$groupid = $groupids[$jid];
-				$fabrik_repeat_group[$groupid] = $counter;
+				$groupId = $groupIds[$jid];
+				$fabrik_repeat_group[$groupId] = $counter;
 			}
 			// $$$ rob here we're setting up fabrik_repeat_group to allow the form to 'know' how many repeated records to insert.
 			$app->input->set('fabrik_repeat_group', $fabrik_repeat_group);
@@ -998,7 +999,6 @@ class CsvImport extends Base
 	 *
 	 * @return  array	updated join data
 	 */
-
 	private function _fakeJoinData($joinData, $aRow, $pkVal, &$formModel)
 	{
 		$origData = $aRow;
@@ -1176,7 +1176,7 @@ class CsvImport extends Base
 
 		$model = $this->getlistModel();
 
-		if (trim($model->getTable()->db_primary_key) !== '')
+		if (trim($model->getTable()->get('list.db_primary_key')) !== '')
 		{
 			return false;
 		}

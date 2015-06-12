@@ -69,7 +69,6 @@ class FabrikModelFusion_Gantt_Chart extends FabrikFEModelVisualization
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 		$db = $listModel->getDB();
-		$table = $listModel->getTable()->db_table_name;
 		$process = (string) $params->get('fusion_gantt_chart_process');
 		$process = FabrikString::safeColNameToArrayKey($process);
 		$processraw = $process . '_raw';

@@ -14,10 +14,7 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Admin\Models\FormSession;
-use Fabrik\Admin\Models\Lizt;
 use Joomla\Utilities\ArrayHelper;
-use \JForm as JForm;
 use Fabrik\Helpers\Worker;
 use \Joomla\Registry\Registry as JRegistry;
 use \JComponentHelper as JComponentHelper;
@@ -31,6 +28,8 @@ use Joomla\String\String as String;
 use FText as FText;
 use \stdClass as stdClass;
 use \JFile as JFile;
+use \JUri;
+use \JRoute;
 
 interface ModelFormFormInterface
 {
@@ -841,8 +840,6 @@ class Form extends View implements ModelFormFormInterface
 		$this->listModel = null;
 
 		$rowId = $this->getRowId();
-		echo "rowdi = $rowId<br>";
-		echo "<Pre>";print_r($this->getItem());exit;
 		$this->setRowId($rowId);
 
 		$this->getListModel();
@@ -930,11 +927,9 @@ class Form extends View implements ModelFormFormInterface
 		// New form can we add?
 		if ($this->getRowId() === '' || $isUserRowId)
 		{
-			echo "check can add";
 			// If they can edit can they also add
 			if ($listModel->canAdd())
 			{
-				echo "can add";exit;
 				$ret = 3;
 			}
 			// $$$ hugh - corner case for rowid=-1, where they DON'T have add perms, but DO have edit perms
@@ -1047,7 +1042,6 @@ class Form extends View implements ModelFormFormInterface
 		{
 			JDEBUG ? $profiler->mark('formmodel getData: start get list model') : null;
 			$listModel = $this->getListModel();
-			echo "form got list model <br>";
 			JDEBUG ? $profiler->mark('formmodel getData: end get list model') : null;
 			$fabrikDb = $listModel->getDb();
 			JDEBUG ? $profiler->mark('formmodel getData: db created') : null;
@@ -1473,11 +1467,11 @@ class Form extends View implements ModelFormFormInterface
 		}
 
 		$this->jsActions = array();
-		$db = Worker::getDbo(true);
-		$j = new JRegistry;
 		$aJsActions = array();
 		$aElIds = array();
 		$groups = $this->getGroupsHierarchy();
+
+		$actions = array();
 
 		foreach ($groups as $groupModel)
 		{
@@ -1485,46 +1479,32 @@ class Form extends View implements ModelFormFormInterface
 
 			foreach ($elementModels as $elementModel)
 			{
+				$element = $elementModel->getElement();
 				/* $$$ hugh - only needed getParent when we weren't saving changes to parent params to child
 				 * which we should now be doing ... and getParent() causes an extra table lookup for every child
 				 * element on the form.
 				 */
 				$aJsActions[$elementModel->getElement()->get('id')] = array();
 				$aElIds[] = $elementModel->getElement()->get('id');
+				$actions  = array_merge($actions, $element->get('jsevents', array()));
 			}
 		}
 
-		if (!empty($aElIds))
+		foreach ($actions as $r)
 		{
-			$query = $db->getQuery(true);
-			// FIXME - jsonify
-			$query->select('*')->from('#__fabrik_jsactions')->where('element_id IN (' . implode(',', $aElIds) . ')');
-			$db->setQuery($query);
-			$res = $db->loadObjectList();
-		}
-		else
-		{
-			$res = array();
-		}
+			// Merge the js attribs back into the array
+			$a = json_decode($r->params);
 
-		if (is_array($res))
-		{
-			foreach ($res as $r)
+			foreach ($a as $k => $v)
 			{
-				// Merge the js attribs back into the array
-				$a = json_decode($r->params);
+				$r->$k = $v;
+			}
 
-				foreach ($a as $k => $v)
-				{
-					$r->$k = $v;
-				}
+			unset($r->params);
 
-				unset($r->params);
-
-				if (!isset($r->js_published) || (int) $r->js_published === 1)
-				{
-					$this->jsActions[$r->element_id][] = $r;
-				}
+			if (!isset($r->js_published) || (int) $r->js_published === 1)
+			{
+				$this->jsActions[$r->element_id][] = $r;
 			}
 		}
 
@@ -2796,18 +2776,13 @@ class Form extends View implements ModelFormFormInterface
 		$groups = $this->getGroupsHierarchy();
 		$repeatTotals = $input->get('fabrik_repeat_group', array(0), 'array');
 		$ajaxPost = $input->getBool('fabrik_ajax');
-		$joindata = array();
+		$joinData = array();
 
 		foreach ($groups as $groupModel)
 		{
 			$groupCounter = $groupModel->getGroup()->id;
 			$elementModels = $groupModel->getPublishedElements();
-			$elDbVals = array();
-
-			if ($groupModel->isJoin())
-			{
-				$joinModel = $groupModel->getJoinModel();
-			}
+			$elDbValues = array();
 
 			foreach ($elementModels as $elementModel)
 			{
@@ -2817,7 +2792,7 @@ class Form extends View implements ModelFormFormInterface
 					continue;
 				}
 
-				$elDbVals = array();
+				$elDbValues = array();
 				$validation_rules = $elementModel->validator->findAll();
 
 				// $$ rob incorrect for ajax validation on joined elements
@@ -2837,13 +2812,13 @@ class Form extends View implements ModelFormFormInterface
 					$this->errors[$elName][$c] = array();
 
 					// $$$ rob $this->formData was $_POST, but failed to get anything for calculation elements in php 5.2.1
-					$form_data = $elementModel->getValue($this->formData, $c, array('runplugins' => 0, 'use_default' => false, 'use_querystring' => false));
+					$formData = $elementModel->getValue($this->formData, $c, array('runplugins' => 0, 'use_default' => false, 'use_querystring' => false));
 
 					if (get_magic_quotes_gpc())
 					{
-						if (is_array($form_data))
+						if (is_array($formData))
 						{
-							foreach ($form_data as &$d)
+							foreach ($formData as &$d)
 							{
 								if (is_string($d))
 								{
@@ -2858,17 +2833,17 @@ class Form extends View implements ModelFormFormInterface
 						}
 						else
 						{
-							$form_data = stripslashes($form_data);
+							$formData = stripslashes($formData);
 
 							if ($ajaxPost)
 							{
-								$form_data = rawurldecode($form_data);
+								$formData = rawurldecode($formData);
 							}
 						}
 					}
 
 					// Internal element plugin validations
-					if (!$elementModel->validate(@$form_data, $c))
+					if (!$elementModel->validate(@$formData, $c))
 					{
 						$ok = false;
 						$this->errors[$elName][$c][] = $elementModel->getValidationErr();
@@ -2881,12 +2856,12 @@ class Form extends View implements ModelFormFormInterface
 					if ($groupModel->canRepeat())
 					{
 						// $$$ rob for repeat groups no join setting to array() means that $_POST only contained the last repeat group data
-						// $elDbVals = array();
-						$elDbVals[$c] = $form_data;
+						// $elDbValues = array();
+						$elDbValues[$c] = $formData;
 					}
 					else
 					{
-						$elDbVals = $form_data;
+						$elDbValues = $formData;
 					}
 					// Validations plugins attached to elements
 					if (!$elementModel->mustValidate())
@@ -2898,9 +2873,9 @@ class Form extends View implements ModelFormFormInterface
 					{
 						$plugin->formModel = $this;
 
-						if ($plugin->shouldValidate($form_data, $c))
+						if ($plugin->shouldValidate($formData, $c))
 						{
-							if (!$plugin->validate($form_data, $c))
+							if (!$plugin->validate($formData, $c))
 							{
 								$this->errors[$elName][$c][] = $w->parseMessageForPlaceHolder($plugin->getMessage());
 								$ok = false;
@@ -2910,27 +2885,27 @@ class Form extends View implements ModelFormFormInterface
 							{
 								if ($groupModel->canRepeat())
 								{
-									$elDbVals[$c] = $form_data;
-									$testreplace = $plugin->replace($elDbVals[$c], $c);
+									$elDbValues[$c] = $formData;
+									$testReplace = $plugin->replace($elDbValues[$c], $c);
 
-									if ($testreplace != $elDbVals[$c])
+									if ($testReplace != $elDbValues[$c])
 									{
-										$elDbVals[$c] = $testreplace;
-										$this->modifiedValidationData[$elName][$c] = $testreplace;
-										$joindata[$elName2 . '_raw'][$c] = $testreplace;
-										$post[$elName . '_raw'][$c] = $testreplace;
+										$elDbValues[$c] = $testReplace;
+										$this->modifiedValidationData[$elName][$c] = $testReplace;
+										$joinData[$elName2 . '_raw'][$c] = $testReplace;
+										$post[$elName . '_raw'][$c] = $testReplace;
 									}
 								}
 								else
 								{
-									$testreplace = $plugin->replace($elDbVals, $c);
+									$testReplace = $plugin->replace($elDbValues, $c);
 
-									if ($testreplace != $elDbVals)
+									if ($testReplace != $elDbValues)
 									{
-										$elDbVals = $testreplace;
-										$this->modifiedValidationData[$elName] = $testreplace;
-										$input->set($elName . '_raw', $elDbVals);
-										$post[$elName . '_raw'] = $elDbVals;
+										$elDbValues = $testReplace;
+										$this->modifiedValidationData[$elName] = $testReplace;
+										$input->set($elName . '_raw', $elDbValues);
+										$post[$elName . '_raw'] = $elDbValues;
 									}
 								}
 							}
@@ -2940,19 +2915,19 @@ class Form extends View implements ModelFormFormInterface
 
 				if ($groupModel->isJoin() || $elementModel->isJoin())
 				{
-					$joindata[$elName2] = $elDbVals;
+					$joinData[$elName2] = $elDbValues;
 				}
 				else
 				{
-					$input->set($elName, $elDbVals);
-					$post[$elName] = $elDbVals;
+					$input->set($elName, $elDbValues);
+					$post[$elName] = $elDbValues;
 				}
 				// Unset the defaults or the orig submitted form data will be used (see date plugin mysql vs form format)
 				$elementModel->defaults = null;
 			}
 		}
 		// Insert join data into request array
-		foreach ($joindata as $key => $val)
+		foreach ($joinData as $key => $val)
 		{
 			$input->set($key, $val);
 			$post[$key] = $val;
@@ -2982,8 +2957,8 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . $this->getRowId() . '.';
-		// Store errors in loca
-		//l array as clearErrors() removes $this->errors
+
+		// Store errors in local array as clearErrors() removes $this->errors
 		$errors = array();
 
 		if (empty($this->errors))
@@ -3043,7 +3018,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return string
 	 */
-
 	public function getJsonErrors()
 	{
 		$data = array('modified' => $this->modifiedValidationData, 'errors' => $this->errors);
@@ -3056,7 +3030,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return	bool
 	 */
-
 	public function spoofCheck()
 	{
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
@@ -3069,7 +3042,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  object  uploader
 	 */
-
 	public function &getUploader()
 	{
 		if (is_null($this->uploader))
@@ -3087,12 +3059,11 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  string  table name
 	 */
-
 	public function getTableName()
 	{
 		$this->getListModel();
 
-		return $this->getListModel()->getTable()->db_table_name;
+		return $this->getListModel()->getTable()->get('list.db_table_name');
 	}
 
 	/**
@@ -3104,7 +3075,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return object form row
 	 */
-
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
 		if (is_null($this->form))
@@ -3133,7 +3103,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  bool  false if update error occurs
 	 */
-
 	public function setElementVars($varName, $varVal)
 	{
 		if ($this->elements == null)
@@ -3166,7 +3135,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  array  ints ids
 	 */
-
 	public function getElementIds($ignore = array(), $opts = array())
 	{
 		$aEls = array();
@@ -3230,7 +3198,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  bool  new row id loaded.
 	 */
-
 	public function paginateRowId($dir)
 	{
 		$db = Worker::getDbo();
@@ -4193,7 +4160,7 @@ class Form extends View implements ModelFormFormInterface
 
 			if (isset($linkedLists->$key) && $linkedLists->$key != 0)
 			{
-				$qsKey = $referringTable->getTable()->db_table_name . '___' . $element->name;
+				$qsKey = $referringTable->getTable()->get('list.db_table_name') . '___' . $element->name;
 				$val = $input->get($qsKey);
 
 				if ($val == '')

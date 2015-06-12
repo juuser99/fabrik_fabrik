@@ -105,7 +105,9 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$query = $db->getQuery(true);
 
 		// As we are selecting on primary key we can select all rows - 3000 records load in 0.014 seconds
-		$query->select($table->db_primary_key)->from($table->db_table_name);
+		$pk = $db->qn($table->get('list.db_primary_key'));
+		$tableName = $db->qn($table->get('list.db_table_name'));
+		$query->select($pk)->from($tableName);
 		$query = $listModel->buildQueryJoin($query);
 		$query = $listModel->buildQueryWhere(true, $query);
 		$query = $listModel->buildQueryOrder($query);
@@ -182,7 +184,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$opts->liveSite = COM_FABRIK_LIVESITE;
 		$opts->view = $input->get('view');
 		$opts->ids = $this->ids;
-		$opts->pkey = FabrikString::safeColNameToArrayKey($formModel->getTableModel()->getTable()->db_primary_key);
+		$opts->pkey = FabrikString::safeColNameToArrayKey($formModel->getTableModel()->getTable()->get('list.db_primary_key'));
 		$opts = json_encode($opts);
 		$container = $formModel->jsKey();
 		$this->formJavascriptClass($params, $formModel);

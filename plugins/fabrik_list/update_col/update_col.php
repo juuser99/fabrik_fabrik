@@ -206,7 +206,8 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$this->row_count = count($ids);
 		$ids = implode(',', $ids);
 		$model->reset();
-		$model->setPluginQueryWhere('update_col', $item->db_primary_key . ' IN ( ' . $ids . ')');
+		$pk = $item->get('list.db_primary_key');
+		$model->setPluginQueryWhere('update_col', $pk . ' IN ( ' . $ids . ')');
 		$data = $model->getData();
 		
 		// Needed to re-assign as getDate() messes the plugin params order
@@ -366,9 +367,10 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$db = $this->db;
 		$userids_emails = array();
 		$query = $db->getQuery();
+		$pk = $db->qn($item->get('list.db_primary_key'));
 		$query->select('#__users.id AS id, #__users.email AS email')
 		->from('#__users')->join('LEFT', $tbl . ' ON #__users.id = ' . $emailColumn)
-		->where($item->db_primary_key . ' IN (' . $ids . ')');
+		->where($pk . ' IN (' . $ids . ')');
 		$db->setQuery($query);
 		$results = $db->loadObjectList();
 

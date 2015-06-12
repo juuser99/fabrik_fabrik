@@ -68,7 +68,7 @@ class PlgFabrik_ElementDigsig extends Element
 		$layoutData->name          = $name;
 		$layoutData->val           = $val;
 		$listModel                 = $this->getListModel();
-		$pk                        = $listModel->getTable()->db_primary_key;
+		$pk                        = $listModel->getTable()->get('list.b_primary_key');
 		$pk                        = FabrikString::safeColNameToArrayKey($pk);
 
 		if (!$this->isEditable())

@@ -120,11 +120,13 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		$list = $listModel->getTable();
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
-		$query->clear()->select(' COUNT(' . $field . ')')->from($list->db_table_name)->where($field . ' = ' . (int) $this->user->get('id'));
+		$query->clear()->select(' COUNT(' . $field . ')')
+			->from($db->qn($list->get('list.db_table_name')))
+			->where($field . ' = ' . (int) $this->user->get('id'));
 
 		if (!empty($fkVal))
 		{
-			$query->where($db->quoteName($fk) . ' = ' . $db->q($fkVal), 'AND');
+			$query->where($db->qn($fk) . ' = ' . $db->q($fkVal), 'AND');
 		}
 
 		$db->setQuery($query);
@@ -168,12 +170,12 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		$listId = (int) $params->get('limit_table');
 		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($listId);
-		$dbTable = $listModel->getTable()->db_table_name;
+		$dbTable = $listModel->getTable()->get('list.db_table_name');
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
 		$lookup = FabrikString::safeColName($params->get('limit_user'));
 		$max = FabrikString::safeColName($params->get('limit_max'));
-		$query->select('MAX(' . $max . ')')->from($dbTable);
+		$query->select('MAX(' . $max . ')')->from($db->qn($dbTable));
 		$type = $params->get('lookup_type', '');
 
 		if ($type == 'user')

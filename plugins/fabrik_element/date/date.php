@@ -1380,7 +1380,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$listModel = $this->getListModel();
 		$table = $listModel->getTable();
 		$element = $this->getElement();
-		$origTable = $table->db_table_name;
+		$origTable = $table->get('list.db_table_name');
 		$elName = $this->getFullName(true, false);
 		$v = $this->filterName($counter, $normal);
 
@@ -1727,7 +1727,8 @@ class PlgFabrik_ElementDate extends ElementList
 		$format = $params->get('date_table_format');
 		$elementModel->strftimeTFormatToMySQL($format);
 		$search = $db->q('%' . addslashes($search) . '%');
-		$query->select('DISTINCT(' . $name . ') AS value, ' . $name . ' AS text')->from($table->db_table_name)
+		$query->select('DISTINCT(' . $name . ') AS value, ' . $name . ' AS text')
+			->from($db->qn($table->get('list.db_table_name')))
 			->where($name . ' LIKE ' . $search . ' OR DATE_FORMAT(' . $name . ', "' . $format . '" ) LIKE ' . $search);
 		$db->setQuery($query);
 		$tmp = $db->loadObjectList();
@@ -1948,7 +1949,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
 		$query->select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(' . $name . '))) AS value, ' . $label)
-			->from($db->qn($table->db_table_name));
+			->from($db->qn($table->get('list.db_table_name')));
 
 		return (string) $query;
 	}
@@ -1973,7 +1974,7 @@ class PlgFabrik_ElementDate extends ElementList
 		// $$$rob not actually likely to work due to the query easily exceeding MySQL's TIMESTAMP_MAX_VALUE value but the query in itself is correct
 
 		$query->select('FROM_UNIXTIME(SUM(UNIX_TIMESTAMP(' . $name . '))) AS value, ' . $label)
-			->from($db->qn($table->db_table_name));
+			->from($db->qn($table->get('list.db_table_name')));
 
 		return (string) $query;
 	}

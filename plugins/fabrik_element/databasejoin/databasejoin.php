@@ -2532,7 +2532,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 						// Either look for the parent_ids in the main fabrik list or the group's list.
 						$groupJoinModel = $group->getJoinModel();
 						$groupFk = $groupJoinModel->getForeignKey('.');
-						$lookupTable = $group->isJoin() ? $groupFk : $this->getListModel()->getTable()->db_primary_key;
+						$lookupTable = $group->isJoin() ? $groupFk : $this->getListModel()->getTable()->get('list.db_primary_key');
 						$str = $lookupTable . ' IN (' . implode(', ', $joinIds) . ')';
 					}
 					else
@@ -2831,7 +2831,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$opts->autoCompleteOpts = $opts->displayType == 'auto-complete'
 			? FabrikHelperHTML::autoCompleteOptions($opts->id, $this->getElement()->id, $this->getFormModel()->getId(), 'databasejoin') : null;
 		$opts->allowadd = $params->get('fabrikdatabasejoin_frontend_add', 0) == 0 ? false : true;
-		$opts->listName = $this->getListModel()->getTable()->db_table_name;
+		$opts->listName = $this->getListModel()->getTable()->get('list.db_table_name');
 		$this->elementJavascriptJoinOpts($opts);
 		$opts->isJoin = $this->isJoin();
 		$opts->advanced = $this->getAdvancedSelectClass() != '';
@@ -3453,7 +3453,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	protected function buildQueryParentKey()
 	{
 		$item = $this->getListModel()->getTable();
-		$parentKey = $item->db_primary_key;
+		$parentKey = $item->get('list.db_primary_key');
 
 		if ($this->isJoin())
 		{

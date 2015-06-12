@@ -67,11 +67,11 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 		else
 		{
 			// Old fabrik 2.x params stored element name as a string
-			$otherFullName = $table->db_table_name . '___' . $otherField;
+			$otherFullName = $table->get('list.db_table_name') . '___' . $otherField;
 		}
 
 		$db          = $listModel->getDb();
-		$lookupTable = $db->qn($table->db_table_name);
+		$lookupTable = $db->qn($table->get('list.db_table_name'));
 		$data        = $db->q($data);
 		$query       = $db->getQuery(true);
 		$query->select('COUNT(*)')->from($lookupTable)->where($db->qn($elementModel->getFullName(false, false)) . ' = ' . $data);
@@ -99,7 +99,8 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 
 		if (!empty($rowId))
 		{
-			$query->where($table->db_primary_key . ' != ' . $db->q($rowId));
+			$pk = $db->qn($table->get('list.db_primary_key'));
+			$query->where($pk . ' != ' . $db->q($rowId));
 		}
 
 		$db->setQuery($query);

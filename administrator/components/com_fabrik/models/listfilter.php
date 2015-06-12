@@ -869,7 +869,7 @@ class ListFilter extends Base
 				 */
 				$elements        = $this->listModel->getElements('id');
 				$filterElements = $this->listModel->getElements('filtername');
-				$tableName       = $db->quoteName($this->listModel->getTable()->db_table_name);
+				$tableName       = $db->qn($this->listModel->getTable()->get('list.db_table_name'));
 				$searchFilters   = $app->getUserState('com_' . $package . '.searchform.form' . $fromFormId . '.filters');
 
 				for ($i = 0; $i < count($searchFilters['key']); $i++)

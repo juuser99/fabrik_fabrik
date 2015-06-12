@@ -98,9 +98,9 @@ class PlgFabrik_ListFilter_View extends PlgFabrik_List
 							$aAsFields = array();
 							$element->getAsField_html($aFields, $aAsFields);
 							$pval = str_replace('___', '.', $val);
-							$query->select(implode(', ', $aFields))->from($db->quoteName($item->db_table_name));
+							$query->select(implode(', ', $aFields))->from($db->qn($item->get('list.db_table_name')));
 							$query = $model->buildQueryJoin($query);
-							$query->group($db->quoteName($pval));
+							$query->group($db->qn($pval));
 							$query->order($pval . ' ASC');
 							$db->setQuery($query);
 							$rows = $db->loadObjectList();

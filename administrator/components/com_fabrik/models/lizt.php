@@ -1217,7 +1217,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * @param   string $prefix  The class prefix. Optional.
 	 * @param   array  $options Configuration array for model. Optional.
 	 *
-	 * @return   object    table
+	 * @return   Registry    table
 	 */
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
@@ -1229,13 +1229,6 @@ class Lizt extends View implements ModelFormLiztInterface
 		if (!isset($this->table) || !is_object($this->table))
 		{
 			$id          = $this->get('id');
-
-			if (!$id)
-			{
-				echo "<pre>";print_r(debug_backtrace());
-				echo "no id set";exit;
-			}
-			echo "get table $id <br>";
 			$this->table = $this->getItem($id);
 
 			if (trim($this->table->get('db_primary_key')) !== '')
@@ -4533,9 +4526,6 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!isset($this->params))
 		{
-			echo "list get Params <br>";
-			echo "<pre>";print_r($item);
-			echo "after print r<br>";
 			$this->params = new JRegistry($item->get('list.params'));
 		}
 
@@ -4586,7 +4576,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	/**
 	 * Load the database object associated with the list
 	 *
-	 * @return  object    database
+	 * @return  \JDatabaseDriver    database
 	 */
 
 	public function getDb()
@@ -4898,8 +4888,6 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			$input             = $this->app->input;
 			$groups            = $this->user->getAuthorisedViewLevels();
-			print_r($this->getItem());
-			echo "<br> allow add = " . $this->getParams()->get('allow_add') . "<br>";exit;
 			$this->access->add = in_array($this->getParams()->get('list.allow_add'), $groups);
 			$hideAdd           = $input->getBool('hide-add', false);
 
@@ -7745,7 +7733,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		$primaryKey = FabrikString::shortColName($this->getTable()->db_primary_key);
+		$primaryKey = FabrikString::shortColName($this->getTable()->get('list.db_primary_key'));
 
 		if ($rowId != '' && $c == 1 && $lastKey == $primaryKey)
 		{
@@ -10640,7 +10628,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			return;
 		}
 
-		$dbprimaryKey = FabrikString::safeColNameToArrayKey($this->getTable()->db_primary_key);
+		$dbPrimaryKey = FabrikString::safeColNameToArrayKey($this->getTable()->get('list.db_primary_key'));
 		$formModel    = $this->getFormModel();
 		$db           = $this->getDb();
 		FabrikHelperHTML::debug($data, 'render:before formatForJoins');
@@ -10741,7 +10729,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		for ($i = 0; $i < $count; $i++)
 		{
 			// $$$rob if rendering J article in PDF format __pk_val not in pdf table view
-			$next_pk = isset($data[$i]->__pk_val) ? $data[$i]->__pk_val : $data[$i]->$dbprimaryKey;
+			$next_pk = isset($data[$i]->__pk_val) ? $data[$i]->__pk_val : $data[$i]->$dbPrimaryKey;
 
 			if (!empty($last_pk) && ($last_pk == $next_pk))
 			{
@@ -10904,7 +10892,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$data[$key] = $value;
 
 		// Ensure the primary key is set in $data
-		$primaryKey = FabrikString::shortColName($this->getTable()->db_primary_key);
+		$primaryKey = FabrikString::shortColName($this->getTable()->get('list.db_primary_key'));
 		$primaryKey = str_replace("`", "", $primaryKey);
 
 		if (!isset($data[$primaryKey]))
@@ -11066,7 +11054,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	/**
 	 * Update a single row with a key = val, does NOT work across joins, main table only
 	 *
-	 * @param   array  $id  Pk value to update
+	 * @param   string  $id  Pk value to update
 	 * @param   string $col Key to update should be in format 'table.element'
 	 * @param   string $val Val to set to
 	 *
@@ -11595,7 +11583,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$field = explode("AS", $col);
 		$field = array_shift($field);
 		$db    = $this->getDb();
-		$k     = $this->getTable()->db_primary_key;
+		$k     = $this->getTable()->get('list.db_primary_key');
 		$tbl   = $this->getTable()->get('list.db_table_name');
 
 		// Get the primary keys and ordering values for the selection.

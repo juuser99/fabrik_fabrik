@@ -117,7 +117,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 			}
 		}
 
-		$key = FabrikString::safeColNameToArrayKey($formModel->getlistModel()->getTable()->db_primary_key);
+		$key = FabrikString::safeColNameToArrayKey($formModel->getlistModel()->getTable()->get('list.db_primary_key'));
 		$customkey = $params->get('salesforce_customid') . '__c';
 
 		if ($params->get('salesforce_allowupsert', 0))

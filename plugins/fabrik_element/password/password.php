@@ -146,7 +146,7 @@ class PlgFabrik_ElementPassword extends Element
 		}
 
 		$input    = $this->app->input;
-		$k        = $this->getlistModel()->getTable()->db_primary_key;
+		$k        = $this->getlistModel()->getTable()->get('list.db_primary_key');
 		$k        = FabrikString::safeColNameToArrayKey($k);
 		$element  = $this->getElement();
 		$origname = $element->name;

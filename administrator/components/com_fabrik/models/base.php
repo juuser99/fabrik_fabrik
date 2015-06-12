@@ -459,7 +459,7 @@ class Base extends \JModelBase
 
 				if (is_array($res))
 				{
-					$data->list->db_primary_key = $newTable . '.' . $res[0];
+					$data->set('list.db_primary_key', $newTable . '.' . $res[0]);
 				}
 			}
 		}
@@ -1149,7 +1149,7 @@ class Base extends \JModelBase
 		foreach ($ids as $id)
 		{
 			$item  = $this->getItem($id);
-			$table = $item->list->db_table_name;
+			$table = $item->get('list.db_table_name');
 			$dispatcher->trigger('onContentBeforeDrop', array('com_fabrik.list', $id));
 
 			if (strncasecmp($table, $dbPrefix, String::strlen($dbPrefix)) == 0)

@@ -136,7 +136,7 @@ class PlgFabrik_ElementTimer extends Element
 
 		// $$$rob not actually likely to work due to the query easily exceeding MySQL's TIMESTAMP_MAX_VALUE value but the query in itself is correct
 		$query->select('DATE_FORMAT(FROM_UNIXTIME(SUM(UNIX_TIMESTAMP(' . $name . '))), \'%H:%i:%s\') AS value, ' . $label)
-		->from($db->qn($table->db_table_name));
+		->from($db->qn($table->get('list.db_table_name')));
 
 		return (string) $query;
 	}
@@ -159,7 +159,7 @@ class PlgFabrik_ElementTimer extends Element
 		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
 		$query->select('DATE_FORMAT(FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(' . $name . '))), \'%H:%i:%s\') AS value, ' . $label)
-			->from($db->qn($table->db_table_name));
+			->from($db->qn($table->get('list.db_table_name')));
 
 		return(string) $query;
 	}
@@ -182,7 +182,7 @@ class PlgFabrik_ElementTimer extends Element
 		$query = $listModel->buildQueryWhere(true, $query);
 		$name = $this->getFullName(false, false);
 		$query->select('DATE_FORMAT(FROM_UNIXTIME((UNIX_TIMESTAMP(' . $name . '))), \'%H:%i:%s\') AS value, ' . $label)
-			->from($db->qn($table->db_table_name));
+			->from($db->qn($table->get('list.db_table_name')));
 
 		return (string) $query;
 	}
