@@ -26,7 +26,7 @@ use \JText as JText;
 use \JRoute as JRoute;
 use \JHtml as JHtml;
 use \JFilterInput as JFilterInput;
-
+use \Fabrik\Admin\Views\Html;
 
 /**
  * Base Form view class
@@ -35,7 +35,7 @@ use \JFilterInput as JFilterInput;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Base extends \Fabrik\Admin\Views\Html
+class Base extends Html
 {
 	/**
 	 * Is the view rendering inside the Fabrik Joomla content plugin
@@ -62,11 +62,12 @@ class Base extends \Fabrik\Admin\Views\Html
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$w = new Worker;
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 
 		$model->isMambot = $this->isMambot;
 		$item = $model->getItem();
-
 		$form = $item->get('form');
 
 		if ($model->render() === false)

@@ -4888,7 +4888,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			$input             = $this->app->input;
 			$groups            = $this->user->getAuthorisedViewLevels();
-			$this->access->add = in_array($this->getParams()->get('list.allow_add'), $groups);
+			$this->access->add = in_array($this->getParams()->get('allow_add'), $groups);
 			$hideAdd           = $input->getBool('hide-add', false);
 
 			if ($hideAdd)

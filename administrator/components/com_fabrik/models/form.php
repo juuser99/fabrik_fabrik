@@ -4809,7 +4809,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  void
 	 */
-
 	public function setEditable($editable)
 	{
 		$this->editable = $editable;
