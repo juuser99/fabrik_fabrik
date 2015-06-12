@@ -19,6 +19,7 @@ use \JFactory as JFactory;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
 use Fabrik\Helpers\Worker;
+use \Joomla\Registry\Registry;
 
 /**
  * Fabrik Admin Component Helper
@@ -65,7 +66,7 @@ class Fabrik
 	 * Prepare the date for saving
 	 * DATES SHOULD BE SAVED AS UTC
 	 *
-	 * @param   JRegistry &$data Data to prepare
+	 * @param   Registry &$data Data to prepare
 	 * @param   string    $key   Key to prepare
 	 *
 	 * @return  JRegistry

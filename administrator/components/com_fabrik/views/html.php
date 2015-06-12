@@ -16,6 +16,7 @@ use \SplPriorityQueue as SplPriorityQueue;
 use \JFactory as JFactory;
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \JHTML as JHTML;
+use \Joomla\Registry\Registry as Registry;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -29,18 +30,44 @@ defined('_JEXEC') or die('Restricted access');
  */
 class Html Extends \JViewHtml
 {
+
+	/**
+	 * @var JApplicationCms
+	 */
+	protected $app = null;
+
+	/**
+	 * @var JUser
+	 */
+	protected $user = null;
+
+	/**
+	 * @var JDocument
+	 */
+	protected $doc = null;
+
+	protected $state = null;
+
 	/**
 	 * Method to instantiate the view.
 	 *
-	 * @param   JModel            $model  The model object.
-	 * @param   SplPriorityQueue  $paths  The paths queue.
-	 *
-	 * @since   12.1
+	 * @param   JModel           $model The model object.
+	 * @param   SplPriorityQueue $paths The paths queue.
+	 * @param   Registry         $state DI options
 	 */
-	public function __construct(JModel $model, SplPriorityQueue $paths = null)
+	public function __construct(JModel $model, SplPriorityQueue $paths = null, Registry $state = null)
 	{
 		parent::__construct($model, $paths);
-		$input = JFactory::getApplication()->input;
+
+		if (is_null($state))
+		{
+			$this->state = new Registry();
+		}
+
+		$this->app  = $this->state->get('app', JFactory::getApplication());
+		$this->user = $this->state->get('user', JFactory::getUser());
+		$this->doc  = $this->state->get('doc', JFactory::getDocument());
+		$input      = $this->app->input;
 
 		if ($input->get('format', 'html') === 'html')
 		{
@@ -59,20 +86,20 @@ class Html Extends \JViewHtml
 	 */
 	public function loadTemplate($template = '')
 	{
-		$file = $template === '' ? $this->layout : $this->layout . '_' . $template;
-		$this->_template = $this->getPath($file);
+		$file     = $template === '' ? $this->layout : $this->layout . '_' . $template;
+		$template = $this->getPath($file);
 		ob_start();
 
 		// Include the requested template filename in the local scope
 		// (this will execute the view logic).
-		include $this->_template;
+		include $template;
 
 		// Done with the requested template; get the buffer and
 		// clear it.
-		$this->_output = ob_get_contents();
+		$output = ob_get_contents();
 		ob_end_clean();
 
-		return $this->_output;
+		return $output;
 	}
 
 	/**
@@ -85,8 +112,15 @@ class Html Extends \JViewHtml
 		return $this->model;
 	}
 
-	public function setModel()
+	/**
+	 * Set Model
+	 *
+	 * @param   JModel $model
+	 *
+	 * @return  void
+	 */
+	public function setModel(JModel $model)
 	{
-		return $this->model;
+		$this->model = $model;
 	}
 }

@@ -1268,7 +1268,6 @@ class Group extends Base implements ModelGroupInterface
 		if (!isset($this->form))
 		{
 			$formIds = $this->getFormsIamIn();
-			print_r($formIds);
 			$formId = empty($formIds) ? '' : $formIds[0];
 			$this->form = new Form;
 			$this->form->set('id', $formId);

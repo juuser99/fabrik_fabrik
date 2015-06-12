@@ -20,7 +20,7 @@ use Joomla\String\String as String;
 use Fabrik\Helpers\Worker as Worker;
 use \JHTML as JHTML;
 use \stdClass as stdClass;
-use Joomla\Registry\Registry as JRegistry;
+use Joomla\Registry\Registry as Registry;
 use \JFactory as JFactory;
 use \FabrikString as FabrikString;
 use \JEventDispatcher as JEventDispatcher;
@@ -30,7 +30,6 @@ use Fabrik\Admin\Helpers\Fabrik as Fabrik;
 use Joomla\String\Inflector;
 use \JFile as JFile;
 use \FabrikHelperHTML as FabrikHelperHTML;
-
 
 /**
  * Fabrik Base Admin Model
@@ -86,16 +85,16 @@ class Base extends \JModelBase
 	/**
 	 * Instantiate the model.
 	 *
-	 * @param   JRegistry $state The model state.
+	 * @param   Registry $state The model state.
 	 *
 	 * @since   12.1
 	 */
-	public function __construct(JRegistry $state = null)
+	public function __construct(Registry $state = null)
 	{
 		parent::__construct($state);
-		$this->app  = $this->state->get('app', JFactory::getApplication());
-		$this->user = $this->state->get('user', JFactory::getUser());
-		$this->config = $this->state->get('config', JFactory::getConfig());
+		$this->app     = $this->state->get('app', JFactory::getApplication());
+		$this->user    = $this->state->get('user', JFactory::getUser());
+		$this->config  = $this->state->get('config', JFactory::getConfig());
 		$this->session = $this->state->get('session', $session = JFactory::getSession());
 
 		if ($this->name === '')
@@ -170,7 +169,7 @@ class Base extends \JModelBase
 	 *
 	 * @param  string $id
 	 *
-	 * @return JRegistry
+	 * @return Registry
 	 */
 	public function getItem($id = null)
 	{
@@ -192,7 +191,7 @@ class Base extends \JModelBase
 
 		$item = json_decode($json);
 
-		return new JRegistry($item);
+		return new Registry($item);
 
 		return $item;
 	}
@@ -215,8 +214,8 @@ class Base extends \JModelBase
 
 		foreach ($files as $file)
 		{
-			$json    = file_get_contents($file);
-			$item = json_decode($json);
+			$json             = file_get_contents($file);
+			$item             = json_decode($json);
 			$items[$item->id] = $item;
 		}
 
@@ -248,19 +247,18 @@ class Base extends \JModelBase
 			$this->publishedListElements = array();
 		}
 
-
-		$input = $this->app->input;
+		$input  = $this->app->input;
 		$params = $this->getParams();
 
 		// $$$ rob fabrik_show_in_list set in admin module params (will also be set in menu items and content plugins later on)
 		// its an array of element ids that should be show. Overrides default element 'show_in_list' setting.
 		$showInList = (array) $input->get('fabrik_show_in_list', array(), 'array');
-		$sig = empty($showInList) ? 0 : implode('.', $showInList);
+		$sig        = empty($showInList) ? 0 : implode('.', $showInList);
 
 		if (!array_key_exists($sig, $this->publishedListElements))
 		{
 			$this->publishedListElements[$sig] = array();
-			$elements = $this->getMyElements();
+			$elements                          = $this->getMyElements();
 
 			foreach ($elements as $elementModel)
 			{
@@ -307,7 +305,7 @@ class Base extends \JModelBase
 			{
 				if (is_string($join->params))
 				{
-					$join->params = new JRegistry($join->params);
+					$join->params = new Registry($join->params);
 					$this->setJoinPk($join);
 				}
 			}
@@ -318,8 +316,9 @@ class Base extends \JModelBase
 
 	/**
 	 * @param  array|object $post
+	 * @param  string  $view
 	 *
-	 * @return JRegistry
+	 * @return Registry
 	 */
 	protected function prepareSave($post, $view = null)
 	{
@@ -330,14 +329,14 @@ class Base extends \JModelBase
 		if (is_array($post))
 		{
 			// We are saving from the form submission
-			$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . ArrayHelper::getValue($post, 'view') . '.json';
-			$data = file_exists($file) ? json_decode(file_get_contents($file)) : new stdClass;
+			$file        = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . ArrayHelper::getValue($post, 'view') . '.json';
+			$data        = file_exists($file) ? json_decode(file_get_contents($file)) : new stdClass;
 			$post        = ArrayHelper::toObject($post);
 			$data->$view = $post;
 
 			if ($view === 'list' || $view === 'form')
 			{
-				$data->view  = $data->$view->view;
+				$data->view = $data->$view->view;
 
 				$data->published = $data->$view->published;
 				unset($data->$view->view);
@@ -350,13 +349,13 @@ class Base extends \JModelBase
 			$data = $post;
 		}
 
-		return new JRegistry($data);
+		return new Registry($data);
 	}
 
 	/**
 	 * Save the form
 	 *
-	 * @param   JRegistry $data A JRegistry representing the view state
+	 * @param   Registry $data A Registry representing the view state
 	 *
 	 * @return bool
 	 * @throws RuntimeException
@@ -437,7 +436,7 @@ class Base extends \JModelBase
 				$data->set('list.auto_inc', 1);
 
 				$dbOpts            = array();
-				$params            = new JRegistry($data->get('list.params'));
+				$params            = new Registry($data->get('list.params'));
 				$dbOpts['COLLATE'] = $params->get('collation', '');
 
 				$fields = array('id' => array('plugin' => 'internalid', 'primary_key' => true),
@@ -516,7 +515,7 @@ class Base extends \JModelBase
 			}
 		}
 
-		$params = new JRegistry($data->get('list'));
+		$params = new Registry($data->get('list'));
 
 		if (!is_null($data->get('list.group_by')))
 		{
@@ -566,7 +565,7 @@ class Base extends \JModelBase
 			return;
 		}
 
-		$params        = new JRegistry($row->params);
+		$params        = new Registry($row->params);
 		$origCollation = $params->get('collation', 'none');
 
 		if (!empty($this->storage->table))
@@ -613,7 +612,7 @@ class Base extends \JModelBase
 				}
 
 				$map[$element->getFullName(false, false)] = $size;
-				$map[$element->getElement()->get('id')]          = $size;
+				$map[$element->getElement()->get('id')]   = $size;
 			}
 		}
 
@@ -622,6 +621,8 @@ class Base extends \JModelBase
 
 	/**
 	 * Get the models active/selected plug-ins
+	 *
+	 * @param   string $subView
 	 *
 	 * @return array
 	 */
@@ -643,9 +644,6 @@ class Base extends \JModelBase
 	 * @param   bool   $useStep            Concat table name and el name with '___' (true) or "." (false)
 	 * @param   bool   $incRaw             Include raw labels default = true
 	 * @param   string $key                What value should be used for the option value 'name' (default) or 'id'
-	 *
-	 * @since 3.0.7
-	 *
 	 * @param   string $attribs            Select list attributes @since 3.1b
 	 *
 	 * @return    string    html list
@@ -671,7 +669,6 @@ class Base extends \JModelBase
 	{
 		if (is_null($this->formModel) || $this->formModel->get('id') !== $this->get('id'))
 		{
-			echo "load new form model<br>";
 			$this->formModel = new Form;
 
 			$this->formModel->set('id', $this->get('id'));
@@ -683,7 +680,7 @@ class Base extends \JModelBase
 	/**
 	 * Get the groups list model
 	 *
-	 * @return  object	list model
+	 * @return  object    list model
 	 */
 	public function getListModel()
 	{
@@ -700,9 +697,9 @@ class Base extends \JModelBase
 	/**
 	 * Get an element
 	 *
-	 * @param   string  $searchName  Name to search for
-	 * @param   bool    $checkInt    Check search name against element id
-	 * @param   bool    $checkShort  Check short element name
+	 * @param   string $searchName Name to search for
+	 * @param   bool   $checkInt   Check search name against element id
+	 * @param   bool   $checkShort Check short element name
 	 *
 	 * @return  mixed  ok: element model not ok: false
 	 */
@@ -742,9 +739,9 @@ class Base extends \JModelBase
 	/**
 	 * Attempts to determine if the form contains the element
 	 *
-	 * @param   string  $searchName  Element name to search for
-	 * @param   bool    $checkInt    Check search name against element id
-	 * @param   bool    $checkShort  Check short element name
+	 * @param   string $searchName Element name to search for
+	 * @param   bool   $checkInt   Check search name against element id
+	 * @param   bool   $checkShort Check short element name
 	 *
 	 * @return  bool  true if found, false if not found
 	 */
@@ -799,7 +796,7 @@ class Base extends \JModelBase
 					continue;
 				}
 
-				$val   = $el->$key;
+				$val   = $el->get($key);
 				$label = strip_tags($prefix . $el->get('label'));
 
 				if ($labelMethod !== '')
@@ -902,11 +899,11 @@ class Base extends \JModelBase
 			$options = array('control' => 'jform', 'load_data' => true);
 		}
 
-		$form  = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
-		$item  = $this->getItem();
+		$form = JForm::getInstance('com_fabrik.' . $name, $name, $options, false, false);
+		$item = $this->getItem();
 
 		$class = $this->getKlass();
-		$data       = $this->getItem()->get($class);
+		$data  = $this->getItem()->get($class);
 
 		$data->view = $item->get('view');
 		$form->bind($data);
@@ -923,9 +920,9 @@ class Base extends \JModelBase
 	 */
 	private function getKlass()
 	{
-		$inflector  = Inflector::getInstance();
-		$class = explode("\\", get_class($this));
-		$class = strtolower(array_pop($class));
+		$inflector = Inflector::getInstance();
+		$class     = explode("\\", get_class($this));
+		$class     = strtolower(array_pop($class));
 
 		if ($class === 'lizt')
 		{
@@ -944,7 +941,6 @@ class Base extends \JModelBase
 			// Inflector not working for lists.
 			$class = 'list';
 		}
-
 
 		return $class;
 	}
@@ -1015,7 +1011,7 @@ class Base extends \JModelBase
 		{
 			$items[$id]->published = 0;
 			$items[$id]->id        = $id;
-			$items[$id] = $this->prepareSave($items[$id]);
+			$items[$id]            = $this->prepareSave($items[$id]);
 			$this->save($items[$id]);
 		}
 	}
@@ -1033,7 +1029,7 @@ class Base extends \JModelBase
 		{
 			$items[$id]->published = 1;
 			$items[$id]->id        = $id;
-			$items[$id] = $this->prepareSave($items[$id]);
+			$items[$id]            = $this->prepareSave($items[$id]);
 			$this->save($items[$id]);
 		}
 	}
@@ -1200,7 +1196,7 @@ class Base extends \JModelBase
 	 * automatically create a form to allow the update/creation of that tables
 	 * records
 	 *
-	 * @param   JRegistry $view   View containing all info
+	 * @param   Registry $view   View containing all info
 	 * @param   int       $formId to copy from. If = 0 then create a default form. If not 0 then copy the form id
 	 *                            passed in
 	 *
@@ -1283,7 +1279,7 @@ class Base extends \JModelBase
 	 * need to create all the elements based on the database table fields and their
 	 * column type
 	 *
-	 * @param   JRegistry $data      JSON view data
+	 * @param   Registry $data      JSON view data
 	 * @param   string    $groupName Group name
 	 * @param   string    $table     Table name - if not set then use jform's db_table_name (@since 3.1)
 	 *
@@ -1667,16 +1663,16 @@ class Base extends \JModelBase
 
 	public function getFormOptions()
 	{
-		$items = $this->getViews();
+		$items   = $this->getViews();
 		$options = array();
 
 		foreach ($items as $item)
 		{
-			$item = new JRegistry($item);
-			$option = new stdClass;
+			$item          = new Registry($item);
+			$option        = new stdClass;
 			$option->value = $item->get('view');
-			$option->text = $item->get('form.label');
-			$options[] = $option;
+			$option->text  = $item->get('form.label');
+			$options[]     = $option;
 		}
 
 		return $options;
@@ -1685,8 +1681,8 @@ class Base extends \JModelBase
 	/**
 	 * Method to copy one or more records.
 	 *
-	 * @param  array  &$ids  Ids to copy
-	 * @param  array  $names  Old to new name map.
+	 * @param  array &$ids  Ids to copy
+	 * @param  array $names Old to new name map.
 	 *
 	 * @throws \Exception
 	 *
@@ -1694,15 +1690,15 @@ class Base extends \JModelBase
 	 */
 	public function copy(&$ids, $names)
 	{
-		$db = $this->getDb();
-		$nullDate = $db->getNullDate();
-		$user  = JFactory::getUser();
-		$createDate             = JFactory::getDate();
-		$createDate             = $createDate->toSql();
+		$db         = $this->getDb();
+		$nullDate   = $db->getNullDate();
+		$user       = JFactory::getUser();
+		$createDate = JFactory::getDate();
+		$createDate = $createDate->toSql();
 
 		foreach ($ids as $i => $pk)
 		{
-			$item = $this->getItem($pk);
+			$item     = $this->getItem($pk);
 			$listName = $names[$pk]['listLabel'];
 			$item->set('id', $listName);
 
@@ -1729,12 +1725,12 @@ class Base extends \JModelBase
 				$item->set($groupKey . '.modified_by', '');
 			}
 
-
-			$file  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' .$listName . '.json';
+			$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $listName . '.json';
 
 			if (JFile::exists($file))
 			{
 				throw new \Exception('Can not copy to ' . $pk . ', the file already exists');
+
 				return false;
 			}
 
@@ -1754,7 +1750,7 @@ class Base extends \JModelBase
 
 	public function getInternalRepeatJoins()
 	{
-		$return = array();
+		$return      = array();
 		$groupModels = $this->getGroupsHierarchy();
 
 		// Remove any groups that were set to be repeating and hence were storing in their own db table.
@@ -1762,8 +1758,8 @@ class Base extends \JModelBase
 		{
 			if ($groupModel->isJoin())
 			{
-				$joinModel = $groupModel->getJoinModel();
-				$join = $joinModel->getJoin();
+				$joinModel  = $groupModel->getJoinModel();
+				$join       = $joinModel->getJoin();
 				$joinParams = is_string($join->params) ? json_decode($join->params) : $join->params;
 
 				if (isset($joinParams->type) && $joinParams->type === 'group')
@@ -1780,15 +1776,15 @@ class Base extends \JModelBase
 	 * As you may be joining to multiple versions of the same db table we need
 	 * to set the various database name alaises that our SQL query will use
 	 *
-	 * @param   array  &$joins  joins
+	 * @param   array &$joins joins
 	 *
 	 * @return  void
 	 */
 	protected function _makeJoinAliases(&$joins)
 	{
-		$prefix = $this->app->get('dbprefix');
-		$table = $this->getItem();
-		$aliases = array($table->get('list.db_table_name'));
+		$prefix      = $this->app->get('dbprefix');
+		$table       = $this->getItem();
+		$aliases     = array($table->get('list.db_table_name'));
 		$tableGroups = array();
 
 		// Build up the alias and $tableGroups array first
@@ -1824,8 +1820,8 @@ class Base extends \JModelBase
 			if (in_array($tableJoin, $aliases))
 			{
 				$base = $tableJoin;
-				$a = $base;
-				$c = 0;
+				$a    = $base;
+				$c    = 0;
 
 				while (in_array($a, $aliases))
 				{
@@ -1876,7 +1872,7 @@ class Base extends \JModelBase
 			{
 				if ($join->element_id != 0)
 				{
-					$join->keytable = $tableGroups[$join->group_id];
+					$join->keytable        = $tableGroups[$join->group_id];
 					$join->join_from_table = $join->keytable;
 				}
 			}

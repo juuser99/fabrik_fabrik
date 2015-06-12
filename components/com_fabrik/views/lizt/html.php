@@ -13,8 +13,6 @@ namespace Fabrik\Views\Lizt;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \JFactory as JFactory;
-
 /**
  * HTML Fabrik List view class
  *
@@ -22,11 +20,8 @@ use \JFactory as JFactory;
  * @subpackage  Fabrik
  * @since       3.5
  */
-
 class Html extends Base
 {
-	private $state = null;
-	private $document = null;
 	private $tabs = null;
 
 	/**
@@ -36,33 +31,30 @@ class Html extends Base
 	 */
 	public function render()
 	{
-		echo "render";
 		if (parent::render() !== false)
 		{
-			echo "here";
-			$model = $this->model;
+			$model      = $this->model;
 			$this->tabs = $model->loadTabs();
-			$app = JFactory::getApplication();
+			$app        = $this->app;
 
 			if (!$app->isAdmin() && isset($this->params))
 			{
-				$this->state = $this->get('State');
+				$this->state = $model->getState();
 				$stateParams = $this->state->get('params');
-				$this->document = JFactory::getDocument();
 
 				if ($stateParams->get('menu-meta_description'))
 				{
-					$this->document->setDescription($stateParams->get('menu-meta_description'));
+					$this->doc->setDescription($stateParams->get('menu-meta_description'));
 				}
 
 				if ($stateParams->get('menu-meta_keywords'))
 				{
-					$this->document->setMetadata('keywords', $stateParams->get('menu-meta_keywords'));
+					$this->doc->setMetadata('keywords', $stateParams->get('menu-meta_keywords'));
 				}
 
 				if ($stateParams->get('robots'))
 				{
-					$this->document->setMetadata('robots', $stateParams->get('robots'));
+					$this->doc->setMetadata('robots', $stateParams->get('robots'));
 				}
 			}
 

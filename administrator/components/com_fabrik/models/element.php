@@ -306,8 +306,6 @@ class Element extends Base implements ModelElementFormInterface
 		if ($data['id'] == '0')
 		{
 			// Have to forcefully set group id otherwise listmodel id is blank
-			/*$elementModel->getElement()->set('group_id', $data['group_id']);
-			echo "<pre>";print_r($elementModel->getElement());*/
 
 			if ($listModel->canAddFields() === false && $listModel->noTable() === false)
 			{

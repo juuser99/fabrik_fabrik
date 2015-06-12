@@ -27,8 +27,7 @@ Fabrik::testPublishedPlugins();
 
 $input = JFactory::getApplication()->input;
 $cName = $input->getCmd('controller');
-/*echo "<Pre>";print_r($_POST);
-echo $cName;exit;*/
+
 // Check for plugin views (e.g. list email plugin's "email form"
 
 if (String::strpos($cName, '.') != false)

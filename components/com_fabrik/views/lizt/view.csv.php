@@ -33,7 +33,7 @@ class FabrikViewList extends FabrikViewListBase
 
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$input = $app->input;
 		$session = JFactory::getSession();
 		$exporter = new \Fabrik\Admin\Models\CsvExport;

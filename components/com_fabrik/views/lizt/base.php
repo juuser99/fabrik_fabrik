@@ -10,14 +10,12 @@
 
 namespace Fabrik\Views\Lizt;
 
-
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use \JComponentHelper as JComponentHelper;
 use \JProfiler as JProfiler;
-use \JFactory as JFactory;
 use \JRegistry as JRegistry;
 use \FabrikHelperHTML as FabrikHelperHTML;
 use \FText as FText;
@@ -78,24 +76,24 @@ class Base extends \Fabrik\Admin\Views\Html
 	/**
 	 * Get JS objects
 	 *
-	 * @param   array  $data  list data
+	 * @param   array $data list data
 	 *
 	 * @return  void
 	 */
 
 	protected function getManagementJS($data = array())
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$itemId = Worker::itemId();
-		$model = $this->model;
-		$params = $model->getParams();
-		$item = $model->getTable();
-		$listRef = $model->getRenderContext();
-		$listId = $model->getId();
-		$formModel = $model->getFormModel();
+		$app                = $this->app;
+		$input              = $app->input;
+		$itemId             = Worker::itemId();
+		$model              = $this->model;
+		$params             = $model->getParams();
+		$item               = $model->getTable();
+		$listRef            = $model->getRenderContext();
+		$listId             = $model->getId();
+		$formModel          = $model->getFormModel();
 		$elementsNotInTable = $formModel->getElementsNotInTable();
-		$toggleCols = (bool) $params->get('toggle_cols', false);
+		$toggleCols         = (bool) $params->get('toggle_cols', false);
 
 		if ($model->requiresSlimbox())
 		{
@@ -107,10 +105,10 @@ class Base extends \Fabrik\Admin\Views\Html
 			FabrikHelperHTML::slideshow();
 		}
 
-		$src = FabrikHelperHTML::framework();
+		$src  = FabrikHelperHTML::framework();
 		$shim = array();
 
-		$dep = new stdClass;
+		$dep       = new stdClass;
 		$dep->deps = array('fab/fabrik', 'fab/listfilter', 'fab/advanced-search', 'fab/encoder');
 
 		if ($toggleCols)
@@ -119,11 +117,11 @@ class Base extends \Fabrik\Admin\Views\Html
 		}
 
 		$shim['fab/list'] = $dep;
-		$src = $model->getPluginJsClasses($src, $shim);
+		$src              = $model->getPluginJsClasses($src, $shim);
 		FabrikHelperHTML::addToFrameWork($src, 'media/com_fabrik/js/list');
 		$model->getCustomJsAction($src);
 
-		$template = $model->getTmpl();
+		$template   = $model->getTmpl();
 		$this->tmpl = $template;
 
 		$model->getListCss();
@@ -136,58 +134,58 @@ class Base extends \Fabrik\Admin\Views\Html
 			$src[] = 'components/com_fabrik/views/list/tmpl/' . $template . '/javascript.js';
 		}
 
-		$origRows = $this->rows;
+		$origRows   = $this->rows;
 		$this->rows = array(array());
 
 		$tmpItemid = !isset($itemId) ? 0 : $itemId;
 
-		$this->_row = new stdClass;
-		$script = array();
-		$params = $model->getParams();
-		$opts = new stdClass;
-		$opts->admin = $app->isAdmin();
-		$opts->ajax = (int) $model->isAjax();
+		$this->_row       = new stdClass;
+		$script           = array();
+		$params           = $model->getParams();
+		$opts             = new stdClass;
+		$opts->admin      = $app->isAdmin();
+		$opts->ajax       = (int) $model->isAjax();
 		$opts->ajax_links = (bool) $params->get('list_ajax_links', $opts->ajax);
 
-		$opts->links = array('detail' => $params->get('detailurl', ''), 'edit' => $params->get('editurl', ''), 'add' => $params->get('addurl', ''));
-		$opts->filterMethod = $this->filter_action;
+		$opts->links           = array('detail' => $params->get('detailurl', ''), 'edit' => $params->get('editurl', ''), 'add' => $params->get('addurl', ''));
+		$opts->filterMethod    = $this->filter_action;
 		$opts->advancedFilters = $model->getAdvancedFilterValues();
-		$opts->form = 'listform_' . $listRef;
-		$this->listref = $listRef;
-		$opts->headings = $model->jsonHeadings();
-		$labels = $this->headings;
+		$opts->form            = 'listform_' . $listRef;
+		$this->listref         = $listRef;
+		$opts->headings        = $model->jsonHeadings();
+		$labels                = $this->headings;
 
 		foreach ($labels as &$l)
 		{
 			$l = strip_tags($l);
 		}
 
-		$opts->labels = $labels;
-		$opts->primaryKey = $item->get('list.db_primary_key');
-		$opts->Itemid = $tmpItemid;
-		$opts->listRef = $listRef;
-		$opts->formid = $model->getFormModel()->getId();
-		$opts->canEdit = $model->canEdit() ? "1" : "0";
-		$opts->canView = $model->canView() ? "1" : "0";
-		$opts->page = JRoute::_('index.php');
-		$opts->isGrouped = $this->isGrouped;
-		$opts->toggleCols = $toggleCols;
+		$opts->labels         = $labels;
+		$opts->primaryKey     = $item->get('list.db_primary_key');
+		$opts->Itemid         = $tmpItemid;
+		$opts->listRef        = $listRef;
+		$opts->formid         = $model->getFormModel()->getId();
+		$opts->canEdit        = $model->canEdit() ? "1" : "0";
+		$opts->canView        = $model->canView() ? "1" : "0";
+		$opts->page           = JRoute::_('index.php');
+		$opts->isGrouped      = $this->isGrouped;
+		$opts->toggleCols     = $toggleCols;
 		$opts->singleOrdering = (bool) $model->singleOrdering();
 
 		$formEls = array();
 
 		foreach ($elementsNotInTable as $tmpElement)
 		{
-			$oo = new stdClass;
-			$oo->name = $tmpElement->name;
-			$oo->label = $tmpElement->label;
+			$oo        = new stdClass;
+			$oo->name  = $tmpElement->get('name');
+			$oo->label = $tmpElement->get('label');
 			$formEls[] = $oo;
 		}
 
-		$opts->formels = $formEls;
+		$opts->formels             = $formEls;
 		$opts->fabrik_show_in_list = $input->get('fabrik_show_in_list', array(), 'array');
-		$opts->csvChoose = (bool) $params->get('csv_frontend_selection');
-		$opts->popup_width = $params->get('popup_width', '');
+		$opts->csvChoose           = (bool) $params->get('csv_frontend_selection');
+		$opts->popup_width         = $params->get('popup_width', '');
 
 		$opts->popup_height = $params->get('popup_height', '');
 
@@ -217,45 +215,44 @@ class Base extends \Fabrik\Admin\Views\Html
 		 *
 		 * But for now, it's too corner case to worry about!
 		 */
-		$noData = new stdClass();
+		$noData                 = new stdClass();
 		$opts->popup_edit_label = $model->editLabel($noData);
 		$opts->popup_view_label = $model->viewLabel($noData);
-		$opts->popup_add_label = $model->addLabel();
-		$opts->limitLength = $model->limitLength;
-		$opts->limitStart = $model->limitStart;
-		$opts->tmpl = $template;
-		$csvOpts = new stdClass;
-		$csvOpts->excel = (int) $params->get('csv_format');
-		$csvOpts->inctabledata = (int) $params->get('csv_include_data');
-		$csvOpts->incraw = (int) $params->get('csv_include_raw_data');
-		$csvOpts->inccalcs = (int) $params->get('csv_include_calculations');
-		$csvOpts->custom_qs = $params->get('csv_custom_qs', '');
-		$opts->csvOpts = $csvOpts;
+		$opts->popup_add_label  = $model->addLabel();
+		$opts->limitLength      = $model->limitLength;
+		$opts->limitStart       = $model->limitStart;
+		$opts->tmpl             = $template;
+		$csvOpts                = new stdClass;
+		$csvOpts->excel         = (int) $params->get('csv_format');
+		$csvOpts->inctabledata  = (int) $params->get('csv_include_data');
+		$csvOpts->incraw        = (int) $params->get('csv_include_raw_data');
+		$csvOpts->inccalcs      = (int) $params->get('csv_include_calculations');
+		$csvOpts->custom_qs     = $params->get('csv_custom_qs', '');
+		$opts->csvOpts          = $csvOpts;
 
-		$opts->csvFields = $model->getCsvFields();
+		$opts->csvFields     = $model->getCsvFields();
 		$csvOpts->incfilters = (int) $params->get('incfilters');
 
 		$opts->data = $data;
 
-		$opts->groupByOpts = new stdClass;
-		$opts->groupByOpts->isGrouped = (bool) $this->isGrouped;
+		$opts->groupByOpts                 = new stdClass;
+		$opts->groupByOpts->isGrouped      = (bool) $this->isGrouped;
 		$opts->groupByOpts->collapseOthers = (bool) $params->get('group_by_collapse_others', false);
 		$opts->groupByOpts->startCollapsed = (bool) $params->get('group_by_start_collapsed', false);
 
 		// If table data starts as empty then we need the html from the row
 		// template otherwise we can't add a row to the table
 		ob_start();
-		$this->_row = new stdClass;
-		$this->_row->id = '';
+		$this->_row        = new stdClass;
+		$this->_row->id    = '';
 		$this->_row->class = 'fabrik_row';
-		echo $this->loadTemplate('row');
 		$opts->rowtemplate = ob_get_contents();
 		ob_end_clean();
 
 		// $$$rob if you are loading a table in a window from a form db join select record option
 		// then we want to know the id of the window so we can set its showSpinner() method
 		$opts->winid = $input->get('winid', '');
-		$opts = json_encode($opts);
+		$opts        = json_encode($opts);
 
 		JText::script('COM_FABRIK_PREV');
 		JText::script('COM_FABRIK_SELECT_ROWS_FOR_DELETION');
@@ -315,15 +312,15 @@ class Base extends \Fabrik\Admin\Views\Html
 		// @since 3.0 inserts content before the start of the list render (currently on f3 tmpl only)
 		$pluginManager->runPlugins('onGetContentBeforeList', $model, 'list');
 		$this->pluginBeforeList = $pluginManager->data;
-		$script[] = $model->filterJs;
+		$script[]               = $model->filterJs;
 
 		// Was separate but should now load in with the rest of the require js code
-		$model = $this->model;
+		$model    = $this->model;
 		$script[] = $model->getElementJs($src);
 
 		// End domReady wrapper
 		$script[] = '})';
-		$script = implode("\n", $script);
+		$script   = implode("\n", $script);
 		FabrikHelperHTML::iniRequireJS($shim);
 		FabrikHelperHTML::script($src, $script);
 
@@ -334,7 +331,7 @@ class Base extends \Fabrik\Admin\Views\Html
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  template
+	 * @param   sting $tpl template
 	 *
 	 * @return void
 	 */
@@ -350,9 +347,9 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$profiler = JProfiler::getInstance('Application');
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$model = $this->model;
+		$app      = $this->app;
+		$input    = $app->input;
+		$model    = $this->model;
 
 		// Force front end templates
 		//$template = $model->getTmpl();
@@ -361,17 +358,17 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		//$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		//$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $template);
-		$user = JFactory::getUser();
-		$document = JFactory::getDocument();
-		$item = $model->getTable();
-		$data = $model->render();
+		$user     = $this->user;
+		$document = $this->doc;
+		$item     = $model->getTable();
+		$data     = $model->render();
 
 		$w = new Worker;
 
 		// Add in some styling short cuts
-		$c = 0;
+		$c    = 0;
 		$form = $model->getFormModel();
-		$nav = $model->getPagination();
+		$nav  = $model->getPagination();
 
 		foreach ($data as $groupkKey => $group)
 		{
@@ -382,13 +379,13 @@ class Base extends \Fabrik\Admin\Views\Html
 				$o = new stdClass;
 
 				// $$$ rob moved merge wip code to FabrikModelTable::formatForJoins() - should contain fix for pagination
-				$o->data = $data[$groupkKey][$i];
-				$o->cursor = $num_rows + $nav->limitstart;
-				$o->total = $nav->total;
-				$o->id = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
-				$o->class = 'fabrik_row oddRow' . $c;
+				$o->data              = $data[$groupkKey][$i];
+				$o->cursor            = $num_rows + $nav->limitstart;
+				$o->total             = $nav->total;
+				$o->id                = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
+				$o->class             = 'fabrik_row oddRow' . $c;
 				$data[$groupkKey][$i] = $o;
-				$c = 1 - $c;
+				$c                    = 1 - $c;
 				$num_rows++;
 			}
 		}
@@ -405,19 +402,19 @@ class Base extends \Fabrik\Admin\Views\Html
 				$elementModel->setRowClass($data);
 			}
 		}
-		echo "<pre>";print_r($data);echo "</pre>";
+
 		$this->rows = $data;
 		reset($this->rows);
 
 		// Cant use numeric key '0' as group by uses grouped name as key
-		$firstRow = current($this->rows);
+		$firstRow                   = current($this->rows);
 		$this->requiredFiltersFound = $model->getRequiredFiltersFound();
-		$this->advancedSearch = $model->getAdvancedSearchLink();
-		$this->advancedSearchURL = $model->getAdvancedSearchURL();
-		$this->nodata = (empty($this->rows) || (count($this->rows) == 1 && empty($firstRow)) || !$this->requiredFiltersFound) ? true : false;
-		$this->tableStyle = $this->nodata ? 'display:none' : '';
-		$this->emptyStyle = $this->nodata ? '' : 'display:none';
-		$params = $model->getParams();
+		$this->advancedSearch       = $model->getAdvancedSearchLink();
+		$this->advancedSearchURL    = $model->getAdvancedSearchURL();
+		$this->nodata               = (empty($this->rows) || (count($this->rows) == 1 && empty($firstRow)) || !$this->requiredFiltersFound) ? true : false;
+		$this->tableStyle           = $this->nodata ? 'display:none' : '';
+		$this->emptyStyle           = $this->nodata ? '' : 'display:none';
+		$params                     = $model->getParams();
 
 		if (!$this->access($model))
 		{
@@ -429,42 +426,42 @@ class Base extends \Fabrik\Admin\Views\Html
 			require_once JPATH_ROOT . '/includes/application.php';
 		}
 
-		$app = JFactory::getApplication();
+		$app     = $this->app;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$this->setTitle($w, $params, $model);
 
 		// Deprecated (keep in case people use them in old templates)
-		$this->table = new stdClass;
-		$this->table->label = FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.label'), $_REQUEST));
-		$this->table->intro = $params->get('show_into', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.introduction')));
-		$this->table->outro = $params->get('show_outro', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($params->get('outro')));
-		$this->table->id = $item->get('id');
-		$this->table->renderid = $model->getRenderContext();
+		$this->table                = new stdClass;
+		$this->table->label         = FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.label'), $_REQUEST));
+		$this->table->intro         = $params->get('show_into', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.introduction')));
+		$this->table->outro         = $params->get('show_outro', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($params->get('outro')));
+		$this->table->id            = $item->get('id');
+		$this->table->renderid      = $model->getRenderContext();
 		$this->table->db_table_name = $item->get('list.db_table_name');
 
 		// End deprecated
-		$this->list = $this->table;
-		$this->list->class = $model->htmlClass();
-		$this->group_by = $item->get('list.group_by');
-		$this->form = new stdClass;
-		$this->form->id = $item->get('list.form_id');
-		$this->renderContext = $model->getRenderContext();
-		$this->formid = 'listform_' . $this->renderContext;
-		$form = $model->getFormModel();
-		$this->table->action = $model->getTableAction();
-		$this->showCSV = $model->canCSVExport();
-		$this->showCSVImport = $model->canCSVImport();
-		$this->toggleCols = $model->toggleCols();
+		$this->list           = $this->table;
+		$this->list->class    = $model->htmlClass();
+		$this->group_by       = $item->get('list.group_by');
+		$this->form           = new stdClass;
+		$this->form->id       = $item->get('list.form_id');
+		$this->renderContext  = $model->getRenderContext();
+		$this->formid         = 'listform_' . $this->renderContext;
+		$form                 = $model->getFormModel();
+		$this->table->action  = $model->getTableAction();
+		$this->showCSV        = $model->canCSVExport();
+		$this->showCSVImport  = $model->canCSVImport();
+		$this->toggleCols     = $model->toggleCols();
 		$this->showToggleCols = (bool) $params->get('toggle_cols', false);
-		$this->canGroupBy = $model->canGroupBy();
-		$this->navigation = $nav;
-		$this->nav = $input->getInt('fabrik_show_nav', $params->get('show-table-nav', 1))
+		$this->canGroupBy     = $model->canGroupBy();
+		$this->navigation     = $nav;
+		$this->nav            = $input->getInt('fabrik_show_nav', $params->get('show-table-nav', 1))
 			? $nav->getListFooter($this->renderContext, $model->getTmpl()) : '';
-		$this->nav = '<div class="fabrikNav">' . $this->nav . '</div>';
-		$this->fabrik_userid = $user->get('id');
-		$this->canDelete = $model->deletePossible() ? true : false;
-		$this->limitLength = $model->limitLength;
-		$this->ajax = $model->isAjax();
+		$this->nav            = '<div class="fabrikNav">' . $this->nav . '</div>';
+		$this->fabrik_userid  = $user->get('id');
+		$this->canDelete      = $model->deletePossible() ? true : false;
+		$this->limitLength    = $model->limitLength;
+		$this->ajax           = $model->isAjax();
 
 		// 3.0 observed in list.js & html moved into fabrik_actions rollover
 		$this->showPDF = $params->get('pdf', $fbConfig->get('list_pdf', false));
@@ -474,9 +471,9 @@ class Base extends \Fabrik\Admin\Views\Html
 			Worker::canPdf();
 		}
 
-		$this->emptyLink = $model->canEmpty() ? '#' : '';
+		$this->emptyLink     = $model->canEmpty() ? '#' : '';
 		$this->csvImportLink = $this->showCSVImport ? JRoute::_('index.php?option=com_' . $package . '&view=import&filetype=csv&listid=' . $item->get('id')) : '';
-		$this->showAdd = $model->canAdd();
+		$this->showAdd       = $model->canAdd();
 
 		if ($this->showAdd)
 		{
@@ -491,7 +488,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		}
 
 		$this->addLabel = $model->addLabel();
-		$this->showRSS = $params->get('rss', 0) == 0 ? 0 : 1;
+		$this->showRSS  = $params->get('rss', 0) == 0 ? 0 : 1;
 
 		if ($this->showRSS)
 		{
@@ -525,30 +522,30 @@ class Base extends \Fabrik\Admin\Views\Html
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $model->getHeadings();
 
 		$this->groupByHeadings = $model->getGroupByHeadings();
-		$this->filter_action = $model->getFilterAction();
+		$this->filter_action   = $model->getFilterAction();
 		JDEBUG ? $profiler->mark('fabrik getfilters start') : null;
 		$this->filters = $model->getFilters('listform_' . $this->renderContext);
 
-		$fKeys = array_keys($this->filters);
+		$fKeys                 = array_keys($this->filters);
 		$this->bootShowFilters = count($fKeys) === 1 && $fKeys[0] === 'all' ? false : true;
 
 		$this->clearFliterLink = $model->getClearButton();
 		JDEBUG ? $profiler->mark('fabrik getfilters end') : null;
-		$this->filterMode = (int) $params->get('show-table-filters');
-		$this->toggleFilters = $this->filterMode == 2 || $this->filterMode == 4;
-		$this->showFilters = $model->getShowFilters();
-		$this->filterCols = (int) $params->get('list_filter_cols', '1');
+		$this->filterMode       = (int) $params->get('show-table-filters');
+		$this->toggleFilters    = $this->filterMode == 2 || $this->filterMode == 4;
+		$this->showFilters      = $model->getShowFilters();
+		$this->filterCols       = (int) $params->get('list_filter_cols', '1');
 		$this->showClearFilters = ($this->showFilters || $params->get('advanced-filter')) ? true : false;
 
 		$this->emptyDataMessage = $model->getEmptyDataMsg();
-		$this->groupheadings = $groupHeadings;
-		$this->calculations = $this->_getCalculations($this->headings);
-		$this->isGrouped = !($model->getGroupBy() == '');
-		$this->colCount = count($this->headings);
+		$this->groupheadings    = $groupHeadings;
+		$this->calculations     = $this->_getCalculations($this->headings);
+		$this->isGrouped        = !($model->getGroupBy() == '');
+		$this->colCount         = count($this->headings);
 
-		$this->hasButtons = $model->getHasButtons();
+		$this->hasButtons     = $model->getHasButtons();
 		$this->grouptemplates = $model->groupTemplates;
-		$this->params = $params;
+		$this->params         = $params;
 		$this->loadTemplateBottom();
 		$this->getManagementJS($this->rows);
 
@@ -562,7 +559,7 @@ class Base extends \Fabrik\Admin\Views\Html
 	/**
 	 * Model check for publish/access
 	 *
-	 * @param   JModel  $model  List model
+	 * @param   JModel $model List model
 	 *
 	 * @return boolean
 	 */
@@ -588,20 +585,20 @@ class Base extends \Fabrik\Admin\Views\Html
 	/**
 	 * Set page title
 	 *
-	 * @param   object  $w        Worker
-	 * @param   object  &$params  List params
-	 * @param   object  $model    List model
+	 * @param   object $w       Worker
+	 * @param   object &$params List params
+	 * @param   object $model   List model
 	 *
 	 * @return  void
 	 */
 
 	protected function setTitle($w, &$params, $model)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$document = JFactory::getDocument();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app      = $this->app;
+		$input    = $app->input;
+		$document = $this->doc;
+		$menus    = $app->getMenu();
+		$menu     = $menus->getActive();
 
 		/**
 		 * Because the application sets a default page title, we need to get it
@@ -645,13 +642,10 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	protected function output()
 	{
-		echo "output";
-		$app = JFactory::getApplication();
-		$input = $app->input;
 		$profiler = JProfiler::getInstance('Application');
-		$text = $this->loadTemplate();
+		$text     = $this->loadTemplate();
 		JDEBUG ? $profiler->mark('template loaded') : null;
-		$model = $this->model;
+		$model  = $this->model;
 		$params = $model->getParams();
 
 		if ($params->get('process-jplugins'))
@@ -673,75 +667,75 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	protected function buttons()
 	{
-		$model = $this->model;
-		$this->buttons = new stdClass;
-		$buttonProperties = array('class' => 'fabrikTip', 'opts' => "{notice:true}",
+		$model                     = $this->model;
+		$this->buttons             = new stdClass;
+		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => "{notice:true}",
 			'title' => '<span>' . FText::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
-		$buttonProperties['alt'] = FText::_('COM_FABRIK_EXPORT_TO_CSV');
-		$this->buttons->csvexport = FabrikHelperHTML::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);
+		$buttonProperties['alt']   = FText::_('COM_FABRIK_EXPORT_TO_CSV');
+		$this->buttons->csvexport  = FabrikHelperHTML::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_IMPORT_FROM_CSV') . '</span>';
-		$buttonProperties['alt'] = FText::_('COM_FABRIK_IMPORT_TO_CSV');
-		$this->buttons->csvimport = FabrikHelperHTML::image('csv-import.png', 'list', $this->tmpl, $buttonProperties);
+		$buttonProperties['alt']   = FText::_('COM_FABRIK_IMPORT_TO_CSV');
+		$this->buttons->csvimport  = FabrikHelperHTML::image('csv-import.png', 'list', $this->tmpl, $buttonProperties);
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_SUBSCRIBE_RSS') . '</span>';
-		$buttonProperties['alt'] = FText::_('COM_FABRIK_SUBSCRIBE_RSS');
-		$this->buttons->feed = FabrikHelperHTML::image('feed.png', 'list', $this->tmpl, $buttonProperties);
+		$buttonProperties['alt']   = FText::_('COM_FABRIK_SUBSCRIBE_RSS');
+		$this->buttons->feed       = FabrikHelperHTML::image('feed.png', 'list', $this->tmpl, $buttonProperties);
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_EMPTY') . '</span>';
-		$buttonProperties['alt'] = FText::_('COM_FABRIK_EMPTY');
-		$this->buttons->empty = FabrikHelperHTML::image('trash.png', 'list', $this->tmpl, $buttonProperties);
+		$buttonProperties['alt']   = FText::_('COM_FABRIK_EMPTY');
+		$this->buttons->empty      = FabrikHelperHTML::image('trash.png', 'list', $this->tmpl, $buttonProperties);
 
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_GROUP_BY') . '</span>';
-		$buttonProperties['alt'] = FText::_('COM_FABRIK_GROUP_BY');
-		$this->buttons->groupby = FabrikHelperHTML::image('group_by.png', 'list', $this->tmpl, $buttonProperties);
+		$buttonProperties['alt']   = FText::_('COM_FABRIK_GROUP_BY');
+		$this->buttons->groupby    = FabrikHelperHTML::image('group_by.png', 'list', $this->tmpl, $buttonProperties);
 
 		unset($buttonProperties['title']);
 		$buttonProperties['alt'] = FText::_('COM_FABRIK_FILTER');
-		$this->buttons->filter = FabrikHelperHTML::image('filter.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->filter   = FabrikHelperHTML::image('filter.png', 'list', $this->tmpl, $buttonProperties);
 
-		$addLabel = $model->addLabel();
+		$addLabel                  = $model->addLabel();
 		$buttonProperties['title'] = '<span>' . $addLabel . '</span>';
-		$buttonProperties['alt'] = $addLabel;
-		$this->buttons->add = FabrikHelperHTML::image('plus-sign.png', 'list', $this->tmpl, $buttonProperties);
+		$buttonProperties['alt']   = $addLabel;
+		$this->buttons->add        = FabrikHelperHTML::image('plus-sign.png', 'list', $this->tmpl, $buttonProperties);
 
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_PDF') . '</span>';
-		$buttonProperties['alt'] = FText::_('COM_FABRIK_PDF');
-		$this->buttons->pdf = FabrikHelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties);
+		$buttonProperties['alt']   = FText::_('COM_FABRIK_PDF');
+		$this->buttons->pdf        = FabrikHelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties);
 	}
 
 	/**
 	 * Get the list calculations
 	 *
-	 * @param   array  $aCols  Columns
+	 * @param   array $aCols Columns
 	 *
 	 * @return  array
 	 */
 
 	protected function _getCalculations($aCols)
 	{
-		$aData = array();
-		$found = false;
-		$model = $this->model;
+		$aData     = array();
+		$found     = false;
+		$model     = $this->model;
 		$modelCals = $model->getCalculations();
 
 		foreach ($aCols as $key => $val)
 		{
-			$calc = '';
-			$res = '';
-			$oCalcs = new stdClass;
+			$calc            = '';
+			$res             = '';
+			$oCalcs          = new stdClass;
 			$oCalcs->grouped = array();
 
 			if (array_key_exists($key, $modelCals['sums']))
 			{
 				$found = true;
-				$res = $modelCals['sums'][$key];
+				$res   = $modelCals['sums'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace('.', '___', $key) . '_calc_sum';
+				$tmpKey          = str_replace('.', '___', $key) . '_calc_sum';
 				$oCalcs->$tmpKey = $res;
 			}
 
 			if (array_key_exists($key . '_obj', $modelCals['sums']))
 			{
 				$found = true;
-				$res = $modelCals['sums'][$key . '_obj'];
+				$res   = $modelCals['sums'][$key . '_obj'];
 
 				foreach ($res as $k => $v)
 				{
@@ -755,16 +749,16 @@ class Base extends \Fabrik\Admin\Views\Html
 			if (array_key_exists($key, $modelCals['avgs']))
 			{
 				$found = true;
-				$res = $modelCals['avgs'][$key];
+				$res   = $modelCals['avgs'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace('.', '___', $key) . '_calc_average';
+				$tmpKey          = str_replace('.', '___', $key) . '_calc_average';
 				$oCalcs->$tmpKey = $res;
 			}
 
 			if (array_key_exists($key . '_obj', $modelCals['avgs']))
 			{
 				$found = true;
-				$res = $modelCals['avgs'][$key . '_obj'];
+				$res   = $modelCals['avgs'][$key . '_obj'];
 
 				foreach ($res as $k => $v)
 				{
@@ -778,7 +772,7 @@ class Base extends \Fabrik\Admin\Views\Html
 			if (array_key_exists($key . '_obj', $modelCals['medians']))
 			{
 				$found = true;
-				$res = $modelCals['medians'][$key . '_obj'];
+				$res   = $modelCals['medians'][$key . '_obj'];
 
 				foreach ($res as $k => $v)
 				{
@@ -792,16 +786,16 @@ class Base extends \Fabrik\Admin\Views\Html
 			if (array_key_exists($key, $modelCals['medians']))
 			{
 				$found = true;
-				$res = $modelCals['medians'][$key];
+				$res   = $modelCals['medians'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace('.', '___', $key) . "_calc_median";
+				$tmpKey          = str_replace('.', '___', $key) . "_calc_median";
 				$oCalcs->$tmpKey = $res;
 			}
 
 			if (array_key_exists($key . '_obj', $modelCals['count']))
 			{
 				$found = true;
-				$res = $modelCals['count'][$key . '_obj'];
+				$res   = $modelCals['count'][$key . '_obj'];
 
 				foreach ($res as $k => $v)
 				{
@@ -816,15 +810,15 @@ class Base extends \Fabrik\Admin\Views\Html
 			{
 				$res = $modelCals['count'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace('.', '___', $key) . "_calc_count";
+				$tmpKey          = str_replace('.', '___', $key) . "_calc_count";
 				$oCalcs->$tmpKey = $res;
-				$found = true;
+				$found           = true;
 			}
 
 			if (array_key_exists($key . '_obj', $modelCals['custom_calc']))
 			{
 				$found = true;
-				$res = $modelCals['custom_calc'][$key . '_obj'];
+				$res   = $modelCals['custom_calc'][$key . '_obj'];
 
 				foreach ($res as $k => $v)
 				{
@@ -839,14 +833,14 @@ class Base extends \Fabrik\Admin\Views\Html
 			{
 				$res = $modelCals['custom_calc'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace('.', '___', $key) . "_calc_custom_calc";
+				$tmpKey          = str_replace('.', '___', $key) . "_calc_custom_calc";
 				$oCalcs->$tmpKey = $res;
-				$found = true;
+				$found           = true;
 			}
 
-			$key = str_replace('.', '___', $key);
+			$key          = str_replace('.', '___', $key);
 			$oCalcs->calc = $calc;
-			$aData[$key] = $oCalcs;
+			$aData[$key]  = $oCalcs;
 		}
 
 		$this->hasCalculations = $found;
@@ -862,14 +856,14 @@ class Base extends \Fabrik\Admin\Views\Html
 
 	protected function loadTemplateBottom()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$app    = $this->app;
+		$input  = $app->input;
 		$itemId = Worker::itemId();
-		$model = $this->model;
-		$item = $model->getTable();
+		$model  = $this->model;
+		$item   = $model->getTable();
 
-		$reffer = str_replace('&', '&amp;', $input->server->get('REQUEST_URI', '', 'string'));
-		$reffer = FabrikString::removeQSVar($reffer, 'fabrik_incsessionfilters');
+		$referer           = str_replace('&', '&amp;', $input->server->get('REQUEST_URI', '', 'string'));
+		$referer           = FabrikString::removeQSVar($referer, 'fabrik_incsessionfilters');
 		$this->hiddenFields = array();
 
 		// $$$ rob 15/12/2011 - if in com_content then doing this means you cant delete rows
@@ -882,20 +876,20 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		// $$$ rob if the content plugin has temporarily set the view to list then get view from origview var, if that doesn't exist
 		// revert to view var. Used when showing table in article/blog layouts
-		$view = $input->get('origview', $input->get('view', 'list'));
+		$view                 = $input->get('origview', $input->get('view', 'list'));
 		$this->hiddenFields[] = '<input type="hidden" name="view" value="' . $view . '" />';
 		$this->hiddenFields[] = '<input type="hidden" name="listid" value="' . $item->get('id') . '"/>';
 		$this->hiddenFields[] = '<input type="hidden" name="listref" value="' . $this->renderContext . '"/>';
 		$this->hiddenFields[] = '<input type="hidden" name="Itemid" value="' . $itemId . '"/>';
 
 		// Removed in favour of using list_{id}_limit dropdown box
-		$this->hiddenFields[] = '<input type="hidden" name="fabrik_referrer" value="' . $reffer . '" />';
+		$this->hiddenFields[] = '<input type="hidden" name="fabrik_referrer" value="' . $referer . '" />';
 		$this->hiddenFields[] = JHTML::_('form.token');
 		$this->hiddenFields[] = '<input type="hidden" name="format" value="html" />';
 
 		// $packageId = $input->getInt('packageId', 0);
 		// $$$ rob testing for ajax table in module
-		$packageId = $model->packageId;
+		$packageId            = $model->packageId;
 		$this->hiddenFields[] = '<input type="hidden" name="packageId" value="' . $packageId . '" />';
 
 		if ($app->isAdmin())
@@ -927,24 +921,24 @@ class Base extends \Fabrik\Admin\Views\Html
 	/**
 	 * Set the advanced search template
 	 *
-	 * @param   string  $tpl  template
+	 * @param   string $tpl template
 	 *
 	 * @return  void
 	 */
 	protected function advancedSearch($tpl)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
-		$model = $this->model;
-		$id = $model->getState('list.id');
+		$app        = $this->app;
+		$package    = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input      = $app->input;
+		$model      = $this->model;
+		$id         = $model->getState('list.id');
 		$this->tmpl = $model->getTmpl();
 		$model->setRenderContext($id);
 		$this->listref = $model->getRenderContext();
 
 		// Advanced search script loaded in list view - avoids timing issues with i.e. loading the ajax content and script
-		$this->rows = $model->getAdvancedSearchRows();
-		$action = $input->server->get('HTTP_REFERER', 'index.php?option=com_' . $package, 'string');
+		$this->rows   = $model->getAdvancedSearchRows();
+		$action       = $input->server->get('HTTP_REFERER', 'index.php?option=com_' . $package, 'string');
 		$this->action = $action;
 		$this->listid = $id;
 	}

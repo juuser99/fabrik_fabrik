@@ -56,7 +56,15 @@ class Lizt extends Controller
 		// Push a model into the view
 		$model = new \Fabrik\Admin\Models\Lizt;
 		$viewClass  = 'Fabrik\Views\Lizt\\' . ucfirst($viewFormat);
-		$view = new $viewClass($model);
+
+
+
+		$model = new \Fabrik\Admin\Models\Lizt;
+		$paths = new \SplPriorityQueue;
+		// FIXME - dont hard wire bootstrap tmpl!
+		$paths->insert(JPATH_SITE . '/components/com_fabrik/views/lizt/tmpl/bootstrap', 'normal');
+
+		$view = new $viewClass($model, $paths);
 		$view->setLayout($layout);
 		$view->setModel($model, true);
 

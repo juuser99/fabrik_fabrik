@@ -1250,10 +1250,10 @@ class Element extends Plugin
 				}
 				else
 				{
-					FabrikHelperHTML::debug($default, 'element eval default:' . $element->label);
+					FabrikHelperHTML::debug($default, 'element eval default:' . $element->get('label'));
 					$default = stripslashes($default);
 					$default = @eval($default);
-					Worker::logEval($default, 'Caught exception on eval of ' . $element->name . ': %s');
+					Worker::logEval($default, 'Caught exception on eval of ' . $element->get('name') . ': %s');
 
 					// Test this does stop error
 					$this->_default = $default === false ? '' : $default;
@@ -1545,7 +1545,7 @@ class Element extends Plugin
 	{
 		$params = $this->getParams();
 		$element = $this->getElement();
-		$label = $params->get('alt_list_heading') == '' ? $element->label : $params->get('alt_list_heading');
+		$label = $params->get('alt_list_heading') == '' ? $element->get('label') : $params->get('alt_list_heading');
 
 		return FText::_($label);
 	}
@@ -1586,7 +1586,7 @@ class Element extends Plugin
 			$rollOver = $this->isTipped();
 			$labelClass = 'fabrikLabel control-label';
 
-			if (empty($element->label))
+			if (empty($element->get('label')))
 			{
 				$labelClass .= ' fabrikEmptyLabel';
 			}
@@ -1613,7 +1613,7 @@ class Element extends Plugin
 				$str .= '<span class="' . $labelClass . ' faux-label">';
 			}
 
-			$labelText = FText::_($element->label);
+			$labelText = FText::_($element->get('label'));
 
 			$labelText = $labelText == '' ? '&nbsp;' : $labelText;
 			$l = '';
@@ -5459,7 +5459,7 @@ class Element extends Plugin
 		$opts->repeatCounter = $repeatCounter;
 		$opts->editable = ($this->canView() && !$this->canUse()) ? false : $this->isEditable();
 		$opts->value = $this->getValue($data, $repeatCounter);
-		$opts->label = $element->label;
+		$opts->label = $element->get('label');
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->inRepeatGroup = $this->getGroup()->canRepeat() == 1;
 		$opts->fullName = $this->getFullName(true, false);
