@@ -497,7 +497,11 @@ class Base extends \Fabrik\Admin\Views\Html
 			if ($this->rssLink != '')
 			{
 				$attributes = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
-				$document->addHeadLink($this->rssLink, 'alternate', 'rel', $attributes);
+
+				if (method_exists($document, 'addHeadLink'))
+				{
+					$document->addHeadLink($this->rssLink, 'alternate', 'rel', $attributes);
+				}
 			}
 		}
 

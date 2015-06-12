@@ -28,9 +28,7 @@ class JSON extends Base
 	 */
 	public function render()
 	{
-		$app = $this->app;
-		$model = $this->getModel();
-		$model->setId($app->input->getString('listid'));
+		$model = $this->model;
 
 		if (!parent::access($model))
 		{

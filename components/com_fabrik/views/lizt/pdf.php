@@ -45,7 +45,7 @@ class PDF extends Base
 		if (parent::render() !== false)
 		{
 			$document = $this->doc;
-			$model = $this->getModel();
+			$model = $this->model;
 			$params = $model->getParams();
 			$size = $params->get('pdf_size', 'A4');
 			$orientation = $params->get('pdf_orientation', 'portrait');

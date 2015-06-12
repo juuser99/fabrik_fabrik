@@ -41,10 +41,8 @@ class CSV extends Base
 		$input    = $app->input;
 		$session  = $this->session;
 		$exporter = new CsvExport;
-		$filter = JFilterInput::getInstance();
-
-		$model    = new Lizt;
-		$model->setId($input->getString('listid'));
+		$filter   = JFilterInput::getInstance();
+		$model    = $this->model;
 
 		if (!parent::access($model))
 		{

@@ -38,7 +38,7 @@ class Feed extends Base
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 		$itemId	= Worker::itemId();
-		$model = $this->getModel();
+		$model = $this->model;
 		$model->setOutPutFormat('feed');
 		$document = $this->doc;
 		$document->_itemTags = array();

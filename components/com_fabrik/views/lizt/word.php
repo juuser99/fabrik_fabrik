@@ -9,10 +9,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
+use \JResponse;
+use \JStringNormalise;
 
 /**
  * MS Word/Open office .doc Fabrik List view class
@@ -20,53 +23,48 @@ require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.7
+ * @since       3.5
  */
-
-class FabrikViewList extends FabrikViewListBase
+class Word extends Base
 {
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  template
-	 *
 	 * @return void
 	 */
-
-	public function display($tpl = null)
+	public function render()
 	{
-		if (parent::display($tpl) !== false)
+		if (parent::render() !== false)
 		{
-			$app = JFactory::getApplication();
+			$app = $this->app;
 
 			if (!$app->isAdmin())
 			{
-				$this->state = $this->get('State');
-				$this->params = $this->state->get('params');
-				$this->document = JFactory::getDocument();
+				$this->state = $this->model->getState();
+				$params = $this->state->get('params');
 
-				if ($this->params->get('menu-meta_description'))
+				if ($params->get('menu-meta_description'))
 				{
-					$this->document->setDescription($this->params->get('menu-meta_description'));
+					$this->doc->setDescription($params->get('menu-meta_description'));
 				}
 
-				if ($this->params->get('menu-meta_keywords'))
+				if ($params->get('menu-meta_keywords'))
 				{
-					$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+					$this->doc->setMetadata('keywords', $params->get('menu-meta_keywords'));
 				}
 
-				if ($this->params->get('robots'))
+				if ($params->get('robots'))
 				{
-					$this->document->setMetadata('robots', $this->params->get('robots'));
+					$this->doc->setMetadata('robots', $params->get('robots'));
 				}
 			}
 
 			// Set the response to indicate a file download
 			JResponse::setHeader('Content-Type', 'application/vnd.ms-word');
-			$name = $this->getModel()->getTable()->label;
+			$name = $this->model->getTable()->get('list.label');
 			$name = JStringNormalise::toDashSeparated($name);
 			JResponse::setHeader('Content-Disposition', "attachment;filename=\"" . $name . ".doc\"");
-			$this->document->setMimeEncoding('text/html; charset=Windows-1252', false);
+			$this->doc->setMimeEncoding('text/html; charset=Windows-1252', false);
 			$this->output();
 		}
 	}

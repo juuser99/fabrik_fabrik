@@ -8,53 +8,49 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Views\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
-
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
+use \stdClass;
 
 /**
  * Raw Fabrik List view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikViewList extends FabrikViewListBase
+class Raw extends Base
 {
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  template
-	 *
 	 * @return void
 	 */
-
-	public function display($tpl = null)
+	public function render()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$app     = $this->app;
+		$input   = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$model = $this->getModel();
-		$model->setId($input->getString('listid'));
+		$model   = $this->model;
 
 		if (!parent::access($model))
 		{
 			exit;
 		}
 
-		$table = $model->getTable();
+		$table  = $model->getTable();
 		$params = $model->getParams();
-		$rowId = $input->getString('rowid', '', 'string');
-		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
-		$data = $model->render();
-		$this->emptyDataMessage = $this->get('EmptyDataMsg');
-		$nav = $model->getPagination();
-		$form = $model->getFormModel();
-		$c = 0;
+		$rowId  = $input->getString('rowid', '', 'string');
+		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $model->getHeadings();
+		$data                   = $model->render();
+		$this->emptyDataMessage = $model->getEmptyDataMsg();
+		$nav                    = $model->getPagination();
+		$form                   = $model->getFormModel();
+		$c                      = 0;
 
 		foreach ($data as $groupk => $group)
 		{
@@ -77,9 +73,9 @@ class FabrikViewList extends FabrikViewListBase
 				}
 
 				$o->cursor = $i + $nav->limitstart;
-				$o->total = $nav->total;
-				$o->id = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
-				$o->class = 'fabrik_row oddRow' . $c;
+				$o->total  = $nav->total;
+				$o->id     = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
+				$o->class  = 'fabrik_row oddRow' . $c;
 
 				if (is_object($data[$groupk]))
 				{
@@ -107,18 +103,19 @@ class FabrikViewList extends FabrikViewListBase
 			}
 		}
 
-		$d = array('id' => $table->id, 'listRef' => $input->get('listref'), 'rowid' => $rowId, 'model' => 'list', 'data' => $data,
-			'headings' => $this->headings, 'formid' => $model->getTable()->form_id,
-			'lastInsertedRow' => JFactory::getSession()->get('lastInsertedRow', 'test'));
+		$session = $this->session;
 
-		$d['nav'] = get_object_vars($nav);
-		$tmpl = $input->get('tmpl', $this->getTmpl());
-		$d['htmlnav'] = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $tmpl) : '';
+		$d = array('id' => $table->get('id'), 'listRef' => $input->get('listref'), 'rowid' => $rowId, 'model' => 'list', 'data' => $data,
+			'headings' => $this->headings, 'formid' => $model->getTable()->get('form.id'),
+			'lastInsertedRow' => $session->get('lastInsertedRow', 'test'));
+
+		$d['nav']          = get_object_vars($nav);
+		$tmpl              = $input->get('tmpl', $this->getTmpl());
+		$d['htmlnav']      = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $tmpl) : '';
 		$d['calculations'] = $model->getCalculations();
 
 		// $$$ hugh - see if we have a message to include, set by a list plugin
 		$context = 'com_' . $package . '.list' . $model->getRenderContext() . '.msg';
-		$session = JFactory::getSession();
 
 		if ($session->has($context))
 		{
@@ -137,10 +134,10 @@ class FabrikViewList extends FabrikViewListBase
 
 	private function getTmpl()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$model = $this->getModel();
-		$table = $model->getTable();
+		$app    = $this->app;
+		$input  = $app->input;
+		$model  = $this->getModel();
+		$table  = $model->getTable();
 		$params = $model->getParams();
 
 		if ($app->isAdmin())
@@ -149,12 +146,12 @@ class FabrikViewList extends FabrikViewListBase
 
 			if ($tmpl == -1 || $tmpl == '')
 			{
-				$tmpl = $input->get('layout', $table->template);
+				$tmpl = $input->get('layout', $table->get('list.template'));
 			}
 		}
 		else
 		{
-			$tmpl = $input->get('layout', $table->template);
+			$tmpl = $input->get('layout',$table->get('list.template'));
 		}
 
 		return $tmpl;

@@ -40,7 +40,7 @@ class Fabrikfeed extends Base
 		$input   = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$itemId  = Worker::itemId();
-		$model   = $this->getModel();
+		$model   = $this->model;
 		$model->setOutPutFormat('feed');
 
 		$app->allowCache(true);
