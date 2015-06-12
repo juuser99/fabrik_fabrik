@@ -16,12 +16,11 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Admin\Models\Base as Base;
-use \JFactory as JFactory;
 use \JProfiler as JProfiler;
 use \JFilterInput as JFilterInput;
 use \FabrikString as FabrikString;
 use \FabrikHelperHTML as FabrikHelperHTML;
+use \stdClass;
 
 /**
  * List filter model
@@ -41,7 +40,7 @@ class ListFilter extends Base
 	/**
 	 * Set the list model
 	 *
-	 * @param   object  $model  list model
+	 * @param   object $model list model
 	 *
 	 * @return  void
 	 */
@@ -54,9 +53,9 @@ class ListFilter extends Base
 	/**
 	 * get the table from the listModel
 	 *
-	 * @param   string  $name     table name
-	 * @param   string  $prefix   prefix name
-	 * @param   array   $options  config
+	 * @param   string $name    table name
+	 * @param   string $prefix  prefix name
+	 * @param   array  $options config
 	 *
 	 * @return void
 	 */
@@ -67,15 +66,15 @@ class ListFilter extends Base
 	}
 
 	/**
-	 * $$$ rob activelistid set in content plugin only clear filters on active list (otherwise with n tables in article all qs filters are removed)
+	 * $$$ rob activelistid set in content plugin only clear filters on active list (otherwise with n tables in article
+	 * all qs filters are removed)
 	 *
 	 * @return  bool - is the list currently being rendered the list that initially triggered the filter
 	 */
 
 	protected function activeTable()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		return $input->getInt('id') == $input->getInt('activelistid') || $input->get('activelistid') == '';
 	}
@@ -100,8 +99,7 @@ class ListFilter extends Base
 
 	public function getFilters()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// Form or detailed views should not apply filters? what about querystrings to set up the default values?
 		if ($input->get('view') == 'details' || $input->get('view') == 'form')
@@ -117,7 +115,7 @@ class ListFilter extends Base
 		}
 
 		$profiler = JProfiler::getInstance('Application');
-		$filters = array();
+		$filters  = array();
 
 		// $$$ rob clears all list filters, and does NOT apply any
 		// other filters to the table, even if in querystring
@@ -141,7 +139,8 @@ class ListFilter extends Base
 
 		// $$$ rob 20/03/2011 - request resetfilters should overwrite menu option - otherwise filter then nav will remove filter.
 		if (($input->get('filterclear') == 1 || Worker::getMenuOrRequestVar('resetfilters', 0, false, 'request') == 1)
-			&& $this->activeTable())
+			&& $this->activeTable()
+		)
 		{
 			$this->clearFilters();
 		}
@@ -193,7 +192,7 @@ class ListFilter extends Base
 	 * seem incorrect - resulting in an incorrect query.
 	 * Use this to force each $filter['property'] array to start at 0 and increment
 	 *
-	 * @param   array  &$filters  list filters
+	 * @param   array &$filters list filters
 	 *
 	 * @since   3.0.6
 	 *
@@ -220,11 +219,11 @@ class ListFilter extends Base
 	/**
 	 * $$$ rob if the filter should not be applied due to its acl level then set its condition so that it
 	 * will always return true. Do this rather than unsetting the filter - as this removes the selected option
-	 * from the filter forms field. Can be used in conjunction with a list filter plugin to override a normal filters option with the
-	 * plugins option, e.g. load all university's courses OR [plugin option] load remote courses run by selected university
-	 * e.g http://www.epics-ve.eu/index.php?option=com_fabrik&view=list&listid=5
+	 * from the filter forms field. Can be used in conjunction with a list filter plugin to override a normal filters
+	 * option with the plugins option, e.g. load all university's courses OR [plugin option] load remote courses run by
+	 * selected university e.g http://www.epics-ve.eu/index.php?option=com_fabrik&view=list&listid=5
 	 *
-	 * @param   array  &$filters  list filters
+	 * @param   array &$filters list filters
 	 *
 	 * @return  void
 	 */
@@ -238,9 +237,9 @@ class ListFilter extends Base
 			// $$$ hugh - fix for where certain elements got created with 0 as the
 			// the default for filter_access, which isn't a legal value, should be 1
 			$selAccess = $selAccess == '0' ? '1' : $selAccess;
-			$i = $filters['key'][$key];
+			$i         = $filters['key'][$key];
 
-			if (!in_array($selAccess, JFactory::getUser()->getAuthorisedViewLevels()))
+			if (!in_array($selAccess, $this->user->getAuthorisedViewLevels()))
 			{
 				$filters['sqlCond'][$key] = '1=1';
 			}
@@ -252,15 +251,15 @@ class ListFilter extends Base
 	/**
 	 * get the search all posted (or session) value
 	 *
-	 * @param   string  $mode  html (performs htmlspecialchars on value) OR 'query' (adds slashes and url decodes)
+	 * @param   string $mode html (performs htmlspecialchars on value) OR 'query' (adds slashes and url decodes)
 	 *
 	 * @return  string
 	 */
 
 	public function getSearchAllValue($mode = 'html')
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$app        = $this->app;
+		$package    = $app->getUserState('com_fabrik.package', 'fabrik');
 		$identifier = $this->listModel->getRenderContext();
 
 		// Test new option to have one field to search them all
@@ -268,7 +267,7 @@ class ListFilter extends Base
 
 		// Seems like post keys 'name.1' get turned into 'name_1'
 		$requestKey = $this->getSearchAllRequestKey();
-		$v = $app->getUserStateFromRequest($key, $requestKey);
+		$v          = $app->getUserStateFromRequest($key, $requestKey);
 
 		if (trim($v) == '')
 		{
@@ -307,27 +306,27 @@ class ListFilter extends Base
 	 *
 	 * If another filter has posted some data then don't add in a 'search all' record for that filter
 	 *
-	 * @param   array  &$filters  filter array
+	 * @param   array &$filters filter array
 	 *
 	 * @return  void
 	 */
 
 	private function getSearchAllFilters(&$filters)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$app        = $this->app;
+		$input      = $app->input;
 		$requestKey = $this->getSearchAllRequestKey();
-		$search = $this->getSearchAllValue('query');
+		$search     = $this->getSearchAllValue('query');
 
 		if ($search == '')
 		{
 			if (array_key_exists($requestKey, $_POST))
 			{
 				// Empty search string sent unset any searchall filters
-				$ks = array_keys($filters);
-				$filterkeys = array_keys(ArrayHelper::getValue($filters, 'search_type', array()));
+				$ks         = array_keys($filters);
+				$filterKeys = array_keys(ArrayHelper::getValue($filters, 'search_type', array()));
 
-				foreach ($filterkeys as $filterkey)
+				foreach ($filterKeys as $filterkey)
 				{
 					if (ArrayHelper::getValue($filters['search_type'], $filterkey, '') == 'searchall')
 					{
@@ -375,8 +374,8 @@ class ListFilter extends Base
 	/**
 	 * clear specific filter data all from filters
 	 *
-	 * @param   array  &$filters  array filters
-	 * @param   int    $id        index
+	 * @param   array &$filters array filters
+	 * @param   int   $id       index
 	 *
 	 * @return  void
 	 */
@@ -402,18 +401,18 @@ class ListFilter extends Base
 	/**
 	 * for extended search all test if the search string is long enough
 	 *
-	 * @param   string  $s  search string
+	 * @param   string $s search string
 	 *
 	 * @since 3.0.6
 	 *
 	 * @throws UnexpectedValueException
 	 *
-	 * @return  bool	search string long enough?
+	 * @return  bool    search string long enough?
 	 */
 
 	protected function testBooleanSearchLength($s)
 	{
-		$db = JFactory::getDbo();
+		$db = $this->db;
 		$db->setQuery('SHOW VARIABLES LIKE \'ft_min_word_len\'');
 		$res = $db->loadObject();
 
@@ -428,17 +427,16 @@ class ListFilter extends Base
 	/**
 	 * do a boolean search
 	 *
-	 * @param   array   &$filters  filter array
-	 * @param   string  $search    term
+	 * @param   array  &$filters filter array
+	 * @param   string $search   term
 	 *
 	 * @return  void
 	 */
 
 	private function doBooleanSearch(&$filters, $search)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$mode = $input->get('search-mode-advanced', 'and');
+		$input = $this->app->input;
+		$mode  = $input->get('search-mode-advanced', 'and');
 
 		if (trim($search) == '')
 		{
@@ -494,24 +492,24 @@ class ListFilter extends Base
 		}
 
 		$input->set('override_join_val_column_concat', 0);
-		$names = implode(", ", $names);
-		$filters['value'][9999] = $search;
-		$filters['condition'][9999] = 'AGAINST';
-		$filters['join'][9999] = 'AND';
-		$filters['no-filter-setup'][9999] = 0;
-		$filters['hidden'][9999] = 0;
-		$filters['key'][9999] = "MATCH(" . $names . ")";
-		$filters['key2'][9999] = "MATCH(" . $names . ")";
-		$filters['search_type'][9999] = 'searchall';
-		$filters['match'][9999] = 1;
-		$filters['full_words_only'][9999] = 0;
-		$filters['eval'][9999] = 0;
-		$filters['required'][9999] = 0;
-		$filters['access'][9999] = 0;
+		$names                                = implode(", ", $names);
+		$filters['value'][9999]               = $search;
+		$filters['condition'][9999]           = 'AGAINST';
+		$filters['join'][9999]                = 'AND';
+		$filters['no-filter-setup'][9999]     = 0;
+		$filters['hidden'][9999]              = 0;
+		$filters['key'][9999]                 = "MATCH(" . $names . ")";
+		$filters['key2'][9999]                = "MATCH(" . $names . ")";
+		$filters['search_type'][9999]         = 'searchall';
+		$filters['match'][9999]               = 1;
+		$filters['full_words_only'][9999]     = 0;
+		$filters['eval'][9999]                = 0;
+		$filters['required'][9999]            = 0;
+		$filters['access'][9999]              = 0;
 		$filters['grouped_to_previous'][9999] = 1;
-		$filters['label'][9999] = '';
-		$filters['elementid'][9999] = -1;
-		$filters['raw'][9999] = false;
+		$filters['label'][9999]               = '';
+		$filters['elementid'][9999]           = -1;
+		$filters['raw'][9999]                 = false;
 	}
 
 	/**
@@ -522,15 +520,14 @@ class ListFilter extends Base
 
 	public function clearFilters()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$session = JFactory::getSession();
-		$registry = $session->get('registry');
-		$id = $app->input->get('listref', $this->listModel->getRenderContext());
-		$tid = 'list' . $id;
+		$package     = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$session     = $this->session;
+		$registry    = $session->get('registry');
+		$id          = $this->app->input->get('listref', $this->listModel->getRenderContext());
+		$tid         = 'list' . $id;
 		$listContext = 'com_' . $package . '.list' . $id . '.';
-		$context = $listContext . 'filter';
-		$app->setUserState($listContext . 'limitstart', 0);
+		$context     = $listContext . 'filter';
+		$this->app->setUserState($listContext . 'limitstart', 0);
 
 		if (!is_object($registry))
 		{
@@ -547,19 +544,19 @@ class ListFilter extends Base
 		 * /forums/index.php?threads/many-to-many-relationship-show-all-related-items-as-list-on-the-joined-list-details.36697/
 		 * #post-184335
 		 */
-		$reg = ArrayHelper::fromObject($reg);
-		$serachTypes = ArrayHelper::getValue($reg, 'search_type', array());
+		$reg         = ArrayHelper::fromObject($reg);
+		$searchTypes = ArrayHelper::getValue($reg, 'search_type', array());
 
-		for ($i = 0; $i < count($serachTypes); $i++)
+		for ($i = 0; $i < count($searchTypes); $i++)
 		{
-			if ($this->canClear($serachTypes[$i]))
+			if ($this->canClear($searchTypes[$i]))
 			{
 				$this->clearAFilter($reg, $i);
 			}
 		}
 
 		$reg['searchall'] = '';
-		$reg = ArrayHelper::toObject($reg);
+		$reg              = ArrayHelper::toObject($reg);
 		$registry->set($context, $reg);
 		$reg = $registry->get($context, new stdClass);
 
@@ -569,33 +566,34 @@ class ListFilter extends Base
 			unset($registry->_registry['com_' . $package]['data']->$tid->plugins);
 		}
 
-		$key = 'com_' . $package . '.' . $tid . '.searchall';
-		$v = $app->setUserState($key, '');
-		$fromFormId = $app->getUserState('com_' . $package . '.searchform.fromForm');
+		$key        = 'com_' . $package . '.' . $tid . '.searchall';
+		$this->app->setUserState($key, '');
+		$fromFormId = $this->app->getUserState('com_' . $package . '.searchform.fromForm');
 
 		if ($fromFormId != $this->listModel->getFormModel()->get('id'))
 		{
-			$app->setUserState('com_' . $package . '.searchform.form' . $fromFormId . '.searchall', '');
+			$this->app->setUserState('com_' . $package . '.searchform.form' . $fromFormId . '.searchall', '');
 		}
 	}
 
 	/**
 	 * Can we clear a filter.
-	 * Filters set by the content plugin ($searchType == jpluginfilters) can only be unset if you are not viewing the content plugin but instead
-	 * a menu item, which points at the same list AND when that menu item has its resetfilters option set to yes.
+	 * Filters set by the content plugin ($searchType == jpluginfilters) can only be unset if you are not viewing the
+	 * content plugin but instead a menu item, which points at the same list AND when that menu item has its
+	 * resetfilters option set to yes.
 	 *
-	 * @param   string  $searchType  Search type string
+	 * @param   string $searchType Search type string
 	 *
 	 * @return boolean
 	 */
 	protected function canClear($searchType)
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 
 		if (!$app->isAdmin() && $this->activeTable())
 		{
 			$menus = $app->getMenu();
-			$menu = $menus->getActive();
+			$menu  = $menus->getActive();
 
 			if (is_object($menu))
 			{
@@ -617,7 +615,7 @@ class ListFilter extends Base
 
 	protected function defaultAccessLevel()
 	{
-		$accessLevels = JFactory::getUser()->getAuthorisedViewLevels();
+		$accessLevels = $this->user->getAuthorisedViewLevels();
 
 		return ArrayHelper::getValue($accessLevels, 0, 1);
 	}
@@ -625,28 +623,28 @@ class ListFilter extends Base
 	/**
 	 * Insert search all string into filters
 	 *
-	 * @param   array   &$filters  list filters
-	 * @param   string  $search    search string
+	 * @param   array  &$filters list filters
+	 * @param   string $search   search string
 	 *
 	 * @return null
 	 */
 
 	private function insertSearchAllIntoFilters(&$filters, $search)
 	{
-		$app = JFactory::getApplication();
-		$elements = $this->listModel->getElements('id', false);
-		$keys = array_keys($elements);
-		$i = 0;
-		$condition = 'REGEXP';
+		$app         = $this->app;
+		$elements    = $this->listModel->getElements('id', false);
+		$keys        = array_keys($elements);
+		$i           = 0;
+		$condition   = 'REGEXP';
 		$orig_search = $search;
-		$searchable = false;
+		$searchable  = false;
 
-		foreach ($keys as $elid)
+		foreach ($keys as $elementId)
 		{
 			// $$$ hugh - need to reset $search each time round, in case getFilterValue has escaped something,
 			// like foo.exe to foo\\\.exe ... otherwise each time round we double the number of \s's
-			$search = $orig_search;
-			$elementModel = $elements[$elid];
+			$search       = $orig_search;
+			$elementModel = $elements[$elementId];
 
 			if (!$elementModel->includeInSearchAll(false, $search))
 			{
@@ -654,8 +652,8 @@ class ListFilter extends Base
 			}
 
 			$searchable = true;
-			$k = $elementModel->getFullName(false, false);
-			$k = FabrikString::safeColName($k);
+			$k          = $elementModel->getFullName(false, false);
+			$k          = FabrikString::safeColName($k);
 
 			// Lower case for search on accented characters e.g. Ö
 			$k = 'LOWER(' . $k . ')';
@@ -703,9 +701,9 @@ class ListFilter extends Base
 				$key = array_key_exists('key', $filters) ? array_search($k, $filters['key']) : false;
 			}
 
-			$element = $elementModel->getElement();
-			$elparams = $elementModel->getParams();
-			$access = $this->defaultAccessLevel();
+			$element  = $elementModel->getElement();
+			$elParams = $elementModel->getParams();
+			$access   = $this->defaultAccessLevel();
 
 			// $$$ rob so search all on checkboxes/radio buttons etc. will take the search value of 'one' and return '1'
 			$newsearch = $elementModel->getFilterValue($search, $condition, $eval);
@@ -713,20 +711,20 @@ class ListFilter extends Base
 
 			if ($key !== false)
 			{
-				$filters['orig_condition'][$key] = $condition;
-				$filters['value'][$key] = $newsearch;
-				$filters['condition'][$key] = $condition;
-				$filters['join'][$key] = 'OR';
+				$filters['orig_condition'][$key]  = $condition;
+				$filters['value'][$key]           = $newsearch;
+				$filters['condition'][$key]       = $condition;
+				$filters['join'][$key]            = 'OR';
 				$filters['no-filter-setup'][$key] = ($element->get('filter_type') == '') ? 1 : 0;
-				$filters['hidden'][$key] = ($element->get('filter_type') == '') ? 1 : 0;
-				$filters['key'][$key] = $k;
-				$filters['key2'][$key] = $k2;
-				$filters['search_type'][$key] = 'searchall';
-				$filters['match'][$key] = 1;
+				$filters['hidden'][$key]          = ($element->get('filter_type') == '') ? 1 : 0;
+				$filters['key'][$key]             = $k;
+				$filters['key2'][$key]            = $k2;
+				$filters['search_type'][$key]     = 'searchall';
+				$filters['match'][$key]           = 1;
 				$filters['full_words_only'][$key] = 0;
-				$filters['eval'][$key] = $eval;
-				$filters['required'][$key] = 0;
-				$filters['access'][$key] = $access;
+				$filters['eval'][$key]            = $eval;
+				$filters['required'][$key]        = 0;
+				$filters['access'][$key]          = $access;
 				/**
 				 * $$$ rob 16/06/2011 - changed this. If search all and search on post then change post filter.
 				 * The grouped_to_previous was being set from 1 to 0 - giving
@@ -735,25 +733,25 @@ class ListFilter extends Base
 				 */
 				// $filters['grouped_to_previous'][$key] = $k == 0 ? 0 : 1;
 				$filters['grouped_to_previous'][$key] = 1;
-				$filters['label'][$key] = $elementModel->getListHeading();
-				$filters['raw'][$key] = false;
+				$filters['label'][$key]               = $elementModel->getListHeading();
+				$filters['raw'][$key]                 = false;
 			}
 			else
 			{
-				$filters['orig_condition'][] = $condition;
-				$filters['value'][] = $newsearch;
-				$filters['condition'][] = $condition;
-				$filters['join'][] = 'OR';
+				$filters['orig_condition'][]  = $condition;
+				$filters['value'][]           = $newsearch;
+				$filters['condition'][]       = $condition;
+				$filters['join'][]            = 'OR';
 				$filters['no-filter-setup'][] = ($element->get('filter_type') == '') ? 1 : 0;
-				$filters['hidden'][] = ($element->get('filter_type')== '') ? 1 : 0;
-				$filters['key'][] = $k;
-				$filters['key2'][] = $k2;
-				$filters['search_type'][] = 'searchall';
-				$filters['match'][] = 1;
+				$filters['hidden'][]          = ($element->get('filter_type') == '') ? 1 : 0;
+				$filters['key'][]             = $k;
+				$filters['key2'][]            = $k2;
+				$filters['search_type'][]     = 'searchall';
+				$filters['match'][]           = 1;
 				$filters['full_words_only'][] = 0;
-				$filters['eval'][] = $eval;
-				$filters['required'][] = 0;
-				$filters['access'][] = $access;
+				$filters['eval'][]            = $eval;
+				$filters['required'][]        = 0;
+				$filters['access'][]          = $access;
 				/**
 				 * $$$ rob having grouped_to_previous as 1 was barfing this list view for beate, when doing a search all:
 				 * http://test.xx-factory.de/index.php?option=com_fabrik&view=list&listid=31&calculations=0&Itemid=16&resetfilters=0
@@ -767,9 +765,9 @@ class ListFilter extends Base
 				 * where (el = 'searchall' OR el = 'searchall') AND el = 'post value'
 				 */
 				$filters['grouped_to_previous'][] = 1;
-				$filters['label'][] = $elementModel->getListHeading();
-				$filters['elementid'][] = $element->get('id');
-				$filters['raw'][] = false;
+				$filters['label'][]               = $elementModel->getListHeading();
+				$filters['elementid'][]           = $element->get('id');
+				$filters['raw'][]                 = false;
 			}
 
 			$i++;
@@ -784,7 +782,7 @@ class ListFilter extends Base
 	/**
 	 * Insert search form's search all filters
 	 *
-	 * @param   array  &$filters  list filters
+	 * @param   array &$filters list filters
 	 *
 	 * @return  void
 	 */
@@ -792,10 +790,10 @@ class ListFilter extends Base
 	private function getSearchFormSearchAllFilters(&$filters)
 	{
 		// See if there was a search all created from a search form
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$formModel = $this->listModel->getFormModel();
-		$key = 'com_' . $package . '.searchform.fromForm';
+		$app        = $this->app;
+		$package    = $app->getUserState('com_fabrik.package', 'fabrik');
+		$formModel  = $this->listModel->getFormModel();
+		$key        = 'com_' . $package . '.searchform.fromForm';
 		$fromFormId = $app->getUserState($key);
 
 		if ($fromFormId != $formModel->get('id'))
@@ -819,85 +817,83 @@ class ListFilter extends Base
 
 	private function getSearchFormId()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$key = 'com_' . $package . '.searchform.fromForm';
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$key     = 'com_' . $package . '.searchform.fromForm';
 
-		return $app->getUserState($key);
+		return $this->app->getUserState($key);
 	}
 
 	/**
 	 * Set search form id
 	 *
-	 * @param   int  $id  form id
+	 * @param   int $id form id
 	 *
 	 * @return  void
 	 */
 
 	private function setSearchFormId($id = null)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$key = 'com_' . $package . '.searchform.fromForm';
-		$app->setUserState($key, $id);
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
+		$key     = 'com_' . $package . '.searchform.fromForm';
+		$this->app->setUserState($key, $id);
 	}
 
 	/**
 	 * Get search form filters
 	 *
-	 * @param   array  &$filters  list filters
+	 * @param   array &$filters list filters
 	 *
 	 * @return  void
 	 */
 
 	private function getSearchFormFilters(&$filters)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$app        = $this->app;
+		$package    = $app->getUserState('com_fabrik.package', 'fabrik');
 		$fromFormId = $this->getSearchFormId();
 
 		if (!empty($fromFormId))
 		{
-			$formModel = $this->listModel->getFormModel();
-			$db = Worker::getDbo();
-			$lookupkeys = ArrayHelper::getValue($filters, 'key', array());
+			$formModel  = $this->listModel->getFormModel();
+			$db         = Worker::getDbo();
+			$lookupKeys = ArrayHelper::getValue($filters, 'key', array());
 
 			if ($fromFormId != $formModel->get('id'))
 			{
 				$fromForm = $this->getFormModel();
 				$fromForm->setId($fromFormId);
-				$fromFormParams = $fromForm->getParams();
+				$fromForm->getParams();
 				/**
-				 * $$$ hugh Added $filter_elements from 'filter_name'
-				 * which we'll need in the case of $elid not being in $elements for search forms
+				 * $$$ hugh Added $filterElements from 'filter_name'
+				 * which we'll need in the case of $elementId not being in $elements for search forms
 				 */
-				$elements = $this->listModel->getElements('id');
-				$filter_elements = $this->listModel->getElements('filtername');
-				$tablename = $db->quoteName($this->listModel->getTable()->db_table_name);
-				$searchfilters = $app->getUserState('com_' . $package . '.searchform.form' . $fromFormId . '.filters');
+				$elements        = $this->listModel->getElements('id');
+				$filterElements = $this->listModel->getElements('filtername');
+				$tableName       = $db->quoteName($this->listModel->getTable()->db_table_name);
+				$searchFilters   = $app->getUserState('com_' . $package . '.searchform.form' . $fromFormId . '.filters');
 
-				for ($i = 0; $i < count($searchfilters['key']); $i++)
+				for ($i = 0; $i < count($searchFilters['key']); $i++)
 				{
-					$eval = FABRIKFILTER_TEXT;
+					$eval  = FABRIKFILTER_TEXT;
 					$found = false;
-					$key = $searchfilters['key'][$i];
-					$elid = $searchfilters['elementid'][$i];
+					$key   = $searchFilters['key'][$i];
+					$elementId  = $searchFilters['elementid'][$i];
 
-					if (array_key_exists($elid, $elements))
+					if (array_key_exists($elementId, $elements))
 					{
-						$found = true;
-						$elementModel = $elements[$elid];
+						$found        = true;
+						$elementModel = $elements[$elementId];
 					}
 					else
 					{
 						// If sent from a search form - the table name will be blank
 						$key = explode('.', $key);
-						$key = $tablename . '.' . array_pop($key);
+						$key = $tableName . '.' . array_pop($key);
 
-						if (array_key_exists($key, $filter_elements))
+						if (array_key_exists($key, $filterElements))
 						{
-							$found = true;
-							$elementModel = $filter_elements["$key"];
+							$found        = true;
+							$elementModel = $filterElements["$key"];
 						}
 						else
 						{
@@ -908,10 +904,10 @@ class ListFilter extends Base
 							{
 								$key = $db->quoteName($join->table_join) . '.' . array_pop(explode('.', $key));
 
-								if (array_key_exists($key, $filter_elements))
+								if (array_key_exists($key, $filterElements))
 								{
-									$found = true;
-									$elementModel = $filter_elements[$key];
+									$found        = true;
+									$elementModel = $filterElements[$key];
 									break;
 								}
 							}
@@ -924,49 +920,49 @@ class ListFilter extends Base
 						continue;
 					}
 
-					$index = array_key_exists('key', $filters) ? array_search($key, $lookupkeys) : false;
-					$element = $elementModel->getElement();
-					$elparams = $elementModel->getParams();
-					$grouped = array_key_exists($i, $searchfilters['grouped_to_previous']) ? $searchfilters['grouped_to_previous'][$i] : 0;
+					$index    = array_key_exists('key', $filters) ? array_search($key, $lookupKeys) : false;
+					$element  = $elementModel->getElement();
+					$elParams = $elementModel->getParams();
+					$grouped  = array_key_exists($i, $searchFilters['grouped_to_previous']) ? $searchFilters['grouped_to_previous'][$i] : 0;
 
-					$join = $searchfilters['join'][$i];
+					$join = $searchFilters['join'][$i];
 
 					if ($index === false)
 					{
-						$filters['value'][] = $searchfilters['value'][$i];
-						$filters['condition'][] = $elementModel->getDefaultFilterCondition();
-						$filters['join'][] = $join;
-						$filters['no-filter-setup'][] = ($$element->get('filter_type') == '') ? 1 : 0;
-						$filters['hidden'][] = ($element->get('filter_type') == '') ? 1 : 0;
-						$filters['key'][] = $key;
-						$filters['search_type'][] = 'search';
-						$filters['match'][] = $element->get('filter_exact_match');
-						$filters['full_words_only'][] = $elparams->get('full_words_only');
-						$filters['eval'][] = $eval;
-						$filters['required'][] = $elparams->get('filter_required');
-						$filters['access'][] = $elparams->get('filter_access');
+						$filters['value'][]               = $searchFilters['value'][$i];
+						$filters['condition'][]           = $elementModel->getDefaultFilterCondition();
+						$filters['join'][]                = $join;
+						$filters['no-filter-setup'][]     = ($$element->get('filter_type') == '') ? 1 : 0;
+						$filters['hidden'][]              = ($element->get('filter_type') == '') ? 1 : 0;
+						$filters['key'][]                 = $key;
+						$filters['search_type'][]         = 'search';
+						$filters['match'][]               = $element->get('filter_exact_match');
+						$filters['full_words_only'][]     = $elParams->get('full_words_only');
+						$filters['eval'][]                = $eval;
+						$filters['required'][]            = $elParams->get('filter_required');
+						$filters['access'][]              = $elParams->get('filter_access');
 						$filters['grouped_to_previous'][] = $grouped;
-						$filters['label'][] = $elementModel->getListHeading();
-						$filters['raw'][] = false;
+						$filters['label'][]               = $elementModel->getListHeading();
+						$filters['raw'][]                 = false;
 					}
 					else
 					{
-						unset($lookupkeys[$index]);
-						$filters['value'][$index] = $searchfilters['value'][$i];
-						$filters['condition'][$index] = $elementModel->getDefaultFilterCondition();
-						$filters['join'][$index] = $join;
-						$filters['no-filter-setup'][$index] = ($element->get('filter_type') == '') ? 1 : 0;
-						$filters['hidden'][$index] = ($element->get('filter_type') == '') ? 1 : 0;
-						$filters['key'][$index] = $key;
-						$filters['search_type'][$index] = 'search';
-						$filters['match'][$index] = $element->get('filter_exact_match');
-						$filters['full_words_only'][$index] = $elparams->get('full_words_only');
-						$filters['eval'][$index] = $eval;
-						$filters['required'][$index] = $elparams->get('filter_required');
-						$filters['access'][$index] = $elparams->get('filter_access');
+						unset($lookupKeys[$index]);
+						$filters['value'][$index]               = $searchFilters['value'][$i];
+						$filters['condition'][$index]           = $elementModel->getDefaultFilterCondition();
+						$filters['join'][$index]                = $join;
+						$filters['no-filter-setup'][$index]     = ($element->get('filter_type') == '') ? 1 : 0;
+						$filters['hidden'][$index]              = ($element->get('filter_type') == '') ? 1 : 0;
+						$filters['key'][$index]                 = $key;
+						$filters['search_type'][$index]         = 'search';
+						$filters['match'][$index]               = $element->get('filter_exact_match');
+						$filters['full_words_only'][$index]     = $elParams->get('full_words_only');
+						$filters['eval'][$index]                = $eval;
+						$filters['required'][$index]            = $elParams->get('filter_required');
+						$filters['access'][$index]              = $elParams->get('filter_access');
 						$filters['grouped_to_previous'][$index] = $grouped;
-						$filters['label'][$index] = $elementModel->getListHeading();
-						$filters['raw'][$index] = false;
+						$filters['label'][$index]               = $elementModel->getListHeading();
+						$filters['raw'][$index]                 = false;
 					}
 
 					$filters['elementid'][] = $element->get('id');
@@ -988,28 +984,28 @@ class ListFilter extends Base
 	 *
 	 * tablename___elementname[value]=value&tablename_elementname[condition]=OR etc.
 	 *
-	 * @param   array  &$filters  list filters
+	 * @param   array &$filters list filters
 	 *
 	 * @return  void
 	 */
 
 	private function getQuerystringFilters(&$filters)
 	{
-		$item = $this->listModel->getTable();
-		$filter = JFilterInput::getInstance();
-		$request = $filter->clean($_GET, 'array');
-		$formModel = $this->listModel->getFormModel();
-		$filterkeys = array_keys($filters);
+		$item       = $this->listModel->getTable();
+		$filter     = JFilterInput::getInstance();
+		$request    = $filter->clean($_GET, 'array');
+		$formModel  = $this->listModel->getFormModel();
+		$filterKeys = array_keys($filters);
 
 		foreach ($request as $key => $val)
 		{
 			$oldkey = $key;
-			$key = FabrikString::safeColName($key);
-			$index = array_key_exists('key', $filters) ? array_search($key, $filters['key']) : false;
+			$key    = FabrikString::safeColName($key);
+			$index  = array_key_exists('key', $filters) ? array_search($key, $filters['key']) : false;
 
 			if ($index !== false)
 			{
-				foreach ($filterkeys as $fkey)
+				foreach ($filterKeys as $fkey)
 				{
 					if (is_array($filters[$fkey]) && array_key_exists($index, $filters[$fkey]))
 					{
@@ -1038,7 +1034,7 @@ class ListFilter extends Base
 				continue;
 			}
 
-			$eval = is_array($val) ? ArrayHelper::getValue($val, 'eval', FABRIKFILTER_TEXT) : FABRIKFILTER_TEXT;
+			$eval      = is_array($val) ? ArrayHelper::getValue($val, 'eval', FABRIKFILTER_TEXT) : FABRIKFILTER_TEXT;
 			$condition = is_array($val) ? ArrayHelper::getValue($val, 'condition', $elementModel->getDefaultFilterCondition())
 				: $elementModel->getDefaultFilterCondition();
 
@@ -1057,8 +1053,8 @@ class ListFilter extends Base
 			// Add request filter to end of filter array
 			if (is_array($val))
 			{
-				$value = ArrayHelper::getValue($val, 'value', '');
-				$join = ArrayHelper::getValue($val, 'join', 'AND');
+				$value   = ArrayHelper::getValue($val, 'value', '');
+				$join    = ArrayHelper::getValue($val, 'join', 'AND');
 				$grouped = ArrayHelper::getValue($val, 'grouped_to_previous', 0);
 
 				/**
@@ -1071,10 +1067,10 @@ class ListFilter extends Base
 					foreach ($value as $vk => $avalue)
 					{
 						// If � entered in qs then that is converted to %E9 which urldecode will convert back
-						$value = addslashes(urldecode($avalue));
+						$value      = addslashes(urldecode($avalue));
 						$acondition = (is_array($condition) && array_key_exists($vk, $condition)) ? $condition[$vk] : $condition;
-						$ajoin = (is_array($join) && array_key_exists($vk, $join)) ? $join[$vk] : $join;
-						$agrouped = (is_array($grouped) && array_key_exists($vk, $grouped)) ? $grouped[$vk] : $grouped;
+						$ajoin      = (is_array($join) && array_key_exists($vk, $join)) ? $join[$vk] : $join;
+						$agrouped   = (is_array($grouped) && array_key_exists($vk, $grouped)) ? $grouped[$vk] : $grouped;
 						$this->indQueryString($elementModel, $filters, $avalue, $acondition, $ajoin, $agrouped, $eval, $key, $raw);
 					}
 				}
@@ -1091,8 +1087,8 @@ class ListFilter extends Base
 			else
 			{
 				// If � entered in qs then that is converted to %E9 which urldecode will convert back
-				$value = addslashes(urldecode($val));
-				$join = 'AND';
+				$value   = addslashes(urldecode($val));
+				$join    = 'AND';
 				$grouped = 0;
 				$this->indQueryString($elementModel, $filters, $value, $condition, $join, $grouped, $eval, $key, $raw);
 			}
@@ -1102,25 +1098,25 @@ class ListFilter extends Base
 	/**
 	 * insert individual querystring filter into filter array
 	 *
-	 * @param   object  $elementModel  element model
-	 * @param   array   &$filters      filter array
-	 * @param   mixed   $value         value
-	 * @param   string  $condition     condition
-	 * @param   string  $join          join
-	 * @param   bool    $grouped       is grouped
-	 * @param   bool    $eval          is eval
-	 * @param   string  $key           element key
-	 * @param   string  $raw           is the filter a raw filter (tablename___elementname_raw=foo)
+	 * @param   object $elementModel element model
+	 * @param   array  &$filters     filter array
+	 * @param   mixed  $value        value
+	 * @param   string $condition    condition
+	 * @param   string $join         join
+	 * @param   bool   $grouped      is grouped
+	 * @param   bool   $eval         is eval
+	 * @param   string $key          element key
+	 * @param   string $raw          is the filter a raw filter (tablename___elementname_raw=foo)
 	 *
 	 * @return  void
 	 */
 
 	private function indQueryString($elementModel, &$filters, $value, $condition, $join, $grouped, $eval, $key, $raw = false)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$element = $elementModel->getElement();
-		$elparams = $elementModel->getParams();
+		$app      = $this->app;
+		$input    = $app->input;
+		$element  = $elementModel->getElement();
+		$elParams = $elementModel->getParams();
 
 		if (is_string($value))
 		{
@@ -1133,26 +1129,26 @@ class ListFilter extends Base
 		 * Treat these as prefilters so we don't unset them
 		 * when we clear the filters
 		 */
-		$stickyFilters = $input->get('fabrik_sticky_filters', array(), 'array');
-		$filterType = in_array($k2 . '_raw', $stickyFilters)
-			|| in_array($k2, $stickyFilters) ? 'jpluginfilters' : 'querystring';
-		$filters['value'][] = $value;
-		$filters['condition'][] = urldecode($condition);
-		$filters['join'][] = $join;
-		$filters['no-filter-setup'][] = ($element->get('filter_type') == '') ? 1 : 0;
-		$filters['hidden'][] = ($$element->get('filter_type') == '') ? 1 : 0;
-		$filters['key'][] = $key;
-		$filters['key2'][] = '';
-		$filters['search_type'][] = $filterType;
-		$filters['match'][] = $element->get('filter_exact_match');
-		$filters['full_words_only'][] = $elparams->get('full_words_only');
-		$filters['eval'][] = $eval;
-		$filters['required'][] = $elparams->get('filter_required');
-		$filters['access'][] = $elparams->get('filter_access');
+		$stickyFilters                    = $input->get('fabrik_sticky_filters', array(), 'array');
+		$filterType                       = in_array($k2 . '_raw', $stickyFilters)
+		|| in_array($k2, $stickyFilters) ? 'jpluginfilters' : 'querystring';
+		$filters['value'][]               = $value;
+		$filters['condition'][]           = urldecode($condition);
+		$filters['join'][]                = $join;
+		$filters['no-filter-setup'][]     = ($element->get('filter_type') == '') ? 1 : 0;
+		$filters['hidden'][]              = ($$element->get('filter_type') == '') ? 1 : 0;
+		$filters['key'][]                 = $key;
+		$filters['key2'][]                = '';
+		$filters['search_type'][]         = $filterType;
+		$filters['match'][]               = $element->get('filter_exact_match');
+		$filters['full_words_only'][]     = $elParams->get('full_words_only');
+		$filters['eval'][]                = $eval;
+		$filters['required'][]            = $elParams->get('filter_required');
+		$filters['access'][]              = $elParams->get('filter_access');
 		$filters['grouped_to_previous'][] = $grouped;
-		$filters['label'][] = $elementModel->getListHeading();
-		$filters['elementid'][] = $element->id;
-		$filters['raw'][] = $raw;
+		$filters['label'][]               = $elementModel->getListHeading();
+		$filters['elementid'][]           = $element->id;
+		$filters['raw'][]                 = $raw;
 	}
 
 	/**
@@ -1165,12 +1161,11 @@ class ListFilter extends Base
 	{
 		if (!isset($this->request))
 		{
-			$item = $this->listModel->getTable();
-			$filter = JFilterInput::getInstance();
+			$filter  = JFilterInput::getInstance();
 			$request = $filter->clean($_POST, 'array');
 			/**
 			 * Use request ONLY if you want to test an ajax post with params in url
-			 * $request	= $filter->clean($_REQUEST, 'array');
+			 * $request    = $filter->clean($_REQUEST, 'array');
 			 */
 			$k = 'list_' . $this->listModel->getRenderContext();
 
@@ -1190,39 +1185,38 @@ class ListFilter extends Base
 	/**
 	 * Overwrite session and search all filters with posted data
 	 *
-	 * @param   array  &$filters  filter array
+	 * @param   array &$filters filter array
 	 *
 	 * @return  void
 	 */
 
 	private function getPostFilters(&$filters)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$item = $this->listModel->getTable();
-		$request = $this->getPostFilterArray();
-		$elements = $this->listModel->getElements('id');
-		$filterkeys = array_keys($filters);
-		$values = ArrayHelper::getValue($request, 'value', array());
+		$app         = $this->app;
+		$input       = $app->input;
+		$request     = $this->getPostFilterArray();
+		$elements    = $this->listModel->getElements('id');
+		$filterKeys  = array_keys($filters);
+		$values      = ArrayHelper::getValue($request, 'value', array());
 		$searchTypes = ArrayHelper::getValue($filters, 'search_type', array());
-		$conditions = ArrayHelper::getValue($request, 'condition', array());
+		$conditions  = ArrayHelper::getValue($request, 'condition', array());
 
 		$usedMerges = array();
 
 		FabrikHelperHTML::debug($filters, 'filter array: start getPostFilters');
-		
+
 		if (!empty($request) && array_key_exists('key', $request))
 		{
-			$keyints = array_keys($request['key']);
-			$ajaxPost = String::strtolower($input->server->get('HTTP_X_REQUESTED_WITH'));
-			$this->listModel->ajaxPost = $ajaxPost;
+			$keyInts                     = array_keys($request['key']);
+			$ajaxPost                    = String::strtolower($input->server->get('HTTP_X_REQUESTED_WITH'));
+			$this->listModel->ajaxPost   = $ajaxPost;
 			$this->listModel->postValues = $values;
 
-			foreach ($keyints as $i)
+			foreach ($keyInts as $i)
 			{
-				$value = ArrayHelper::getValue($values, $i, '');
-				$key = ArrayHelper::getValue($request['key'], $i);
-				$elid = ArrayHelper::getValue($request['elementid'], $i);
+				$value     = ArrayHelper::getValue($values, $i, '');
+				$key       = ArrayHelper::getValue($request['key'], $i);
+				$elementId      = ArrayHelper::getValue($request['elementid'], $i);
 				$condition = ArrayHelper::getValue($conditions, $i);
 
 				if ($key == '')
@@ -1231,9 +1225,9 @@ class ListFilter extends Base
 				}
 
 				// Index is the filter index for a previous filter that uses the same element id
-				if (!in_array($elid, $usedMerges))
+				if (!in_array($elementId, $usedMerges))
 				{
-					$index = array_key_exists('elementid', $filters) ? array_search($elid, (array) $filters['elementid']) : false;
+					$index = array_key_exists('elementid', $filters) ? array_search($elementId, (array) $filters['elementid']) : false;
 				}
 				else
 				{
@@ -1242,7 +1236,7 @@ class ListFilter extends Base
 
 				if ($index !== false)
 				{
-					$usedMerges[] = $elid;
+					$usedMerges[] = $elementId;
 				}
 
 				/**
@@ -1285,16 +1279,16 @@ class ListFilter extends Base
 					continue;
 				}
 
-				$origCondition = $condition;
+				$origCondition               = $condition;
 				$filters['orig_condition'][] = $condition;
 
 				if ($condition === 'EMPTY')
 				{
 					$condition = '=';
-					$value = '';
+					$value     = '';
 				}
 
-				$elementModel = $elements[$elid];
+				$elementModel = $elements[$elementId];
 
 				if (!is_a($elementModel, 'PlgFabrik_Element'))
 				{
@@ -1310,7 +1304,7 @@ class ListFilter extends Base
 				// If the request key is already in the filter array - unset it
 				if ($index !== false)
 				{
-					foreach ($filterkeys as $fkey)
+					foreach ($filterKeys as $fkey)
 					{
 						if (is_array($filters[$fkey]) && array_key_exists($index, $filters[$fkey]))
 						{
@@ -1365,7 +1359,7 @@ class ListFilter extends Base
 					if ($i == 0)
 					{
 						$joinModes = ArrayHelper::getValue($filters, 'join', array('AND'));
-						$joinMode = array_pop($joinModes);
+						$joinMode  = array_pop($joinModes);
 
 						// $$$ rob - If search all made, then the post filters should filter further the results
 						$tmpSearchTypes = ArrayHelper::getValue($filters, 'search_type', array('normal'));
@@ -1379,13 +1373,13 @@ class ListFilter extends Base
 				}
 
 				// Add request filter to end of filter array
-				$element = $elementModel->getElement();
-				$elparams = $elementModel->getParams();
-				$filters['value'][] = $value;
-				$filters['condition'][] = urldecode($condition);
-				$filters['join'][] = $joinMode;
-				$filters['no-filter-setup'][] = ($element->get('filter_type')== '') ? 1 : 0;
-				$filters['hidden'][] = ($element->get('filter_type') == '') ? 1 : 0;
+				$element                      = $elementModel->getElement();
+				$elParams                     = $elementModel->getParams();
+				$filters['value'][]           = $value;
+				$filters['condition'][]       = urldecode($condition);
+				$filters['join'][]            = $joinMode;
+				$filters['no-filter-setup'][] = ($element->get('filter_type') == '') ? 1 : 0;
+				$filters['hidden'][]          = ($element->get('filter_type') == '') ? 1 : 0;
 				/*
 				 * $$$ hugh - need to check for magic quotes, otherwise filter keys for
 				 * CONCAT's get munged into things like CONCAT(last_name,\', \',first_name)
@@ -1400,16 +1394,16 @@ class ListFilter extends Base
 					$filters['key'][] = urldecode($key);
 				}
 
-				$filters['search_type'][] = ArrayHelper::getValue($request['search_type'], $i, 'normal');
-				$filters['match'][] = $element->get('filter_exact_match');
-				$filters['full_words_only'][] = $elparams->get('full_words_only');
-				$filters['eval'][] = $eval;
-				$filters['required'][] = $elparams->get('filter_required');
-				$filters['access'][] = $elparams->get('filter_access');
+				$filters['search_type'][]         = ArrayHelper::getValue($request['search_type'], $i, 'normal');
+				$filters['match'][]               = $element->get('filter_exact_match');
+				$filters['full_words_only'][]     = $elParams->get('full_words_only');
+				$filters['eval'][]                = $eval;
+				$filters['required'][]            = $elParams->get('filter_required');
+				$filters['access'][]              = $elParams->get('filter_access');
 				$filters['grouped_to_previous'][] = ArrayHelper::getValue($request['grouped_to_previous'], $i, '0');
-				$filters['label'][] = $elementModel->getListHeading();
-				$filters['elementid'][] = $elid;
-				$filters['raw'][] = false;
+				$filters['label'][]               = $elementModel->getListHeading();
+				$filters['elementid'][]           = $elementId;
+				$filters['raw'][]                 = false;
 			}
 		}
 
@@ -1423,31 +1417,30 @@ class ListFilter extends Base
 	/**
 	 * load up filters stored in the session from previous searches
 	 *
-	 * @param   array  &$filters  list filters
+	 * @param   array &$filters list filters
 	 *
 	 * @return  void
 	 */
 
 	private function getSessionFilters(&$filters)
 	{
-		$profiler = JProfiler::getInstance('Application');
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$elements = $this->listModel->getElements('id');
-		$item = $this->listModel->getTable();
-		$identifier = $app->input->get('listref', $this->listModel->getRenderContext());
-		$key = 'com_' . $package . '.list' . $identifier . '.filter';
-		$sessionfilters = ArrayHelper::fromObject($app->getUserState($key));
-		$filterkeys = array_keys($filters);
+		$profiler       = JProfiler::getInstance('Application');
+		$app            = $this->app;
+		$package        = $app->getUserState('com_fabrik.package', 'fabrik');
+		$elements       = $this->listModel->getElements('id');
+		$identifier     = $app->input->get('listref', $this->listModel->getRenderContext());
+		$key            = 'com_' . $package . '.list' . $identifier . '.filter';
+		$sessionFilters = ArrayHelper::fromObject($app->getUserState($key));
+		$filterKeys     = array_keys($filters);
 
-		if (!is_array($sessionfilters) || !array_key_exists('key', $sessionfilters))
+		if (!is_array($sessionFilters) || !array_key_exists('key', $sessionFilters))
 		{
 			return;
 		}
 
 		// If we are coming from a search form ignore session filters
 		$fromFormId = $this->getSearchFormId();
-		$formModel = $this->listModel->getFormModel();
+		$formModel  = $this->listModel->getFormModel();
 
 		if (!is_null($fromFormId) && $fromFormId !== $formModel->get('id'))
 		{
@@ -1456,27 +1449,27 @@ class ListFilter extends Base
 		// End ignore
 		$request = $this->getPostFilterArray();
 		JDEBUG ? $profiler->mark('listfilter:session filters getPostFilterArray') : null;
-		$key = 'com_' . $package . '.list' . $identifier . '.filter.searchall';
+		$key        = 'com_' . $package . '.list' . $identifier . '.filter.searchall';
 		$requestKey = $this->getSearchAllRequestKey();
 		JDEBUG ? $profiler->mark('listfilter:session filters getSearchAllRequestKey') : null;
 		$pluginKeys = $this->getPluginFilterKeys();
 		JDEBUG ? $profiler->mark('listfilter:session filters getPluginFilterKeys') : null;
-		$search = $app->getUserStateFromRequest($key, $requestKey);
+		$search   = $app->getUserStateFromRequest($key, $requestKey);
 		$postkeys = ArrayHelper::getValue($request, 'key', array());
 
-		for ($i = 0; $i < count($sessionfilters['key']); $i++)
+		for ($i = 0; $i < count($sessionFilters['key']); $i++)
 		{
-			$elid = ArrayHelper::getValue($sessionfilters['elementid'], $i);
-			$key = ArrayHelper::getValue($sessionfilters['key'], $i, null);
-			$index = ArrayHelper::getValue($filters['elementid'], $key, false);
+			$elementId          = ArrayHelper::getValue($sessionFilters['elementid'], $i);
+			$key           = ArrayHelper::getValue($sessionFilters['key'], $i, null);
+			$index         = ArrayHelper::getValue($filters['elementid'], $key, false);
 			$origCondition = ArrayHelper::getValue($filters['orig_condition'], $i, '');
 
 			// Used by radius search plugin
-			$sqlConds = ArrayHelper::getValue($sessionfilters, 'sqlCond', array());
+			$sqlConds = ArrayHelper::getValue($sessionFilters, 'sqlCond', array());
 
 			if ($index !== false)
 			{
-				foreach ($filterkeys as $fkey)
+				foreach ($filterKeys as $fkey)
 				{
 					if (is_array($filters[$fkey]) && array_key_exists($index, $filters[$fkey]))
 					{
@@ -1495,71 +1488,71 @@ class ListFilter extends Base
 				}
 			}
 
-			$value = $sessionfilters['value'][$i];
-			$key2 = array_key_exists('key2', $sessionfilters) ? ArrayHelper::getValue($sessionfilters['key2'], $i, '') : '';
+			$value = $sessionFilters['value'][$i];
+			$key2  = array_key_exists('key2', $sessionFilters) ? ArrayHelper::getValue($sessionFilters['key2'], $i, '') : '';
 
-			if ($elid == -1)
+			if ($elementId == -1)
 			{
 				// Search all boolean mode
-				$eval = 0;
-				$condition = 'AGAINST';
-				$origCondition = 'AGAINST';
-				$join = 'AND';
+				$eval           = 0;
+				$condition      = 'AGAINST';
+				$origCondition  = 'AGAINST';
+				$join           = 'AND';
 				$noFiltersSetup = 0;
-				$hidden = 0;
-				$search_type = 'searchall';
-				$match = 1;
-				$fullWordsOnly = 0;
-				$required = 0;
-				$access = $this->defaultAccessLevel();
-				$grouped = 1;
-				$label = '';
+				$hidden         = 0;
+				$search_type    = 'searchall';
+				$match          = 1;
+				$fullWordsOnly  = 0;
+				$required       = 0;
+				$access         = $this->defaultAccessLevel();
+				$grouped        = 1;
+				$label          = '';
 				/**
 				 * $$$ rob force the counter to always be the same for extended search all
 				 * stops issue of multiple search alls being applied
 				 */
 				$counter = 9999;
-				$raw = 0;
+				$raw     = 0;
 				$sqlCond = null;
 			}
 			else
 			{
-				$elementModel = ArrayHelper::getValue($elements, $elid);
+				$elementModel = ArrayHelper::getValue($elements, $elementId);
 
-				if (!is_a($elementModel, 'plgFabrik_Element') && !in_array($elid, $pluginKeys))
+				if (!is_a($elementModel, 'plgFabrik_Element') && !in_array($elementId, $pluginKeys))
 				{
 					continue;
 				}
 				// Check list plugins
-				if (in_array($elid, $pluginKeys))
+				if (in_array($elementId, $pluginKeys))
 				{
-					$condition = $sessionfilters['condition'][$i];
-					$origCondition = $sessionfilters['orig_condition'][$i];
-					$eval = $sessionfilters['eval'][$i];
-					$search_type = $sessionfilters['search_type'][$i];
-					$join = $sessionfilters['join'][$i];
-					$grouped = $sessionfilters['grouped_to_previous'][$i];
-					$noFiltersSetup = $sessionfilters['no-filter-setup'][$i];
-					$hidden = $sessionfilters['hidden'][$i];
-					$match = $sessionfilters['match'][$i];
-					$fullWordsOnly = $sessionfilters['full_words_only'][$i];
-					$required = $sessionfilters['required'][$i];
-					$access = $sessionfilters['access'][$i];
-					$label = $sessionfilters['label'][$i];
-					$sqlCond = ArrayHelper::getValue($sqlConds, $i);
-					$raw = $sessionfilters['raw'][$i];
-					$counter = $elid;
+					$condition      = $sessionFilters['condition'][$i];
+					$origCondition  = $sessionFilters['orig_condition'][$i];
+					$eval           = $sessionFilters['eval'][$i];
+					$search_type    = $sessionFilters['search_type'][$i];
+					$join           = $sessionFilters['join'][$i];
+					$grouped        = $sessionFilters['grouped_to_previous'][$i];
+					$noFiltersSetup = $sessionFilters['no-filter-setup'][$i];
+					$hidden         = $sessionFilters['hidden'][$i];
+					$match          = $sessionFilters['match'][$i];
+					$fullWordsOnly  = $sessionFilters['full_words_only'][$i];
+					$required       = $sessionFilters['required'][$i];
+					$access         = $sessionFilters['access'][$i];
+					$label          = $sessionFilters['label'][$i];
+					$sqlCond        = ArrayHelper::getValue($sqlConds, $i);
+					$raw            = $sessionFilters['raw'][$i];
+					$counter        = $elementId;
 				}
 				else
 				{
-					$sqlCond = null;
-					$condition = array_key_exists($i, $sessionfilters['condition']) ? $sessionfilters['condition'][$i]
+					$sqlCond   = null;
+					$condition = array_key_exists($i, $sessionFilters['condition']) ? $sessionFilters['condition'][$i]
 						: $elementModel->getDefaultFilterCondition();
 
-					$origFound = array_key_exists('orig_condition', $sessionfilters) && array_key_exists($i, $sessionfilters['orig_condition']);
-					$origCondition = $origFound ? $sessionfilters['orig_condition'][$i] : $elementModel->getDefaultFilterCondition();
-					$raw = array_key_exists($i, $sessionfilters['raw']) ? $sessionfilters['raw'][$i] : 0;
-					$eval = array_key_exists($i, $sessionfilters['eval']) ? $sessionfilters['eval'][$i] : FABRIKFILTER_TEXT;
+					$origFound     = array_key_exists('orig_condition', $sessionFilters) && array_key_exists($i, $sessionFilters['orig_condition']);
+					$origCondition = $origFound ? $sessionFilters['orig_condition'][$i] : $elementModel->getDefaultFilterCondition();
+					$raw           = array_key_exists($i, $sessionFilters['raw']) ? $sessionFilters['raw'][$i] : 0;
+					$eval          = array_key_exists($i, $sessionFilters['eval']) ? $sessionFilters['eval'][$i] : FABRIKFILTER_TEXT;
 
 					if (!is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
 					{
@@ -1578,21 +1571,21 @@ class ListFilter extends Base
 					 * add request filter to end of filter array
 					 * with advanced search and then page nav this wasn't right
 					 */
-					$search_type = array_key_exists($i, $sessionfilters['search_type']) ? $sessionfilters['search_type'][$i]
+					$search_type = array_key_exists($i, $sessionFilters['search_type']) ? $sessionFilters['search_type'][$i]
 						: $elementModel->getDefaultFilterCondition();
 
-					$join = $sessionfilters['join'][$i];
-					$grouped = array_key_exists($i, $sessionfilters['grouped_to_previous']) ? $sessionfilters['grouped_to_previous'][$i] : 0;
+					$join    = $sessionFilters['join'][$i];
+					$grouped = array_key_exists($i, $sessionFilters['grouped_to_previous']) ? $sessionFilters['grouped_to_previous'][$i] : 0;
 
-					$element = $elementModel->getElement();
-					$elparams = $elementModel->getParams();
+					$element        = $elementModel->getElement();
+					$elParams       = $elementModel->getParams();
 					$noFiltersSetup = ($element->get('filter_type') == '') ? 1 : 0;
-					$hidden = ($element->get('filter_type')== '') ? 1 : 0;
-					$match = $element->get('filter_exact_match');
-					$fullWordsOnly = $elparams->get('full_words_only');
-					$required = $elparams->get('filter_required');
-					$access = $elparams->get('filter_access');
-					$label = $elementModel->getListHeading();
+					$hidden         = ($element->get('filter_type') == '') ? 1 : 0;
+					$match          = $element->get('filter_exact_match');
+					$fullWordsOnly  = $elParams->get('full_words_only');
+					$required       = $elParams->get('filter_required');
+					$access         = $elParams->get('filter_access');
+					$label          = $elementModel->getListHeading();
 
 					/**
 					 * $$$ rob if the session filter is also in the request data then set it to use the same key as the post data
@@ -1608,30 +1601,31 @@ class ListFilter extends Base
 			 * So ... if this $filter is a pluginfilter, lets NOT overwrite it
 			 */
 			if (array_key_exists('search_type', $filters) && array_key_exists($counter, $filters['search_type'])
-				&& $filters['search_type'][$counter] == 'jpluginfilters')
+				&& $filters['search_type'][$counter] == 'jpluginfilters'
+			)
 			{
 				continue;
 			}
 
-			$filters['value'][$counter] = $value;
-			$filters['condition'][$counter] = $condition;
-			$filters['join'][$counter] = $join;
-			$filters['no-filter-setup'][$counter] = $noFiltersSetup;
-			$filters['hidden'][$counter] = $hidden;
-			$filters['key'][$counter] = $key;
-			$filters['key2'][$counter] = $key2;
-			$filters['search_type'][$counter] = $search_type;
-			$filters['match'][$counter] = $match;
-			$filters['full_words_only'][$counter] = $fullWordsOnly;
-			$filters['eval'][$counter] = $eval;
-			$filters['required'][$counter] = $required;
-			$filters['access'][$counter] = $access;
+			$filters['value'][$counter]               = $value;
+			$filters['condition'][$counter]           = $condition;
+			$filters['join'][$counter]                = $join;
+			$filters['no-filter-setup'][$counter]     = $noFiltersSetup;
+			$filters['hidden'][$counter]              = $hidden;
+			$filters['key'][$counter]                 = $key;
+			$filters['key2'][$counter]                = $key2;
+			$filters['search_type'][$counter]         = $search_type;
+			$filters['match'][$counter]               = $match;
+			$filters['full_words_only'][$counter]     = $fullWordsOnly;
+			$filters['eval'][$counter]                = $eval;
+			$filters['required'][$counter]            = $required;
+			$filters['access'][$counter]              = $access;
 			$filters['grouped_to_previous'][$counter] = $grouped;
-			$filters['label'][$counter] = $label;
-			$filters['elementid'][$counter] = $elid;
-			$filters['sqlCond'][$counter] = $sqlCond;
-			$filters['raw'][$counter] = $raw;
-			$filters['orig_condition'][$counter] = $origCondition;
+			$filters['label'][$counter]               = $label;
+			$filters['elementid'][$counter]           = $elementId;
+			$filters['sqlCond'][$counter]             = $sqlCond;
+			$filters['raw'][$counter]                 = $raw;
+			$filters['orig_condition'][$counter]      = $origCondition;
 
 			if (array_search($key, $postkeys) === false)
 			{

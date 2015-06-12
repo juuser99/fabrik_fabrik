@@ -48,6 +48,8 @@ class Html Extends \JViewHtml
 
 	protected $state = null;
 
+	protected $session = null;
+
 	/**
 	 * Method to instantiate the view.
 	 *
@@ -67,6 +69,7 @@ class Html Extends \JViewHtml
 		$this->app  = $this->state->get('app', JFactory::getApplication());
 		$this->user = $this->state->get('user', JFactory::getUser());
 		$this->doc  = $this->state->get('doc', JFactory::getDocument());
+		$this->session = $this->state->get('session', JFactory::getSession());
 		$input      = $this->app->input;
 
 		if ($input->get('format', 'html') === 'html')

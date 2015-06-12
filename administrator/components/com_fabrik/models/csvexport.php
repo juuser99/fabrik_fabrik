@@ -16,8 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use \JResponse as JResponse;
+use \FabrikString as FabrikString;
 use \JFile as JFile;
+use \stdClass as stdClass;
 
 /**
  * CSV Export Model
@@ -46,6 +47,13 @@ class CsvExport extends Base
 	 * @var string
 	 */
 	protected $delimiter = ',';
+
+	/**
+	 * CSV file name
+	 *
+	 * @var string
+	 */
+	protected $fileName = null;
 	
 	/**
 	 * Get csv export step
@@ -70,11 +78,11 @@ class CsvExport extends Base
 		$input = $app->input;
 
 		// F3 turn off error reporting as this is an ajax call
-		error_reporting(0);
+		//error_reporting(0);
 		jimport('joomla.filesystem.file');
 		$start = $input->getInt('start', 0);
-		$filename = $this->getFileName();
 		$filePath = $this->getFilePath();
+
 		$str = '';
 
 		if (JFile::exists($filePath))
@@ -103,7 +111,6 @@ class CsvExport extends Base
 			$str = '';
 		}
 
-		$session = JFactory::getSession();
 		$table = $this->model->getTable();
 		$this->model->render();
 		$this->removePkVal();
@@ -130,7 +137,7 @@ class CsvExport extends Base
 		$incData = $input->get('inctabledata', true);
 		$data = $this->model->getData();
 		$exportFormat = $this->model->getParams()->get('csvfullname');
-		$shortKey = FabrikString::shortColName($table->db_primary_key);
+		$shortKey = FabrikString::shortColName($table->get('list.db_primary_key'));
 
 		foreach ($data as $group)
 		{
@@ -287,14 +294,18 @@ class CsvExport extends Base
 	 *
 	 * @return  string  filename
 	 */
-	private function getFileName()
+	public function getFileName()
 	{
+		if (isset($this->fileName))
+		{
+			return $this->fileName;
+		}
 		$app = $this->app;
-		$this->model->setId($app->input->getInt('listid'));
+		$this->model->setId($app->input->getString('listid'));
 		$table = $this->model->getTable();
-		$filename = $table->db_table_name . '-export.csv';
+		$this->fileName = $table->get('list.db_table_name') . '-export.csv';
 
-		return $filename;
+		return $this->fileName;
 	}
 
 	/**
@@ -302,59 +313,11 @@ class CsvExport extends Base
 	 *
 	 * @return  string  path
 	 */
-	private function getFilePath()
+	public function getFilePath()
 	{
 		$config = $this->config;
 
 		return $config->get('tmp_path') . '/' . $this->getFileName();
-	}
-
-	/**
-	 * Start the download of the completed csv file
-	 *
-	 * @return null
-	 */
-	public function downloadFile()
-	{
-		// To prevent long file from getting cut off from     //max_execution_time
-		error_reporting(0);
-		@set_time_limit(0);
-		jimport('joomla.filesystem.file');
-		$filename = $this->getFileName();
-		$filePath = $this->getFilePath();
-		$document = JFactory::getDocument();
-		$document->setMimeEncoding('application/zip');
-
-		if (JFile::exists($filePath))
-		{
-			$str = file_get_contents($filePath);
-		}
-		else
-		{
-			// If we cant find the file then don't try to auto download it
-			return false;
-		}
-
-		JResponse::clearHeaders();
-		$encoding = $this->getEncoding();
-
-		// Set the response to indicate a file download
-		JResponse::setHeader('Content-Type', 'application/zip');
-		JResponse::setHeader('Content-Disposition', "attachment;filename=\"" . $filename . "\"");
-
-		// Xls formatting for accents
-		if ($this->outPutFormat == 'excel')
-		{
-			JResponse::setHeader('Content-Type', 'application/vnd.ms-excel');
-		}
-
-		JResponse::setHeader('charset', $encoding);
-		JResponse::setBody($str);
-		echo JResponse::toString(false);
-		JFile::delete($filePath);
-
-		// $$$ rob 21/02/2012 - need to exit otherwise Chrome give 349 download error
-		exit;
 	}
 
 	/**
@@ -485,7 +448,7 @@ class CsvExport extends Base
 	 *
 	 * @return string
 	 */
-	protected function getEncoding()
+	public function getEncoding()
 	{
 		$params = $this->model->getParams();
 		$defaultEncoding = $this->outPutFormat == 'excel' ? 'UTF-16LE' : 'UTF-8';
@@ -513,7 +476,6 @@ class CsvExport extends Base
 		$params = $this->model->getParams();
 		$headingFormat = $params->get('csvfullname');
 		$data = $this->model->getData();
-		$headings = array();
 		$g = current($data);
 
 		if (empty($g))
@@ -534,7 +496,7 @@ class CsvExport extends Base
 		$incRaw = $input->get('incraw', true);
 		$incData = $input->get('inctabledata', true);
 
-		$shortKey = FabrikString::shortColName($table->db_primary_key);
+		$shortKey = FabrikString::shortColName($table->get('list.db_primary_key'));
 
 		foreach ($r as $heading => $value)
 		{
