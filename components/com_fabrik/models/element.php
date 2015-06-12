@@ -6971,7 +6971,7 @@ class Element extends Plugin
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$this->form = new Form;
-		$formId = $input->getInt('formid');
+		$formId = $input->getString('formid');
 		$this->form->setId($formId);
 		$this->setId($input->getInt('element_id'));
 		$this->list = new Lizt;

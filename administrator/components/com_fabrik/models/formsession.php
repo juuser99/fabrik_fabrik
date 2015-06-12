@@ -475,7 +475,7 @@ class FormSession extends JModelBase
 
 		if (is_null($this->formid))
 		{
-			$this->formid = $app->input->getInt('formid');
+			$this->formid = $app->input->getString('formid');
 		}
 
 		return $this->formid;

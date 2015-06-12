@@ -83,6 +83,13 @@ class Base extends \JModelBase
 	public $joinTableElementStep = '___';
 
 	/**
+	 * Data storage model
+	 *
+	 * @var Storage|null
+	 */
+	protected $storage = null;
+
+	/**
 	 * Instantiate the model.
 	 *
 	 * @param   Registry $state The model state.
@@ -1183,12 +1190,16 @@ class Base extends \JModelBase
 	 */
 	protected function getStorage($options = array())
 	{
-		if (!array_key_exists('db', $options))
+		if (!isset($this->storage))
 		{
-			$options['db'] = $this->getDb();
+			if (!array_key_exists('db', $options))
+			{
+				$options['db'] = $this->getDb();
+			}
+			$this->storage = new Storage($options);
 		}
 
-		return new Storage($options);
+		return $this->storage;
 	}
 
 	/**

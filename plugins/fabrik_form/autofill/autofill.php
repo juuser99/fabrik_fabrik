@@ -113,7 +113,7 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 		if ($cnn === 0 || $cnn == -1)
 		{
 			// No connection selected so query current forms' table data
-			$formId = $input->getInt('formid');
+			$formId = $input->getString('formid');
 			$input->set($element, $value, 'get');
 			$model =  new \Fabrik\Admin\Models\Form;
 			$model->setId($formId);

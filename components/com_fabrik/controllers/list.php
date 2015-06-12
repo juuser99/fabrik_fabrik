@@ -47,29 +47,21 @@ class Lizt extends Controller
 			// In PDF view only shown the main component content.
 			$input->set('tmpl', 'component');
 		}
-		// Set the default view name from the Request
 
 		// Register the layout paths for the view
 		$paths = new \SplPriorityQueue;
 		$paths->insert(JPATH_COMPONENT . '/views/' . $viewName . '/tmpl', 'normal');
 
-		// Push a model into the view
-		$model = new \Fabrik\Admin\Models\Lizt;
-		$viewClass  = 'Fabrik\Views\Lizt\\' . ucfirst($viewFormat);
-
-
-
-		$model = new \Fabrik\Admin\Models\Lizt;
-		$paths = new \SplPriorityQueue;
 		// FIXME - dont hard wire bootstrap tmpl!
 		$paths->insert(JPATH_SITE . '/components/com_fabrik/views/lizt/tmpl/bootstrap', 'normal');
+
+		// Push a model into the view
+		$viewClass  = 'Fabrik\Views\Lizt\\' . ucfirst($viewFormat);
+		$model = new \Fabrik\Admin\Models\Lizt;
 
 		$view = new $viewClass($model, $paths);
 		$view->setLayout($layout);
 		$view->setModel($model, true);
-
-		// Display the view
-		//$view->error = $this->getError();
 
 		/**
 		 * F3 cache with raw view gives error

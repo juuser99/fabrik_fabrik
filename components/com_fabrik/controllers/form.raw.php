@@ -73,7 +73,7 @@ class FabrikControllerForm extends FabrikController
 		 */
 		if (!$model->hasErrors())
 		{
-			$context = 'com_' . $package . '.form.' . $input->getInt('formid');
+			$context = 'com_' . $package . '.form.' . $input->getString('formid');
 			$model->errors = $session->get($context . '.errors', array());
 			$session->clear($context . '.errors');
 		}
@@ -226,7 +226,7 @@ class FabrikControllerForm extends FabrikController
 	{
 		$input = $this->input;
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
-		$formId = $input->getInt('formid');
+		$formId = $input->getString('formid');
 		$listId = $input->getString('listid');
 		$rowId = $input->getString('rowid', '', 'string');
 

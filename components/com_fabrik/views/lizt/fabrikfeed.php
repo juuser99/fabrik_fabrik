@@ -371,7 +371,6 @@ class Fabrikfeed extends Base
 	 *
 	 * @return mixed|number
 	 */
-
 	protected function get_filesize($path, $remote = false)
 	{
 		if ($remote)

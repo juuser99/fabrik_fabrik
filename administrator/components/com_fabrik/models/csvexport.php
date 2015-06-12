@@ -19,6 +19,7 @@ use Fabrik\Helpers\Worker;
 use \FabrikString as FabrikString;
 use \JFile as JFile;
 use \stdClass as stdClass;
+use \JModel;
 
 /**
  * CSV Export Model
@@ -54,7 +55,13 @@ class CsvExport extends Base
 	 * @var string
 	 */
 	protected $fileName = null;
-	
+
+	/**
+	 *
+	 * @var JModel
+	 */
+	public $model = null;
+
 	/**
 	 * Get csv export step
 	 *

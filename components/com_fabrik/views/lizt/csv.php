@@ -121,8 +121,8 @@ class CSV extends Base
 	 */
 	public function downloadFile($exporter)
 	{
-		// To prevent long file from getting cut off from     //max_execution_time
-		//error_reporting(0);
+		// To prevent long file from getting cut off from max_execution_time
+		error_reporting(0);
 		@set_time_limit(0);
 		jimport('joomla.filesystem.file');
 		$filename = $exporter->getFileName();

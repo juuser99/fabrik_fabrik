@@ -323,7 +323,7 @@ class PlgFabrik_ElementRating extends Element
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'form', false);
 
 		$listId = $this->getlistModel()->getTable()->id;
-		$formId = $input->getInt('formid');
+		$formId = $input->getString('formid');
 		$rowId = $this->getFormModel()->getRowId();
 
 		if ($params->get('rating-mode') == 'creator-    rating')
@@ -366,7 +366,7 @@ class PlgFabrik_ElementRating extends Element
 		$input = $this->app->input;
 		$params = $this->getParams();
 		$listId = $input->getString('listid');
-		$formid = $input->getInt('formid');
+		$formid = $input->getString('formid');
 		$row_id = $input->get('rowid', '', 'string');
 
 		if (empty($listId))

@@ -75,7 +75,7 @@ class FabrikControllerDetails extends FabrikController
 		// If errors made when submitting from a J plugin they are stored in the session lets get them back and insert them into the form model
 		if (!empty($model->errors))
 		{
-			$context = 'com_' . $package . '.form.' . $this->input->getInt('formid');
+			$context = 'com_' . $package . '.form.' . $this->input->getString('formid');
 			$model->errors = $session->get($context . '.errors', array());
 			$session->clear($context . '.errors');
 		}
@@ -234,76 +234,6 @@ class FabrikControllerDetails extends FabrikController
 	}
 
 	/**
-	 * Set the redirect url
-	 *
-	 * @param   string  $url   default url
-	 * @param   string  $msg   optional message to apply on redirect
-	 * @param   string  $type  optional message type
-	 *
-	 * @return  null
-	 */
-
-	public function setRedirect($url, $msg = null, $type = 'message')
-	{
-		$session = JFactory::getSession();
-		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
-		$formdata = $session->get('com_' . $package . '.form.data');
-		$context = 'com_' . $package . '.form.' . $formdata['fabrik'] . '.redirect.';
-
-		// If the redirect plug-in has set a url use that in preference to the default url
-		$surl = $session->get($context . 'url', array($url));
-
-		if (!is_array($surl))
-		{
-			$surl = array($surl);
-		}
-
-		if (empty($surl))
-		{
-			$surl[] = $url;
-		}
-
-		$smsg = $session->get($context . 'msg', array($msg));
-
-		if (!is_array($smsg))
-		{
-			$smsg = array($smsg);
-		}
-
-		if (empty($smsg))
-		{
-			$smsg[] = $msg;
-		}
-
-		$url = array_shift($surl);
-		$msg = array_shift($smsg);
-
-		$q = $this->app->getMessageQueue();
-		$found = false;
-
-		foreach ($q as $m)
-		{
-			// Custom message already queued - unset default msg
-			if ($m['type'] == 'message' && trim($m['message']) !== '')
-			{
-				$found = true;
-				break;
-			}
-		}
-
-		if ($found)
-		{
-			$msg = null;
-		}
-
-		$session->set($context . 'url', $surl);
-		$session->set($context . 'msg', $smsg);
-		$showmsg = array_shift($session->get($context . 'showsystemmsg', array(true)));
-		$msg = $showmsg ? $msg : null;
-		parent::setRedirect($url, $msg, $type);
-	}
-
-	/**
 	 * generic function to redirect
 	 *
 	 * @param   object  &$model  form model
@@ -316,7 +246,7 @@ class FabrikControllerDetails extends FabrikController
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $this->input;
-		$formId = $input->getInt('formid');
+		$formId = $input->getString('formid');
 		$listId = $input->getString('listid');
 		$rowId = $input->getString('rowid');
 
@@ -409,7 +339,7 @@ class FabrikControllerDetails extends FabrikController
 		$input = $this->input;
 		$model = $this->getModel('Formsession', 'FabrikFEModel');
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
-		$formModel->setId($input->getInt('formid'));
+		$formModel->setId($input->getString('formid'));
 		$model->savePage($formModel);
 	}
 
@@ -437,7 +367,7 @@ class FabrikControllerDetails extends FabrikController
 	public function paginate()
 	{
 		$model = $this->getModel('Form', 'FabrikFEModel');
-		$model->setId($this->input->getInt('formid'));
+		$model->setId($this->input->getString('formid'));
 		$model->paginateRowId($this->input->get('dir'));
 		$this->display();
 	}

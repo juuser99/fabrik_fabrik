@@ -403,7 +403,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	{
 		$input = $this->app->input;
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
-		$formModel = $this->buildModel($input->getInt('formid'));
+		$formModel = $this->buildModel($input->getString('formid'));
 		$params = $formModel->getParams();
 		$consumer_key = $input->get('twitter_consumer_key');
 		$consumer_secret = $input->get('twitter_consumer_secret');
@@ -461,7 +461,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	public function onUpdateAdmin()
 	{
 		$input = $this->app->input;
-		$formModel = $this->buildModel($input->getInt('formid'));
+		$formModel = $this->buildModel($input->getString('formid'));
 		$params = $formModel->getParams();
 		$renderOrder = $input->getInt('repeatCounter');
 
@@ -476,7 +476,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 		// Save the access token to the element params
 		$formModel = new \Fabrik\Admin\Models\From;
-		$formModel->setId($input->getInt('formid'));
+		$formModel->setId($input->getString('formid'));
 		$row = $formModel->getForm();
 
 		$params = $formModel->getParams();

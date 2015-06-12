@@ -110,8 +110,8 @@ class Raw extends Base
 			'lastInsertedRow' => $session->get('lastInsertedRow', 'test'));
 
 		$d['nav']          = get_object_vars($nav);
-		$tmpl              = $input->get('tmpl', $this->getTmpl());
-		$d['htmlnav']      = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $tmpl) : '';
+		$template              = $input->get('tmpl', $this->getTmpl());
+		$d['htmlnav']      = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $template) : '';
 		$d['calculations'] = $model->getCalculations();
 
 		// $$$ hugh - see if we have a message to include, set by a list plugin
@@ -131,7 +131,6 @@ class Raw extends Base
 	 *
 	 * @return  string template name
 	 */
-
 	private function getTmpl()
 	{
 		$app    = $this->app;
@@ -142,18 +141,18 @@ class Raw extends Base
 
 		if ($app->isAdmin())
 		{
-			$tmpl = $params->get('admin_template');
+			$template = $params->get('admin_template');
 
-			if ($tmpl == -1 || $tmpl == '')
+			if ($template == -1 || $template == '')
 			{
-				$tmpl = $input->get('layout', $table->get('list.template'));
+				$template = $input->get('layout', $table->get('list.template'));
 			}
 		}
 		else
 		{
-			$tmpl = $input->get('layout',$table->get('list.template'));
+			$template = $input->get('layout',$table->get('list.template'));
 		}
 
-		return $tmpl;
+		return $template;
 	}
 }

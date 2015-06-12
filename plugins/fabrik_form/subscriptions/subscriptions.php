@@ -535,7 +535,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 	public function onThanks()
 	{
 		$input = $this->app->input;
-		$formid = $input->getInt('formid');
+		$formid = $input->getString('formid');
 		$rowId = $input->getString('rowid', '', 'string');
 		$formModel = new \Fabrik\Admin\Models\Form;
 		$formModel->setId($formid);

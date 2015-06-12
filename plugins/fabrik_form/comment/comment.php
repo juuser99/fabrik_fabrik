@@ -600,7 +600,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	{
 		$input = $this->app->input;
 		$formModel =  new \Fabrik\Admin\Models\Form;
-		$formModel->setId($input->getInt('formid'));
+		$formModel->setId($input->getString('formid'));
 		$this->model = $formModel;
 
 		return $this->model;
@@ -626,7 +626,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		// @TODO this isn't set?
 		$row->url = $input->server->get('HTTP_REFERER', '', 'string');
 		$rowId = $input->get('rowid', '', 'string');
-		$row->formid = $input->getInt('formid');
+		$row->formid = $input->getString('formid');
 		$row->row_id = $rowId;
 
 		if ($user->get('id') != 0)

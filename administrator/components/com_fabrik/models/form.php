@@ -839,8 +839,13 @@ class Form extends View implements ModelFormFormInterface
 
 		// $$$rob required in paolo's site when rendering modules with ajax option turned on
 		$this->listModel = null;
-		$this->setRowId($this->getRowId());
 
+		$rowId = $this->getRowId();
+		echo "rowdi = $rowId<br>";
+		echo "<Pre>";print_r($this->getItem());exit;
+		$this->setRowId($rowId);
+
+		$this->getListModel();
 		/*
 		 * $$$ hugh - need to call this here as we set $this->editable here, which is needed by some plugins
 		 * , this means that getData() is being called from checkAccessFromListSettings(),
@@ -925,9 +930,11 @@ class Form extends View implements ModelFormFormInterface
 		// New form can we add?
 		if ($this->getRowId() === '' || $isUserRowId)
 		{
+			echo "check can add";
 			// If they can edit can they also add
 			if ($listModel->canAdd())
 			{
+				echo "can add";exit;
 				$ret = 3;
 			}
 			// $$$ hugh - corner case for rowid=-1, where they DON'T have add perms, but DO have edit perms
@@ -1040,6 +1047,7 @@ class Form extends View implements ModelFormFormInterface
 		{
 			JDEBUG ? $profiler->mark('formmodel getData: start get list model') : null;
 			$listModel = $this->getListModel();
+			echo "form got list model <br>";
 			JDEBUG ? $profiler->mark('formmodel getData: end get list model') : null;
 			$fabrikDb = $listModel->getDb();
 			JDEBUG ? $profiler->mark('formmodel getData: db created') : null;
@@ -4929,7 +4937,7 @@ class Form extends View implements ModelFormFormInterface
 			// Admin always uses option com_fabrik
 			if (array_key_exists('apply', $this->formData))
 			{
-				$url = 'index.php?option=com_fabrik&task=form.view&formid=' . $input->getInt('formid') . '&rowid=' . $input->getString('rowid', '', 'string');
+				$url = 'index.php?option=com_fabrik&task=form.view&formid=' . $input->getString('formid') . '&rowid=' . $input->getString('rowid', '', 'string');
 			}
 			else
 			{
@@ -4940,7 +4948,7 @@ class Form extends View implements ModelFormFormInterface
 		{
 			if (array_key_exists('apply', $this->formData))
 			{
-				$url = 'index.php?option=com_' . $package . '&view=form&formid=' . $input->getInt('formid') . '&rowid=' . $input->getString('rowid', '', 'string')
+				$url = 'index.php?option=com_' . $package . '&view=form&formid=' . $input->getString('formid') . '&rowid=' . $input->getString('rowid', '', 'string')
 					. '&listid=' . $input->getString('listid');
 			}
 			else
@@ -4956,13 +4964,13 @@ class Form extends View implements ModelFormFormInterface
 					$url = urldecode($input->post->get('fabrik_referrer', 'index.php', 'string'));
 				}
 
-				$Itemid = (int) Worker::itemId();
+				$itemId = (int) Worker::itemId();
 
 				if ($url == '')
 				{
-					if ($Itemid !== 0)
+					if ($itemId !== 0)
 					{
-						$url = 'index.php?' . http_build_query($this->app->getMenu('site')->getActive()->query) . '&Itemid=' . $Itemid;
+						$url = 'index.php?' . http_build_query($this->app->getMenu('site')->getActive()->query) . '&Itemid=' . $itemId;
 					}
 					else
 					{

@@ -14,7 +14,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use \JFolder;
 use \stdClass;
-use \JUri;
 
 /**
  * PDF List view
@@ -32,7 +31,6 @@ class PDF extends Base
 	 *
 	 * @return  void
 	 */
-
 	public function render()
 	{
 		if (!JFolder::exists(COM_FABRIK_BASE . '/libraries/dompdf'))
@@ -66,7 +64,6 @@ class PDF extends Base
 	 *
 	 * @return  void
 	 */
-
 	protected function buttons()
 	{
 		// Don't add buttons as pdf is not interactive
@@ -82,7 +79,6 @@ class PDF extends Base
 	 *
 	 * @return  void
 	 */
-
 	protected function setTitle($w, &$params, $model)
 	{
 		parent::setTitle($w, $params, $model);

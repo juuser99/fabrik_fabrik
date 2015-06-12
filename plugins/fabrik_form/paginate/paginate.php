@@ -199,7 +199,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $this->app->input;
-		$formid = $input->getInt('formid');
+		$formid = $input->getString('formid');
 		$rowId = $input->get('rowid', '', 'string');
 		$mode = $input->get('mode', 'details');
 		$model =  new \Fabrik\Admin\Models\Form;

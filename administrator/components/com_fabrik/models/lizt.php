@@ -487,7 +487,6 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	protected $selectedOrderFields = null;
 	protected $mainQuery = null;
-	//protected $orderBy = null;
 
 	/**
 	 * Instantiate the model.
@@ -504,10 +503,6 @@ class Lizt extends View implements ModelFormLiztInterface
 		$input           = $this->app->input;
 		$this->packageId = (int) $input->getInt('packageId', $usersConfig->get('packageId'));
 		$this->access    = new stdClass;
-
-		$db            = $this->getDb();
-		$storeCfg      = array('db' => $db);
-		$this->storage = new Storage($storeCfg);
 	}
 
 	/**
@@ -860,9 +855,10 @@ class Lizt extends View implements ModelFormLiztInterface
 	/**
 	 * Load up the front end list model so we can use some of its methods
 	 *
+	 * @throws Error
+	 *
 	 * @return  object  front end list model
 	 */
-
 	public function getFEModel()
 	{
 		throw new Error ('list admin model trying to load front end model - no no - its now all in admin model');
@@ -923,10 +919,10 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		if (!is_null($tableName))
 		{
-			$this->storage->table = $tableName;
+			$this->getStorage()->table = $tableName;
 		}
 
-		return $this->storage->tableExists($tableName);
+		return $this->getStorage()->tableExists($tableName);
 	}
 
 	/**
@@ -972,7 +968,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		 * but I don't think we know what the PK of the joined table is any other
 		 * way at this point.
 		 */
-		$pk = $this->storage->getPrimaryKeyAndExtra($join->table_join);
+		$pk = $this->getStorage()->getPrimaryKeyAndExtra($join->table_join);
 
 		if ($pk !== false)
 		{
@@ -1233,6 +1229,13 @@ class Lizt extends View implements ModelFormLiztInterface
 		if (!isset($this->table) || !is_object($this->table))
 		{
 			$id          = $this->get('id');
+
+			if (!$id)
+			{
+				echo "<pre>";print_r(debug_backtrace());
+				echo "no id set";exit;
+			}
+			echo "get table $id <br>";
 			$this->table = $this->getItem($id);
 
 			if (trim($this->table->get('db_primary_key')) !== '')
@@ -4530,6 +4533,9 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!isset($this->params))
 		{
+			echo "list get Params <br>";
+			echo "<pre>";print_r($item);
+			echo "after print r<br>";
 			$this->params = new JRegistry($item->get('list.params'));
 		}
 
@@ -4886,14 +4892,15 @@ class Lizt extends View implements ModelFormLiztInterface
 	 *
 	 * @return  bool  access allowed
 	 */
-
 	public function canAdd()
 	{
 		if (!array_key_exists('add', $this->access))
 		{
 			$input             = $this->app->input;
 			$groups            = $this->user->getAuthorisedViewLevels();
-			$this->access->add = in_array($this->getParams()->get('allow_add'), $groups);
+			print_r($this->getItem());
+			echo "<br> allow add = " . $this->getParams()->get('allow_add') . "<br>";exit;
+			$this->access->add = in_array($this->getParams()->get('list.allow_add'), $groups);
 			$hideAdd           = $input->getBool('hide-add', false);
 
 			if ($hideAdd)
@@ -5116,7 +5123,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		// The element type AFTER saving
 		$type         = $elementModel->getFieldDescription();
-		$descriptions = $this->storage->getDBFields($tableName, 'Field');
+		$descriptions = $this->getStorage()->getDBFields($tableName, 'Field');
 
 		if (!$this->canAlterFields() && !$this->canAddFields())
 		{
@@ -5308,7 +5315,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		// $$$ rob base plugin needs to know group info for date fields in non-join repeat groups
 		$basePlugIn->setGroupModel($elementModel->getGroupModel());
 		$type         = $elementModel->getFieldDescription();
-		$descriptions = $this->storage->getDBFields($tableName);
+		$descriptions = $this->getStorage()->getDBFields($tableName);
 
 		if (!$this->canAlterFields())
 		{
@@ -5466,7 +5473,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	public function isView()
 	{
-		return $this->storage->isView();
+		return $this->getStorage()->isView();
 	}
 
 	/**
@@ -8446,7 +8453,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	public function getPrimaryKeyAndExtra($table = null)
 	{
-		return $this->storage->setTable($table)->getPrimarykeyAndDefault();
+		return $this->getStorage()->setTable($table)->getPrimarykeyAndDefault();
 	}
 
 	/**
@@ -9089,7 +9096,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$className = "inputbox")
 	{
 		$this->setConnectionId($cnnId);
-		$aFields    = $this->storage->getDBFields($tbl);
+		$aFields    = $this->getStorage()->getDBFields($tbl);
 		$fieldNames = array();
 
 		if ($incSelect != '')
@@ -9447,7 +9454,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$table = $this->getGenericTableName();
 		}
 
-		$fields     = $this->storage->getDBFields($table);
+		$fields     = $this->getStorage()->getDBFields($table);
 		$primaryKey = "";
 		$sql        = "";
 		$table      = FabrikString::safeColName($table);
@@ -9710,7 +9717,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$fabrikDb->setQuery($query, $nav->limitstart, $nav->limit);
 			$rowId = $fabrikDb->loadResult();
 			$input->set('rowid', $rowId);
-			$formId = $input->getInt('formid');
+			$formId = $input->getString('formid');
 			$this->app->redirect('index.php?option=' . $package . '&view=form&formid=' . $formId . '&rowid=' . $rowId . '&format=raw');
 		}
 

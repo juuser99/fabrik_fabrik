@@ -62,7 +62,6 @@ class Feed extends Base
 
 		foreach ($groupModels as $groupModel)
 		{
-			echo "grou model";
 			$elementModels = $groupModel->getPublishedElements();
 
 			foreach ($elementModels as $elementModel)

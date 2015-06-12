@@ -559,7 +559,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		 * and just grab it from params directly.
 		 */
 		$input = $this->app->input;
-		$formid = $input->getInt('formid');
+		$formid = $input->getString('formid');
 		$rowId = $input->getString('rowid', '', 'string');
 		$formModel = new \Fabrik\Admin\Models\Form;
 		$formModel->setId($formid);

@@ -8,12 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use \Fabrik\Admin\Models\FormInlineEdit;
+use \JFactory;
+use \JRoute;
 
-require 'controller.php';
 
 /**
  * Fabrik From Controller
@@ -21,9 +25,9 @@ require 'controller.php';
  * @static
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       1.5
+ * @since       3.5
  */
-class FabrikControllerForm extends FabrikController
+class Form extends Controller
 {
 	/**
 	 * Is the view rendered from the J content plugin
@@ -65,62 +69,73 @@ class FabrikControllerForm extends FabrikController
 	 */
 	public function inlineedit()
 	{
-		$model = new \Fabrik\Admin\Models\FormInlineEdit;
+		$model = new FormInlineEdit;
 		$model->render();
 	}
 
 	/**
 	 * Display the view
 	 *
-	 * @param   boolean $cachable  If true, the view output will be cached - NOTE not actually used to control
-	 *                             caching!!!
-	 * @param   array   $urlparams An array of safe url parameters and their variable types, for valid values see
-	 *                             {@link JFilterInput::clean()}.
-	 *
 	 * @return  JController  A JController object to support chaining.
 	 */
-
-	public function display($cachable = false, $urlparams = array())
+	public function execute()
 	{
 		$input     = $this->input;
 		$package   = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$document  = JFactory::getDocument();
 		$viewName  = $input->get('view', 'form');
-		$modelName = $viewName;
-
-		if ($viewName == 'emailform')
-		{
-			$modelName = 'form';
-		}
-
-		$viewType = $document->getType();
+		$layout    = $input->getWord('layout', 'default');
+		$formId = $this->app->input->getString('formid');
+		$viewFormat  = $document->getType();
 
 		// Set the default view name from the Request
-		$view = $this->getView($viewName, $viewType);
+		//$view = $this->getView($viewName, $viewType);
 
 		// Push a model into the view (may have been set in content plugin already)
-		$model            = !isset($this->_model) ? $this->getModel($modelName, 'FabrikFEModel') : $this->_model;
+		$model            = !isset($this->_model) ? new \Fabrik\Admin\Models\Form : $this->_model;
 		$model->isMambot  = $this->isMambot;
 		$model->packageId = $this->app->input->getInt('packageId');
 
-		$view->setModel($model, true);
+
+		/*// Register the layout paths for the view
+		$paths = new \SplPriorityQueue;
+		$paths->insert(JPATH_COMPONENT . '/views/' . $viewName . '/tmpl', 'normal');
+
+		// FIXME - dont hard wire bootstrap tmpl!
+		$paths->insert(JPATH_SITE . '/components/com_fabrik/views/form/tmpl/bootstrap', 'normal');
+
+		// Push a model into the view
+
+
+		$view = new $viewClass($model, $paths);
+		$view->setLayout($layout);
+		$view->setModel($model, true);*/
+
+		$viewClass  = 'Fabrik\Views\Form\\' . ucfirst($viewFormat);
+
+		// Render the form itself
+		$model = new \Fabrik\Admin\Models\Form;
+		echo "model set id $formId <br>";
+		$model->setId($formId);
+
+		$paths = new \SplPriorityQueue;
+
+		// FIXME - dont hardwire bootstrap template
+		$paths->insert(JPATH_SITE . '/components/com_fabrik/views/form/tmpl/bootstrap', 'normal');
+
+		// FIXME - what about other views than HTML?
+		$view = new $viewClass($model, $paths);
+
+		$view->setLayout('default');
+
+		// Render our view.
+		echo $view->render();
+		return;
+
 		$view->isMambot = $this->isMambot;
 
 		// Get data as it will be needed for ACL when testing if current row is editable.
 		$model->getData();
-
-		// If we can't edit the record redirect to details view
-		if ($model->checkAccessFromListSettings() <= 1)
-		{
-			$url = 'index.php?option=com_' . $package . '&view=details&formid=' . $input->getInt('formid') . '&rowid=' . $input->get('rowid', '', 'string');
-
-			$msg = $model->aclMessage();
-			$this->setRedirect(JRoute::_($url), $msg, 'notice');
-
-			return;
-		}
-		// Display the view
-		$view->error = $this->getError();
 
 		// Redirect plugin message if coming from content plugin - reloading in same page
 		$model->applyMsgOnce();
@@ -143,10 +158,10 @@ class FabrikControllerForm extends FabrikController
 		{
 			$uri     = JURI::getInstance();
 			$uri     = $uri->toString(array('path', 'query'));
-			$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache   = JFactory::getCache('com_' . $package, 'view');
 			ob_start();
-			$cache->get($view, 'display', $cacheid);
+			$cache->get($view, 'display', $cacheId);
 			$contents = ob_get_contents();
 			ob_end_clean();
 
@@ -166,7 +181,6 @@ class FabrikControllerForm extends FabrikController
 	 *
 	 * @return  null
 	 */
-
 	public function process()
 	{
 		$profiler = JProfiler::getInstance('Application');
@@ -263,8 +277,8 @@ class FabrikControllerForm extends FabrikController
 		$listModel = $model->getListModel();
 		$listModel->set('_table', null);
 
-		$url = $this->getRedirectURL($model);
-		$msg = $this->getRedirectMessage($model);
+		$url = $model->getRedirectURL(true, $this->isMambot);
+		$msg = $model->getRedirectMessage();
 
 		// @todo -should get handed off to the json view to do this
 		if ($input->getInt('fabrik_ajax') == 1)
@@ -431,23 +445,6 @@ class FabrikControllerForm extends FabrikController
 	}
 
 	/**
-	 * Get redirect message
-	 *
-	 * @param   object $model form model
-	 *
-	 * @since      3.0
-	 *
-	 * @deprecated - use form model getRedirectMessage instead
-	 *
-	 * @return  string  redirect message
-	 */
-
-	protected function getRedirectMessage($model)
-	{
-		return $model->getRedirectMessage();
-	}
-
-	/**
 	 * Get redirect URL
 	 *
 	 * @param   object $model      form model
@@ -459,7 +456,6 @@ class FabrikControllerForm extends FabrikController
 	 *
 	 * @return   string  redirect url
 	 */
-
 	protected function getRedirectURL($model, $incSession = true)
 	{
 		$res                = $model->getRedirectURL($incSession, $this->isMambot);
@@ -500,7 +496,7 @@ class FabrikControllerForm extends FabrikController
 		$input     = $this->input;
 		$model     = $this->getModel('Formsession', 'FabrikFEModel');
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
-		$formModel->setId($input->getInt('formid'));
+		$formModel->setId($input->getString('formid'));
 		$model->savePage($formModel);
 	}
 
@@ -510,7 +506,6 @@ class FabrikControllerForm extends FabrikController
 	 *
 	 * @return  null
 	 */
-
 	public function removeSession()
 	{
 		$input        = $this->input;
@@ -531,7 +526,7 @@ class FabrikControllerForm extends FabrikController
 	{
 		$input = $this->input;
 		$model = $this->getModel('Form', 'FabrikFEModel');
-		$model->setId($input->getInt('formid'));
+		$model->setId($input->getString('formid'));
 		$model->paginateRowId($input->get('dir'));
 		$this->display();
 	}
@@ -552,34 +547,34 @@ class FabrikControllerForm extends FabrikController
 		$ids     = array($input->get('rowid', 0));
 
 		$listId     = $input->getString('listid');
-		$limitstart = $input->getInt('limitstart' . $listId);
+		$limitStart = $input->getInt('limitstart' . $listId);
 		$length     = $input->getInt('limit' . $listId);
 
-		$oldtotal = $model->getTotalRecords();
+		$oldTotal = $model->getTotalRecords();
 		$model->setId($listId);
 		$ok = $model->deleteRows($ids);
 
-		$total = $oldtotal - count($ids);
+		$total = $oldTotal - count($ids);
 
 		$ref = $input->get('fabrik_referrer', 'index.php?option=com_' . $package . '&view=list&listid=' . $listId, 'string');
 
-		if ($total >= $limitstart)
+		if ($total >= $limitStart)
 		{
-			$newlimitstart = $limitstart - $length;
+			$newLimitStart = $limitStart - $length;
 
-			if ($newlimitstart < 0)
+			if ($newLimitStart < 0)
 			{
-				$newlimitstart = 0;
+				$newLimitStart = 0;
 			}
 
-			$ref     = str_replace("limitstart$listId=$limitstart", "limitstart$listId=$newlimitstart", $ref);
+			$ref     = str_replace("limitstart$listId=$limitStart", "limitstart$listId=$newLimitStart", $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
-			$this->app->setUserState($context . 'limitstart', $newlimitstart);
+			$this->app->setUserState($context . 'limitstart', $newLimitStart);
 		}
 
 		if ($input->get('format') == 'raw')
 		{
-			$app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listId . '&format=raw');
+			$this->app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listId . '&format=raw');
 		}
 		else
 		{

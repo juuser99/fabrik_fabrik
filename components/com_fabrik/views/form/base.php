@@ -66,13 +66,15 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		$model->isMambot = $this->isMambot;
 		$item = $model->getItem();
+
 		$form = $item->get('form');
 
+echo "render start <br>";
 		if ($model->render() === false)
 		{
 			return false;
 		}
-
+echo "render end<br>";
 		$this->isMultiPage = $model->isMultiPage();
 		list($this->plugintop, $this->pluginbottom, $this->pluginend) = $model->getFormPluginHTML();
 		$listModel = $model->getlistModel();
@@ -88,11 +90,12 @@ class Base extends \Fabrik\Admin\Views\Html
 		}
 
 		$this->rowid = $model->getRowId();
+		echo "this rowid = $this->rowid";
 		$this->access = $model->checkAccessFromListSettings();
-
+echo "access = " . $this->access;exit;
 		if ($this->access == 0)
 		{
-			$app->enqueueMessage(FText::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$app->enqueueMessage($model->aclMessage(), 'error');
 
 			return false;
 		}
