@@ -15,14 +15,13 @@ defined('_JEXEC') or die('Restricted access');
 
 use Exception;
 use Fabrik\Admin\Models\Form;
-use Fabrik\Admin\Models\Group;
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Validator;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
 use \stdClass as stdClass;
-use \JRegistry as JRegistry;
+use Joomla\Registry\Registry as Registry;
 use \JTable as JTable;
 use \FabTable as FabTable;
 use \FabrikString as FabrikString;
@@ -34,6 +33,7 @@ use \JFile as JFile;
 use \JFactory as JFactory;
 use \JComponentHelper as JComponentHelper;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
+use \Fabrik\Admin\Models\Group;
 
 /**
  * Fabrik Element Model
@@ -301,7 +301,7 @@ class Element extends Plugin
 	 *
 	 * @param   bool $force default false - force load the element
 	 *
-	 * @return  JRegistry  element table
+	 * @return  Registry  element table
 	 */
 
 	public function &getElement($force = false)
@@ -327,12 +327,11 @@ class Element extends Plugin
 	 * and bind each record to that plugins _element. This is instead of using getElement() which
 	 * reloads in the element increasing the number of queries run
 	 *
-	 * @param   JRegistry &$row
+	 * @param   Registry &$row
 	 *
-	 * @return  JRegistry  element info
+	 * @return  Registry  element info
 	 */
-
-	public function bindToElement(JRegistry &$row)
+	public function bindToElement(Registry &$row)
 	{
 		$this->element = $row;
 
@@ -378,9 +377,8 @@ class Element extends Plugin
 	 *
 	 * @param   int $groupId group id
 	 *
-	 * @return  object    group model
+	 * @return  \Fabrik\Admin\Models\Group  Group model
 	 */
-
 	public function &getGroup($groupId = null)
 	{
 		// @todo ensure that the element is always loaded inside a group context.
@@ -394,7 +392,7 @@ class Element extends Plugin
 		{
 			$model = new Group;
 			$model->setId($groupId);
-			$group       = $model->getGroup();
+			$model->getGroup();
 			$this->group = $model;
 		}
 
@@ -406,9 +404,8 @@ class Element extends Plugin
 	 *
 	 * @param   int $group_id If not set uses elements default group id
 	 *
-	 * @return  object  group model
+	 * @return  \Fabrik\Admin\Models\Group  Group model
 	 */
-
 	public function getGroupModel($group_id = null)
 	{
 		return $this->getGroup($group_id);
@@ -417,14 +414,14 @@ class Element extends Plugin
 	/**
 	 * Set the group model
 	 *
-	 * @param   object $group group model
+	 * @param   \Fabrik\Admin\Models\Group $group group model
 	 *
 	 * @since 3.0.6
 	 *
 	 * @return  null
 	 */
 
-	public function setGroupModel($group)
+	public function setGroupModel(Group $group)
 	{
 		$this->group = $group;
 	}
@@ -2748,12 +2745,11 @@ class Element extends Plugin
 	 *
 	 * @return  object  default element params
 	 */
-
 	public function getParams()
 	{
 		if (!isset($this->params))
 		{
-			$this->params = new JRegistry($this->getElement()->get('params'));
+			$this->params = new Registry($this->getElement()->get('params'));
 		}
 
 		return $this->params;
@@ -2766,13 +2762,12 @@ class Element extends Plugin
 	 *
 	 * @return  mixed
 	 */
-
 	protected function loadPluginParams()
 	{
 		if (isset($this->xmlPath))
 		{
 			$element      = $this->getElement();
-			$pluginParams = new JRegistry($element->get('params'));
+			$pluginParams = new Registry($element->get('params'));
 
 			return $pluginParams;
 		}
@@ -5728,12 +5723,11 @@ class Element extends Plugin
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		$element = strtolower(str_ireplace('PlgFabrik_Element', '', get_class($this)));
 		$plugin  = JPluginHelper::getPlugin('fabrik_element', $element);
-		$fparams = new JRegistry($plugin->params);
+		$params = new Registry($plugin->params);
 		$p       = $this->getParams();
 
 		if ($this->encryptMe())
@@ -5750,12 +5744,12 @@ class Element extends Plugin
 		else
 		{
 			$size    = $p->get('maxlength', $this->fieldSize);
-			$objtype = sprintf($this->fieldDesc, $size);
+			$objType = sprintf($this->fieldDesc, $size);
 		}
 
-		$objtype = $fparams->get('defaultFieldType', $objtype);
+		$objType = $params->get('defaultFieldType', $objType);
 
-		return $objtype;
+		return $objType;
 	}
 
 	/**
@@ -5765,7 +5759,6 @@ class Element extends Plugin
 	 *
 	 * @return  void
 	 */
-
 	public function onDeleteRows($groups)
 	{
 	}
@@ -6775,16 +6768,16 @@ class Element extends Plugin
 		$query->select('id')->from('#__fabrik_joins')->where('table_join = ' . $db->q($tableName));
 		$db->setQuery($query);
 		$ids    = $db->loadColumn();
-		$teskPk = $db->qn($tableName . '.' . $oldName);
+		$testPk = $db->qn($tableName . '.' . $oldName);
 		$newPk  = $db->qn($tableName . '.' . $newName);
 
 		foreach ($ids as $id)
 		{
 			$join = FabTable::getInstance('Join', 'FabrikTable');
 			$join->load($id);
-			$params = new JRegistry($join->params);
+			$params = new Registry($join->params);
 
-			if ($params->get('pk') === $teskPk)
+			if ($params->get('pk') === $testPk)
 			{
 				$params->set('pk', $newPk);
 				$join->params = (string) $params;
@@ -6798,7 +6791,6 @@ class Element extends Plugin
 	 *
 	 * @return  bool
 	 */
-
 	public function isJoin()
 	{
 		return $this->getParams()->get('repeat', false);
@@ -6814,7 +6806,6 @@ class Element extends Plugin
 	 *
 	 * @return  bool
 	 */
-
 	protected function canToggleValue()
 	{
 		return false;
@@ -6826,7 +6817,6 @@ class Element extends Plugin
 	 *
 	 * @return  null
 	 */
-
 	public function encryptColumn()
 	{
 		$secret    = $this->config->get('secret');
@@ -6847,7 +6837,6 @@ class Element extends Plugin
 	 *
 	 * @return  null
 	 */
-
 	public function decryptColumn()
 	{
 		// @TODO this query looks right but when going from encrypted blob to decrypted field the values are set to null

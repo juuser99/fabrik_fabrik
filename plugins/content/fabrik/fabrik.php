@@ -188,7 +188,7 @@ class PlgContentFabrik extends JPlugin
 
 		// Special case if we are wanting to write in an element's data
 		$element = false;
-		$repeatcounter = 0;
+		$repeatCounter = 0;
 
 		// Was defaulting to 1 but that forced filters to show in cal viz even with showfilter=no option turned on
 		$showfilters = $input->get('showfilters', null);
@@ -262,7 +262,7 @@ class PlgContentFabrik extends JPlugin
 					$usekey = $m[1];
 					break;
 				case 'repeatcounter':
-					$repeatcounter = $m[1];
+					$repeatCounter = $m[1];
 					break;
 				case 'showfilters':
 					$showfilters = $m[1];
@@ -360,8 +360,7 @@ class PlgContentFabrik extends JPlugin
 			}
 
 			$model->setId($listId);
-			$formModel = $model->getFormModel();
-			$groups = $formModel->getGroupsHierarchy();
+			$groups = $model->getGroupsHierarchy();
 
 			foreach ($groups as $groupModel)
 			{
@@ -402,36 +401,36 @@ class PlgContentFabrik extends JPlugin
 					$element = $element . '_raw';
 				}
 				// $$$ hugh - need to pass all row data, or calc elements that use {placeholders} won't work
-				$defaultdata = is_object($row) ? get_object_vars($row) : $row;
+				$defaultData = is_object($row) ? get_object_vars($row) : $row;
 
 				/* $$$ hugh - if we don't do this, our passed data gets blown away when render() merges the form data
 				 * not sure why, but apparently if you do $foo =& $bar and $bar is NULL ... $foo ends up NULL
 				 */
-				$activeEl->getFormModel()->data = $defaultdata;
+				$activeEl->getFormModel()->data = $defaultData;
 				$activeEl->editable = false;
 
 				// Set row id for things like user element
 				$origRowid = $input->get('rowid');
 				$input->set('rowid', $rowId);
 
-				$defaultdata = (array) $defaultdata;
+				$defaultData = (array) $defaultData;
 				unset($activeEl->defaults);
 
-				if ($repeatcounter === 'all')
+				if ($repeatCounter === 'all')
 				{
 					$repeat = $activeEl->getGroupModel()->repeatCount();
 					$res = array();
 
 					for ($j = 0; $j < $repeat; $j ++)
 					{
-						$res[] = $activeEl->render($defaultdata, $j);
+						$res[] = $activeEl->render($defaultData, $j);
 					}
 
 					$res = count($res) > 1 ? '<ul><li>' . implode('</li><li>', $res) . '</li></ul>' : $res[0];
 				}
 				else
 				{
-					$res = $activeEl->render($defaultdata, $repeatcounter);
+					$res = $activeEl->render($defaultData, $repeatCounter);
 				}
 
 				$input->set('rowid', $origRowid);

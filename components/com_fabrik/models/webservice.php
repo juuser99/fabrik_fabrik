@@ -214,7 +214,6 @@ abstract class FabrikWebService
 	public function storeLocally($listModel, $data, $fk, $update)
 	{
 		$data = $this->map($data, $fk);
-		$formModel = $listModel->getFormModel();
 		$db = $listModel->getDb();
 		$item = $listModel->getTable();
 		$query = $db->getQuery(true);
@@ -222,7 +221,7 @@ abstract class FabrikWebService
 			->from($item->get('list.db_table_name'));
 		$db->setQuery($query);
 		$ids = $db->loadObjectList($fk);
-		$formModel->getGroupsHierarchy();
+		$listModel->getGroupsHierarchy();
 		$this->updateCount = 0;
 		$this->addedCount = 0;
 
@@ -230,7 +229,7 @@ abstract class FabrikWebService
 		{
 			foreach ($row as $k => $v)
 			{
-				$elementModel = $formModel->getElement($k, true);
+				$elementModel = $listModel->getElement($k, true);
 				$row[$k] = $elementModel->fromXMLFormat($v);
 			}
 

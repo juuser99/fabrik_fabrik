@@ -53,12 +53,11 @@ class Feed extends Base
 			return '';
 		}
 
-		$formModel = $model->getFormModel();
 		$aJoinsToThisKey = $model->getJoinsToThisKey();
 
 		// Get headings
 		$aTableHeadings = array();
-		$groupModels = $formModel->getGroupsHierarchy();
+		$groupModels = $model->getGroupsHierarchy();
 
 		foreach ($groupModels as $groupModel)
 		{
@@ -133,7 +132,7 @@ class Feed extends Base
 		$dateEl = $params->get('feed_date');
 
 		$dateColId = (int) $params->get('feed_date', 0);
-		$dateColElement = $formModel->getElement($dateColId, true);
+		$dateColElement = $model->getElement($dateColId, true);
 		$dateEl = $model->getDb()->qn($dateColElement->getFullName(false, false, false));
 
 		$view = $model->canEdit() ? 'form' : 'details';

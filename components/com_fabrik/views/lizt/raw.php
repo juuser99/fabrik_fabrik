@@ -90,7 +90,7 @@ class Raw extends Base
 			}
 		}
 
-		$groups = $form->getGroupsHierarchy();
+		$groups = $model->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{

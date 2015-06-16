@@ -111,12 +111,11 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		$download_height = $params->get('download_height');
 		$download_resize = ($download_width || $download_height) ? true : false;
 		$table = $model->getTable();
-		$filelist = array();
-		$zip_err = '';
+		$fileList = array();
+		$zipError = '';
 
 		// Check ajax upload file names
-		$formModel = $model->getFormModel();
-		$downloadElement = $formModel->getElement($download_file);
+		$downloadElement = $model->getElement($download_file);
 
 		if ($downloadElement)
 		{
@@ -143,7 +142,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 
 						if (is_file($this_file))
 						{
-							$filelist[] = $this_file;
+							$fileList[] = $this_file;
 						}
 					}
 				}
@@ -166,12 +165,12 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 
 				if (is_file($this_file))
 				{
-					$filelist[] = $this_file;
+					$fileList[] = $this_file;
 				}
 			}
 		}
 
-		if (!empty($filelist))
+		if (!empty($fileList))
 		{
 			if ($download_resize)
 			{
@@ -183,17 +182,17 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 				$oImage->setStorage($storage);
 			}
 
-			$zipfile = tempnam(sys_get_temp_dir(), "zip");
-			$zipfile_basename = basename($zipfile);
+			$zipFile = tempnam(sys_get_temp_dir(), "zip");
+			$zipFileBaseName = basename($zipFile);
 			$zip = new ZipArchive;
-			$zipres = $zip->open($zipfile, ZipArchive::OVERWRITE);
+			$zipRes = $zip->open($zipFile, ZipArchive::OVERWRITE);
 
-			if ($zipres === true)
+			if ($zipRes === true)
 			{
-				$ziptot = 0;
-				$tmp_files = array();
+				$zipTotal = 0;
+				$tmpFiles = array();
 
-				foreach ($filelist AS $this_file)
+				foreach ($fileList AS $this_file)
 				{
 					$this_basename = basename($this_file);
 
@@ -202,71 +201,71 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 						$tmp_file = '/tmp/' . $this_basename;
 						$oImage->resize($download_width, $download_height, $this_file, $tmp_file);
 						$this_file = $tmp_file;
-						$tmp_files[] = $tmp_file;
+						$tmpFiles[] = $tmp_file;
 					}
 
-					$zipadd = $zip->addFile($this_file, $this_basename);
+					$zipAdd = $zip->addFile($this_file, $this_basename);
 
-					if ($zipadd === true)
+					if ($zipAdd === true)
 					{
-						$ziptot++;
+						$zipTotal++;
 					}
 					else
 					{
-						$zip_err .= FText::_('ZipArchive add error: ' . $zipadd);
+						$zipError .= FText::_('ZipArchive add error: ' . $zipAdd);
 					}
 				}
 
 				if (!$zip->close())
 				{
-					$zip_err = FText::_('ZipArchive close error') . ($zip->status);
+					$zipError = FText::_('ZipArchive close error') . ($zip->status);
 				}
 
 				if ($download_resize)
 				{
-					foreach ($tmp_files as $tmp_file)
+					foreach ($tmpFiles as $tmp_file)
 					{
 						$storage->delete($tmp_file);
 					}
 				}
 
-				if ($ziptot > 0)
+				if ($zipTotal > 0)
 				{
 					// Stream the file to the client
-					$filesize = filesize($zipfile);
+					$fileSize = filesize($zipFile);
 
-					if ($filesize > 0)
+					if ($fileSize > 0)
 					{
 						header("Content-Type: application/zip");
-						header("Content-Length: " . filesize($zipfile));
-						header("Content-Disposition: attachment; filename=\"$zipfile_basename.zip\"");
-						echo file_get_contents($zipfile);
-						JFile::delete($zipfile);
+						header("Content-Length: " . filesize($zipFile));
+						header("Content-Disposition: attachment; filename=\"$zipFileBaseName.zip\"");
+						echo file_get_contents($zipFile);
+						JFile::delete($zipFile);
 						exit;
 					}
 					else
 					{
-						$zip_err .= FText::_('ZIP is empty');
+						$zipError .= FText::_('ZIP is empty');
 					}
 				}
 			}
 			else
 			{
-				$zip_err = FText::_('ZipArchive open error: ' . $zipres);
+				$zipError = FText::_('ZipArchive open error: ' . $zipRes);
 			}
 		}
 		else
 		{
-			$zip_err = "No files to ZIP!";
+			$zipError = "No files to ZIP!";
 		}
 
-		if (empty($zip_err))
+		if (empty($zipError))
 		{
 			return true;
 		}
 		else
 		{
-			$this->msg = $zip_err;
+			$this->msg = $zipError;
 
 			return false;
 		}

@@ -170,22 +170,21 @@ class Html extends \Fabrik\Admin\Views\Html
 		{
 			$model->setId($id);
 			$table          = $model->getTable();
-			$formModel      = $model->getFormModel();
 			$row            = new stdClass;
 			$row->id        = $id;
 			$row->formid    = $table->form_id;
 			$row->label     = $table->label;
-			$row->formlabel = $formModel->getForm()->label;
-			$groups         = $formModel->getGroupsHierarchy();
+			$row->formlabel = $model->getItem()->get('form.label');
+			$groups         = $model->getGroupsHierarchy();
 			$row->groups    = array();
 
 			foreach ($groups as $group)
 			{
-				$grouprow       = new stdClass;
+				$groupRow       = new stdClass;
 				$g              = $group->getGroup();
-				$grouprow->id   = $g->id;
-				$grouprow->name = $g->name;
-				$row->groups[]  = $grouprow;
+				$groupRow->id   = $g->id;
+				$groupRow->name = $g->name;
+				$row->groups[]  = $groupRow;
 			}
 
 			$lists[] = $row;

@@ -12,7 +12,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 $this->filepath = "foo";
-$formModel = $model->getFormModel();
 
 foreach ($data as $name => $value)
 {
@@ -21,7 +20,7 @@ foreach ($data as $name => $value)
 		continue;
 	}
 
-	$elementModel = $formModel->getElement($name);
+	$elementModel = $model->getElement($name);
 
 	if (empty($elementModel))
 	{

@@ -52,6 +52,18 @@ class Base extends Html
 	public $access = null;
 
 	/**
+	 * Is a multipage form
+	 * @var bool
+	 */
+	public $isMultiPage = null;
+
+	/**
+	 * Editable
+	 * @var bool
+	 */
+	public $editable = false;
+
+	/**
 	 * Main setup routine for displaying the form/detail view
 	 *
 	 * @return  void
@@ -203,6 +215,8 @@ class Base extends Html
 	{
 		$w = new Worker;
 		$text = $this->loadTemplate();
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$params = $model->getParams();
 
@@ -225,6 +239,7 @@ class Base extends Html
 
 	private function setMessage()
 	{
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$message = '';
 
@@ -263,6 +278,8 @@ class Base extends Html
 	protected function setTitle($w, &$params, $model)
 	{
 		$document = JFactory::getDocument();
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$app = JFactory::getApplication();
 		$input = $app->input;
@@ -326,6 +343,8 @@ class Base extends Html
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$params = $model->getParams();
 		$this->showEmail = $params->get('email', $fbConfig->get('form_email', 0));
@@ -383,6 +402,8 @@ class Base extends Html
 	protected function _addJavascript($listId)
 	{
 		$pluginManager = Worker::getPluginManager();
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$aLoadedElementPlugins = array();
 		$jsActions = array();
@@ -466,7 +487,7 @@ class Base extends Html
 		$opts = $this->jsOpts();
 
 		$model->jsOpts = $opts;
-		$res = $pluginManager->runPlugins('onJSOpts', $model);
+		$pluginManager->runPlugins('onJSOpts', $model);
 
 		$opts = json_encode($model->jsOpts);
 
@@ -601,6 +622,8 @@ class Base extends Html
 	{
 		$app = $this->app;
 		$input = $app->input;
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$item = $model->getItem();
@@ -765,12 +788,13 @@ class Base extends Html
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 		$Itemid = Worker::itemId();
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$listModel = $model->getListModel();
 		$row = ArrayHelper::toObject($model->data);
 		$canDelete = $listModel->canDelete($row);
 		$params = $model->getParams();
-		//$task = 'form.process';
 		$refer = $input->server->get('HTTP_REFERER', '', 'string');
 
 		// $$$rob - if returning from a failed validation then we should use the fabrik_referrer post var
@@ -991,6 +1015,8 @@ class Base extends Html
 	protected function _cryptQueryString(&$fields)
 	{
 		$crypt = Worker::getCrypt();
+
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$formModel = $this->getModel();
 		$filter = JFilterInput::getInstance();
 		$get = $filter->clean($_GET, 'array');
@@ -1047,9 +1073,9 @@ class Base extends Html
 
 	protected function _cryptViewOnlyElements(&$aHiddenFields)
 	{
+		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
 		$crypt = Worker::getCrypt();
-		$formModel = $this->getModel();
 		$fields = array();
 		$ro = $model->getReadOnlyVals();
 

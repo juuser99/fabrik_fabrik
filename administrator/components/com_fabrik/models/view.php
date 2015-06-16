@@ -26,6 +26,13 @@ use Fabrik\Helpers\Worker;
 class View extends Base
 {
 	/**
+	 * Last current element found in hasElement()
+	 *
+	 * @var object
+	 */
+	protected $currentElement = null;
+
+	/**
 	 * Similar to getFormGroups() except that this returns a data structure of
 	 * form
 	 * --->group
@@ -34,7 +41,7 @@ class View extends Base
 	 * --->group
 	 * if run before then existing data returned
 	 *
-	 * @return  array  element objects
+	 * @return  \Fabrik\Admin\Models\Group[]  element objects
 	 */
 	public function getGroupsHierarchy()
 	{
@@ -101,7 +108,7 @@ class View extends Base
 	 * Test to try to load all group data in one query and then bind that data to group table objects
 	 * in getGroups()
 	 *
-	 * @return  array
+	 * @return  \Fabrik\Admin\Models\Group[]
 	 */
 	public function getPublishedGroups()
 	{
@@ -236,5 +243,81 @@ class View extends Base
 	public function setId($id)
 	{
 		$this->set('id', $id);
+	}
+
+	/**
+	 * Attempts to determine if the form contains the element
+	 *
+	 * @param   string  $searchName  Element name to search for
+	 * @param   bool    $checkInt    Check search name against element id
+	 * @param   bool    $checkShort  Check short element name
+	 *
+	 * @return  bool  true if found, false if not found
+	 */
+	public function hasElement($searchName, $checkInt = false, $checkShort = true)
+	{
+		$groups = $this->getGroupsHierarchy();
+
+		foreach ($groups as $groupModel)
+		{
+			$groupModel->getMyElements();
+
+			if (!is_array($groupModel->elements))
+			{
+				continue;
+			}
+
+			foreach ($groupModel->elements as $elementModel)
+			{
+				$element = $elementModel->getElement();
+
+				if ($checkInt)
+				{
+					if ($searchName == $element->get('id'))
+					{
+						$this->currentElement = $elementModel;
+
+						return true;
+					}
+				}
+
+				if ($searchName == $element->get('name') && $checkShort)
+				{
+					$this->currentElement = $elementModel;
+
+					return true;
+				}
+
+				if ($searchName == $elementModel->getFullName(true, false))
+				{
+					$this->currentElement = $elementModel;
+
+					return true;
+				}
+
+				if ($searchName == $elementModel->getFullName(false, false))
+				{
+					$this->currentElement = $elementModel;
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get an element
+	 *
+	 * @param   string  $searchName  Name to search for
+	 * @param   bool    $checkInt    Check search name against element id
+	 * @param   bool    $checkShort  Check short element name
+	 *
+	 * @return  mixed  ok: element model not ok: false
+	 */
+	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
+	{
+		return $this->hasElement($searchName, $checkInt, $checkShort) ? $this->currentElement : false;
 	}
 }

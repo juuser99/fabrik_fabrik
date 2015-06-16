@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+Lizt;
 
 jimport('joomla.application.component.model');
 
@@ -227,7 +228,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 			for ($i = 0; $i < count($tables); $i++)
 			{
-				$listModel = new \Fabrik\Admin\Models\Lizt;
+				$listModel = new Lizt;
 
 				if ($tables[$i] != 'undefined')
 				{
@@ -319,17 +320,16 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$this->setupEvents();
 		$filter = JFilterInput::getInstance();
 		$request = $filter->clean($_REQUEST, 'array');
-		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel = new Lizt;
 
 		foreach ($this->events as $listId => $record)
 		{
 			$listModel->setId($listId);
-			$table = $listModel->getTable();
-			$formModel = $listModel->getFormModel();
+			$listModel->getTable();
 
 			foreach ($request as $key => $val)
 			{
-				if ($formModel->hasElement($key))
+				if ($listModel->hasElement($key))
 				{
 					$o = new stdClass;
 					$o->key = $key;
@@ -355,7 +355,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 			foreach ($lists as $id)
 			{
-				$listModel = new \Fabrik\Admin\Models\Lizt;
+				$listModel = new Lizt;
 				$listModel->setId($id);
 
 				if (!$listModel->canAdd())
@@ -386,7 +386,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 		foreach ($lists as $id)
 		{
-			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel = new Lizt;
 			$listModel->setId($id);
 
 			if ($listModel->canDelete())
@@ -423,7 +423,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		foreach ($this->events as $listId => $record)
 		{
 			$this_where = ArrayHelper::getValue($where, $listId, '');
-			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel = new Lizt;
 			$listModel->setId($listId);
 
 			if (!$listModel->canView())
@@ -438,7 +438,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 			foreach ($record as $data)
 			{
 				$db = $listModel->getDb();
-				$startdate = trim($data['startdate']) !== '' ? FabrikString::safeColName($data['startdate']) : '\'\'';
+				$startDate = trim($data['startdate']) !== '' ? FabrikString::safeColName($data['startdate']) : '\'\'';
 
 				if ($data['startdate'] == '')
 				{
@@ -447,8 +447,8 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 					return;
 				}
 
-				$startElement = $formModel->getElement($data['startdate']);
-				$enddate = trim($data['enddate']) !== '' ? FabrikString::safeColName($data['enddate']) : "''";
+				$startElement = $listModel->getElement($data['startdate']);
+				$endDate = trim($data['enddate']) !== '' ? FabrikString::safeColName($data['enddate']) : "''";
 				$endElement = trim($data['enddate']) !== '' ? $formModel->getElement($data['enddate']) : $startElement;
 
 				$startLocal = $store_as_local = (bool) $startElement->getParams()->get('date_store_as_local', false);
@@ -477,10 +477,10 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 				$query = $db->getQuery(true);
 				$query = $listModel->buildQuerySelect('list', $query);
 				$status = trim($data['status']) !== '' ? FabrikString::safeColName($data['status']) : "''";
-				$query->select($pk . ' AS id, ' . $pk . ' AS rowid, ' . $startdate . ' AS startdate, ' . $enddate . ' AS enddate')
+				$query->select($pk . ' AS id, ' . $pk . ' AS rowid, ' . $startDate . ' AS startdate, ' . $endDate . ' AS enddate')
 					->select('"" AS link, ' . $label . ' AS label, ' . $db->q($data['colour']) . ' AS colour, 0 AS formid')
 				->select($status . ' AS status')
-				->order($startdate . ' ASC');
+				->order($startDate . ' ASC');
 				$query = $listModel->buildQueryJoin($query);
 				$this_where = trim(str_replace('WHERE', '', $this_where));
 				$query = $this_where === '' ? $listModel->buildQueryWhere(true, $query) : $query->where($this_where);
@@ -591,7 +591,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 		foreach ($this->events as $listId => $record)
 		{
-			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel = new Lizt;
 			$listModel->setId($listId);
 			$table = $listModel->getTable();
 
@@ -652,7 +652,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$input = $app->input;
 		$id = $input->getInt('id');
 		$listId = $input->getString('listid');
-		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel = new Lizt;
 		$listModel->setId($listId);
 		$list = $listModel->getTable();
 		$tableDb = $listModel->getDb();

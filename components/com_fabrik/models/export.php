@@ -248,7 +248,7 @@ class FabrikFEModelExport
 
 			foreach ($this->tables as $listModel)
 			{
-				$groups = $listModel->_oForm->getGroupsHierarchy();
+				$groups = $listModel->getGroupsHierarchy();
 				$i = 0;
 
 				foreach ($groups as $groupModel)

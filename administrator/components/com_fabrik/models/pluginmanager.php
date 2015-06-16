@@ -29,6 +29,7 @@ use \JPluginHelper as JPluginHelper;
 use \JProfiler as JProfiler;
 use \RuntimeException as RuntimeException;
 use Joomla\Registry\Registry as JRegistry;
+use Fabrik\Admin\Models\Group as Group;
 
 
 jimport('joomla.filesystem.file');
@@ -391,7 +392,7 @@ class PluginManager extends Base
 	 *
 	 * @param  \Fabrik\Admin\Models\View  &$model  View model
 	 *
-	 * @return  array	Group objects with plugin objects loaded in group->elements
+	 * @return  Group[]	Group objects with plugin objects loaded in group->elements
 	 */
 	public function getFormPlugins(&$model)
 	{

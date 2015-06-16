@@ -90,6 +90,16 @@ class Base extends \JModelBase
 	protected $storage = null;
 
 	/**
+	 * @var \JApplicationCms
+	 */
+	public $app = null;
+
+	/**
+	 * @var \Joomla\Input\Input;
+	 */
+	protected $input = null;
+
+	/**
 	 * Instantiate the model.
 	 *
 	 * @param   Registry $state The model state.
@@ -100,6 +110,7 @@ class Base extends \JModelBase
 	{
 		parent::__construct($state);
 		$this->app     = $this->state->get('app', JFactory::getApplication());
+		$this->input = $this->app->input;
 		$this->user    = $this->state->get('user', JFactory::getUser());
 		$this->config  = $this->state->get('config', JFactory::getConfig());
 		$this->session = $this->state->get('session', $session = JFactory::getSession());
@@ -167,7 +178,7 @@ class Base extends \JModelBase
 	 */
 	public function getId()
 	{
-		return $this->get('id');
+		return \JFilterInput::getInstance()->clean($this->get('id'), 'WORD');
 	}
 
 	/**
@@ -185,6 +196,7 @@ class Base extends \JModelBase
 			$id = $this->getId();
 		}
 
+		$id = \JFilterInput::getInstance()->clean($this->get('id'), 'WORD');
 		// @TODO - save & load from session?
 
 		if ($id === '')
@@ -593,8 +605,7 @@ class Base extends \JModelBase
 	protected function fieldSizeMap()
 	{
 		$map       = array();
-		$formModel = $this->getFormModel();
-		$groups    = $formModel->getGroupsHierarchy();
+		$groups    = $this->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -712,7 +723,7 @@ class Base extends \JModelBase
 	 */
 	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
 	{
-		$groups = $this->getFormModel()->getGroupsHierarchy();
+		$groups = $this->getGroupsHierarchy();
 
 		foreach ($groups as $gid => $groupModel)
 		{
@@ -776,7 +787,7 @@ class Base extends \JModelBase
 	public function getElementOptions($useStep = false, $key = 'name', $show_in_list_summary = false, $incRaw = false,
 		$filter = array(), $labelMethod = '', $noJoins = false)
 	{
-		$groups = $this->getFormModel()->getGroupsHierarchy();
+		$groups = $this->getGroupsHierarchy();
 		$aEls   = array();
 
 		foreach ($groups as $gid => $groupModel)
@@ -878,7 +889,7 @@ class Base extends \JModelBase
 	/**
 	 * Method to get the record form.
 	 *
-	 * @return  mixed    A JForm object on success, false on failure
+	 * @return  JForm    A JForm object on success, false on failure
 	 */
 	public function getForm()
 	{
@@ -891,11 +902,10 @@ class Base extends \JModelBase
 	 * @param string $name
 	 * @param array  $options
 	 *
-	 * @return mixed
+	 * @return JForm
 	 */
 	public function loadForm($name, $options = array())
 	{
-
 		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
 		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
 		JForm::addFormPath(JPATH_COMPONENT . '/model/form');
@@ -1304,7 +1314,7 @@ class Base extends \JModelBase
 		if ($groupName === '')
 		{
 			$groupData = new stdClass;
-			$groupName = $data->list->label;
+			$groupName = $data->get('list.label');
 			$groupData->$groupName;
 			$data->set('form.groups.' . $groupName, $this->createLinkedGroup($groupData, false));
 		}
@@ -1756,9 +1766,8 @@ class Base extends \JModelBase
 	 * Get an array of join models relating to the groups which were set to be repeating and thus thier data
 	 * stored in a separate db table
 	 *
-	 * @return  array  join models.
+	 * @return  \Fabrik\Admin\Models\Join[]  join models.
 	 */
-
 	public function getInternalRepeatJoins()
 	{
 		$return      = array();

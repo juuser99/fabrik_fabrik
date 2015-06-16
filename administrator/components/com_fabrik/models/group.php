@@ -90,7 +90,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Element plugins
 	 *
-	 * @var array
+	 * @var \Fabrik\Plugins\Element[]
 	 */
 	public $elements = null;
 
@@ -328,7 +328,6 @@ class Group extends Base implements ModelGroupInterface
 		$fkFieldName    = $join->table_join . '___' . $join->table_join_key;
 		$pkFieldName    = $join->join_from_table . '___' . $join->table_key;
 		$formModel      = $groupModel->getFormModel();
-		$pkElementModel = $formModel->getElement($pkFieldName);
 		$fields         = $listModel->storage->getDBFields($join->join_from_table, 'Field');
 		$pkField        = ArrayHelper::getValue($fields, $join->table_key, false);
 
@@ -663,6 +662,9 @@ class Group extends Base implements ModelGroupInterface
 		return $this->group->get('fields', array());
 	}
 
+	/**
+	 * @return \Fabrik\Plugins\Element[]
+	 */
 	public function getMyElements()
 	{
 		return $this->elements;
@@ -953,7 +955,7 @@ class Group extends Base implements ModelGroupInterface
 	 *
 	 * @since 120/10/2011 - can override with elementid request data (used in inline edit to limit which elements are shown)
 	 *
-	 * @return  array	published element objects
+	 * @return  \Fabrik\Plugins\Element[]	published element objects
 	 */
 	public function getPublishedElements()
 	{

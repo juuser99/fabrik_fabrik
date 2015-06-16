@@ -99,11 +99,9 @@ class JFormFieldFabrikModalrepeat extends JFormField
 
 		if (isset($v->order_by))
 		{
-			$formModel = $model->getFormModel();
-
 			foreach ($v->order_by as &$orderBy)
 			{
-				$elementModel = $formModel->getElement($orderBy, true);
+				$elementModel = $model->getElement($orderBy, true);
 				$orderBy = $elementModel ? $elementModel->getId() : $orderBy;
 			}
 		}

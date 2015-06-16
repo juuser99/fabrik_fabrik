@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Admin\Models\Lizt;
+
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
@@ -65,9 +67,8 @@ class FabrikModelFusion_Gantt_Chart extends FabrikFEModelVisualization
 
 		// Setting Param string
 		$listId = $params->get('fusion_gantt_chart_table');
-		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel = new Lizt;
 		$listModel->setId($listId);
-		$formModel = $listModel->getFormModel();
 		$db = $listModel->getDB();
 		$process = (string) $params->get('fusion_gantt_chart_process');
 		$process = FabrikString::safeColNameToArrayKey($process);
@@ -96,7 +97,7 @@ class FabrikModelFusion_Gantt_Chart extends FabrikFEModelVisualization
 		{
 			if ($use != '')
 			{
-				$formModel->getElement($use)->getAsField_html($fields, $names);
+				$listModel->getElement($use)->getAsField_html($fields, $names);
 			}
 		}
 

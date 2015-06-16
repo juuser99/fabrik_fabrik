@@ -137,7 +137,6 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 
 		if ($params->get('update_user_select', 0))
 		{
-			$formModel = $model->getFormModel();
 			$app = JFactory::getApplication();
 			$qs = $app->input->get('fabrik_update_col', '', 'string');
 			parse_str($qs, $output);
@@ -153,7 +152,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 			for ($i = 0; $i < count($values['elementid']); $i ++)
 			{
 				$id = $values['elementid'][$i];
-				$elementModel = $formModel->getElement($id, true);
+				$elementModel = $model->getElement($id, true);
 				$update->coltoupdate[] = $elementModel->getFullName(false, false);
 				$update->update_value[] = $values['value'][$i];
 			}

@@ -90,7 +90,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$params             = $model->getParams();
 		$item               = $model->getTable();
 		$listRef            = $model->getRenderContext();
-		$listId             = $model->getId();
+		$listId = \JFilterInput::getInstance()->clean($model->getId(), 'WORD');
 		$formModel          = $model->getFormModel();
 		$elementsNotInTable = $formModel->getElementsNotInTable();
 		$toggleCols         = (bool) $params->get('toggle_cols', false);
@@ -898,14 +898,14 @@ class Base extends \Fabrik\Admin\Views\Html
 		$packageId            = $model->packageId;
 		$this->hiddenFields[] = '<input type="hidden" name="packageId" value="' . $packageId . '" />';
 
-		if ($app->isAdmin())
+		/*if ($app->isAdmin())
 		{
 			$this->hiddenFields[] = '<input type="hidden" name="task" value="list.view" />';
 		}
 		else
 		{
 			$this->hiddenFields[] = '<input type="hidden" name="task" value="" />';
-		}
+		}*/
 
 		$this->hiddenFields[] = '<input type="hidden" name="fabrik_listplugin_name" value="" />';
 		$this->hiddenFields[] = '<input type="hidden" name="fabrik_listplugin_renderOrder" value="" />';

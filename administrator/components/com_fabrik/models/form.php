@@ -176,13 +176,6 @@ class Form extends View implements ModelFormFormInterface
 	public $form = null;
 
 	/**
-	 * Last current element found in hasElement()
-	 *
-	 * @var object
-	 */
-	protected $currentElement = null;
-
-	/**
 	 * Form Data
 	 *
 	 * @var array
@@ -1031,7 +1024,7 @@ class Form extends View implements ModelFormFormInterface
 
 		$data = $clean_request;
 		$item = $this->getItem();
-		$aGroups = $this->getGroupsHierarchy();
+		$this->getGroupsHierarchy();
 		JDEBUG ? $profiler->mark('formmodel getData: groups loaded') : null;
 
 		if (!$item->get('form.record_in_database'))
@@ -1139,11 +1132,6 @@ class Form extends View implements ModelFormFormInterface
 						FabrikHelperHTML::debug($fabrikDb->getQuery(), 'form:render');
 						$rows = $fabrikDb->loadObjectList();
 
-						if (is_null($rows))
-						{
-							JError::raiseWarning(500, $fabrikDb->getErrorMsg());
-						}
-
 						JDEBUG ? $profiler->mark('formmodel getData: rows data loaded') : null;
 
 						// $$$ rob Ack above didn't work for joined data where there would be n rows returned for "this rowid = $this->rowId  \n";
@@ -1186,13 +1174,7 @@ class Form extends View implements ModelFormFormInterface
 								if (empty($useKey) && !$this->isMambot && in_array($input->get('view'), array('form', 'details')))
 								{
 									$this->rowId = '';
-									/**
-									 * runtime exception is a little obtuse for people getting here from legitimate links,
-									 * like from an email, but aren't logged in so run afoul of a pre-filter, etc
-									 * So do the 3.0 thing, and raise a warning
-									 */
-									//throw new RuntimeException(FText::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
-									JError::raiseWarning(500, FText::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
+									$this->app->enqueueMessage(FText::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'), 'error');
 								}
 								else
 								{
@@ -1228,7 +1210,6 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$groups = $this->getGroupsHierarchy();
 
-		/* @var $groupModel \Fabrik\Admin\Models\Group */
 		foreach ($groups as $groupModel)
 		{
 			$params = $groupModel->getParams();
@@ -1336,7 +1317,7 @@ class Form extends View implements ModelFormFormInterface
 
 			if (!FabrikHelperHTML::stylesheetFromPath($tmplPath))
 			{
-				$ok = FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/template_css.php' . $qs);
+				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/template_css.php' . $qs);
 			}
 
 			/* $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
@@ -1366,23 +1347,22 @@ class Form extends View implements ModelFormFormInterface
 	/**
 	 * Load the JS files into the document
 	 *
-	 * @param   array  &$srcs  js script srcs to load in the head
+	 * @param   array  &$scripts  js scripts to load in the head
 	 *
 	 * @return null
 	 */
-
-	public function getCustomJsAction(&$srcs)
+	public function getCustomJsAction(&$scripts)
 	{
 		// $$$ hugh - added ability to use form_XX, as am adding custom list_XX
 		$view = $this->isEditable() ? 'form' : 'details';
 
 		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/' . $this->getId() . '.js'))
 		{
-			$srcs[] = 'components/com_fabrik/js/' . $this->getId() . '.js';
+			$scripts[] = 'components/com_fabrik/js/' . $this->getId() . '.js';
 		}
 		elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/' . $view . '_' . $this->getId() . '.js'))
 		{
-			$srcs[] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
+			$scripts[] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
 		}
 	}
 
@@ -1398,12 +1378,10 @@ class Form extends View implements ModelFormFormInterface
 		$title = $title == '' ? $this->getLabel() : $title;
 		$groups = $this->getGroupsHierarchy();
 
-		/* @var $groupModel \Fabrik\Admin\Models\Group */
 		foreach ($groups as $groupModel)
 		{
 			$elementModels = $groupModel->getPublishedElements();
 
-			/* @var $elementModel \Fabrik\Plugins\Element */
 			foreach ($elementModels as $elementModel)
 			{
 				$element = $elementModel->getElement();
@@ -1425,7 +1403,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return	array	array(group_id =>join_id)
 	 */
-
 	public function getJoinGroupIds($joins = null)
 	{
 		$listModel = $this->getlistModel();
@@ -3131,7 +3108,7 @@ class Form extends View implements ModelFormFormInterface
 	 * Get an array of the form's element's ids
 	 *
 	 * @param   array  $ignore  ClassNames to ignore e.g. array('FabrikModelFabrikCascadingdropdown')
-	 * @param   array  $opts    Property 'includePublised' can be set to 0; @since 3.0.7
+	 * @param   array  $opts    Property 'includePublished' can be set to 0; @since 3.0.7
 	 *                          Property 'loadPrefilters' @since 3.0.7.1 - used to ensure that prefilter elements are loaded in inline edit
 	 *
 	 * @return  array  ints ids
@@ -3623,82 +3600,6 @@ class Form extends View implements ModelFormFormInterface
 		$this->query = (string) $query;
 
 		return $this->query;
-	}
-
-	/**
-	 * Attempts to determine if the form contains the element
-	 *
-	 * @param   string  $searchName  Element name to search for
-	 * @param   bool    $checkInt    Check search name against element id
-	 * @param   bool    $checkShort  Check short element name
-	 *
-	 * @return  bool  true if found, false if not found
-	 */
-	public function hasElement($searchName, $checkInt = false, $checkShort = true)
-	{
-		$groups = $this->getGroupsHierarchy();
-
-		foreach ($groups as $groupModel)
-		{
-			$groupModel->getMyElements();
-
-			if (!is_array($groupModel->elements))
-			{
-				continue;
-			}
-
-			foreach ($groupModel->elements as $elementModel)
-			{
-				$element = $elementModel->getElement();
-
-				if ($checkInt)
-				{
-					if ($searchName == $element->get('id'))
-					{
-						$this->currentElement = $elementModel;
-
-						return true;
-					}
-				}
-
-				if ($searchName == $element->get('name') && $checkShort)
-				{
-					$this->currentElement = $elementModel;
-
-					return true;
-				}
-
-				if ($searchName == $elementModel->getFullName(true, false))
-				{
-					$this->currentElement = $elementModel;
-
-					return true;
-				}
-
-				if ($searchName == $elementModel->getFullName(false, false))
-				{
-					$this->currentElement = $elementModel;
-
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get an element
-	 *
-	 * @param   string  $searchName  Name to search for
-	 * @param   bool    $checkInt    Check search name against element id
-	 * @param   bool    $checkShort  Check short element name
-	 *
-	 * @return  mixed  ok: element model not ok: false
-	 */
-	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
-	{
-		return $this->hasElement($searchName, $checkInt, $checkShort) ? $this->currentElement : false;
 	}
 
 	/**
@@ -4517,7 +4418,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return  array
 	 */
-
 	public function getGroupView($tmpl = '')
 	{
 		if (isset($this->groupView))
@@ -4632,6 +4532,7 @@ class Form extends View implements ModelFormFormInterface
 
 					if (!$this->isEditable() && !$elementModel->canView())
 					{
+						echo "not editabe";
 						continue;
 					}
 

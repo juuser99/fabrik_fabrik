@@ -491,8 +491,7 @@ class CsvExport extends Base
 		}
 
 		$r = current($g);
-		$formModel = $this->model->getFormModel();
-		$groups = $formModel->getGroupsHierarchy();
+		$groups = $this->model->getGroupsHierarchy();
 		$h = array();
 
 		if (!is_object($r))

@@ -991,15 +991,13 @@ class ListFilter extends Base
 
 	private function getQuerystringFilters(&$filters)
 	{
-		$item       = $this->listModel->getTable();
 		$filter     = JFilterInput::getInstance();
 		$request    = $filter->clean($_GET, 'array');
-		$formModel  = $this->listModel->getFormModel();
 		$filterKeys = array_keys($filters);
 
 		foreach ($request as $key => $val)
 		{
-			$oldkey = $key;
+			$oldKey = $key;
 			$key    = FabrikString::safeColName($key);
 			$index  = array_key_exists('key', $filters) ? array_search($key, $filters['key']) : false;
 
@@ -1019,15 +1017,15 @@ class ListFilter extends Base
 
 			$raw = 0;
 
-			if (substr($oldkey, -4, 4) == '_raw')
+			if (substr($oldKey, -4, 4) == '_raw')
 			{
 				$raw = 1;
 
 				// Without this line related data links 'listname___elementname_raw=X' where not having their filter applied
-				$key = FabrikString::safeColName(FabrikString::rtrimword($oldkey, '_raw'));
+				$key = FabrikString::safeColName(FabrikString::rtrimword($oldKey, '_raw'));
 			}
 
-			$elementModel = $formModel->getElement(FabrikString::rtrimword($oldkey, '_raw'), false, false);
+			$elementModel = $this->listModel->getElement(FabrikString::rtrimword($oldKey, '_raw'), false, false);
 
 			if (!is_a($elementModel, 'PlgFabrik_Element'))
 			{

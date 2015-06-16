@@ -9,9 +9,10 @@
  */
 
 use Fabrik\Helpers\Worker;
+use \Fabrik\Admin\Models\Lizt;
 
 /**
- * Fabrik nvd3_chart Discretre bar chart
+ * Fabrik nvd3_chart Discrete bar chart
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.nvd3_chart
@@ -31,7 +32,6 @@ class DiscreteBarChart
 	 *
 	 * @param   JParameters  params
 	 */
-
 	public function __construct($params)
 	{
 		$this->params = $params;
@@ -164,20 +164,20 @@ class DiscreteBarChart
 		$labelColumn = $params->get('label_field');
 		$valueColumn = $params->get('value_field');
 		$calc = $params->get('value_calc', '');
-		$listModel = new \Fabrik\Admin\Models\Lizt;
+		$listModel = new lizt;
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 
 		$listModel->pluginQueryGroupBy = array($params->get('label_field'));
 		$fields = array();
 
-		if ($labelElement = $formModel->getElement($labelColumn, false, true))
+		if ($labelElement = $listModel->getElement($labelColumn, false, true))
 		{
 			$labelColumn = $labelElement->getFullName(true, false);
 			$fields[] = $labelElement->getId();
 		}
 
-		if ($valueElement = $formModel->getElement($valueColumn, false, true))
+		if ($valueElement = $listModel->getElement($valueColumn, false, true))
 		{
 			$valueElement->calcSelectModifier = $calc;
 			$valueColumn = $valueElement->getFullName(true, false);

@@ -15,6 +15,9 @@ jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
 
+use \Fabrik\Admin\Models\Form;
+use \Fabrik\Admin\Models\Lizt;
+
 /**
  * Approval viz Model
  *
@@ -47,8 +50,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 		for ($x = 0; $x < count($ids); $x++)
 		{
 			$asFields = array();
-			$fields = array();
-			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel = new Lizt;
 			$listModel->setId($ids[$x]);
 			$item = $listModel->getTable();
 			$formModel = $listModel->getFormModel();
@@ -86,7 +88,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 	/**
 	 * Load up a field 'select as' statement
 	 *
-	 * @param   JModel  $formModel  Form model
+	 * @param   Form  $formModel  Form model
 	 * @param   string  $fieldName  Element full name
 	 * @param   array   &$asFields  As fields to append as statement to
 	 * @param   array   $opts       Options
@@ -95,7 +97,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 	 *
 	 * @return  void
 	 */
-	private function asField($formModel, $fieldName, &$asFields, $opts)
+	private function asField(Form $formModel, $fieldName, &$asFields, $opts)
 	{
 		$elementModel = $formModel->getElement($fieldName);
 		$fields = array();

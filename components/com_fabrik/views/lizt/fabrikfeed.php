@@ -65,17 +65,16 @@ class Fabrikfeed extends Base
 			return '';
 		}
 
-		$formModel       = $model->getFormModel();
 		$aJoinsToThisKey = $model->getJoinsToThisKey();
 
 		// Get headings
 		$aTableHeadings = array();
-		$groupModels    = $formModel->getGroupsHierarchy();
+		$groupModels    = $model->getGroupsHierarchy();
 		$titleEl        = $params->get('feed_title');
 		$dateEl         = (int) $params->get('feed_date');
 
-		$titleEl = $formModel->getElement($titleEl, true);
-		$dateEl  = $formModel->getElement($dateEl, true);
+		$titleEl = $model->getElement($titleEl, true);
+		$dateEl  = $model->getElement($dateEl, true);
 		$title   = $titleEl === false ? '' : $titleEl->getFullName(true, false);
 		$date    = $dateEl === false ? '' : $dateEl->getFullName(true, false);
 		$dateRaw = $date . '_raw';

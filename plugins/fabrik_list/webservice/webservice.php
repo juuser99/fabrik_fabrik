@@ -130,22 +130,21 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 		$params = $this->getParams();
 		$fk = $params->get('webservice_foreign_key');
 		$model = $this->getModel();
-		$formModel = $model->getFormModel();
-		$foriegnKeyElement = $formModel->getElement($fk, true);
+		$foreignKeyElement = $model->getElement($fk, true);
 
-		if (!$foriegnKeyElement)
+		if (!$foreignKeyElement)
 		{
 			throw new UnexpectedValueException('Webservice list plugin requires a foriegn key element to be selected');
 		}
 
-		$fk = $foriegnKeyElement->getElement()->name;
+		$fk = $foreignKeyElement->getElement()->name;
 		$credentials = $this->getCredentials();
 
 		$driver = $params->get('webservice_driver');
 		$opts = array('driver' => $driver, 'endpoint' => $params->get('webservice_url'), 'credentials' => $credentials);
 		$service = FabrikWebService::getInstance($opts);
 		$filters = $this->getServiceFilters($service);
-		$service->setMap($this->getMap($formModel));
+		$service->setMap($this->getMap());
 		$filters = array_merge($opts['credentials'], $filters);
 		$method = $params->get('webservice_get_method');
 		$startPoint = $params->get('webservice_start_point');
@@ -160,11 +159,9 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 	/**
 	 * Get the data map to transform web service data into list data
 	 *
-	 * @param   object  $formModel  Form model
-	 *
 	 * @return  array  data map
 	 */
-	protected function getMap($formModel)
+	protected function getMap()
 	{
 		$params = $this->getParams();
 		$map = json_decode($params->get('webservice_map'));
@@ -178,7 +175,7 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 
 		for ($i = 0; $i < $n; $i++)
 		{
-			$tid = $formModel->getElement($to[$i], true)->getElement()->name;
+			$tid = $this->getModel()->getElement($to[$i], true)->getElement()->get('name');
 			$return[] = array('from' => $from[$i], 'to' => $tid, 'value' => $value[$i], 'match' => $match[$i], 'eval' => (bool) $eval[$i]);
 		}
 

@@ -710,13 +710,13 @@ var FbList = new Class({
 		// Fabrik.loader.start('listform_' + this.options.listRef);
 		if (task === 'list.filter') {
 			Fabrik['filter_listform_' + this.options.listRef].onSubmit();
-			this.form.task.value = task;
+			//this.form.task.value = task;
 			if (this.form['limitstart' + this.id]) {
 				this.form.getElement('#limitstart' + this.id).value = 0;
 			}
 		} else {
 			if (task !== '') {
-				this.form.task.value = task;
+				//this.form.task.value = task;
 			}
 		}
 		if (this.options.ajax) {

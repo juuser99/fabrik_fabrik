@@ -253,16 +253,12 @@ class Worker
 	public static function strToDateTime($date, $format)
 	{
 		$weekdays = array('Sun' => '0', 'Mon' => '1', 'Tue' => '2', 'Wed' => '3', 'Thu' => '4', 'Fri' => '5', 'Sat' => '6');
-		$months = array('Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04', 'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
-			'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12');
 
 		if (!($date = self::str2Time($date, $format)))
 		{
 			return;
 		}
 
-		$months = array(FText::_('January'), FText::_('February'), FText::_('March'), FText::_('April'), FText::_('May'), FText::_('June'),
-			FText::_('July'), FText::_('August'), FText::_('September'), FText::_('October'), FText::_('November'), FText::_('December'));
 		$shortMonths = array(FText::_('Jan'), FText::_('Feb'), FText::_('Mar'), FText::_('Apr'), FText::_('May'), FText::_('Jun'), FText::_('Jul'),
 			FText::_('Aug'), FText::_('Sept'), FText::_('Oct'), FText::_('Nov'), FText::_('Dec'));
 
@@ -1553,7 +1549,7 @@ class Worker
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$jform = $input->get('jform', array(), 'array');
+		$jForm = $input->get('jform', array(), 'array');
 
 		if (is_object($item))
 		{
@@ -1562,7 +1558,7 @@ class Worker
 				$item = new JRegistry($item);
 			}
 
-			$item = is_null($item->get('list.connection_id')) ? ArrayHelper::getValue($jform, 'connection_id', -1) : $item->get('list.connection_id');
+			$item = is_null($item->get('list.connection_id')) ? ArrayHelper::getValue($jForm, 'connection_id', -1) : $item->get('list.connection_id');
 		}
 
 		$connId = (int) $item;
@@ -1596,9 +1592,8 @@ class Worker
 	 *
 	 * @since	3.0b
 	 *
-	 * @return	object	plugin manager
+	 * @return	\Fabrik\Admin\Models\PluginManager
 	 */
-
 	public static function getPluginManager()
 	{
 		if (!self::$pluginManager)

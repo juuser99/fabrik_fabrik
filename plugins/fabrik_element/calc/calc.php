@@ -283,7 +283,7 @@ class PlgFabrik_ElementCalc extends Element
 
 	protected function swapValuesForLabels(&$d)
 	{
-		$groups = $this->getForm()->getGroupsHierarchy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 
 		foreach (array_keys($groups) as $gkey)
 		{

@@ -456,12 +456,10 @@ class CsvImport extends Base
 	 */
 	public function getlistModel()
 	{
-		$app = $this->app;
-
 		if (!isset($this->listModel))
 		{
 			$this->listModel = new \Fabrik\Admin\Models\Lizt;
-			$this->listModel->setId($app->input->getString('listid'));
+			$this->listModel->setId($this->input->getString('listid'));
 		}
 
 		return $this->listModel;
@@ -475,14 +473,12 @@ class CsvImport extends Base
 	public function findExistingElements()
 	{
 		$model = $this->getlistModel();
-		$model->getGroupsHierarchy();
 		$pluginManager = new PluginManager;
 		$pluginManager->getPlugInGroup('list');
-		$formModel = $model->getFormModel();
 		$tableParams = $model->getParams();
 		$mode = $tableParams->get('csvfullname');
 		$intKey = 0;
-		$groups = $formModel->getGroupsHierarchy();
+		$groups = $model->getGroupsHierarchy();
 		$elementMap = array();
 
 		// $$ hugh - adding $rawMap so we can tell prepareCSVData() if data is already raw
@@ -521,7 +517,6 @@ class CsvImport extends Base
 						{
 							// Heading found in table
 							$this->matchedHeadings[$headingKey] = $element->get('name');
-							$this->aUsedElements[strtolower($heading)] = $elementModel;
 							$elementMap[$intKey] = clone ($elementModel);
 							$rawMap[$intKey] = false;
 							$found = true;
@@ -539,7 +534,6 @@ class CsvImport extends Base
 						{
 							// Heading found in table
 							$this->matchedHeadings[$headingKey] = $element->get('name') . '_raw';
-							$this->aUsedElements[strtolower($heading) . '_raw'] = $elementModel;
 							$found = true;
 							$elementMap[$intKey] = clone ($elementModel);
 							$rawMap[$intKey] = true;
@@ -629,10 +623,9 @@ class CsvImport extends Base
 	 */
 	public function insertData()
 	{
-		$app = $this->app;
-		$jform = $app->input->get('jform', array(), 'array');
-		$dropData = (int) ArrayHelper::getValue($jform, 'drop_data', 0);
-		$overWrite = (int) ArrayHelper::getValue($jform, 'overwrite', 0);
+		$jForm = $this->input->get('jform', array(), 'array');
+		$dropData = (int) ArrayHelper::getValue($jForm, 'drop_data', 0);
+		$overWrite = (int) ArrayHelper::getValue($jForm, 'overwrite', 0);
 		$model = $this->getlistModel();
 		$model->importingCSV = true;
 		$formModel = $model->getFormModel();
@@ -667,7 +660,7 @@ class CsvImport extends Base
 		$tableJoinsFound = $this->tableJoinsFound();
 
 		$joinData = array();
-		$defaultsToAdd = $this->defaultsToAdd();
+		$this->defaultsToAdd();
 
 		foreach ($this->data as $data)
 		{
@@ -692,11 +685,11 @@ class CsvImport extends Base
 				// Test _raw key and use that
 				if (String::substr($heading, String::strlen($heading) - 4, String::strlen($heading)) == '_raw')
 				{
-					$pktestHeading = String::substr($heading, 0, String::strlen($heading) - 4);
+					$pkTestHeading = String::substr($heading, 0, String::strlen($heading) - 4);
 				}
 				else
 				{
-					$pktestHeading = $heading;
+					$pkTestHeading = $heading;
 				}
 				/*
 				 * $$$rob isset($pkVal) because: It could be that you have two elements (short names) with the
@@ -704,7 +697,7 @@ class CsvImport extends Base
 				 * presuming that the master table's pkval is the first one you come to
 				 */
 
-				if ($pktestHeading == $key && !isset($pkVal))
+				if ($pkTestHeading == $key && !isset($pkVal))
 				{
 					$pkVal = $data[$i];
 				}
@@ -940,14 +933,14 @@ class CsvImport extends Base
 		}
 
 		$formModel = $model->getFormModel();
-		$groups = $formModel->getGroupsHierarchy();
+		$groups = $model->getGroupsHierarchy();
 		$groupIds = array();
 
 		foreach ($groups as $group)
 		{
 			if ($group->isJoin())
 			{
-				$groupIds[$group->getGroup()->join_id] = $group->getGroup()->id;
+				$groupIds[$group->getGroup()->get('join_id')] = $group->getGroup()->get('id');
 			}
 		}
 
@@ -958,12 +951,12 @@ class CsvImport extends Base
 			$fabrik_repeat_group = array();
 			$js = ArrayHelper::getValue($data, 'join', array());
 
-			foreach ($js as $jid => $jdata)
+			foreach ($js as $jid => $jData)
 			{
 				// Work out max num of repeated data to insert
 				$counter = 0;
 
-				foreach ($jdata as $v)
+				foreach ($jData as $v)
 				{
 					if (count($v) > $counter)
 					{
@@ -1158,8 +1151,7 @@ class CsvImport extends Base
 	 */
 	public function getSelectKey()
 	{
-		$app = $this->app;
-		$input = $app->input;
+		$input = $this->input;
 
 		// $$$ rob 30/01/2012 - if in csvimport cron plugin then we have to return true here
 		// otherwise a blank column is added to the import data meaning overwrite date dunna workie
@@ -1511,12 +1503,11 @@ class Csv_Bv
 	 * It is called from array_walk.
 	 *
 	 * @param   string  &$item  string to trim
-	 * @param   string  $key    not used
 	 *
 	 * @return  void
 	 */
 
-	protected function ArrayRemoveEscapor(&$item, $key)
+	protected function ArrayRemoveEscapor(&$item)
 	{
 		$item = str_replace($this->mFldEscapor . $this->mFldEnclosure, $this->mFldEnclosure, $item);
 	}
