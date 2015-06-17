@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render folder list
@@ -20,7 +20,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.folder
  * @since       3.5
  */
-class PlgFabrik_ElementFolder extends Element
+class Folder extends Element
 {
 	/**
 	 * Draws the html form element

@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Render a spotify player in an iframe
@@ -20,7 +20,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.spotify
  * @since       3.5
  */
-class PlgFabrik_ElementSpotify extends Element
+class Spotify extends Element
 {
 	protected $pluginName = 'spotify';
 

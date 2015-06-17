@@ -8,21 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Is Unique Value Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.isuniquevalue
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
+class IsUniqueValue extends Validation
 {
 	/**
 	 * Plugin name
@@ -39,7 +37,6 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		$app = JFactory::getApplication();
@@ -61,7 +58,8 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 		$data = $db->q($data);
 		$query = $db->getQuery(true);
 		$cond = $params->get('isuniquevalue-caseinsensitive') == 1 ? 'LIKE' : '=';
-		$query->select('COUNT(*)')->from($lookuptable)->where($db->quoteName($element->get('name')) . ' ' . $cond . ' ' . $data);
+		$query->select('COUNT(*)')->from($lookuptable)
+			->where($db->qn($element->get('name')) . ' ' . $cond . ' ' . $data);
 
 		/* $$$ hugh - need to check to see if we're editing a record, otherwise
 		 * will fail 'cos it finds the original record (assuming this element hasn't changed)

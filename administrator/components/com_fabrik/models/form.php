@@ -2382,7 +2382,7 @@ class Form extends View implements ModelFormFormInterface
 		{
 			$elementModels = $groupModel->getPublishedElements();
 
-			/* @var $elementModel \Fabrik\Plugins\Element */
+			/* @var $elementModel \Fabrik\Plugins\Element\Element */
 			foreach ($elementModels as $elementModel)
 			{
 				$elementModel->onFinalStoreRow($this->formData);

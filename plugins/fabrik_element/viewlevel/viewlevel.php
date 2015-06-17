@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to render user view levels
@@ -20,7 +20,7 @@ use Fabrik\Plugins\ElementList as ElementList;
  * @subpackage  Fabrik.element.viewlevel
  * @since       3.5
  */
-class PlgFabrik_ElementViewlevel extends ElementList
+class Viewlevel extends ElementList
 {
 	/**
 	 * Db table field type

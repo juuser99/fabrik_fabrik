@@ -8,11 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Fabrik\Plugins\Element as Element;
 
 require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.11/recaptchalib.php';
 
@@ -21,10 +22,9 @@ require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.captcha
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementCaptcha extends Element
+class Captcha extends Element
 {
 	protected $font = 'monofont.ttf';
 

@@ -8,21 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Special Characters Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.specialchars
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleSpecialChars extends PlgFabrik_Validationrule
+class SpecialChars extends Validation
 {
 	/**
 	 * Plugin name
@@ -39,7 +37,6 @@ class PlgFabrik_ValidationruleSpecialChars extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		// For multiselect elements
@@ -49,9 +46,9 @@ class PlgFabrik_ValidationruleSpecialChars extends PlgFabrik_Validationrule
 		}
 
 		$params = $this->getParams();
-		$domatch = $params->get('specialchars-match');
+		$doMatch = $params->get('specialchars-match');
 
-		if ($domatch)
+		if ($doMatch)
 		{
 			$v = $params->get('specalchars');
 			$v = explode(',', $v);
@@ -77,15 +74,13 @@ class PlgFabrik_ValidationruleSpecialChars extends PlgFabrik_Validationrule
 	 *
 	 * @return  string	original or replaced data
 	 */
-
 	public function replace($data, $repeatCounter)
 	{
 		$params = $this->getParams();
-		$domatch = $params->get('specialchars-match');
+		$doMatch = $params->get('specialchars-match');
 
-		if (!$domatch)
+		if (!$doMatch)
 		{
-			$v = $params->get($this->pluginName . '-expression');
 			$replace = $params->get('specialchars-replacestring');
 
 			if ($replace === '_default')

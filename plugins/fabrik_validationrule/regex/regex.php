@@ -8,21 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Regular Expression Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.regex
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
+class Regex extends Validation
 {
 	/**
 	 * Plugin name
@@ -39,7 +37,6 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		// For multiselect elements
@@ -49,9 +46,9 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 		}
 
 		$params = $this->getParams();
-		$domatch = $params->get('regex-match');
+		$doMatch = $params->get('regex-match');
 
-		if ($domatch)
+		if ($doMatch)
 		{
 			$matches = array();
 			$v = $params->get('regex-expression');
@@ -73,13 +70,12 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 *
 	 * @return  string	original or replaced data
 	 */
-
 	public function replace($data, $repeatCounter)
 	{
 		$params = $this->getParams();
-		$domatch = $params->get('regex-match');
+		$doMatch = $params->get('regex-match');
 
-		if (!$domatch)
+		if (!$doMatch)
 		{
 			$v = $params->get($this->pluginName . '-expression');
 			$v = trim($v);
@@ -99,7 +95,6 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 *
 	 * @return  string
 	 */
-
 	public function iconImage()
 	{
 		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);

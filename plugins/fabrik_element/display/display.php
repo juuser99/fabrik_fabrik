@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render plain text/HTML
@@ -22,7 +23,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.display
  * @since       3.5
  */
-class PlgFabrik_ElementDisplay extends Element
+class Display extends Element
 {
 	/**
 	 * Db table field type

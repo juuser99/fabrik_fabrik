@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -23,10 +25,9 @@ require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.cascadingdropdown
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
+class Cascadingdropdown extends Databasejoin
 {
 	/**
 	 * J Parameter name for the field containing the label value

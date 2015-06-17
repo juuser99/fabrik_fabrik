@@ -7,10 +7,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element: js periodical will fire a JavaScript function at a definable interval
@@ -19,7 +19,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.jsperiodical
  * @since       3.5
  */
-class PlgFabrik_ElementJSPeriodical extends Element
+class JSPeriodical extends Element
 {
 	/**
 	 * Shows the data formatted for the list view

@@ -8,10 +8,11 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugins\Element as Element;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
 
 /**
@@ -21,7 +22,7 @@ use \Fabrik\Admin\Models\Lizt as LiztModel;
  * @subpackage  Fabrik.element.timer
  * @since       3.5
  */
-class PlgFabrik_ElementTimer extends Element
+class Timer extends Element
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons

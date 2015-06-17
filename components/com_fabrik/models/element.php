@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugins;
+namespace Fabrik\Plugins\Element;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -41,7 +41,7 @@ use \Fabrik\Admin\Models\Group;
  * @package  Fabrik
  * @since    3.0
  */
-class Element extends Plugin
+class Element extends \Fabrik\Plugins\Plugin
 {
 	/**
 	 * Element id

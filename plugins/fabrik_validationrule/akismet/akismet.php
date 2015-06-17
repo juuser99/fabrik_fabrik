@@ -8,21 +8,23 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \RuntimeException;
+use \JUri;
+
 
 /**
  * Akismet Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.akismet
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
+class Akismet extends Validation
 {
 	/**
 	 * Plugin name
@@ -37,9 +39,10 @@ class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
 	 * @param   string  $data           To check
 	 * @param   int     $repeatCounter  Repeat group counter
 	 *
+	 * @throws RuntimeException
+	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		$params = $this->getParams();
@@ -47,18 +50,17 @@ class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
 		if ($params->get('akismet-key') != '')
 		{
 			$username = $this->user->get('username') != '' ? $this->user->get('username') : $this->_randomSring();
-			$email = $this->user->get('email') != '' ? $this->user->get('email') : $this->_randomSring() . '@' . $this->_randomSring() . 'com';
-			require_once JPATH_COMPONENT . '/plugins/validationrule/akismet/libs/akismet.class.php';
-			$akismet_comment = array('author' => $username, 'email' => $this->user->get('email'), 'website' => JURI::base(), 'body' => $data);
-			$akismet = new Akismet(JURI::base(), $params->get('akismet-key'), $akismet_comment);
+			require_once JPATH_SITE . '/plugins/fabrik_validationrule/akismet/libs/akismet.class.php';
+			$comment = array('author' => $username, 'email' => $this->user->get('email'), 'website' => JUri::base(), 'body' => $data);
+			$validator = new \Akismet(JURI::base(), $params->get('akismet-key'), $comment);
 
-			if ($akismet->errorsExist())
+			if ($validator->errorsExist())
 			{
 				throw new RuntimeException("Couldn't connected to Akismet server!");
 			}
 			else
 			{
-				if ($akismet->isSpam())
+				if ($validator->isSpam())
 				{
 					return false;
 				}
@@ -73,7 +75,6 @@ class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
 	 *
 	 * @return string
 	 */
-
 	protected function _randomSring()
 	{
 		return preg_replace('/([ ])/e', 'chr(rand(97,122))', '     ');

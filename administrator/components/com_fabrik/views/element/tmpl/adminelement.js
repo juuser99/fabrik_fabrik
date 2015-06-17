@@ -29,7 +29,7 @@ var fabrikAdminElement = new Class({
 			fconsole('Fabrik adminelement.js: Initialising', plugins, options, id);
 		}
 		console.log(options, id);
-		this.parent(plugins, options, 'validationrule');
+		this.parent(plugins, options, 'validation');
 		this.setOptions(options);
 		//this.setParentViz();
 

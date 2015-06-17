@@ -8,21 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \FText;
 
 /**
  * Is Not Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.isnot
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
+class IsNot extends Validation
 {
 	/**
 	 * Plugin name
@@ -39,7 +39,6 @@ class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		if (is_array($data))
@@ -48,10 +47,10 @@ class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
 		}
 
 		$params = $this->getParams();
-		$isnot = $params->get('isnot-isnot');
-		$isnot = explode('|', $isnot);
+		$isNot = $params->get('isnot-isnot');
+		$isNot = explode('|', $isNot);
 
-		foreach ($isnot as $i)
+		foreach ($isNot as $i)
 		{
 			if ((string) $data === (string) $i)
 			{
@@ -67,7 +66,6 @@ class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
 	 *
 	 * @return  string	label
 	 */
-
 	protected function getLabel()
 	{
 		$params = $this->getParams();
@@ -78,8 +76,8 @@ class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
 			return FText::_($tipText);
 		}
 
-		$isnot = $params->get('isnot-isnot');
+		$isNot = $params->get('isnot-isnot');
 
-		return JText::sprintf('PLG_VALIDATIONRULE_ISNOT_LABEL', $isnot);
+		return FText::sprintf('PLG_VALIDATIONRULE_ISNOT_LABEL', $isNot);
 	}
 }

@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to a series of radio buttons
@@ -22,7 +23,7 @@ use Fabrik\Plugins\ElementList as ElementList;
  * @subpackage  Fabrik.element.radiolist
  * @since       3.5
  */
-class PlgFabrik_ElementRadiobutton extends ElementList
+class Radiobutton extends ElementList
 {
 	/**
 	 * Method to set the element id

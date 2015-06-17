@@ -8,23 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Is Email Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.isemail
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
+class IsEmail extends Validation
 {
 	/**
 	 * Plugin name
@@ -41,7 +39,6 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		$email = $data;
@@ -72,7 +69,6 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool
 	 */
-
 	protected function allowEmpty()
 	{
 		$params = $this->getParams();

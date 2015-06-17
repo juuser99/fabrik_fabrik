@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 /**
@@ -23,7 +24,7 @@ use Fabrik\Helpers\HTML;
  * @subpackage  Fabrik.element.link
  * @since       3.5
  */
-class PlgFabrik_ElementLink extends Element
+class Link extends Element
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons

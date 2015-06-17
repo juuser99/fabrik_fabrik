@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -20,10 +22,9 @@ use Fabrik\Helpers\HTML;
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.tags
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
+class Tags extends Databasejoin
 {
 	/**
 	 * Multi-db join option - can we add duplicate options (set to false in tags element)

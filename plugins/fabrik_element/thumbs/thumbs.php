@@ -8,22 +8,22 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render thumbs-up/down widget
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.thumbs
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementThumbs extends Element
+class Thumbs extends Element
 {
 	/**
 	 * States the element should be ignored from advanced search all queries.

@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\Element as Element;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
 use Fabrik\Helpers\HTML;
 
@@ -22,10 +23,9 @@ use Fabrik\Helpers\HTML;
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.calc
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementCalc extends Element
+class Calc extends Element
 {
 	/**
 	 * This really does get just the default value (as defined in the element's settings)

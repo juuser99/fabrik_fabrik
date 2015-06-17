@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Render an embedded youtube video play
@@ -20,7 +20,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.youtube
  * @since       3.5
  */
-class PlgFabrik_ElementYoutube extends Element
+class Youtube extends Element
 {
 	protected $pluginName = 'youtube';
 

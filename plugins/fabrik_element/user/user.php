@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -21,7 +23,7 @@ use Fabrik\Helpers\ArrayHelper;
  * @subpackage  Fabrik.element.user
  * @since       3.0
  */
-class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
+class User extends Databasejoin
 {
 	/**
 	 * Db table field type

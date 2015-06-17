@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -16,10 +18,9 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.notes
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
+class Notes extends Databasejoin
 {
 	/**
 	 * Last row id to be inserted via ajax call

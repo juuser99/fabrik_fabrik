@@ -8,23 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin classes
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Is Greater or Less than Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.isgreaterorlessthan
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationrule
+class IsGreaterOrLessThan extends Validation
 {
 	/**
 	 * Plugin name
@@ -41,7 +39,6 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		// Could be a dropdown with multivalues
@@ -52,7 +49,7 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 
 		$params = $this->getParams();
 		$elementModel = $this->elementModel;
-		$formdata = $elementModel->getForm()->formData;
+		$formData = $elementModel->getFormModel()->formData;
 		$cond = $params->get('isgreaterorlessthan-greaterthan');
 		$compareValue = $params->get('compare_value', '');
 
@@ -82,8 +79,7 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 		}
 
 		$otherElementModel = $this->getOtherElement();
-		$otherFullName = $otherElementModel->getFullName(true, false);
-		$compare = $compareValue === '' ? $otherElementModel->getValue($formdata, $repeatCounter) : $compareValue;
+		$compare = $compareValue === '' ? $otherElementModel->getValue($formData, $repeatCounter) : $compareValue;
 
 		if ($this->allowEmpty() && ($data === '' || $compare === ''))
 		{
@@ -108,7 +104,6 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 	 *
 	 * @return	bool
 	 */
-
 	protected function allowEmpty()
 	{
 		$params = $this->getParams();
@@ -126,8 +121,8 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 	private function getOtherElement()
 	{
 		$params = $this->getParams();
-		$otherfield = $params->get('isgreaterorlessthan-comparewith');
+		$otherField = $params->get('isgreaterorlessthan-comparewith');
 
-		return Worker::getPluginManager()->getElementPlugin($otherfield);
+		return Worker::getPluginManager()->getElementPlugin($otherField);
 	}
 }

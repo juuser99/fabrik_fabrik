@@ -8,11 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Plugins\ElementList as ElementList;
 
 /**
  * Plugin element to two lists - one to select from the other to select into
@@ -21,7 +22,7 @@ use Fabrik\Plugins\ElementList as ElementList;
  * @subpackage  Fabrik.element.picklist
  * @since       3.5
  */
-class PlgFabrik_ElementPicklist extends ElementList
+class Picklist extends ElementList
 {
 	/**
 	 * Does the element have sub elements

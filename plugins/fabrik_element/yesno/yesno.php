@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -16,17 +18,14 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\HTML;
 
-require_once JPATH_SITE . '/plugins/fabrik_element/radiobutton/radiobutton.php';
-
 /**
  * Plugin element to yes/no radio options - render as tick/cross in list view
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.yesno
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
+class Yesno extends Radiobutton
 {
 	/**
 	 * Db table field type

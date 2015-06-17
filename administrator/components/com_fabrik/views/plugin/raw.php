@@ -47,6 +47,11 @@ class Raw extends \JViewHtml
 		echo $model->render();
 	}
 
+	/**
+	 * Render the top part of the plugin form
+	 *
+	 * @return string
+	 */
 	protected function top()
 	{
 		$data                   = $this->model->getData();
@@ -59,10 +64,12 @@ class Raw extends \JViewHtml
 		$topForm                = new JForm($formName, array('control' => 'jform'));
 		$topForm->repeatCounter = $c;
 		$xmlFile                = JPATH_SITE . '/administrator/components/com_fabrik/models/forms/' . $type . '-plugin.xml';
+
 		// Add the plugin specific fields to the form.
 		$topForm->loadFile($xmlFile, false);
 		$topForm->bind($data);
 		$topForm->model = $this->model;
+
 		// Filter the forms fieldsets for those starting with the correct $searchName prefix
 		foreach ($topForm->getFieldsets() as $fieldset)
 		{
@@ -92,7 +99,6 @@ class Raw extends \JViewHtml
 	 *
 	 * @return  void
 	 */
-
 	protected function setStates()
 	{
 		$model = $this->model;

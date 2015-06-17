@@ -40,7 +40,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @since	1.0
 	 */
-
 	public function plgSystemFabrik(&$subject, $config)
 	{
 		/**
@@ -87,7 +86,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return string
 	 */
-
 	public static function js()
 	{
 		/**
@@ -119,7 +117,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return string
 	 */
-
 	public static function buildJs()
 	{
 		$session = JFactory::getSession();
@@ -163,7 +160,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return  void
 	 */
-
 	public function onAfterRender()
 	{
 		// Could be component was uninstalled but not the plugin
@@ -199,22 +195,12 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return  void
 	 */
-
 	public function onAfterInitialise()
 	{
 		jimport('joomla.filesystem.file');
 		$p = JPATH_SITE . '/plugins/system/fabrik/';
 		$defines = JFile::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
 		require_once $defines;
-
-		$app = JFactory::getApplication();
-		$input = $app->input;
-
-		if ($app->isAdmin())
-		{
-			require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/fabrik.php';
-		}
-
 		$this->setBigSelects();
 	}
 
@@ -225,7 +211,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return  void
 	 */
-
 	protected function setBigSelects()
 	{
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
@@ -260,7 +245,6 @@ class PlgSystemFabrik extends JPlugin
 	 *
 	 * @return  array
 	 */
-
 	public static function onDoContentSearch($text, $params, $phrase = '', $ordering = '')
 	{
 		$app = JFactory::getApplication();

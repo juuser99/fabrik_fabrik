@@ -8,23 +8,23 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render day/month/year dropdowns
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.birthday
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementBirthday extends Element
+class Birthday extends Element
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons

@@ -3122,7 +3122,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	/**
 	 * Get the href for the edit/details link
 	 *
-	 * @param   \Fabrik\Plugins\Element $elementModel  Element model
+	 * @param   \Fabrik\Plugins\Element\Element $elementModel  Element model
 	 * @param   stdClass                $row           Lists current row data
 	 * @param   int                     $repeatCounter Repeat group counter
 	 *
@@ -4463,7 +4463,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	 *
 	 * @since 3.0.7
 	 *
-	 * @return  \Fabrik\Plugins\Element
+	 * @return  \Fabrik\Plugins\Element\Element
 	 */
 	protected function getGroupByElement()
 	{
@@ -5040,7 +5040,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * if a new element it will run the sql to add to field,
 	 * if existing element and name changed will create query to be used later
 	 *
-	 * @param   \Fabrik\Plugins\Element &$elementModel element model
+	 * @param   \Fabrik\Plugins\Element\Element &$elementModel element model
 	 * @param   string                  $origColName   original column name
 	 *
 	 * @throws ErrorException
@@ -5265,7 +5265,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	/**
 	 * Add or update a database column via sql
 	 *
-	 * @param   \Fabrik\Plugins\Element &$elementModel element plugin
+	 * @param   \Fabrik\Plugins\Element\Element &$elementModel element plugin
 	 * @param   string                  $origColName   origional field name
 	 *
 	 * @return  bool
@@ -9842,7 +9842,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * @param   bool   $showInTable   show in table default true
 	 * @param   bool   $onlyPublished return only published elements
 	 *
-	 * @return  \Fabrik\Plugins\Element[]  Array of Element models
+	 * @return  \Fabrik\Plugins\Element\Element[]  Array of Element models
 	 */
 
 	public function getElements($key = '0', $showInTable = true, $onlyPublished = true)

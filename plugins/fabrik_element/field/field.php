@@ -7,8 +7,7 @@
  * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
-
-use Fabrik\Plugins\Element as Element;
+namespace Fabrik\Plugins\Element;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -25,7 +24,7 @@ use Fabrik\Helpers\HTML;
  * @subpackage  Fabrik.element.field
  * @since       3.5
  */
-class PlgFabrik_ElementField extends Element
+class Field extends Element
 {
 	/**
 	 * Shows the data formatted for the list view

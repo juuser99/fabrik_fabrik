@@ -8,21 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin classes
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Is Numeric Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.isnumeric
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
+class IsNumeric extends Validation
 {
 	/**
 	 * Plugin name
@@ -39,7 +37,6 @@ class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		// Could be a dropdown with multivalues
@@ -65,7 +62,6 @@ class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
 	 *
 	 * @return bool
 	 */
-
 	protected function allowEmpty()
 	{
 		$params = $this->getParams();

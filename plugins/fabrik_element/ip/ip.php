@@ -8,11 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to store the user's IP address
@@ -21,7 +22,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.ip
  * @since       3.5
  */
-class PlgFabrik_ElementIp extends Element
+class Ip extends Element
 {
 	/**
 	 * Draws the html form element

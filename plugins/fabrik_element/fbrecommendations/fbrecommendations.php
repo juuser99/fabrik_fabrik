@@ -8,10 +8,11 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 /**
@@ -19,9 +20,9 @@ use Fabrik\Helpers\HTML;
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.facebookrecommendations
- * @since       3.0
+ * @since       3.5
  */
-class PlgFabrik_ElementFbRecommendations extends Element
+class FbRecommendations extends Element
 {
 	/**
 	 * Does the element have a label

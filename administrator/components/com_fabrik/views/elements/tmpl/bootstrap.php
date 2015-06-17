@@ -106,7 +106,6 @@ $states = array(
 					<th width="30px">
 						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'e.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
 					</th>
-					<th width="30px">&nbsp;&nbsp;&nbsp;</th>
 					<th width="30px"><input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
 					</th>
 
@@ -178,22 +177,6 @@ $states = array(
 							<i class="icon-menu"></i>
 						</span>
 							<?php endif; ?>
-						</td>
-						<td>
-							<?php if ($item->parent_id != 0) :
-								// FIXME - need to decide what to do about parent elements.
-								echo "<a href='index.php?option=com_fabrik&view==element&layout=edit&id=" . $item->parent_id . "'>"
-									. JHTML::image('media/com_fabrik/images/child_element.png', JText::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id), 'title="' . JText::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id) . '"')
-									. '</a>&nbsp;';
-							else :
-								if (!empty($item->child_ids)) :
-									echo JHTML::image('media/com_fabrik/images/parent_element.png', JText::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids), 'title="' . JText::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids) . '"');
-								else :
-									// Trying out removing the icon all together if it isn't linked
-									// echo JHTML::image('media/com_fabrik/images/element.png', FText::_('COM_FABRIK_NONLINKED_ELEMENT'), 'title="' . FText::_('COM_FABRIK_NONLINKED_ELEMENT') . '"');
-								endif;
-							endif;
-							?>
 						</td>
 						<td>
 							<?php echo JHtml::_('grid.id', $i, $item->id); ?>

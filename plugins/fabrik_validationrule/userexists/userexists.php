@@ -8,24 +8,23 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \JUserHelper;
 
 /**
  * User Exists Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.userexists
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
+class UserExists extends Validation
 {
 	/**
 	 * Plugin name
@@ -49,7 +48,7 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 		$elementModel = $this->elementModel;
 
 		// As ornot is a radio button it gets json encoded/decoded as an object
-		$ornot = $params->get('userexists_or_not', 'fail_if_exists');
+		$orNot = $params->get('userexists_or_not', 'fail_if_exists');
 		jimport('joomla.user.helper');
 		$result = JUserHelper::getUserId($data);
 
@@ -57,14 +56,14 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 		{
 			if (!$result)
 			{
-				if ($ornot == 'fail_if_exists')
+				if ($orNot == 'fail_if_exists')
 				{
 					return true;
 				}
 			}
 			else
 			{
-				if ($ornot == 'fail_if_not_exists')
+				if ($orNot == 'fail_if_not_exists')
 				{
 					return true;
 				}
@@ -76,7 +75,7 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 		{
 			if (!$result)
 			{
-				if ($ornot == 'fail_if_exists')
+				if ($orNot == 'fail_if_exists')
 				{
 					return true;
 				}
@@ -96,8 +95,8 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 				if (!empty($user_field))
 				{
 					// $$$ the array thing needs fixing, for now just grab 0
-					$formdata = $elementModel->getForm()->formData;
-					$user_id = ArrayHelper::getValue($formdata, $user_fullName . '_raw', ArrayHelper::getValue($formdata, $user_fullName, ''));
+					$formData = $elementModel->getFormModel()->formData;
+					$user_id = ArrayHelper::getValue($formData, $user_fullName . '_raw', ArrayHelper::getValue($formData, $user_fullName, ''));
 
 					if (is_array($user_id))
 					{
@@ -109,7 +108,7 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 				{
 					if ($result == $user_id)
 					{
-						return ($ornot == 'fail_if_exists') ? true : false;
+						return ($orNot == 'fail_if_exists') ? true : false;
 					}
 
 					return false;
@@ -119,7 +118,7 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 					// The connected user is editing his own data
 					if ($result == $this->user->get('id'))
 					{
-						return ($ornot == 'fail_if_exists') ? true : false;
+						return ($orNot == 'fail_if_exists') ? true : false;
 					}
 
 					return false;

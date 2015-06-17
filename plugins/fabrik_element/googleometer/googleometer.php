@@ -8,13 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render a google o meter chart
@@ -23,7 +23,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.googleometer
  * @since       3.5
  */
-class PlgFabrik_ElementGoogleometer extends Element
+class Googleometer extends Element
 {
 	/**
 	 * Db table field type

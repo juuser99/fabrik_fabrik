@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 /**
@@ -23,7 +24,7 @@ use Fabrik\Helpers\HTML;
  * @subpackage  Fabrik.element.facebooklike
  * @since       3.5
  */
-class PlgFabrik_ElementFblike extends Element
+class Fblike extends Element
 {
 	/**
 	 * Does the element have a label

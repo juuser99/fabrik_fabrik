@@ -8,13 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\GoogleMapHelper;
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 /**
@@ -24,7 +24,7 @@ use Fabrik\Helpers\HTML;
  * @subpackage  Fabrik.element.googlemap
  * @since       3.5
  */
-class PlgFabrik_ElementGooglemap extends Element
+class Googlemap extends Element
 {
 	/**
 	 * Has the geoJS been loaded

@@ -107,22 +107,21 @@ class PluginManager extends Base
 			}
 
 			$a = array(JHTML::_('select.option', '', $defaultlabel));
-			$elementstypes = $this->_getList();
-			$elementstypes = array_merge($a, $elementstypes);
-			$this->elementLists[$hash] = JHTML::_('select.genericlist', $elementstypes, $name, $extra, 'value', 'text', $default);
+			$elementTypes = $this->_getList();
+			$elementTypes = array_merge($a, $elementTypes);
+			$this->elementLists[$hash] = JHTML::_('select.genericlist', $elementTypes, $name, $extra, 'value', 'text', $default);
 		}
 
 		return $this->elementLists[$hash];
 	}
 
 	/**
-	 * Can the pluginmanager be used
+	 * Can the plugin manager be used
 	 *
 	 * @deprecated
 	 *
 	 * @return  true
 	 */
-
 	public function canUse()
 	{
 		return true;
@@ -139,9 +138,9 @@ class PluginManager extends Base
 	public function getList($group, $id)
 	{
 		$str = '<ul id="' . $id . '">';
-		$elementstypes = $this->_getList();
+		$elementTypes = $this->_getList();
 
-		foreach ($elementstypes as $plugin)
+		foreach ($elementTypes as $plugin)
 		{
 			$str .= '<li>' . $plugin->text . '</li>';
 		}
@@ -200,7 +199,6 @@ class PluginManager extends Base
 	 *
 	 * @return void
 	 */
-
 	public function loadJS()
 	{
 		// JHtml::_('script', 'media/com_fabrik/js/head/head.min.js');
@@ -229,7 +227,6 @@ class PluginManager extends Base
 	 *
 	 * @return  array
 	 */
-
 	protected function &loadPlugInGroup($group)
 	{
 		// $$$ rob 16/12/2011 - this was setting $this->plugIns, but if you had 2 lists as admin modules
@@ -303,11 +300,6 @@ class PluginManager extends Base
 	 */
 	public function loadPlugIn($className = '', $group = '')
 	{
-		if ($group == 'table')
-		{
-			$group = 'list';
-		}
-
 		$group = String::strtolower($group);
 		/* $$$ rob ONLY import the actual plugin you need otherwise ALL $group plugins are loaded regardless of whether they
 		* are used or not memory changes:
@@ -317,7 +309,7 @@ class PluginManager extends Base
 		JPluginHelper::importPlugin('fabrik_' . $group, $className);
 		$dispatcher = JEventDispatcher::getInstance();
 
-		if ($className != '')
+		/*if ($className != '')
 		{
 			$file = JPATH_PLUGINS . '/fabrik_' . $group . '/' . $className . '/' . $className . '.php';
 
@@ -338,9 +330,8 @@ class PluginManager extends Base
 					throw new RuntimeException('plugin manager: did not load ' . $file);
 				}
 			}
-		}
-
-		$class = 'plgFabrik_' . String::ucfirst($group) . String::ucfirst($className);
+		}*/
+		$class = "Fabrik\\Plugins\\" . String::ucfirst($group) . '\\' . String::ucfirst($className);
 		$conf = array();
 		$conf['name'] = String::strtolower($className);
 		$conf['type'] = String::strtolower('fabrik_' . $group);
@@ -349,10 +340,9 @@ class PluginManager extends Base
 		// Needed for viz
 		$client = JApplicationHelper::getClientInfo(0);
 		$lang = JFactory::getLanguage();
-		$folder = 'fabrik_' . $group;
+		$folder = $group == 'validation' ? 'fabrik_validationrule' : 'fabrik_' . $group;
 		$langFile = 'plg_' . $folder . '_' . $className;
 		$langPath = $client->path . '/plugins/' . $folder . '/' . $className;
-
 		$lang->load($langFile, $langPath, null, false, false) || $lang->load($langFile, $langPath, $lang->getDefault(), false, false);
 
 		// Load system ini file
@@ -426,7 +416,7 @@ class PluginManager extends Base
 					$plugin = $element->plugin;
 					JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->get('name') . '' . $plugin) : null;
 					require_once JPATH_PLUGINS . '/fabrik_element/' . $plugin . '/' . $plugin . '.php';
-					$class = 'PlgFabrik_Element' . $element->plugin;
+					$class = 'Fabrik\\Plugins\\Element\\' . String::ucfirst($element->plugin);
 					$pluginModel = new $class($dispatcher, array());
 
 					if (!is_object($pluginModel))
@@ -463,7 +453,7 @@ class PluginManager extends Base
 	 *
 	 * @param   int  $id  Element id
 	 *
-	 * @return \Fabrik\Plugins\Element  Element plugin
+	 * @return \Fabrik\Plugins\Element\Element  Element plugin
 	 */
 	public function getElementPlugin($id)
 	{
@@ -492,7 +482,7 @@ class PluginManager extends Base
 				$o->getTable();
 				break;
 			case 'Element':
-				/** @var $o \Fabrik\Plugins\Element */
+				/** @var $o \Fabrik\Plugins\Element\Element */
 				$o->getElement();
 				break;
 		}

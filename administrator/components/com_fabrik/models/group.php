@@ -90,7 +90,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Element plugins
 	 *
-	 * @var \Fabrik\Plugins\Element[]
+	 * @var \Fabrik\Plugins\Element\Element[]
 	 */
 	public $elements = null;
 
@@ -663,7 +663,7 @@ class Group extends Base implements ModelGroupInterface
 	}
 
 	/**
-	 * @return \Fabrik\Plugins\Element[]
+	 * @return \Fabrik\Plugins\Element\Element[]
 	 */
 	public function getMyElements()
 	{
@@ -955,7 +955,7 @@ class Group extends Base implements ModelGroupInterface
 	 *
 	 * @since 120/10/2011 - can override with elementid request data (used in inline edit to limit which elements are shown)
 	 *
-	 * @return  \Fabrik\Plugins\Element[]	published element objects
+	 * @return  \Fabrik\Plugins\Element\Element[]	published element objects
 	 */
 	public function getPublishedElements()
 	{

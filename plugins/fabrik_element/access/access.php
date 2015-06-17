@@ -8,21 +8,20 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Access element
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.access
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementAccess extends Element
+class Access extends Element
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the

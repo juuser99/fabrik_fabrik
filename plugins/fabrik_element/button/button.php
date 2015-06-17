@@ -8,20 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render button
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.button
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementButton extends Element
+class Button extends Element
 {
 	/**
 	 * Draws the html form element

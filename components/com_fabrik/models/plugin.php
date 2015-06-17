@@ -243,7 +243,9 @@ class Plugin extends \JPlugin
 		$this->makeDbTable();
 		$type = str_replace('fabrik_', '', $this->_type);
 		JForm::addFormPath(JPATH_SITE . '/plugins/' . $this->_type . '/' . $this->_name);
-		$xmlFile = JPATH_SITE . '/plugins/' . $this->_type . '/' . $this->_name . '/forms/fields.xml';
+
+		$folder = $this->_type == 'fabrik_validation' ? 'fabrik_validationrule' : $this->_type;
+		$xmlFile = JPATH_SITE . '/plugins/' . $folder . '/' . $this->_name . '/forms/fields.xml';
 		$form = $this->getJForm();
 		$repeatScript = '';
 
@@ -302,30 +304,6 @@ class Plugin extends \JPlugin
 		{
 			// Handle strings with HTML
 			$iniVal2 = '';
-
-			/**
-			 * $$$ hugh - this was blowing up with the massively useful error "Cannot parse
-			 * XML 0" and refusing to load the plugin if the description has any non-XML-ish HTML
-			 * markup, or if there was some malformed HTML.  So redoing it with a regular expression,
-			 * which may not match on some formats, as I haven't done a huge amount of testing,
-			 * but at least it won't error out!
-			 */
-
-			/*
-			if (substr($iniVal, 0, 3) == '<p>' || substr($iniVal, 0, 3) == '<p ')
-			{
-				$xml = new SimpleXMLElement('<xml>' . $iniVal . '</xml>');
-				$lines = $xml->xpath('/xml/p[position()<2]');
-
-				while (list( , $node) = each($lines))
-				{
-					$legend = $node;
-				}
-
-				$iniVal2 = str_replace($legend, '', $iniVal);
-				$iniVal = $legend;
-			}
-			*/
 			$p_re = '#^\s*(<p\s*\S*\s*>.*?</p>)#i';
 			$matches = array();
 

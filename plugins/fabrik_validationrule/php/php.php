@@ -8,23 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * PHP Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.php
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
+class Php extends Validation
 {
 	/**
 	 * Plugin name
@@ -41,19 +39,18 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter = 0)
 	{
-		// For multiselect elements
+		// For multi-select elements
 		if (is_array($data))
 		{
 			$data = implode('', $data);
 		}
 
 		$params = $this->getParams();
-		$domatch = $params->get('php-match');
+		$doMatch = $params->get('php-match');
 
-		if ($domatch)
+		if ($doMatch)
 		{
 			return $this->_eval($data, $repeatCounter);
 		}
@@ -74,11 +71,11 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	public function replace($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
-		$domatch = $params->get('php-match');
+		$doMatch = $params->get('php-match');
 
-		if (!$domatch)
+		if (!$doMatch)
 		{
-			return $this->_eval($data, $repeatCounter);
+			return $this->_eval();
 		}
 
 		return $data;
@@ -87,13 +84,9 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	/**
 	 * Run eval
 	 *
-	 * @param   string  $data  Original data
-	 * @param   int     $repeatCounter  Repeat group counter
-	 *
 	 * @return  string	Evaluated PHP function
 	 */
-
-	private function _eval($data, $repeatCounter = 0)
+	private function _eval()
 	{
 		$params = $this->getParams();
 		$elementModel = $this->elementModel;
@@ -111,10 +104,10 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 		 * $$$ hugh - moved the $trigger_error() into a helper func
 		 */
 		Worker::clearEval();
-		$retval = @eval($phpCode);
-		Worker::logEval($retval, 'Caught exception on php validation of ' . $elementModel->getFullName(true, false) . ': %s');
+		$return = @eval($phpCode);
+		Worker::logEval($return, 'Caught exception on php validation of ' . $elementModel->getFullName(true, false) . ': %s');
 
-		return $retval;
+		return $return;
 	}
 
 	/**
@@ -124,7 +117,6 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	 *
 	 * @return  string
 	 */
-
 	public function iconImage()
 	{
 		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);

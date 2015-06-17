@@ -64,7 +64,7 @@ class Plugin extends Base implements PluginInterface
 		$type = $this->get('type');
 		$data = array();
 
-		if ($type === 'validationrule')
+		if ($type === 'validation')
 		{
 			//$item = FabTable::getInstance('Element', 'FabrikTable');
 			//$item->load($this->get('id'));
@@ -81,15 +81,14 @@ class Plugin extends Base implements PluginInterface
 			$item  = $model->getItem();
 		}
 
-		//$data                                       = $data + (array) $item->params;
 		$data['plugin']                             = $this->get('plugin');
 		$data['params']                             = (array) ArrayHelper::getValue($data, 'params', array());
 		$data['params']['plugins']                  = $this->get('plugin');
-		$data['validationrule']['plugin']           = $this->get('plugin');
-		$data['validationrule']['plugin_published'] = $this->get('plugin_published');
-		$data['validationrule']['show_icon']        = $this->get('show_icon');
-		$data['validationrule']['validate_in']      = $this->get('validate_in');
-		$data['validationrule']['validation_on']    = $this->get('validation_on');
+		$data['validation']['plugin']           = $this->get('plugin');
+		$data['validation']['plugin_published'] = $this->get('plugin_published');
+		$data['validation']['show_icon']        = $this->get('show_icon');
+		$data['validation']['validate_in']      = $this->get('validate_in');
+		$data['validation']['validation_on']    = $this->get('validation_on');
 		$c                                          = $this->get('c') + 1;
 		// Add plugin published state, locations, descriptions and events
 		$state                          = (array) ArrayHelper::getValue($data, 'plugin_state');
@@ -111,21 +110,6 @@ class Plugin extends Base implements PluginInterface
 	 */
 	protected function getPluginModel()
 	{
-		/*$model = null;
-		$type  = $this->get('type');
-
-		if ($type === 'elementjavascript')
-		{
-			return null;
-		}
-
-		if ($type !== 'validationrule')
-		{
-			// Set the parent model e.g. form/list
-			$model = new Lizt;
-			$model->set('id', $this->get('id'));
-		}*/
-		// Set the parent model e.g. form/list
 		$model = new Lizt;
 		$model->set('id', $this->get('id'));
 

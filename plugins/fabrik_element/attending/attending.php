@@ -6,11 +6,12 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+namespace Fabrik\Plugins\Element;
+
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\Element as Element;
 
 jimport('joomla.application.component.model');
 
@@ -21,9 +22,9 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.attending
- * @since       3.0
+ * @since       3.5
  */
-class PlgFabrik_ElementAttending extends Element
+class Attending extends Element
 {
 	/**
 	 * Db table field type

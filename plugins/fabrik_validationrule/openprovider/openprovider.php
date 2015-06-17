@@ -8,11 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 // Require the Open Provider API
 require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.php';
@@ -22,10 +21,9 @@ require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.openprovider
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleOpenprovider extends PlgFabrik_Validationrule
+class Openprovider extends Validation
 {
 	/**
 	 * Plugin name
@@ -42,7 +40,6 @@ class PlgFabrik_ValidationruleOpenprovider extends PlgFabrik_Validationrule
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		$params = $this->getParams();

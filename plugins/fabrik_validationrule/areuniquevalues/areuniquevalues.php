@@ -8,23 +8,23 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \JText;
 
 /**
  * Are Unique values Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.areuniquevalues
- * @since       3.0
+ * @since       3.5
  */
-class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
+class AreUniqueValues extends Validation
 {
 	/**
 	 * Plugin name
@@ -80,7 +80,7 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 		if (!empty($otherField))
 		{
 			// $$$ the array thing needs fixing, for now just grab 0
-			$formData = $elementModel->getForm()->formData;
+			$formData = $elementModel->getFormModel()->formData;
 			$v        = ArrayHelper::getValue($formData, $otherFullName . '_raw', ArrayHelper::getValue($formData, $otherFullName, ''));
 
 			if (is_array($v))

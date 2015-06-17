@@ -8,15 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\ElementList as ElementList;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
 use Fabrik\Helpers\HTML;
+use \JDate;
 
 /**
  * Plugin element to render date picker
@@ -25,7 +27,7 @@ use Fabrik\Helpers\HTML;
  * @subpackage  Fabrik.element.date
  * @since       3.5
  */
-class PlgFabrik_ElementDate extends ElementList
+class Date extends ElementList
 {
 	/**
 	 * States the element should be ignored from advanced search all queries.

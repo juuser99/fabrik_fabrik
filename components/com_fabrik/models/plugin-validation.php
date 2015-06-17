@@ -8,13 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugins;
+namespace Fabrik\Plugins\Validation;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use \Fabrik\Plugins\Plugin;
 
 /**
  * Fabrik Validation Rule Model
@@ -22,7 +23,7 @@ use Fabrik\Helpers\HTML;
  * @package  Fabrik
  * @since    3.5
  */
-class ValidationRule extends Plugin
+class Validation extends Plugin
 {
 	/**
 	 * Plugin name
@@ -34,7 +35,7 @@ class ValidationRule extends Plugin
 	/**
 	 * Validation rule's element model
 	 *
-	 * @var \Fabrik\Plugins\Element
+	 * @var \Fabrik\Plugins\Element\Element
 	 */
 	public $elementModel = null;
 

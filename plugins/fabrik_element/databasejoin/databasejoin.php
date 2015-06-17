@@ -8,13 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\ElementList as ElementList;
 use Fabrik\Helpers\HTML;
 
 /**
@@ -23,10 +24,9 @@ use Fabrik\Helpers\HTML;
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.databasejoin
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ElementDatabasejoin extends ElementList
+class Databasejoin extends ElementList
 {
 	/**
 	 * connection

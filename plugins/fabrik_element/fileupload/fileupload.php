@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -16,7 +18,6 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ImageHelper;
 use Fabrik\Helpers\UploaderHelper;
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 //require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
@@ -36,7 +37,7 @@ JLog::addLogger(array('text_file' => 'fabrik.element.fileupload.log.php'), $logL
  * @subpackage  Fabrik.element.fileupload
  * @since       3.5
  */
-class PlgFabrik_ElementFileupload extends Element
+class Fileupload extends Element
 {
 	/**
 	 * Storage method adaptor object (filesystem/amazon s3)

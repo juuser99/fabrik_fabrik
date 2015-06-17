@@ -8,13 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 if (!defined('DS'))
@@ -29,7 +30,7 @@ if (!defined('DS'))
  * @subpackage  Fabrik.element.image
  * @since       3.5
  */
-class PlgFabrik_ElementImage extends Element
+class Image extends Element
 {
 	/**
 	 * Ignored folders

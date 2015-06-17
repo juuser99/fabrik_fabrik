@@ -8,11 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use \Joomla\Utilities\ArrayHelper;
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 /**
@@ -22,7 +23,7 @@ use Fabrik\Helpers\HTML;
  * @subpackage  Fabrik.element.digsig
  * @since       3.5
  */
-class PlgFabrik_ElementDigsig extends Element
+class Digsig extends Element
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the

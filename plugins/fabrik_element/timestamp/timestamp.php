@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use Fabrik\Plugins\Element as Element;
 
 /**
  * Plugin element to render a timestamp
@@ -20,7 +20,7 @@ use Fabrik\Plugins\Element as Element;
  * @subpackage  Fabrik.element.timestamp
  * @since       3.5
  */
-class PlgFabrik_ElementTimestamp extends Element
+class Timestamp extends Element
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the

@@ -24,7 +24,7 @@ use Joomla\Registry\Registry as Registry;
 use \JFactory as JFactory;
 use \FabrikString as FabrikString;
 use \JEventDispatcher as JEventDispatcher;
-use \Fabrik\Plugins\Element as Element;
+use \Fabrik\Plugins\Element\Element as Element;
 use \JComponentHelper as JComponentHelper;
 use Fabrik\Admin\Helpers\Fabrik as Fabrik;
 use Joomla\String\Inflector;

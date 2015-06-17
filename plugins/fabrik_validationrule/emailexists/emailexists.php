@@ -8,24 +8,23 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validation;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \FText;
 
 /**
  * Email Already Registered Validation Rule
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.validationrule.emailexists
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
+class EmailExists extends Validation
 {
 	/**
 	 * Plugin name
@@ -57,7 +56,7 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 
 		$params = $this->getParams();
 		$elementModel = $this->elementModel;
-		$ornot = $params->get('emailexists_or_not', 'fail_if_exists');
+		$orNot = $params->get('emailexists_or_not', 'fail_if_exists');
 		$user_field = $params->get('emailexists_user_field');
 		$user_id = 0;
 
@@ -71,8 +70,8 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 		if (!empty($user_field))
 		{
 			// $$$ the array thing needs fixing, for now just grab 0
-			$formdata = $elementModel->getForm()->formData;
-			$user_id = ArrayHelper::getValue($formdata, $user_fullName . '_raw', ArrayHelper::getValue($formdata, $user_fullName, ''));
+			$formData = $elementModel->getFormModel()->formData;
+			$user_id = ArrayHelper::getValue($formData, $user_fullName . '_raw', ArrayHelper::getValue($formData, $user_fullName, ''));
 
 			if (is_array($user_id))
 			{
@@ -91,14 +90,14 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 		{
 			if (!$result)
 			{
-				if ($ornot == 'fail_if_exists')
+				if ($orNot == 'fail_if_exists')
 				{
 					return true;
 				}
 			}
 			else
 			{
-				if ($ornot == 'fail_if_not_exists')
+				if ($orNot == 'fail_if_not_exists')
 				{
 					return true;
 				}
@@ -110,7 +109,7 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 		{
 			if (!$result)
 			{
-				return ($ornot == 'fail_if_exists') ? true : false;
+				return ($orNot == 'fail_if_exists') ? true : false;
 			}
 			else
 			{
@@ -118,7 +117,7 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 				{
 					if ($result == $user_id)
 					{
-						return ($ornot == 'fail_if_exists') ? true : false;
+						return ($orNot == 'fail_if_exists') ? true : false;
 					}
 
 					return false;
@@ -127,7 +126,7 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 				{
 					if ($result == $this->user->get('id')) // The connected user is editing his own data
 					{
-						return ($ornot == 'fail_if_exists') ? true : false;
+						return ($orNot == 'fail_if_exists') ? true : false;
 					}
 
 					return false;
@@ -143,7 +142,6 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 	 *
 	 * @return	string	label
 	 */
-
 	protected function getLabel()
 	{
 		$params = $this->getParams();

@@ -8,10 +8,11 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugins\Element as Element;
 use Fabrik\Helpers\HTML;
 
 /**
@@ -21,7 +22,7 @@ use Fabrik\Helpers\HTML;
  * @subpackage  Fabrik.element.facebookactivityfeed
  * @since       3.5
  */
-class PlgFabrik_ElementFbActivityFeed extends Element
+class FbActivityFeed extends Element
 {
 	/**
 	 * Does the element have a label

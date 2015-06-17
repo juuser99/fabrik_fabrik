@@ -19,6 +19,12 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \stdClass;
 use \RuntimeException;
+use \JFactory;
+use \JHtml;
+use \JText;
+use \JFile;
+use \JUri;
+use \JComponentHelper;
 
 jimport('joomla.filesystem.file');
 
