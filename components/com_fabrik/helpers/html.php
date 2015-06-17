@@ -8,13 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Joomla\Registry\Registry as JRegistry;
+use Joomla\Registry\Registry as Registry;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use \stdClass;
+use \RuntimeException;
 
 jimport('joomla.filesystem.file');
 
@@ -29,9 +33,9 @@ if (!defined('COM_FABRIK_FRONTEND'))
  * @static
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @since       1.5
+ * @since       3.5
  */
-class FabrikHelperHTML
+class HTML
 {
 	/**
 	 * Is the Fabrik JavaScript framework loaded
@@ -617,7 +621,7 @@ EOD;
 		foreach ($files as $file)
 		{
 			$json = file_get_contents($file);
-			$item = new JRegistry(json_decode($json));
+			$item = new Registry(json_decode($json));
 
 			if ($item->get('list.published'))
 			{

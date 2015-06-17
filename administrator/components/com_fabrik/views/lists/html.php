@@ -18,7 +18,7 @@ use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
 use Fabrik\Admin\Helpers\Fabrik;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 use JFactory as JFactory;
 
 /**
@@ -106,7 +106,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->sidebar = JHtmlSidebar::render();
 
-		FabrikHelperHTML::iniRequireJS();
+		HelperHTML::iniRequireJS();
 		$this->setLayout('bootstrap');
 
 		return parent::render();

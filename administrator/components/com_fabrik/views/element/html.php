@@ -13,7 +13,7 @@ namespace Fabrik\Admin\Views\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HTMLHelper;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
 use \FText as FText;
@@ -89,7 +89,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->addToolbar();
 		JText::script('COM_FABRIK_ERR_ELEMENT_JS_ACTION_NOT_DEFINED');
 
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HTMLHelper::framework();
 		$srcs[] = 'media/com_fabrik/js/fabrik.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
@@ -104,8 +104,8 @@ class Html extends \Fabrik\Admin\Views\Html
 		$plugManagerDeps = new stdClass;
 		$plugManagerDeps->deps = array('admin/namespace');
 		$shim['admin/pluginmanager'] = $plugManagerDeps;
-		FabrikHelperHTML::iniRequireJS($shim);
-		FabrikHelperHTML::script($srcs, $this->js);
+		HTMLHelper::iniRequireJS($shim);
+		HTMLHelper::script($srcs, $this->js);
 
 		return parent::render();
 	}

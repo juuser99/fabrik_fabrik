@@ -19,7 +19,7 @@ use Fabrik\Helpers\Worker;
 use \JProfiler as JProfiler;
 use \JFilterInput as JFilterInput;
 use \FabrikString as FabrikString;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML;
 use \stdClass;
 
 /**
@@ -150,7 +150,7 @@ class ListFilter extends Base
 		// Overwrite filters with querystring filter
 		$this->getQuerystringFilters($filters);
 		JDEBUG ? $profiler->mark('listfilter:querystring filters got') : null;
-		FabrikHelperHTML::debug($filters, 'filter array: after querystring filters');
+		HTML::debug($filters, 'filter array: after querystring filters');
 		$request = $this->getPostFilterArray();
 		JDEBUG ? $profiler->mark('listfilter:request got') : null;
 		$this->counter = count(ArrayHelper::getValue($request, 'key', array()));
@@ -161,7 +161,7 @@ class ListFilter extends Base
 			$this->getSessionFilters($filters);
 		}
 
-		FabrikHelperHTML::debug($filters, 'filter array: after session filters');
+		HTML::debug($filters, 'filter array: after session filters');
 		JDEBUG ? $profiler->mark('listfilter:session filters got') : null;
 
 		// The search form search all has lower priority than the filter search all and search form filters
@@ -169,7 +169,7 @@ class ListFilter extends Base
 
 		// Overwrite session filters with search form filters
 		$this->getSearchFormFilters($filters);
-		FabrikHelperHTML::debug($filters, 'filter array: search form');
+		HTML::debug($filters, 'filter array: search form');
 
 		// Overwrite filters with 'search all' filter
 		$this->getSearchAllFilters($filters);
@@ -178,9 +178,9 @@ class ListFilter extends Base
 		// Finally overwrite filters with post filters
 		$this->getPostFilters($filters);
 		JDEBUG ? $profiler->mark('listfilter:post filters got') : null;
-		FabrikHelperHTML::debug($filters, 'filter array: after getpostfilters');
+		HTML::debug($filters, 'filter array: after getpostfilters');
 		$this->request = $filters;
-		FabrikHelperHTML::debug($this->request, 'filter array');
+		HTML::debug($this->request, 'filter array');
 		$this->checkAccess($filters);
 		$this->normalizeKeys($filters);
 
@@ -245,7 +245,7 @@ class ListFilter extends Base
 			}
 		}
 
-		FabrikHelperHTML::debug($filters, 'filter array: after access taken into account');
+		HTML::debug($filters, 'filter array: after access taken into account');
 	}
 
 	/**
@@ -1201,7 +1201,7 @@ class ListFilter extends Base
 
 		$usedMerges = array();
 
-		FabrikHelperHTML::debug($filters, 'filter array: start getPostFilters');
+		HTML::debug($filters, 'filter array: start getPostFilters');
 
 		if (!empty($request) && array_key_exists('key', $request))
 		{
@@ -1406,9 +1406,9 @@ class ListFilter extends Base
 		}
 
 		$this->listModel->tmpFilters = $filters;
-		FabrikHelperHTML::debug($filters, 'filter array: before onGetPostFilter');
+		HTML::debug($filters, 'filter array: before onGetPostFilter');
 		Worker::getPluginManager()->runPlugins('onGetPostFilter', $this->listModel, 'list', $filters);
-		FabrikHelperHTML::debug($filters, 'filter array: after onGetPostFilter');
+		HTML::debug($filters, 'filter array: after onGetPostFilter');
 		$filters = $this->listModel->tmpFilters;
 	}
 

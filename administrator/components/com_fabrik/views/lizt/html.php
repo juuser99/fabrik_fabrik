@@ -17,7 +17,7 @@ use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
 use \FText as FText;
 use \JToolBarHelper as JToolBarHelper;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 use \stdClass as stdClass;
 use Fabrik\Helpers\Worker;
 use \JHTML as JHTML;
@@ -115,7 +115,7 @@ class Html extends \Fabrik\Admin\Views\Html
 			$this->group_by = $model->getElementList('group_by', $this->item->get('list.group_by'), true, false, false);
 		}
 
-		$srcs   = FabrikHelperHTML::framework();
+		$srcs   = HelperHTML::framework();
 		$srcs[] = 'media/com_fabrik/js/fabrik.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
@@ -126,8 +126,8 @@ class Html extends \Fabrik\Admin\Views\Html
 		$dep->deps                         = array('admin/pluginmanager');
 		$shim['admin/list/tmpl/adminlist'] = $dep;
 		$shim['adminfields/tables']        = $dep;
-		FabrikHelperHTML::iniRequireJS($shim);
-		FabrikHelperHTML::script($srcs, $this->js);
+		HelperHTML::iniRequireJS($shim);
+		HelperHTML::script($srcs, $this->js);
 
 		return parent::render();
 	}
@@ -146,7 +146,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->addLinkedElementsToolbar();
 		$this->formGroupEls = $model->getFormGroups(false);
 		$this->formTable    = $model->getForm();
-		FabrikHelperHTML::iniRequireJS();
+		HelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
 
@@ -192,7 +192,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->lists = $lists;
 		$this->addConfirmCopyToolbar();
-		FabrikHelperHTML::iniRequireJS();
+		HelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
 

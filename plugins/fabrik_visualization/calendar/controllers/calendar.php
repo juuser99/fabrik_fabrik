@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Admin\Models\Form;
+
 jimport('joomla.application.component.controller');
 
 require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
@@ -93,7 +95,7 @@ class FabrikControllerVisualizationcalendar extends FabrikControllerVisualizatio
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
-		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$formModel = new Form;
 		$view->setModel($formModel);
 
 		// Push a model into the view

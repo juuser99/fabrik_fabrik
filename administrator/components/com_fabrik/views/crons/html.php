@@ -19,7 +19,7 @@ use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
 use Fabrik\Admin\Helpers\Fabrik;
 use \JFactory as JFactory;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HTMLHelper;
 
 /**
  * View class for a list of crons.
@@ -75,7 +75,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->sidebar = JHtmlSidebar::render();
 		$this->setLayout('bootstrap');
 
-		FabrikHelperHTML::iniRequireJS();
+		HTMLHelper::iniRequireJS();
 
 		return parent::render();
 	}

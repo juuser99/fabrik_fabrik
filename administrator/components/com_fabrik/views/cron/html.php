@@ -13,7 +13,7 @@ namespace Fabrik\Admin\Views\Cron;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HTMLHelper;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
 use \FText as FText;
@@ -72,7 +72,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->addToolbar();
 
-		$srcs   = FabrikHelperHTML::framework();
+		$srcs   = HTMLHelper::framework();
 		$srcs[] = 'media/com_fabrik/js/fabrik.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
@@ -91,8 +91,8 @@ class Html extends \Fabrik\Admin\Views\Html
 		$js[] = "\twindow.addEvent('domready', function () {";
 		$js[] = "\t\tFabrik.controller = new CronAdmin(" . json_encode($opts) . ");";
 		$js[] = "\t})";
-		FabrikHelperHTML::iniRequireJS($shim);
-		FabrikHelperHTML::script($srcs, implode("\n", $js));
+		HTMLHelper::iniRequireJS($shim);
+		HTMLHelper::script($srcs, implode("\n", $js));
 
 		return parent::render();
 	}

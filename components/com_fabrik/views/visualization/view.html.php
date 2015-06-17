@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use \Fabrik\Admin\Models\PluginManager as PluginManager;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.application.component.view');
 
@@ -34,10 +35,10 @@ class FabrikViewVisualization extends JViewLegacy
 	 */
 	public function display($tmpl = 'default')
 	{
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HTML::framework();
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		FabrikHelperHTML::script($srcs);
+		HTML::script($srcs);
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model->setId($input->get('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));

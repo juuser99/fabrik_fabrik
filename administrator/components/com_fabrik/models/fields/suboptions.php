@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -71,7 +72,7 @@ class JFormFieldSuboptions extends JFormField
 		$script[] = "window.addEvent('domready', function () {";
 		$script[] = "\tnew Suboptions('$this->name', $opts);";
 		$script[] = "});";
-		FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/suboptions.js', implode("\n", $script));
+		HTML::script('administrator/components/com_fabrik/models/fields/suboptions.js', implode("\n", $script));
 		$html = array();
 
 
@@ -90,8 +91,8 @@ class JFormFieldSuboptions extends JFormField
 		$html[] = '<tbody></tbody>';
 		$html[] = '</table>';
 
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
+		HTML::framework();
+		HTML::iniRequireJS();
 
 		return implode("\n", $html);
 	}

@@ -13,8 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
-FabrikHelperHTML::formvalidation();
+HTML::formvalidation();
 $db = Worker::getDbo(true);
 ?>
 

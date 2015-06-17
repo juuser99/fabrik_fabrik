@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 /**
  * Renders widget for (de)selecting available groups when editing a from
@@ -48,9 +49,9 @@ class JFormFieldSwapList extends JFormFieldList
 		$script[] = "\tswaplist = new SwapList('$from', '$this->id','$add', '$remove', '$up', '$down');";
 		$script[] = "});";
 
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
-		FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/swaplist.js', implode("\n", $script));
+		HTML::framework();
+		HTML::iniRequireJS();
+		HTML::script('administrator/components/com_fabrik/models/fields/swaplist.js', implode("\n", $script));
 
 		list($this->currentGroups, $this->currentGroupList) = $this->getCurrentGroupList();
 		list($this->groups, $this->groupList) = $this->getGroupList();

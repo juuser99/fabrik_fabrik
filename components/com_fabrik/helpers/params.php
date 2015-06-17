@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\HTML;
 
 /*
  * DEPRECIATED?
@@ -368,14 +369,14 @@ class FabrikParams extends JForm
 
 		if ($repeat && $repeatControls && ($repeatSingleVal == null || $repeatSingleVal == 0))
 		{
-			FabrikHelperHTML::script('components/com_fabrik/libs/params.js');
+			HTML::script('components/com_fabrik/libs/params.js');
 
 			// Watch add and remove buttons
 			$document = JFactory::getDocument();
 			$script = "window.addEvent('fabrik.loaded', function() {
 			 new RepeatParams('container{$this->_identifier}', {repeatMin:$repeatMin});
 	});";
-			FabrikHelperHTML::addScriptDeclaration($script);
+			HTML::addScriptDeclaration($script);
 		}
 
 		if ($write)

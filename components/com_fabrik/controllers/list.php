@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use \Fabrik\Models\Lizt as Model;
 use \JFactory as JFactory;
 use \JURI as JURI;
+use \Fabrik\Helpers\HTML;
 
 /**
  * Fabrik List Controller
@@ -93,12 +94,10 @@ class Lizt extends Controller
 	 *
 	 * @return  null
 	 */
-
 	public function order()
 	{
 		$input     = $this->input;
-		$modelName = $input->get('view', 'list');
-		$model     = $this->getModel($modelName, 'FabrikFEModel');
+		$model     = new Model;
 		$model->setId($input->getString('listid'));
 		$model->setOrderByAndDir();
 
@@ -113,7 +112,6 @@ class Lizt extends Controller
 	 *
 	 * @return  null
 	 */
-
 	public function clearfilter()
 	{
 		$this->app->enqueueMessage(FText::_('COM_FABRIK_FILTERS_CLEARED'));
@@ -140,10 +138,9 @@ class Lizt extends Controller
 
 	public function filter()
 	{
-		$modelName = $this->input->get('view', 'list');
-		$model     = $this->getModel($modelName, 'FabrikFEModel');
+		$model     = new Model;
 		$model->setId($this->input->getString('listid'));
-		FabrikHelperHTML::debug('', 'list model: getRequestData');
+		HTML::debug('', 'list model: getRequestData');
 		$request = $model->getRequestData();
 		$model->storeRequestData($request);
 

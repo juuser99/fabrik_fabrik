@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use \Fabrik\Helpers\HTML;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -113,7 +114,7 @@ class JFormFieldElement extends JFormFieldList
 		$script                     = implode("\n", $script);
 		$fabrikElements[$this->id]  = true;
 		$src[]                      = 'administrator/components/com_fabrik/models/fields/element.js';
-		FabrikHelperHTML::script($src, $script);
+		HTML::script($src, $script);
 
 		if ($mode === 'gui')
 		{
@@ -126,8 +127,8 @@ class JFormFieldElement extends JFormFieldList
 				. '_loader" src="components/com_fabrik/images/ajax-loader.gif" alt="' . FText::_('COM_FABRIK_LOADING') . '" />';
 		}
 
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
+		HTML::framework();
+		HTML::iniRequireJS();
 
 		return $return;
 	}

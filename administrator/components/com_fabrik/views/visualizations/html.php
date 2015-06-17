@@ -19,7 +19,7 @@ use \JHtmlSidebar as JHtmlSidebar;
 use \FText as FText;
 use Fabrik\Admin\Helpers\Fabrik;
 use \JFactory as JFactory;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 
 /**
  * View class for a list of visualizations.
@@ -70,7 +70,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->sidebar = JHtmlSidebar::render();
 		$this->setLayout('bootstrap');
 
-		FabrikHelperHTML::iniRequireJS();
+		HelperHTML::iniRequireJS();
 
 		return parent::render();
 	}

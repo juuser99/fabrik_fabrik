@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render facebook open graph activity feed widget
@@ -56,7 +57,7 @@ class PlgFabrik_ElementFbActivityFeed extends Element
 	{
 		$params = $this->getParams();
 		$layout = $this->getLayout('form');
-		$str = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'));
+		$str = HTML::facebookGraphAPI($params->get('opengraph_applicationid'));
 		$displayData = new stdClass;
 		$displayData->domain = $params->get('fbactivityfeed_domain');
 		$displayData->width = $params->get('fbactivityfeed_width', 300);

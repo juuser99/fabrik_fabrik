@@ -13,27 +13,22 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use Fabrik\Admin\Models\Visualization;
 
 /**
  * Fabrik Media Plug-in Model
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.media
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikModelMedia extends FabrikFEModelVisualization
+class FabrikModelMedia extends Visualization
 {
 	/**
 	 * Get Media
 	 *
 	 * @return string
 	 */
-
 	public function getMedia()
 	{
 		$app = JFactory::getApplication();
@@ -69,7 +64,6 @@ class FabrikModelMedia extends FabrikFEModelVisualization
 	 *
 	 * @return string
 	 */
-
 	public function getPlaylist()
 	{
 		$app = JFactory::getApplication();

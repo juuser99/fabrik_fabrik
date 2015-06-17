@@ -11,12 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
 
 use \Fabrik\Admin\Models\Form;
 use \Fabrik\Admin\Models\Lizt;
+use \Fabrik\Admin\Models\Visualization;
 
 /**
  * Approval viz Model
@@ -25,8 +25,7 @@ use \Fabrik\Admin\Models\Lizt;
  * @subpackage  Fabrik.visualization.approvals
  * @since       3.0
  */
-
-class FabrikModelApprovals extends FabrikFEModelVisualization
+class FabrikModelApprovals extends Visualization
 {
 	/**
 	 * Get the rows of data to show in the viz

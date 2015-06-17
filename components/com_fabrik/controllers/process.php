@@ -13,13 +13,14 @@ namespace Fabrik\Controllers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Models\FormSession;
 use Fabrik\Helpers\Worker;
 use \Fabrik\Admin\Models\FormInlineEdit;
 use \JFactory;
 use \JProfiler;
 use \JSession;
 use \Fabrik\Admin\Models\Form;
-use \FabrikHelperHTML;
+use \Fabrik\Helpers\HTML;
 
 
 /**
@@ -110,7 +111,7 @@ class Process extends Controller
 		if ($input->getInt('elid', 0) !== 0)
 		{
 			// Inline edit show the edited element - ignores validations for now
-			$inlineModel = $this->getModel('forminlineedit', 'FabrikFEModel');
+			$inlineModel = new FormInlineEdit;
 			$inlineModel->setFormModel($model);
 			echo $inlineModel->showResults();
 
@@ -131,7 +132,7 @@ class Process extends Controller
 		 * bypass any and all redirects, so we can see the profile for the submit
 		 */
 
-		if (FabrikHelperHTML::isDebugSubmit())
+		if (HTML::isDebugSubmit())
 		{
 			return;
 		}
@@ -223,7 +224,7 @@ class Process extends Controller
 	 * Handle the view error
 	 *
 	 * @param   JView  $view  View
-	 * @param   JModel $model Form Model
+	 * @param   \Fabrik\Admin\Models\Form $model Form Model
 	 *
 	 * @since   3.1b
 	 *
@@ -335,8 +336,8 @@ class Process extends Controller
 	public function savepage()
 	{
 		$input     = $this->input;
-		$model     = $this->getModel('Formsession', 'FabrikFEModel');
-		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$model     = new FormSession;
+		$formModel = new Form;
 		$formModel->setId($input->getString('formid'));
 		$model->savePage($formModel);
 	}

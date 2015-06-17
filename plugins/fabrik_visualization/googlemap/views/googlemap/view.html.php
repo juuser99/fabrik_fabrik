@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\HTML;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -35,8 +37,8 @@ class FabrikViewGooglemap extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$srcs = FabrikHelperHTML::framework();
-		FabrikHelperHTML::slimbox();
+		$srcs = HTML::framework();
+		HTML::slimbox();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel();
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
@@ -75,7 +77,7 @@ class FabrikViewGooglemap extends JViewLegacy
 		}
 		else
 		{
-			if (FabrikHelperHTML::isDebug())
+			if (HTML::isDebug())
 			{
 				$srcs[] = 'plugins/fabrik_visualization/googlemap/googlemap.js';
 			}
@@ -86,7 +88,7 @@ class FabrikViewGooglemap extends JViewLegacy
 
 			if ((int) $this->params->get('fb_gm_clustering', '0') == 1)
 			{
-				if (FabrikHelperHTML::isDebug())
+				if (HTML::isDebug())
 				{
 					$srcs[] = 'components/com_fabrik/libs/googlemaps/markerclustererplus/src/markerclusterer.js';
 				}
@@ -98,7 +100,7 @@ class FabrikViewGooglemap extends JViewLegacy
 			else
 			{
 				// Doesn't work in v3
-				// FabrikHelperHTML::script('components/com_fabrik/libs/googlemaps/markermanager.js');
+				// HTML::script('components/com_fabrik/libs/googlemaps/markermanager.js');
 			}
 
 			$template = null;
@@ -116,15 +118,15 @@ class FabrikViewGooglemap extends JViewLegacy
 
 		$js .= $model->getFilterJs();
 
-		FabrikHelperHTML::iniRequireJs($model->getShim());
-		FabrikHelperHTML::script($srcs, $js);
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl . '/template.css');
+		HTML::iniRequireJs($model->getShim());
+		HTML::script($srcs, $js);
+		HTML::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl . '/template.css');
 
 		// Check and add a general fabrik custom css file overrides template css and generic table css
-		FabrikHelperHTML::stylesheetFromPath('media/com_fabrik/css/custom.css');
+		HTML::stylesheetFromPath('media/com_fabrik/css/custom.css');
 
 		// Check and add a specific viz template css file overrides template css generic table css and generic custom css
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl . '/custom.css');
+		HTML::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl . '/custom.css');
 		$this->filters = $model->getFilters();
 		$this->showFilters = $model->showFilters();
 		$this->filterFormURL = $model->getFilterFormURL();

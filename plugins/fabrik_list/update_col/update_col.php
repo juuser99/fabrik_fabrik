@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -529,8 +530,8 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$layoutData = new stdClass;
 		$layoutData->listRef = $listRef;
 		$layoutData->j3 = true;
-		$layoutData->addImg = FabrikHelperHTML::image($addImg, 'list', $model->getTmpl());
-		$layoutData->delImg = FabrikHelperHTML::image($removeImg, 'list', $model->getTmpl());
+		$layoutData->addImg = HTML::image($addImg, 'list', $model->getTmpl());
+		$layoutData->delImg = HTML::image($removeImg, 'list', $model->getTmpl());
 		$layoutData->elements = $elements;
 
 		return $layout->render($layoutData);

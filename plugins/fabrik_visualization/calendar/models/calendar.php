@@ -13,7 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-Lizt;
+use Fabrik\Admin\Models\Lizt;
+use Fabrik\Admin\Models\Visualization;
 
 jimport('joomla.application.component.model');
 
@@ -27,7 +28,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @since       3.0
  */
 
-class FabrikModelCalendar extends FabrikFEModelVisualization
+class FabrikModelCalendar extends Visualization
 {
 	/**
 	 * Array of Fabrik lists containing events

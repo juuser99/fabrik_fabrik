@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\HTML;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -57,7 +58,7 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 			$name = $this->_getButtonName();
 			$label = $this->buttonLabel();
 			$imageName = $this->getParams()->get('list_' . $this->buttonPrefix . '_image_name', 'update_col.png');
-			$img = FabrikHelperHTML::image($imageName, 'list', '', $label);
+			$img = HTML::image($imageName, 'list', '', $label);
 
 			return '<a data-list="' . $this->context . '" href="#" class="' . $name . ' listplugin" title="' . $label . '">'
 				. $img . '<span>' . $label . '</span></a>';

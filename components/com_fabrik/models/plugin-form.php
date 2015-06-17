@@ -8,12 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\LayoutFile;
-use Fabrik\Plugins\Plugin as Plugin;
+use \JProfiler;
+use Fabrik\Helpers\HTML;
 
 /**
  * Fabrik Plugin From Model
@@ -22,8 +25,13 @@ use Fabrik\Plugins\Plugin as Plugin;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class PlgFabrik_Form extends Plugin
+class Form extends Plugin
 {
+	/**
+	 * @var array
+	 */
+	protected $data;
+
 	/**
 	 * Formatted email data
 	 *
@@ -45,7 +53,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return  bool
 	 */
-
 	public function onDeleteRowsForm(&$groups)
 	{
 		return true;
@@ -58,7 +65,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return  bool
 	 */
-	
 	public function onAfterDeleteRowsForm(&$groups)
 	{
 		return true;
@@ -69,7 +75,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return	bool
 	 */
-
 	public function onBeforeProcess()
 	{
 		return true;
@@ -80,7 +85,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return	bool
 	 */
-
 	public function onError()
 	{
 	}
@@ -90,7 +94,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return	bool
 	 */
-
 	public function onBeforeCalculations()
 	{
 		return true;
@@ -102,7 +105,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return	bool
 	 */
-
 	public function onAfterProcess()
 	{
 		return true;
@@ -115,7 +117,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return bool
 	 */
-
 	public function customProcessResult($method)
 	{
 		return true;
@@ -126,7 +127,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return void
 	 */
-
 	public function getBottomContent()
 	{
 		$this->html = '';
@@ -139,7 +139,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return  string  html
 	 */
-
 	public function getBottomContent_result($c)
 	{
 		return $this->html;
@@ -150,7 +149,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return  bool
 	 */
-
 	public function getTopContent()
 	{
 		$this->html = '';
@@ -161,7 +159,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return  string  html
 	 */
-
 	public function getTopContent_result()
 	{
 		return $this->html;
@@ -172,7 +169,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return  void
 	 */
-
 	public function getEndContent()
 	{
 		$this->html = '';
@@ -183,7 +179,6 @@ class PlgFabrik_Form extends Plugin
 	 *
 	 * @return	string	html
 	 */
-
 	public function getEndContent_result()
 	{
 		return $this->html;
@@ -442,7 +437,7 @@ class PlgFabrik_Form extends Plugin
 	public function formJavascriptClass()
 	{
 		$formModel = $this->getModel();
-		$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+		$ext = HTML::isDebug() ? '.js' : '-min.js';
 		$name = $this->get('_name');
 		static $jsClasses;
 

@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\HTML;
+
 // The number of columns to split the list rows into
 $columns = 3;
 
@@ -63,7 +65,7 @@ if ($this->showFilters) {
 	?>
 	<div class="fabrik_groupheading">
 		<a href="#" class="toggle">
-			<?php echo FabrikHelperHTML::image('orderasc.png', 'list', $this->tmpl, FText::_('COM_FABRIK_TOGGLE'));?>
+			<?php echo HTML::image('orderasc.png', 'list', $this->tmpl, FText::_('COM_FABRIK_TOGGLE'));?>
 			<span class="groupTitle">
 				<?php echo $this->grouptemplates[$groupedby]; ?> ( <?php echo count($group)?> )
 			</span>
@@ -85,7 +87,7 @@ if ($this->showFilters) {
 	foreach ($group as $this->_row) :
 		$items[] = $this->loadTemplate('row');
 	endforeach;
-	echo FabrikHelperHTML::bootstrapGrid($items, $columns, 'well', true);
+	echo HTML::bootstrapGrid($items, $columns, 'well', true);
 	?>
 	</div>
 	<?php

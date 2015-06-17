@@ -17,7 +17,6 @@ use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
 use \FText as FText;
 use \JToolBarHelper as JToolBarHelper;
-use \FabrikHelperHTML as FabrikHelperHTML;
 use \stdClass as stdClass;
 use Fabrik\Helpers\Worker;
 use \JHTML as JHTML;

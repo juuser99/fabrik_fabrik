@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 
+use Fabrik\Helpers\HTML;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -43,7 +45,7 @@ class FabrikViewEmailform extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		FabrikHelperHTML::framework();
+		HTML::framework();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$model = $this->getModel('form');
@@ -52,7 +54,7 @@ class FabrikViewEmailform extends JViewLegacy
 
 		if (!array_key_exists('youremail', $post))
 		{
-			FabrikHelperHTML::emailForm($model);
+			HTML::emailForm($model);
 		}
 		else
 		{
@@ -63,7 +65,7 @@ class FabrikViewEmailform extends JViewLegacy
 				$app->enqueueMessage(FText::_('COM_FABRIK_THIS_ITEM_HAS_BEEN_SENT_TO') . ' ' . $to, 'success');
 			}
 
-			FabrikHelperHTML::emailSent();
+			HTML::emailSent();
 		}
 	}
 

@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render fields
@@ -269,7 +270,7 @@ class PlgFabrik_ElementField extends Element
 				$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
 			}
 
-			$value = FabrikHelperHTML::a($value, $value, $opts);
+			$value = HTML::a($value, $value, $opts);
 		}
 	}
 
@@ -295,7 +296,7 @@ class PlgFabrik_ElementField extends Element
 			case 'default':
 				break;
 			case 'lightbox':
-				FabrikHelperHTML::slimbox();
+				HTML::slimbox();
 				$opts['rel'] = 'lightbox[]';
 
 				if ($fbConfig->get('use_mediabox', false))
@@ -342,7 +343,7 @@ class PlgFabrik_ElementField extends Element
 			$autoOpts = array();
 			$autoOpts['max'] = $this->getParams()->get('autocomplete_rows', '10');
 			$autoOpts['storeMatchedResultsOnly'] = false;
-			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'field', $autoOpts);
+			HTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'field', $autoOpts);
 		}
 
 		return array('FbField', $id, $opts);

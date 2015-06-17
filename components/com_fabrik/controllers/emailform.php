@@ -45,11 +45,10 @@ class FabrikControllerEmailform extends FabrikController
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
+		// FIXME for 3.5 - not display() anymore
 		// Test for failed validation then page refresh
-		if ($model = $this->getModel($modelName, 'FabrikFEModel'))
-		{
-			$view->setModel($model, true);
-		}
+		$model = new Fabrik\Admin\Models\Form;
+		$view->setModel($model, true);
 		// Display the view
 		$view->error = $this->getError();
 		$view->display();

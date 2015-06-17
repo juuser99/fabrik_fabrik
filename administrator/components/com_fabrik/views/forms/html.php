@@ -13,7 +13,7 @@ namespace Fabrik\Admin\Views\Forms;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use FabrikHelperHTML;
+use Fabrik\Helpers\HTML as HelperHTML;
 use JFactory;
 use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
@@ -75,7 +75,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->sidebar = JHtmlSidebar::render();
 
-		FabrikHelperHTML::iniRequireJS();
+		HelperHTML::iniRequireJS();
 		$this->setLayout('bootstrap');
 		return parent::render();
 	}

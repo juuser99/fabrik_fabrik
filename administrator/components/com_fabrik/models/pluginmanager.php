@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML;
 use \FabrikString as FabrikString;
 use \JApplicationHelper as JApplicationHelper;
 use \JDispatcher as JDispatcher;
@@ -218,7 +218,7 @@ class PluginManager extends Base
 			$file = basename($f);
 			$folder = dirname($f);
 			$folder = FabrikString::ltrimword($folder, '/') . '/';
-			FabrikHelperHTML::script($folder . $file);
+			HTML::script($folder . $file);
 		}
 	}
 
@@ -249,12 +249,11 @@ class PluginManager extends Base
 	/**
 	 * Load an individual plugin
 	 *
-	 * @param   string  $className  Plugin name e.g. fabrikfield
+	 * @param   string  $className  Plugin name e.g. field
 	 * @param   string  $group      Plugin type element/ form or list
 	 *
-	 * @return  object	Plugin
+	 * @return  \Fabrik\Plugins\Plugin	Plugin
 	 */
-
 	public function getPlugIn($className = '', $group = '')
 	{
 		if ($className != '' && (array_key_exists($group, $this->plugIns) && array_key_exists($className, $this->plugIns[$group])))
@@ -295,14 +294,13 @@ class PluginManager extends Base
 	/**
 	 * Load plugin
 	 *
-	 * @param   string  $className  Plugin name e.g. fabrikfield
+	 * @param   string  $className  Plugin name e.g.field
 	 * @param   string  $group      Plugin type element/ form or list
 	 *
 	 * @throws RuntimeException
 	 *
-	 * @return  mixed	False if not loaded - otherwise plugin object
+	 * @return  \Fabrik\Plugins\Plugin|bool	 False if not loaded - otherwise plugin object
 	 */
-
 	public function loadPlugIn($className = '', $group = '')
 	{
 		if ($group == 'table')
@@ -378,7 +376,6 @@ class PluginManager extends Base
 	 *
 	 * @return  void
 	 */
-
 	public function clearFormPlugins($formModel)
 	{
 		$app = JFactory::getApplication();
@@ -466,9 +463,8 @@ class PluginManager extends Base
 	 *
 	 * @param   int  $id  Element id
 	 *
-	 * @return object  Element plugin
+	 * @return \Fabrik\Plugins\Element  Element plugin
 	 */
-
 	public function getElementPlugin($id)
 	{
 		return $this->getPluginFromId($id);
@@ -480,9 +476,8 @@ class PluginManager extends Base
 	 * @param   int     $id    Plugin id
 	 * @param   string  $type  Plugin type
 	 *
-	 * @return object  plugin
+	 * @return \Fabrik\Plugins\Plugin  plugin
 	 */
-
 	public function getPluginFromId($id, $type = 'Element')
 	{
 		// FIXME - 3.5: elements no longer stored db tables.
@@ -497,27 +492,12 @@ class PluginManager extends Base
 				$o->getTable();
 				break;
 			case 'Element':
+				/** @var $o \Fabrik\Plugins\Element */
 				$o->getElement();
 				break;
 		}
 
 		return $o;
-	}
-
-	/**
-	 * not used
-	 *
-	 * @param   string  $group          Name of plugin group to load
-	 * @param   array   $lists          List of default element lists
-	 * @param   array   &$elementModel  List of default and plugin element lists
-	 *
-	 * @deprecated
-	 *
-	 * @return  void
-	 */
-
-	protected function loadLists($group, $lists, &$elementModel)
-	{
 	}
 
 	/**
@@ -527,7 +507,7 @@ class PluginManager extends Base
 	 * @param   object  &$parentModel  Model calling the plugin form/list
 	 * @param   string  $type          Plugin type to call form/list
 	 *
-	 * @return  array	of bools: false if error found and processed, otherwise true
+	 * @return  bool[]   false if error found and processed, otherwise true
 	 */
 
 	public function runPlugins($method, &$parentModel, $type = 'form')
@@ -627,11 +607,11 @@ class PluginManager extends Base
 							$pluginArgs = array_splice($t, 3);
 						}
 
-						$preflightMethod = $method . '_preflightCheck';
-						$preflightCheck = method_exists($plugin, $preflightMethod) ? $plugin->$preflightMethod($pluginArgs)
+						$preFlightMethod = $method . '_preflightCheck';
+						$preFlightCheck = method_exists($plugin, $preFlightMethod) ? $plugin->$preFlightMethod($pluginArgs)
 							: true;
 
-						if ($preflightCheck)
+						if ($preFlightCheck)
 						{
 							JDEBUG ? $profiler->mark("runPlugins: preflight OK, starting: $plugin, $method") : null;
 							$ok = $plugin->$method($pluginArgs);
@@ -642,8 +622,8 @@ class PluginManager extends Base
 							}
 							else
 							{
-								$thisreturn = $plugin->customProcessResult($method);
-								$return[] = $thisreturn;
+								$thisReturn = $plugin->customProcessResult($method);
+								$return[] = $thisReturn;
 								$m = $method . '_result';
 
 								if (method_exists($plugin, $m))

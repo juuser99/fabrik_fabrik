@@ -14,20 +14,17 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use Fabrik\Admin\Models\Visualization;
+use Fabrik\Helpers\HTML;
 
 /**
  * Fabrik Coverflow Plug-in Model
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.coverflow
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikModelCoverflow extends FabrikFEModelVisualization
+class FabrikModelCoverflow extends Visualization
 {
 	/**
 	 * Internally render the plugin, and add required script declarations
@@ -111,9 +108,9 @@ class FabrikModelCoverflow extends FabrikFEModelVisualization
 
 		$json = json_encode($eventdata);
 		$str = "var coverflow = new FbVisCoverflow($json);";
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HTML::framework();
 		$srcs[] = $this->srcBase . 'coverflow/coverflow.js';
-		FabrikHelperHTML::script($srcs, $str);
+		HTML::script($srcs, $str);
 	}
 
 	/**

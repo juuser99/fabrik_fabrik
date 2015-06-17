@@ -13,20 +13,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use Fabrik\Admin\Models\Visualization;
 
 /**
  * Fabrik Chart Plug-in Model
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.chart
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikModelChart extends FabrikFEModelVisualization
+class FabrikModelChart extends Visualization
 {
 	/**
 	 * Google charts api url

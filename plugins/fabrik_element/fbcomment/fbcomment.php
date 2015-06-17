@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render facebook open graph comment widget
@@ -88,7 +89,7 @@ class PlgFabrik_ElementFbcomment extends Element
 				$locale = 'en_US';
 			}
 
-			$displayData->graphApi = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'), $locale);
+			$displayData->graphApi = HTML::facebookGraphAPI($params->get('opengraph_applicationid'), $locale);
 		}
 
 		$layout = $this->getLayout('form');

@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Fabrik\Admin\Models\PluginManager as PluginManager;
+use \Fabrik\Admin\Models\PluginManager;
+use \Fabrik\Admin\Models\Lizt;
 
 jimport('joomla.application.component.controller');
 
@@ -66,7 +67,7 @@ class FabrikControllerListemail extends JControllerLegacy
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
-		$listModel = $this->getModel('List', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$listModel->setId($input->getInt('id'));
 		$formModel = $listModel->getFormModel();
 
@@ -100,7 +101,7 @@ class FabrikControllerListemail extends JControllerLegacy
 		$input = $app->input;
 		$pluginManager = new PluginManager;
 		$model = $pluginManager->getPlugIn('email', 'list');
-		$listModel = $this->getModel('List', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$listModel->setId($input->getInt('id'));
 		$listParams = $listModel->getParams();
 		$model->setParams($listParams, $input->getInt('renderOrder'));

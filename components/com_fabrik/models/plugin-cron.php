@@ -8,20 +8,22 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugins\Plugin as Plugin;
+use \JTable as JTable;
+use \FabTable;
 
 /**
  * Fabrik Plugin Cron Model
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_Cron extends Plugin
+class  Cron extends Plugin
 {
 	/**
 	 * Plugin item
@@ -44,7 +46,6 @@ class PlgFabrik_Cron extends Plugin
 	 *
 	 * @return  object
 	 */
-
 	public function &getTable($force = false)
 	{
 		if (!$this->row || $force)
@@ -63,7 +64,6 @@ class PlgFabrik_Cron extends Plugin
 	 *
 	 * @return  bool
 	 */
-
 	public function requiresTableData()
 	{
 		return true;
@@ -74,7 +74,6 @@ class PlgFabrik_Cron extends Plugin
 	 *
 	 * @return  string
 	 */
-
 	public function getLog()
 	{
 		return $this->log;
@@ -88,7 +87,6 @@ class PlgFabrik_Cron extends Plugin
 	 *
 	 * @return  bool
 	 */
-
 	public function queryStringActivated()
 	{
 		$app = $this->app;

@@ -13,8 +13,11 @@ namespace Fabrik\Controllers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Models\Lizt;
 use Fabrik\Helpers\Worker;
 use \Fabrik\Admin\Models\FormInlineEdit;
+use Fabrik\Admin\Models\Form as FormModel;
+use Fabrik\Admin\Models\FormSession;
 use \JFactory;
 
 /**
@@ -178,11 +181,11 @@ class Form extends Controller
 	public function ajax_validate()
 	{
 		$input = $this->input;
-		$model = $this->getModel('form', 'FabrikFEModel');
+		$model = new FormModel;
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();
 		$model->setRowId($input->get('rowid', '', 'string'));
-		$model->validate();
+		$model->validateForm();
 		$data = array('modified' => $model->modifiedValidationData);
 
 		// Validating entire group when navigating form pages
@@ -199,8 +202,8 @@ class Form extends Controller
 	public function savepage()
 	{
 		$input     = $this->input;
-		$model     = $this->getModel('Formsession', 'FabrikFEModel');
-		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$model     = new FormSession;
+		$formModel = new FormModel;
 		$formModel->setId($input->getString('formid'));
 		$model->savePage($formModel);
 	}
@@ -214,7 +217,7 @@ class Form extends Controller
 	public function removeSession()
 	{
 		$input        = $this->input;
-		$sessionModel = $this->getModel('formsession', 'FabrikFEModel');
+		$sessionModel = new FormModel;
 		$sessionModel->setFormId($input->getInt('formid', 0));
 		$sessionModel->setRowId($input->get('rowid', '', 'string'));
 		$sessionModel->remove();
@@ -230,7 +233,7 @@ class Form extends Controller
 	public function paginate()
 	{
 		$input = $this->input;
-		$model = $this->getModel('Form', 'FabrikFEModel');
+		$model = new FormModel;
 		$model->setId($input->getString('formid'));
 		$model->paginateRowId($input->get('dir'));
 		$this->display();
@@ -248,7 +251,7 @@ class Form extends Controller
 		JSession::checkToken() or die('Invalid Token');
 		$input   = $this->input;
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
-		$model   = $this->getModel('list', 'FabrikFEModel');
+		$model   = new Lizt;
 		$ids     = array($input->get('rowid', 0));
 
 		$listId     = $input->getString('listid');

@@ -12,9 +12,9 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 // Required for menus
-require_once JPATH_SITE . '/components/com_fabrik/helpers/html.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/string.php';
 require_once JPATH_SITE . '/components/com_fabrik/helpers/parent.php';
 
@@ -128,14 +128,14 @@ class JFormFieldFabrikTables extends JFormFieldList
 			$src[]                   = 'media/com_fabrik/js/fabrik.js';
 			$src[]                   = 'administrator/components/com_fabrik/views/namespace.js';
 			$src[]                   = 'administrator/components/com_fabrik/models/fields/fabriktables.js';
-			FabrikHelperHTML::script($src, $script);
+			HTML::script($src, $script);
 		}
 
 		$html = parent::getInput();
 		$html .= '<img style="margin-left:10px;display:none" id="' . $this->id . '_loader" src="components/com_fabrik/images/ajax-loader.gif" alt="'
 			. FText::_('LOADING') . '" />';
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
+		HTML::framework();
+		HTML::iniRequireJS();
 
 		return $html;
 	}

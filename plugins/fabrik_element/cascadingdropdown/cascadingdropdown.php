@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\HTML;
 
 require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
 
@@ -61,10 +62,10 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			$autoOpts['observerid'] = $this->getWatchId($repeatCounter);
 			$autoOpts['formRef'] = $this->getFormModel()->jsKey();
 			$autoOpts['storeMatchedResultsOnly'] = true;
-			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'cascadingdropdown', $autoOpts);
+			HTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'cascadingdropdown', $autoOpts);
 		}
 
-		FabrikHelperHTML::script('media/com_fabrik/js/lib/Event.mock.js');
+		HTML::script('media/com_fabrik/js/lib/Event.mock.js');
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->showPleaseSelect = $this->showPleaseSelect();
 		$opts->watch = $this->getWatchId($repeatCounter);
@@ -101,7 +102,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		$opts->advanced = $this->getAdvancedSelectClass() != '';
 		$formId = $this->getFormModel()->getId();
 		$opts->autoCompleteOpts = $opts->displayType == 'auto-complete'
-				? FabrikHelperHTML::autoCompleteOptions($opts->id, $this->getElement()->id, $formId, 'cascadingdropdown') : null;
+				? HTML::autoCompleteOptions($opts->id, $this->getElement()->id, $formId, 'cascadingdropdown') : null;
 		$this->elementJavascriptJoinOpts($opts);
 
 		return array('FbCascadingdropdown', $id, $opts);
@@ -218,7 +219,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		}
 
 		$imageOpts = array('alt' => FText::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
-		$this->loadingImg = FabrikHelperHTML::image("ajax-loader.gif", 'form', @$this->tmpl, $imageOpts);
+		$this->loadingImg = HTML::image("ajax-loader.gif", 'form', @$this->tmpl, $imageOpts);
 
 		// Get the default label for the drop down (use in read only templates)
 		$defaultLabel = '';
@@ -544,7 +545,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			return $this->optionVals[$sqlKey];
 		}
 
-		FabrikHelperHTML::debug($db->getQuery(), 'cascadingdropdown _getOptionVals');
+		HTML::debug($db->getQuery(), 'cascadingdropdown _getOptionVals');
 		$this->optionVals[$sqlKey] = $db->loadObjectList();
 		$eval = $params->get('cdd_join_label_eval', '');
 
@@ -937,7 +938,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		}
 
 		$this->sql[$sig] = $query;
-		FabrikHelperHTML::debug($this->sql[$sig]);
+		HTML::debug($this->sql[$sig]);
 
 		return $this->sql[$sig];
 	}
@@ -1066,7 +1067,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		{
 			$default = $this->getDefaultFilterVal($normal);
 			$filterid = $this->getHTMLId() . 'value';
-			FabrikHelperHTML::script('plugins/fabrik_element/cascadingdropdown/filter.js');
+			HTML::script('plugins/fabrik_element/cascadingdropdown/filter.js');
 			$opts = new stdClass;
 			$opts->formid = $formId;
 			$opts->filterid = $filterid;

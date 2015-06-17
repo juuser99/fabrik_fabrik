@@ -17,7 +17,10 @@ use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \JPath as JPath;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HTML;
+use \JFactory;
+use \FabrikString;
+use \JHTML;
 
 /**
  * Fabrik Element List Model
@@ -211,9 +214,9 @@ class ElementList extends Element
 		$db = JFactory::getDbo();
 		$condition = String::strtoupper($condition);
 		$this->encryptFieldName($key);
-		$glue = 'OR';
+		$filterType = $element->get('filter_type');
 
-		if ($element->get('filter_type') == 'checkbox' || $element->filter_type == 'multiselect')
+		if ($filterType == 'checkbox' || $filterType == 'multiselect')
 		{
 			$str = array();
 
@@ -343,12 +346,13 @@ class ElementList extends Element
 		$values = $this->getSubOptionValues();
 		$default = $this->getDefaultFilterVal($normal, $counter);
 		$elName = $this->getFullName(true, false);
-		$htmlid = $this->getHTMLId() . 'value';
-		$listModel = $this->getListModel();
+		$htmlId = $this->getHTMLId() . 'value';
+		$this->getListModel();
 		$params = $this->getParams();
 		$class = $this->filterClass();
 		$v = $this->filterName($counter, $normal);
-		$filterType = $element->filter_type;
+		$filterType = $element->get('filter_type');
+		$rows = array();
 
 		if (in_array($filterType, array('range', 'dropdown', '', 'checkbox', 'multiselect')))
 		{
@@ -365,7 +369,7 @@ class ElementList extends Element
 			}
 		}
 
-		$attribs = 'class="' . $class . '" size="1" ';
+		$attributes = 'class="' . $class . '" size="1" ';
 		$size = $params->get('filter_length', 20);
 		$return = array();
 
@@ -377,10 +381,10 @@ class ElementList extends Element
 					$default = array('', '');
 				}
 
-				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attribs, 'value', 'text', $default[0],
-					$element->name . "_filter_range_0");
-				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attribs, 'value', 'text', $default[1],
-					$element->name . "_filter_range_1");
+				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attributes, 'value', 'text', $default[0],
+					$element->get('name') . "_filter_range_0");
+				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attributes, 'value', 'text', $default[1],
+					$element->get('name') . "_filter_range_1");
 				break;
 			case 'checkbox':
 				$return[] = $this->checkboxFilter($rows, $default, $v);
@@ -389,9 +393,9 @@ class ElementList extends Element
 			case 'multiselect':
 			default:
 				$size = $filterType === 'multiselect' ? 'multiple="multiple" size="7"' : 'size="1"';
-				$attribs = 'class="' . $class . '" ' . $size;
+				$attributes = 'class="' . $class . '" ' . $size;
 				$v = $filterType === 'multiselect' ? $v . '[]' : $v;
-				$return[] = JHTML::_('select.genericlist', $rows, $v, $attribs, 'value', 'text', $default, $htmlid);
+				$return[] = JHTML::_('select.genericlist', $rows, $v, $attributes, 'value', 'text', $default, $htmlId);
 				break;
 
 			case 'field':
@@ -402,7 +406,7 @@ class ElementList extends Element
 
 				$default = htmlspecialchars($default);
 				$return[] = '<input type="text" name="' . $v . '" class="' . $class . '" size="' . $size . '" value="' . $default . '" id="'
-					. $htmlid . '" />';
+					. $htmlId . '" />';
 				break;
 
 			case 'hidden':
@@ -412,7 +416,7 @@ class ElementList extends Element
 				}
 
 				$default = htmlspecialchars($default);
-				$return[] = '<input type="hidden" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="' . $htmlid . '" />';
+				$return[] = '<input type="hidden" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="' . $htmlId . '" />';
 				break;
 
 			case 'auto-complete':
@@ -459,7 +463,7 @@ class ElementList extends Element
 	{
 		$params = $this->getParams();
 		$split_str = $params->get('options_split_str', '');
-		$element = $this->getElement();
+		$this->getElement();
 
 		// Pass in data - otherwise if using multiple plugins of the same type the plugin order gets messed
 		// up. Occurs for dropdown element using php eval options.
@@ -546,7 +550,7 @@ class ElementList extends Element
 	public static function cacheAutoCompleteOptions($elementModel, $search, $opts = array())
 	{
 		$app = JFactory::getApplication();
-		$listModel = $elementModel->getListModel();
+		$elementModel->getListModel();
 		$label = ArrayHelper::getValue($opts, 'label', '');
 		$rows = $elementModel->filterValueList(true, '', $label);
 		$v = $app->input->get('value', '', 'string');
@@ -860,7 +864,7 @@ class ElementList extends Element
 
 		$classes = $this->labelClasses();
 		$buttonGroup = $this->buttonGroup();
-		$grid = FabrikHelperHTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow, $classes, $buttonGroup);
+		$grid = HTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow, $classes, $buttonGroup);
 		array_unshift($grid, '<div class="fabrikSubElementContainer" id="' . $id . '">');
 		$grid[] = '</div><!-- close subElementContainer -->';
 
@@ -891,7 +895,7 @@ class ElementList extends Element
 	/**
 	 * Get a json encoded string of the element default parameters
 	 *
-	 * @return  stdClass
+	 * @return  \stdClass
 	 */
 	public function getDefaultAttribs()
 	{
@@ -933,7 +937,6 @@ class ElementList extends Element
 	 *
 	 * @return  string  Element name inside data array
 	 */
-
 	protected function getValueFullName($opts)
 	{
 		return $this->getFullName(true, false);
@@ -979,9 +982,8 @@ class ElementList extends Element
 	 * @param   array  &$data          Data to store
 	 * @param   int    $repeatCounter  Repeat group index
 	 *
-	 * @return  void
+	 * @return  bool
 	 */
-
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
 		if (!parent::onStoreRow($data, $repeatCounter))
@@ -993,10 +995,11 @@ class ElementList extends Element
 		$params = $this->getParams();
 		$formModel = $this->getFormModel();
 		$formData = $formModel->formData;
+		$name = $element->get('name');
 
-		if ($params->get('savenewadditions') && array_key_exists($element->name . '_additions', $formData))
+		if ($params->get('savenewadditions') && array_key_exists($name . '_additions', $formData))
 		{
-			$added = stripslashes($formData[$element->name . '_additions']);
+			$added = stripslashes($formData[$name . '_additions']);
 
 			if (trim($added) == '')
 			{
@@ -1024,9 +1027,10 @@ class ElementList extends Element
 				$opts->sub_values = $values;
 				$opts->sub_labels = $labels;
 
-				// $$$ rob don't json_encode this - the params object has its own toString() magic method
-				$element->params = (string) $params;
-				$element->store();
+				$element->set('params', $params);
+
+				// FIXME - 3.5 - $element is registry - no need to store it
+				// $element->store();
 			}
 		}
 
@@ -1046,7 +1050,7 @@ class ElementList extends Element
 
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
-		$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+		$ext = HTML::isDebug() ? '.js' : '-min.js';
 		$files = array('media/com_fabrik/js/element' . $ext, 'media/com_fabrik/js/elementlist' . $ext);
 
 		foreach ($files as $file)

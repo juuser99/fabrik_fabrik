@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\HTML;
+
 ?>
 <div class="btn-group">
 	<?php if ($this->canGroupBy) :?>
@@ -66,7 +68,7 @@ defined('_JEXEC') or die('Restricted access');
 
 	<?php if ($this->showRSS) {?>
 		<a href="<?php echo $this->rssLink;?>" class="btn feedButton">
-			<?php echo FabrikHelperHTML::image('feed.png', 'list', $this->tmpl);?>
+			<?php echo HTML::image('feed.png', 'list', $this->tmpl);?>
 			<?php echo FText::_('COM_FABRIK_SUBSCRIBE_RSS');?>
 		</a>
 	<?php }

@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -173,7 +174,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$opts->row_id = $input->getString('rowid', '', 'string');
 		$opts->voteType = 'comment';
 
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/thumbs/images/', 'image', 'form', false);
+		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/thumbs/images/', 'image', 'form', false);
 		$opts->formid = $this->formModel->getId();
 		$opts->listid = $this->formModel->getListModel()->getTable()->id;
 		$opts = json_encode($opts);
@@ -255,7 +256,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 			$script .= "\n comments.thumbs = new FbThumbsList(" . $this->formModel->getId() . ", $thumbopts);";
 		}
 
-		FabrikHelperHTML::script($jsfiles, $script);
+		HTML::script($jsfiles, $script);
 
 		$this->data = $layout->render($layoutData);
 	}
@@ -451,7 +452,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 
 		$data[] = ' <small>' . JHTML::date($comment->time_date,$dateformat,'UTC') . '</small>';
 
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_form/comment/images/', 'image', 'form', false);
+		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_form/comment/images/', 'image', 'form', false);
 
 		if ($params->get('comment-internal-rating') == 1)
 		{
@@ -494,7 +495,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$params = $this->getParams();
 		$input = $this->app->input;
 		$layoutData = new stdClass;
-		$layoutData->insrc = FabrikHelperHTML::image("star_in.png", 'form', @$this->tmpl, array(), true);
+		$layoutData->insrc = HTML::image("star_in.png", 'form', @$this->tmpl, array(), true);
 		$layoutData->name = (int) $comment->annonymous == 0 ? $comment->name : FText::_('PLG_FORM_COMMENT_ANONYMOUS_SHORT');
 		$layoutData->comment = $comment;
 		$layoutData->dateFormat = $params->get('comment-date-format');
@@ -936,7 +937,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	protected function _intensedebate()
 	{
 		$params = $this->getParams();
-		FabrikHelperHTML::addScriptDeclaration(
+		HTML::addScriptDeclaration(
 			"
 				var idcomments_acct = '" . $params->get('comment-intesedebate-code') . "';
 						var idcomments_post_id;
@@ -964,7 +965,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 			return;
 		}
 
-		FabrikHelperHTML::addScriptDeclaration(
+		HTML::addScriptDeclaration(
 			"
 				(function() {
 				var links = document.getElementsByTagName('a');

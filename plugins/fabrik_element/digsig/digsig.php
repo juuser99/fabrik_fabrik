@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use \Joomla\Utilities\ArrayHelper;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render digital signature pad
@@ -323,7 +324,7 @@ class PlgFabrik_ElementDigsig extends Element
 
 		$shim['element/digsig/digsig'] = $s;
 
-		FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/digsig/libs/signature-pad/jquery.signaturepad.css');
+		HTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/digsig/libs/signature-pad/jquery.signaturepad.css');
 
 		parent::formJavascriptClass($srcs, $script, $shim);
 

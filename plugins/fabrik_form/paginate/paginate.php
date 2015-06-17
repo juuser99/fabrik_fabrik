@@ -12,7 +12,9 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use Fabrik\Admin\Models\Form;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\HTML;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -85,7 +87,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$layout = new JLayoutFile('plugins.fabrik_form.paginate.layouts.default_paginate', JPATH_SITE);
 		$this->data = $layout->render($links);
 
-		FabrikHelperHTML::stylesheet('plugins/fabrik_form/paginate/paginate.css');
+		HTML::stylesheet('plugins/fabrik_form/paginate/paginate.css');
 
 		return true;
 	}
@@ -179,6 +181,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 			return;
 		}
 
+		$app = JFactory::getApplication();
 		$input = $this->app->input;
 		$opts = new stdClass;
 		$opts->liveSite = COM_FABRIK_LIVESITE;
@@ -204,7 +207,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$formid = $input->getString('formid');
 		$rowId = $input->get('rowid', '', 'string');
 		$mode = $input->get('mode', 'details');
-		$model =  new \Fabrik\Admin\Models\Form;
+		$model =  new Form;
 		$model->setId($formid);
 		$this->setModel($model);
 		$model->rowId = $rowId;

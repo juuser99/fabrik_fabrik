@@ -13,8 +13,7 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Fabrik\Admin\Models\Base as Base;
-use Fabrik\Admin\Models\Form;
+use \Fabrik\Helpers\HTML;
 
 /**
  * Fabrik Form Model
@@ -26,6 +25,11 @@ use Fabrik\Admin\Models\Form;
 class FormInlineEdit extends Base
 {
 	/**
+	 * @var array
+	 */
+	protected $groups;
+	
+	/**
 	 * Render the inline edit interface
 	 *
 	 * @return void
@@ -36,14 +40,13 @@ class FormInlineEdit extends Base
 		$input = $this->app->input;
 
 		// Need to render() with all element ids in case canEditRow plugins etc. use the row data.
-		$elids = $input->get('elementid', array(), 'array');
+		$elIds = $input->get('elementid', array(), 'array');
 		$input->set('elementid', null);
 
-		$form = $this->formModel->getForm();
 		$this->formModel->render();
 
 		// Set back to original input so we only show the requested elements
-		$input->set('elementid', $elids);
+		$input->set('elementid', $elIds);
 		$this->groups = $this->formModel->getGroupView();
 
 		// Main trigger element's id
@@ -52,7 +55,7 @@ class FormInlineEdit extends Base
 		$html = $this->inlineEditMarkUp() ;
 		echo implode("\n", $html);
 
-		$srcs = array();
+		$scripts = array();
 		$repeatCounter = 0;
 		$elementIds = (array) $input->get('elementid', array(), 'array');
 		$eCounter = 0;
@@ -64,7 +67,7 @@ class FormInlineEdit extends Base
 			$elementModel = $this->formModel->getElement($id, true);
 			$elementModel->getElement();
 			$elementModel->setEditable(true);
-			$elementModel->formJavascriptClass($srcs);
+			$elementModel->formJavascriptClass($scripts);
 			$elementJS = $elementModel->elementJavascript($repeatCounter);
 			$onLoad[] = 'var o = new ' . $elementJS[0] . '("' . $elementJS[1] . '",' . json_encode($elementJS[2]) . ');';
 
@@ -80,7 +83,7 @@ class FormInlineEdit extends Base
 		}
 
 		$onLoad[] = "Fabrik.fireEvent('fabrik.list.inlineedit.setData');";
-		FabrikHelperHTML::script($srcs, implode("\n", $onLoad));
+		HTML::script($scripts, implode("\n", $onLoad));
 	}
 
 	/**
@@ -122,14 +125,14 @@ class FormInlineEdit extends Base
 			if ($input->getBool('inlinecancel') == true)
 			{
 				$html[] = '<a href="#" class="btn inline-cancel">';
-				$html[] = FabrikHelperHTML::image('delete.png', 'list', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_CANCEL')));
+				$html[] = HTML::image('delete.png', 'list', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_CANCEL')));
 				$html[] = '<span>' . FText::_('COM_FABRIK_CANCEL') . '</span></a>';
 			}
 
 			if ($input->getBool('inlinesave') == true)
 			{
 				$html[] = '<a href="#" class="btn btn-primary inline-save">';
-				$html[] = FabrikHelperHTML::image('save.png', 'list', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SAVE')));
+				$html[] = HTML::image('save.png', 'list', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SAVE')));
 				$html[] = '<span>' . FText::_('COM_FABRIK_SAVE') . '</span></a>';
 			}
 
@@ -144,7 +147,7 @@ class FormInlineEdit extends Base
 	/**
 	 * Set form model
 	 *
-	 * @param   JModel  $model  Front end form model
+	 * @param   \Fabrik\Admin\Models\Form  $model  Form Model
 	 *
 	 * @return  void
 	 */

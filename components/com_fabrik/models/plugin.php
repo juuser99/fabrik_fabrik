@@ -27,6 +27,7 @@ use \Joomla\Registry\Registry as JRegistry;
 use \FabrikString as FabrikString;
 use \JHTML as JHTML;
 use \FabTable as FabTable;
+use \Fabrik\Helpers\HTML;
 
 /**
  * Base Fabrik Plugin Model
@@ -83,7 +84,7 @@ class Plugin extends \JPlugin
 	/**
 	 * Model
 	 *
-	 * @var JModel
+	 * @var \Fabrik\Admin\Models\Form
 	 */
 	public $model = null;
 
@@ -114,7 +115,7 @@ class Plugin extends \JPlugin
 	/**
 	 * Set model
 	 *
-	 * @param   JModel  &$model  Plugin model
+	 * @param   \Fabrik\Admin\Models\Form  &$model  Plugin model
 	 *
 	 * @return  void
 	 */
@@ -126,7 +127,7 @@ class Plugin extends \JPlugin
 	/**
 	 * Get Model
 	 *
-	 * @return JModel
+	 * @return \Fabrik\Admin\Models\Form
 	 */
 	public function getModel()
 	{
@@ -138,7 +139,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return string
 	 */
-
 	public function getName()
 	{
 		return isset($this->name) ? $this->name : get_class($this);
@@ -164,9 +164,8 @@ class Plugin extends \JPlugin
 	/**
 	 * Get the JForm object for the plugin
 	 *
-	 * @return object jform
+	 * @return \JForm jform
 	 */
-
 	public function getJForm()
 	{
 		if (!isset($this->jform))
@@ -239,7 +238,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  string	admin html
 	 */
-
 	public function onRenderAdminSettings($data = array(), $repeatCounter = null, $mode = null)
 	{
 		$this->makeDbTable();
@@ -295,16 +293,15 @@ class Plugin extends \JPlugin
 		// as bind() only saves the values from $data with a corresponding xml field we set the raw data as well
 		$form->rawData = $data;
 		$str = array();
-		$repeatGroupCounter = 0;
 
 		// Paul - If there is a string for plugin_DESCRIPTION then display this as a legend
-		$inistr = strtoupper('PLG_' . $type . '_' . $this->_name . '_DESCRIPTION');
-		$inival = FText::_($inistr);
+		$iniStr = strtoupper('PLG_' . $type . '_' . $this->_name . '_DESCRIPTION');
+		$iniVal = FText::_($iniStr);
 
-		if ($inistr != $inival)
+		if ($iniStr != $iniVal)
 		{
 			// Handle strings with HTML
-			$inival2 = '';
+			$iniVal2 = '';
 
 			/**
 			 * $$$ hugh - this was blowing up with the massively useful error "Cannot parse
@@ -315,9 +312,9 @@ class Plugin extends \JPlugin
 			 */
 
 			/*
-			if (substr($inival, 0, 3) == '<p>' || substr($inival, 0, 3) == '<p ')
+			if (substr($iniVal, 0, 3) == '<p>' || substr($iniVal, 0, 3) == '<p ')
 			{
-				$xml = new SimpleXMLElement('<xml>' . $inival . '</xml>');
+				$xml = new SimpleXMLElement('<xml>' . $iniVal . '</xml>');
 				$lines = $xml->xpath('/xml/p[position()<2]');
 
 				while (list( , $node) = each($lines))
@@ -325,32 +322,32 @@ class Plugin extends \JPlugin
 					$legend = $node;
 				}
 
-				$inival2 = str_replace($legend, '', $inival);
-				$inival = $legend;
+				$iniVal2 = str_replace($legend, '', $iniVal);
+				$iniVal = $legend;
 			}
 			*/
 			$p_re = '#^\s*(<p\s*\S*\s*>.*?</p>)#i';
 			$matches = array();
 
-			if (preg_match($p_re, $inival, $matches))
+			if (preg_match($p_re, $iniVal, $matches))
 			{
-				$inival2 = preg_replace($p_re, '', $inival);
-				$inival = $matches[1];
+				$iniVal2 = preg_replace($p_re, '', $iniVal);
+				$iniVal = $matches[1];
 			}
-			elseif (substr($inival, 0, 1) != '<' && strpos($inival, '<br') > 0)
+			elseif (substr($iniVal, 0, 1) != '<' && strpos($iniVal, '<br') > 0)
 			{
 				// Separate first part for legend and convert rest to paras
-				$lines = preg_split('/<br\s*\/\s*>/', $inival, PREG_SPLIT_NO_EMPTY);
-				$inival = $lines[0];
+				$lines = preg_split('/<br\s*\/\s*>/', $iniVal, PREG_SPLIT_NO_EMPTY);
+				$iniVal = $lines[0];
 				unset($lines[0]);
-				$inival2 = '<b><p>' . implode('</p>\n<p>', $lines) . '<br/><br/></p></b>';
+				$iniVal2 = '<b><p>' . implode('</p>\n<p>', $lines) . '<br/><br/></p></b>';
 			}
 
-			$str[] = '<legend>' . $inival . '</legend>';
+			$str[] = '<legend>' . $iniVal . '</legend>';
 
-			if ($inival2 != '')
+			if ($iniVal2 != '')
 			{
-				$str[] = $inival2;
+				$str[] = $iniVal2;
 			}
 		}
 
@@ -446,7 +443,6 @@ class Plugin extends \JPlugin
 					$str[] = '</div>';
 				}
 
-
 				if ($repeat)
 				{
 					$str[] = "</div>";
@@ -471,7 +467,7 @@ class Plugin extends \JPlugin
 		if (!empty($repeatScript))
 		{
 			$repeatScript = "window.addEvent('domready', function () {\n" . implode("\n", $repeatScript) . "\n})\n";
-			FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/repeatgroup.js', $repeatScript);
+			HTML::script('administrator/components/com_fabrik/models/fields/repeatgroup.js', $repeatScript);
 		}
 
 		return implode("\n", $str);
@@ -486,7 +482,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return   object  params
 	 */
-
 	public function setParams(&$params, $repeatCounter)
 	{
 		$opts = $params->toArray();
@@ -519,7 +514,6 @@ class Plugin extends \JPlugin
 	{
 		if (!isset($this->params))
 		{
-			//echo "plugin params not set - recreating <br>";
 			$row = $this->getRow();
 			$this->params = new JRegistry($row->params);
 		}
@@ -530,11 +524,11 @@ class Plugin extends \JPlugin
 	/**
 	 * Get db row/item loaded with id
 	 *
-	 * @return  JTable
+	 * @return  \JTable
 	 */
-
 	protected function getRow()
 	{
+		// FIXME 3.5
 		if (!isset($this->row))
 		{
 			$this->row = $this->getTable($this->_type);
@@ -547,11 +541,10 @@ class Plugin extends \JPlugin
 	/**
 	 * Set db row/item
 	 *
-	 * @param   JTable  $row  db item
+	 * @param   \JTable  $row  db item
 	 *
 	 * @return  void
 	 */
-
 	public function setRow($row)
 	{
 		$this->row = $row;
@@ -562,9 +555,9 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  JTable
 	 */
-
 	public function getTable()
 	{
+		// FIXME 3.5
 		return FabTable::getInstance('Extension', 'JTable');
 	}
 
@@ -643,7 +636,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return boolean
 	 */
-
 	public function customProcessResult($method)
 	{
 		return true;
@@ -655,7 +647,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  void
 	 */
-
 	public function onAjax_tables()
 	{
 		$app = $this->app;
@@ -744,10 +735,9 @@ class Plugin extends \JPlugin
 		{
 			if ($showAll)
 			{
-				echo "show all";exit;
 				// Show all db columns
 				$cid = $input->get('cid', -1);
-				$cnn = new Fabrik\Admin\Models\Connection;
+				$cnn = new Connection;
 				$cnn->set('id', $cid);
 				$db = $cnn->getDb();
 
@@ -960,7 +950,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  object
 	 */
-
 	protected function getAdminJsOpts($html)
 	{
 		$opts = new stdClass;
@@ -978,7 +967,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  bool
 	 */
-
 	public function runAway($method)
 	{
 		return false;
@@ -994,7 +982,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  bool
 	 */
-
 	protected function shouldProcess($paramName, $data = null, $params = null)
 	{
 		if (is_null($data))
@@ -1044,7 +1031,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  string
 	 */
-
 	protected function replace_num_entity($ord)
 	{
 		$ord = $ord[1];
@@ -1118,9 +1104,8 @@ class Plugin extends \JPlugin
 	 *
 	 * @deprecated use Worker::getPluginManager()
 	 *
-	 * @return  FabrikFEModelPluginmanager
+	 * @return  \Fabrik\Admin\Models\PluginManager
 	 */
-
 	protected function getPluginManager()
 	{
 		return Worker::getPluginManager();
@@ -1136,7 +1121,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  array  users' property defined in $field
 	 */
-
 	protected function getUsersInGroups($sendTo, $field = 'id')
 	{
 		if (empty($sendTo))
@@ -1160,7 +1144,6 @@ class Plugin extends \JPlugin
 	 *
 	 * @return  void
 	 */
-
 	protected function makeDbTable()
 	{
 		$db = Worker::getDbo();

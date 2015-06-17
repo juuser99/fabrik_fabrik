@@ -18,7 +18,7 @@ use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
 use \FText as FText;
 use \JProfiler as JProfiler;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 use \JComponentHelper as JComponentHelper;
 use \stdClass as stdClass;
 use \FabrikString as FabrikString;
@@ -121,7 +121,7 @@ class Base extends Html
 
 		$params = $model->getParams();
 		$this->setTitle($w, $params, $model);
-		FabrikHelperHTML::debug($params->get('note'), 'note');
+		HelperHTML::debug($params->get('note'), 'note');
 		$params->def('icons', $app->get('icons'));
 		$params->set('popup', ($input->get('tmpl') == 'component') ? 1 : 0);
 
@@ -168,7 +168,7 @@ class Base extends Html
 		$this->params = $params;
 		$this->tipLocation = $params->get('tiplocation');
 
-		FabrikHelperHTML::debug($this->groups, 'form:view:groups');
+		HelperHTML::debug($this->groups, 'form:view:groups');
 
 		// Force front end templates
 		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
@@ -222,7 +222,7 @@ class Base extends Html
 
 		if ($params->get('process-jplugins', 2) == 1 || ($params->get('process-jplugins', 2) == 2 && $model->isEditable() === false))
 		{
-			FabrikHelperHTML::runContentPlugins($text);
+			HelperHTML::runContentPlugins($text);
 		}
 
 		// Allows you to use {placeholders} in form template Only replacing data accessible to the users acl.
@@ -358,7 +358,7 @@ class Base extends Html
 
 		if ($this->showPrint)
 		{
-			$text = FabrikHelperHTML::image('print.png');
+			$text = HelperHTML::image('print.png');
 			$this->printLink = '<a href="#" class="printlink" onclick="window.print();return false;">' . $text . '</a>';
 		}
 
@@ -366,14 +366,14 @@ class Base extends Html
 		{
 			if ($this->showEmail)
 			{
-				$this->emailLink = FabrikHelperHTML::emailIcon($model, $params);
-				$this->emailURL = FabrikHelperHTML::emailURL($model);
+				$this->emailLink = HelperHTML::emailIcon($model, $params);
+				$this->emailURL = HelperHTML::emailURL($model);
 			}
 
 			if ($this->showPrint)
 			{
-				$this->printLink = FabrikHelperHTML::printIcon($model, $params, $model->getRowId());
-				$this->printURL = FabrikHelperHTML::printURL($model);
+				$this->printLink = HelperHTML::printIcon($model, $params, $model->getRowId());
+				$this->printURL = HelperHTML::printURL($model);
 			}
 		}
 
@@ -387,7 +387,7 @@ class Base extends Html
 			Worker::canPdf();
 			$this->pdfURL = 'index.php?option=com_' . $package . '&view=details&formid=' . $model->getId() . '&rowid=' . $model->getRowId() . '&format=pdf';
 			$this->pdfURL = JRoute::_($this->pdfURL);
-			$this->pdfLink = '<a href="' . $this->pdfURL . '">' . FabrikHelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties) . '</a>';
+			$this->pdfLink = '<a href="' . $this->pdfURL . '">' . HelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties) . '</a>';
 		}
 	}
 
@@ -408,13 +408,13 @@ class Base extends Html
 		$aLoadedElementPlugins = array();
 		$jsActions = array();
 		$bkey = $this->model->jsKey();
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HelperHTML::framework();
 		$shim = array();
 
 		if (!defined('_JOS_FABRIK_FORMJS_INCLUDED'))
 		{
 			define('_JOS_FABRIK_FORMJS_INCLUDED', 1);
-			FabrikHelperHTML::slimbox();
+			HelperHTML::slimbox();
 
 			$dep = new stdClass;
 			$dep->deps = array('fab/element', 'lib/form_placeholder/Form.Placeholder', 'fab/encoder');
@@ -425,9 +425,9 @@ class Base extends Html
 			$framework['fab/elementlist'] = $deps;
 
 			$srcs[] = 'media/com_fabrik/js/lib/form_placeholder/Form.Placeholder.js';
-			FabrikHelperHTML::addToFrameWork($srcs, 'media/com_fabrik/js/form');
-			FabrikHelperHTML::addToFrameWork($srcs, 'media/com_fabrik/js/form-submit');
-			FabrikHelperHTML::addToFrameWork($srcs, 'media/com_fabrik/js/element');
+			HelperHTML::addToFrameWork($srcs, 'media/com_fabrik/js/form');
+			HelperHTML::addToFrameWork($srcs, 'media/com_fabrik/js/form-submit');
+			HelperHTML::addToFrameWork($srcs, 'media/com_fabrik/js/element');
 		}
 
 		$aWYSIWYGNames = array();
@@ -479,10 +479,10 @@ class Base extends Html
 			}
 		}
 
-		FabrikHelperHTML::iniRequireJS($shim);
+		HelperHTML::iniRequireJS($shim);
 		$actions = trim(implode("\n", $jsActions));
-		FabrikHelperHTML::windows('a.fabrikWin');
-		FabrikHelperHTML::tips('.hasTip', array(), "$('$bkey')");
+		HelperHTML::windows('a.fabrikWin');
+		HelperHTML::tips('.hasTip', array(), "$('$bkey')");
 		$model->getFormCss();
 		$opts = $this->jsOpts();
 
@@ -491,7 +491,7 @@ class Base extends Html
 
 		$opts = json_encode($model->jsOpts);
 
-		if (!FabrikHelperHTML::inAjaxLoadedPage())
+		if (!HelperHTML::inAjaxLoadedPage())
 		{
 			JText::script('COM_FABRIK_VALIDATING');
 			JText::script('COM_FABRIK_SUCCESS');
@@ -586,9 +586,9 @@ class Base extends Html
 		$script[] = "\tnew Form.Placeholder('.fabrikForm input');";
 		$this->_addJavascriptSumbit($script, $listId, $aWYSIWYGNames);
 
-		if (FabrikHelperHTML::inAjaxLoadedPage())
+		if (HelperHTML::inAjaxLoadedPage())
 		{
-			$tipOpts = FabrikHelperHTML::tipOpts();
+			$tipOpts = HelperHTML::tipOpts();
 			$script[] = "new FloatingTips('#" . $bkey . " .fabrikTip', " . json_encode($tipOpts) . ");";
 		}
 
@@ -607,7 +607,7 @@ class Base extends Html
 		// 3.1 call form js plugin code within main require method
 		$srcs = array_merge($srcs, $model->formPluginShim);
 		$str .= $model->formPluginJS;
-		FabrikHelperHTML::script($srcs, $str);
+		HelperHTML::script($srcs, $str);
 	}
 
 	/**
@@ -665,13 +665,13 @@ class Base extends Html
 		$opts->listid = (int) $item->get('id');
 
 		$errorIcon = $fbConfig->get('error_icon', 'exclamation-sign') . '.png';
-		$this->errorIcon = FabrikHelperHTML::image($errorIcon, 'form', $this->tmpl);
+		$this->errorIcon = HelperHTML::image($errorIcon, 'form', $this->tmpl);
 
 		$imgs = new stdClass;
-		$imgs->alert = FabrikHelperHTML::image($errorIcon, 'form', $this->tmpl, '', true);
-		$imgs->action_check = FabrikHelperHTML::image('action_check.png', 'form', $this->tmpl, '', true);
+		$imgs->alert = HelperHTML::image($errorIcon, 'form', $this->tmpl, '', true);
+		$imgs->action_check = HelperHTML::image('action_check.png', 'form', $this->tmpl, '', true);
 
-		$imgs->ajax_loader = FabrikHelperHTML::image('ajax-loader.gif', 'form', $this->tmpl, '', true);
+		$imgs->ajax_loader = HelperHTML::image('ajax-loader.gif', 'form', $this->tmpl, '', true);
 		$imgs->ajax_loader = '<i class="icon-spinner icon-spin"></i>';
 		$opts->images = $imgs;
 

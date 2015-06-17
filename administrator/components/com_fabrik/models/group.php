@@ -48,7 +48,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Join model
 	 *
-	 * @var FabrikFEModelJoin
+	 * @var \Fabrik\Admin\Models\Join
 	 */
 	protected $joinModel = null;
 

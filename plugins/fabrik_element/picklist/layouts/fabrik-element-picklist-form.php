@@ -1,9 +1,10 @@
 <?php
 
 defined('JPATH_BASE') or die;
+use Fabrik\Helpers\HTML;
 
 $d = $displayData;
-FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist.css');
+HTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist.css');
 ?>
 <div class="<?php echo $d->name; ?>" id="<?php echo $d->id; ?>">
 	<div class="row">

@@ -12,7 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
-use Fabrik\Plugins\Element as Element;
+use Fabrik\Plugins\Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render text area or wysiwyg editor
@@ -64,7 +65,7 @@ class PlgFabrik_ElementTextarea extends Element
 		$data = array_map('trim', $data);
 		$data = array_unique($data);
 		$img = 'bookmark.png';
-		$icon = FabrikHelperHTML::image($img, 'form', @$this->tmpl, array('alt' => 'tag'));
+		$icon = HTML::image($img, 'form', @$this->tmpl, array('alt' => 'tag'));
 		$tmplData = new stdClass;
 		$tmplData->tags = array();
 

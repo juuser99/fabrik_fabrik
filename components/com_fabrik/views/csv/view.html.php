@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\HTML;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -66,7 +68,7 @@ class FabrikViewCsv extends JViewLegacy
 		$dep = new stdClass;
 		$dep->deps = array('fab/fabrik', 'fab/listfilter', 'fab/advanced-search', 'fab/encoder');
 		$shim['fab/list'] = $dep;
-		FabrikHelperHTML::iniRequireJS($shim);
+		HTML::iniRequireJS($shim);
 	}
 
 	/**
@@ -130,12 +132,12 @@ class FabrikViewCsv extends JViewLegacy
 		JText::script('JYES');
 		JText::script('COM_FABRIK_SAVING_TO');
 
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HTML::framework();
 		$srcs[] = 'media/com_fabrik/js/list-plugin.js';
 		$srcs[] = 'media/com_fabrik/js/list.js';
 
 		$script[] = 'var list = new FbList(' . $listId . ',' . $opts . ');';
 		$script[] = 'Fabrik.addBlock(\'list_' . $listId . '\', list);';
-		FabrikHelperHTML::script($srcs, implode("\n", $script));
+		HTML::script($srcs, implode("\n", $script));
 	}
 }

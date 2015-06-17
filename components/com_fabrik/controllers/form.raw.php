@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Admin\Models\Form;
+use Fabrik\Admin\Models\FormInlineEdit;
 
 require 'controller.php';
 
@@ -62,10 +64,8 @@ class FabrikControllerForm extends FabrikController
 		$view = $this->getView($viewName, $viewType);
 
 		// Push a model into the view
-		if ($model = $this->getModel($modelName, 'FabrikFEModel'))
-		{
-			$view->setModel($model, true);
-		}
+		$model = new Form;
+		$view->setModel($model, true);
 
 		/**
 		 * If errors made when submitting from a J plugin they are stored in the session
@@ -114,10 +114,8 @@ class FabrikControllerForm extends FabrikController
 		$viewType = $document->getType();
 		$view = $this->getView($viewName, $viewType);
 
-		if ($model = $this->getModel('form', 'FabrikFEModel'))
-		{
-			$view->setModel($model, true);
-		}
+		$model = new Form;
+		$view->setModel($model, true);
 
 		$model->setId($input->getInt('formid', 0));
 		$this->isMambot = $input->get('isMambot', 0);
@@ -195,7 +193,7 @@ class FabrikControllerForm extends FabrikController
 		if ($input->getInt('elid') !== 0)
 		{
 			// Inline edit show the edited element
-			$inlineModel = $this->getModel('forminlineedit', 'FabrikFEModel');
+			$inlineModel = new FormInlineEdit;
 			$inlineModel->setFormModel($model);
 			echo $inlineModel->showResults();
 

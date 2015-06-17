@@ -13,7 +13,7 @@ namespace Fabrik\Admin\Views\Form;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 use \stdClass as stdClass;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
@@ -76,13 +76,13 @@ class Html extends \Fabrik\Admin\Views\Html
 		$dep = new stdClass;
 		$dep->deps = array('fab/fabrik');
 		$shim['admin/pluginmanager'] = $dep;
-		FabrikHelperHTML::iniRequireJS($shim);
+		HelperHTML::iniRequireJS($shim);
 
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HelperHTML::framework();
 		$srcs[] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
 
-		FabrikHelperHTML::script($srcs, $this->js);
+		HelperHTML::script($srcs, $this->js);
 
 		return parent::render();
 	}

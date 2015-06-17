@@ -13,8 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-require 'controller.php';
+use Fabrik\Admin\Models\Form;
+use Fabrik\Admin\Models\FormSession;
+use Fabrik\Admin\Models\Lizt;
 
 /**
  * Fabrik Details Controller
@@ -70,7 +71,7 @@ class FabrikControllerDetails extends FabrikController
 		$view = $this->getView($viewName, $viewType);
 
 		// Push a model into the view
-		$model = !isset($this->_model) ? $this->getModel($modelName, 'FabrikFEModel') : $this->_model;
+		$model = !isset($this->_model) ? new Form : $this->_model;
 
 		// If errors made when submitting from a J plugin they are stored in the session lets get them back and insert them into the form model
 		if (!empty($model->errors))
@@ -101,135 +102,6 @@ class FabrikControllerDetails extends FabrikController
 			$cacheid = serialize(array($uri, $this->input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_' . $package, 'view');
 			echo $cache->get($view, 'display', $cacheid);
-		}
-	}
-
-	/**
-	 * process the form
-	 *
-	 * @return  null
-	 */
-
-	public function process()
-	{
-		@set_time_limit(300);
-		$session = JFactory::getSession();
-		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
-		$document = JFactory::getDocument();
-		$viewName = $this->input->get('view', 'form');
-		$viewType = $document->getType();
-		$view = $this->getView($viewName, $viewType);
-
-		if ($model = $this->getModel('form', 'FabrikFEModel'))
-		{
-			$view->setModel($model, true);
-		}
-
-		$model->setId($this->input->getInt('formid', 0));
-
-		$this->isMambot = $this->input->get('isMambot', 0);
-		$model->getForm();
-		$model->setRowId($this->input->get('rowid', '', 'string'));
-
-		// Check for request forgeries
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
-
-		if ($model->getParams()->get('spoof_check', $fbConfig->get('spoofcheck_on_formsubmission', true)) == true)
-		{
-			JSession::checkToken() or die('Invalid Token');
-		}
-
-		if ($this->input->getBool('fabrik_ignorevalidation', false) != true)
-		{
-			// Put in when saving page of form
-			if (!$model->validate())
-			{
-				// If its in a module with ajax or in a package
-				if ($this->input->getInt('packageId') !== 0)
-				{
-					$data = array('modified' => $model->modifiedValidationData);
-
-					// Validating entire group when navigating form pages
-					$data['errors'] = $model->errors;
-					echo json_encode($data);
-
-					return;
-				}
-
-				if ($this->isMambot)
-				{
-					// Store errors in session
-					$context = 'com_' . $package . '.form.' . $model->get('id') . '.';
-					$session->set($context . 'errors', $model->errors);
-					/**
-					 * $$$ hugh - testing way of preserving form values after validation fails with form plugin
-					 * might as well use the 'savepage' mechanism, as it's already there!
-					 */
-					$session->set($context . 'session.on', true);
-					$this->savepage();
-					$this->makeRedirect($model, '');
-				}
-				else
-				{
-					/**
-					 * $$$ rob - http://fabrikar.com/forums/showthread.php?t=17962
-					 * couldn't determine the exact set up that triggered this, but we need to reset the rowid to -1
-					 * if reshowing the form, otherwise it may not be editable, but rather show as a detailed view
-					 */
-					if ($this->input->get('usekey', '') !== '')
-					{
-						$this->input->set('rowid', -1);
-					}
-
-					$view->display();
-				}
-
-				return;
-			}
-		}
-
-		// Reset errors as validate() now returns ok validations as empty arrays
-		$model->errors = array();
-		$model->process();
-
-		// Check if any plugin has created a new validation error
-		if (!empty($model->errors))
-		{
-			Worker::getPluginManager()->runPlugins('onError', $model);
-			$view->display();
-
-			return;
-		}
-
-		/**
-		 * $$$ rob 31/01/2011
-		 * Now redirect always occurs even with redirect thx message, $this->setRedirect
-		 * will look up any redirect url specified in the session by a plugin and use that or
-		 * fall back to the url defined in $this->makeRedirect()
-		 */
-
-		$listModel = $model->getListModel();
-		$listModel->set('_table', null);
-
-		$msg = $model->getSuccessMsg();
-
-		if ($this->input->getInt('packageId') !== 0)
-		{
-			echo json_encode(array('msg' => $msg));
-
-			return;
-		}
-
-		if ($this->input->get('format') == 'raw')
-		{
-			$this->input->set('view', 'list');
-			$this->display();
-
-			return;
-		}
-		else
-		{
-			$this->makeRedirect($model, $msg);
 		}
 	}
 
@@ -316,11 +188,11 @@ class FabrikControllerDetails extends FabrikController
 	public function ajax_validate()
 	{
 		$input = $this->input;
-		$model = $this->getModel('form', 'FabrikFEModel');
+		$model = new Form;
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();
 		$model->setRowId($input->get('rowid', '', 'string'));
-		$model->validate();
+		$model->validateForm();
 		$data = array('modified' => $model->modifiedValidationData);
 
 		// Validating entire group when navigating form pages
@@ -337,8 +209,8 @@ class FabrikControllerDetails extends FabrikController
 	public function savepage()
 	{
 		$input = $this->input;
-		$model = $this->getModel('Formsession', 'FabrikFEModel');
-		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$model = new FormSession;
+		$formModel = new Form;
 		$formModel->setId($input->getString('formid'));
 		$model->savePage($formModel);
 	}
@@ -352,7 +224,7 @@ class FabrikControllerDetails extends FabrikController
 
 	public function removeSession()
 	{
-		$sessionModel = $this->getModel('Formsession', 'FabrikFEModel');
+		$sessionModel = new FormSession;
 		$sessionModel->setFormId($this->input->getInt('formid', 0));
 		$sessionModel->setRowId($this->input->get('rowid', '', 'string'));
 		$sessionModel->remove();
@@ -366,7 +238,7 @@ class FabrikControllerDetails extends FabrikController
 	 */
 	public function paginate()
 	{
-		$model = $this->getModel('Form', 'FabrikFEModel');
+		$model = new Form;
 		$model->setId($this->input->getString('formid'));
 		$model->paginateRowId($this->input->get('dir'));
 		$this->display();
@@ -382,7 +254,7 @@ class FabrikControllerDetails extends FabrikController
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
-		$model = $this->getModel('list', 'FabrikFEModel');
+		$model = new Lizt;
 		$ids = array($this->input->get('rowid', 0, 'string'));
 
 		$listId = $this->input->getString('listid');

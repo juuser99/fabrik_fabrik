@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\HTML;
 
 /**
  * Fileupload adaptor to render uploaded images
@@ -134,7 +135,7 @@ class ImageRender
 
 		$layout                     = $model->getLayout('image');
 		$displayData                = new stdClass;
-		$displayData->lightboxAttrs = FabrikHelperHTML::getLightboxAttributes($title, $n);
+		$displayData->lightboxAttrs = HTML::getLightboxAttributes($title, $n);
 		$displayData->fullSize      = $model->storage->preRenderPath($fullSize);
 		$displayData->file          = $file;
 		$displayData->makeLink      = $params->get('make_link', true) && !$this->fullImageInRecord($params);

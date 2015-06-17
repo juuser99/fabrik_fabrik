@@ -16,6 +16,7 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\ElementList as ElementList;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render date picker
@@ -368,12 +369,12 @@ class PlgFabrik_ElementDate extends ElementList
 		$str[] = '<div class="input-append">';
 
 		$timeLength = String::strlen($timeFormat);
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/date/images/', 'image', 'form', false);
+		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/date/images/', 'image', 'form', false);
 		$str[] = '<input type="text" class="' . $class . '" ' . $readOnly . ' size="' . $timeLength . '" value="' . $time . '" name="'
 				. $timeElName . '" />';
 		$opts = array('alt' => FText::_('PLG_ELEMENT_DATE_TIME'), 'class' => 'timeButton');
 		$file = 'clock.png';
-		$img = '<button class="btn timeButton">' . FabrikHelperHTML::image($file, 'form', @$this->tmpl, $opts) . '</button>';
+		$img = '<button class="btn timeButton">' . HTML::image($file, 'form', @$this->tmpl, $opts) . '</button>';
 		$str[] = $img;
 
 		$str[] = '</div>';
@@ -777,9 +778,9 @@ class PlgFabrik_ElementDate extends ElementList
 			$attribs = ArrayHelper::toString($attribs);
 		}
 
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
+		HTML::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
 		$opts = array('alt' => 'calendar');
-		$img = FabrikHelperHTML::image('calendar.png', 'form', @$this->tmpl, $opts);
+		$img = HTML::image('calendar.png', 'form', @$this->tmpl, $opts);
 		$html = array();
 
 		$img = '<button id ="' . $id . '_cal_img" class="btn calendarbutton">' . $img . '</button>';
@@ -919,7 +920,7 @@ class PlgFabrik_ElementDate extends ElementList
 			return $dates;
 		}
 
-		$dates = FabrikHelperHTML::isDebug() ? eval($php) : @eval($php);
+		$dates = HTML::isDebug() ? eval($php) : @eval($php);
 		Worker::logEval($dates, 'Eval exception : ' . $this->getElement()->name . '::getAllowedPHPDates() : %s');
 
 		return (array) $dates;
@@ -1500,7 +1501,7 @@ class PlgFabrik_ElementDate extends ElementList
 			$autoId = '.advanced-search-list .autocomplete-trigger';
 		}
 
-		FabrikHelperHTML::autoComplete($autoId, $this->getElement()->id, $this->getFormModel()->getId(), 'date');
+		HTML::autoComplete($autoId, $this->getElement()->id, $this->getFormModel()->getId(), 'date');
 
 		return $layout->render($displayData);
 	}
@@ -1621,7 +1622,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$from->name = $v;
 
 		$imageOpts = array('alt' => 'calendar');
-		$from->img = FabrikHelperHTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$from->img = HTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
 
 		$displayData->from = $from;
 
@@ -1667,7 +1668,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$from->name = $v . '[0]';
 
 		$imageOpts = array('alt' => 'calendar');
-		$from->img = FabrikHelperHTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$from->img = HTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
 
 		$displayData->from = $from;
 
@@ -1680,7 +1681,7 @@ class PlgFabrik_ElementDate extends ElementList
 		$to->name = $v . '[1]';
 
 		$imageOpts = array('alt' => 'calendar');
-		$to->img = FabrikHelperHTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$to->img = HTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
 
 		$displayData->to = $to;
 		$displayData->filterType = $this->getFilterType();
@@ -2417,13 +2418,13 @@ class PlgFabrik_ElementDate extends ElementList
 
 		if ($normal)
 		{
-			FabrikHelperHTML::script('plugins/fabrik_element/date/filter.js');
+			HTML::script('plugins/fabrik_element/date/filter.js');
 
 			return $script;
 		}
 		else
 		{
-			FabrikHelperHTML::script('plugins/fabrik_element/date/filter.js', $script);
+			HTML::script('plugins/fabrik_element/date/filter.js', $script);
 		}
 	}
 

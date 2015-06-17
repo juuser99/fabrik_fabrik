@@ -18,6 +18,7 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use \JEventDispatcher as JEventDispatcher;
 use \JPluginHelper as JPluginHelper;
+use Fabrik\Helpers\HTML as HelperHTML;
 
 
 /**
@@ -237,7 +238,7 @@ class Validator extends \JModelBase
 		$tmpl = $this->elementModel->getFormModel()->getTmpl();
 		$validations = array_unique($this->findAll());
 		$emptyIcon = $this->getIcon();
-		$icon = empty($emptyIcon) && empty($validations) ? "" : FabrikHelperHTML::image($emptyIcon, 'form', $tmpl, $this->iconOpts) . ' ';
+		$icon = empty($emptyIcon) && empty($validations) ? "" : HelperHTML::image($emptyIcon, 'form', $tmpl, $this->iconOpts) . ' ';
 		
 		return $icon;
 	}
@@ -283,7 +284,7 @@ class Validator extends \JModelBase
 			if ($internal !== '')
 			{
 				$i = $this->elementModel->internalValidationIcon();
-				$icon = FabrikHelperHTML::image($i, 'form', $tmpl, $this->iconOpts);
+				$icon = HelperHTML::image($i, 'form', $tmpl, $this->iconOpts);
 				$texts[] = $icon . ' ' . $internal;
 			}
 		}

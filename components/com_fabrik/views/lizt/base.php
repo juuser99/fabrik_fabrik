@@ -17,7 +17,7 @@ use Fabrik\Helpers\Worker;
 use \JComponentHelper as JComponentHelper;
 use \JProfiler as JProfiler;
 use \JRegistry as JRegistry;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 use \FText as FText;
 use \stdClass as stdClass;
 use \FabrikString as FabrikString;
@@ -97,15 +97,15 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		if ($model->requiresSlimbox())
 		{
-			FabrikHelperHTML::slimbox();
+			HelperHTML::slimbox();
 		}
 
 		if ($model->requiresSlideshow())
 		{
-			FabrikHelperHTML::slideshow();
+			HelperHTML::slideshow();
 		}
 
-		$src  = FabrikHelperHTML::framework();
+		$src  = HelperHTML::framework();
 		$shim = array();
 
 		$dep       = new stdClass;
@@ -118,7 +118,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		$shim['fab/list'] = $dep;
 		$src              = $model->getPluginJsClasses($src, $shim);
-		FabrikHelperHTML::addToFrameWork($src, 'media/com_fabrik/js/list');
+		HelperHTML::addToFrameWork($src, 'media/com_fabrik/js/list');
 		$model->getCustomJsAction($src);
 
 		$template   = $model->getTmpl();
@@ -321,8 +321,8 @@ class Base extends \Fabrik\Admin\Views\Html
 		// End domReady wrapper
 		$script[] = '})';
 		$script   = implode("\n", $script);
-		FabrikHelperHTML::iniRequireJS($shim);
-		FabrikHelperHTML::script($src, $script);
+		HelperHTML::iniRequireJS($shim);
+		HelperHTML::script($src, $script);
 
 		// Reset data back to original settings
 		$this->rows = $origRows;
@@ -556,7 +556,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$this->getManagementJS($this->rows);
 
 		// Get dropdown list of other tables for quick nav in admin
-		$this->tablePicker = $params->get('show-table-picker', $input->get('list-picker', true)) && $app->isAdmin() && $app->input->get('format') !== 'pdf' ? FabrikHelperHTML::tableList($this->table->id) : '';
+		$this->tablePicker = $params->get('show-table-picker', $input->get('list-picker', true)) && $app->isAdmin() && $app->input->get('format') !== 'pdf' ? HelperHTML::tableList($this->table->id) : '';
 
 		$this->buttons();
 		$this->pluginTopButtons = $model->getPluginTopButtons();
@@ -656,7 +656,7 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		if ($params->get('process-jplugins'))
 		{
-			FabrikHelperHTML::runContentPlugins($text);
+			HelperHTML::runContentPlugins($text);
 		}
 
 		JDEBUG ? $profiler->mark('end fabrik display') : null;
@@ -678,33 +678,33 @@ class Base extends \Fabrik\Admin\Views\Html
 		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => "{notice:true}",
 			'title' => '<span>' . FText::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_EXPORT_TO_CSV');
-		$this->buttons->csvexport  = FabrikHelperHTML::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->csvexport  = HelperHTML::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_IMPORT_FROM_CSV') . '</span>';
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_IMPORT_TO_CSV');
-		$this->buttons->csvimport  = FabrikHelperHTML::image('csv-import.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->csvimport  = HelperHTML::image('csv-import.png', 'list', $this->tmpl, $buttonProperties);
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_SUBSCRIBE_RSS') . '</span>';
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_SUBSCRIBE_RSS');
-		$this->buttons->feed       = FabrikHelperHTML::image('feed.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->feed       = HelperHTML::image('feed.png', 'list', $this->tmpl, $buttonProperties);
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_EMPTY') . '</span>';
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_EMPTY');
-		$this->buttons->empty      = FabrikHelperHTML::image('trash.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->empty      = HelperHTML::image('trash.png', 'list', $this->tmpl, $buttonProperties);
 
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_GROUP_BY') . '</span>';
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_GROUP_BY');
-		$this->buttons->groupby    = FabrikHelperHTML::image('group_by.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->groupby    = HelperHTML::image('group_by.png', 'list', $this->tmpl, $buttonProperties);
 
 		unset($buttonProperties['title']);
 		$buttonProperties['alt'] = FText::_('COM_FABRIK_FILTER');
-		$this->buttons->filter   = FabrikHelperHTML::image('filter.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->filter   = HelperHTML::image('filter.png', 'list', $this->tmpl, $buttonProperties);
 
 		$addLabel                  = $model->addLabel();
 		$buttonProperties['title'] = '<span>' . $addLabel . '</span>';
 		$buttonProperties['alt']   = $addLabel;
-		$this->buttons->add        = FabrikHelperHTML::image('plus-sign.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->add        = HelperHTML::image('plus-sign.png', 'list', $this->tmpl, $buttonProperties);
 
 		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_PDF') . '</span>';
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_PDF');
-		$this->buttons->pdf        = FabrikHelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties);
+		$this->buttons->pdf        = HelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties);
 	}
 
 	/**

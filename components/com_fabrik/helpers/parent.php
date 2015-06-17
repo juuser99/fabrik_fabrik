@@ -26,6 +26,7 @@ use \JCache as JCache;
 use \JUri as JUri;
 use \JAccess;
 use \JFilterInput;
+use Fabrik\Helpers\HTML as HelperHTML;
 
 /**
  * Generic tools that all models use
@@ -1396,7 +1397,7 @@ class Worker
 
 	public static function logError($errString, $msgType)
 	{
-		if (FabrikHelperHTML::isDebug())
+		if (HelperHTML::isDebug())
 		{
 			$app = JFactory::getApplication();
 			$app->enqueueMessage($errString, $msgType);

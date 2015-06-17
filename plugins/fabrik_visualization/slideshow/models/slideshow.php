@@ -13,10 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use Fabrik\Admin\Models\Visualization;
 
 /**
  * Slideshow viz Model
@@ -26,7 +23,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @since       3.0
  */
 
-class FabrikModelSlideshow extends FabrikFEModelVisualization
+class FabrikModelSlideshow extends Visualization
 {
 	/**
 	 * Get slideshow HTML container markup

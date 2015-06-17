@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.form.formfield');
 JFormHelper::loadFieldClass('textarea');
@@ -85,8 +86,8 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 			return $editor;
 		}
 
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
+		HTML::framework();
+		HTML::iniRequireJS();
 
 		if ($mode === 'php')
 		{
@@ -159,7 +160,7 @@ window.addEvent(\'domready\', function () {
 		';
 
 		$src = array('media/com_fabrik/js/lib/ace/src-min-noconflict/ace.js', 'media/com_fabrik/js/fabrik.js');
-		FabrikHelperHTML::script($src, $script);
+		HTML::script($src, $script);
 
 		echo '<style type="text/css" media="screen">
 	#' . $aceId . '-ace {

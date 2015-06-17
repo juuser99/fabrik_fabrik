@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Admin\Helpers\AdminElement;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -242,8 +243,8 @@ class JFormFieldListfields extends JFormFieldList
 			}
 		}
 
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
+		HTML::framework();
+		HTML::iniRequireJS();
 
 		return $return;
 	}
@@ -278,7 +279,7 @@ class JFormFieldListfields extends JFormFieldList
 		$srcs = array();
 		$srcs[] = 'media/com_fabrik/js/fabrik.js';
 		$srcs[] = 'administrator/components/com_fabrik/models/fields/listfields.js';
-		FabrikHelperHTML::script($srcs, $script);
+		HTML::script($srcs, $script);
 	}
 
 	/**

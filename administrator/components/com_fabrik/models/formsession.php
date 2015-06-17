@@ -35,7 +35,7 @@ class FormSession extends \JModelBase
 	 *
 	 * @var int
 	 */
-	protected $userid = null;
+	protected $userId = null;
 
 	/**
 	 * Unique reference for the form session
@@ -49,7 +49,7 @@ class FormSession extends \JModelBase
 	 *
 	 * @var int
 	 */
-	protected $formid = null;
+	protected $formId = null;
 
 	/**
 	 * Row id
@@ -112,11 +112,10 @@ class FormSession extends \JModelBase
 	/**
 	 * Save the form data to #__fabrik_form_session
 	 *
-	 * @param   object  &$formModel  form model
+	 * @param   \Fabrik\Admin\Models\Form  &$formModel  form model
 	 *
 	 * @return  null
 	 */
-
 	public function savePage(&$formModel)
 	{
 		$app = JFactory::getApplication();
@@ -128,7 +127,7 @@ class FormSession extends \JModelBase
 		$input = $app->input;
 		$formModel->copyToRaw($post);
 		$fabrik_vars = ArrayHelper::getValue($post, 'fabrik_vars', array());
-		$querystring = ArrayHelper::getValue($fabrik_vars, 'querystring', array());
+		$queryString = ArrayHelper::getValue($fabrik_vars, 'querystring', array());
 		$formModel->addEncrytedVarsToArray($post);
 
 		if (array_key_exists('fabrik_vars', $post))
@@ -138,7 +137,7 @@ class FormSession extends \JModelBase
 
 		$data = serialize($post);
 		$hash = $this->getHash();
-		$userid = $this->getUserId();
+		$userId = $this->getUserId();
 		$user = JFactory::getUser();
 		$row = $this->load();
 		$row->hash = $hash;
@@ -203,7 +202,6 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  JSimpleCrypt
 	 */
-
 	protected function getCrypt()
 	{
 		/**
@@ -231,7 +229,6 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  void
 	 */
-
 	public function useCookie($bol)
 	{
 		$this->useCookie = $bol;
@@ -242,7 +239,6 @@ class FormSession extends \JModelBase
 	 *
 	 * @return object session table row
 	 */
-
 	public function load()
 	{
 		$user = JFactory::getUser();
@@ -298,7 +294,6 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  string
 	 */
-
 	protected function getCookieKey()
 	{
 		$user = JFactory::getUser();
@@ -315,15 +310,14 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  bool
 	 */
-
 	public function canUseCookie()
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$session = JFactory::getSession();
-		$formid = $this->getFormId();
+		$formId = $this->getFormId();
 
-		if ($session->get('com_' . $package . '.form.' . $formid . '.session.on'))
+		if ($session->get('com_' . $package . '.form.' . $formId . '.session.on'))
 		{
 			return true;
 		}
@@ -336,7 +330,6 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  bool
 	 */
-
 	public function remove()
 	{
 		// $$$ hugh - need to clear the 'session.on'.  If we're zapping the stored
@@ -395,14 +388,13 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  string  hash
 	 */
-
 	public function getHash()
 	{
-		$userid = $this->getUserId();
+		$userId = $this->getUserId();
 
 		if (is_null($this->hash))
 		{
-			$this->hash = $userid . ':' . $this->getFormId() . ':' . $this->getRowId();
+			$this->hash = $userId . ':' . $this->getFormId() . ':' . $this->getRowId();
 		}
 
 		return $this->hash;
@@ -413,7 +405,6 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  mixed  user id if logged in, unique id if not
 	 */
-
 	protected function getUserId()
 	{
 		$user = JFactory::getUser();
@@ -433,10 +424,9 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  null
 	 */
-
 	public function setFormId($id)
 	{
-		$this->formid = $id;
+		$this->formId = $id;
 	}
 
 	/**
@@ -446,10 +436,9 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  null
 	 */
-
 	public function setRowId($id)
 	{
-		$this->rowid = (int) $id;
+		$this->rowId = (int) $id;
 	}
 
 	/**
@@ -457,17 +446,16 @@ class FormSession extends \JModelBase
 	 *
 	 * @return  int
 	 */
-
 	protected function getRowId()
 	{
 		$app = JFactory::getApplication();
 
-		if (is_null($this->rowid))
+		if (is_null($this->rowId))
 		{
-			$this->rowid = $app->input->getString('rowid', '', 'string');
+			$this->rowId = $app->input->getString('rowid', '', 'string');
 		}
 
-		return (int) $this->rowid;
+		return (int) $this->rowId;
 	}
 
 	/**
@@ -475,16 +463,15 @@ class FormSession extends \JModelBase
 	 *
 	 * @return int  form id
 	 */
-
 	public function getFormId()
 	{
 		$app = JFactory::getApplication();
 
-		if (is_null($this->formid))
+		if (is_null($this->formId))
 		{
-			$this->formid = $app->input->getString('formid');
+			$this->formId = $app->input->getString('formid');
 		}
 
-		return $this->formid;
+		return $this->formId;
 	}
 }

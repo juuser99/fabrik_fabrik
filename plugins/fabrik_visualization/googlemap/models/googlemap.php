@@ -16,21 +16,17 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ListHelper;
 use Fabrik\Helpers\GoogleMapHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
-require_once JPATH_SITE . '/components/com_fabrik/helpers/googlemap.php';
+use Fabrik\Admin\Models\Visualization;
+use Fabrik\Helpers\HTML;
 
 /**
  * Fabrik Google Map Plug-in Model
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.googlemap
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikModelGooglemap extends FabrikFEModelVisualization
+class FabrikModelGooglemap extends Visualization
 {
 	/**
 	 * Out put text
@@ -554,7 +550,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 			$app->enqueueMessage($limitMessage);
 		}
 
-		FabrikHelperHTML::debug($icons, 'map');
+		HTML::debug($icons, 'map');
 
 		return $icons;
 	}

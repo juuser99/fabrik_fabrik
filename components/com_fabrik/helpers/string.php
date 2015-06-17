@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
+use \Fabrik\Helpers\HTML as HelperHTML;
 
 /**
  * String helpers
@@ -396,7 +397,7 @@ class FabrikString extends String
 
 		if ($showTip && count($text) > $wordCount)
 		{
-			FabrikHelperHTML::tips();
+			HelperHTML::tips();
 
 			if ($title !== '')
 			{

@@ -23,7 +23,7 @@ use \JFolder as JFolder;
 use \JProfiler as JProfiler;
 use \JFilterInput as JFilterInput;
 use \FabrikString as FabrikString;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML;
 use Joomla\String\String as String;
 use FText as FText;
 use \stdClass as stdClass;
@@ -121,7 +121,7 @@ class Form extends View implements ModelFormFormInterface
 	/**
 	 * List model associated with form
 	 *
-	 * @var FabrikFEModelList
+	 * @var \Fabrik\Admin\Models\Lizt
 	 */
 	protected $listModel = null;
 
@@ -199,7 +199,7 @@ class Form extends View implements ModelFormFormInterface
 	/**
 	 * Session model deals with storing incomplete pages
 	 *
-	 * @var FabrikFEModelFormsession
+	 * @var \Fabrik\Admin\Models\FormSession
 	 */
 	public $sessionModel = null;
 
@@ -441,13 +441,12 @@ class Form extends View implements ModelFormFormInterface
 	}
 
 	/**
-	 * Validate the form
+	 * Admin Validate the form
 	 *
 	 * @param   array   $data   The data to validate.
 	 *
 	 * @return mixed  false or data
 	 */
-
 	public function validate($data)
 	{
 		$params = $data['params'];
@@ -1029,7 +1028,7 @@ class Form extends View implements ModelFormFormInterface
 
 		if (!$item->get('form.record_in_database'))
 		{
-			FabrikHelperHTML::debug($data, 'form:getData from $_REQUEST');
+			HTML::debug($data, 'form:getData from $_REQUEST');
 			$data = $f->clean($_REQUEST, 'array');
 		}
 		else
@@ -1056,7 +1055,7 @@ class Form extends View implements ModelFormFormInterface
 						$data = ArrayHelper::toObject(unserialize($sessionRow->data), 'stdClass', false);
 						JFilterOutput::objectHTMLSafe($data);
 						$data = array($data);
-						FabrikHelperHTML::debug($data, 'form:getData from session (form in Mambot and errors)');
+						HTML::debug($data, 'form:getData from session (form in Mambot and errors)');
 					}
 				}
 				else
@@ -1069,7 +1068,7 @@ class Form extends View implements ModelFormFormInterface
 					// $$$rob ensure "<tags>text</tags>" that are entered into plain text areas are shown correctly
 					JFilterOutput::objectHTMLSafe($data);
 					$data = ArrayHelper::fromObject($data);
-					FabrikHelperHTML::debug($data, 'form:getData from POST (form not in Mambot and errors)');
+					HTML::debug($data, 'form:getData from POST (form not in Mambot and errors)');
 				}
 			}
 			else
@@ -1107,7 +1106,7 @@ class Form extends View implements ModelFormFormInterface
 						$bits = $data;
 						$bits = array_merge($tmp_data, $bits);
 						$data = array(ArrayHelper::toObject($bits));
-						FabrikHelperHTML::debug($data, 'form:getData from session (form not in Mambot and no errors');
+						HTML::debug($data, 'form:getData from session (form not in Mambot and no errors');
 					}
 				}
 
@@ -1129,7 +1128,7 @@ class Form extends View implements ModelFormFormInterface
 						$opts = $input->get('task') == 'form.inlineedit' ? array('ignoreOrder' => true) : array();
 						$sql = $this->buildQuery($opts);
 						$fabrikDb->setQuery($sql);
-						FabrikHelperHTML::debug($fabrikDb->getQuery(), 'form:render');
+						HTML::debug($fabrikDb->getQuery(), 'form:render');
 						$rows = $fabrikDb->loadObjectList();
 
 						JDEBUG ? $profiler->mark('formmodel getData: rows data loaded') : null;
@@ -1155,7 +1154,7 @@ class Form extends View implements ModelFormFormInterface
 							}
 						}
 
-						FabrikHelperHTML::debug($data, 'form:getData from querying rowid= ' . $this->rowId . ' (form not in Mambot and no errors)');
+						HTML::debug($data, 'form:getData from querying rowid= ' . $this->rowId . ' (form not in Mambot and no errors)');
 
 						// If empty data return and trying to edit a record then show error
 						JDEBUG ? $profiler->mark('formmodel getData: empty test') : null;
@@ -1195,7 +1194,7 @@ class Form extends View implements ModelFormFormInterface
 		}
 
 		$this->data = $data;
-		FabrikHelperHTML::debug($data, 'form:data');
+		HTML::debug($data, 'form:data');
 		JDEBUG ? $profiler->mark('queryselect: getData() end') : null;
 
 		return $this->data;
@@ -1298,11 +1297,11 @@ class Form extends View implements ModelFormFormInterface
 			$qs .= '&amp;rowid=' . $this->getRowId();
 
 			/* $$$ need &amp; for pdf output which is parsed through xml parser otherwise fails
-			 * If FabrikHelperHTML::styleSheetajax loaded then don't do &amp;
+			 * If HTML::styleSheetajax loaded then don't do &amp;
 			 */
 			$view = $this->isEditable() ? 'form' : 'details';
 
-			if (FabrikHelperHTML::cssAsAsset())
+			if (HTML::cssAsAsset())
 			{
 				$qs .= '&view=' . $v;
 				$qs .= '&rowid=' . $this->getRowId();
@@ -1315,9 +1314,9 @@ class Form extends View implements ModelFormFormInterface
 
 			$tmplPath = 'templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/template_css.php' . $qs;
 
-			if (!FabrikHelperHTML::stylesheetFromPath($tmplPath))
+			if (!HTML::stylesheetFromPath($tmplPath))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/template_css.php' . $qs);
+				HTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/template_css.php' . $qs);
 			}
 
 			/* $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
@@ -1325,22 +1324,22 @@ class Form extends View implements ModelFormFormInterface
 			 * custom_css.php - what we'll recommend people use for custom css moving forward.
 			 */
 
-			if (!FabrikHelperHTML::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom.css' . $qs))
+			if (!HTML::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom.css' . $qs))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/custom.css' . $qs);
+				HTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/custom.css' . $qs);
 			}
 
 			$path = 'templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom_css.php' . $qs;
 
-			if (!FabrikHelperHTML::stylesheetFromPath($path))
+			if (!HTML::stylesheetFromPath($path))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/custom_css.php' . $qs);
+				HTML::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/custom_css.php' . $qs);
 			}
 		}
 
 		if ($this->app->isAdmin() && $input->get('tmpl') === 'components')
 		{
-			FabrikHelperHTML::stylesheet('administrator/templates/system/css/system.css');
+			HTML::stylesheet('administrator/templates/system/css/system.css');
 		}
 	}
 
@@ -2507,7 +2506,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return	array	(validationruleid => classname )
 	 */
-
 	public function loadValidationRuleClasses()
 	{
 		if (is_null($this->validationRuleClasses))
@@ -2535,7 +2533,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return	null
 	 */
-
 	public function addEncrytedVarsToArray(&$post)
 	{
 		if (array_key_exists('fabrik_vars', $_REQUEST) && array_key_exists('querystring', $_REQUEST['fabrik_vars']))
@@ -2684,7 +2681,6 @@ class Form extends View implements ModelFormFormInterface
 	 *
 	 * @return bool
 	 */
-
 	public function failedValidation()
 	{
 		return $this->hasErrors();
@@ -2699,7 +2695,6 @@ class Form extends View implements ModelFormFormInterface
 	 *                // FIXME - call this when the form is submitted (had to change the function ame from validate to
 	 *                avoid clash with admin form validate method.
 	 */
-
 	public function validateForm()
 	{
 		$input = $this->app->input;
@@ -2916,7 +2911,7 @@ class Form extends View implements ModelFormFormInterface
 			Worker::getPluginManager()->runPlugins('onError', $this);
 		}
 
-		FabrikHelperHTML::debug($this->errors, 'form:errors');
+		HTML::debug($this->errors, 'form:errors');
 		$this->setErrors($this->errors);
 
 		return $ok;

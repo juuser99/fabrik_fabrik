@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
+
 /**
  * Plugin element to render two fields to capture a link (url/label)
  *
@@ -67,7 +69,7 @@ class PlgFabrik_ElementLink extends Element
 
 		if ($listModel->getOutPutFormat() != 'rss' && ($smart_link || $target == 'mediabox'))
 		{
-			FabrikHelperHTML::slimbox();
+			HTML::slimbox();
 		}
 
 		$data = Worker::JSONtoData($data, true);
@@ -157,7 +159,7 @@ class PlgFabrik_ElementLink extends Element
 					$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
 				}
 
-				return FabrikHelperHTML::a($href, $lbl, $opts);
+				return HTML::a($href, $lbl, $opts);
 			}
 			else
 			{
@@ -261,7 +263,7 @@ class PlgFabrik_ElementLink extends Element
 				$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
 			}
 
-			return FabrikHelperHTML::a($href, $lbl, $opts);
+			return HTML::a($href, $lbl, $opts);
 		}
 
 		$labelname = FabrikString::rtrimword($name, '[]') . '[label]';
@@ -412,7 +414,7 @@ class PlgFabrik_ElementLink extends Element
 
 		if ($listModel->getOutPutFormat() != 'rss' && ($smart_link || $target == 'mediabox'))
 		{
-			FabrikHelperHTML::slimbox();
+			HTML::slimbox();
 		}
 
 		$id = $this->getHTMLId($repeatCounter);

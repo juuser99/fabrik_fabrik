@@ -15,6 +15,7 @@ use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 if (!defined('DS'))
 {
@@ -139,7 +140,7 @@ class PlgFabrik_ElementImage extends Element
 			if (!strstr($iPath, '/'))
 			{
 				// Single file specified so find it in tmpl folder
-				$data = (array) FabrikHelperHTML::image($iPath, 'list', @$this->tmpl, array(), true);
+				$data = (array) HTML::image($iPath, 'list', @$this->tmpl, array(), true);
 			}
 			else
 			{

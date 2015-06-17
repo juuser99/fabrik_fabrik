@@ -20,9 +20,8 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @since       3.0
+ * @since       3.5
  */
-
 class FabGoogleMapHelper
 {
 	/**

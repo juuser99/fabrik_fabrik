@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render colour picker
@@ -95,7 +96,7 @@ class PlgFabrik_ElementColourpicker extends Element
 			return array();
 		}
 
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/colourpicker/images/', 'image', 'form', false);
+		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/colourpicker/images/', 'image', 'form', false);
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$data = $this->getFormModel()->data;

@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
+use Fabrik\Admin\Models\Lizt;
 
 require 'controller.php';
 
@@ -67,7 +68,6 @@ class FabrikControllerPlugin extends FabrikController
 	 *
 	 * @return  null
 	 */
-
 	public function userAjax()
 	{
 		$db = Worker::getDbo();
@@ -84,11 +84,10 @@ class FabrikControllerPlugin extends FabrikController
 	/**
 	 * Do Cron task
 	 *
-	 * @param   object  &$pluginManager  pluginmanager
+	 * @param   \Fabrik\Admin\Models\PluginManager  &$pluginManager  plugin manager
 	 *
 	 * @return  null
 	 */
-
 	public function doCron(&$pluginManager)
 	{
 		$db = Worker::getDbo();
@@ -103,7 +102,7 @@ class FabrikControllerPlugin extends FabrikController
 
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
-		$viewModel = JModelLegacy::getInstance('view', 'FabrikFEModel');
+		$viewModel = new Lizt;
 		$c = 0;
 
 		foreach ($rows as $row)
@@ -115,9 +114,9 @@ class FabrikControllerPlugin extends FabrikController
 
 			$thisViewModel = clone ($viewModel);
 			$thisViewModel->setId($params->get('table'));
-			$table = $viewModel->getTable();
+			$viewModel->getTable();
 			$total = $thisViewModel->getTotalRecords();
-			$nav = $thisViewModel->getPagination($total, 0, $total);
+			$thisViewModel->getPagination($total, 0, $total);
 			$data = $thisViewModel->getData();
 
 			// $$$ hugh - added table model param, in case plugin wants to do further table processing

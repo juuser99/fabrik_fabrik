@@ -13,7 +13,7 @@ namespace Fabrik\Admin\Views\Visualization;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
 use \FText as FText;
@@ -71,7 +71,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->addToolbar();
 
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HelperHTML::framework();
 		$srcs[] = 'media/com_fabrik/js/fabrik.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
@@ -82,7 +82,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$dep->deps = array('admin/pluginmanager');
 		$shim['admin/visualization/adminvisualization'] = $dep;
 
-		FabrikHelperHTML::iniRequireJS($shim);
+		HelperHTML::iniRequireJS($shim);
 
 		$opts = new stdClass;
 		$opts->plugin = $this->item->plugin;
@@ -92,7 +92,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		Fabrik.controller = new AdminVisualization(options);
 ";
 
-		FabrikHelperHTML::script($srcs, $js);
+		HelperHTML::script($srcs, $js);
 
 		return parent::render();
 	}

@@ -14,7 +14,7 @@ namespace Fabrik\Admin\Views;
 use \Jmodel as JModel;
 use \SplPriorityQueue as SplPriorityQueue;
 use \JFactory as JFactory;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use Fabrik\Helpers\HTML as HelperHTML;
 use \JHTML as JHTML;
 use \Joomla\Registry\Registry as Registry;
 
@@ -74,7 +74,7 @@ class Html Extends \JViewHtml
 
 		if ($input->get('format', 'html') === 'html')
 		{
-			FabrikHelperHTML::framework();
+			HelperHTML::framework();
 		}
 
 		JHTML::stylesheet('administrator/components/com_fabrik/headings.css');

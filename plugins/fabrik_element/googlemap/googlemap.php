@@ -15,6 +15,7 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\GoogleMapHelper;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render a Google map
@@ -207,7 +208,7 @@ class PlgFabrik_ElementGooglemap extends Element
 			if ($params->get('fb_gm_defaultloc'))
 			{
 				$uri = JURI::getInstance();
-				FabrikHelperHTML::script('components/com_fabrik/libs/geo-location/geo.js');
+				HTML::script('components/com_fabrik/libs/geo-location/geo.js');
 				self::$geoJs = true;
 			}
 		}
@@ -230,7 +231,7 @@ class PlgFabrik_ElementGooglemap extends Element
 
 			if ((int) $params->get('fb_gm_radius', '0'))
 			{
-				FabrikHelperHTML::script('components/com_fabrik/libs/googlemaps/distancewidget.js');
+				HTML::script('components/com_fabrik/libs/googlemaps/distancewidget.js');
 				self::$radiusJs = true;
 			}
 		}

@@ -12,7 +12,7 @@ namespace Fabrik\Admin\Views\Group;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML as HelperHTML;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
 use \FText as FText;
@@ -63,9 +63,9 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->addToolbar();
 
-		$srcs = FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
-		FabrikHelperHTML::script($srcs);
+		$srcs = HelperHTML::framework();
+		HelperHTML::iniRequireJS();
+		HelperHTML::script($srcs);
 
 		return parent::render();
 	}

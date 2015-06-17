@@ -10,6 +10,7 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+use Fabrik\Helpers\HTML;
 
 ?>
 <form method="post" enctype="multipart/form-data" action="<?php echo JURI::base();?>index.php" name="emailtable" id="emailtable">
@@ -52,10 +53,10 @@ defined('_JEXEC') or die('Restricted access');
 			<input class="inputbox fabrikinput" name="attachment[]" type="file" id="attachment" />
 		</label>
 		<a href="#" class="addattachment">
-		<?php echo FabrikHelperHTML::image('plus.png', 'form', @$this->tmpl, FText::_('COM_FABRIK_ADD'));?>
+		<?php echo HTML::image('plus.png', 'form', @$this->tmpl, FText::_('COM_FABRIK_ADD'));?>
 		</a>
 		<a href="#" class="delattachment">
-			<?php echo FabrikHelperHTML::image('minus-sign.png', 'form', @$this->tmpl, FText::_('COM_FABRIK_DELETE'));?>
+			<?php echo HTML::image('minus-sign.png', 'form', @$this->tmpl, FText::_('COM_FABRIK_DELETE'));?>
 		</a>
 	</div>
 	<?php

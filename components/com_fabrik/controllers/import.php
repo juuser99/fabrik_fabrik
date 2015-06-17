@@ -34,9 +34,10 @@ class FabrikControllerImport extends FabrikController
 	public function display($cachable = false, $urlparams = array())
 	{
 		$input = $this->input;
-		$this->getModel('Importcsv', 'FabrikFEModel')->clearSession();
+		$model = new CsvImport;
+		$model->clearSession();
 		$this->listid = $input->getInt('listid', 0);
-		$listModel = $this->getModel('list', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$listModel->setId($this->listid);
 		$this->table = $listModel->getTable();
 		$document = JFactory::getDocument();
@@ -45,7 +46,7 @@ class FabrikControllerImport extends FabrikController
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
-		$model = $this->getModel('Importcsv', 'FabrikFEModel');
+		$model = new CsvImport;
 		$view->setModel($model, true);
 		$view->display();
 	}
@@ -60,7 +61,7 @@ class FabrikControllerImport extends FabrikController
 	public function doimport()
 	{
 		$input = $this->input;
-		$model = $this->getModel('Importcsv', 'FabrikFEModel');
+		$model = new CsvImport;
 		$listModel = $model->getListModel();
 
 		if (!$listModel->canCSVImport())

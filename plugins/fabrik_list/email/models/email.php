@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -90,7 +91,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 	public function onLoadJavascriptInstance($args)
 	{
-		FabrikHelperHTML::slimbox();
+		HTML::slimbox();
 		parent::onLoadJavascriptInstance($args);
 		$opts              = $this->getElementJSOptions();
 		$opts->renderOrder = $this->renderOrder;
@@ -606,7 +607,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		{
 			if ($phpMsg)
 			{
-				$thisMsg .= FabrikHelperHTML::getPHPTemplate($emailTemplate, $row, $this->listModel);
+				$thisMsg .= HTML::getPHPTemplate($emailTemplate, $row, $this->listModel);
 			}
 			else
 			{
@@ -695,7 +696,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		$phpMsg          = false;
 		$params          = $this->getParams();
 		$contentTemplate = $params->get('emailtable_template_content', '');
-		$content       = empty($contentTemplate) ? '' : FabrikHelperHTML::getContentTemplate($contentTemplate);
+		$content       = empty($contentTemplate) ? '' : HTML::getContentTemplate($contentTemplate);
 		$emailTemplate = $this->_emailTemplate();
 
 		if (JFile::exists($emailTemplate))
@@ -707,7 +708,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			}
 			else
 			{
-				$message = FabrikHelperHTML::getTemplateFile($emailTemplate);
+				$message = HTML::getTemplateFile($emailTemplate);
 			}
 
 			$message = str_replace('{content}', $content, $message);
@@ -763,7 +764,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		{
 			if ($phpMsg)
 			{
-				$thisMsg = FabrikHelperHTML::getPHPTemplate($emailTemplate, $row, $this->listModel);
+				$thisMsg = HTML::getPHPTemplate($emailTemplate, $row, $this->listModel);
 			}
 			else
 			{

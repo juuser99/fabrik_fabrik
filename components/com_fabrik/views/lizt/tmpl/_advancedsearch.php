@@ -11,15 +11,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
+use Fabrik\Helpers\HTML;
 
 $app = JFactory::getApplication();
 $input = $app->input;
 ?>
 <form method="post" action="<?php echo $this->action?>" class="advancedSeach_<?php echo $this->listref?>">
 	<a class="addbutton advanced-search-add btn-success btn" href="#">
-		<?php echo FabrikHelperHTML::image('plus.png', 'list', $this->tmpl);?>
+		<?php echo HTML::image('plus.png', 'list', $this->tmpl);?>
 		<?php echo FText::_('COM_FABRIK_ADD')?>
 	</a>
 	<div id="advancedSearchContainer">
@@ -35,7 +34,7 @@ $input = $app->input;
 				<td>
 					<div class="button-group">
 						<a class="advanced-search-remove-row btn btn-danger" href="#">
-							<?php echo FabrikHelperHTML::image('minus.png', 'list', $this->tmpl);?>
+							<?php echo HTML::image('minus.png', 'list', $this->tmpl);?>
 						</a>
 					</div>
 				</td>

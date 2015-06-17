@@ -13,6 +13,7 @@ use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\PDFHelper;
+use Fabrik\Helpers\HTML;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -94,7 +95,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$runContentPlugins = $params->get('email_run_content_plugins', '0') === '1';
 		
 		$contentTemplate = $params->get('email_template_content');		
-		$content = $contentTemplate != '' ? FabrikHelperHTML::getContentTemplate($contentTemplate, 'both', $runContentPlugins) : '';
+		$content = $contentTemplate != '' ? HTML::getContentTemplate($contentTemplate, 'both', $runContentPlugins) : '';
 		
 		// Always send as html as even text email can contain html from wysiwyg editors
 		$htmlEmail = true;
@@ -114,7 +115,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 			if ($runContentPlugins === true)
 			{
-				FabrikHelperHTML::runContentPlugins($messageTemplate);	
+				HTML::runContentPlugins($messageTemplate);	
 			}
 			
 			$messageTemplate = str_replace('{content}', $content, $messageTemplate);
@@ -127,7 +128,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			
 			if ($runContentPlugins === true)
 			{
-				FabrikHelperHTML::runContentPlugins($messageText);
+				HTML::runContentPlugins($messageText);
 			}
 			
 			$messageText = $w->parseMessageForPlaceholder($messageText, $this->data, false);
@@ -588,7 +589,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 	/**
 	 * Get content item template
-	 * DEPRECATED use FabrikHelperHTML::getContentTemplate() instead
+	 * DEPRECATED use HTML::getContentTemplate() instead
 	 *
 	 * @param   int  $contentTemplate  Joomla article ID to load
 	 *

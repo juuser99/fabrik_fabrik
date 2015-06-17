@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render facebook likebox widget
@@ -58,7 +59,7 @@ class PlgFabrik_ElementFbLikeBox extends Element
 		$layout = $this->getLayout('form');
 		$displayData = new stdClass;
 
-		$displayData->graphApi = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'));
+		$displayData->graphApi = HTML::facebookGraphAPI($params->get('opengraph_applicationid'));
 		$displayData->pageid = $params->get('fblikebox_pageid', 0);
 		$displayData->stream = $params->get('fblikebox_stream', 1) == 1 ? 'true' : 'false';
 		$displayData->width = $params->get('fblikebox_width', 300);

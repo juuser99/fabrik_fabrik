@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Models\Lizt;
 require 'controller.php';
 
 /**
@@ -75,10 +76,9 @@ class FabrikControllerElement extends FabrikController
 	 *
 	 * @return  null
 	 */
-
 	public function save()
 	{
-		$listModel = $this->getModel('list', 'FabrikFEModel');
+		$listModel = new Lizt;
 		$listModel->setId($this->input->getString('listid'));
 		$rowId = $this->input->get('rowid');
 		$key   = $this->input->get('element');

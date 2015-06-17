@@ -221,16 +221,6 @@ class PlgFabrik_ElementCaptcha extends Element
 		}
 		elseif ($params->get('captcha-method') == 'nocaptcha')
 		{
-			/*
-			FabrikHelperHTML::addScriptDeclaration(
-				"var onloadCallback = function() {
-					grecaptcha.render('" . $id . "', {
-						'sitekey' : '" . $params->get('recaptcha_publickey') . "'
-					});
-				};"
-			);
-			*/
-			
 			$layout = $this->getLayout('nocaptcha');
 			$displayData = new stdClass;
 			$displayData->id = $id;

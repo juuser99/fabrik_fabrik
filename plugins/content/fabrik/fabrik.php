@@ -742,12 +742,9 @@ class PlgContentFabrik extends JPlugin
 			$viewName = 'list';
 		}
 
+		// FIXME for 3.5 - model loading
 		$prefix = '';
 
-		if ($viewName == 'form' || $viewName == 'list')
-		{
-			$prefix = 'FabrikFEModel';
-		}
 
 		if (!isset($controller->_model))
 		{

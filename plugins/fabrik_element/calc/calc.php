@@ -15,6 +15,7 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\Element as Element;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render field with PHP calculated value
@@ -112,7 +113,7 @@ class PlgFabrik_ElementCalc extends Element
 			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
 			$d = $data;
 
-			$res = FabrikHelperHTML::isDebug() ? eval($default) : @eval($default);
+			$res = HTML::isDebug() ? eval($default) : @eval($default);
 			Worker::logEval($res, 'Eval exception : ' . $this->getElement()->name . '::_getV() : ' . $default . ' : %s');
 
 			return $res;
@@ -356,7 +357,7 @@ class PlgFabrik_ElementCalc extends Element
 			$d = $data;
 			$cal = $listModel->parseMessageForRowHolder($cal, $data, true);
 
-			if (FabrikHelperHTML::isDebug())
+			if (HTML::isDebug())
 			{
 				$res = eval($cal);
 			}
@@ -453,7 +454,7 @@ class PlgFabrik_ElementCalc extends Element
 		}
 
 		$opts = array('alt' => FText::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
-		$str[] = FabrikHelperHTML::image('ajax-loader.gif', 'form', @$this->tmpl, $opts);
+		$str[] = HTML::image('ajax-loader.gif', 'form', @$this->tmpl, $opts);
 
 		return implode("\n", $str);
 	}
@@ -531,7 +532,7 @@ class PlgFabrik_ElementCalc extends Element
 		// $$$ hugh - trying to standardize on $data so scripts know where data is
 		$data = $d;
 		$calc = $w->parseMessageForPlaceHolder($calc, $d);
-		$c = FabrikHelperHTML::isDebug() ? eval($calc): @eval($calc);
+		$c = HTML::isDebug() ? eval($calc): @eval($calc);
 		$c = preg_replace('#(\/\*.*?\*\/)#', '', $c);
 		echo $c;
 	}

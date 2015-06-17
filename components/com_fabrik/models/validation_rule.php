@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugins\Plugin as Plugin;
+use Fabrik\Helpers\HTML;
 
 /**
  * Fabrik Validation Rule Model
@@ -21,7 +22,7 @@ use Fabrik\Plugins\Plugin as Plugin;
  * @package  Fabrik
  * @since    3.5
  */
-class PlgFabrik_ValidationRule extends Plugin
+class ValidationRule extends Plugin
 {
 	/**
 	 * Plugin name
@@ -33,7 +34,7 @@ class PlgFabrik_ValidationRule extends Plugin
 	/**
 	 * Validation rule's element model
 	 *
-	 * @var \Fabrik\Models\Element
+	 * @var \Fabrik\Plugins\Element
 	 */
 	public $elementModel = null;
 
@@ -52,7 +53,6 @@ class PlgFabrik_ValidationRule extends Plugin
 	 *
 	 * @return  bool  true if validation passes, false if fails
 	 */
-
 	public function validate($data, $repeatCounter)
 	{
 		return true;
@@ -67,7 +67,6 @@ class PlgFabrik_ValidationRule extends Plugin
 	 *
 	 * @return  string	original or replaced data
 	 */
-
 	public function replace($data, $repeatCounter)
 	{
 		return $data;
@@ -105,7 +104,7 @@ class PlgFabrik_ValidationRule extends Plugin
 
 		$w = new Worker;
 		$condition = trim($w->parseMessageForPlaceHolder($condition));
-		$formModel = $this->elementModel->getFormModel();
+		$this->elementModel->getFormModel();
 		$res = @eval($condition);
 
 		if (is_null($res))
@@ -231,7 +230,7 @@ class PlgFabrik_ValidationRule extends Plugin
 	public function getIcon($c = 0, $tmpl = '')
 	{
 		$name = $this->elementModel->validator->getIcon($c);
-		$i = FabrikHelperHTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
+		$i = HTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
 	}
 
 	/**
@@ -277,11 +276,10 @@ class PlgFabrik_ValidationRule extends Plugin
 	 *
 	 * @return  string
 	 */
-
 	public function getHoverText($c = null, $tmpl = '')
 	{
 		$name = $this->elementModel->validator->getIcon($c);
-		$i = FabrikHelperHTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
+		$i = HTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
 
 		return $i . ' ' . $this->getLabel();
 	}
@@ -291,7 +289,6 @@ class PlgFabrik_ValidationRule extends Plugin
 	 *
 	 * @return  string	label
 	 */
-
 	protected function getLabel()
 	{
 		$params = $this->getParams();
@@ -318,7 +315,6 @@ class PlgFabrik_ValidationRule extends Plugin
 	 *
 	 * @return  bool
 	 */
-
 	protected function allowEmpty()
 	{
 		return false;

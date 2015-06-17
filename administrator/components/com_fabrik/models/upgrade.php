@@ -9,6 +9,8 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -17,17 +19,15 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikModelUpgrade extends FabModelAdmin
+class Upgrade extends Base
 {
 	/**
 	 * Construct
 	 *
 	 * @param   array  $config  options
 	 */
-
 	public function __construct($config = array())
 	{
 		$this->fundleMenus();
@@ -47,7 +47,6 @@ class FabrikModelUpgrade extends FabModelAdmin
 	 *
 	 * @return  bool
 	 */
-
 	protected function backUp()
 	{
 		$db = JFactory::getDbo(true);
@@ -100,7 +99,6 @@ class FabrikModelUpgrade extends FabModelAdmin
 	 *
 	 * @return  void
 	 */
-
 	protected function upgrade()
 	{
 		if (!$this->shouldUpgrade())
@@ -217,7 +215,6 @@ class FabrikModelUpgrade extends FabModelAdmin
 	 *
 	 * @return  void
 	 */
-
 	protected function fundleMenus()
 	{
 		$db = JFactory::getDbo();
@@ -246,7 +243,6 @@ class FabrikModelUpgrade extends FabModelAdmin
 	 *
 	 * @return  object
 	 */
-
 	protected function fromAttribsToObject($str)
 	{
 		$o = new stdClass;
@@ -305,7 +301,6 @@ class FabrikModelUpgrade extends FabModelAdmin
 	 *
 	 * @return array of objects each with db_table_name and connection_id property
 	 */
-
 	protected function getFabrikTables()
 	{
 		$db = JFactory::getDbo(true);
@@ -332,7 +327,6 @@ class FabrikModelUpgrade extends FabModelAdmin
 	 *
 	 * @return  bool
 	 */
-
 	protected function shouldUpgrade()
 	{
 		$db = JFactory::getDbo(true);

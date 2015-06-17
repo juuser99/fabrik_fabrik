@@ -14,20 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use Fabrik\Admin\Models\Visualization;
 
 /**
  * Fabrik Fusion Chart Plug-in Model
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.fusionchart
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikModelFusionchart extends FabrikFEModelVisualization
+class FabrikModelFusionchart extends Visualization
 {
 	/**
 	 * Get the chart parameters

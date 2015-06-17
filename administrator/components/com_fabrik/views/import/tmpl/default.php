@@ -14,9 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 JHtml::_('behavior.tooltip');
-FabrikHelperHTML::formvalidation();
+HTML::formvalidation();
 $app = JFactory::getApplication();
 $input = $app->input;
 $input->set('hidemainmenu', true);

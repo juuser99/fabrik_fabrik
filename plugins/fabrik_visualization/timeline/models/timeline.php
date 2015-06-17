@@ -14,10 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use Fabrik\Admin\Models\Visualization;
 
 /**
  * Renders timeline visualization
@@ -27,7 +24,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @since       3.0
  */
 
-class FabrikModelTimeline extends FabrikFEModelVisualization
+class FabrikModelTimeline extends Visualization
 {
 	/**
 	 * Number of ajax records to return each time
@@ -41,7 +38,6 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 *
 	 * @return  string  json encoded event list
 	 */
-
 	public function onAjax_getEvents()
 	{
 		$app = JFactory::getApplication();

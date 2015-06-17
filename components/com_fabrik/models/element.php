@@ -26,7 +26,7 @@ use \JTable as JTable;
 use \FabTable as FabTable;
 use \FabrikString as FabrikString;
 use \JPath as JPath;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML;
 use \JFolder as JFolder;
 use \FText as FText;
 use \JFile as JFile;
@@ -561,7 +561,7 @@ class Element extends Plugin
 			foreach ($this->imageExtensions as $ex)
 			{
 				$f   = JPath::clean($cleanData . '.' . $ex);
-				$img = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), false, $opts);
+				$img = HTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), false, $opts);
 
 				if ($img !== '')
 				{
@@ -616,7 +616,7 @@ class Element extends Plugin
 						if (class_exists('DOMDocument') && $as->length)
 						{
 							$img = $html->createElement('img');
-							$src = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true, array('forceImage' => true));
+							$src = HTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true, array('forceImage' => true));
 							$img->setAttribute('src', $src);
 							$as->item(0)->nodeValue = '';
 							$as->item(0)->appendChild($img);
@@ -1250,7 +1250,7 @@ class Element extends Plugin
 				}
 				else
 				{
-					FabrikHelperHTML::debug($default, 'element eval default:' . $element->get('label'));
+					HTML::debug($default, 'element eval default:' . $element->get('label'));
 					$default = stripslashes($default);
 					$default = @eval($default);
 					Worker::logEval($default, 'Caught exception on eval of ' . $element->get('name') . ': %s');
@@ -1623,7 +1623,7 @@ class Element extends Plugin
 
 			if ($rollOver)
 			{
-				$l .= FabrikHelperHTML::image('question-sign.png', 'form', $tmpl, $iconOpts) . ' ';
+				$l .= HTML::image('question-sign.png', 'form', $tmpl, $iconOpts) . ' ';
 			}
 
 			if ($this->isEditable())
@@ -1668,7 +1668,7 @@ class Element extends Plugin
 			$err         = '<span>' . $err . '</span>';
 			$usersConfig = JComponentHelper::getParams('com_fabrik');
 			$icon        = $usersConfig->get('error_icon', 'exclamation-sign') . '.png';
-			$str .= '<a href="#" class="fabrikTip" title="' . $err . '" opts="{notice:true}">' . FabrikHelperHTML::image($icon, 'form', $tmpl)
+			$str .= '<a href="#" class="fabrikTip" title="' . $err . '" opts="{notice:true}">' . HTML::image($icon, 'form', $tmpl)
 				. '</a>';
 		}
 
@@ -1751,7 +1751,7 @@ class Element extends Plugin
 
 		if ($this->isTipped($mode))
 		{
-			$lines[] = '<li>' . FabrikHelperHTML::image('question-sign.png', 'form', $tmpl) . ' ' . $this->getTipText($data) . '</li>';
+			$lines[] = '<li>' . HTML::image('question-sign.png', 'form', $tmpl) . ' ' . $this->getTipText($data) . '</li>';
 		}
 
 		if ($mode === 'form')
@@ -1806,7 +1806,7 @@ class Element extends Plugin
 
 		if ($params->get('tipseval'))
 		{
-			if (FabrikHelperHTML::isDebug())
+			if (HTML::isDebug())
 			{
 				$res = eval($tip);
 			}
@@ -2130,7 +2130,7 @@ class Element extends Plugin
 
 		if ($tip !== '')
 		{
-			$tip = FabrikHelperHTML::image('question-sign.png', 'form', $tmpl) . ' ' . $tip;
+			$tip = HTML::image('question-sign.png', 'form', $tmpl) . ' ' . $tip;
 		}
 
 		$global_labels    = $model->getParams()->get('labels_above');
@@ -3354,7 +3354,7 @@ class Element extends Plugin
 
 		$element = $this->getElement();
 		$formId  = $this->getFormModel()->getId();
-		FabrikHelperHTML::autoComplete($selector, $element->get('id'), $formId, $element->get('plugin'), $opts);
+		HTML::autoComplete($selector, $element->get('id'), $formId, $element->get('plugin'), $opts);
 
 		return $return;
 	}
@@ -3615,7 +3615,7 @@ class Element extends Plugin
 			$data = empty($data) ? $this->getFormModel()->getData() : $data;
 			$pop  = $w->parseMessageForPlaceHolder($pop, $data);
 
-			if (FabrikHelperHTML::isDebug())
+			if (HTML::isDebug())
 			{
 				$res = eval($pop);
 			}
@@ -3844,7 +3844,7 @@ class Element extends Plugin
 		$sql .= "\n" . $groupBy;
 		$sql = $listModel->pluginQuery($sql);
 		$fabrikDb->setQuery($sql, 0, $fbConfig->get('filter_list_max', 100));
-		FabrikHelperHTML::debug($fabrikDb->getQuery(), 'element filterValueList_Exact:');
+		HTML::debug($fabrikDb->getQuery(), 'element filterValueList_Exact:');
 
 		try
 		{
@@ -5479,7 +5479,7 @@ class Element extends Plugin
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$name    = $this->getElement()->get('plugin');
-		$ext     = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+		$ext     = HTML::isDebug() ? '.js' : '-min.js';
 		$shimKey = 'element/' . $name . '/' . $name;
 
 		if (!array_key_exists($shimKey, $shim))
@@ -5980,7 +5980,7 @@ class Element extends Plugin
 		$layout                          = new JLayoutFile('fabrik-element-addoptions', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 		$displayData                     = new stdClass;
 		$displayData->id                 = $this->getHTMLId($repeatCounter);
-		$displayData->add_image          = FabrikHelperHTML::image('plus.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_ADD')));
+		$displayData->add_image          = HTML::image('plus.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_ADD')));
 		$displayData->allowadd_onlylabel = $params->get('allowadd-onlylabel');
 		$displayData->savenewadditions   = $params->get('savenewadditions');
 		$displayData->onlylabel          = $onlylabel;

@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.plugin.plugin');
 jimport('joomla.filesystem.file');
@@ -138,7 +139,7 @@ class PlgSystemFabrik extends JPlugin
 			 * tests if its inside requirejs (false) then loads scripts via <script> node creation. By the time the secondary
 			 * scripts were loaded, Fabrik had loaded requires js, and conflicts occurred.
 			 */
-			$jsAssetBaseURI = FabrikHelperHTML::getJSAssetBaseURI();
+			$jsAssetBaseURI = HTML::getJSAssetBaseURI();
 			$rjs = $jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js';
 			$script = '<script>
             setTimeout(function(){

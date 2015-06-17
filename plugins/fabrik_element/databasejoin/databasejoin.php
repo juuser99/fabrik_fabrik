@@ -15,6 +15,7 @@ use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\ElementList as ElementList;
+use Fabrik\Helpers\HTML;
 
 /**
  *  Plugin element to render list of data looked up from a database table
@@ -30,7 +31,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	/**
 	 * connection
 	 *
-	 * @var FabrikFEModelConnection
+	 * @var Fabrik\Admin\Models\Connection
 	 */
 	protected $cn = null;
 
@@ -39,7 +40,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 	/**
 	 * Created in getJoin
 	 *
-	 * @var FabrikFEModelJoin
+	 * @var Fabrik\Admin\Models\Join
 	 */
 	protected $join = null;
 
@@ -574,9 +575,9 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		}
 
 		$db->setQuery($sql);
-		FabrikHelperHTML::debug((string) $db->getQuery(), $this->getElement()->name . 'databasejoin element: get options query');
+		HTML::debug((string) $db->getQuery(), $this->getElement()->name . 'databasejoin element: get options query');
 		$this->optionVals[$sqlKey] = $db->loadObjectList();
-		FabrikHelperHTML::debug($this->optionVals, 'databasejoin elements');
+		HTML::debug($this->optionVals, 'databasejoin elements');
 
 		if (!is_array($this->optionVals[$sqlKey]))
 		{
@@ -1411,7 +1412,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 					}
 
 					$html[] = '<a href="' . $chooseUrl . '" class="toggle-selectoption btn" title="' . FText::_('COM_FABRIK_SELECT') . '">'
-						. FabrikHelperHTML::image('search.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SELECT'))) . '</a>';
+						. HTML::image('search.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SELECT'))) . '</a>';
 				}
 
 				if ($frontEndAdd && $this->isEditable())
@@ -1419,10 +1420,10 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 					JText::script('PLG_ELEMENT_DBJOIN_ADD');
 					$popupForm = (int) $params->get('databasejoin_popupform');
 					$addURL = 'index.php?option=com_fabrik';
-					$addURL .= $app->isAdmin() ? '&amp;task=form.view' : '&amp;view=form';
+					$addURL .= $this->app->isAdmin() ? '&amp;task=form.view' : '&amp;view=form';
 					$addURL .= '&amp;tmpl=component&amp;ajax=1&amp;formid=' . $popupForm;
 					$html[] = '<a href="' . $addURL . '" title="' . FText::_('COM_FABRIK_ADD') . '" class="toggle-addoption btn">';
-					$html[] = FabrikHelperHTML::image('plus.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SELECT'))) . '</a>';
+					$html[] = HTML::image('plus.png', 'form', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SELECT'))) . '</a>';
 				}
 				// If add and select put them in a button group.
 				if ($frontEndSelect && $frontEndAdd && $this->isEditable())
@@ -1551,7 +1552,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 		$html[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
 		$editable = $this->isEditable();
-		$html[] = FabrikHelperHTML::aList('radio', $tmp, $thisElName, $attribs, $defaultValue, 'value', 'text', $optsPerRow, $editable);
+		$html[] = HTML::aList('radio', $tmp, $thisElName, $attribs, $defaultValue, 'value', 'text', $optsPerRow, $editable);
 	}
 
 	/**
@@ -1636,7 +1637,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		else
 		{
 			$attribs = 'class="' . $class . '" size="1" id="' . $id . '"';
-			$html[] = FabrikHelperHTML::aList('multilist', $tmp, $elName, $attribs, $default, 'value', 'text', $optsPerRow, $this->isEditable());
+			$html[] = HTML::aList('multilist', $tmp, $elName, $attribs, $default, 'value', 'text', $optsPerRow, $this->isEditable());
 		}
 	}
 
@@ -1673,7 +1674,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$default = $targetIds;
 		}
 
-		$html[] = FabrikHelperHTML::aList('checkbox', $tmp, $name, $attribs, $default, 'value', 'text', $optsPerRow, $editable);
+		$html[] = HTML::aList('checkbox', $tmp, $name, $attribs, $default, 'value', 'text', $optsPerRow, $editable);
 
 		if (empty($tmp))
 		{
@@ -1683,7 +1684,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$o->value = 'dummy';
 			$tmpids[] = $o;
 			$tmp = $tmpids;
-			$dummy = FabrikHelperHTML::aList('checkbox', $tmp, $name, $attribs, $default, 'value', 'text', 1, true);
+			$dummy = HTML::aList('checkbox', $tmp, $name, $attribs, $default, 'value', 'text', 1, true);
 			$html[] = '<div class="chxTmplNode">' . $dummy . '</div>';
 		}
 
@@ -2273,7 +2274,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 
 		$sql = $listModel->pluginQuery($sql);
 		$fabrikDb->setQuery($sql);
-		FabrikHelperHTML::debug($fabrikDb->getQuery(), 'fabrikdatabasejoin getFilter');
+		HTML::debug($fabrikDb->getQuery(), 'fabrikdatabasejoin getFilter');
 
 		return $fabrikDb->loadObjectList();
 	}
@@ -2769,7 +2770,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 			$autoOpts = array();
 			$autoOpts['max'] = $this->getParams()->get('autocomplete_rows', '10');
 			$autoOpts['storeMatchedResultsOnly'] = true;
-			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'databasejoin', $autoOpts);
+			HTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'databasejoin', $autoOpts);
 		}
 
 		$opts = $this->elementJavascriptOpts($repeatCounter);
@@ -2829,7 +2830,7 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		$opts->show_please_select = $params->get('database_join_show_please_select') === "1";
 		$opts->showDesc = $params->get('join_desc_column', '') === '' ? false : true;
 		$opts->autoCompleteOpts = $opts->displayType == 'auto-complete'
-			? FabrikHelperHTML::autoCompleteOptions($opts->id, $this->getElement()->id, $this->getFormModel()->getId(), 'databasejoin') : null;
+			? HTML::autoCompleteOptions($opts->id, $this->getElement()->id, $this->getFormModel()->getId(), 'databasejoin') : null;
 		$opts->allowadd = $params->get('fabrikdatabasejoin_frontend_add', 0) == 0 ? false : true;
 		$opts->listName = $this->getListModel()->getTable()->get('list.db_table_name');
 		$this->elementJavascriptJoinOpts($opts);
@@ -3146,7 +3147,6 @@ class PlgFabrik_ElementDatabasejoin extends ElementList
 		}
 
 		$db = $this->getDb();
-		$query = $db->getQuery(true);
 		$query = $this->buildQuery(array(), false);
 		$key = $this->getJoinValueColumn();
 		$query->clear('where');

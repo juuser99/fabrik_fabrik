@@ -67,7 +67,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	 *
 	 * @param   int  $id  form id
 	 *
-	 * @return  FabrikFEModelForm
+	 * @return  \Fabrik\Admin\Models\Form
 	 */
 	protected function buildModel($id)
 	{

@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.application.component.view');
 
@@ -179,22 +180,22 @@ class FabrikViewCalendar extends JViewLegacy
 		$js[] = "" . $model->getFilterJs();
 		$js = implode("\n", $js);
 
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = HTML::framework();
 		$srcs[] = 'media/com_fabrik/js/listfilter.js';
 		$srcs[] = 'plugins/fabrik_visualization/calendar/calendar.js';
 
-		FabrikHelperHTML::iniRequireJs($model->getShim());
-		FabrikHelperHTML::script($srcs, $js);
+		HTML::iniRequireJs($model->getShim());
+		HTML::script($srcs, $js);
 
 		$viewName = $this->getName();
 		$this->params = $model->getParams();
 		$tpl = $params->get('calendar_layout', $tpl);
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tpl;
 		$this->_setPath('template', $tmplpath);
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tpl . '/template.css');
+		HTML::stylesheetFromPath('plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tpl . '/template.css');
 
 		// Adding custom.css, just for the heck of it
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tpl . '/custom.css');
+		HTML::stylesheetFromPath('plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tpl . '/custom.css');
 
 		return parent::display();
 	}
@@ -266,6 +267,6 @@ class FabrikViewCalendar extends JViewLegacy
 
 		echo '<h2>' . FText::_('PLG_VISUALIZATION_CALENDAR_PLEASE_CHOOSE_AN_EVENT_TYPE') . ':</h2>';
 		echo $this->_eventTypeDd;
-		FabrikHelperHTML::addScriptDeclaration(implode("\n", $script));
+		HTML::addScriptDeclaration(implode("\n", $script));
 	}
 }

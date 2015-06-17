@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML as HelperHTML;
 
 /**
  * View when emailing a form to a user
@@ -34,21 +35,21 @@ class FabrikAdminViewemailform extends JViewLegacy
 
 	public function display($tpl = null)
 	{
-		$srcs = FabrikHelperHTML::framework();
-		FabrikHelperHTML::script($srcs);
+		$srcs = HelperHTML::framework();
+		HelperHTML::script($srcs);
 		$model = new \Fabrik\Admin\Models\Form;
 		$app = JFactory::getApplication();
 		$input = $app->input;
 
 		if (!$input->get('youremail', false))
 		{
-			FabrikHelperHTML::emailForm($model);
+			HelperHTML::emailForm($model);
 		}
 		else
 		{
 			$to = $template = '';
 			$ok = $this->sendMail($to);
-			FabrikHelperHTML::emailSent($to, $ok);
+			HelperHTML::emailSent($to, $ok);
 		}
 	}
 

@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\HTML;
+
 ?>
 <div class="row-fluid">
 <ul class="nav nav-pills  pull-left">
@@ -97,7 +99,7 @@ if ($this->showCSVImport || $this->showCSV) :?>
 if ($this->showRSS) :?>
 	<li>
 		<a href="<?php echo $this->rssLink;?>" class="feedButton">
-		<?php echo FabrikHelperHTML::image('feed.png', 'list', $this->tmpl);?>
+		<?php echo HTML::image('feed.png', 'list', $this->tmpl);?>
 		<?php echo FText::_('COM_FABRIK_SUBSCRIBE_RSS');?>
 		</a>
 	</li>

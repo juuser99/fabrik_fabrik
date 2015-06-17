@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\HTML;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -179,7 +180,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 
 		if (JFactory::getApplication()->input->get('format') !== 'raw')
 		{
-			FabrikHelperHTML::addStyleDeclaration("table.radius_table{border-collapse:collapse;border:0;}
+			HTML::addStyleDeclaration("table.radius_table{border-collapse:collapse;border:0;}
 			table.radius_table td{border:0;}");
 		}
 
@@ -452,7 +453,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 	private function slider()
 	{
 		$v = $this->getValue();
-		FabrikHelperHTML::stylesheet('plugins/fabrik_list/radius_search/radius_search.css');
+		HTML::stylesheet('plugins/fabrik_list/radius_search/radius_search.css');
 		$str = array();
 		$str[] = '<div class="slider_cont" style="width:200px;">';
 		$str[] = '<div class="fabrikslider-line" style="width:200px">';
@@ -554,12 +555,12 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		{
 			$el = $this->getPlaceElement();
 			$element = $el->getElement();
-			FabrikHelperHTML::autoComplete("radius_search_place{$this->renderOrder}", $element->get('id'), $formId, $element->get('plugin'), $opts);
+			HTML::autoComplete("radius_search_place{$this->renderOrder}", $element->get('id'), $formId, $element->get('plugin'), $opts);
 		}
 
 		if ($params->get('myloc', 1) == 1)
 		{
-			FabrikHelperHTML::script('components/com_fabrik/libs/geo-location/geo.js');
+			HTML::script('components/com_fabrik/libs/geo-location/geo.js');
 		}
 
 		parent::loadJavascriptClass();

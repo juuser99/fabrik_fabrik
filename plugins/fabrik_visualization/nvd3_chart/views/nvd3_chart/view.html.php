@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Fabrik\Admin\Models\PluginManager as PluginManager;
+use \Fabrik\Admin\Models\PluginManager;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.application.component.view');
 
@@ -50,8 +51,8 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 			return false;
 		}
 
-		$srcs = FabrikHelperHTML::framework();
-		FabrikHelperHTML::styleSheet('plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/src/nv.d3.css');
+		$srcs = HTML::framework();
+		HTML::styleSheet('plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/src/nv.d3.css');
 
 		$srcs[] = 'media/com_fabrik/js/listfilter.js';
 		$srcs[] = 'media/com_fabrik/js/advanced-search.js';
@@ -74,7 +75,7 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		$this->requiredFiltersFound = $model->getRequiredFiltersFound();
 		$params = $model->getParams();
 		$js = $model->js();
-		FabrikHelperHTML::addScriptDeclaration($js);
+		HTML::addScriptDeclaration($js);
 
 		$this->params = $params;
 		$viewName = $this->getName();
@@ -90,7 +91,7 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		$tpl = $params->get('nvd3_chart_layout', $tpl);
 		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/nvd3_chart/views/nvd3_chart/tmpl/' . $tpl);
 
-		FabrikHelperHTML::stylesheetFromPath(
+		HTML::stylesheetFromPath(
 			'plugins/fabrik_visualization/nvd3_chart/views/nvd3_chart/tmpl/' . $tpl . '/template.css');
 
 		// Assign something to Fabrik.blocks to ensure we can clear filters
@@ -99,11 +100,11 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		$js .= "\n" . "Fabrik.addBlock('$ref', $ref);";
 		$js .= $model->getFilterJs();
 
-		FabrikHelperHTML::iniRequireJs($model->getShim());
-		FabrikHelperHTML::script($srcs, $js);
+		HTML::iniRequireJs($model->getShim());
+		HTML::script($srcs, $js);
 
 		$text = $this->loadTemplate();
-		FabrikHelperHTML::runContentPlugins($text);
+		HTML::runContentPlugins($text);
 		echo $text;
 	}
 }

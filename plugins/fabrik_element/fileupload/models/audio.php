@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\HTML;
+
 /**
  * Fileupload adaptor to render audio play
  *
@@ -110,7 +112,7 @@ class AudioRender
 				$js .= ']
 				});
 				';
-				FabrikHelperHTML::script('plugins/fabrik_element/fileupload/lib/jwplayer/jwplayer.js', $js);
+				HTML::script('plugins/fabrik_element/fileupload/lib/jwplayer/jwplayer.js', $js);
 			}
 		}
 

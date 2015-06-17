@@ -32,6 +32,8 @@
  * THE SOFTWARE.
  */
 
+use Fabrik\Helpers\HTML;
+
 /**
  * The reCAPTCHA server URL's
  */
@@ -159,7 +161,7 @@ function fabrik_recaptcha_get_html ($id, $pubkey, $theme = "red", $lang = "en", 
 	$str = '  <div id="'.$id.'"></div> ';
 	$document = JFactory::getDocument();
 	$document->addScript($server . '/js/recaptcha_ajax.js');
-	FabrikHelperHTML::addScriptDeclaration(
+	HTML::addScriptDeclaration(
 		'window.addEvent("fabrik.loaded", function() {
 			Recaptcha.create(
 				"'.$pubkey.'",

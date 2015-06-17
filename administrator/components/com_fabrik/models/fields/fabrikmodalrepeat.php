@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 jimport('joomla.form.formfield');
 
@@ -186,7 +187,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 
 			if ($option === 'com_fabrik')
 			{
-				FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/fabrikmodalrepeat.js', $script);
+				HTML::script('administrator/components/com_fabrik/models/fields/fabrikmodalrepeat.js', $script);
 			}
 			else
 			{
@@ -196,7 +197,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 
 				// Wont work when rendering in admin module page
 				// @TODO test this now that the list and form pages are loading plugins via ajax (18/08/2012)
-				FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/fabrikmodalrepeat.js', $script);
+				HTML::script('administrator/components/com_fabrik/models/fields/fabrikmodalrepeat.js', $script);
 			}
 		}
 
@@ -212,8 +213,8 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$str[] = '<button class="btn" id="' . $modalId . '_button" data-modal="' . $modalId . '">' . $icon . '</button>';
 		$str[] = '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" />';
 
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
+		HTML::framework();
+		HTML::iniRequireJS();
 
 		return implode("\n", $str);
 	}

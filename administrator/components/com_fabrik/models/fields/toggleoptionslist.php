@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Helpers\HTML;
+
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -58,7 +60,7 @@ class JFormFieldToggleoptionslist extends JFormFieldList
 				}
 			});
 		})";
-		FabrikHelperHTML::addScriptDeclaration($script);
+		HTML::addScriptDeclaration($script);
 
 		return parent::getInput();
 	}

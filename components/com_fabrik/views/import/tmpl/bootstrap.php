@@ -10,10 +10,11 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+use Fabrik\Helpers\HTML;
 
 $url = JRoute::_('index.php');
 JHtml::_('behavior.tooltip');
-FabrikHelperHTML::formvalidation();
+HTML::formvalidation();
 $action = JRoute::_('index.php?option=com_fabrik');
 $app = JFactory::getApplication();
 $listId = $app->input->getString('listid');

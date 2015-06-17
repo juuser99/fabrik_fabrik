@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render facebook open graph like button
@@ -78,7 +79,7 @@ class PlgFabrik_ElementFblike extends Element
 		$meta['og:url'] = $ex . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 		$meta['og:site_name'] = $this->config->get('sitename');
 		$meta['fb:admins'] = $params->get('fblike_opengraph_applicationid');
-		$str = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
+		$str = HTML::facebookGraphAPI($params->get('opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
 
 		// In list view we link to the detailed record not the list view itself
 		// means form or details view must be viewable by the user
@@ -162,7 +163,7 @@ class PlgFabrik_ElementFblike extends Element
 		$meta['og:url'] = $ex . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 		$meta['og:site_name'] = $this->config->get('sitename');
 		$meta['fb:app_id'] = $params->get('fblike_opengraph_applicationid');
-		$str = FabrikHelperHTML::facebookGraphAPI($params->get('fblike_opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
+		$str = HTML::facebookGraphAPI($params->get('fblike_opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
 		$url = $params->get('fblike_url');
 		$w = new Worker;
 		$url = $w->parseMessageForPlaceHolder($url, $data);

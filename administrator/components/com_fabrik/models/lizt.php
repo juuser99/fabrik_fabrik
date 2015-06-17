@@ -33,7 +33,7 @@ use Fabrik\Helpers\Pagination;
 use Fabrik\Admin\Models\Group as Group;
 use \JComponentHelper as JComponentHelper;
 use \JFolder as JFolder;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML;
 use \JFilterInput as JFilterInput;
 use \JProfiler as JProfiler;
 use \Exception as Exception;
@@ -1248,7 +1248,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBeforeListRender', $this, 'list');
-		FabrikHelperHTML::debug($_POST, 'render:post');
+		HTML::debug($_POST, 'render:post');
 		$input              = $this->input;
 		$profiler           = JProfiler::getInstance('Application');
 		$id                 = $this->getId();
@@ -1336,7 +1336,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$this->filters = array();
 		$request       = $this->getRequestData();
 		$this->storeRequestData($request);
-		FabrikHelperHTML::debug($request, 'filter:request');
+		HTML::debug($request, 'filter:request');
 
 		$elements = $this->getElements('id');
 
@@ -1351,7 +1351,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		// These are filters created from a search form or normal search
 		$keys      = array_keys($request);
 		$indexStep = count(ArrayHelper::getValue($this->filters, 'key', array()));
-		FabrikHelperHTML::debug($keys, 'filter:request keys');
+		HTML::debug($keys, 'filter:request keys');
 
 		foreach ($keys as $key)
 		{
@@ -1369,7 +1369,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		FabrikHelperHTML::debug($this->filters, 'listmodel::getFilterArray middle');
+		HTML::debug($this->filters, 'listmodel::getFilterArray middle');
 		$readOnlyValues = array();
 		$w              = new Worker;
 		$noFiltersSetup = ArrayHelper::getValue($this->filters, 'no-filter-setup', array());
@@ -1579,7 +1579,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		FabrikHelperHTML::debug($this->filters, 'end filters');
+		HTML::debug($this->filters, 'end filters');
 
 		foreach ($readOnlyValues as $key => $val)
 		{
@@ -1593,7 +1593,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		Worker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
-		FabrikHelperHTML::debug($this->filters, 'after plugins:onFiltersGot');
+		HTML::debug($this->filters, 'after plugins:onFiltersGot');
 
 		return $this->filters;
 	}
@@ -1967,7 +1967,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$fabrikDb->setQuery($query, $this->limitStart, $this->limitLength);
 		}
 
-		FabrikHelperHTML::debug($fabrikDb->getQuery(), 'list GetData:' . $this->getItem()->get('list.label'));
+		HTML::debug($fabrikDb->getQuery(), 'list GetData:' . $this->getItem()->get('list.label'));
 		JDEBUG ? $profiler->mark('before query run') : null;
 
 		/* set 2nd param to false in attempt to stop joomfish db adaptor from translating the original query
@@ -2254,7 +2254,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		if ($this->outputFormat != 'pdf' && $this->outputFormat != 'csv' && $this->outputFormat != 'feed')
 		{
 			$this->addSelectBoxAndLinks($data);
-			FabrikHelperHTML::debug($data, 'table:data');
+			HTML::debug($data, 'table:data');
 		}
 
 		JDEBUG ? $profiler->mark('end format data') : null;
@@ -2379,7 +2379,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				$class      = $btnClass . 'fabrik_edit fabrik__rowlink';
 				$dataList   = 'list_' . $this->getRenderContext();
 				$loadMethod = $this->getLoadMethod('editurl');
-				$img        = FabrikHelperHTML::image('edit.png', 'list', '', array('alt' => $editLabel));
+				$img        = HTML::image('edit.png', 'list', '', array('alt' => $editLabel));
 				$editLink   = '<a data-loadmethod="' . $loadMethod . '" class="' . $class . '" ' . $editAttribs
 					. 'data-list="' . $dataList . '" href="' . $edit_link . '" title="' . $editLabel . '">' . $img
 					. ' ' . $editText . '</a>';
@@ -2389,7 +2389,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				$class     = $btnClass . 'fabrik_view fabrik__rowlink';
 
 				$loadMethod = $this->getLoadMethod('detailurl');
-				$img        = FabrikHelperHTML::image('search.png', 'list', '', array('alt' => $viewLabel));
+				$img        = HTML::image('search.png', 'list', '', array('alt' => $viewLabel));
 				$viewLink   = '<a data-loadmethod="' . $loadMethod . '" class="' . $class . '" ' . $detailsAttribs
 					. 'data-list="' . $dataList . '" href="' . $link . '" title="' . $viewLabel . '">' . $img
 					. ' ' . $viewText . '</a>';
@@ -2678,7 +2678,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$label        = ' ' . FText::_('COM_FABRIK_DELETE');
 		$btn          = '<a href="#" class="' . $btnClass . 'delete" data-listRef="list_' . $this->getRenderContext()
 			. '" title="' . FText::_('COM_FABRIK_DELETE') . '">'
-			. FabrikHelperHTML::image('delete.png', 'list', $tpl, array('alt' => $label, 'icon-class' => $iconClass)) . ' ' . $text . '</a>';
+			. HTML::image('delete.png', 'list', $tpl, array('alt' => $label, 'icon-class' => $iconClass)) . ' ' . $text . '</a>';
 
 		return $btn;
 	}
@@ -2791,8 +2791,8 @@ class Lizt extends View implements ModelFormLiztInterface
 		$db->setQuery($query);
 		$this->recordCounts[$k]            = $db->loadObjectList('id');
 		$this->recordCounts[$k]['linkKey'] = FabrikString::safeColNameToArrayKey($key);
-		FabrikHelperHTML::debug($query->dump(), 'getRecordCounts query: ' . $linkKey);
-		FabrikHelperHTML::debug($this->recordCounts[$k], 'getRecordCounts data: ' . $linkKey);
+		HTML::debug($query->dump(), 'getRecordCounts query: ' . $linkKey);
+		HTML::debug($this->recordCounts[$k], 'getRecordCounts data: ' . $linkKey);
 		$input->set('fabrik_incsessionfilters', $origIncSesssionFilters);
 
 		return $this->recordCounts[$k];
@@ -3333,7 +3333,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			// Can't limit the query here as this gives incorrect _data array.
 			// $db->setQuery($query, $this->limitStart, $this->limitLength);
 			$db->setQuery($query);
-			FabrikHelperHTML::debug((string) $query, 'table:mergeJoinedData get ids');
+			HTML::debug((string) $query, 'table:mergeJoinedData get ids');
 			$ids            = array();
 			$idRows         = $db->loadObjectList();
 			$maxPossibleIds = count($idRows);
@@ -5667,7 +5667,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		FabrikHelperHTML::debug($filters, 'prefilters');
+		HTML::debug($filters, 'prefilters');
 	}
 
 	/**
@@ -5726,7 +5726,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$totalSql = (string) $query;
 		$totalSql = $this->pluginQuery($totalSql);
 		$db->setQuery($totalSql);
-		FabrikHelperHTML::debug($totalSql, 'table getJoinMergeTotalRecords');
+		HTML::debug($totalSql, 'table getJoinMergeTotalRecords');
 		$total = $db->loadResult();
 
 		return $total;
@@ -6434,7 +6434,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$url   = $this->getAdvancedSearchURL();
 			$title = '<span>' . FText::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
 			$opts  = array('alt' => FText::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
-			$img   = FabrikHelperHTML::image('find.png', 'list', $tmpl, $opts);
+			$img   = HTML::image('find.png', 'list', $tmpl, $opts);
 
 			return '<a href="' . $url . '" class="advanced-search-link">' . $img . '</a>';
 		}
@@ -6484,7 +6484,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		$list                = $this->getTable();
 		$listRef             = $this->getRenderContext();
-		$opts->conditionList = FabrikHelperHTML::conditionList($listRef, '');
+		$opts->conditionList = HTML::conditionList($listRef, '');
 		list($fieldNames, $firstFilter) = $this->getAdvancedSearchElementList();
 		$statements          = $this->getStatementsOpts();
 		$opts->elementList   = JHTML::_('select.genericlist', $fieldNames, 'fabrik___filter[list_' . $listRef . '][key][]',
@@ -6696,7 +6696,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				}
 				else
 				{
-					$join = FabrikHelperHTML::conditionList($this->getRenderContext(), $join);
+					$join = HTML::conditionList($this->getRenderContext(), $join);
 				}
 
 				$lineElname = FabrikString::safeColName($elementModel->getFullName(true, false));
@@ -6898,18 +6898,18 @@ class Lizt extends View implements ModelFormLiztInterface
 						case 'desc':
 							$orderDir = '-';
 							$class    = 'class="fabrikorder-desc"';
-							$img      = FabrikHelperHTML::image('arrow-up.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+							$img      = HTML::image('arrow-up.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
 							break;
 						case 'asc':
 							$orderDir = 'desc';
 							$class    = 'class="fabrikorder-asc"';
-							$img      = FabrikHelperHTML::image('arrow-down.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+							$img      = HTML::image('arrow-down.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
 							break;
 						case '':
 						case '-':
 							$orderDir = 'asc';
 							$class    = 'class="fabrikorder"';
-							$img      = FabrikHelperHTML::image('menu-2.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+							$img      = HTML::image('menu-2.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
 							break;
 					}
 
@@ -6920,7 +6920,7 @@ class Lizt extends View implements ModelFormLiztInterface
 							if ($item->order_dir === 'desc')
 							{
 								$class = 'class="fabrikorder-desc"';
-								$img   = FabrikHelperHTML::image('orderdesc.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+								$img   = HTML::image('orderdesc.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
 							}
 						}
 					}
@@ -7156,18 +7156,18 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				if ($this->actionMethod() == 'dropdown')
 				{
-					$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapDropDown($headingButtons);
+					$aTableHeadings['fabrik_actions'] = HTML::bootStrapDropDown($headingButtons);
 				}
 				else
 				{
 					if ($this->actionMethod() == 'dropdown')
 					{
 						$align                            = $params->get('checkboxLocation', 'end') == 'end' ? 'right' : 'left';
-						$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapDropDown($headingButtons, $align);
+						$aTableHeadings['fabrik_actions'] = HTML::bootStrapDropDown($headingButtons, $align);
 					}
 					else
 					{
-						$aTableHeadings['fabrik_actions'] = FabrikHelperHTML::bootStrapButtonGroup($headingButtons);
+						$aTableHeadings['fabrik_actions'] = HTML::bootStrapButtonGroup($headingButtons);
 					}
 				}
 			}
@@ -7829,7 +7829,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			return false;
 		}
 
-		FabrikHelperHTML::debug($db->getQuery(), 'list model updateObject:');
+		HTML::debug($db->getQuery(), 'list model updateObject:');
 
 		return true;
 	}
@@ -7894,7 +7894,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$object->$keyName = $id;
 		}
 
-		FabrikHelperHTML::debug($db->getQuery(), 'list model insertObject:');
+		HTML::debug($db->getQuery(), 'list model insertObject:');
 
 		return true;
 	}
@@ -8191,8 +8191,8 @@ class Lizt extends View implements ModelFormLiztInterface
 				{
 					JDEBUG ? $profiler->mark('cacheDoCalculations, avg_on: start') : null;
 					$aAvgCalcs = $elementModel->avg($listModel);
-					$params->set('avg_value_serialized', serialize($aAvgCals[1]));
-					$params->set('avg_value', $aAvgCals[0]);
+					$params->set('avg_value_serialized', serialize($aAvgCalcs[1]));
+					$params->set('avg_value', $aAvgCalcs[0]);
 					$update = true;
 				}
 
@@ -9842,7 +9842,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	 * @param   bool   $showInTable   show in table default true
 	 * @param   bool   $onlyPublished return only published elements
 	 *
-	 * @return  \Fabrik\Plguins\Element[]  Array of Element models
+	 * @return  \Fabrik\Plugins\Element[]  Array of Element models
 	 */
 
 	public function getElements($key = '0', $showInTable = true, $onlyPublished = true)
@@ -10012,7 +10012,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$script = $plugin->filterJS(false, $container);
-		FabrikHelperHTML::addScriptDeclaration($script);
+		HTML::addScriptDeclaration($script);
 
 		echo $plugin->getFilter($input->getInt('counter', 0), false);
 	}
@@ -10394,7 +10394,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$tmpl  = $this->getTmpl();
 			$title = '<span>' . FText::_('COM_FABRIK_CLEAR') . '</span>';
 			$opts  = array('alt' => FText::_('COM_FABRIK_CLEAR'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
-			$img   = FabrikHelperHTML::image('filter_delete.png', 'list', $tmpl, $opts);
+			$img   = HTML::image('filter_delete.png', 'list', $tmpl, $opts);
 
 			return '<a href="#" class="clearFilters">' . $img . '</a>';
 		}
@@ -10494,7 +10494,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		$dbPrimaryKey = FabrikString::safeColNameToArrayKey($this->getTable()->get('list.db_primary_key'));
 		$db           = $this->getDb();
-		FabrikHelperHTML::debug($data, 'render:before formatForJoins');
+		HTML::debug($data, 'render:before formatForJoins');
 
 		$last_pk             = '';
 		$last_i              = 0;
@@ -11151,22 +11151,22 @@ class Lizt extends View implements ModelFormLiztInterface
 			$qs .= '&amp;buttoncount=' . $this->rowActionCount;
 			$overRide = 'templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/template_css.php' . $qs;
 
-			if (!FabrikHelperHTML::stylesheetFromPath($overRide))
+			if (!HTML::stylesheetFromPath($overRide))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/template_css.php' . $qs);
+				HTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/template_css.php' . $qs);
 			}
 			/* $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
 			 * custom.css - for backward compat with existing 2.x custom.css
 			* custom_css.php - what we'll recommend people use for custom css moving foward.
 			*/
-			if (!FabrikHelperHTML::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom.css' . $qs))
+			if (!HTML::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom.css' . $qs))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/custom.css');
+				HTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/custom.css');
 			}
 
-			if (!FabrikHelperHTML::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom_css.php' . $qs))
+			if (!HTML::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom_css.php' . $qs))
 			{
-				FabrikHelperHTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/custom_css.php' . $qs);
+				HTML::stylesheetFromPath('components/com_fabrik/views/list/tmpl/' . $tmpl . '/custom_css.php' . $qs);
 			}
 		}
 	}
@@ -11725,13 +11725,13 @@ class Lizt extends View implements ModelFormLiztInterface
 		 * $this->buildQueryWhere($this->input->getInt('incfilters', 1), $query, false);
 		 **/
 		$db->setQuery($query);
-		FabrikHelperHTML::debug($query->dump(), 'list getTabCategories query:' . $table->label);
+		HTML::debug($query->dump(), 'list getTabCategories query:' . $table->label);
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('before fabrik list tabs query run') : null;
 		$db->execute();
 		$counts = $db->loadRowList();
 		JDEBUG ? $profiler->mark('after fabrik list tabs query run') : null;
-		FabrikHelperHTML::debug($counts, 'list getTabCategories counts: ' . $table->label);
+		HTML::debug($counts, 'list getTabCategories counts: ' . $table->label);
 
 		/**
 		 * We consolidate by finding the two consecutive rows with the smallest total and merging them.
@@ -11792,7 +11792,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		JDEBUG ? $profiler->mark('after fabrik list tabs counts merge') : null;
-		FabrikHelperHTML::debug($counts, 'list getTabCategories merged counts: ' . $table->label);
+		HTML::debug($counts, 'list getTabCategories merged counts: ' . $table->label);
 
 		for ($i = 0; $i < count($counts); $i++)
 		{

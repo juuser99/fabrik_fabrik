@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render rating widget
@@ -90,7 +91,7 @@ class PlgFabrik_ElementRating extends Element
 		}
 
 		$data = Worker::JSONtoData($data, true);
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'list', false);
+		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'list', false);
 		$colData = $this->getListModel()->getData();
 
 		for ($i = 0; $i < count($data); $i++)
@@ -107,7 +108,7 @@ class PlgFabrik_ElementRating extends Element
 				$a = str_replace('{r}', $r, $atpl);
 				$imgOpts = array('icon-class' => 'starRating rate_' . $r);
 				$imgOpts['data-fabrik-rating'] = $r;
-				$img = FabrikHelperHTML::image("star.png", 'list', @$this->tmpl, $imgOpts);
+				$img = HTML::image("star.png", 'list', @$this->tmpl, $imgOpts);
 				$str[] = $a . $img . $a2;
 			}
 
@@ -117,7 +118,7 @@ class PlgFabrik_ElementRating extends Element
 				$a = str_replace('{r}', $r, $atpl);
 				$imgOpts = array('icon-class' => 'starRating rate_' . $r);
 				$imgOpts['data-fabrik-rating'] = $r;
-				$img = FabrikHelperHTML::image("star-empty.png", 'list', @$this->tmpl, $imgOpts);
+				$img = HTML::image("star-empty.png", 'list', @$this->tmpl, $imgOpts);
 
 				$str[] = $a . $img . $a2;
 			}
@@ -320,7 +321,7 @@ class PlgFabrik_ElementRating extends Element
 		$css = $this->canRate() ? 'cursor:pointer;' : '';
 		$value = $this->getValue($data, $repeatCounter);
 
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'form', false);
+		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'form', false);
 
 		$listId = $this->getlistModel()->getTable()->id;
 		$formId = $input->getString('formid');
@@ -342,7 +343,7 @@ class PlgFabrik_ElementRating extends Element
 		$layoutData->id = $id;
 		$layoutData->name = $name;
 		$layoutData->value = $value;
-		$layoutData->clearImg = FabrikHelperHTML::image('remove.png', 'list', @$this->tmpl, $imgOpts);
+		$layoutData->clearImg = HTML::image('remove.png', 'list', @$this->tmpl, $imgOpts);
 		$layoutData->avg = $avg;
 		$layoutData->canRate = $this->canRate();
 		$layoutData->ratingNoneFirst = $params->get('rating-nonefirst');
@@ -595,7 +596,7 @@ class PlgFabrik_ElementRating extends Element
 		$opts->elid = $this->getElement()->id;
 
 		$opts->canRate = $params->get('rating-mode') == 'creator-rating' ? true : $this->canRate();
-		$opts->ajaxloader = FabrikHelperHTML::image("ajax-loader.gif", 'list', @$this->tmpl, array(), true);
+		$opts->ajaxloader = HTML::image("ajax-loader.gif", 'list', @$this->tmpl, array(), true);
 		$opts->listRef = $listModel->getRenderContext();
 		$opts->formid = $listModel->getFormModel()->getId();
 		$opts->userid = (int) $this->user->get('id');

@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Admin\Models\Form;
 
 /**
  * Element Helper class
@@ -100,12 +101,12 @@ class FabrikHelperElement
 	/**
 	 * Is the key part of an element join's data. Used in csv import/export
 	 *
-	 * @param   FabrikFEModelForm  $model  Form model
+	 * @param   Form  $model  Form model
 	 * @param   string             $key  Key - full element name or full element name with _id / ___params appended
 	 *
 	 * @return boolean
 	 */
-	public static function keyIsElementJoinInfo($model, $key)
+	public static function keyIsElementJoinInfo(Form $model, $key)
 	{
 		$elementModel = self::findElementFromJoinKeys($model, $key);
 
@@ -122,12 +123,12 @@ class FabrikHelperElement
 	 * Loose lookup to find join element from any key related to the join (e.g. _id & __params).
 	 * Used in csv import/export
 	 *
-	 * @param   FabrikFEModelForm  $model  Form model
+	 * @param   Form  $model  Form model
 	 * @param   string             $key    Key - full element name or full element name with _id / ___params appended
 	 *
 	 * @return  PlgFabrik_Element|boolean
 	 */
-	public static function findElementFromJoinKeys($model, $key)
+	public static function findElementFromJoinKeys(Form $model, $key)
 	{
 		// Search on fullname fullname_id and fullname___params
 		$lookups = array($key, substr($key, 0, String::strlen($key) - 3), substr($key, 0, String::strlen($key) - 9));

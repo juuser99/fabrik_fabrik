@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugins\Element as Element;
+use Fabrik\Plugins\Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render mootools slider
@@ -54,7 +55,7 @@ class PlgFabrik_ElementSlider extends Element
 
 	public function render($data, $repeatCounter = 0)
 	{
-		FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'media/com_fabrik/css/slider.css');
+		HTML::stylesheet(COM_FABRIK_LIVESITE . 'media/com_fabrik/css/slider.css');
 		$params = $this->getParams();
 		$width = (int) $params->get('slider_width', 250);
 		$val = $this->getValue($data, $repeatCounter);
@@ -65,7 +66,7 @@ class PlgFabrik_ElementSlider extends Element
 		}
 
 		$labels = (explode(',', $params->get('slider-labels')));
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/slider/images/', 'image', 'form', false);
+		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/slider/images/', 'image', 'form', false);
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
@@ -74,7 +75,7 @@ class PlgFabrik_ElementSlider extends Element
 		$layoutData->value = $val;
 		$layoutData->width = $width;
 		$layoutData->showNone = $params->get('slider-shownone');
-		$layoutData->outSrc = FabrikHelperHTML::image('clear_rating_out.png', 'form', $this->tmpl, array(), true);
+		$layoutData->outSrc = HTML::image('clear_rating_out.png', 'form', $this->tmpl, array(), true);
 		$layoutData->labels = $labels;
 		$layoutData->spanWidth = floor(($width - (2 * count($labels))) / count($labels));
 

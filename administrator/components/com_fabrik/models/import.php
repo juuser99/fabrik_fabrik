@@ -9,6 +9,8 @@
  * @since       1.6
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -17,10 +19,9 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikAdminModelImport extends FabModelAdmin
+class Import extends Base
 {
 	/**
 	 * The prefix to use with controller messages.

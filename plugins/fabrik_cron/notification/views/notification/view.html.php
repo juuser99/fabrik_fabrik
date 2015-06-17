@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\HTML;
 jimport('joomla.application.component.view');
 
 /**
@@ -42,7 +43,7 @@ class FabrikViewNotification extends JViewLegacy
 		$this->id = $model->getId();
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_cron/notification/views/notification/tmpl/bootstrap';
 		$this->_setPath('template', $tmplpath);
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_cron/notification/views/notification/tmpl/bootstrap/template.css');
+		HTML::stylesheetFromPath('plugins/fabrik_cron/notification/views/notification/tmpl/bootstrap/template.css');
 		echo parent::display();
 	}
 }

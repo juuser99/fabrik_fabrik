@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Plugins\Element as Element;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render facebook recommendations widget
@@ -56,7 +57,7 @@ class PlgFabrik_ElementFbRecommendations extends Element
 	{
 		$params            = $this->getParams();
 		$displayData = new stdClass;
-		$displayData->graphApi    = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'));
+		$displayData->graphApi    = HTML::facebookGraphAPI($params->get('opengraph_applicationid'));
 		$displayData->domain      = $params->get('fbrecommendations_domain');
 		$displayData->width       = $params->get('fbrecommendations_width', 300);
 		$displayData->height      = $params->get('fbrecommendations_height', 300);

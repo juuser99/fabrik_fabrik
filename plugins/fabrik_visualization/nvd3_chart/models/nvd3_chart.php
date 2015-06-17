@@ -13,10 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use Fabrik\Admin\Models\Visualization;
 
 /**
  * data_mode parameter defines 2 states for the data
@@ -54,9 +51,9 @@ define('LABELS_IN_COLUMNS', 1);
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.nvd3_chart
- * @since       3.0.7
+ * @since       3.5
  */
-class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
+class FabrikModelNvd3_Chart extends Visualization
 {
 	/**
 	 * Chart data

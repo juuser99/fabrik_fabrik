@@ -8,13 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Admin\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
-
-jimport('joomla.application.component.model');
 
 /**
  * Old package? export code
@@ -24,8 +24,7 @@ jimport('joomla.application.component.model');
  * @since       3.0
  * @deprecated  Not used
  */
-
-class FabrikFEModelExport
+class Export  extends Base
 {
 	/**
 	 * Label
@@ -59,9 +58,8 @@ class FabrikFEModelExport
 	 */
 	public function load($id)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$this->packageModel = JModelLegacy::getInstance('Package', 'FabrikFEModel');
+		$input = $this->input;
+		$this->packageModel = \Fabrik\Admin\Models\Package;
 		$this->packageModel->setId($id);
 		$this->packageModel->getPackage();
 		$this->packageModel->loadTables();

@@ -29,7 +29,7 @@ use \JComponentHelper as JComponentHelper;
 use Fabrik\Admin\Helpers\Fabrik as Fabrik;
 use Joomla\String\Inflector;
 use \JFile as JFile;
-use \FabrikHelperHTML as FabrikHelperHTML;
+use \Fabrik\Helpers\HTML;
 
 /**
  * Fabrik Base Admin Model
@@ -1898,7 +1898,7 @@ class Base extends \JModelBase
 			}
 		}
 
-		FabrikHelperHTML::debug($joins, 'joins');
+		HTML::debug($joins, 'joins');
 	}
 
 }

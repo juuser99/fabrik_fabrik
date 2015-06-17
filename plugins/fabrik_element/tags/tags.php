@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\HTML;
 
 /**
  * Plugin element to render Joomla's tags field
@@ -97,7 +98,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 			JText::script('JGLOBAL_SELECT_AN_OPTION');
 			JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
 
-			$ext = FabrikHelperHTML::isDebug() ? '.min.js' : '.js';
+			$ext = HTML::isDebug() ? '.min.js' : '.js';
 			JHtml::_('script', 'jui/chosen.jquery' . $ext, false, true, false, false);
 			JHtml::_('stylesheet', 'jui/chosen.css', false, true);
 			JHtml::_('script', 'jui/ajax-chosen' . $ext, false, true, false, false);
@@ -123,7 +124,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 			$name = $this->getFullName(true, false);
 			$baseUrl = $this->tagUrl();
 			$icon = $this->tagIcon();
-			$data = FabrikHelperHTML::tagify($d, $baseUrl, $name, $icon);
+			$data = HTML::tagify($d, $baseUrl, $name, $icon);
 
 			return implode("\n", $data);
 		}
@@ -395,7 +396,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 		$merged = array_combine($ids, $data);
 		$baseUrl = $this->tagUrl();
 		$icon = $this->tagIcon();
-		$data = FabrikHelperHTML::tagify($merged, $baseUrl, $name, $icon);
+		$data = HTML::tagify($merged, $baseUrl, $name, $icon);
 	}
 
 	/**
@@ -407,7 +408,7 @@ class PlgFabrik_ElementTags extends PlgFabrik_ElementDatabasejoin
 	{
 		$name = $this->getFullName(true, false);
 		$rawname = $name . '_raw';
-		$baseUrl = FabrikHelperHTML::tagBaseUrl($rawname);
+		$baseUrl = HTML::tagBaseUrl($rawname);
 		$baseUrl .= strstr($baseUrl, '?') ? '&' : '?';
 		$baseUrl .= $rawname . '={key}';
 
