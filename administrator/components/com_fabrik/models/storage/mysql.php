@@ -14,7 +14,6 @@ use Fabrik\Helpers\ArrayHelper;
 use Joomla\Registry\Registry;
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\String;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

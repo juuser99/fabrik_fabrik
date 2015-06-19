@@ -35,7 +35,6 @@ use \Fabrik\Admin\Models\Lizt as LiztModel;
 use \Fabrik\Admin\Models\Group;
 use \RuntimeException;
 use \ErrorException;
-use \stdClass;
 
 /**
  * Fabrik Element Model

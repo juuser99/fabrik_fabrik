@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
 /**
  * if using file extensions sef and htaccess :
  * you need to edit yout .htaccess file to:

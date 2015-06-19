@@ -1648,7 +1648,7 @@ class Date extends ElementList
 		$to->name = $v . '[1]';
 
 		$imageOpts = array('alt' => 'calendar');
-		$to->img = HTML::image('calendar.png', 'form', this->tmpl, $imageOpts);
+		$to->img = HTML::image('calendar.png', 'form', $this->tmpl, $imageOpts);
 
 		$displayData->to = $to;
 		$displayData->filterType = $this->getFilterType();
