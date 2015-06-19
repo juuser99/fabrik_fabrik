@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Text;
+use Joomla\Registry\Registry;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
@@ -28,10 +30,9 @@ class FabrikTableList extends FabTable
 	/**
 	 * Constructor
 	 *
-	 * @param   object  &$db  database object
+	 * @param   JDatabaseDriver  &$db  database object
 	 */
-
-	public function __construct(&$db)
+	public function __construct(JDatabaseDriver &$db)
 	{
 		parent::__construct('#__fabrik_lists', 'id', $db);
 	}
@@ -46,7 +47,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function bind($src, $ignore = array())
 	{
 		// Bind the rules.
@@ -59,7 +59,7 @@ class FabrikTableList extends FabTable
 		// Covert the params to a json object if its set as an array
 		if (isset($src['params']) && is_array($src['params']))
 		{
-			$registry = new JRegistry;
+			$registry = new Registry;
 			$registry->loadArray($src['params']);
 			$src['params'] = (string) $registry;
 		}
@@ -74,7 +74,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return	string
 	 */
-
 	protected function _getAssetName()
 	{
 		$k = $this->_tbl_key;
@@ -87,7 +86,6 @@ class FabrikTableList extends FabTable
 	 *
 	 * @return	string
 	 */
-
 	protected function _getAssetTitle()
 	{
 		return $this->label;
@@ -101,9 +99,10 @@ class FabrikTableList extends FabTable
 	 * set the instance property value is used.
 	 * @param   boolean  $reset  True to reset the default values before loading the new row.
 	 *
+	 * @throws Exception
+	 *
 	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
 	 */
-
 	public function load($keys = null, $reset = true)
 	{
 		if (empty($keys))
@@ -142,10 +141,8 @@ class FabrikTableList extends FabTable
 			// Check that $field is in the table.
 			if (!in_array($field, $fields))
 			{
-				$e = new JException(JText::sprintf('JLIB_DATABASE_ERROR_CLASS_IS_MISSING_FIELD', get_class($this), $field));
-				$this->setError($e);
+				throw new Exception(Text::sprintf('JLIB_DATABASE_ERROR_CLASS_IS_MISSING_FIELD', get_class($this), $field));
 
-				return false;
 			}
 			// Add the search tuple to the query.
 			$query->where($this->_tbl . '.' . $this->_db->qn($field) . ' = ' . $this->_db->q($value));
@@ -184,7 +181,7 @@ class FabrikTableList extends FabTable
 
 		if (empty($pk))
 		{
-			return;
+			return true;
 		}
 
 		// Initialise the query.

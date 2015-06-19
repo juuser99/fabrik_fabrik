@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\String;
+use Fabrik\Helpers\Helper;
 
 /**
  * Old package? export code
@@ -179,7 +180,6 @@ class Export  extends Base
 	 *
 	 * @return  string  xml file
 	 */
-
 	protected function _buildXML()
 	{
 		$app = JFactory::getApplication();
@@ -195,7 +195,6 @@ class Export  extends Base
 		$strXML .= "<version>" . $input->get('version') . "</version>\n";
 		$strXML .= "<licence>" . $input->get('license') . "</licence>\n";
 		$strXML .= "<description>" . $input->get('description') . "</description>\n";
-		$aTableObjs = array();
 		$tables = $this->packageModel->_tables;
 		$forms = $this->packageModel->_forms;
 
@@ -396,19 +395,19 @@ class Export  extends Base
 		{
 			if (!is_writable($filename))
 			{
-				throw new RuntimeException(JText::sprintf("FILE NOT WRITEABLE", $filename), 500);
+				throw new RuntimeException(Text::sprintf("FILE NOT WRITEABLE", $filename), 500);
 			}
 		}
 
 		if (!$handle = fopen($filename, 'a'))
 		{
-			throw new RuntimeException(JText::sprintf("CANT OPEN FILES", $filename), 500);
+			throw new RuntimeException(Text::sprintf("CANT OPEN FILES", $filename), 500);
 		}
 
 		// Write $somecontent to our opened file.
 		if (fwrite($handle, $str) === false)
 		{
-			throw new RuntimeException(JText::sprintf("CANT WRITE TO FILES", $filename), 500);
+			throw new RuntimeException(Text::sprintf("CANT WRITE TO FILES", $filename), 500);
 		}
 
 		fclose($handle);

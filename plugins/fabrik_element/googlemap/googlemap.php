@@ -14,10 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\GoogleMapHelper;
+use Fabrik\Helpers\GoogleMap as Helper;
 use Fabrik\Helpers\HTML;
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
+use \stdClass;
+use \Exception;
+use \JUri;
+use \JComponentHelper;
+use \PolylineEncoder;
+use Fabrik\Helpers\Image;
 
 /**
  * Plugin element to render a Google map
@@ -57,7 +63,6 @@ class Googlemap extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$listModel = $this->getListModel();
@@ -102,7 +107,6 @@ class Googlemap extends Element
 	 *
 	 * @return  string	Formatted value
 	 */
-
 	public function renderListData_feed($data, &$thisRow)
 	{
 		$str = '';
@@ -123,7 +127,6 @@ class Googlemap extends Element
 	 *
 	 * @return string Html microformat markup
 	 */
-
 	protected function _georss($data)
 	{
 		if (strstr($data, '<georss:point>'))
@@ -150,7 +153,6 @@ class Googlemap extends Element
 	 *
 	 * @return string Html microformat markup
 	 */
-
 	protected function _microformat($data)
 	{
 		$o = $this->_strToCoords($data, 0);
@@ -175,7 +177,6 @@ class Googlemap extends Element
 	 *
 	 * @return  string  Html DMS markup
 	 */
-
 	protected function _dmsformat($data)
 	{
 		$dms = $this->_strToDMS($data);
@@ -199,17 +200,14 @@ class Googlemap extends Element
 	 *
 	 * @return  void
 	 */
-
 	protected function geoJs()
 	{
 		if (!isset(self::$geoJs))
 		{
-			$document = JFactory::getDocument();
 			$params = $this->getParams();
 
 			if ($params->get('fb_gm_defaultloc'))
 			{
-				$uri = JURI::getInstance();
 				HTML::script('components/com_fabrik/libs/geo-location/geo.js');
 				self::$geoJs = true;
 			}
@@ -223,12 +221,10 @@ class Googlemap extends Element
 	 *
 	 * @return  void
 	 */
-
 	protected function radiusJs()
 	{
 		if (!isset(self::$radiusJs))
 		{
-			$document = JFactory::getDocument();
 			$params = $this->getParams();
 
 			if ((int) $params->get('fb_gm_radius', '0'))
@@ -246,17 +242,15 @@ class Googlemap extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
-		$element = $this->getElement();
 		$formModel = $this->getFormModel();
 		$data = $formModel->data;
 		$v = $this->getValue($data, $repeatCounter);
-		$zoomlevel = (int) $params->get('fb_gm_zoomlevel');
-		$o = $this->_strToCoords($v, $zoomlevel);
+		$zoomLevel = (int) $params->get('fb_gm_zoomlevel');
+		$o = $this->_strToCoords($v, $zoomLevel);
 		$dms = $this->_strToDMS($v);
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$this->geoJs();
@@ -293,14 +287,12 @@ class Googlemap extends Element
 					|| $geocode_on_load == 3
 				);
 		$opts->auto_center = (bool) $params->get('fb_gm_auto_center', false);
-		$opts->styles = GoogleMapHelper::styleJs($params);
+		$opts->styles = Helper::styleJs($params);
 
 		if ($opts->geocode == '2')
 		{
 			foreach (array('addr1', 'addr2', 'city', 'state', 'zip', 'country') as $which_field)
 			{
-				$field_id = '';
-
 				if ($field_id = $this->_getGeocodeFieldId($which_field, $repeatCounter))
 				{
 					$opts->geocode_fields[] = $field_id;
@@ -315,8 +307,6 @@ class Googlemap extends Element
 			foreach (array('route' => 'addr1', 'neighborhood' => 'addr2', 'locality' => 'city', 'administrative_area_level_1' => 'state',
 				'postal_code' => 'zip', 'country' => 'country') as $google_field => $which_field)
 			{
-				$field_id = '';
-
 				if ($field_id = $this->_getGeocodeFieldId($which_field, $repeatCounter))
 				{
 					$opts->reverse_geocode_fields[$google_field] = $field_id;
@@ -353,7 +343,6 @@ class Googlemap extends Element
 	 *
 	 * @return  mixed false or field value
 	 */
-
 	protected function _getFieldValue($which_field, $data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -382,10 +371,8 @@ class Googlemap extends Element
 	 *
 	 * @return mixed false or element HTML id
 	 */
-
 	protected function _getFieldId($which_field, $repeatCounter = 0)
 	{
-		$listModel = $this->getlistModel();
 		$params = $this->getParams();
 		$field = $params->get($which_field, false);
 
@@ -412,7 +399,6 @@ class Googlemap extends Element
 	 *
 	 * @return mixed false or element HTML id
 	 */
-
 	protected function _getGeocodeFieldId($which_field, $repeatCounter = 0)
 	{
 		return $this->_getFieldId('fb_gm_geocode_' . $which_field, $repeatCounter);
@@ -424,7 +410,6 @@ class Googlemap extends Element
 	 *
 	 * @return  bool
 	 */
-
 	protected function _useStaticMap()
 	{
 		if (!isset(self::$usestatic))
@@ -450,16 +435,15 @@ class Googlemap extends Element
 	 * Util function to turn the saved string into coordinate array
 	 *
 	 * @param   string  $v          Coordinates
-	 * @param   int     $zoomlevel  Default zoom level
+	 * @param   int     $zoomLevel  Default zoom level
 	 *
 	 * @return  object  Coords array and zoomlevel int
 	 */
-
-	protected function _strToCoords($v, $zoomlevel = 0)
+	protected function _strToCoords($v, $zoomLevel = 0)
 	{
 		$o = new stdClass;
 		$o->coords = array('', '');
-		$o->zoomlevel = (int) $zoomlevel;
+		$o->zoomlevel = (int) $zoomLevel;
 
 		if (strstr($v, ","))
 		{
@@ -484,7 +468,6 @@ class Googlemap extends Element
 	 *
 	 * @return  object  Coords array and zoomlevel int
 	 */
-
 	protected function _strToDMS($v)
 	{
 		$dms = new stdClass;
@@ -580,9 +563,10 @@ class Googlemap extends Element
 	 * @param   bool    $tableView      Is the static map in the table view
 	 * @param   array   $data           Row / form data, needed for optional radius value
 	 *
+	 * @throws Exception
+	 *
 	 * @return  string  static map html
 	 */
-
 	protected function _staticMap($v, $w = null, $h = null, $z = null, $repeatCounter = 0, $tableView = false, $data = array())
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -696,7 +680,6 @@ class Googlemap extends Element
 		}
 
 		// Serve cached file from remote url
-		require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
 		$src .= implode('&', $attribs);
 		$folder = 'cache/com_fabrik/staticmaps/';
 		$file = implode('.', $attribs) . '.png';
@@ -704,7 +687,7 @@ class Googlemap extends Element
 		// If its not editable and there's no val don't show the map
 		$layout = $this->getLayout('static');
 		$displayData = new stdClass;
-		$displayData->src = Fabimage::cacheRemote($src, $folder, $file);
+		$displayData->src = Image::cacheRemote($src, $folder, $file);
 		$displayData->id = $id;
 		$displayData->view = $tableView ? 'list' : 'details';
 
@@ -756,7 +739,7 @@ class Googlemap extends Element
 				$layoutData->width = $w;
 				$layoutData->height = $h;
 				$layoutData->name = $name;
-				$layoutData->label = $element->label;
+				$layoutData->label = $element->get('label');
 				$layoutData->value = htmlspecialchars($val, ENT_QUOTES);
 				$layoutData->dms = $this->_strToDMS($val);
 				$layoutData->staticmap = $params->get('fb_gm_staticmap');
@@ -799,7 +782,8 @@ class Googlemap extends Element
 		$table = $listModel->getTable();
 		$fullElName = ArrayHelper::getValue($opts, 'alias', $dbTable . '___' . $this->element->get('name'));
 		$dbTable = $db->qn($dbTable);
-		$str = $dbTable . '.' . $db->qn($this->element->name) . ' AS ' . $db->qn($fullElName);
+		$element = $this->getElement();
+		$str = $dbTable . '.' . $db->qn($element->get('name')) . ' AS ' . $db->qn($fullElName);
 
 		if ($table->get('list.db_primary_key') == $fullElName)
 		{
@@ -811,7 +795,7 @@ class Googlemap extends Element
 			$aFields[] = $str;
 			$aAsFields[] = $db->qn($fullElName);
 			$rawName = $fullElName . '_raw';
-			$aFields[] = $dbTable . '.' . $db->qn($this->element->get('name')) . ' AS ' . $db->qn($rawName);
+			$aFields[] = $dbTable . '.' . $db->qn($element->get('name')) . ' AS ' . $db->qn($rawName);
 			$aAsFields[] = $db->qn($rawName);
 		}
 	}

@@ -11,13 +11,14 @@
 
 namespace Fabrik\Admin\Models;
 
-use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
+use \Fabrik\Helpers\String as String;
+use Fabrik\Helpers\Text;
 use Joomla\Registry\Registry as Registry;
 use \JForm as JForm;
 use \stdClass as stdClass;
-use Fabrik\Helpers\Text;
-use \Fabrik\Helpers\String as String;
+
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -1928,7 +1929,7 @@ class Group extends Base implements ModelGroupInterface
 			}
 		}
 
-		$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_JOINED_DATA_BUT_FK_NOT_PUBLISHED', $fullFk), 'error');
+		$this->app->enqueueMessage(Text::sprintf('COM_FABRIK_JOINED_DATA_BUT_FK_NOT_PUBLISHED', $fullFk), 'error');
 
 		return false;
 	}

@@ -14,6 +14,9 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
+use \stdClass;
 
 /**
  * Plugin element to two lists - one to select from the other to select into
@@ -38,7 +41,6 @@ class Picklist extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
 		parent::setId($id);
@@ -56,7 +58,6 @@ class Picklist extends ElementList
 	 *
 	 * @return  string    elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$values   = $this->getSubOptionValues();
@@ -117,7 +118,6 @@ class Picklist extends ElementList
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id               = $this->getHTMLId($repeatCounter);
@@ -129,7 +129,7 @@ class Picklist extends ElementList
 
 		$opts->hovercolour   = $params->get('picklist-hovercolour', '#AFFFFD');
 		$opts->bghovercolour = $params->get('picklist-bghovercolour', '#FFFFDF');
-		JText::script('PLG_ELEMENT_PICKLIST_ENTER_VALUE_LABEL');
+		Text::script('PLG_ELEMENT_PICKLIST_ENTER_VALUE_LABEL');
 
 		return array('FbPicklist', $id, $opts);
 	}
@@ -143,7 +143,6 @@ class Picklist extends ElementList
 	 *
 	 * @return  string
 	 */
-
 	protected function prepareFilterVal($value)
 	{
 		$values = $this->getSubOptionValues();
@@ -171,7 +170,6 @@ class Picklist extends ElementList
 	 *
 	 * @return  array    (value condition)
 	 */
-
 	public function getFilterValue($value, $condition, $eval)
 	{
 		$value  = $this->prepareFilterVal($value);
@@ -189,7 +187,6 @@ class Picklist extends ElementList
 	 *
 	 * @return  bool
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		$data = (array) $data;

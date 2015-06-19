@@ -315,7 +315,7 @@ class View extends Base
 	 * @param   bool    $checkInt    Check search name against element id
 	 * @param   bool    $checkShort  Check short element name
 	 *
-	 * @return  \Fabrik\Plugins\Element ok: element model not ok: false
+	 * @return  \Fabrik\Plugins\Element\Element ok: element model not ok: false
 	 */
 	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
 	{

@@ -15,7 +15,6 @@ namespace Fabrik\Admin\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Storage\MySql as Storage;
-use \Text as Text;
 use \stdClass as stdClass;
 use \JHtml as JHtml;
 use Fabrik\Helpers\Worker;
@@ -24,10 +23,10 @@ use Fabrik\Helpers\ArrayHelper;
 use \RuntimeException as RuntimeException;
 use \Joomla\Registry\Registry as Registry;
 use \JEventDispatcher as JEventDispatcher;
+use Fabrik\Helpers\Text;
 use \JDatabaseQuery as JDatabaseQuery;
 use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\Pagination;
-use Fabrik\Admin\Models\Group as Group;
 use \JComponentHelper as JComponentHelper;
 use \JFolder as JFolder;
 use \Fabrik\Helpers\HTML;
@@ -40,7 +39,6 @@ use \JRoute as JRoute;
 use \JSession as JSession;
 use \JFile as JFile;
 use \JApplication as JApplication;
-use Fabrik\Helpers\Text;
 
 interface ModelFormLiztInterface
 {
@@ -709,29 +707,29 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$item      = $this->getItem();
 		$connModel = $this->getCnn();
-		JText::script('COM_FABRIK_OPTIONS');
-		JText::script('COM_FABRIK_JOIN');
-		JText::script('COM_FABRIK_FIELD');
-		JText::script('COM_FABRIK_CONDITION');
-		JText::script('COM_FABRIK_VALUE');
-		JText::script('COM_FABRIK_EVAL');
-		JText::script('COM_FABRIK_APPLY_FILTER_TO');
-		JText::script('COM_FABRIK_DELETE');
-		JText::script('JYES');
-		JText::script('JNO');
-		JText::script('COM_FABRIK_QUERY');
+		Text::script('COM_FABRIK_OPTIONS');
+		Text::script('COM_FABRIK_JOIN');
+		Text::script('COM_FABRIK_FIELD');
+		Text::script('COM_FABRIK_CONDITION');
+		Text::script('COM_FABRIK_VALUE');
+		Text::script('COM_FABRIK_EVAL');
+		Text::script('COM_FABRIK_APPLY_FILTER_TO');
+		Text::script('COM_FABRIK_DELETE');
+		Text::script('JYES');
+		Text::script('JNO');
+		Text::script('COM_FABRIK_QUERY');
 		JTEXT::script('COM_FABRIK_NO_QUOTES');
-		JText::script('COM_FABRIK_TEXT');
-		JText::script('COM_FABRIK_TYPE');
-		JText::script('COM_FABRIK_PLEASE_SELECT');
-		JText::script('COM_FABRIK_GROUPED');
-		JText::script('COM_FABRIK_TO');
-		JText::script('COM_FABRIK_FROM');
-		JText::script('COM_FABRIK_JOIN_TYPE');
-		JText::script('COM_FABRIK_FROM_COLUMN');
-		JText::script('COM_FABRIK_TO_COLUMN');
-		JText::script('COM_FABRIK_REPEAT_GROUP_BUTTON_LABEL');
-		JText::script('COM_FABRIK_PUBLISHED');
+		Text::script('COM_FABRIK_TEXT');
+		Text::script('COM_FABRIK_TYPE');
+		Text::script('COM_FABRIK_PLEASE_SELECT');
+		Text::script('COM_FABRIK_GROUPED');
+		Text::script('COM_FABRIK_TO');
+		Text::script('COM_FABRIK_FROM');
+		Text::script('COM_FABRIK_JOIN_TYPE');
+		Text::script('COM_FABRIK_FROM_COLUMN');
+		Text::script('COM_FABRIK_TO_COLUMN');
+		Text::script('COM_FABRIK_REPEAT_GROUP_BUTTON_LABEL');
+		Text::script('COM_FABRIK_PUBLISHED');
 
 		$joinTypeOpts      = array();
 		$joinTypeOpts[]    = array('inner', Text::_('INNER JOIN'));
@@ -1449,7 +1447,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				continue;
 			}
 
-			$elementModel->_rawFilter = $raw;
+			$elementModel->set('rawFilter', $raw);
 
 			if ($filterEval == '1')
 			{
@@ -5634,7 +5632,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					JLog::addLogger(array('text_file' => 'fabrik.log.php'));
 
 					// Start logging...
-					$msg = JText::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', String::safeColName($tmpFilter));
+					$msg = Text::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', String::safeColName($tmpFilter));
 					JLog::add($msg, JLog::NOTICE, 'com_fabrik');
 
 					$this->app->enqueueMessage($msg, 'notice');
@@ -9689,7 +9687,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			if ((int) $fbConfig->get('filter_list_max', 100) == count($res))
 			{
-				$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_FILTER_LIST_MAX_REACHED', $col), 'notice');
+				$this->app->enqueueMessage(Text::sprintf('COM_FABRIK_FILTER_LIST_MAX_REACHED', $col), 'notice');
 			}
 
 			$this->columnData[$col] = $res;

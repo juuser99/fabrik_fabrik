@@ -14,6 +14,9 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use \Fabrik\Admin\Models\Lizt as LiztModel;
+use Fabrik\Helpers\Text;
+use \stdClass;
+use \JFactory;
 
 /**
  * Plugin element to render a user controllable stopwatch timer
@@ -93,15 +96,14 @@ class Timer extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->autostart = (bool) $params->get('timer_autostart', false);
-		JText::script('PLG_ELEMENT_TIMER_START');
-		JText::script('PLG_ELEMENT_TIMER_STOP');
+		Text::script('PLG_ELEMENT_TIMER_START');
+		Text::script('PLG_ELEMENT_TIMER_STOP');
 
 		return array('FbTimer', $id, $opts);
 	}
@@ -166,7 +168,7 @@ class Timer extends Element
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$table = $listModel->getTable();
-		$db = $listModel->getDbo();
+		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
 		$query = $listModel->buildQueryJoin($query);
 		$query = $listModel->buildQueryWhere(true, $query);
@@ -184,7 +186,6 @@ class Timer extends Element
 	 *
 	 * @return  string	sum result
 	 */
-
 	public function simpleSum($data)
 	{
 		$sum = 0;

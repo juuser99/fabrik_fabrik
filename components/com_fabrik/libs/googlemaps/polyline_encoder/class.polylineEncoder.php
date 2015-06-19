@@ -216,10 +216,10 @@ class PolylineEncoder
 	 * http://stackoverflow.com/questions/7316963/drawing-a-circle-google-static-maps
 	 * Needed for drawing radius circle on static maps
 	 *
-	 * @param unknown_type $Lat
-	 * @param unknown_type $Lng
-	 * @param unknown_type $Rad
-	 * @param unknown_type $Detail
+	 * @param float|string $Lat
+	 * @param float|string $Lng
+	 * @param float|string $Rad
+	 * @param int $Detail
 	 */
 	public function GMapCircle($Lat,$Lng,$Rad,$Detail=8){
 		$R    = 6371;

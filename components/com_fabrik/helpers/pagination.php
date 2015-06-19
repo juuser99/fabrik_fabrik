@@ -15,7 +15,6 @@ use \JHtml as JHtml;
 use \stdClass as stdClass;
 use \JPaginationObject as JPaginationObject;
 use \JPagination as JPagination;
-use \Text as Text;
 use \JRoute as JRoute;
 use \JFile as JFile;
 
@@ -200,8 +199,6 @@ class Pagination extends JPagination
 
 	protected function _item_active(JPaginationObject $item)
 	{
-		$app = JFactory::getApplication();
-
 		return '<a title="' . $item->text . '" href="' . $item->link . '" class="pagenav">' . $item->text . '</a>';
 	}
 

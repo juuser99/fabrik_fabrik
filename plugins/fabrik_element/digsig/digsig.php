@@ -18,6 +18,8 @@ use Fabrik\Helpers\HTML;
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
 use \stdClass;
+use \JLayoutFile;
+use \Exception;
 
 /**
  * Plugin element to render digital signature pad
@@ -51,15 +53,14 @@ class Digsig extends Element
 	 *
 	 * @return  string    elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name          = $this->getHTMLName($repeatCounter);
 		$id            = $this->getHTMLId($repeatCounter);
 		$sig_id        = $id . '_sig';
 		$params        = $this->getParams();
-		$digsig_width  = $params->get('digsig_form_width', '400');
-		$digsig_height = $params->get('digsig_form_height', '150');
+		$width  = $params->get('digsig_form_width', '400');
+		$height = $params->get('digsig_form_height', '150');
 		$val           = $this->getValue($data, $repeatCounter);
 		$basePath      = COM_FABRIK_BASE . '/plugins/fabrik_element/digsig/layouts/';
 		$layoutData    = new stdClass;
@@ -67,8 +68,8 @@ class Digsig extends Element
 		$format        = $input->get('format');
 
 		$layoutData->id            = $id;
-		$layoutData->digsig_width  = $digsig_width;
-		$layoutData->digsig_height = $digsig_height;
+		$layoutData->digsig_width  = $width;
+		$layoutData->digsig_height = $height;
 		$layoutData->sig_id        = $sig_id;
 		$layoutData->name          = $name;
 		$layoutData->val           = $val;
@@ -169,7 +170,7 @@ class Digsig extends Element
 	 */
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
-		$rowId = JArrayHelper::getValue($data, '__pk_val');
+		$rowId = ArrayHelper::getValue($data, '__pk_val');
 
 		return $this->toImage($rowId);
 	}
@@ -186,8 +187,8 @@ class Digsig extends Element
 		$this->loadMeForAjax();
 		$this->getElement();
 		$params        = $this->getParams();
-		$digsig_width  = (int) $params->get('digsig_list_width', '200');
-		$digsig_height = (int) $params->get('digsig_list_height', '75');
+		$width  = (int) $params->get('digsig_list_width', '200');
+		$height = (int) $params->get('digsig_list_height', '75');
 		$this->language->load('com_fabrik.plg.element.fabrikdigsig', JPATH_ADMINISTRATOR);
 		$url = 'index.php';
 
@@ -221,7 +222,7 @@ class Digsig extends Element
 		$json_sig = $row->$elName;
 		require JPATH_SITE . '/plugins/fabrik_element/digsig/libs/signature-to-image/signature-to-image.php';
 		$opts        = array(
-			'imageSize' => array($digsig_width, $digsig_height)
+			'imageSize' => array($width, $height)
 		);
 		$fileContent = sigJsonToImage($json_sig, $opts);
 
@@ -264,7 +265,6 @@ class Digsig extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		if ($val == '')

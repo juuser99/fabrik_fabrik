@@ -39,7 +39,7 @@ class FabrikViewCalendar extends JViewLegacy
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$Itemid = Worker::itemId();
+		$itemId = Worker::itemId();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$id = $input->get('id', $usersConfig->get('visualizationid', $input->get('visualizationid', 0)));
@@ -84,8 +84,8 @@ class FabrikViewCalendar extends JViewLegacy
 
 		// Don't JRoute as its wont load with sef?
 		$urls->del = 'index.php?option=com_' . $package
-		. '&controller=visualization.calendar&view=visualization&task=deleteEvent&format=raw&Itemid=' . $Itemid . '&id=' . $id;
-		$urls->add = 'index.php?option=com_' . $package . '&view=visualization&format=raw&Itemid=' . $Itemid . '&id=' . $id;
+		. '&controller=visualization.calendar&view=visualization&task=deleteEvent&format=raw&Itemid=' . $itemId . '&id=' . $id;
+		$urls->add = 'index.php?option=com_' . $package . '&view=visualization&format=raw&Itemid=' . $itemId . '&id=' . $id;
 		$legend = $params->get('show_calendar_legend', 0) ? $model->getLegend() : '';
 		$tpl = $params->get('calendar_layout', $tpl);
 		$options = new stdClass;
@@ -115,7 +115,7 @@ class FabrikViewCalendar extends JViewLegacy
 		$options->filters = $model->filters;
 
 		// End not sure
-		$options->Itemid = $Itemid;
+		$options->Itemid = $itemId;
 		$options->show_day = (bool) $params->get('show_day', true);
 		$options->show_week = (bool) $params->get('show_week', true);
 		$options->days = array(Text::_('SUNDAY'), Text::_('MONDAY'), Text::_('TUESDAY'), Text::_('WEDNESDAY'), Text::_('THURSDAY'),
@@ -153,22 +153,22 @@ class FabrikViewCalendar extends JViewLegacy
 
 		$json = json_encode($options);
 
-		JText::script('PLG_VISUALIZATION_CALENDAR_NEXT');
-		JText::script('PLG_VISUALIZATION_CALENDAR_PREVIOUS');
-		JText::script('PLG_VISUALIZATION_CALENDAR_DAY');
-		JText::script('PLG_VISUALIZATION_CALENDAR_WEEK');
-		JText::script('PLG_VISUALIZATION_CALENDAR_MONTH');
-		JText::script('PLG_VISUALIZATION_CALENDAR_KEY');
-		JText::script('PLG_VISUALIZATION_CALENDAR_TODAY');
-		JText::script('PLG_VISUALIZATION_CALENDAR_CONF_DELETE');
-		JText::script('PLG_VISUALIZATION_CALENDAR_DELETE');
-		JText::script('PLG_VISUALIZATION_CALENDAR_VIEW');
-		JText::script('PLG_VISUALIZATION_CALENDAR_EDIT');
-		JText::script('PLG_VISUALIZATION_CALENDAR_ADD_EDIT_EVENT');
-		JText::script('COM_FABRIK_FORM_SAVED');
-		JText::script('PLG_VISUALIZATION_CALENDAR_EVENT_START_END');
-		JText::script('PLG_VISUALIZATION_CALENDAR_DATE_ADD_TOO_LATE');
-		JText::script('PLG_VISUALIZATION_CALENDAR_DATE_ADD_TOO_EARLY');
+		Text::script('PLG_VISUALIZATION_CALENDAR_NEXT');
+		Text::script('PLG_VISUALIZATION_CALENDAR_PREVIOUS');
+		Text::script('PLG_VISUALIZATION_CALENDAR_DAY');
+		Text::script('PLG_VISUALIZATION_CALENDAR_WEEK');
+		Text::script('PLG_VISUALIZATION_CALENDAR_MONTH');
+		Text::script('PLG_VISUALIZATION_CALENDAR_KEY');
+		Text::script('PLG_VISUALIZATION_CALENDAR_TODAY');
+		Text::script('PLG_VISUALIZATION_CALENDAR_CONF_DELETE');
+		Text::script('PLG_VISUALIZATION_CALENDAR_DELETE');
+		Text::script('PLG_VISUALIZATION_CALENDAR_VIEW');
+		Text::script('PLG_VISUALIZATION_CALENDAR_EDIT');
+		Text::script('PLG_VISUALIZATION_CALENDAR_ADD_EDIT_EVENT');
+		Text::script('COM_FABRIK_FORM_SAVED');
+		Text::script('PLG_VISUALIZATION_CALENDAR_EVENT_START_END');
+		Text::script('PLG_VISUALIZATION_CALENDAR_DATE_ADD_TOO_LATE');
+		Text::script('PLG_VISUALIZATION_CALENDAR_DATE_ADD_TOO_EARLY');
 
 		$ref = $model->getJSRenderContext();
 

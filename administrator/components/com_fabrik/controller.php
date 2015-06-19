@@ -14,7 +14,7 @@ namespace Fabrik\Admin\Controllers;
 use JFactory;
 use Joomla\String\Inflector;
 use Joomla\Utilities\ArrayHelper;
-use \JText as JText;
+use Fabrik\Helpers\Text;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -98,13 +98,13 @@ class Controller extends \JControllerBase
 			case 'unpublish':
 				$model->unpublish($ids);
 				$msg = 'COM_FABRIK_' . strtoupper($viewName) . '_N_ITEMS_UNPUBLISHED';
-				$this->app->enqueueMessage(JText::plural($msg, $ids));
+				$this->app->enqueueMessage(Text::plural($msg, $ids));
 				$this->app->redirect($listUrl);
 				break;
 			case 'publish':
 				$model->publish($ids);
 				$msg = 'COM_FABRIK_' . strtoupper($viewName) . '_N_ITEMS_PUBLISHED';
-				$this->app->enqueueMessage(JText::plural($msg, $ids));
+				$this->app->enqueueMessage(Text::plural($msg, $ids));
 				$this->app->redirect($listUrl);
 				break;
 			case 'checkin':
@@ -124,7 +124,7 @@ class Controller extends \JControllerBase
 			case 'copy':
 				$model->copy($ids);
 				$msg = 'COM_FABRIK_' . strtoupper($viewName) . 'N_ITEMS_COPIED';
-				$app->enqueueMessage(JText::plural($msg, $ids));
+				$app->enqueueMessage(Text::plural($msg, $ids));
 				break;
 			case 'view':
 				$paths = new \SplPriorityQueue;

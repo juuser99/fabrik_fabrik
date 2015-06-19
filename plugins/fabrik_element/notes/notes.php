@@ -13,6 +13,9 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use stdClass;
+use JDatabaseQuery;
+
 /**
  * Plugin element to enable users to make notes on a give record
  *
@@ -36,7 +39,6 @@ class Notes extends Databasejoin
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -55,7 +57,6 @@ class Notes extends Databasejoin
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -140,7 +141,7 @@ class Notes extends Databasejoin
 			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('COUNT(id)')->from('#__extensions')->where('name = ' . $db->q($c));
-			$db->seQuery($query);
+			$db->setQuery($query);
 			$found = $db->loadResult();
 			$this->components[$c] = $found;
 		}
@@ -155,11 +156,10 @@ class Notes extends Databasejoin
 	 * @param   bool            $incWhere        Should the additional user defined WHERE statement be included
 	 * @param   string          $thisTableAlias  Db table alias
 	 * @param   array           $opts            Options
-	 * @param   JDatabaseQuery  $query           Append where to JDatabaseQuery object or return string (false)
+	 * @param   JDatabaseQuery|bool  $query           Append where to JDatabaseQuery object or return string (false)
 	 *
 	 * @return string|JDatabaseQuery
 	 */
-
 	protected function buildQueryWhere($data = array(), $incWhere = true, $thisTableAlias = null, $opts = array(), $query = false)
 	{
 		$params = $this->getParams();
@@ -222,11 +222,10 @@ class Notes extends Databasejoin
 	 * Get options order by
 	 *
 	 * @param   string         $view   View mode '' or 'filter'
-	 * @param   JDatabasQuery  $query  Set to false to return a string
+	 * @param   JDatabaseQuery|bool  $query  Set to false to return a string
 	 *
 	 * @return  string  order by statement
 	 */
-
 	protected function getOrderBy($view = '', $query = false)
 	{
 		$params = $this->getParams();
@@ -259,7 +258,6 @@ class Notes extends Databasejoin
 	 *
 	 * @return string fields to add e.g return ',name, username AS other'
 	 */
-
 	protected function getAdditionalQueryFields()
 	{
 		$fields = '';
@@ -283,13 +281,12 @@ class Notes extends Databasejoin
 	/**
 	 * If buildQuery needs additional joins then set them here, used in notes plugin
 	 *
-	 * @param   mixed  $query  false to return string, or JQueryBuilder object
+	 * @param   JDatabaseQuery|bool  $query  false to return string, or JDatabaseQuery object
 	 *
 	 * @since 3.0rc1
 	 *
-	 * @return string|JQueryerBuilder join statement to add
+	 * @return string|JDatabaseQuery join statement to add
 	 */
-
 	protected function buildQueryJoin($query = false)
 	{
 		$join = '';
@@ -325,7 +322,6 @@ class Notes extends Databasejoin
 	 *
 	 * @return boolean
 	 */
-
 	protected function showPleaseSelect()
 	{
 		return false;
@@ -336,7 +332,6 @@ class Notes extends Databasejoin
 	 *
 	 * @return  void
 	 */
-
 	public function onAjax_addNote()
 	{
 		$input = $this->app->input;
@@ -347,7 +342,6 @@ class Notes extends Databasejoin
 		$params = $this->getParams();
 		$table = $db->qn($params->get('join_db_name'));
 		$col = $params->get('join_val_column');
-		$key = $db->qn($params->get('join_key_column'));
 		$v = $input->get('v', '', '', 'string');
 		$rowId = $this->getFormModel()->getRowId();
 

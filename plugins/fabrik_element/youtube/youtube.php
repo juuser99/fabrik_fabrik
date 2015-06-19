@@ -13,6 +13,8 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \stdClass;
+
 /**
  * Render an embedded youtube video play
  *
@@ -32,7 +34,6 @@ class Youtube extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		return $this->constructVideoPlayer($data, 'list');
@@ -43,7 +44,6 @@ class Youtube extends Element
 	 *
 	 * @return  bool
 	 */
-
 	public function requiresLightBox()
 	{
 		return true;
@@ -57,7 +57,6 @@ class Youtube extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$input = $this->app->input;
@@ -110,7 +109,6 @@ class Youtube extends Element
 	 *
 	 * @return string
 	 */
-
 	private function constructVideoPlayer($value, $mode = 'form')
 	{
 		$params = $this->getParams();
@@ -203,7 +201,7 @@ class Youtube extends Element
 					$layoutData->value = $url . $vid;
 					$layoutData->width = $width;
 					$layoutData->height = $height;
-					$layoutData->title = $element->label;
+					$layoutData->title = $element->get('label');
 					$layoutData->label = $dlink;
 					$layout = $this->getLayout('list');
 
@@ -236,7 +234,6 @@ class Youtube extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -250,7 +247,6 @@ class Youtube extends Element
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		$p = $this->getParams();
@@ -260,8 +256,8 @@ class Youtube extends Element
 			return 'BLOB';
 		}
 
-		$objtype = "VARCHAR(" . $p->get('maxlength', 255) . ")";
+		$type = "VARCHAR(" . $p->get('maxlength', 255) . ")";
 
-		return $objtype;
+		return $type;
 	}
 }

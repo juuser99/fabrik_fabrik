@@ -239,11 +239,11 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 
 		if (empty($this->msg))
 		{
-			$this->msg = JText::sprintf('PLG_LIST_UPDATE_COL_UPDATE_MESSAGE', $this->row_count, $this->sent);
+			$this->msg = Text::sprintf('PLG_LIST_UPDATE_COL_UPDATE_MESSAGE', $this->row_count, $this->sent);
 		}
 		else
 		{
-			$this->msg = JText::sprintf($this->msg, $this->row_count, $this->sent);
+			$this->msg = Text::sprintf($this->msg, $this->row_count, $this->sent);
 		}
 
 		if (!empty($postEval))
@@ -503,7 +503,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	protected function userSelectForm()
 	{
 		$model = $this->getModel();
-		JText::script('PLG_LIST_UPDATE_COL_UPDATE');
+		Text::script('PLG_LIST_UPDATE_COL_UPDATE');
 		$options[] = '<option value="">' . Text::_('COM_FABRIK_PLEASE_SELECT') . '</option>';
 		$elementModels = $model->getElements(0, false, true);
 

@@ -14,6 +14,7 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use \stdClass;
 
 /**
  * Plugin element to render facebook recommendations widget
@@ -53,7 +54,6 @@ class FbRecommendations extends Element
 	 *
 	 * @return  string    elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params            = $this->getParams();
@@ -79,7 +79,6 @@ class FbRecommendations extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id   = $this->getHTMLId($repeatCounter);

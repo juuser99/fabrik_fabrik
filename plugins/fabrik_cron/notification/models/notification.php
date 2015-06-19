@@ -10,7 +10,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 

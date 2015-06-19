@@ -116,7 +116,7 @@ class PlgFabrik_FormReceipt extends PlgFabrik_Form
 		}
 
 		$subject = html_entity_decode($params->get('receipt_subject', ''));
-		$subject = JText::_($w->parseMessageForPlaceHolder($subject, $data, false));
+		$subject = Text::_($w->parseMessageForPlaceHolder($subject, $data, false));
 		$from = $this->config->get('mailfrom', '');
 		$fromName = $this->config->get('fromname', '');
 

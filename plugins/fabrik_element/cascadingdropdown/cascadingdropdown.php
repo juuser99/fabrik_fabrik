@@ -225,7 +225,7 @@ class Cascadingdropdown extends Databasejoin
 		}
 
 		$imageOpts = array('alt' => Text::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
-		$this->loadingImg = HTML::image("ajax-loader.gif", 'form', @$this->tmpl, $imageOpts);
+		$this->loadingImg = HTML::image("ajax-loader.gif", 'form', $this->tmpl, $imageOpts);
 
 		// Get the default label for the drop down (use in read only templates)
 		$defaultLabel = '';
@@ -895,9 +895,9 @@ class Cascadingdropdown extends Databasejoin
 
 					foreach ($elementModels as $elementModel)
 					{
-						$element = $elementModel->element;
+						$element = $elementModel->getElement();
 
-						if ($element->name == $val)
+						if ($element->get('name') == $val)
 						{
 							$val = $elementModel->modifyJoinQuery($val);
 						}

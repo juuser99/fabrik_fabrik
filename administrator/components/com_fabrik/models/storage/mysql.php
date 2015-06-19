@@ -12,7 +12,7 @@ namespace Fabrik\Storage;
 
 use Fabrik\Helpers\ArrayHelper;
 use Joomla\Registry\Registry;
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\String;
 

@@ -13,10 +13,10 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use \JText;
+use Fabrik\Helpers\Text;
 use \stdClass;
 
 /**
@@ -94,7 +94,7 @@ class Checkbox extends ElementList
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->data = (empty($values) && empty($labels)) ? array() : array_combine($values, $labels);
 		$opts->allowadd = (bool) $params->get('allow_frontend_addtocheckbox', false);
-		JText::script('PLG_ELEMENT_CHECKBOX_ENTER_VALUE_LABEL');
+		Text::script('PLG_ELEMENT_CHECKBOX_ENTER_VALUE_LABEL');
 
 		return array('FbCheckBox', $id, $opts);
 	}

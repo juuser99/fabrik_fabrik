@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 /**
  * other records in the table to auto fill in the rest of the form with that records data
@@ -45,7 +46,6 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 	 *
 	 * @return  void
 	 */
-
 	public function onAfterJSLoad()
 	{
 		$params = $this->getParams();
@@ -82,9 +82,9 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 		}
 
 		$opts = json_encode($opts);
-		JText::script('PLG_FORM_AUTOFILL_DO_UPDATE');
-		JText::script('PLG_FORM_AUTOFILL_SEARCHING');
-		JText::script('PLG_FORM_AUTOFILL_NORECORDS_FOUND');
+		Text::script('PLG_FORM_AUTOFILL_DO_UPDATE');
+		Text::script('PLG_FORM_AUTOFILL_SEARCHING');
+		Text::script('PLG_FORM_AUTOFILL_NORECORDS_FOUND');
 
 		if (!isset($formModel->formPluginJS))
 		{
@@ -100,7 +100,6 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 	 *
 	 * @return	string	json object of record data
 	 */
-
 	public function onajax_getAutoFill()
 	{
 		$input = $this->app->input;
@@ -164,11 +163,11 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 
 			if (!empty($map))
 			{
-				$newdata = new stdClass;
+				$newData = new stdClass;
 				/*
 				 * need __pk_val if 'edit original row'
 				 */
-				$newdata->__pk_val = $data->__pk_val;
+				$newData->__pk_val = $data->__pk_val;
 
 				foreach ($map as $from => $to)
 				{
@@ -176,21 +175,21 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 					{
 						foreach ($to as $to2)
 						{
-							$this->fillField($data, $newdata, $from, $to2);
+							$this->fillField($data, $newData, $from, $to2);
 						}
 					}
 					else
 					{
-						$this->fillField($data, $newdata, $from, $to);
+						$this->fillField($data, $newData, $from, $to);
 					}
 				}
 			}
 			else
 			{
-				$newdata = $data;
+				$newData = $data;
 			}
 
-			echo json_encode($newdata);
+			echo json_encode($newData);
 		}
 	}
 
@@ -198,26 +197,26 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 	 * Fill the response with the lookup data
 	 *
 	 * @param   object  $data      Lookup List - Row data
-	 * @param   object  &$newdata  Data to fill the form with
+	 * @param   object  &$newData  Data to fill the form with
 	 * @param   string  $from      Key to search for in $data - may be either element full name, or placeholders
 	 * @param   string  $to        Form's field to insert data into
 	 *
 	 * @return  null
 	 */
-	protected function fillField($data, &$newdata, $from, $to)
+	protected function fillField($data, &$newData, $from, $to)
 	{
 		$matched = false;
-		$toraw = $to . '_raw';
-		$fromraw = $from . '_raw';
+		$toRaw = $to . '_raw';
+		$fromRaw = $from . '_raw';
 
 		if (array_key_exists($from, $data))
 		{
 			$matched = true;
 		}
 
-		$newdata->$to = isset($data->$from) ? $data->$from : '';
+		$newData->$to = isset($data->$from) ? $data->$from : '';
 
-		if (array_key_exists($fromraw, $data))
+		if (array_key_exists($fromRaw, $data))
 		{
 			$matched = true;
 		}
@@ -225,11 +224,11 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 		if (!$matched)
 		{
 			$w = new Worker;
-			$newdata->$toraw = $newdata->$to = $w->parseMessageForPlaceHolder($from, $data);
+			$newData->$toRaw = $newData->$to = $w->parseMessageForPlaceHolder($from, $data);
 		}
 		else
 		{
-			$newdata->$toraw = isset($data->$fromraw) ? $data->$fromraw : '';
+			$newData->$toRaw = isset($data->$fromRaw) ? $data->$fromRaw : '';
 		}
 	}
 }

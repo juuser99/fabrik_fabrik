@@ -13,6 +13,8 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 /**
  * List Helper class
  *
@@ -66,7 +68,7 @@ class ListHelper
 		if (empty($found))
 		{
 			$filterNames = implode(', ', $filter);
-			throw new Exception(JText::sprintf('COM_FABRIK_ERR_NO_ELEMENTS_MATCHED_FILTER', $filterNames));
+			throw new Exception(Text::sprintf('COM_FABRIK_ERR_NO_ELEMENTS_MATCHED_FILTER', $filterNames));
 		}
 
 		return $found;

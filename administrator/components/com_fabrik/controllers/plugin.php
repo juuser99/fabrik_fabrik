@@ -15,7 +15,7 @@ namespace Fabrik\Admin\Controllers;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Admin\Models\Lizt;
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 

@@ -245,10 +245,10 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		}
 
 		$opts = json_encode($opts);
-		JText::script('PLG_FORM_COMMENT_TYPE_A_COMMENT_HERE');
-		JText::script('PLG_FORM_COMMENT_PLEASE_ENTER_A_COMMENT_BEFORE_POSTING');
-		JText::script('PLG_FORM_COMMENT_PLEASE_ENTER_A_NAME_BEFORE_POSTING');
-		JText::script('PLG_FORM_COMMENT_ENTER_EMAIL_BEFORE_POSTNG');
+		Text::script('PLG_FORM_COMMENT_TYPE_A_COMMENT_HERE');
+		Text::script('PLG_FORM_COMMENT_PLEASE_ENTER_A_COMMENT_BEFORE_POSTING');
+		Text::script('PLG_FORM_COMMENT_PLEASE_ENTER_A_NAME_BEFORE_POSTING');
+		Text::script('PLG_FORM_COMMENT_ENTER_EMAIL_BEFORE_POSTNG');
 		$script = "var comments = new FabrikComment('fabrik-comments', $opts);";
 
 		if ($this->doThumbs())

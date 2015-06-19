@@ -12,7 +12,7 @@ namespace Fabrik\Plugins\Validation;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
 use \Fabrik\Plugins\Plugin;
@@ -215,24 +215,6 @@ class Validation extends Plugin
 	public function setMessage($msg)
 	{
 		$this->errorMsg = $msg;
-	}
-
-	/**
-	 * Now show only on validation icon next to the element name and put icons and text inside hover text
-	 * gets the validation rule icon
-	 *
-	 * @param   int     $c     Repeat group counter
-	 * @param   string  $tmpl  Template folder name
-	 *
-	 * @deprecated @since 3.0.5
-	 *
-	 * @return  string
-	 */
-
-	public function getIcon($c = 0, $tmpl = '')
-	{
-		$name = $this->elementModel->validator->getIcon($c);
-		$i = HTML::image($name, 'form', $tmpl, array('class' => $this->pluginName));
 	}
 
 	/**

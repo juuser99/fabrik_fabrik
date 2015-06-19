@@ -198,8 +198,8 @@ $listDir   = $this->state->get('list.direction');
 	</form>
 
 <?php
-$footer = '<button class="btn" data-dismiss="modal" aria-hidden="true">' . JText::_('JCANCEL') . '</button>';
-$footer .= '<button class="btn btn-warning" id="btn-delete"><span class="icon-trash"></span> ' . JText::_('JACTION_DELETE') . '</button>';
-$footer .= '<button class="btn btn-danger" id="btn-delete-drop"><span class="icon-warning"></span>' . JText::_('COM_FABRIK_DELETE_AND_DROP_TABLES') . '</button>';
-$title = JText::_('COM_FABRIK_CONFIRM_DELETE_TITLE');
-echo JHtmlBootstrap::renderModal('delete', array('footer' => $footer, 'title' => $title), JText::_('COM_FABRIK_CONFIRM_DELETE_BODY'));
+$footer = '<button class="btn" data-dismiss="modal" aria-hidden="true">' . Text::_('JCANCEL') . '</button>';
+$footer .= '<button class="btn btn-warning" id="btn-delete"><span class="icon-trash"></span> ' . Text::_('JACTION_DELETE') . '</button>';
+$footer .= '<button class="btn btn-danger" id="btn-delete-drop"><span class="icon-warning"></span>' . Text::_('COM_FABRIK_DELETE_AND_DROP_TABLES') . '</button>';
+$title = Text::_('COM_FABRIK_CONFIRM_DELETE_TITLE');
+echo JHtmlBootstrap::renderModal('delete', array('footer' => $footer, 'title' => $title), Text::_('COM_FABRIK_CONFIRM_DELETE_BODY'));

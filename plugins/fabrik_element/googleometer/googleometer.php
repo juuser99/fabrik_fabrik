@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \stdClass;
 
 /**
  * Plugin element to render a google o meter chart
@@ -47,7 +48,6 @@ class Googleometer extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$range = $this->getRange();
@@ -63,11 +63,10 @@ class Googleometer extends Element
 	 *
 	 * @return  string
 	 */
-
 	private function getDataElementFullName()
 	{
-		$dataelement = $this->getDataElement();
-		$fullName = $dataelement->getFullName();
+		$dataElement = $this->getDataElement();
+		$fullName = $dataElement->getFullName();
 
 		return $fullName;
 	}
@@ -75,9 +74,8 @@ class Googleometer extends Element
 	/**
 	 * Get the data element
 	 *
-	 * @return  PlgFabrik_Element
+	 * @return  \Fabrik\Plugins\Element\Element
 	 */
-
 	private function getDataElement()
 	{
 		$params = $this->getParams();
@@ -93,7 +91,6 @@ class Googleometer extends Element
 	 *
 	 * @return  object
 	 */
-
 	private function getRange()
 	{
 		$listModel = $this->getlistModel();
@@ -117,7 +114,6 @@ class Googleometer extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		static $range;
@@ -143,7 +139,6 @@ class Googleometer extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	protected function _renderListData($data, $range)
 	{
 		$options = array();

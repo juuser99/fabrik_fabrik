@@ -13,6 +13,8 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \stdClass;
+
 /**
  * Plugin element to render internal id
  *
@@ -37,7 +39,6 @@ class Internalid extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$element = $this->getElement();
@@ -64,7 +65,6 @@ class Internalid extends Element
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		return "INT(11) NOT NULL AUTO_INCREMENT";
@@ -77,7 +77,6 @@ class Internalid extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -91,7 +90,6 @@ class Internalid extends Element
 	 *
 	 * @return  bool
 	 */
-
 	public function isHidden()
 	{
 		return true;
@@ -102,7 +100,6 @@ class Internalid extends Element
 	 *
 	 * @return  object	element (id = 0)
 	 */
-
 	public function getDefaultProperties()
 	{
 		$item = parent::getDefaultProperties();

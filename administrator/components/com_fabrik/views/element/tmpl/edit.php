@@ -22,7 +22,7 @@ JHtml::_('behavior.framework', true);
 HTML::formvalidation();
 JHtml::_('behavior.keepalive');
 
-JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
+Text::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 ?>
 
 <script type="text/javascript">

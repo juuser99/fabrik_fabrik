@@ -21,6 +21,16 @@ use Fabrik\Helpers\UploaderHelper;
 use Fabrik\Helpers\HTML;
 use \JError;
 use Fabrik\Helpers\Text;
+use \JFile;
+use \JClientHelper;
+use \stdClass;
+use \JComponentHelper;
+use \Exception;
+use \JPath;
+use \JLog;
+use \JTable;
+use \JLayoutFile;
+use \JFilterInput;
 
 define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
@@ -53,6 +63,12 @@ class Fileupload extends Element
 	 * @var bool
 	 */
 	protected $is_upload = true;
+
+	/**
+	 * Repeat group counter - used in rendering
+	 * @var null
+	 */
+	public $_repeatGroupCounter = null;
 
 	/**
 	 * Does the element store its data in a join table (1:n)
@@ -322,7 +338,7 @@ class Fileupload extends Element
 						foreach ($value[$x]['id'] as $tkey => $parts)
 						{
 							$o = new stdClass;
-							$o->id = 'alreadyuploaded_' . $element->id . '_' . $iCounter;
+							$o->id = 'alreadyuploaded_' . $element->get('id') . '_' . $iCounter;
 							$o->name = array_pop(explode(DIRECTORY_SEPARATOR, $tkey));
 							$o->path = $tkey;
 
@@ -350,7 +366,7 @@ class Fileupload extends Element
 							// Single crop image (not sure about the 0 settings in here)
 							$parts = explode(DIRECTORY_SEPARATOR, $value[$x]->file);
 							$o = new stdClass;
-							$o->id = 'alreadyuploaded_' . $element->id . '_0';
+							$o->id = 'alreadyuploaded_' . $element->get('id') . '_0';
 							$o->name = array_pop($parts);
 							$o->path = $value[$x]->file;
 
@@ -374,7 +390,7 @@ class Fileupload extends Element
 						{
 							$parts = explode('/', $value[$x]);
 							$o = new stdClass;
-							$o->id = 'alreadyuploaded_' . $element->id . '_' . $rawvalues[$x];
+							$o->id = 'alreadyuploaded_' . $element->get('id') . '_' . $rawvalues[$x];
 							$o->name = array_pop($parts);
 							$o->path = $value[$x];
 
@@ -408,7 +424,7 @@ class Fileupload extends Element
 			$opts->joinId = $this->getJoinModel()->getJoin()->id;
 		}
 
-		$opts->elid = $element->id;
+		$opts->elid = $element->get('id');
 		$opts->defaultImage = $params->get('default_image');
 		$opts->folderSelect = $params->get('upload_allow_folderselect', 0);
 		$opts->dir = JPATH_SITE . '/' . $params->get('ul_directory');
@@ -429,26 +445,26 @@ class Fileupload extends Element
 		$opts->dragdrop = true;
 		$icon = 'picture';
 		$resize = 'expand-2';
-		$opts->previewButton = HTML::image($icon, 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
-		$opts->resizeButton = HTML::image($resize, 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
+		$opts->previewButton = HTML::image($icon, 'form', $this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
+		$opts->resizeButton = HTML::image($resize, 'form', $this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
 		$opts->files = $oFiles;
 
 		$opts->winWidth = (int) $params->get('win_width', 400);
 		$opts->winHeight = (int) $params->get('win_height', 400);
-		$opts->elementShortName = $element->name;
+		$opts->elementShortName = $element->get('name');
 		$opts->listName = $this->getListModel()->getTable()->get('list.db_table_name');
 		$opts->useWIP = (bool) $params->get('upload_use_wip', '0') == '1';
 		$opts->page_url = COM_FABRIK_LIVESITE;
 
-		JText::script('PLG_ELEMENT_FILEUPLOAD_MAX_UPLOAD_REACHED');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_DRAG_FILES_HERE');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ALL_FILES');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_RESIZE');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_CROP_AND_SCALE');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_PREVIEW');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_CONFIRM_SOFT_DELETE');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE');
-		JText::script('PLG_ELEMENT_FILEUPLOAD_FILE_TOO_LARGE_SHORT');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_MAX_UPLOAD_REACHED');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_DRAG_FILES_HERE');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ALL_FILES');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_RESIZE');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_CROP_AND_SCALE');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_PREVIEW');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_CONFIRM_SOFT_DELETE');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE');
+		Text::script('PLG_ELEMENT_FILEUPLOAD_FILE_TOO_LARGE_SHORT');
 
 		return array('FbFileUpload', $id, $opts);
 	}
@@ -783,7 +799,7 @@ class Fileupload extends Element
 	/**
 	 * Display the file in the list
 	 *
-	 * @param   string  $data      Current cell data
+	 * @param   stdClas|string  $data      Current cell data
 	 * @param   array   &$thisRow  Current row data
 	 * @param   int     $i         Repeat group count
 	 *
@@ -1026,7 +1042,7 @@ class Fileupload extends Element
 		{
 			$ok = false;
 			$size = $fileSize / 1000;
-			$errors[] = JText::sprintf('PLG_ELEMENT_FILEUPLOAD_FILE_TOO_LARGE', $params->get('ul_max_file_size'), $size);
+			$errors[] = Text::sprintf('PLG_ELEMENT_FILEUPLOAD_FILE_TOO_LARGE', $params->get('ul_max_file_size'), $size);
 		}
 
 		/**
@@ -1353,13 +1369,6 @@ class Fileupload extends Element
 				if (!$groupModel->canRepeat() && !$this->isJoin())
 				{
 					$files = $files[0];
-				}
-
-				$joinId = $groupModel->getGroup()->join_id;
-
-				if ($this->isJoin())
-				{
-					$joinId = $this->getJoinModel()->getJoin()->id;
 				}
 
 				$name = $this->getFullName(true, false);
@@ -1731,8 +1740,7 @@ class Fileupload extends Element
 			}
 			else
 			{
-				//$file = $joindata[$joinId][$name]['name'];
-				$file = JArrayHelper::getValue($files, 'name');
+				$file = ArrayHelper::getValue($files, 'name');
 			}
 
 			return $file == '' ? true : false;
@@ -1793,9 +1801,10 @@ class Fileupload extends Element
 	 * @param   string  $myFileDir           User selected upload folder
 	 * @param   int     $repeatGroupCounter  Repeat group counter
 	 *
+	 * @thorws Exception
+	 *
 	 * @return	string	Location of uploaded file
 	 */
-
 	protected function _processIndUpload(&$file, $myFileDir = '', $repeatGroupCounter = 0)
 	{
 		$params = $this->getParams();
@@ -1833,7 +1842,7 @@ class Fileupload extends Element
 
 		if (!UploaderHelper::canUpload($file, $err, $params))
 		{
-			$this->setError(100, $file['name'] . ': ' . Text::_($err));
+			throw new Exception($file['name'] . ': ' . Text::_($err));
 		}
 
 		if ($storage->exists($filePath))
@@ -1855,7 +1864,7 @@ class Fileupload extends Element
 		if (!$storage->upload($tmpFile, $filePath))
 		{
 			$uploader->moveError = true;
-			$this->setError(100, JText::sprintf('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR', $tmpFile, $filePath));
+			$this->setError(100, Text::sprintf('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR', $tmpFile, $filePath));
 
 			return;
 		}
@@ -1902,7 +1911,6 @@ class Fileupload extends Element
 			$formModel = $this->getFormModel();
 			$thumbPath = $w->parseMessageForRepeats($thumbPath, $formModel->formData, $this, $repeatGroupCounter);
 			$thumbPath = $w->parseMessageForPlaceHolder($thumbPath);
-			$thumbPrefix = $params->get('thumb_prefix');
 			$maxWidth = $params->get('thumb_max_width', 125);
 			$maxHeight = $params->get('thumb_max_height', 125);
 
@@ -1935,7 +1943,6 @@ class Fileupload extends Element
 	 *
 	 * @return object
 	 */
-
 	public function getStorage()
 	{
 		if (!isset($this->storage))
@@ -2210,11 +2217,13 @@ class Fileupload extends Element
 		{
 			case 1:
 				$capture = ' capture="camera"';
+				break;
 			case 2:
 				$capture = ' accept="image/*"' . $capture;
 				break;
 			case 3:
 				$capture = ' capture="microphone"';
+				break;
 			case 4:
 				$capture = ' accept="audio/*"' . $capture;
 				break;
@@ -2239,14 +2248,14 @@ class Fileupload extends Element
 
 			if ($groupModel->canRepeat())
 			{
-				$ulname = String::rtrimword($name, "[$repeatCounter]") . "[ul_end_dir][$repeatCounter]";
+				$ulName = String::rtrimword($name, "[$repeatCounter]") . "[ul_end_dir][$repeatCounter]";
 			}
 			else
 			{
-				$ulname = $name . '[ul_end_dir]';
+				$ulName = $name . '[ul_end_dir]';
 			}
 
-			$str[] = '<input name="' . $ulname . '" type="hidden" class="folderpath"/>';
+			$str[] = '<input name="' . $ulName . '" type="hidden" class="folderpath"/>';
 		}
 
 		if ($params->get('ajax_upload'))
@@ -2298,10 +2307,6 @@ class Fileupload extends Element
 			if (empty($singleCropImg))
 			{
 				$value = '';
-			}
-			else
-			{
-				$singleCropImg = $singleCropImg[0];
 			}
 		}
 
@@ -2629,7 +2634,6 @@ class Fileupload extends Element
 		}
 
 		$db = $this->getListModel()->getDb();
-		$storage = $this->getStorage();
 		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
 		$params = $this->getParams();
 
@@ -2752,7 +2756,6 @@ class Fileupload extends Element
 
 		if ($params->get('fu_show_image_in_email', false))
 		{
-			$origShowImages = $params->get('fu_show_image');
 			$params->set('fu_show_image', true);
 
 			// For ajax repeats

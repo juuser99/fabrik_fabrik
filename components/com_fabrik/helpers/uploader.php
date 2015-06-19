@@ -15,7 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use \JFolder;
 use \JFile;
-use \JParams;
+use Joomla\Registry\Registry;
+use \RuntimeException;
+use Fabrik\Admin\Models\Form;
 
 /**
  * Fabrik upload helper
@@ -30,7 +32,7 @@ class UploaderHelper extends \JObject
 	/**
 	 * Form model
 	 *
-	 * @var  object
+	 * @var  Form
 	 */
 	protected $form = null;
 
@@ -44,9 +46,9 @@ class UploaderHelper extends \JObject
 	/**
 	 * Upload
 	 *
-	 * @param   object  $formModel  form model
+	 * @param   Form  $formModel  form model
 	 */
-	public function __construct($formModel)
+	public function __construct(Form $formModel)
 	{
 		$this->form = $formModel;
 	}
@@ -156,7 +158,7 @@ class UploaderHelper extends \JObject
 	 *
 	 * @param   array    $file     File information
 	 * @param   string   &$err     An error message to be returned
-	 * @param   JParams  &$params  Params
+	 * @param   Registry  &$params  Params
 	 *
 	 * @return  bool
 	 */

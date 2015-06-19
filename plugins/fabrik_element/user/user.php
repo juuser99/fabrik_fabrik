@@ -18,6 +18,10 @@ use Fabrik\Helpers\ArrayHelper;
 use \InvalidArgumentException;
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
+use \stdClass;
+use \JFactory;
+use \JHtml;
+use \JFilterInput;
 
 /**
  * Plugin element to render drop-down list to select user
@@ -102,10 +106,10 @@ class User extends Databasejoin
 		else
 		{
 			/**
-			 *  $$$ hugh - this is blowing away the userid, as $element->default is empty at this point
+			 *  $$$ hugh - this is blowing away the userid, as $element->get('default') is empty at this point
 			 *  so for now I changed it to the $data value
 			 *  keep previous user
-			 *  $user = JFactory::getUser((int) $element->default);
+			 *  $user = JFactory::getUser((int) $element->get('default'));
 			 */
 			// $$$ hugh ... what a mess ... of course if it's a new form, $data doesn't exist ...
 			if (empty($data))
@@ -190,7 +194,6 @@ class User extends Databasejoin
 	 *
 	 * @return  bool
 	 */
-
 	public function isHidden()
 	{
 		if ($this->inJDb())
@@ -289,7 +292,6 @@ class User extends Databasejoin
 	 *
 	 * @return  bool  If false, data should not be added.
 	 */
-
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
 		if (!parent::onStoreRow($data, $repeatCounter))
@@ -320,17 +322,17 @@ class User extends Databasejoin
 		/*
 		 * After a failed validation, if readonly for ACL's, it may be JSON, and urlencoded, like [&quot;94&quot;]
 		*/
+		$name = $element->get('name');
+		$data[$name] = is_array($data[$name]) ? $data[$name][0] : $data[$name];
 
-		$data[$element->name] = is_array($data[$element->name]) ? $data[$element->name][0] : $data[$element->name];
+		$data[$name] = html_entity_decode($data[$name]);
 
-		$data[$element->name] = html_entity_decode($data[$element->name]);
-
-		if (Worker::isJSON($data[$element->name]))
+		if (Worker::isJSON($data[$name]))
 		{
-			$data[$element->name] = Worker::JSONtoData($data[$element->name], true);
+			$data[$name] = Worker::JSONtoData($data[$name], true);
 		}
 
-		$data[$element->name] = is_array($data[$element->name]) ? $data[$element->name][0] : $data[$element->name];
+		$data[$name] = is_array($data[$name]) ? $data[$name][0] : $data[$name];
 
 
 		/**
@@ -349,8 +351,8 @@ class User extends Databasejoin
 
 				if ($session->has('fabrik.plugin.profile_id'))
 				{
-					$data[$element->name] = $session->get('fabrik.plugin.profile_id');
-					$data[$element->name . '_raw'] = $data[$element->name];
+					$data[$element->get('name')] = $session->get('fabrik.plugin.profile_id');
+					$data[$element->get('name') . '_raw'] = $data[$name];
 
 					// $session->clear('fabrik.plugin.profile_id');
 					return true;
@@ -365,8 +367,8 @@ class User extends Databasejoin
 			if (!$this->canUse() || $this->getElement()->get('hidden') == 1)
 			{
 				$user = $this->user;
-				$data[$element->name] = $user->get('id');
-				$data[$element->name . '_raw'] = $data[$element->name];
+				$data[$element->get('name')] = $user->get('id');
+				$data[$element->get('name') . '_raw'] = $data[$name];
 			}
 		}
 		// $$$ hugh
@@ -389,8 +391,8 @@ class User extends Databasejoin
 			if ($this->updateOnEdit())
 			{
 				$user = $this->user;
-				$data[$element->name] = $user->get('id');
-				$data[$element->name . '_raw'] = $data[$element->name];
+				$data[$name] = $user->get('id');
+				$data[$name . '_raw'] = $data[$name];
 
 				// $$$ hugh - need to add to updatedByPlugin() in order to override write access settings.
 				// This allows us to still 'update on edit' when element is write access controlled.
@@ -409,7 +411,7 @@ class User extends Databasejoin
 			else if ($this->getListModel()->importingCSV)
 			{
 				$formData = $this->getFormModel()->formData;
-				$userId = ArrayHelper::getValue($formData, $element->name, '');
+				$userId = ArrayHelper::getValue($formData, $name, '');
 				if (!empty($userId) && !is_numeric($userId))
 				{
 					$user = JFactory::getUser($userId);
@@ -426,7 +428,7 @@ class User extends Databasejoin
 
 						$newUserId = (int) $db->loadResult();
 					}
-					$data[$element->name] = $newUserId;
+					$data[$element->get('name')] = $newUserId;
 				}
 			}
 		}
@@ -548,7 +550,7 @@ class User extends Databasejoin
 		$table = $this->actualTableName();
 		$element = $this->getElement();
 		$db = Worker::getDbo();
-		$fullElName = ArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
+		$fullElName = ArrayHelper::getValue($opts, 'alias', $table . '___' . $element->get('name'));
 
 		// Check if main database is the same as the elements database
 		if ($this->inJDb())
@@ -562,7 +564,7 @@ class User extends Databasejoin
 
 			// $$$ rob in csv import keytable not set
 			$k = isset($join->keytable) ? $join->keytable : $join->join_from_table;
-			$k = String::safeColName($k . '.' . $element->name);
+			$k = String::safeColName($k . '.' . $element->get('name'));
 			$k2 = String::safeColName($this->getJoinLabelColumn());
 
 			if (ArrayHelper::getValue($opts, 'inc_raw', true))
@@ -576,7 +578,7 @@ class User extends Databasejoin
 		}
 		else
 		{
-			$k = $db->qn($table) . '.' . $db->qn($element->name);
+			$k = $db->qn($table) . '.' . $db->qn($element->get('name'));
 
 			// Its not so revert back to selecting the id
 			$aFields[] = $k . ' AS ' . $db->qn($fullElName . '_raw');
@@ -721,6 +723,7 @@ class User extends Databasejoin
 		$join = $this->getJoin();
 		$joinTableName = String::safeColName($join->table_join_alias);
 		$filterType = $element->get('filter_type');
+		$rows = array();
 
 		// If filter type isn't set was blowing up in switch below 'cos no $rows
 		// so added '' to this test.  Should probably set $element->get('filter_type') to a default somewhere.
@@ -731,7 +734,7 @@ class User extends Databasejoin
 
 			if ($filterType !== 'checkbox')
 			{
-				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
+				array_unshift($rows, JHtml::_('select.option', '', $this->filterSelectLabel()));
 			}
 		}
 
@@ -745,9 +748,9 @@ class User extends Databasejoin
 			case "range":
 				$attributes = 'class="' . $class . '" size="1" ';
 				$default1 = is_array($default) ? $default[0] : '';
-				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attributes, 'value', 'text', $default1, $element->name . "_filter_range_0");
+				$return[] = JHtml::_('select.genericlist', $rows, $v . '[]', $attributes, 'value', 'text', $default1, $element->get('name') . "_filter_range_0");
 				$default1 = is_array($default) ? $default[1] : '';
-				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attributes, 'value', 'text', $default1, $element->name . "_filter_range_1");
+				$return[] = JHtml::_('select.genericlist', $rows, $v . '[]', $attributes, 'value', 'text', $default1, $element->get('name') . "_filter_range_1");
 				break;
 			case 'dropdown':
 			case 'multiselect':
@@ -755,7 +758,7 @@ class User extends Databasejoin
 				$max = count($rows) < 7 ? count($rows) : 7;
 				$size = $filterType === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
 				$v = $filterType === 'multiselect' ? $v . '[]' : $v;
-				$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" ' . $size, 'value', 'text', $default, $htmlId);
+				$return[] = JHtml::_('select.genericlist', $rows, $v, 'class="' . $class . '" ' . $size, 'value', 'text', $default, $htmlId);
 				break;
 
 			case 'field':
@@ -896,7 +899,7 @@ class User extends Databasejoin
 		}
 		else
 		{
-			if ($this->_rawFilter)
+			if ($this->get('rawFilter', false))
 			{
 				$k = $db->qn($joinTableName . '.id');
 			}
@@ -1065,11 +1068,9 @@ class User extends Databasejoin
 
 		if ($displayParam == 'gid')
 		{
-			$displayParam == 'username';
-
 			if (!isset($displayMessage))
 			{
-				$this->app->enqueueMessage(JText::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->get('id')), 'notice');
+				$this->app->enqueueMessage(Text::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->get('id')), 'notice');
 				$displayMessage = true;
 			}
 		}

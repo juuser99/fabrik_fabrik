@@ -58,14 +58,13 @@ class ImageRender
 	/**
 	 * Render uploaded image
 	 *
-	 * @param   object &$model  Element model
+	 * @param   \Fabrik\Plugins\Element\Element &$model  Element model
 	 * @param   object &$params Element params
 	 * @param   string $file    Row data for this element
 	 * @param   object $thisRow All row's data
 	 *
 	 * @return  void
 	 */
-
 	public function render(&$model, &$params, $file, $thisRow = null)
 	{
 		/*

@@ -84,20 +84,20 @@ class FabrikControllerImport extends FabrikController
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 		$model->import();
-		$Itemid = $input->getInt('Itemid');
+		$itemId = $input->getInt('Itemid');
 
 		if (!empty($model->newHeadings))
 		{
 			// As opposed to admin you can't alter table structure with a CSV import from the front end
 			$this->app->enqueueMessage($model->makeError(), 'notice');
-			$this->setRedirect('index.php?option=com_fabrik&view=import&filetype=csv&listid=' . $id . '&Itemid=' . $Itemid);
+			$this->setRedirect('index.php?option=com_fabrik&view=import&filetype=csv&listid=' . $id . '&Itemid=' . $itemId);
 		}
 		else
 		{
 			$input->set('fabrik_list', $id);
 			$model->insertData();
 			$msg = $model->updateMessage();
-			$this->setRedirect('index.php?option=com_fabrik&view=list&listid=' . $id . "&resetfilters=1&Itemid=" . $Itemid, $msg);
+			$this->setRedirect('index.php?option=com_fabrik&view=list&listid=' . $id . "&resetfilters=1&Itemid=" . $itemId, $msg);
 		}
 	}
 }

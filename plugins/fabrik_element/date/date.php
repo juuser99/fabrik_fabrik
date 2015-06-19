@@ -366,7 +366,7 @@ class Date extends ElementList
 				. $timeElName . '" />';
 		$opts = array('alt' => Text::_('PLG_ELEMENT_DATE_TIME'), 'class' => 'timeButton');
 		$file = 'clock.png';
-		$img = '<button class="btn timeButton">' . HTML::image($file, 'form', @$this->tmpl, $opts) . '</button>';
+		$img = '<button class="btn timeButton">' . HTML::image($file, 'form', $this->tmpl, $opts) . '</button>';
 		$str[] = $img;
 
 		$str[] = '</div>';
@@ -763,7 +763,7 @@ class Date extends ElementList
 
 		HTML::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
 		$opts = array('alt' => 'calendar');
-		$img = HTML::image('calendar.png', 'form', @$this->tmpl, $opts);
+		$img = HTML::image('calendar.png', 'form', $this->tmpl, $opts);
 		$html = array();
 
 		$img = '<button id ="' . $id . '_cal_img" class="btn calendarbutton">' . $img . '</button>';
@@ -1589,7 +1589,7 @@ class Date extends ElementList
 		$from->name = $v;
 
 		$imageOpts = array('alt' => 'calendar');
-		$from->img = HTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$from->img = HTML::image('calendar.png', 'form', $this->tmpl, $imageOpts);
 
 		$displayData->from = $from;
 
@@ -1635,7 +1635,7 @@ class Date extends ElementList
 		$from->name = $v . '[0]';
 
 		$imageOpts = array('alt' => 'calendar');
-		$from->img = HTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$from->img = HTML::image('calendar.png', 'form', $this->tmpl, $imageOpts);
 
 		$displayData->from = $from;
 
@@ -1648,7 +1648,7 @@ class Date extends ElementList
 		$to->name = $v . '[1]';
 
 		$imageOpts = array('alt' => 'calendar');
-		$to->img = HTML::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$to->img = HTML::image('calendar.png', 'form', this->tmpl, $imageOpts);
 
 		$displayData->to = $to;
 		$displayData->filterType = $this->getFilterType();

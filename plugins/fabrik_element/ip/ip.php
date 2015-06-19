@@ -14,6 +14,7 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use \stdClass;
 
 /**
  * Plugin element to store the user's IP address
@@ -32,7 +33,6 @@ class Ip extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -99,7 +99,6 @@ class Ip extends Element
 	 *
 	 * @return  bool  If false, data should not be added.
 	 */
-
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
 		if (!parent::onStoreRow($data, $repeatCounter))
@@ -111,9 +110,9 @@ class Ip extends Element
 		$formModel = $this->getFormModel();
 		$formData = $formModel->formData;
 
-		if (ArrayHelper::getValue($formData, 'rowid', 0) == 0 && !in_array($element->name, $data))
+		if (ArrayHelper::getValue($formData, 'rowid', 0) == 0 && !in_array($element->get('name'), $data))
 		{
-			$data[$element->name] = $_SERVER['REMOTE_ADDR'];
+			$data[$element->get('name')] = $_SERVER['REMOTE_ADDR'];
 		}
 		else
 		{
@@ -121,8 +120,8 @@ class Ip extends Element
 
 			if ($params->get('ip_update_on_edit', 0))
 			{
-				$data[$element->name] = $_SERVER['REMOTE_ADDR'];
-				$data[$element->name . '_raw'] = $_SERVER['REMOTE_ADDR'];
+				$data[$element->get('name')] = $_SERVER['REMOTE_ADDR'];
+				$data[$element->get('name') . '_raw'] = $_SERVER['REMOTE_ADDR'];
 			}
 		}
 
@@ -136,7 +135,6 @@ class Ip extends Element
 	 *
 	 * @return mixed
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
@@ -156,7 +154,6 @@ class Ip extends Element
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		// Kludge for 2 scenarios

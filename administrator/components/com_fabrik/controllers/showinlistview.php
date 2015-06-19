@@ -12,7 +12,7 @@
 namespace Fabrik\Admin\Controllers;
 
 use Fabrik\Admin\Models\Elements as Elements;
-use \JText as JText;
+use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -41,7 +41,7 @@ class showInListView extends Controller
 		$ids   = $this->app->input->get('cid', array(), 'array');
 		$model = new Elements;
 		$model->changeState($ids, 'show_in_list_summary', 1);
-		$this->app->enqueueMessage(JText::plural('COM_FABRIK_ELEMENTS_N_ITEMS_ADDED_TO_LIST_VIEW', count($ids)));
+		$this->app->enqueueMessage(Text::plural('COM_FABRIK_ELEMENTS_N_ITEMS_ADDED_TO_LIST_VIEW', count($ids)));
 		$this->app->redirect($this->listUrl('element'));
 	}
 

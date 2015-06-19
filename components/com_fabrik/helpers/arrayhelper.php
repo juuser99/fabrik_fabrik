@@ -204,9 +204,8 @@ class ArrayHelper extends \JArrayHelper
 	 * @param   string  $key     to search on
 	 * @param   string  $value   of key to keep from array
 	 *
-	 * @return unknown_type
+	 * @return void
 	 */
-
 	public static function filter(&$array, $key, $value)
 	{
 		for ($i = count($array) - 1; $i >= 0; $i--)
@@ -227,7 +226,6 @@ class ArrayHelper extends \JArrayHelper
 	 *
 	 * @return  mixed  value or false
 	 */
-
 	public function get($array, $key, $value)
 	{
 		for ($i = count($array) - 1; $i >= 0; $i--)
@@ -249,7 +247,6 @@ class ArrayHelper extends \JArrayHelper
 	 *
 	 * @return  array of single key values
 	 */
-
 	public static function extract($array, $key)
 	{
 		$return = array();
@@ -272,7 +269,6 @@ class ArrayHelper extends \JArrayHelper
 	 *
 	 * @return  string  the first array key.
 	 */
-
 	public static function firstKey($array)
 	{
 		reset($array);
@@ -290,7 +286,6 @@ class ArrayHelper extends \JArrayHelper
 	 *
 	 * @return  bool  is array empty(ish)
 	 */
-
 	public static function emptyIsh($array, $even_emptierish = false)
 	{
 		if (empty($array))
@@ -321,7 +316,6 @@ class ArrayHelper extends \JArrayHelper
 	 *
 	 * @return  mixed  The value from the source array
 	 */
-	
 	public static function getValue(&$array, $name, $default = null, $type = '')
 	{
 		if (is_object($array))
@@ -392,5 +386,4 @@ class ArrayHelper extends \JArrayHelper
 
 		return $result;
 	}
-	
 }

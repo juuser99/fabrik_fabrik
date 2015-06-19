@@ -12,7 +12,7 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
@@ -116,7 +116,6 @@ class Field extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -206,7 +205,6 @@ class Field extends Element
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$value = parent::getValue($data, $repeatCounter, $opts);
@@ -228,7 +226,6 @@ class Field extends Element
 	 *
 	 * @return  void
 	 */
-
 	protected function _guessLinkType(&$value, $data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -537,13 +534,13 @@ class Field extends Element
 	 * Get a link to this element which will call onAjax_renderQRCode().
 	 *
 	 * @param   string $value    element's value
-	 * @param   array  $thisRow  row data
+	 * @param   stdClass  $thisRow  row data
 	 *
 	 * @since 3.1
 	 *
 	 * @return   string  QR code link
 	 */
-	protected function qrCodeLink($value, $thisRow)
+	protected function qrCodeLink($value, stdClass $thisRow)
 	{
 		if (is_object($thisRow))
 		{

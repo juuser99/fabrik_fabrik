@@ -16,6 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\HTML;
+use \Fabrik\Admin\Models\Lizt;
+use \stdClass;
 
 /**
  * Plugin element to render facebook open graph like button
@@ -63,7 +65,6 @@ class Fblike extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		if ($this->app->input->get('format') === 'raw')
@@ -108,12 +109,11 @@ class Fblike extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
 		$meta = array();
-		$formModel = $this->getForm();
+		$formModel = $this->getFormModel();
 		$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
 		$map = array('og:title' => 'fblike_title', 'og:type' => 'fblike_type', 'og:image' => 'fblike_image',
 			'og:description' => 'fblike_description', 'og:street-address' => 'fblike_street_address', 'og:locality' => 'fblike_locality',
@@ -180,7 +180,6 @@ class Fblike extends Element
 	 *
 	 * @return string
 	 */
-
 	protected function _render($url)
 	{
 		$params = $this->getParams();
@@ -222,7 +221,6 @@ class Fblike extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -239,13 +237,12 @@ class Fblike extends Element
 	 *
 	 * @return  null
 	 */
-
 	public function onAjax_rate()
 	{
 		$input = $this->app->input;
 		$this->loadMeForAjax();
 		$listId = $input->getString('listid');
-		$list = new \Fabrik\Admin\Models\Lizt;
+		$list = new Lizt;
 		$list->setId($listId);
 		$rowId = $input->get('row_id');
 		$direction = $input->get('direction', '+');

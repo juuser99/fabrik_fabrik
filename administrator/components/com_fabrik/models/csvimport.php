@@ -18,6 +18,7 @@ use \JFile as JFile;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use \RuntimeException as RuntimeException;
+use Fabrik\Admin\Models\Lizt;
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
 use \JPath;
@@ -453,13 +454,13 @@ class CsvImport extends Base
 	/**
 	 * Get the list model
 	 *
-	 * @return \Fabrik\Admin\Models\Lizt  List model
+	 * @return Lizt  List model
 	 */
 	public function getlistModel()
 	{
 		if (!isset($this->listModel))
 		{
-			$this->listModel = new \Fabrik\Admin\Models\Lizt;
+			$this->listModel = new Lizt;
 			$this->listModel->setId($this->input->getString('listid'));
 		}
 
@@ -857,11 +858,11 @@ class CsvImport extends Base
 
 		if ($elementsCreated == 0)
 		{
-			$msg = JText::sprintf('COM_FABRIK_CSV_ADDED_AND_UPDATED', $this->addedCount, $this->updatedCount);
+			$msg = Text::sprintf('COM_FABRIK_CSV_ADDED_AND_UPDATED', $this->addedCount, $this->updatedCount);
 		}
 		else
 		{
-			$msg = JText::sprintf('COM_FABRIK_CSV_ADD_ELEMENTS_AND_RECORDS_AND_UPDATED', $elementsCreated, $this->addedCount, $this->updatedCount);
+			$msg = Text::sprintf('COM_FABRIK_CSV_ADD_ELEMENTS_AND_RECORDS_AND_UPDATED', $elementsCreated, $this->addedCount, $this->updatedCount);
 		}
 
 		return $msg;

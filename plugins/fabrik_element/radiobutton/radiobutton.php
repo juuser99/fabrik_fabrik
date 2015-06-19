@@ -13,8 +13,10 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\ArrayHelper;
+use \stdClass;
 
 /**
  * Plugin element to a series of radio buttons
@@ -32,7 +34,6 @@ class Radiobutton extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
 		parent::setId($id);
@@ -68,7 +69,6 @@ class Radiobutton extends ElementList
 	 *
 	 * @return  string  email formatted value
 	 */
-
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		if (empty($value))
@@ -91,20 +91,19 @@ class Radiobutton extends ElementList
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$data = $this->getFormModel()->data;
-		$arVals = $this->getSubOptionValues();
+		$values = $this->getSubOptionValues();
 		$arTxt = $this->getSubOptionLabels();
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->value = $this->getValue($data, $repeatCounter);
 		$opts->defaultVal = $this->getDefaultValue($data);
-		$opts->data = empty($arVals) ? array() : array_combine($arVals, $arTxt);
+		$opts->data = empty($values) ? array() : array_combine($values, $arTxt);
 		$opts->allowadd = $params->get('allow_frontend_addtoradio', false) ? true : false;
-		JText::script('PLG_ELEMENT_RADIO_ENTER_VALUE_LABEL');
+		Text::script('PLG_ELEMENT_RADIO_ENTER_VALUE_LABEL');
 
 		return array('FbRadio', $id, $opts);
 	}
@@ -119,7 +118,6 @@ class Radiobutton extends ElementList
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s = new stdClass;
@@ -133,11 +131,10 @@ class Radiobutton extends ElementList
 	 * sees then switch from the search string to the db value here
 	 * overwritten in things like checkbox and radio plugins
 	 *
-	 * @param   string  $value  filterVal
+	 * @param   array|string  $value  filterVal
 	 *
 	 * @return  string
 	 */
-
 	protected function prepareFilterVal($value)
 	{
 		$values = $this->getSubOptionValues();
@@ -180,18 +177,16 @@ class Radiobutton extends ElementList
 	 *
 	 * @return  array  form data
 	 */
-
 	public function getEmptyDataValue(&$data)
 	{
-		$params = $this->getParams();
 		$element = $this->getElement();
 
-		if (!array_key_exists($element->name, $data))
+		if (!array_key_exists($element->get('name'), $data))
 		{
 			$sel = $this->getSubInitialSelection();
 			$sel = ArrayHelper::getValue($sel, 0, '');
-			$arVals = $this->getSubOptionValues();
-			$data[$element->name] = array(ArrayHelper::getValue($arVals, $sel, ''));
+			$values = $this->getSubOptionValues();
+			$data[$element->get('name')] = array(ArrayHelper::getValue($values, $sel, ''));
 		}
 	}
 
@@ -204,29 +199,12 @@ class Radiobutton extends ElementList
 	 *
 	 * @return  array	(value condition)
 	 */
-
 	public function getFilterValue($value, $condition, $eval)
 	{
 		$value = $this->prepareFilterVal($value);
 		$return = parent::getFilterValue($value, $condition, $eval);
 
 		return $return;
-	}
-
-	/**
-	 * Used by inline edit table plugin
-	 * If returns yes then it means that there are only two possible options for the
-	 * ajax edit, so we should simply toggle to the alternative value and show the
-	 * element rendered with that new value (used for yes/no element)
-	 *
-	 * @deprecated - only called in a deprecated element method
-	 *
-	 * @return  bool
-	 */
-
-	protected function canToggleValue()
-	{
-		return count($this->getSubOptionValues()) < 3 ? true : false;
 	}
 
 	/**
@@ -238,7 +216,6 @@ class Radiobutton extends ElementList
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$v = parent::getValue($data, $repeatCounter, $opts);

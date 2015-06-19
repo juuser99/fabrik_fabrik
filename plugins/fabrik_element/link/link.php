@@ -18,6 +18,8 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
+use \stdClass;
+use \bitly;
 
 /**
  * Plugin element to render two fields to capture a link (url/label)
@@ -131,15 +133,15 @@ class Link extends Element
 			$lbl = trim($data['label']);
 			$href = $w->parseMessageForPlaceHolder(urldecode($href), ArrayHelper::fromObject($thisRow));
 
-			if (JString::strtolower($href) == 'http://' || JString::strtolower($href) == 'https://')
+			if (String::strtolower($href) == 'http://' || String::strtolower($href) == 'https://')
 			{
 				// Treat some default values as empty
 				$href = '';
 			}
 			else if (strlen($href) > 0 && substr($href, 0, 1) != "/"
-				&& substr(JString::strtolower($href), 0, 7) != 'http://'
-				&& substr(JString::strtolower($href), 0, 8) != 'https://'
-				&& substr(JString::strtolower($href), 0, 6) != 'ftp://'
+				&& substr(String::strtolower($href), 0, 7) != 'http://'
+				&& substr(String::strtolower($href), 0, 8) != 'https://'
+				&& substr(String::strtolower($href), 0, 6) != 'ftp://'
 				)
 			{
 					$href = 'http://' . $href;
@@ -169,7 +171,6 @@ class Link extends Element
 				$link = $href;
 			}
 
-			$w = new Worker;
 			$aRow = ArrayHelper::fromObject($thisRow);
 			$link = $listModel->parseMessageForRowHolder($link, $aRow);
 
@@ -269,11 +270,10 @@ class Link extends Element
 			return HTML::a($href, $lbl, $opts);
 		}
 
-		$labelname = String::rtrimword($name, '[]') . '[label]';
-		$linkname = String::rtrimword($name, '[]') . '[link]';
+		$labelName = String::rtrimword($name, '[]') . '[label]';
+		$linkName = String::rtrimword($name, '[]') . '[link]';
 
-		$html = array();
-		$bits['name'] = $labelname;
+		$bits['name'] = $labelName;
 		$bits['placeholder'] = Text::_('PLG_ELEMENT_LINK_LABEL');
 		$bits['value'] = $value['label'];
 		$bits['class'] .= ' fabrikSubElement';
@@ -286,7 +286,7 @@ class Link extends Element
 		$layoutData->linkAttributes = $bits;
 
 		$bits['placeholder'] = Text::_('PLG_ELEMENT_LINK_URL');
-		$bits['name'] = $linkname;
+		$bits['name'] = $linkName;
 		$bits['value'] = ArrayHelper::getValue($value, 'link');
 
 		if (is_a($bits['value'], 'stdClass'))
@@ -489,9 +489,9 @@ class Link extends Element
 			}
 
 			$element = $this->getElement();
-			$default = $w->parseMessageForPlaceHolder($element->default, $data);
+			$default = $w->parseMessageForPlaceHolder($element->get('default'), $data);
 
-			if ($element->eval == "1")
+			if ($element->get('eval') == "1")
 			{
 				$default = @eval((string) stripslashes($default));
 			}

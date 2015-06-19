@@ -14,8 +14,13 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Joomla\Registry\Registry;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
+use \JHtml;
+use \JFactory;
+use JDatabaseQuery;
 
 /**
  * Plugin element to render Joomla's tags field
@@ -42,7 +47,7 @@ class Tags extends Databasejoin
 	{
 		if (!isset($this->params))
 		{
-			$this->params = new JRegistry($this->getElement()->params);
+			$this->params = new Registry($this->getElement()->get('params'));
 			$this->params->set('table_join', '#__tags');
 		}
 
@@ -56,11 +61,9 @@ class Tags extends Databasejoin
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
-		$params = $this->getParams();
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->rowid = $this->getFormModel()->getRowId();
 		$opts->id = $this->id;
@@ -83,7 +86,6 @@ class Tags extends Databasejoin
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$name = $this->getHTMLName($repeatCounter);
-		$formModel = $this->getFormModel();
 
 		if ($this->isEditable())
 		{
@@ -93,11 +95,11 @@ class Tags extends Databasejoin
 			JHtml::_('jquery.framework');
 
 			// Requires chosen to work
-			JText::script('JGLOBAL_KEEP_TYPING');
-			JText::script('JGLOBAL_LOOKING_FOR');
-			JText::script('JGLOBAL_SELECT_SOME_OPTIONS');
-			JText::script('JGLOBAL_SELECT_AN_OPTION');
-			JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
+			Text::script('JGLOBAL_KEEP_TYPING');
+			Text::script('JGLOBAL_LOOKING_FOR');
+			Text::script('JGLOBAL_SELECT_SOME_OPTIONS');
+			Text::script('JGLOBAL_SELECT_AN_OPTION');
+			Text::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
 
 			$ext = HTML::isDebug() ? '.min.js' : '.js';
 			JHtml::_('script', 'jui/chosen.jquery' . $ext, false, true, false, false);
@@ -138,11 +140,10 @@ class Tags extends Databasejoin
 	 * @param   bool            $incWhere        Should the additional user defined WHERE statement be included
 	 * @param   string          $thisTableAlias  Db table alias
 	 * @param   array           $opts            Options
-	 * @param   JDatabaseQuery  $query           Append where to JDatabaseQuery object or return string (false)
+	 * @param   JDatabaseQuery|bool  $query           Append where to JDatabaseQuery object or return string (false)
 	 *
 	 * @return string|JDatabaseQuery
 	 */
-
 	protected function buildQueryWhere($data = array(), $incWhere = true, $thisTableAlias = null, $opts = array(), $query = false)
 	{
 		$rowId = $this->getFormModel()->getRowId();
@@ -178,13 +179,12 @@ class Tags extends Databasejoin
 	/**
 	 * If buildQuery needs additional joins then set them here
 	 *
-	 * @param   mixed  $query  false to return string, or JQueryBuilder object
+	 * @param   JDatabaseQuery|bool  $query  false to return string, or JQueryBuilder object
 	 *
 	 * @since 3.0rc1
 	 *
-	 * @return string|JQueryerBuilder join statement to add
+	 * @return string|JDatabaseQuery join statement to add
 	 */
-
 	protected function buildQueryJoin($query = false)
 	{
 		$db = $this->getDb();
@@ -193,9 +193,9 @@ class Tags extends Databasejoin
 		if ($query !== false)
 		{
 			$query->join('LEFT', '#__tags AS t ON t.id = ' . $f);
-
-			return $query;
 		}
+
+		return $query;
 	}
 
 	/**
@@ -205,7 +205,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return boolean
 	 */
-
 	protected function showPleaseSelect()
 	{
 		return false;
@@ -216,7 +215,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		return "INT(11)";
@@ -227,7 +225,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return	bool
 	 */
-
 	public function isJoin()
 	{
 		return true;
@@ -238,7 +235,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return  string	database name
 	 */
-
 	protected function getDbName()
 	{
 		$this->dbname = '#__tags';
@@ -251,7 +247,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function getJoinValueFieldName()
 	{
 		return 'id';
@@ -262,7 +257,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return string
 	 */
-
 	protected function getLabelParamVal()
 	{
 		if (!isset($this->labelParamVal))
@@ -282,7 +276,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return  string	Label
 	 */
-
 	public function getLabelForValue($v, $defaultLabel = null, $forceCheck = false)
 	{
 		// Band aid - as this is called in listModel::addLabels() lets not bother - re-querying the db (label already loaded)
@@ -313,7 +306,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return  mixed	JDatabaseQuery or false if query can't be built
 	 */
-
 	protected function buildQuery($data = array(), $incWhere = true, $opts = array())
 	{
 		$db = $this->getDb();
@@ -336,7 +328,6 @@ class Tags extends Databasejoin
 	 *
 	 * @return  void
 	 */
-
 	public function onFinalStoreRow(&$data)
 	{
 		$name = $this->getFullName(true, false);

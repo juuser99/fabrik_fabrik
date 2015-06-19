@@ -11,9 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.plugin.plugin');
 
@@ -69,7 +70,7 @@ class PlgContentFabrik extends JPlugin
 
 		if (!defined('COM_FABRIK_FRONTEND'))
 		{
-			throw new RuntimeException(JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
+			throw new RuntimeException(Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
 		}
 
 		// Get plugin info

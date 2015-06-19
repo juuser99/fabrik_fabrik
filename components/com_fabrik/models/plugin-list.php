@@ -12,11 +12,12 @@ namespace Fabrik\Plugins;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\Text;
 use \stdClass as stdClass;
 use Fabrik\Helpers\HTML;
+use \JFile;
 
 /**
  * Fabrik Plugin From Model
@@ -191,7 +192,7 @@ class Lizt extends Plugin
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
-		JText::script('COM_FABRIK_PLEASE_SELECT_A_ROW');
+		Text::script('COM_FABRIK_PLEASE_SELECT_A_ROW');
 
 		return true;
 	}
@@ -417,7 +418,7 @@ class Lizt extends Plugin
 	public function getLayout($type)
 	{
 		$name = get_class($this);
-		$name = strtolower(JString::str_ireplace('PlgFabrik_List', '', $name));
+		$name = strtolower(String::str_ireplace('PlgFabrik_List', '', $name));
 		$basePath = COM_FABRIK_BASE . '/plugins/fabrik_list/' . $name . '/layouts';
 		$layout = new LayoutFile('fabrik-list-' . $name. '-' . $type, $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 		$layout->addIncludePaths(JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts');

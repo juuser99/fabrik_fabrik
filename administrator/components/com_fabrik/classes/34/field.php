@@ -701,7 +701,7 @@ abstract class JFormField
 
 		// Get the label text from the XML element, defaulting to the element name.
 		$title = $this->element['label'] ? (string) $this->element['label'] : (string) $this->element['name'];
-		$title = $this->translateLabel ? JText::_($title) : $title;
+		$title = $this->translateLabel ? Text::_($title) : $title;
 
 		return $title;
 	}
@@ -727,7 +727,7 @@ abstract class JFormField
 		// Forcing the Alias field to display the tip below
 		$position = $this->element['name'] == 'alias' ? ' data-placement="bottom" ' : '';
 
-		$description = ($this->translateDescription && !empty($this->description)) ? JText::_($this->description) : $this->description;
+		$description = ($this->translateDescription && !empty($this->description)) ? Text::_($this->description) : $this->description;
 
 		$displayData = array(
 				'text'        => $text,

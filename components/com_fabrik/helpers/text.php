@@ -13,6 +13,7 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \JText;
 /**
  *
  * $$$ hugh JText::_() does funky stuff to strings with commas in them, like

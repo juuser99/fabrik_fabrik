@@ -13,6 +13,8 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \stdClass;
+
 /**
  * Google Map class
  *
@@ -20,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.helpers
  * @since       3.5
  */
-class FabGoogleMapHelper
+class GoogleMap
 {
 	/**
 	 * Set the google map style
@@ -34,7 +36,6 @@ class FabGoogleMapHelper
 
 	public static function styleJs($params)
 	{
-		$optStyles = array();
 		$styles = json_decode($params->get('gmap_styles'));
 
 		if (!$styles)

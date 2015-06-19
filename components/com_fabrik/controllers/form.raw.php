@@ -267,11 +267,11 @@ class FabrikControllerForm extends FabrikController
 					$url = $input->get('fabrik_referrer', 'index.php', 'string');
 				}
 
-				$Itemid = Worker::itemId();
+				$itemId = Worker::itemId();
 
 				if ($url == '')
 				{
-					$url = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid;
+					$url = 'index.php?option=com_' . $package . '&Itemid=' . $itemId;
 				}
 			}
 

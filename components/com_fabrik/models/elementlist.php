@@ -853,7 +853,6 @@ class ElementList extends Element
 		}
 
 		$optionsPerRow = (int) $this->getParams()->get('options_per_row', 4);
-		$elBeforeLabel = (bool) $this->getParams()->get('element_before_label', true);
 
 		// Element_before_label
 		if ($input->get('format') == 'raw')
@@ -863,7 +862,7 @@ class ElementList extends Element
 
 		$classes = $this->labelClasses();
 		$buttonGroup = $this->buttonGroup();
-		$grid = HTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow, $classes, $buttonGroup);
+		$grid = HTML::grid($values, $labels, $selected, $name, $this->inputType, $optionsPerRow, $classes, $buttonGroup);
 		array_unshift($grid, '<div class="fabrikSubElementContainer" id="' . $id . '">');
 		$grid[] = '</div><!-- close subElementContainer -->';
 

@@ -1,6 +1,8 @@
 <?php
 defined('JPATH_BASE') or die;
 
+use Fabrik\Helpers\Text;
+
 $d         = $displayData;
 $multiple  = $d->multiple ? 'multiple' : '';
 $multisize = $d->multisize === '' ? '' : 'size="' . $d->multisize . '""';
@@ -11,7 +13,7 @@ $multisize = $d->multisize === '' ? '' : 'size="' . $d->multisize . '""';
 	<?php foreach ($d->options as $opt) :
 		$selected = in_array($opt->value, $d->selected) ? ' selected="selected" ' : ''; ?>
 		<option value="<?php echo $opt->value; ?>" <?php echo $selected; ?>>
-			<?php echo JText::_($opt->text); ?>
+			<?php echo Text::_($opt->text); ?>
 		</option>
 	<?php endforeach; ?>
 </select>

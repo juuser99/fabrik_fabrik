@@ -20,7 +20,6 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
 use \JDatabaseQuery;
 use Fabrik\Admin\Models\Connection;
-use \JText;
 use \JHtml;
 use \stdClass;
 
@@ -146,7 +145,7 @@ class Databasejoin extends ElementList
 		$connection = $listModel->getConnection();
 
 		// Make sure same connection as this table
-		$fullElName = ArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
+		$fullElName = ArrayHelper::getValue($opts, 'alias', $table . '___' . $element->get('name'));
 
 		if ($params->get('join_conn_id') == $connection->get('id') || $element->get('plugin') != 'databasejoin')
 		{
@@ -172,7 +171,7 @@ class Databasejoin extends ElementList
 			*$k = String::safeColName("`$join->keytable`.`$element->name`");
 			*/
 			$keytable = isset($join->keytable) ? $join->keytable : $join->join_from_table;
-			$k = String::safeColName($keytable . '.' . $element->name);
+			$k = String::safeColName($keytable . '.' . $element->get('name'));
 			$k2 = $this->getJoinLabelColumn();
 
 			if (ArrayHelper::getValue($opts, 'inc_raw', true))
@@ -186,7 +185,7 @@ class Databasejoin extends ElementList
 		}
 		else
 		{
-			$aFields[] = $db->qn($table . '.' . $element->name) . ' AS ' . $db->qn($fullElName);
+			$aFields[] = $db->qn($table . '.' . $element->get('name')) . ' AS ' . $db->qn($fullElName);
 			$aAsFields[] = $db->qn($fullElName);
 		}
 	}
@@ -225,7 +224,7 @@ class Databasejoin extends ElementList
 
 		$element = $this->getElement();
 		$k = isset($join->keytable) ? $join->keytable : $join->join_from_table;
-		$name = $element->name . '_raw';
+		$name = $element->get('name') . '_raw';
 
 		return $useStep ? $k . '___' . $name : String::safeColName($k . '.' . $name);
 	}
@@ -1397,7 +1396,7 @@ class Databasejoin extends ElementList
 					$forms = $this->getLinkedForms();
 					$popupForm = (int) $params->get('databasejoin_popupform');
 					$popupListId = (empty($popupForm) || !isset($forms[$popupForm])) ? '' : $forms[$popupForm]->listid;
-					JText::script('PLG_ELEMENT_DBJOIN_SELECT');
+					Text::script('PLG_ELEMENT_DBJOIN_SELECT');
 
 					if ($this->app->isAdmin())
 					{
@@ -1409,18 +1408,18 @@ class Databasejoin extends ElementList
 					}
 
 					$html[] = '<a href="' . $chooseUrl . '" class="toggle-selectoption btn" title="' . Text::_('COM_FABRIK_SELECT') . '">'
-						. HTML::image('search.png', 'form', @$this->tmpl, array('alt' => Text::_('COM_FABRIK_SELECT'))) . '</a>';
+						. HTML::image('search.png', 'form', $this->tmpl, array('alt' => Text::_('COM_FABRIK_SELECT'))) . '</a>';
 				}
 
 				if ($frontEndAdd && $this->isEditable())
 				{
-					JText::script('PLG_ELEMENT_DBJOIN_ADD');
+					Text::script('PLG_ELEMENT_DBJOIN_ADD');
 					$popupForm = (int) $params->get('databasejoin_popupform');
 					$addURL = 'index.php?option=com_fabrik';
 					$addURL .= $this->app->isAdmin() ? '&amp;task=form.view' : '&amp;view=form';
 					$addURL .= '&amp;tmpl=component&amp;ajax=1&amp;formid=' . $popupForm;
 					$html[] = '<a href="' . $addURL . '" title="' . Text::_('COM_FABRIK_ADD') . '" class="toggle-addoption btn">';
-					$html[] = HTML::image('plus.png', 'form', @$this->tmpl, array('alt' => Text::_('COM_FABRIK_SELECT'))) . '</a>';
+					$html[] = HTML::image('plus.png', 'form', $this->tmpl, array('alt' => Text::_('COM_FABRIK_SELECT'))) . '</a>';
 				}
 				// If add and select put them in a button group.
 				if ($frontEndSelect && $frontEndAdd && $this->isEditable())
@@ -2444,7 +2443,7 @@ class Databasejoin extends ElementList
 				 * by the time it gets here we have normalized to elementname. So we check if the original qs filter was looking at the raw
 				* value if it was then we want to filter on the key and not the label
 				*/
-				if (!$this->_rawFilter)
+				if (!$this->get('rawFilter', false))
 				{
 					$k = $db->qn($params->get('join_db_name')) . '.' . $db->qn($this->getLabelParamVal());
 				}
@@ -2461,7 +2460,7 @@ class Databasejoin extends ElementList
 
 		$this->encryptFieldName($key);
 
-		if (!$this->_rawFilter && ($type == 'searchall' || $type == 'prefilter'))
+		if (!$this->get('rawFilter', false) && ($type == 'searchall' || $type == 'prefilter'))
 		{
 			if ($type !== 'prefilter')
 			{
@@ -2841,8 +2840,8 @@ class Databasejoin extends ElementList
 
 			// $$$ rob - wrong for inline edit plugin
 			// $opts->elementName = $join->table_join;
-			$opts->elementName = $join->table_join . '___' . $element->name;
-			$opts->elementShortName = $element->name;
+			$opts->elementName = $join->table_join . '___' . $element->get('name');
+			$opts->elementShortName = $element->get('name');
 			$opts->joinId = $join->id;
 			$opts->isJoin = true;
 		}
@@ -2998,7 +2997,7 @@ class Databasejoin extends ElementList
 		$join->table_join = $tableJoin;
 		$join->join_type = 'left';
 		$join->group_id = $data['group_id'];
-		$join->table_key = str_replace('`', '', $element->name);
+		$join->table_key = str_replace('`', '', $element->get('name'));
 		$join->table_join_key = $keyCol;
 		$join->join_from_table = '';
 

@@ -222,7 +222,7 @@ if ($dosef == false)
 // ------------------  load language file - adjust as needed ----------------------------------------
 
 // $task   = isset($task) ? @$task : null;
-// $Itemid = isset($Itemid) ? @$Itemid : null;
+// $itemId = isset($itemId) ? @$itemId : null;
 $listId = isset($listId) ? @$listId : null;
 $id     = isset($id) ? @$id : null;
 $view   = isset($view) ? @$view : null;

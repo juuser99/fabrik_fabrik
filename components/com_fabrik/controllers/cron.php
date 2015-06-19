@@ -41,12 +41,11 @@ class FabrikControllerCron extends FabrikController
 	/**
 	 * Display the view
 	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached - NOTE not actually used to control caching!!!
-	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+	 * @param   boolean     $cachable   If true, the view output will be cached - NOTE not actually used to control caching!!!
+	 * @param   bool|array  $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
 	 * @return  JController  A JController object to support chaining.
 	 */
-
 	public function display($cachable = false, $urlparams = false)
 	{
 		$document = JFactory::getDocument();
@@ -62,10 +61,10 @@ class FabrikControllerCron extends FabrikController
 			$view->setModel($model, true);
 		}
 		// Display the view
-		$view->error = $this->getError();
+		//$view->error = $this->getError();
 
-		$jinput = JFactory::getApplication()->input;
-		$task = $jinput->getCmd('task');
+		$input = JFactory::getApplication()->input;
+		$task = $input->getCmd('task');
 
 		if (!strstr($task, '.'))
 		{
@@ -78,22 +77,21 @@ class FabrikControllerCron extends FabrikController
 		}
 
 		// F3 cache with raw view gives error
-		if (in_array($jinput->getCmd('format'), array('raw', 'csv')))
+		if (in_array($input->getCmd('format'), array('raw', 'csv')))
 		{
 			$view->$task();
 		}
 		else
 		{
-			$post = $jinput->get('post');
+			$post = $input->get('post');
 
 			// Build unique cache id on url, post and user id
 			$user = JFactory::getUser();
-
 			$uri = JURI::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
-			$cacheid = serialize(array($uri, $post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+			$cacheId = serialize(array($uri, $post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_fabrik', 'view');
-			$cache->get($view, 'display', $cacheid);
+			$cache->get($view, 'display', $cacheId);
 		}
 	}
 

@@ -35,6 +35,7 @@ use \Fabrik\Admin\Models\Lizt as LiztModel;
 use \Fabrik\Admin\Models\Group;
 use \RuntimeException;
 use \ErrorException;
+use \stdClass;
 
 /**
  * Fabrik Element Model
@@ -262,6 +263,16 @@ class Element extends \Fabrik\Plugins\Plugin
 	 * @var  string
 	 */
 	public $calcSelectModifier = null;
+
+	/**
+	 * @var string
+	 */
+	protected $tmpl = '';
+
+	/**
+	 * @var int
+	 */
+	public $_repeatGroupTotal;
 
 	/**
 	 * Constructor
@@ -1002,19 +1013,6 @@ class Element extends \Fabrik\Plugins\Plugin
 	}
 
 	/**
-	 * Set/get if element should record its data in the database
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return bool
-	 */
-
-	public function setIsRecordedInDatabase()
-	{
-		return true;
-	}
-
-	/**
 	 * Internal element validation
 	 *
 	 * @param   array $data          Form data
@@ -1029,7 +1027,7 @@ class Element extends \Fabrik\Plugins\Plugin
 	}
 
 	/**
-	 * Get validation error - run through JText
+	 * Get validation error - run through Text
 	 *
 	 * @return  string
 	 */
@@ -1633,19 +1631,14 @@ class Element extends \Fabrik\Plugins\Plugin
 	 * Add tips on element labels
 	 * does ACL check on element's label in details setting
 	 *
-	 * @param   string $txt  Label
-	 * @param   array  $data Row data
-	 * @param   string $mode Form/list render context
+	 * @param   string    $txt  Label
+	 * @param   stdClass  $data Row data
+	 * @param   string    $mode Form/list render context
 	 *
 	 * @return  string  Label with tip
 	 */
-	protected function rollover($txt, $data = array(), $mode = 'form')
+	protected function rollover($txt, stdClass $data, $mode = 'form')
 	{
-		if (is_object($data))
-		{
-			$data = ArrayHelper::fromObject($data);
-		}
-
 		$rollOver = $this->tipHtml($data, $mode);
 
 		return $rollOver !== '' ? '<span class="fabrikTip" ' . $rollOver . '">' . $txt . '</span>' : $txt;
@@ -2686,7 +2679,7 @@ class Element extends \Fabrik\Plugins\Plugin
 	/**
 	 * Load element params
 	 *
-	 * @return  object  default element params
+	 * @return  Registry  default element params
 	 */
 	public function getParams()
 	{
@@ -2699,49 +2692,15 @@ class Element extends \Fabrik\Plugins\Plugin
 	}
 
 	/**
-	 * Not used
-	 *
-	 * @deprecated
-	 *
-	 * @return  mixed
-	 */
-	protected function loadPluginParams()
-	{
-		if (isset($this->xmlPath))
-		{
-			$element      = $this->getElement();
-			$pluginParams = new Registry($element->get('params'));
-
-			return $pluginParams;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Loads in elements validation objects
 	 *
 	 * @deprecated use $this->validator->findAll()
 	 *
 	 * @return  array    validation objects
 	 */
-
 	public function getValidations()
 	{
 		return $this->validator->findAll();
-	}
-
-	/**
-	 * get javascript actions
-	 *
-	 * @deprecated ?
-	 *
-	 * @return  array  js actions
-	 */
-
-	public function getJSActions()
-	{
-		return $this->getElement()->get('jsevents', array());
 	}
 
 	/**
@@ -2752,7 +2711,6 @@ class Element extends \Fabrik\Plugins\Plugin
 	 *
 	 * @return  string    js events
 	 */
-
 	public function getFormattedJSActions($jsControllerKey, $repeatCount)
 	{
 		$jsStr           = '';
@@ -2872,7 +2830,6 @@ class Element extends \Fabrik\Plugins\Plugin
 	 *
 	 * @return  string
 	 */
-
 	protected function getDefaultFilterVal($normal = true, $counter = 0)
 	{
 		$app = $this->app;
@@ -3019,7 +2976,6 @@ class Element extends \Fabrik\Plugins\Plugin
 	 *
 	 * @return  string
 	 */
-
 	protected function prepareFilterVal($value)
 	{
 		return $value;
@@ -3033,7 +2989,6 @@ class Element extends \Fabrik\Plugins\Plugin
 	 *
 	 * @return  string
 	 */
-
 	protected function filterName($counter = 0, $normal = true)
 	{
 		$listModel = $this->getListModel();
@@ -4434,11 +4389,10 @@ class Element extends \Fabrik\Plugins\Plugin
 	 *
 	 * @param   string $v            Value
 	 * @param   string $defaultLabel Default label
-	 * @param   bool   $forceCheck   Force check even if $v === $defaultLabel
+	 * @param   bool   $forceCheck   Force check even if $v === $defaultLabel (used in child classes)
 	 *
 	 * @return  string    Label
 	 */
-
 	public function getLabelForValue($v, $defaultLabel = null, $forceCheck = false)
 	{
 		$params = $this->getParams();
@@ -6653,21 +6607,6 @@ class Element extends \Fabrik\Plugins\Plugin
 	public function isJoin()
 	{
 		return $this->getParams()->get('repeat', false);
-	}
-
-	/**
-	 * Used by inline edit table plugin
-	 * If returns yes then it means that there are only two possible options for the
-	 * ajax edit, so we should simply toggle to the alternative value and show the
-	 * element rendered with that new value (used for yes/no element)
-	 *
-	 * @deprecated - only called in a deprecated element method
-	 *
-	 * @return  bool
-	 */
-	protected function canToggleValue()
-	{
-		return false;
 	}
 
 	/**

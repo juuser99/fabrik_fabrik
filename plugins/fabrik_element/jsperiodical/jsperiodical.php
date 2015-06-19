@@ -31,7 +31,6 @@ class JSPeriodical extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$params = $this->getParams();
@@ -54,7 +53,6 @@ class JSPeriodical extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$layout = $this->getLayout('form');
@@ -74,7 +72,6 @@ class JSPeriodical extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
@@ -91,7 +88,6 @@ class JSPeriodical extends Element
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		$p = $this->getParams();

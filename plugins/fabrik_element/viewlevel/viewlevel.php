@@ -13,6 +13,8 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use stdClass;
+
 /**
  * Plugin element to render user view levels
  *
@@ -51,7 +53,6 @@ class Viewlevel extends ElementList
 	 *
 	 * @return  string	Elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -91,7 +92,6 @@ class Viewlevel extends ElementList
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -105,7 +105,6 @@ class Viewlevel extends ElementList
 	 *
 	 * @return  array
 	 */
-
 	private function allOpts()
 	{
 		if (!isset($this->allOpts))

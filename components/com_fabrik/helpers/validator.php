@@ -13,13 +13,11 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
-use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\String;
 use \JEventDispatcher as JEventDispatcher;
 use \JPluginHelper as JPluginHelper;
 use Fabrik\Helpers\HTML as HelperHTML;
-
+use \stdClass;
 
 /**
  * Fabrik Element Validator Model
@@ -41,7 +39,7 @@ class Validator extends \JModelBase
 	/**
 	 * Element model
 	 *
-	 * @var PlgFabrik_Element
+	 * @var \Fabrik\Plugins\Element\Element
 	 */
 	protected $elementModel = null;
 
@@ -68,9 +66,8 @@ class Validator extends \JModelBase
 	/**
 	 * Loads in elements published validation objects
 	 *
-	 * @return  array	validation objects
+	 * @return  \Fabrik\Plugins\Validation\Validation[]	validation objects
 	 */
-
 	public function findAll()
 	{
 		if (isset($this->validations))
@@ -78,7 +75,6 @@ class Validator extends \JModelBase
 			return $this->validations;
 		}
 
-		$element = $this->elementModel->getElement();
 		$params = $this->elementModel->getParams();
 		$validations = (array) $params->get('validations', 'array');
 		$usedPlugins = (array) ArrayHelper::getValue($validations, 'plugin', array());
@@ -92,7 +88,7 @@ class Validator extends \JModelBase
 		$c = 0;
 		$this->validations = array();
 		$dispatcher = JEventDispatcher::getInstance();
-		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
+		JPluginHelper::importPlugin('fabrik_validationrule');
 		$i = 0;
 
 		foreach ($usedPlugins as $usedPlugin)
@@ -108,7 +104,7 @@ class Validator extends \JModelBase
 					$conf['name'] = String::strtolower($usedPlugin);
 					$conf['type'] = String::strtolower('fabrik_Validationrule');
 					$plugIn = new $class($dispatcher, $conf);
-					$oPlugin = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
+					JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
 					$plugIn->elementModel = $this->elementModel;
 					$this->validations[] = $plugIn;
 
@@ -134,7 +130,6 @@ class Validator extends \JModelBase
 	 *
 	 * @return boolean
 	 */
-
 	private function showIcon()
 	{
 		$validations = $this->findAll();
@@ -167,7 +162,6 @@ class Validator extends \JModelBase
 	 *
 	 * @return string
 	 */
-
 	public function getIcon($c = null)
 	{
 		$validations = $this->findAll();
@@ -204,7 +198,7 @@ class Validator extends \JModelBase
 	 *
 	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return multitype:stdClass
+	 * @return stdClass[]
 	 */
 	public function jsWatchElements($repeatCounter = 0)
 	{
@@ -276,6 +270,7 @@ class Validator extends \JModelBase
 
 			foreach ($validations as $c => $validation)
 			{
+				/** @var $validation \Fabrik\Plugins\Validation\Validaiton */
 				$texts[] = $validation->getHoverText($c, $tmpl);
 			}
 

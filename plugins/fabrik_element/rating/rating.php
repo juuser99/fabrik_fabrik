@@ -19,6 +19,9 @@ use Fabrik\Helpers\HTML;
 use Fabrik\Helpers\Text;
 use \stdClass;
 use \JFactory;
+use \JUri;
+use \JComponentHelper;
+use \JHtml;
 
 /**
  * Plugin element to render rating widget
@@ -96,7 +99,7 @@ class Rating extends Element
 
 		$data = Worker::JSONtoData($data, true);
 		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'list', false);
-		$colData = $this->getListModel()->getData();
+		$this->getListModel()->getData();
 
 		for ($i = 0; $i < count($data); $i++)
 		{
@@ -108,21 +111,21 @@ class Rating extends Element
 
 			for ($s = 0; $s < $avg; $s++)
 			{
-				$r = $s + 1;
+				$r = (int) $s + 1;
 				$a = str_replace('{r}', $r, $atpl);
 				$imgOpts = array('icon-class' => 'starRating rate_' . $r);
 				$imgOpts['data-fabrik-rating'] = $r;
-				$img = HTML::image("star.png", 'list', @$this->tmpl, $imgOpts);
+				$img = HTML::image("star.png", 'list', $this->tmpl, $imgOpts);
 				$str[] = $a . $img . $a2;
 			}
 
 			for ($s = $avg; $s < 5; $s++)
 			{
-				$r = $s + 1;
+				$r = (int) $s + 1;
 				$a = str_replace('{r}', $r, $atpl);
 				$imgOpts = array('icon-class' => 'starRating rate_' . $r);
 				$imgOpts['data-fabrik-rating'] = $r;
-				$img = HTML::image("star-empty.png", 'list', @$this->tmpl, $imgOpts);
+				$img = HTML::image("star-empty.png", 'list', $this->tmpl, $imgOpts);
 
 				$str[] = $a . $img . $a2;
 			}
@@ -161,8 +164,8 @@ class Rating extends Element
 		else
 		{
 			$list = $this->getlistModel()->getTable();
-			$listId = $list->id;
-			$formId = $list->form_id;
+			$listId = $list->get('id');
+			$formId = $list->get('list.form_id');
 			$d = $this->getListModel()->getData();
 			$ids = ArrayHelper::getColumn($d, '__pk_val');
 			$row_id = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
@@ -311,7 +314,7 @@ class Rating extends Element
 
 		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'form', false);
 
-		$listId = $this->getlistModel()->getTable()->id;
+		$listId = $this->getlistModel()->getTable()->get('id');
 		$formId = $input->getString('formid');
 		$rowId = $this->getFormModel()->getRowId();
 
@@ -331,12 +334,12 @@ class Rating extends Element
 		$layoutData->id = $id;
 		$layoutData->name = $name;
 		$layoutData->value = $value;
-		$layoutData->clearImg = HTML::image('remove.png', 'list', @$this->tmpl, $imgOpts);
+		$layoutData->clearImg = HTML::image('remove.png', 'list', $this->tmpl, $imgOpts);
 		$layoutData->avg = $avg;
 		$layoutData->canRate = $this->canRate();
 		$layoutData->ratingNoneFirst = $params->get('rating-nonefirst');
 		$layoutData->css = $css;
-		$layoutData->tmpl = @$this->tmpl;
+		$layoutData->tmpl = $this->tmpl;
 
 		return $layout->render($layoutData);
 	}
@@ -385,7 +388,7 @@ class Rating extends Element
 		$this->loadMeForAjax();
 		$listModel = $this->getListModel();
 		$list = $listModel->getTable();
-		$listId = $list->id;
+		$listId = $list->get('id');
 		$formId = $listModel->getFormModel()->getId();
 		$row_id = $input->get('row_id');
 		$rating = $input->getInt('rating');
@@ -402,7 +405,7 @@ class Rating extends Element
 			$pk = $db->qn($list->get('list.db_primary_key'));
 			$tableName = $db->qn($list->get('list.db_table_name'));
 			$query->update($tableName)
-				->set($element->name . '=' . $rating)->where($pk . ' = ' . $db->q($row_id));
+				->set($element->get('name') . '=' . $rating)->where($pk . ' = ' . $db->q($row_id));
 			$db->setQuery($query);
 			$db->execute();
 		}
@@ -535,7 +538,7 @@ class Rating extends Element
 		$id = $this->getHTMLId($repeatCounter);
 		$data = $this->getFormModel()->data;
 		$listModel = $this->getlistModel();
-		$listId = $listModel->getTable()->id;
+		$listId = $listModel->getTable()->get('id');
 		$formId = $listModel->getFormModel()->getId();
 		$row_id = $input->get('rowid', '', 'string');
 		$value = $this->getValue($data, $repeatCounter);
@@ -557,7 +560,7 @@ class Rating extends Element
 		$opts->rating = $value;
 		$opts->listid = $listId;
 
-		JText::script('PLG_ELEMENT_RATING_NO_RATING');
+		Text::script('PLG_ELEMENT_RATING_NO_RATING');
 
 		return array('FbRating', $id, $opts);
 	}
@@ -575,13 +578,13 @@ class Rating extends Element
 		$listModel = $this->getlistModel();
 		$list = $listModel->getTable();
 		$opts = new stdClass;
-		$opts->listid = $list->id;
+		$opts->listid = $list->get('id');
 		$imagePath = JUri::root() . '/plugins/fabrik_element/rating/images/';
 		$opts->imagepath = $imagePath;
 		$opts->elid = $this->getElement()->get('id');
 
 		$opts->canRate = $params->get('rating-mode') == 'creator-rating' ? true : $this->canRate();
-		$opts->ajaxloader = HTML::image("ajax-loader.gif", 'list', @$this->tmpl, array(), true);
+		$opts->ajaxloader = HTML::image("ajax-loader.gif", 'list', $this->tmpl, array(), true);
 		$opts->listRef = $listModel->getRenderContext();
 		$opts->formid = $listModel->getFormModel()->getId();
 		$opts->userid = (int) $this->user->get('id');

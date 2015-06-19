@@ -14,7 +14,7 @@ namespace Fabrik\Admin\Controllers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use \JPluginHelper as JPluginHelper;
 use \JEventDispatcher as JEventDispatcher;
 

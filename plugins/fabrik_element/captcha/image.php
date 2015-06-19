@@ -10,7 +10,7 @@
 // Allow direct access!!!!
 define('_JEXEC', 1);
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 
 $jpath = dirname(__FILE__);
 $jpath = str_replace('/plugins/fabrik_element/captcha', '', $jpath);

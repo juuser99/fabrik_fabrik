@@ -85,7 +85,7 @@ class PlgFabrik_Cronnotification extends PlgFabrik_Cron
 			list($listId, $formId, $rowId) = explode('.', $row->reference);
 
 			$url = JRoute::_('index.php?option=com_fabrik&view=details&listid=' . $listId . '&formid=' . $formId . '&rowid=' . $rowId);
-			$msg = JText::sprintf('FABRIK_NOTIFICATION_EMAIL_PART', $row->creator_name, $url, $event);
+			$msg = Text::sprintf('FABRIK_NOTIFICATION_EMAIL_PART', $row->creator_name, $url, $event);
 
 			if (!array_key_exists($row->observer_id, $usermsgs))
 			{

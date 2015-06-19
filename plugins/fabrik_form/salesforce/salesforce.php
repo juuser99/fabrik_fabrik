@@ -146,11 +146,11 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		{
 			if ($result->created == '' && $params->get('salesforce_allowupsert', 0))
 			{
-				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_UPDATED, $updateObject));
+				$this->app->enqueueMessage(Text::sprintf(SALESFORCE_UPDATED, $updateObject));
 			}
 			else
 			{
-				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_CREATED, $updateObject));
+				$this->app->enqueueMessage(Text::sprintf(SALESFORCE_CREATED, $updateObject));
 			}
 		}
 		else
@@ -171,7 +171,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 			}
 			else
 			{
-				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_NOCREATE, $updateObject), 'error');
+				$this->app->enqueueMessage(Text::sprintf(SALESFORCE_NOCREATE, $updateObject), 'error');
 			}
 		}
 	}

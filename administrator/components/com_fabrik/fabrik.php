@@ -13,7 +13,7 @@ namespace Fabrik\Admin;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Admin\Helpers\Fabrik;
 use \JFactory as JFactory;
 

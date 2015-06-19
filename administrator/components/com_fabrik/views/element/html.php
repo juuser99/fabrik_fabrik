@@ -19,7 +19,6 @@ use Fabrik\Admin\Helpers\Fabrik;
 use Fabrik\Helpers\Text;
 use \JToolBarHelper as JToolBarHelper;
 use \stdClass as stdClass;
-use \JText as JText;
 
 /**
  * View to edit an element.
@@ -87,7 +86,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$this->js = $model->getJs();
 
 		$this->addToolbar();
-		JText::script('COM_FABRIK_ERR_ELEMENT_JS_ACTION_NOT_DEFINED');
+		Text::script('COM_FABRIK_ERR_ELEMENT_JS_ACTION_NOT_DEFINED');
 
 		$srcs = HTMLHelper::framework();
 		$srcs[] = 'media/com_fabrik/js/fabrik.js';

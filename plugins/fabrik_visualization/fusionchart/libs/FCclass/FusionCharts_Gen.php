@@ -17,7 +17,7 @@
    
  */
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 
 class FusionCharts{
 

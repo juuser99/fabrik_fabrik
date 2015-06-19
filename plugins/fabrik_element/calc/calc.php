@@ -43,7 +43,7 @@ class Calc extends Element
 		{
 			$w = new Worker;
 			$element = $this->getElement();
-			$default = $w->parseMessageForPlaceHolder($element->default, $data, true, true);
+			$default = $w->parseMessageForPlaceHolder($element->get('default'), $data, true, true);
 			$this->default = $default;
 		}
 
@@ -296,7 +296,7 @@ class Calc extends Element
 					foreach (array_keys($v) as $x)
 					{
 						$origValue = ArrayHelper::getValue($origData, $x);
-						$d[$elementKey][$x] = $elementModel->getLabelForValue($v[$x], $origValue, true, $x);
+						$d[$elementKey][$x] = $elementModel->getLabelForValue($v[$x], $origValue, true);
 					}
 				}
 				else
@@ -444,7 +444,7 @@ class Calc extends Element
 		}
 
 		$opts = array('alt' => Text::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
-		$str[] = HTML::image('ajax-loader.gif', 'form', @$this->tmpl, $opts);
+		$str[] = HTML::image('ajax-loader.gif', 'form', $this->tmpl, $opts);
 
 		return implode("\n", $str);
 	}

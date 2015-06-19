@@ -51,22 +51,9 @@ class Timestamp extends Element
 	 *
 	 * @return  string  label
 	 */
-
 	public function getLabel($repeatCounter, $tmpl = '')
 	{
 		return '';
-	}
-
-	/**
-	 * Set/get if element should record its data in the database
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return bool
-	 */
-	public function setIsRecordedInDatabase()
-	{
-		$this->recordInDatabase = false;
 	}
 
 	/**

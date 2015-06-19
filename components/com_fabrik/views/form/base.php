@@ -22,7 +22,6 @@ use \Fabrik\Helpers\HTML as HelperHTML;
 use \JComponentHelper as JComponentHelper;
 use \stdClass as stdClass;
 use Fabrik\Helpers\String;
-use \JText as JText;
 use \JRoute as JRoute;
 use \JHtml as JHtml;
 use \JFilterInput as JFilterInput;
@@ -493,14 +492,14 @@ class Base extends Html
 
 		if (!HelperHTML::inAjaxLoadedPage())
 		{
-			JText::script('COM_FABRIK_VALIDATING');
-			JText::script('COM_FABRIK_SUCCESS');
-			JText::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
-			JText::script('COM_FABRIK_VALIDATION_ERROR');
-			JText::script('COM_FABRIK_CONFIRM_DELETE_1');
+			Text::script('COM_FABRIK_VALIDATING');
+			Text::script('COM_FABRIK_SUCCESS');
+			Text::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
+			Text::script('COM_FABRIK_VALIDATION_ERROR');
+			Text::script('COM_FABRIK_CONFIRM_DELETE_1');
 		}
 
-		JText::script('COM_FABRIK_FORM_SAVED');
+		Text::script('COM_FABRIK_FORM_SAVED');
 
 		// $$$ rob don't declare as var $bkey, but rather assign to window, as if loaded via ajax window the function is wrapped
 		// inside an anonymous function, and therefore $bkey wont be available as a global var in window
@@ -787,7 +786,7 @@ class Base extends Html
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$Itemid = Worker::itemId();
+		$itemId = Worker::itemId();
 
 		/* @var $model \Fabrik\Admin\Models\Form */
 		$model = $this->getModel();
@@ -805,7 +804,7 @@ class Base extends Html
 		$fields[] = '<input type="hidden" name="listid" value="' . $listModel->getId() . '" />';
 		$fields[] = '<input type="hidden" name="listref" value="' . $listModel->getId() . '" />';
 		$fields[] = '<input type="hidden" name="rowid" value="' . $this_rowid . '" />';
-		$fields[] = '<input type="hidden" name="Itemid" value="' . $Itemid . '" />';
+		$fields[] = '<input type="hidden" name="Itemid" value="' . $itemId . '" />';
 		$fields[] = '<input type="hidden" name="option" value="com_' . $package . '" />';
 		//$fields[] = '<input type="hidden" name="task" value="' . $task . '" />';
 		$fields[] = '<input type="hidden" name="view" value="process" />';

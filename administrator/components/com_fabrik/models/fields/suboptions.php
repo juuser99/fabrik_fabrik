@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -44,7 +45,7 @@ class JFormFieldSuboptions extends JFormField
 
 	protected function getInput()
 	{
-		JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
+		Text::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 
 		$default = new stdClass;
 		$default->sub_values = array();

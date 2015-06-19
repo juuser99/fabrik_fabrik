@@ -17,6 +17,11 @@ use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\HTML;
+use \stdClass;
+use \JFolder;
+use \JHtml;
+use \JPath;
+
 
 if (!defined('DS'))
 {
@@ -53,7 +58,6 @@ class Image extends Element
 	 *
 	 * @return mixed
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
@@ -71,10 +75,10 @@ class Image extends Element
 			$this->default = preg_replace("#^$rootFolder#", '', $this->default);
 			$this->default = $w->parseMessageForPlaceHolder($this->default, $data);
 
-			if ($element->eval == "1")
+			if ($element->get('eval') == "1")
 			{
 				$this->default = @eval((string) stripslashes($this->default));
-				Worker::logEval($this->default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
+				Worker::logEval($this->default, 'Caught exception on eval in ' . $element->get('name') . '::getDefaultValue() : %s');
 			}
 		}
 
@@ -97,7 +101,6 @@ class Image extends Element
 	 *
 	 * @return  mixed	value
 	 */
-
 	protected function getDefaultOnACL($data, $opts)
 	{
 		/**
@@ -116,24 +119,23 @@ class Image extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$w = new Worker;
 		$data = Worker::JSONtoData($data, true);
 		$params = $this->getParams();
-		$pathset = false;
+		$pathSet = false;
 
 		foreach ($data as $d)
 		{
 			if (strstr($d, '/'))
 			{
-				$pathset = true;
+				$pathSet = true;
 				break;
 			}
 		}
 
-		if ($data === '' || empty($data) || !$pathset)
+		if ($data === '' || empty($data) || !$pathSet)
 		{
 			// No data so default to image (or simple image name stored).
 			$iPath = $params->get('imagepath');
@@ -141,7 +143,7 @@ class Image extends Element
 			if (!strstr($iPath, '/'))
 			{
 				// Single file specified so find it in tmpl folder
-				$data = (array) HTML::image($iPath, 'list', @$this->tmpl, array(), true);
+				$data = (array) HTML::image($iPath, 'list', $this->tmpl, array(), true);
 			}
 			else
 			{
@@ -203,7 +205,6 @@ class Image extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		$groupModel = $this->getGroup();
@@ -214,7 +215,7 @@ class Image extends Element
 		if (!array_key_exists($key, $data))
 		{
 			$element = $this->getElement();
-			$key = $element->name;
+			$key = $element->get('name');
 		}
 
 		if ($groupModel->canRepeat() && !$groupModel->isJoin())
@@ -226,18 +227,18 @@ class Image extends Element
 
 			if (!array_key_exists($key . '_folder', $data))
 			{
-				$retval = json_encode($data[$key]);
+				$returnValue = json_encode($data[$key]);
 			}
 			else
 			{
-				$retvals = array();
+				$returnValues = array();
 
 				foreach ($data[$key] as $k => $v)
 				{
-					$retvals[] = preg_replace("#^$selectImage_root_folder#", '', $data[$key . '_folder'][$k]) . $data[$key . '_image'][$k];
+					$returnValues[] = preg_replace("#^$selectImage_root_folder#", '', $data[$key . '_folder'][$k]) . $data[$key . '_image'][$k];
 				}
 
-				$retval = json_encode($retvals);
+				$returnValue = json_encode($returnValues);
 			}
 		}
 		else
@@ -248,15 +249,15 @@ class Image extends Element
 			 */
 			if (!array_key_exists($key . '_image', $data))
 			{
-				$retval = $data[$key];
+				$returnValue = $data[$key];
 			}
 			else
 			{
-				$retval = preg_replace("#^$selectImage_root_folder#", '', $data[$key]);
+				$returnValue = preg_replace("#^$selectImage_root_folder#", '', $data[$key]);
 			}
 		}
 
-		return $retval;
+		return $returnValue;
 	}
 
 	/**
@@ -267,7 +268,6 @@ class Image extends Element
 	 *
 	 * @return string formatted value
 	 */
-
 	public function renderListData_rss($data, $thisRow)
 	{
 		$params = $this->getParams();
@@ -287,7 +287,6 @@ class Image extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -331,7 +330,7 @@ class Image extends Element
 
 			foreach ($imageNames as $n)
 			{
-				$images[] = JHTML::_('select.option', $n, $n);
+				$images[] = JHtml::_('select.option', $n, $n);
 			}
 
 			// $$$rob not sure about his name since we are adding $repeatCounter to getHTMLName();
@@ -410,7 +409,6 @@ class Image extends Element
 	 *
 	 * @return  void
 	 */
-
 	public function onAjax_files()
 	{
 		$this->loadMeForAjax();
@@ -422,8 +420,6 @@ class Image extends Element
 		}
 
 		$pathA = JPath::clean($folder);
-		$folder = array();
-		$files = array();
 		$images = array();
 		Worker::readImages($pathA, "/", $folders, $images, $this->ignoreFolders);
 
@@ -442,7 +438,6 @@ class Image extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
@@ -451,7 +446,7 @@ class Image extends Element
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->rootPath = $this->rootFolder();
 		$opts->canSelect = (bool) $params->get('image_front_end_select', false);
-		$opts->id = $element->id;
+		$opts->id = $element->get('id');
 		$opts->ds = DS;
 		$opts->dir = JPATH_SITE . '/' . str_replace('/', DS, $opts->rootPath);
 
@@ -465,7 +460,6 @@ class Image extends Element
 	 *
 	 * @return  string  root folder
 	 */
-
 	protected function rootFolder($value = '')
 	{
 		$rootFolder = '';
@@ -497,7 +491,6 @@ class Image extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		return $this->render($data);
@@ -515,7 +508,6 @@ class Image extends Element
 	 *
 	 * @return  bool
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		return ($data == '') ? true : false;

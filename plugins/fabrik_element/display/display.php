@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use \stdClass;
 
 /**
  * Plugin element to render plain text/HTML
@@ -40,19 +41,6 @@ class Display extends Element
 	protected $recordInDatabase = false;
 
 	/**
-	 * Set/get if element should record its data in the database
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return bool
-	 */
-
-	public function setIsRecordedInDatabase()
-	{
-		$this->recordInDatabase = false;
-	}
-
-	/**
 	 * Get the element's HTML label
 	 *
 	 * @param   int     $repeatCounter  Group repeat counter
@@ -60,7 +48,6 @@ class Display extends Element
 	 *
 	 * @return  string  label
 	 */
-
 	public function getLabel($repeatCounter = 0, $tmpl = '')
 	{
 		$params = $this->getParams();
@@ -68,8 +55,8 @@ class Display extends Element
 
 		if (!$params->get('display_showlabel', true))
 		{
-			$element->label = $this->getValue(array());
-			$element->label_raw = $element->label;
+			$element->set('label', $this->getValue(array()));
+			$element->set('label_raw', $element->get('label'));
 		}
 
 		return parent::getLabel($repeatCounter, $tmpl);
@@ -98,7 +85,6 @@ class Display extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		unset($this->default);
@@ -115,7 +101,6 @@ class Display extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -154,7 +139,6 @@ class Display extends Element
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$value = $this->getDefaultOnACL($data, $opts);
@@ -184,7 +168,6 @@ class Display extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);

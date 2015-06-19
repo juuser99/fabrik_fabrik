@@ -79,8 +79,8 @@ class FabrikViewTimeline extends JViewLegacy
 		HTML::iniRequireJs($model->getShim());
 		HTML::script($srcs, $js);
 
-		JText::script('COM_FABRIK_ADVANCED_SEARCH');
-		JText::script('COM_FABRIK_LOADING');
+		Text::script('COM_FABRIK_ADVANCED_SEARCH');
+		Text::script('COM_FABRIK_LOADING');
 		$opts = array('alt' => 'calendar', 'class' => 'calendarbutton', 'id' => 'timelineDatePicker_cal_img');
 		$img = HTML::image('calendar.png', 'form', @$this->tmpl, $opts);
 		$this->datePicker = '<input type="text" name="timelineDatePicker" id="timelineDatePicker" value="" />' . $img;

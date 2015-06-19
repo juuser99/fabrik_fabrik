@@ -100,9 +100,9 @@ class FabrikControllerDetails extends FabrikController
 			$user = JFactory::getUser();
 			$uri = JURI::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
-			$cacheid = serialize(array($uri, $this->input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+			$cacheId = serialize(array($uri, $this->input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_' . $package, 'view');
-			echo $cache->get($view, 'display', $cacheid);
+			echo $cache->get($view, 'display', $cacheId);
 		}
 	}
 
@@ -161,11 +161,11 @@ class FabrikControllerDetails extends FabrikController
 					$url = urldecode($input->post->get('fabrik_referrer', 'index.php', 'string'));
 				}
 
-				$Itemid = Worker::itemId();
+				$itemId = Worker::itemId();
 
 				if ($url == '')
 				{
-					$url = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid;
+					$url = 'index.php?option=com_' . $package . '&Itemid=' . $itemId;
 				}
 			}
 

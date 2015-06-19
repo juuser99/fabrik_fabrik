@@ -13,6 +13,8 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use stdClass;
+
 /**
  * Render a spotify player in an iframe
  *
@@ -28,14 +30,13 @@ class Spotify extends Element
 	 * Shows the data formatted for the list view
 	 *
 	 * @param   string  $data      Elements data
-	 * @param   object  &$thisRow  All the data in the lists current row
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
-		return $this->constructPlayer($data, 'list');
+		return $this->constructPlayer($data);
 	}
 
 	/**
@@ -46,7 +47,6 @@ class Spotify extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$input = $this->app->input;
@@ -60,7 +60,7 @@ class Spotify extends Element
 			$name = $this->getHTMLName($repeatCounter);
 			$id = $this->getHTMLId($repeatCounter);
 			$size = $params->get('width');
-			$maxlength = 255;
+			$maxLength = 255;
 			$bits = array();
 			$type = "text";
 
@@ -82,7 +82,7 @@ class Spotify extends Element
 			// Stop "'s from breaking the content out of the field.
 			$bits['value'] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 			$bits['size'] = $size;
-			$bits['maxlength'] = $maxlength;
+			$bits['maxlength'] = $maxLength;
 
 			$layout = $this->getLayout('form');
 			$layoutData = new stdClass;
@@ -100,12 +100,10 @@ class Spotify extends Element
 	 * Make player
 	 *
 	 * @param   string  $value  Value
-	 * @param   string  $mode   Mode form/list
 	 *
 	 * @return string
 	 */
-
-	private function constructPlayer($value, $mode = 'form')
+	private function constructPlayer($value)
 	{
 		$params = $this->getParams();
 		$width = (int) $params->get('width');
@@ -139,7 +137,6 @@ class Spotify extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);

@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use \JText;
+use Fabrik\Helpers\Text;
 
 /**
  * Are Unique values Validation Rule
@@ -137,7 +137,7 @@ class AreUniqueValues extends Validation
 
 		if ((int) $otherField !== 0)
 		{
-			return JText::sprintf('PLG_VALIDATIONRULE_AREUNIQUEVALUES_ADDITIONAL_LABEL', $otherElementModel->getElement()->label);
+			return Text::sprintf('PLG_VALIDATIONRULE_AREUNIQUEVALUES_ADDITIONAL_LABEL', $otherElementModel->getElement()->label);
 		}
 		else
 		{

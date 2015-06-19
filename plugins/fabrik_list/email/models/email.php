@@ -520,11 +520,11 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		$this->_updateRows($updated);
 
 		// T3 blank tmpl doesn't seem to render messages when tmpl=component
-		$app->enqueueMessage(JText::sprintf('%s emails sent', $sent));
+		$app->enqueueMessage(Text::sprintf('%s emails sent', $sent));
 
 		if ($notSent != 0)
 		{
-			$app->enqueueMessage(JText::sprintf('%s emails not sent', $notSent), 'notice');
+			$app->enqueueMessage(Text::sprintf('%s emails not sent', $notSent), 'notice');
 		}
 	}
 

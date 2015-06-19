@@ -16,6 +16,7 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Admin\Models\Lizt;
 use Fabrik\Admin\Models\Visualization;
 use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.model');
 
@@ -398,7 +399,7 @@ class FabrikModelCalendar extends Visualization
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = Worker::itemId();
+		$itemId = Worker::itemId();
 		$config = JFactory::getConfig();
 		$tzoffset = $config->get('offset');
 		$tz = new DateTimeZone($tzoffset);
@@ -483,7 +484,7 @@ class FabrikModelCalendar extends Visualization
 					{
 						if ($row->startdate != '')
 						{
-							$defaultURL = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid . '&view=form&formid='
+							$defaultURL = 'index.php?option=com_' . $package . '&Itemid=' . $itemId . '&view=form&formid='
 								. $table->form_id . '&rowid=' . $row->id . '&tmpl=component';
 							$thisCustomUrl = $w->parseMessageForPlaceHolder($customUrl, $row);
 							$row->link = $thisCustomUrl !== '' ? $thisCustomUrl : $defaultURL;
@@ -693,19 +694,19 @@ class FabrikModelCalendar extends Visualization
 
 		if ($min !== '' && $max === '')
 		{
-			$msg = '<br />' . JText::sprintf('PLG_VISUALIZATION_CALENDAR_LIMIT_AFTER', JFactory::getDate($min)->format($f));
+			$msg = '<br />' . Text::sprintf('PLG_VISUALIZATION_CALENDAR_LIMIT_AFTER', JFactory::getDate($min)->format($f));
 		}
 
 		if ($min === '' && $max !== '')
 		{
-			$msg = '<br />' . JText::sprintf('PLG_VISUALIZATION_CALENDAR_LIMIT_BEFORE', JFactory::getDate($max)->format($f));
+			$msg = '<br />' . Text::sprintf('PLG_VISUALIZATION_CALENDAR_LIMIT_BEFORE', JFactory::getDate($max)->format($f));
 		}
 
 		if ($min !== '' && $max !== '')
 		{
 			$min = JFactory::getDate($min)->format($f);
 			$max = JFactory::getDate($max)->format($f);
-			$msg = '<br />' . JText::sprintf('PLG_VISUALIZATION_CALENDAR_LIMIT_RANGE', $min, $max);
+			$msg = '<br />' . Text::sprintf('PLG_VISUALIZATION_CALENDAR_LIMIT_RANGE', $min, $max);
 		}
 
 		return $msg;

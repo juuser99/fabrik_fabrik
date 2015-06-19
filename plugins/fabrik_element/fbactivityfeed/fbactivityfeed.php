@@ -14,6 +14,7 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use \stdClass;
 
 /**
  * Plugin element to render facebook open graph activity feed widget
@@ -53,7 +54,6 @@ class FbActivityFeed extends Element
 	 *
 	 * @return  string  returns element html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -78,7 +78,6 @@ class FbActivityFeed extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);

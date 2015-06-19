@@ -15,6 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use stdClass;
+use JHtml;
+use JFactory;
 
 /**
  * Plugin element to render multi select user group list
@@ -54,7 +57,6 @@ class Usergroup extends ElementList
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -168,7 +170,6 @@ class Usergroup extends ElementList
 	 *
 	 * @return  array	Filter value and labels
 	 */
-
 	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$listModel = $this->getListModel();
@@ -228,7 +229,6 @@ class Usergroup extends ElementList
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$opts = parent::getElementJSOptions($repeatCounter);
@@ -246,7 +246,6 @@ class Usergroup extends ElementList
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$value = parent::getValue($data, $repeatCounter, $opts);
@@ -269,7 +268,6 @@ class Usergroup extends ElementList
 	 *
 	 * @return mixed
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->_default))
@@ -303,7 +301,6 @@ class Usergroup extends ElementList
 	 *
 	 * @return  array	Filter value and labels
 	 */
-
 	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$db = $this->db;
@@ -312,10 +309,11 @@ class Usergroup extends ElementList
 		$query->from($db->qn('#__usergroups'));
 		$db->setQuery($query);
 		$selected = $db->loadObjectList();
+		$return = array();
 
 		for ($i = 0; $i < count($selected); $i++)
 		{
-			$return[] = JHTML::_('select.option', $selected[$i]->id, $selected[$i]->title);
+			$return[] = JHtml::_('select.option', $selected[$i]->id, $selected[$i]->title);
 		}
 
 		return $return;

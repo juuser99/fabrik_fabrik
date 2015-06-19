@@ -9,14 +9,12 @@
  */
 
 namespace Fabrik\Plugins\Element;
-use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
-use \JText;
-use \Text;
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\String;
 use \JUserHelper;
 use \stdClass;
@@ -222,11 +220,11 @@ class Password extends Element
 		$opts->ajax_validation = $formParams->get('ajax_validations') === '1';
 		$opts->progressbar     = true;
 
-		JText::script('PLG_ELEMENT_PASSWORD_STRONG');
-		JText::script('PLG_ELEMENT_PASSWORD_MEDIUM');
-		JText::script('PLG_ELEMENT_PASSWORD_WEAK');
-		JText::script('PLG_ELEMENT_PASSWORD_TYPE_PASSWORD');
-		JText::script('PLG_ELEMENT_PASSWORD_MORE_CHARACTERS');
+		Text::script('PLG_ELEMENT_PASSWORD_STRONG');
+		Text::script('PLG_ELEMENT_PASSWORD_MEDIUM');
+		Text::script('PLG_ELEMENT_PASSWORD_WEAK');
+		Text::script('PLG_ELEMENT_PASSWORD_TYPE_PASSWORD');
+		Text::script('PLG_ELEMENT_PASSWORD_MORE_CHARACTERS');
 
 		return array('FbPassword', $id, $opts);
 	}

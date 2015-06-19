@@ -186,9 +186,9 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 			table.radius_table td{border:0;}");
 		}
 
-		JText::script('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE');
-		JText::script('COM_FABRIK_SEARCH');
-		JText::script('PLG_LIST_RADIUS_SEARCH');
+		Text::script('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE');
+		Text::script('COM_FABRIK_SEARCH');
+		Text::script('PLG_LIST_RADIUS_SEARCH');
 
 		$mapElement = $this->getMapElement();
 		$mapName = $mapElement->getFullName(true, false);
@@ -616,7 +616,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		$opts = json_encode($opts);
 		$this->jsInstance = "new FbListRadiusSearch($opts)";
 
-		JText::script('PLG_LIST_RADIUS_SEARCH_CLEAR_CONFIRM');
+		Text::script('PLG_LIST_RADIUS_SEARCH_CLEAR_CONFIRM');
 
 		return true;
 	}

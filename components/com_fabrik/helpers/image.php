@@ -61,7 +61,7 @@ class ImageHelper
 
 	public static function loadLib($lib)
 	{
-		$class = "Fabimage" . $lib;
+		$class = "Image" . $lib;
 
 		if (class_exists($class))
 		{
@@ -159,7 +159,7 @@ class ImageHelper
  * @since       1.0
  */
 
-class Fabimage
+class Image
 {
 	/**
 	 * Thumbnail image path
@@ -333,7 +333,7 @@ class Fabimage
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.0
  */
-class FabimageGD extends Fabimage
+class ImageGD extends Image
 {
 	/**
 	 * Create an image object from a file path
@@ -693,7 +693,7 @@ class FabimageGD extends Fabimage
  * @since       1.0
  */
 
-class FabimageGD2 extends FabimageGD
+class ImageGD2 extends ImageGD
 {
 	/**
 	 * Resize an image to a specific width/height
@@ -847,7 +847,7 @@ class FabimageGD2 extends FabimageGD
  * @since       1.0
  */
 
-class FabimageIM extends Fabimage
+class ImageIM extends Image
 {
 	/**
 	 * Resize an image to a specific width/height

@@ -69,7 +69,7 @@ class Textarea extends Element
 		$data = array_map('trim', $data);
 		$data = array_unique($data);
 		$img = 'bookmark.png';
-		$icon = HTML::image($img, 'form', @$this->tmpl, array('alt' => 'tag'));
+		$icon = HTML::image($img, 'form', $this->tmpl, array('alt' => 'tag'));
 		$tmplData = new stdClass;
 		$tmplData->tags = array();
 
@@ -468,7 +468,6 @@ class Textarea extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
@@ -509,7 +508,6 @@ class Textarea extends Element
 	 *
 	 * @return bool
 	 */
-
 	public function validate($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -533,11 +531,10 @@ class Textarea extends Element
 	}
 
 	/**
-	 * Get validation error - run through JText
+	 * Get validation error - run through Text
 	 *
 	 * @return  string
 	 */
-
 	public function getValidationErr()
 	{
 		return Text::_('PLG_ELEMENT_TEXTAREA_CONTENT_TOO_LONG');
@@ -550,7 +547,6 @@ class Textarea extends Element
 	 *
 	 * @return  string	joomfish translation type e.g. text/textarea/referenceid/titletext
 	 */
-
 	public function getJoomfishTranslationType()
 	{
 		return 'textarea';
@@ -563,7 +559,6 @@ class Textarea extends Element
 	 *
 	 * @return  array	Key=>value options
 	 */
-
 	public function getJoomfishOptions()
 	{
 		$params = $this->getParams();
@@ -582,7 +577,6 @@ class Textarea extends Element
 	 *
 	 * @return  bool
 	 */
-
 	public function canEncrypt()
 	{
 		return true;

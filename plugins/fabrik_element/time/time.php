@@ -18,6 +18,8 @@ use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\String;
+use stdClass;
+use JHtml;
 
 /**
  * Plugin element to render time dropdowns - derived from birthday element
@@ -50,7 +52,6 @@ class Time extends Element
 	 *
 	 * @return  string  returns element html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -93,28 +94,27 @@ class Time extends Element
 				$sec = ArrayHelper::getValue($bits, 2, '00');
 
 				// $$$ rob - all this below is nice but ... you still need to set a default
-				$detailvalue = '';
+				$detailValue = '';
 
 				if ($fd == 'H:i:s')
 				{
-					$detailvalue = $hour . $sep . $min . $sep . $sec;
+					$detailValue = $hour . $sep . $min . $sep . $sec;
 				}
 				else
 				{
 					if ($fd == 'H:i')
 					{
-						$detailvalue = $hour . $sep . $min;
+						$detailValue = $hour . $sep . $min;
 					}
 
 					if ($fd == 'i:s')
 					{
-						$detailvalue = $min . $sep . $sec;
+						$detailValue = $min . $sep . $sec;
 					}
 				}
 
-				$value = $this->replaceWithIcons($detailvalue);
 
-				return ($element->get('hidden') == '1') ? "<!-- " . $detailvalue . " -->" : $detailvalue;
+				return ($element->get('hidden') == '1') ? "<!-- " . $detailValue . " -->" : $detailValue;
 			}
 			else
 			{
@@ -129,33 +129,33 @@ class Time extends Element
 				$value = strstr($value, ',') ? (explode(',', $value)) : explode(':', $value);
 			}
 
-			$hourvalue = ArrayHelper::getValue($value, 0);
-			$minvalue = ArrayHelper::getValue($value, 1);
-			$secvalue = ArrayHelper::getValue($value, 2);
+			$hourValue = ArrayHelper::getValue($value, 0);
+			$minValue = ArrayHelper::getValue($value, 1);
+			$secValue = ArrayHelper::getValue($value, 2);
 
-			$hours = array(JHTML::_('select.option', '', $params->get('time_hourlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_HOUR'))));
+			$hours = array(JHtml::_('select.option', '', $params->get('time_hourlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_HOUR'))));
 
 			for ($i = 0; $i < 24; $i++)
 			{
 				$i = str_pad($i, 2, '0', STR_PAD_LEFT);
-				$hours[] = JHTML::_('select.option', $i);
+				$hours[] = JHtml::_('select.option', $i);
 			}
 
-			$mins = array(JHTML::_('select.option', '', $params->get('time_minlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_MINUTE'))));
+			$mins = array(JHtml::_('select.option', '', $params->get('time_minlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_MINUTE'))));
 			$increment = (int) $params->get('minutes_increment', 1);
 
 			for ($i = 0; $i < 60; $i += $increment)
 			{
 				$i = str_pad($i, 2, '0', STR_PAD_LEFT);
-				$mins[] = JHTML::_('select.option', $i);
+				$mins[] = JHtml::_('select.option', $i);
 			}
 
-			$secs = array(JHTML::_('select.option', '', $params->get('time_seclabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_SECOND'))));
+			$secs = array(JHtml::_('select.option', '', $params->get('time_seclabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_SECOND'))));
 
 			for ($i = 0; $i < 60; $i++)
 			{
 				$i = str_pad($i, 2, '0', STR_PAD_LEFT);
-				$secs[] = JHTML::_('select.option', $i);
+				$secs[] = JHtml::_('select.option', $i);
 			}
 
 			$layout = $this->getLayout('form');
@@ -169,9 +169,9 @@ class Time extends Element
 			$layoutData->hours = $hours;
 			$layoutData->mins = $mins;
 			$layoutData->secs = $secs;
-			$layoutData->hourValue = $hourvalue;
-			$layoutData->minValue = $minvalue;
-			$layoutData->secValue = $secvalue;
+			$layoutData->hourValue = $hourValue;
+			$layoutData->minValue = $minValue;
+			$layoutData->secValue = $secValue;
 
 			return $layout->render($layoutData);
 		}
@@ -185,7 +185,6 @@ class Time extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		return $this->_indStoreDBFormat($val);
@@ -198,7 +197,6 @@ class Time extends Element
 	 *
 	 * @return  string  hh-mm-ss
 	 */
-
 	private function _indStoreDBFormat($val)
 	{
 		if (is_array($val) && implode($val) != '')
@@ -222,7 +220,6 @@ class Time extends Element
 	 *
 	 * @return  void
 	 */
-
 	protected function formatCalValues(&$rows)
 	{
 		foreach ($rows as &$row)
@@ -244,19 +241,21 @@ class Time extends Element
 	 *
 	 * @return string
 	 */
-
 	protected function getSumQuery(&$listModel, $labels = array())
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
-		$joinSQL = $listModel->_buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$query = $db->getQuery(true);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere($query);
 		$name = $this->getFullName(false, false, false);
 
-		return 'SELECT SUM(substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60
-			+ substr(' . $name . ' FROM 7 FOR 2))  AS value, ' . $label . ' FROM '
-				. $db->qn($table->get('list.db_table_name')) . ' ' . $joinSQL . ' ' . $whereSQL;
+		$query->select('SUM(substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60
+			+ substr(' . $name . ' FROM 7 FOR 2))  AS value, ' . $label)
+		->from($db->qn($table->get('list.db_table_name')));
+		
+		return (string) $query;
 	}
 
 	/**
@@ -267,22 +266,21 @@ class Time extends Element
 	 *
 	 * @return  string	sql statement
 	 */
-
 	protected function getAvgQuery(&$listModel, $labels = array())
 	{
 		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
 		$item = $listModel->getTable();
-		$joinSQL = $listModel->_buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$query = $listModel->getDb()->getQuery(true);
+		$query = $listModel->buildQueryJoin($query);
+		$query = $listModel->buildQueryWhere($query);
 		$name = $this->getFullName(false, false, false);
-		$groupModel = $this->getGroup();
 		$roundTo = (int) $this->getParams()->get('avg_round');
 
 		$valueSelect = 'substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60 + substr(' . $name . ' FROM 7 FOR 2)';
-
-		// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-		return "SELECT ROUND(AVG($valueSelect), $roundTo) AS value, $label FROM " . String::safeColName($item->get('list.db_table_name'))
-		. " $joinSQL $whereSQL";
+		$query->select('ROUND(AVG(' . $valueSelect . '), ' . $roundTo . ') AS value, ' . $label)
+			->from(String::safeColName($item->get('list.db_table_name')));
+		
+		return (string) $query;
 	}
 
 	/**
@@ -293,7 +291,6 @@ class Time extends Element
 	 *
 	 * @return bool
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		$data = str_replace(null, '', $data);
@@ -323,7 +320,6 @@ class Time extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
@@ -342,7 +338,6 @@ class Time extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$params = $this->getParams();
@@ -361,36 +356,29 @@ class Time extends Element
 		{
 			if ($d)
 			{
-				$bits = explode(':', $d);
-				$hour = ArrayHelper::getValue($bits, 0, '00');
-				$min = ArrayHelper::getValue($bits, 1, '00');
-				$sec = ArrayHelper::getValue($bits, 2, '00');
-				$hms = $hour . $sep . $min . $sep . $sec;
-				$hm = $hour . $sep . $min;
-				$ms = $min . $sep . $sec;
-				$timedisp = '';
+				$timeDisplay = '';
 
 				if ($ft == "H:i:s")
 				{
 					list($hour, $min, $sec) = explode(':', $d);
-					$timedisp = $hour . $sep . $min . $sep . $sec;
+					$timeDisplay = $hour . $sep . $min . $sep . $sec;
 				}
 				else
 				{
 					if ($ft == "H:i")
 					{
 						list($hour, $min) = explode(':', $d);
-						$timedisp = $hour . $sep . $min;
+						$timeDisplay = $hour . $sep . $min;
 					}
 
 					if ($ft == "i:s")
 					{
 						list($min, $sec) = explode(':', $d);
-						$timedisp = $min . $sep . $sec;
+						$timeDisplay = $min . $sep . $sec;
 					}
 				}
 
-				$format[] = $timedisp;
+				$format[] = $timeDisplay;
 			}
 			else
 			{
@@ -412,7 +400,6 @@ class Time extends Element
 	 *
 	 * @return  string  email formatted value
 	 */
-
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		$params = $this->getParams();

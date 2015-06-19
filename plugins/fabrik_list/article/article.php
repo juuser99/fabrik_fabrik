@@ -130,13 +130,12 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 *
 	 * @return  string
 	 */
-
 	public function process_result($c)
 	{
 		$input = JFactory::getApplication()->input;
 		$ids = $input->get('ids', array(), 'array');
 
-		return JText::sprintf('PLG_LIST_ARTICLES_UPDATED', count($ids));
+		return Text::sprintf('PLG_LIST_ARTICLES_UPDATED', count($ids));
 	}
 
 	/**

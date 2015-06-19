@@ -15,11 +15,14 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use \stdClass;
-use \JVersion;
-use \JFactory;
+use stdClass;
+use JFactory;
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
+use JApplicationHelper;
+use RuntimeException;
+use JComponentHelper;
+use JHtml;
 
 /**
  * Plugin element to render thumbs-up/down widget
@@ -78,7 +81,7 @@ class Thumbs extends Element
 		$input = $this->app->input;
 		$params = $this->getParams();
 		$data = Worker::JSONtoData($data, true);
-		$listId = $this->getlistModel()->getTable()->id;
+		$listId = $this->getlistModel()->getTable()->get('id');
 		$formModel = $this->getFormModel();
 		$formId = $formModel->getId();
 
@@ -164,15 +167,15 @@ class Thumbs extends Element
 			->setQuery(
 				"SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId . " AND formid = " . (int) $formId . " AND row_id = "
 					. $db->q($rowId) . " AND element_id = " . (int) $elementId . $sql . " AND thumb = 'up'");
-		$resup = $db->loadResult();
+		$resUp = $db->loadResult();
 		$db
 			->setQuery(
 				"SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId . " AND formid = " . (int) $formId . " AND row_id = "
 					. $db->q($rowId) . " AND element_id = " . (int) $elementId . $sql . " AND thumb = 'down'");
 
-		$resdown = $db->loadResult();
+		$resDown = $db->loadResult();
 
-		return json_encode(array($resup, $resdown));
+		return json_encode(array($resUp, $resDown));
 	}
 
 	/**
@@ -378,16 +381,8 @@ class Thumbs extends Element
 	{
 		$cookieName = 'thumb-table_' . $listId . '_row_' . $rowId . '_ip_' . $_SERVER['REMOTE_ADDR'];
 		jimport('joomla.utilities.utility');
-		$version = new JVersion;
 
-		if (version_compare($version->RELEASE, '3.1', '>'))
-		{
-			return JApplicationHelper::getHash($cookieName);
-		}
-		else
-		{
-			return JApplication::getHash($cookieName);
-		}
+		return JApplicationHelper::getHash($cookieName);
 	}
 
 	/**
@@ -560,7 +555,7 @@ class Thumbs extends Element
 		}
 
 		$id = $this->getHTMLId($repeatCounter);
-		$listId = $this->getlistModel()->getTable()->id;
+		$listId = $this->getlistModel()->getTable()->get('id');
 		$formModel = $this->getFormModel();
 		$formId = $formModel->getId();
 		$rowId = $formModel->getRowId();
@@ -591,7 +586,7 @@ class Thumbs extends Element
 		$params = $this->getParams();
 		$id = $this->getHTMLId();
 		$list = $this->getlistModel()->getTable();
-		$formId = $list->form_id;
+		$formId = $list->get('form_id');
 		$listMyThumbs = array();
 		$idFromCookie = null;
 		$data = $this->getListModel()->getData();
@@ -624,7 +619,7 @@ class Thumbs extends Element
 		$opts = new stdClass;
 		$opts->canUse = $this->canUse();
 		$opts->noAccessMsg = Text::_($params->get('thumbs_no_access_msg', Text::_('PLG_ELEMENT_THUMBS_NO_ACCESS_MSG_DEFAULT')));
-		$opts->listid = $list->id;
+		$opts->listid = $list->get('id');
 		$opts->formid = $this->getFormModel()->getId();
 		$opts->imagepath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
 		$opts->elid = $this->getElement()->get('id');
@@ -682,12 +677,11 @@ class Thumbs extends Element
 	 *
 	 * @return  array	filter value and labels
 	 */
-
 	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		for ($i = 0; $i < 6; $i++)
 		{
-			$return[] = JHTML::_('select.option', $i);
+			$return[] = JHtml::_('select.option', $i);
 		}
 
 		return $return;
@@ -702,7 +696,6 @@ class Thumbs extends Element
 	 *
 	 * @return  string	admin html
 	 */
-
 	public function onRenderAdminSettings($data = array(), $repeatCounter = null, $mode = null)
 	{
 		$this->install();
@@ -715,7 +708,6 @@ class Thumbs extends Element
 	 *
 	 * @return  void
 	 */
-
 	public function install()
 	{
 		$db = Worker::getDbo();

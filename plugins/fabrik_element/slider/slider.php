@@ -14,6 +14,7 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use stdClass;
 
 /**
  * Plugin element to render mootools slider
@@ -53,7 +54,6 @@ class Slider extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		HTML::stylesheet(COM_FABRIK_LIVESITE . 'media/com_fabrik/css/slider.css');
@@ -112,7 +112,6 @@ class Slider extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		// If clear button pressed then store as null.
@@ -131,7 +130,6 @@ class Slider extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();

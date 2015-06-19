@@ -230,7 +230,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 		if (empty($pks))
 		{
-			$this->setError(JText::_('COM_CONTENT_NO_ITEM_SELECTED'));
+			$this->setError(Text::_('COM_CONTENT_NO_ITEM_SELECTED'));
 			return false;
 		}
 

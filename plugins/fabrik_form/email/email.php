@@ -11,10 +11,10 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\PDFHelper;
 use Fabrik\Helpers\HTML;
-use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -334,7 +334,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 				 */
 				if ($res !== true)
 				{
-					$this->app->enqueueMessage(JText::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL', $email), 'notice');
+					$this->app->enqueueMessage(Text::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL', $email), 'notice');
 				}
 
 				if (JFile::exists($attach_fname))
@@ -344,7 +344,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			}
 			else
 			{
-				$this->app->enqueueMessage(JText::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email), 'notice');
+				$this->app->enqueueMessage(Text::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email), 'notice');
 			}
 		}
 
@@ -360,7 +360,6 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 *
 	 * @return  void
 	 */
-
 	protected function pdfAttachement(&$thisAttachments)
 	{
 		$params = $this->getParams();

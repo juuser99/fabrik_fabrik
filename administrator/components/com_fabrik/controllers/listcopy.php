@@ -13,7 +13,7 @@ namespace Fabrik\Admin\Controllers;
 
 use Fabrik\Admin\Models\Lists as Lists;
 use Fabrik\Admin\Views\Lists\Html as View;
-use \JText as JText;
+use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -44,7 +44,7 @@ class listCopy extends Controller
 		$model = new Lists;
 		$model->copy($ids, $names);
 
-		$this->app->enqueueMessage(JText::plural('COM_FABRIK_LIST_N_ITEMS_COPIED', $ids));
+		$this->app->enqueueMessage(Text::plural('COM_FABRIK_LIST_N_ITEMS_COPIED', $ids));
 		$this->app->redirect($this->listUrl('list'));
 	}
 }

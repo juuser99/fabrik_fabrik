@@ -12,7 +12,7 @@
 namespace Fabrik\Admin\Controllers;
 
 use Fabrik\Admin\Models\Form as Form;
-use \JText as JText;
+use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -42,7 +42,7 @@ class updateDatabase extends Controller
 		$model->set('id', $this->app->input->getString('id'));
 		$model->updateDatabase();
 
-		$this->app->enqueueMessage(JText::plural('COM_FABRIK_LIST_N_ITEMS_COPIED', $ids));
+		$this->app->enqueueMessage(Text::plural('COM_FABRIK_LIST_N_ITEMS_COPIED', $ids));
 		$this->app->redirect($this->listUrl('list'));
 	}
 }

@@ -52,7 +52,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return mixed
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
@@ -72,7 +71,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/yesno/images/', 'image', 'list', false);
@@ -81,7 +79,7 @@ class Yesno extends Radiobutton
 		$raw = $this->getFullName(true, false) . '_raw';
 		$displayData = new stdClass;
 		$displayData->value = $thisRow->$raw;
-		$displayData->tmpl = @$this->tmpl;
+		$displayData->tmpl = $this->tmpl;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
 		$layout = new LayoutFile('fabrik_element_yesno_list', $basePath);
 		$layout->addIncludePaths(JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts');
@@ -98,7 +96,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return string formatted value
 	 */
-
 	public function renderListData_pdf($data, $thisRow)
 	{
 		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/yesno/images/', 'image', 'list', false);
@@ -127,7 +124,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData_csv($data, &$thisRow)
 	{
 	    $raw = $this->getFullName(true, false) . '_raw';
@@ -172,7 +168,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  null
 	 */
-
 	protected function reapplyFilterLabels(&$rows)
 	{
 		$values = $this->getSubOptionValues();
@@ -204,7 +199,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s = new stdClass;
@@ -226,12 +220,11 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  string  read only value
 	 */
-
 	protected function getReadOnlyOutput($value, $label)
 	{
 		$displayData = new stdClass;
 		$displayData->value = $value;
-		$displayData->tmpl = @$this->tmpl;
+		$displayData->tmpl = $this->tmpl;
 		$displayData->format = $this->app->input->get('format', '');;
 		$basePath = JPATH_ROOT . '/plugins/fabrik_element/yesno/layouts';
 		$layout = new LayoutFile('fabrik_element_yesno_details', $basePath);
@@ -248,7 +241,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -264,7 +256,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  bool
 	 */
-
 	protected function buttonGroup()
 	{
 		$params = $this->getParams();
@@ -280,7 +271,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -299,7 +289,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  string	Filter html
 	 */
-
 	public function getFilter($counter = 0, $normal = true)
 	{
 		$listModel = $this->getlistModel();
@@ -347,7 +336,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  array	filter value and labels
 	 */
-
 	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$o = new stdClass;
@@ -429,7 +417,7 @@ class Yesno extends Radiobutton
 	
 			if ($toggle === false)
 			{
-				return;
+				return true;
 			}
 	
 			$listModel = $this->getListModel();
@@ -481,7 +469,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  string
 	 */
-	
 	public function getChangeEvent()
 	{
 		return $this->buttonGroup() ? 'click' : 'change';

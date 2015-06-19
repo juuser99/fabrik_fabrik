@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Admin\Models\Visualization;
 
@@ -33,7 +33,7 @@ class FabrikModelMedia extends Visualization
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = Worker::itemId();
+		$itemId = Worker::itemId();
 		$params = $this->getParams();
 		$w = $params->get('media_width');
 		$h = $params->get('media_height');
@@ -44,7 +44,7 @@ class FabrikModelMedia extends Visualization
 			$player_type = "Extended";
 			$player_url = COM_FABRIK_LIVESITE . $this->srcBase . "media/libs/xspf/$player_type/xspf_player.swf";
 			$playlist_url = 'index.php?option=com_' . $package . '&controller=visualization.media&view=visualization&task=getPlaylist&format=raw&Itemid='
-				. $Itemid . '&visualizationid=' . $this->getId();
+				. $itemId . '&visualizationid=' . $this->getId();
 			$playlist_url = urlencode($playlist_url);
 			$return = '<object type="application/x-shockwave-flash" width="400" height="170" data="' . $player_url . '?playlist_url=' . $playlist_url
 				. '">';

@@ -25,6 +25,18 @@ use \JUri as JUri;
 use \JAccess;
 use \JFilterInput;
 use Fabrik\Helpers\HTML as HelperHTML;
+use \stdClass;
+use \JLog;
+use \JPath;
+use \JHtml;
+use \ReflectionClass;
+use \JApplicationCMS;
+use \Exception;
+use \JFile;
+use \RuntimeException;
+use \JMailHelper;
+use \PHPMailer;
+
 
 /**
  * Generic tools that all models use
@@ -39,7 +51,7 @@ class Worker
 	/**
 	 * Fabrik database objects
 	 *
-	 * @var  array
+	 * @var  JDatabaseDriver[]
 	 */
 	public static $database = null;
 
@@ -845,16 +857,15 @@ class Worker
 	 *
 	 * @return	string	parsed message
 	 */
-
 	public static function replaceWithGlobals($msg)
 	{
 		$app = JFactory::getApplication();
-		$Itemid = self::itemId();
+		$itemId = self::itemId();
 		$config = JFactory::getConfig();
 		$msg = str_replace('{$mosConfig_absolute_path}', JPATH_SITE, $msg);
 		$msg = str_replace('{$mosConfig_live_site}', COM_FABRIK_LIVESITE, $msg);
 		$msg = str_replace('{$mosConfig_offset}', $config->get('offset'), $msg);
-		$msg = str_replace('{$Itemid}', $Itemid, $msg);
+		$msg = str_replace('{$itemId}', $itemId, $msg);
 		$msg = str_replace('{$mosConfig_sitename}', $config->get('sitename'), $msg);
 		$msg = str_replace('{$mosConfig_mailfrom}', $config->get('mailfrom'), $msg);
 		$msg = str_replace('{$mosConfig_secret}', $config->get('secret'), $msg);
@@ -887,7 +898,6 @@ class Worker
 	 *
 	 * @return	string	posted data that corresponds with placeholder
 	 */
-
 	protected function replaceWithFormData($matches)
 	{
 		// Merge any join data key val pairs down into the main data array
@@ -915,21 +925,20 @@ class Worker
 		// Strip the {}
 		$match = String::substr($match, 1, String::strlen($match) - 2);
 
-		/* $$$ hugh - added dbprefix substitution
+		/* $$$ hugh - added db prefix substitution
 		 * Not 100% if we should do this on $match before copying to $orig, but for now doing it
-		 * after, so we don't potentially disclose dbprefix if no substitution found.
+		 * after, so we don't potentially disclose db prefix if no substitution found.
 		 */
 		$config = JFactory::getConfig();
 		$prefix = $config->get('dbprefix');
 		$match = str_replace('#__', $prefix, $match);
 
-		// $$$ rob test this format searchvalue||defaultsearchvalue
+		// $$$ rob test this format search value||default search value
 		$bits = explode('||', $match);
 
 		if (count($bits) == 2)
 		{
 			$match = self::parseMessageForPlaceHolder('{' . $bits[0] . '}', $this->_searchData, false);
-			$default = $bits[1];
 
 			if ($match == '')
 			{
@@ -980,22 +989,22 @@ class Worker
 
 				if (is_array($match))
 				{
-					$newmatch = '';
+					$newMatch = '';
 
 					// Deal with radio boxes etc. inside repeat groups
 					foreach ($match as $m)
 					{
 						if (is_array($m))
 						{
-							$newmatch .= ',' . implode(',', $m);
+							$newMatch .= ',' . implode(',', $m);
 						}
 						else
 						{
-							$newmatch .= ',' . $m;
+							$newMatch .= ',' . $m;
 						}
 					}
 
-					$match = String::ltrim($newmatch, ',');
+					$match = String::ltrim($newMatch, ',');
 				}
 			}
 			else
@@ -1177,7 +1186,6 @@ class Worker
 
 	public static function getContentFilter()
 	{
-		$dofilter = false;
 		$filter = false;
 
 		// Filter settings
@@ -1203,7 +1211,6 @@ class Worker
 		$whiteListTags = array();
 		$whiteListAttributes = array();
 
-		$noHtml = false;
 		$whiteList = false;
 		$blackList = false;
 		$unfiltered = false;
@@ -1222,12 +1229,7 @@ class Worker
 			$filterData = $filters->$groupId;
 			$filterType = String::strtoupper($filterData->filter_type);
 
-			if ($filterType == 'NH')
-			{
-				// Maximum HTML filtering.
-				$noHtml = true;
-			}
-			elseif ($filterType == 'NONE')
+			if ($filterType == 'NONE')
 			{
 				// No HTML filtering.
 				$unfiltered = true;
@@ -1725,11 +1727,9 @@ class Worker
 	 *
 	 * @return bool
 	 */
-
 	public static function isEmail($email)
 	{
 		$conf = JFactory::getConfig();
-		$mail = JFactory::getMailer();
 		$mailer = $conf->get('mailer');
 
 		if ($mailer === 'mail')
@@ -1746,7 +1746,6 @@ class Worker
 	 *
 	 * @return string
 	 */
-
 	public static function goBackAction()
 	{
 		jimport('joomla.environment.browser');
@@ -1754,14 +1753,14 @@ class Worker
 
 		if ($uri->getScheme() === 'https')
 		{
-			$gobackaction = 'onclick="parent.location=\'' . ArrayHelper::getValue($_SERVER, 'HTTP_REFERER') . '\'"';
+			$goBackAction = 'onclick="parent.location=\'' . ArrayHelper::getValue($_SERVER, 'HTTP_REFERER') . '\'"';
 		}
 		else
 		{
-			$gobackaction = 'onclick=\'history.back();\'';
+			$goBackAction = 'onclick=\'history.back();\'';
 		}
 
-		return $gobackaction;
+		return $goBackAction;
 	}
 
 	/**
@@ -1775,7 +1774,6 @@ class Worker
 	 *
 	 * @return mixed NULL if nothing found, int if menu item found
 	 */
-
 	public static function itemId($listId = null)
 	{
 		$app = JFactory::getApplication();
@@ -1827,7 +1825,6 @@ class Worker
 	 *
 	 * @return  string
 	 */
-
 	public static function getMenuOrRequestVar($name, $val = '', $mambot = false, $priority = 'menu')
 	{
 		$app = JFactory::getApplication();
@@ -1879,7 +1876,6 @@ class Worker
 	 *
 	 * @return	mixed	- if ACL setting defined here return bool, otherwise return -1 to continue with default acl setting
 	 */
-
 	public static function canUserDo($params, $row, $col)
 	{
 		if (!is_null($row))
@@ -1887,46 +1883,46 @@ class Worker
 			$app = JFactory::getApplication();
 			$input = $app->input;
 			$user = JFactory::getUser();
-			$usercol = $params->get($col, '');
+			$userCol = $params->get($col, '');
 
-			if ($usercol != '')
+			if ($userCol != '')
 			{
-				$usercol = String::safeColNameToArrayKey($usercol);
+				$userCol = String::safeColNameToArrayKey($userCol);
 
-				if (!array_key_exists($usercol, $row))
+				if (!array_key_exists($userCol, $row))
 				{
 					return false;
 				}
 				else
 				{
-					if (array_key_exists($usercol . '_raw', $row))
+					if (array_key_exists($userCol . '_raw', $row))
 					{
-						$usercol .= '_raw';
+						$userCol .= '_raw';
 					}
 
 					$myid = $user->get('id');
 
 					// -1 for menu items that link to their own records
-					$usercol_val = is_array($row) ? $row[$usercol] : $row->$usercol;
+					$userCol_val = is_array($row) ? $row[$userCol] : $row->$userCol;
 
 					// User element stores as object
-					if (is_object($usercol_val))
+					if (is_object($userCol_val))
 					{
-						$usercol_val = ArrayHelper::fromObject($usercol_val);
+						$userCol_val = ArrayHelper::fromObject($userCol_val);
 					}
 
 					// Could be coming back from a failed validation in which case val might be an array
-					if (is_array($usercol_val))
+					if (is_array($userCol_val))
 					{
-						$usercol_val = array_shift($usercol_val);
+						$userCol_val = array_shift($userCol_val);
 					}
 
-					if (empty($usercol_val) && empty($myid))
+					if (empty($userCol_val) && empty($myid))
 					{
 						return false;
 					}
 
-					if (intVal($usercol_val) === intVal($myid) || $input->get('rowid') == -1)
+					if (intVal($userCol_val) === intVal($myid) || $input->get('rowid') == -1)
 					{
 						return true;
 					}

@@ -13,7 +13,7 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use \stdClass;
 use \AYAH;
 use Fabrik\Helpers\Text;
@@ -365,7 +365,7 @@ class Captcha extends Element
 	}
 
 	/**
-	 * Get validation error - run through JText
+	 * Get validation error - run through Text
 	 *
 	 * @return  string
 	 */

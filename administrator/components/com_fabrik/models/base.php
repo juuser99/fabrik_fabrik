@@ -29,6 +29,7 @@ use Fabrik\Admin\Helpers\Fabrik as Fabrik;
 use Joomla\String\Inflector;
 use \JFile as JFile;
 use \Fabrik\Helpers\HTML;
+use \RuntimeException;
 
 /**
  * Fabrik Base Admin Model
@@ -1071,7 +1072,7 @@ class Base extends \JModelBase
 
 			if (strncasecmp($table, $dbPrefix, String::strlen($dbPrefix)) == 0)
 			{
-				$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table, $dbPrefix), 'notice');
+				$this->app->enqueueMessage(Text::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table, $dbPrefix), 'notice');
 			}
 			else
 			{
@@ -1089,7 +1090,7 @@ class Base extends \JModelBase
 					}
 				}
 
-				$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_DROPPED', $table));
+				$this->app->enqueueMessage(Text::sprintf('COM_FABRIK_TABLE_DROPPED', $table));
 			}
 
 			$dispatcher->trigger('onContentAfterDrop', array('com_fabrik.list', $id));
