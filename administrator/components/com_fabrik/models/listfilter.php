@@ -13,14 +13,14 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \JProfiler as JProfiler;
 use \JFilterInput as JFilterInput;
-use \FabrikString as FabrikString;
+use \Fabrik\Helpers\String as String;
 use \Fabrik\Helpers\HTML;
 use \stdClass;
+use Fabrik\Helpers\Text;
 
 /**
  * List filter model
@@ -418,7 +418,7 @@ class ListFilter extends Base
 
 		if (!String::strlen($s) >= $res->Value)
 		{
-			throw new UnexpectedValueException(FText::_('COM_FABRIK_NOTICE_SEARCH_STRING_TOO_SHORT'));
+			throw new UnexpectedValueException(Text::_('COM_FABRIK_NOTICE_SEARCH_STRING_TOO_SHORT'));
 		}
 
 		return true;
@@ -653,7 +653,7 @@ class ListFilter extends Base
 
 			$searchable = true;
 			$k          = $elementModel->getFullName(false, false);
-			$k          = FabrikString::safeColName($k);
+			$k          = String::safeColName($k);
 
 			// Lower case for search on accented characters e.g. Ö
 			$k = 'LOWER(' . $k . ')';
@@ -775,7 +775,7 @@ class ListFilter extends Base
 
 		if (!$searchable)
 		{
-			$app->enqueueMessage(FText::_('COM_FABRIK_NOTICE_SEARCH_ALL_BUT_NO_ELEMENTS'));
+			$app->enqueueMessage(Text::_('COM_FABRIK_NOTICE_SEARCH_ALL_BUT_NO_ELEMENTS'));
 		}
 	}
 
@@ -902,7 +902,7 @@ class ListFilter extends Base
 
 							foreach ($joins as $join)
 							{
-								$key = $db->quoteName($join->table_join) . '.' . array_pop(explode('.', $key));
+								$key = $db->qn($join->table_join) . '.' . array_pop(explode('.', $key));
 
 								if (array_key_exists($key, $filterElements))
 								{
@@ -998,7 +998,7 @@ class ListFilter extends Base
 		foreach ($request as $key => $val)
 		{
 			$oldKey = $key;
-			$key    = FabrikString::safeColName($key);
+			$key    = String::safeColName($key);
 			$index  = array_key_exists('key', $filters) ? array_search($key, $filters['key']) : false;
 
 			if ($index !== false)
@@ -1022,10 +1022,10 @@ class ListFilter extends Base
 				$raw = 1;
 
 				// Without this line related data links 'listname___elementname_raw=X' where not having their filter applied
-				$key = FabrikString::safeColName(FabrikString::rtrimword($oldKey, '_raw'));
+				$key = String::safeColName(String::rtrimword($oldKey, '_raw'));
 			}
 
-			$elementModel = $this->listModel->getElement(FabrikString::rtrimword($oldKey, '_raw'), false, false);
+			$elementModel = $this->listModel->getElement(String::rtrimword($oldKey, '_raw'), false, false);
 
 			if (!is_a($elementModel, 'PlgFabrik_Element'))
 			{
@@ -1121,7 +1121,7 @@ class ListFilter extends Base
 			$value = trim($value);
 		}
 
-		$k2 = FabrikString::safeColNameToArrayKey($key);
+		$k2 = String::safeColNameToArrayKey($key);
 		/**
 		 * $$$ rob fabrik_sticky_filters set in J content plugin
 		 * Treat these as prefilters so we don't unset them

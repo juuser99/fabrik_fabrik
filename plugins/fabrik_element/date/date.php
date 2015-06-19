@@ -13,12 +13,15 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
 use Fabrik\Helpers\HTML;
 use \JDate;
+use \stdClass;
+use \JFactory;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render date picker
@@ -72,7 +75,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		if ($data == '')
@@ -83,8 +85,6 @@ class Date extends ElementList
 		// @TODO: deal with time options (currently can be defined in date_table_format param).
 		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$params = $this->getParams();
-		$store_as_local = (int) $params->get('date_store_as_local', 0);
-		$groupModel = $this->getGroup();
 		$data = Worker::JSONtoData($data, true);
 		$f = $params->get('date_table_format', 'Y-m-d');
 		$format = array();
@@ -133,17 +133,12 @@ class Date extends ElementList
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData_csv($data, &$thisRow)
 	{
 		// @TODO: deal with time options (currently can be defined in date_table_format param).
 		$timeZone = new DateTimeZone($this->config->get('offset'));
-		$db = Worker::getDbo();
 		$params = $this->getParams();
-		$element = $this->getElement();
 		$store_as_local = (int) $params->get('date_store_as_local', 0);
-
-		$groupModel = $this->getGroup();
 		$data = Worker::JSONtoData($data, true);
 		$f = $params->get('date_table_format', 'Y-m-d');
 		/* $$$ hugh - see http://fabrikar.com/forums/showthread.php?p=87507
@@ -207,7 +202,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	protected function modHTMLId(&$id)
 	{
 		$id = $id . '_cal';
@@ -225,7 +219,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	public function getValuesToEncrypt(&$values, $data, $c)
 	{
 		$name = $this->getFullName(true, false);
@@ -258,7 +251,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$this->offsetDate = '';
@@ -348,7 +340,6 @@ class Date extends ElementList
 		return $o;
 	}
 
-
 	/**
 	 * Render time button
 	 *
@@ -360,7 +351,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	protected function timeButton($timeElName, $time, &$str)
 	{
 		$params = $this->getParams();
@@ -374,7 +364,7 @@ class Date extends ElementList
 		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/date/images/', 'image', 'form', false);
 		$str[] = '<input type="text" class="' . $class . '" ' . $readOnly . ' size="' . $timeLength . '" value="' . $time . '" name="'
 				. $timeElName . '" />';
-		$opts = array('alt' => FText::_('PLG_ELEMENT_DATE_TIME'), 'class' => 'timeButton');
+		$opts = array('alt' => Text::_('PLG_ELEMENT_DATE_TIME'), 'class' => 'timeButton');
 		$file = 'clock.png';
 		$img = '<button class="btn timeButton">' . HTML::image($file, 'form', @$this->tmpl, $opts) . '</button>';
 		$str[] = $img;
@@ -391,7 +381,6 @@ class Date extends ElementList
 	 *
 	 * @return  date
 	 */
-
 	protected function displayDate($gmt)
 	{
 		$date = JFactory::getDate($gmt);
@@ -419,7 +408,6 @@ class Date extends ElementList
 	 *
 	 * @return  boolean
 	 */
-
 	protected function shouldApplyTz($view = 'form')
 	{
 		$formModel = $this->getFormModel();
@@ -477,7 +465,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	MySQL formatted date
 	 */
-
 	private function _indStoreDBFormat($val)
 	{
 		$params = $this->getParams();
@@ -536,7 +523,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	MySQL formatted GMT date
 	 */
-
 	protected function toMySQLGMT($date)
 	{
 		if ($this->resetToGMT)
@@ -579,7 +565,6 @@ class Date extends ElementList
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		if (!is_array($val))
@@ -627,7 +612,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		if ((is_array($value) && empty($value)) || (!is_array($value) && trim($value) == ''))
@@ -677,7 +661,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	Text to add to the browser's title
 	 */
-
 	public function getTitlePart($data, $repeatCounter = 0, $opts = array())
 	{
 		$gmt_date = $this->getValue($data, $repeatCounter, $opts);
@@ -720,7 +703,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	protected function toLabel(&$v)
 	{
 		$params = $this->getParams();
@@ -772,7 +754,6 @@ class Date extends ElementList
 	 *
 	 * @return  string
 	 */
-
 	public function calendar($value, $name, $id, $format = '%Y-%m-%d', $attribs = null, $repeatCounter = 0)
 	{
 		if (is_array($attribs))
@@ -801,7 +782,6 @@ class Date extends ElementList
 	 *
 	 * @return object ready for js encoding
 	 */
-
 	protected function _CalendarJSOpts($id)
 	{
 		$params = $this->getParams();
@@ -826,7 +806,6 @@ class Date extends ElementList
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
@@ -838,7 +817,7 @@ class Date extends ElementList
 		// Used uniquely in reset();
 		$opts->defaultVal = $this->getFrontDefaultValue();
 		$opts->showtime = (!$element->get('hidden') && $params->get('date_showtime', 0)) ? true : false;
-		$opts->timelabel = FText::_('time');
+		$opts->timelabel = Text::_('time');
 		$opts->typing = (bool) $params->get('date_allow_typing_in_field', true);
 		$opts->timedisplay = $params->get('date_timedisplay', 1);
 		$opts->dateTimeFormat = $params->get('date_time_format', '');
@@ -860,7 +839,6 @@ class Date extends ElementList
 	 *
 	 * @return  string
 	 */
-
 	protected function getWatchId($repeatCounter = 0)
 	{
 		$elementModel = $this->getWatchElement();
@@ -874,7 +852,6 @@ class Date extends ElementList
 	 *
 	 * @return  plgFabrik_Element
 	 */
-
 	protected function getWatchElement()
 	{
 		if (!isset($this->watchElement))
@@ -897,7 +874,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	public function onAjax_getAllowedDates()
 	{
 		$this->loadMeForAjax();
@@ -923,7 +899,7 @@ class Date extends ElementList
 		}
 
 		$dates = HTML::isDebug() ? eval($php) : @eval($php);
-		Worker::logEval($dates, 'Eval exception : ' . $this->getElement()->name . '::getAllowedPHPDates() : %s');
+		Worker::logEval($dates, 'Eval exception : ' . $this->getElement()->get('name') . '::getAllowedPHPDates() : %s');
 
 		return (array) $dates;
 	}
@@ -933,7 +909,6 @@ class Date extends ElementList
 	 *
 	 * @return  string  Db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		if ($this->encryptMe())
@@ -953,7 +928,6 @@ class Date extends ElementList
 	 *
 	 * @return  array  html ids to watch for validation
 	 */
-
 	public function getValidationWatchElements($repeatCounter)
 	{
 		$return = array();
@@ -972,7 +946,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	public function setValuesFromEncryt(&$post, $key, $data)
 	{
 		$date = $data[0];
@@ -1005,7 +978,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	value  Date as GMT time
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$params = $this->getParams();
@@ -1032,10 +1004,10 @@ class Date extends ElementList
 		}
 
 		// Element could be a date element (in which case no time stored) - check for both datetime and date null dates.
-		$nulldate = $db->getNullDate();
-		$shortNullDate = explode(' ', $nulldate);
+		$nullDate = $db->getNullDate();
+		$shortNullDate = explode(' ', $nullDate);
 		$shortNullDate = ArrayHelper::getValue($shortNullDate, 0);
-		$isNullDate = $nulldate == $value || $shortNullDate == $value;
+		$isNullDate = $nullDate == $value || $shortNullDate == $value;
 
 		if (!($formModel->isNewRecord() && $defaultToday) && $value == '')
 		{
@@ -1074,7 +1046,6 @@ class Date extends ElementList
 	 *
 	 * @return  bool
 	 */
-
 	protected function formatContainsTime($format)
 	{
 		$times = array('%H', '%I', '%l', '%M', '%p', '%P', '%r', '%R', '%S', '%T', '%X', '%z', '%Z');
@@ -1098,7 +1069,6 @@ class Date extends ElementList
 	 *
 	 * @return  bool	true
 	 */
-
 	public function includeInSearchAll($advancedMode = false, $search = '')
 	{
 		if (!Worker::isDate($search))
@@ -1118,7 +1088,6 @@ class Date extends ElementList
 	 *
 	 * @return  array	(value condition)
 	 */
-
 	public function getFilterValue($value, $condition, $eval)
 	{
 		/* if its a search all value it may not be a date - so use parent method.
@@ -1176,7 +1145,7 @@ class Date extends ElementList
 				{
 					// Will only work on php 5.3.6
 					$value = JFactory::getDate('first day of January ' . $value)->toSql();
-					$next = JFactory::getDate('first day of January ' . ($value + 1));
+					$next = JFactory::getDate('first day of January ' . ((int) $value + 1));
 				}
 				elseif ($this->isMonth($value))
 				{
@@ -1272,14 +1241,13 @@ class Date extends ElementList
 	 *
 	 * @return  bool
 	 */
-
 	protected function isMonth($test)
 	{
-		$months = array(FText::_('JANUARY_SHORT'), FText::_('JANUARY'), FText::_('FEBRUARY_SHORT'), FText::_('FEBRUARY'), FText::_('MARCH_SHORT'),
-			FText::_('MARCH'), FText::_('APRIL'), FText::_('APRIL_SHORT'), FText::_('MAY_SHORT'), FText::_('MAY'), FText::_('JUNE_SHORT'),
-			FText::_('JUNE'), FText::_('JULY_SHORT'), FText::_('JULY'), FText::_('AUGUST_SHORT'), FText::_('AUGUST'), FText::_('SEPTEMBER_SHORT'),
-			FText::_('SEPTEMBER'), FText::_('OCTOBER_SHORT'), FText::_('OCTOBER'), FText::_('NOVEMBER_SHORT'), FText::_('NOVEMBER'),
-			FText::_('DECEMBER_SHORT'), FText::_('DECEMBER'));
+		$months = array(Text::_('JANUARY_SHORT'), Text::_('JANUARY'), Text::_('FEBRUARY_SHORT'), Text::_('FEBRUARY'), Text::_('MARCH_SHORT'),
+			Text::_('MARCH'), Text::_('APRIL'), Text::_('APRIL_SHORT'), Text::_('MAY_SHORT'), Text::_('MAY'), Text::_('JUNE_SHORT'),
+			Text::_('JUNE'), Text::_('JULY_SHORT'), Text::_('JULY'), Text::_('AUGUST_SHORT'), Text::_('AUGUST'), Text::_('SEPTEMBER_SHORT'),
+			Text::_('SEPTEMBER'), Text::_('OCTOBER_SHORT'), Text::_('OCTOBER'), Text::_('NOVEMBER_SHORT'), Text::_('NOVEMBER'),
+			Text::_('DECEMBER_SHORT'), Text::_('DECEMBER'));
 
 		return in_array($test, $months);
 	}
@@ -1291,57 +1259,56 @@ class Date extends ElementList
 	 *
 	 * @return string|boolean
 	 */
-
 	protected function untranslateMonth($test)
 	{
 		switch ($test)
 		{
-			case FText::_('JANUARY_SHORT'):
-			case FText::_('JANUARY'):
+			case Text::_('JANUARY_SHORT'):
+			case Text::_('JANUARY'):
 				return 'January';
 				break;
-			case FText::_('FEBRUARY_SHORT'):
-			case FText::_('FEBRUARY'):
+			case Text::_('FEBRUARY_SHORT'):
+			case Text::_('FEBRUARY'):
 				return 'February';
 				break;
-			case FText::_('MARCH_SHORT'):
-			case FText::_('MARCH'):
+			case Text::_('MARCH_SHORT'):
+			case Text::_('MARCH'):
 				return 'March';
 				break;
-			case FText::_('APRIL_SHORT'):
-			case FText::_('APRIL'):
+			case Text::_('APRIL_SHORT'):
+			case Text::_('APRIL'):
 				return 'April';
 				break;
-			case FText::_('MAY_SHORT'):
-			case FText::_('MAY'):
+			case Text::_('MAY_SHORT'):
+			case Text::_('MAY'):
 				return 'May';
 				break;
-			case FText::_('JUNE_SHORT'):
-			case FText::_('JUNE'):
+			case Text::_('JUNE_SHORT'):
+			case Text::_('JUNE'):
 				return 'June';
 				break;
-			case FText::_('JULY_SHORT'):
-			case FText::_('JULY'):
+			case Text::_('JULY_SHORT'):
+			case Text::_('JULY'):
 				return 'July';
 				break;
-			case FText::_('AUGUST_SHORT'):
-			case FText::_('AUGUST'):
+			case Text::_('AUGUST_SHORT'):
+			case Text::_('AUGUST'):
 				return 'August';
 				break;
-			case FText::_('SEPTEMBER_SHORT'):
-			case FText::_('SEPTEMBER'):
+			case Text::_('SEPTEMBER_SHORT'):
+			case Text::_('SEPTEMBER'):
 				return 'September';
 				break;
-			case FText::_('OCTOBER_SHORT'):
-			case FText::_('OCTOBER'):
+			case Text::_('OCTOBER_SHORT'):
+			case Text::_('OCTOBER'):
 				return 'October';
 				break;
-			case FText::_('NOVEMBER_SHORT'):
-			case FText::_('NOVEMBER'):
+			case Text::_('NOVEMBER_SHORT'):
+			case Text::_('NOVEMBER'):
 				return 'November';
 				break;
-			case FText::_('DECEMBER_SHORT'):
-			case FText::_('DECEMBER'):
+			case Text::_('DECEMBER_SHORT'):
+			case Text::_('DECEMBER'):
 				return 'December';
 				break;
 		}
@@ -1354,7 +1321,6 @@ class Date extends ElementList
 	 *
 	 * @return  string
 	 */
-
 	public function emptyFilterValue()
 	{
 		$listModel = $this->getListModel();
@@ -1377,7 +1343,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	filter html
 	 */
-
 	public function getFilter($counter = 0, $normal = true)
 	{
 		$listModel = $this->getListModel();
@@ -1406,8 +1371,7 @@ class Date extends ElementList
 			}
 		}
 
-		$where = $listModel->buildQueryPrefilterWhere($this);
-		$elName = FabrikString::safeColName($elName);
+		$elName = String::safeColName($elName);
 		$requestName = $elName . '___filter';
 
 		if (array_key_exists($elName, $_REQUEST))
@@ -1466,6 +1430,7 @@ class Date extends ElementList
 
 		return implode("\n", $return);
 	}
+
 	/**
 	 * Build the HTML for the auto-complete filter
 	 *
@@ -1503,11 +1468,10 @@ class Date extends ElementList
 			$autoId = '.advanced-search-list .autocomplete-trigger';
 		}
 
-		HTML::autoComplete($autoId, $this->getElement()->id, $this->getFormModel()->getId(), 'date');
+		HTML::autoComplete($autoId, $this->getElement()->get('id'), $this->getFormModel()->getId(), 'date');
 
 		return $layout->render($displayData);
 	}
-
 
 	/**
 	 * @param $default
@@ -1594,6 +1558,7 @@ class Date extends ElementList
 
 		return $layout->render($displayData);
 	}
+
 	/**
 	 * @param $default
 	 * @param $v
@@ -1698,7 +1663,6 @@ class Date extends ElementList
 	 *
 	 * @return  string  html filter id
 	 */
-
 	protected function getFilterHtmlId($range)
 	{
 		$input = $this->app->input;
@@ -1718,7 +1682,6 @@ class Date extends ElementList
 	 *
 	 * @return string  json encoded search results
 	 */
-
 	public static function cacheAutoCompleteOptions($elementModel, $search, $opts = array())
 	{
 		$listModel = $elementModel->getListModel();
@@ -1761,7 +1724,6 @@ class Date extends ElementList
 	 *
 	 * @return  array  data
 	 */
-
 	public function prepareCSVData(&$data, $key, $isRaw = false)
 	{
 		if ($isRaw)
@@ -1809,7 +1771,6 @@ class Date extends ElementList
 	 *
 	 * @return  bool
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		return ($data == '') ? true : false;
@@ -1905,7 +1866,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	MySQL formatted date with time set to 0
 	 */
-
 	protected function setMySQLTimeToZero($date)
 	{
 		$date_array = explode(' ', $date);
@@ -1990,7 +1950,6 @@ class Date extends ElementList
 	 *
 	 * @return  string  average result
 	 */
-
 	public function simpleAvg($data)
 	{
 		$avg = $this->simpleSum($data) / count($data);
@@ -2006,7 +1965,6 @@ class Date extends ElementList
 	 *
 	 * @return  string  sum result
 	 */
-
 	public function simpleSum($data)
 	{
 		$sum = 0;
@@ -2027,7 +1985,6 @@ class Date extends ElementList
 	 *
 	 * @return  int		seconds
 	 */
-
 	protected function toSeconds($date)
 	{
 		return (int) ($date->format('H') * 60 * 60) + (int) ($date->format('i') * 60) + (int) $date->format('s');
@@ -2041,7 +1998,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	protected function strftimeTFormatToMySQL(&$format)
 	{
 		/**
@@ -2072,7 +2028,6 @@ class Date extends ElementList
 	 *
 	 * @return  string	sql query part e,g, "key = value"
 	 */
-
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		$this->encryptFieldName($key);
@@ -2166,7 +2121,6 @@ class Date extends ElementList
 	 *
 	 * @return mixed value to copy into new record
 	 */
-
 	public function onCopyRow($val)
 	{
 		if (!Worker::isDate($val))
@@ -2201,7 +2155,6 @@ class Date extends ElementList
 	 *
 	 * @return bool
 	 */
-
 	public function greaterOrLessThan($data, $cond, $compare)
 	{
 		$data = $this->storeDatabaseFormat($data, null);
@@ -2226,129 +2179,128 @@ class Date extends ElementList
 	 *
 	 * @return  string  English month name
 	 */
-
 	private function _monthToEnglish($month, $abbr = false)
 	{
 		if ($abbr)
 		{
-			if (String::strcmp($month, FText::_('JANUARY_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('JANUARY_SHORT')) === 0)
 			{
 				return 'Jan';
 			}
 
-			if (String::strcmp($month, FText::_('FEBRUARY_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('FEBRUARY_SHORT')) === 0)
 			{
 				return 'Feb';
 			}
 
-			if (String::strcmp($month, FText::_('MARCH_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('MARCH_SHORT')) === 0)
 			{
 				return 'Mar';
 			}
 
-			if (String::strcmp($month, FText::_('APRIL_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('APRIL_SHORT')) === 0)
 			{
 				return 'Apr';
 			}
 
-			if (String::strcmp($month, FText::_('MAY_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('MAY_SHORT')) === 0)
 			{
 				return 'May';
 			}
 
-			if (String::strcmp($month, FText::_('JUNE_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('JUNE_SHORT')) === 0)
 			{
 				return 'Jun';
 			}
 
-			if (String::strcmp($month, FText::_('JULY_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('JULY_SHORT')) === 0)
 			{
 				return 'Jul';
 			}
 
-			if (String::strcmp($month, FText::_('AUGUST_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('AUGUST_SHORT')) === 0)
 			{
 				return 'Aug';
 			}
 
-			if (String::strcmp($month, FText::_('SEPTEMBER_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('SEPTEMBER_SHORT')) === 0)
 			{
 				return 'Sep';
 			}
 
-			if (String::strcmp($month, FText::_('OCTOBER_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('OCTOBER_SHORT')) === 0)
 			{
 				return 'Oct';
 			}
 
-			if (String::strcmp($month, FText::_('NOVEMBER_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('NOVEMBER_SHORT')) === 0)
 			{
 				return 'Nov';
 			}
 
-			if (String::strcmp($month, FText::_('DECEMBER_SHORT')) === 0)
+			if (String::strcmp($month, Text::_('DECEMBER_SHORT')) === 0)
 			{
 				return 'Dec';
 			}
 		}
 		else
 		{
-			if (String::strcmp($month, FText::_('JANUARY')) === 0)
+			if (String::strcmp($month, Text::_('JANUARY')) === 0)
 			{
 				return 'January';
 			}
 
-			if (String::strcmp($month, FText::_('FEBRUARY')) === 0)
+			if (String::strcmp($month, Text::_('FEBRUARY')) === 0)
 			{
 				return 'February';
 			}
 
-			if (String::strcmp($month, FText::_('MARCH')) === 0)
+			if (String::strcmp($month, Text::_('MARCH')) === 0)
 			{
 				return 'March';
 			}
 
-			if (String::strcmp($month, FText::_('APRIL')) === 0)
+			if (String::strcmp($month, Text::_('APRIL')) === 0)
 			{
 				return 'April';
 			}
 
-			if (String::strcmp($month, FText::_('MAY')) === 0)
+			if (String::strcmp($month, Text::_('MAY')) === 0)
 			{
 				return 'May';
 			}
 
-			if (String::strcmp($month, FText::_('JUNE')) === 0)
+			if (String::strcmp($month, Text::_('JUNE')) === 0)
 			{
 				return 'June';
 			}
 
-			if (String::strcmp($month, FText::_('JULY')) === 0)
+			if (String::strcmp($month, Text::_('JULY')) === 0)
 			{
 				return 'July';
 			}
 
-			if (String::strcmp($month, FText::_('AUGUST')) === 0)
+			if (String::strcmp($month, Text::_('AUGUST')) === 0)
 			{
 				return 'August';
 			}
 
-			if (String::strcmp($month, FText::_('SEPTEMBER')) === 0)
+			if (String::strcmp($month, Text::_('SEPTEMBER')) === 0)
 			{
 				return 'September';
 			}
 
-			if (String::strcmp($month, FText::_('OCTOBER')) === 0)
+			if (String::strcmp($month, Text::_('OCTOBER')) === 0)
 			{
 				return 'October';
 			}
 
-			if (String::strcmp($month, FText::_('NOVEMBER')) === 0)
+			if (String::strcmp($month, Text::_('NOVEMBER')) === 0)
 			{
 				return 'November';
 			}
 
-			if (String::strcmp($month, FText::_('DECEMBER')) === 0)
+			if (String::strcmp($month, Text::_('DECEMBER')) === 0)
 			{
 				return 'December';
 			}
@@ -2362,7 +2314,6 @@ class Date extends ElementList
 	 *
 	 * @return object Element (id = 0)
 	 */
-
 	public function getDefaultProperties()
 	{
 		$item = parent::getDefaultProperties();
@@ -2378,7 +2329,6 @@ class Date extends ElementList
 	 *
 	 * @return  mixed  data
 	 */
-
 	public function fromXMLFormat($v)
 	{
 		return JFactory::getDate($v)->toSql();
@@ -2393,7 +2343,6 @@ class Date extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	public function filterJS($normal, $container)
 	{
 		$element = $this->getElement();
@@ -2404,7 +2353,6 @@ class Date extends ElementList
 			return;
 		}
 
-		$htmlId = $this->getHTMLId();
 		$params = $this->getParams();
 		$id = $this->getFilterHtmlId(0);
 		$id2 = $this->getFilterHtmlId(1);
@@ -2435,7 +2383,6 @@ class Date extends ElementList
 	 *
 	 * @return array  options
 	 */
-
 	protected function filterCalendarOpts()
 	{
 		$params = $this->getParams();
@@ -2460,7 +2407,6 @@ class Date extends ElementList
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$key = 'element/date/date';
@@ -2494,14 +2440,12 @@ class Date extends ElementList
 	 *
 	 * @return string
 	 */
-
 	public function getFrontDefaultValue($data = array())
 	{
 		$params = $this->getParams();
 		$db = $this->db;
 		$alwaysToday = $params->get('date_alwaystoday', false);
 		$defaultToday = $params->get('date_defaulttotoday', false);
-		$formModel = $this->getFormModel();
 
 		if ($alwaysToday || $defaultToday)
 		{
@@ -2545,7 +2489,6 @@ class FabDate extends JDate
 	 * @param   string  $date  Date
 	 * @param   mixed   $tz    Timezone
 	 */
-
 	public function __construct($date = 'now', $tz = null)
 	{
 		$orig = $date;
@@ -2585,10 +2528,9 @@ class FabDate extends JDate
 	 *
 	 * @return  string
 	 */
-
 	protected function removeDashes($str)
 	{
-		$str = FabrikString::ltrimword($str, '-');
+		$str = String::ltrimword($str, '-');
 
 		return $str;
 	}
@@ -2600,7 +2542,6 @@ class FabDate extends JDate
 	 *
 	 * @return  int  month number
 	 */
-
 	protected function monthToInt($str)
 	{
 		$abbrs = array(true, false);
@@ -2631,7 +2572,6 @@ class FabDate extends JDate
 	 *
 	 * @return  void
 	 */
-
 	static public function strftimeFormatToDateFormat(&$format)
 	{
 		$app = JFactory::getApplication();
@@ -2659,7 +2599,6 @@ class FabDate extends JDate
 	 *
 	 * @return  void
 	 */
-
 	static public function dateFormatToStrftimeFormat(&$format)
 	{
 		$search = array('d', 'D', 'j', 'l', 'N', 'S', 'w', 'z', 'W', 'F', 'm', 'M', 'n', 't', 'L', 'o', 'Y',
@@ -2681,7 +2620,6 @@ class FabDate extends JDate
 	 *
 	 * @return  string date without days
 	 */
-
 	protected function stripDays($str)
 	{
 		$abbrs = array(true, false);
@@ -2701,5 +2639,4 @@ class FabDate extends JDate
 
 		return $str;
 	}
-
 }

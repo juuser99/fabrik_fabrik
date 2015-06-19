@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \JToolBarHelper as JToolBarHelper;
 use \stdClass as stdClass;
 use Fabrik\Helpers\Worker;
@@ -37,7 +37,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	 */
 	public function render()
 	{
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
 		return parent::render();
 	}
 

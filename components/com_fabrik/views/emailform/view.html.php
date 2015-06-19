@@ -13,8 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
-
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
 
@@ -62,7 +62,7 @@ class FabrikViewEmailform extends JViewLegacy
 
 			if ($this->sendMail($to))
 			{
-				$app->enqueueMessage(FText::_('COM_FABRIK_THIS_ITEM_HAS_BEEN_SENT_TO') . ' ' . $to, 'success');
+				$app->enqueueMessage(Text::_('COM_FABRIK_THIS_ITEM_HAS_BEEN_SENT_TO') . ' ' . $to, 'success');
 			}
 
 			HTML::emailSent();
@@ -91,14 +91,14 @@ class FabrikViewEmailform extends JViewLegacy
 		 */
 		if (!isset($_SERVER['HTTP_USER_AGENT']))
 		{
-			throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
+			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 500);
 		}
 
 		// Make sure the form was indeed POST'ed:
 		//  (requires your html form to use: action="post")
 		if (!$_SERVER['REQUEST_METHOD'] == 'POST')
 		{
-			throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
+			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 500);
 		}
 
 		// Attempt to defend against header injections:
@@ -112,7 +112,7 @@ class FabrikViewEmailform extends JViewLegacy
 			{
 				if (String::strpos($v, $v2) !== false)
 				{
-					throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
+					throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 500);
 				}
 			}
 		}
@@ -129,7 +129,7 @@ class FabrikViewEmailform extends JViewLegacy
 
 		if (!$email || !$youremail || (Worker::isEmail($email) == false) || (Worker::isEmail($youremail) == false))
 		{
-			$app->enqueueMessage(FText::_('PHPMAILER_INVALID_ADDRESS'));
+			$app->enqueueMessage(Text::_('PHPMAILER_INVALID_ADDRESS'));
 		}
 
 		$config = JFactory::getConfig();

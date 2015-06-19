@@ -28,7 +28,7 @@ class View extends Base
 	/**
 	 * Last current element found in hasElement()
 	 *
-	 * @var object
+	 * @var \Fabrik\Plugins\Element
 	 */
 	protected $currentElement = null;
 
@@ -273,6 +273,7 @@ class View extends Base
 
 				if ($checkInt)
 				{
+					echo "elemetn id = " . $element->get('id');
 					if ($searchName == $element->get('id'))
 					{
 						$this->currentElement = $elementModel;
@@ -314,7 +315,7 @@ class View extends Base
 	 * @param   bool    $checkInt    Check search name against element id
 	 * @param   bool    $checkShort  Check short element name
 	 *
-	 * @return  mixed  ok: element model not ok: false
+	 * @return  \Fabrik\Plugins\Element ok: element model not ok: false
 	 */
 	public function getElement($searchName = '', $checkInt = false, $checkShort = true)
 	{

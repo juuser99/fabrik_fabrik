@@ -17,7 +17,7 @@ use \Fabrik\Helpers\HTML as HelperHTML;
 use \stdClass as stdClass;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \JToolBarHelper as JToolBarHelper;
 
 /**
@@ -101,7 +101,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$userId = JFactory::getUser()->get('id');
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
-		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_FORM_NEW') : FText::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "' . $this->item->form->label . '"';
+		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_FORM_NEW') : Text::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "' . $this->item->form->label . '"';
 		JToolBarHelper::title($title, 'form.png');
 
 		if ($isNew)
@@ -139,6 +139,6 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_FORMS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_FORMS_EDIT'));
 	}
 }

@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
 /**
@@ -28,7 +30,6 @@ class FabrikTableForm extends FabTable
 	 *
 	 * @param   object  &$db  database object
 	 */
-
 	public function __construct(&$db)
 	{
 		parent::__construct('#__fabrik_forms', 'id', $db);
@@ -44,7 +45,6 @@ class FabrikTableForm extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function bind($src, $ignore = array())
 	{
 		if (isset($src['params']) && is_array($src['params']))
@@ -79,7 +79,6 @@ class FabrikTableForm extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function store($updateNulls = false)
 	{
 		// We don't want these to be stored - generates an sql error
@@ -97,9 +96,10 @@ class FabrikTableForm extends FabTable
 	 * set the instance property value is used.
 	 * @param   boolean  $reset  True to reset the default values before loading the new row.
 	 *
+	 * @throws Exception
+	 *
 	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
 	 */
-
 	public function load($keys = null, $reset = true)
 	{
 		if (empty($keys))
@@ -143,7 +143,7 @@ class FabrikTableForm extends FabTable
 				return false;
 			}
 			// Add the search tuple to the query.
-			$query->where($this->_db->quoteName($this->_tbl) . '.' . $this->_db->quoteName($field) . ' = ' . $this->_db->q($value));
+			$query->where($this->_db->qn($this->_tbl) . '.' . $this->_db->qn($field) . ' = ' . $this->_db->q($value));
 		}
 
 		$query->join('LEFT', '#__fabrik_lists AS l ON l.form_id = ' . $this->_tbl . '.id');
@@ -153,10 +153,7 @@ class FabrikTableForm extends FabTable
 		// Check that we have a result.
 		if (empty($row))
 		{
-			$e = new JException(FText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
-			$this->setError($e);
-
-			return false;
+			throw new Exception(Text::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
 		}
 
 		// Bind the object with the row and return.

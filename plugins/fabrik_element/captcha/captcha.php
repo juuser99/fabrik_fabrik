@@ -14,6 +14,12 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use \stdClass;
+use \AYAH;
+use Fabrik\Helpers\Text;
+use \JFactory;
+use \ReCaptcha\ReCaptcha;
+use \RuntimeException;
 
 require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/recaptcha-php-1.11/recaptchalib.php';
 
@@ -29,27 +35,12 @@ class Captcha extends Element
 	protected $font = 'monofont.ttf';
 
 	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
-	}
-
-	/**
 	 * Generate captcha text
 	 *
 	 * @param   int  $characters  number of characters to generate
 	 *
 	 * @return  string captcha text
 	 */
-
 	protected function _generateCode($characters)
 	{
 		// List all possible characters, similar looking characters and vowels have been removed
@@ -133,7 +124,6 @@ class Captcha extends Element
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		$params = $this->getParams();
@@ -157,7 +147,6 @@ class Captcha extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
@@ -182,7 +171,7 @@ class Captcha extends Element
 
 		if ($params->get('captcha-method') == 'recaptcha')
 		{
-			$publickey = $params->get('recaptcha_publickey');
+			$publicKey = $params->get('recaptcha_publickey');
 
 			// $$$tom added lang & theme options
 			$theme = $params->get('recaptcha_theme', 'red');
@@ -195,10 +184,9 @@ class Captcha extends Element
 			}
 			else
 			{
-				$browser = JBrowser::getInstance();
-				$ssl = $browser->isSSLConnection();
+				$ssl = $this->app->isSSLConnection();
 
-				return fabrik_recaptcha_get_html($id, $publickey, $theme, $lang, $error, $ssl);
+				return fabrik_recaptcha_get_html($id, $publicKey, $theme, $lang, $error, $ssl);
 			}
 		}
 		elseif ($params->get('captcha-method') == 'playthru')
@@ -233,12 +221,11 @@ class Captcha extends Element
 		{
 			if (!function_exists('imagettfbbox'))
 			{
-				throw new RuntimeException(FText::_('PLG_FABRIK_ELEMENT_CAPTCHA_STANDARD_TTF_ERROR'));
+				throw new RuntimeException(Text::_('PLG_FABRIK_ELEMENT_CAPTCHA_STANDARD_TTF_ERROR'));
 			}
 
-			$str = array();
-			$size = $element->width;
-			$fontsize = $params->get('captcha-font-size', 22);
+			$size = $element->get('width');
+			$fontSize = $params->get('captcha-font-size', 22);
 			$angle = $params->get('captcha-angle', 0);
 			$padding = $params->get('captcha-padding', 10);
 			$characters = $params->get('captcha-chars', 6);
@@ -260,8 +247,7 @@ class Captcha extends Element
 			$bg_color = $this->_getRGBcolor($bg_color, 'FFFFFF');
 
 			// Let's keep all params in relatively safe place not only captcha value
-			// Felixkat - Add
-			$session->set('com_' . $package . '.element.captcha.fontsize', $fontsize);
+			$session->set('com_' . $package . '.element.captcha.fontsize', $fontSize);
 			$session->set('com_' . $package . '.element.captcha.angle', $angle);
 			$session->set('com_' . $package . '.element.captcha.padding', $padding);
 			$session->set('com_' . $package . '.element.captcha.noise_color', $noise_color);
@@ -317,13 +303,13 @@ class Captcha extends Element
 
 		if ($params->get('captcha-method') == 'recaptcha')
 		{
-			$privatekey = $params->get('recaptcha_privatekey');
+			$privateKey = $params->get('recaptcha_privatekey');
 
 			if ($input->get('recaptcha_response_field'))
 			{
 				$challenge = $input->get('recaptcha_challenge_field');
 				$response = $input->get('recaptcha_response_field');
-				$resp = recaptcha_check_answer($privatekey, $_SERVER["REMOTE_ADDR"], $challenge, $response);
+				$resp = recaptcha_check_answer($privateKey, $_SERVER["REMOTE_ADDR"], $challenge, $response);
 
 				return ($resp->is_valid) ? true : false;
 			}
@@ -340,11 +326,11 @@ class Captcha extends Element
 				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/RequestParameters.php';
 				require_once JPATH_SITE . '/plugins/fabrik_element/captcha/libs/ReCaptcha/Response.php';
 				
-				$privatekey = $params->get('recaptcha_privatekey');
-				$nocaptcha = new \ReCaptcha\ReCaptcha($privatekey);
+				$privateKey = $params->get('recaptcha_privatekey');
+				$noCaptcha = new ReCaptcha($privateKey);
 				$response = $input->get('g-recaptcha-response');
 				$server = $input->server->get('REMOTE_ADDR');
-				$resp = $nocaptcha->verify($response, $server);
+				$resp = $noCaptcha->verify($response, $server);
 
 				return $resp->isSuccess();
 			}
@@ -367,7 +353,6 @@ class Captcha extends Element
 		else
 		{
 			$this->getParams();
-			$elName = $this->getFullName(true, false);
 			$session = JFactory::getSession();
 
 			if ($session->get('com_' . $package . '.element.captcha.security_code', null) != $data)
@@ -384,10 +369,9 @@ class Captcha extends Element
 	 *
 	 * @return  string
 	 */
-
 	public function getValidationErr()
 	{
-		return FText::_('PLG_ELEMENT_CAPTCHA_FAILED');
+		return Text::_('PLG_ELEMENT_CAPTCHA_FAILED');
 	}
 
 	/**
@@ -395,11 +379,8 @@ class Captcha extends Element
 	 *
 	 * @return  bool	default true
 	 */
-
 	public function mustValidate()
 	{
-		$params = $this->getParams();
-
 		if (!$this->canUse() && !$this->canView())
 		{
 			return false;
@@ -415,7 +396,6 @@ class Captcha extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		if ($this->user->id == 0)
@@ -438,7 +418,6 @@ class Captcha extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		return "";
@@ -452,7 +431,6 @@ class Captcha extends Element
 	 *
 	 * @return  string 	as 'R+G+B' where R,G,B are decimal
 	 */
-
 	private function _getRGBcolor($hexColor, $default = 'FF0000')
 	{
 		$regex = '/^#?(([\da-f])([\da-f])([\da-f])|([\da-f]{2})([\da-f]{2})([\da-f]{2}))$/i';

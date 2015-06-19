@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 JFormHelper::loadFieldClass('groupedlist');
 
 /**
@@ -40,8 +42,8 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 		$model = $this->form->model;
 
 		$rows = array();
-		$rows[FText::_('COM_FABRIK_GROUPS')] = array();
-		$rows[FText::_('COM_FABRIK_ELEMENTS')] = array();
+		$rows[Text::_('COM_FABRIK_GROUPS')] = array();
+		$rows[Text::_('COM_FABRIK_ELEMENTS')] = array();
 
 		// Get available element types
 		$groups = $model->getGroupsHierarchy();
@@ -51,19 +53,19 @@ class JFormFieldGroupElements extends JFormFieldGroupedList
 			$group = $groupModel->getGroup();
 			$label = $group->get('name');
 			$value = 'fabrik_trigger_group_group' . $group->get('id');
-			$rows[FText::_('COM_FABRIK_GROUPS')][] = JHTML::_('select.option', $value, $label);
+			$rows[Text::_('COM_FABRIK_GROUPS')][] = JHTML::_('select.option', $value, $label);
 			$elementModels = $groupModel->getMyElements();
 
 			foreach ($elementModels as $elementModel)
 			{
 				$label = $elementModel->getFullName(false, false);
 				$value = 'fabrik_trigger_element_' . $elementModel->getFullName(true, false);
-				$rows[FText::_('COM_FABRIK_ELEMENTS')][] = JHTML::_('select.option', $value, $label);
+				$rows[Text::_('COM_FABRIK_ELEMENTS')][] = JHTML::_('select.option', $value, $label);
 			}
 		}
 
 		reset($rows);
-		asort($rows[FText::_('COM_FABRIK_ELEMENTS')]);
+		asort($rows[Text::_('COM_FABRIK_ELEMENTS')]);
 
 		return $rows;
 	}

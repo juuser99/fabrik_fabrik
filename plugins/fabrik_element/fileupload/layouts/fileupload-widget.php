@@ -1,6 +1,8 @@
 <?php
 defined('JPATH_BASE') or die;
 
+use Fabrik\Helpers\Text;
+
 $d = $displayData;
 $id = $d->id;
 $winWidth = $d->winWidth;
@@ -25,7 +27,7 @@ if ($canCrop) :
 		</div>
 		<input name="zoom-val" value="" size="3"  class="input-mini"/>
 	</div>
-	<div class="rotate" style="float:left;margin-top:10px;width:180px"><?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_ROTATE'); ?>:
+	<div class="rotate" style="float:left;margin-top:10px;width:180px"><?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_ROTATE'); ?>:
 		<div class="fabrikslider-line" style="width: 100px;float:left;">
 			<div class="knob"></div>
 		</div>
@@ -37,7 +39,7 @@ endif;
 if ($canvasSupport) :
 ?>
 	<div style="text-align: right;float:right;margin:10px 0; width: 205px">
-		<input type="button" class="button btn btn-primary" name="close-crop" value="<?php echo FText::_('CLOSE'); ?>" />
+		<input type="button" class="button btn btn-primary" name="close-crop" value="<?php echo Text::_('CLOSE'); ?>" />
 	</div>
 <?php
 endif;
@@ -50,7 +52,7 @@ endif;
 		<table class="table table-striped table-condensed">
 			<thead style="display:none">
 				<tr>
-					<th class="span4"><?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_FILENAME'); ?></th>
+					<th class="span4"><?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_FILENAME'); ?></th>
 					<th class="span1 plupload_crop">&nbsp;</th>
 					<th class="span5 plupload_file_status"></th>
 					<th class="span1 plupload_file_action">&nbsp;</th>
@@ -62,10 +64,10 @@ endif;
 				<tr>
 					<td colspan="4">
 								<a id="<?php echo $id; ?>_browseButton" class="btn btn-mini" href="#"><i class="icon-plus-sign icon-plus"></i>
-						<?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_ADD_FILES'); ?></a>
+						<?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_ADD_FILES'); ?></a>
 								<a id="<?php echo $id; ?>_startButton" class="btn btn-mini disabled plupload_start" data-action="plupload_start" href="#">
 								<i class="icon-upload"></i>
-						<?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_START_UPLOAD'); ?></a>
+						<?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_START_UPLOAD'); ?></a>
 							<span class="plupload_upload_status"></span>
 					</td>
 				</tr>
@@ -74,7 +76,7 @@ endif;
 
 	</div>
 	<!-- FALLBACK; SHOULD LOADING OF PLUPLOAD FAIL -->
-	<div class="plupload_fallback"><?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_FALLBACK_MESSAGE'); ?>
+	<div class="plupload_fallback"><?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_FALLBACK_MESSAGE'); ?>
 	<br />
 	<?php
 	echo $field;

@@ -103,7 +103,7 @@ class Validator extends \JModelBase
 
 				if ($isPublished)
 				{
-					$class = 'PlgFabrik_Validationrule' . String::ucfirst($usedPlugin);
+					$class = '\Fabrik\Plugins\Validation\\' . String::ucfirst($usedPlugin);
 					$conf = array();
 					$conf['name'] = String::strtolower($usedPlugin);
 					$conf['type'] = String::strtolower('fabrik_Validationrule');
@@ -252,7 +252,7 @@ class Validator extends \JModelBase
 	{
 		$validations = $this->findAll();
 
-		if (!empty($validations) || $this->elementModel->internalValidataionText() !== '')
+		if (!empty($validations) || $this->elementModel->internalValidationText() !== '')
 		{
 			return true;
 		}
@@ -279,7 +279,7 @@ class Validator extends \JModelBase
 				$texts[] = $validation->getHoverText($c, $tmpl);
 			}
 
-			$internal = $this->elementModel->internalValidataionText();
+			$internal = $this->elementModel->internalValidationText();
 
 			if ($internal !== '')
 			{

@@ -9,11 +9,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\PDFHelper;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -167,8 +168,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			. $input->get('rowid', '', 'string');
 		$viewURL = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&amp;view=details&amp;fabrik=' . $formModel->get('id') . '&amp;rowid='
 			. $input->get('rowid', '', 'string');
-		$editlink = '<a href="' . $editURL . '">' . FText::_('EDIT') . '</a>';
-		$viewlink = '<a href="' . $viewURL . '">' . FText::_('VIEW') . '</a>';
+		$editlink = '<a href="' . $editURL . '">' . Text::_('EDIT') . '</a>';
+		$viewlink = '<a href="' . $viewURL . '">' . Text::_('VIEW') . '</a>';
 		$message = str_replace('{fabrik_editlink}', $editlink, $message);
 		$message = str_replace('{fabrik_viewlink}', $viewlink, $message);
 		$message = str_replace('{fabrik_editurl}', $editURL, $message);
@@ -602,7 +603,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		{
 			$db = $this->db;
 			$query = $db->getQuery(true);
-			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
+			$query->select('introtext, ' . $db->qn('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
 			$db->setQuery($query);
 			$res = $db->loadObject();
 		}
@@ -663,7 +664,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 						$val = ArrayHelper::getValue($data, $key);
 					}
 
-					$val = FabrikString::rtrimword($val, "<br />");
+					$val = String::rtrimword($val, "<br />");
 					$val = stripslashes($val);
 
 					// Set $val to default value if empty
@@ -685,7 +686,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			}
 		}
 
-		$message = FText::_('Email from') . ' ' . $this->config->get('sitename') . '<br />' . FText::_('Message') . ':'
+		$message = Text::_('Email from') . ' ' . $this->config->get('sitename') . '<br />' . Text::_('Message') . ':'
 			. "<br />===================================<br />" . "<br />" . stripslashes($message);
 
 		return $message;

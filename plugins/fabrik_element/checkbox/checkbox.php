@@ -16,6 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \JText;
+use \stdClass;
 
 /**
  * Plugin element to render series of checkboxes
@@ -36,13 +38,12 @@ class Checkbox extends ElementList
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
 		parent::setId($id);
 		$params = $this->getParams();
 
-		// Set elementlist params from checkbox params
+		// Set params from checkbox params
 		$params->set('options_per_row', $params->get('ck_options_per_row'));
 		$params->set('allow_frontend_addto', (bool) $params->get('allow_frontend_addtocheckbox', false));
 		$params->set('allowadd-onlylabel', (bool) $params->get('chk-allowadd-onlylabel', true));
@@ -57,7 +58,6 @@ class Checkbox extends ElementList
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderRawListData($data, $thisRow)
 	{
 		return json_encode($data);
@@ -70,7 +70,6 @@ class Checkbox extends ElementList
 	 *
 	 * @return  bool
 	 */
-
 	protected function isMultiple()
 	{
 		return true;
@@ -83,7 +82,6 @@ class Checkbox extends ElementList
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
@@ -124,7 +122,6 @@ class Checkbox extends ElementList
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s = new stdClass;
@@ -141,18 +138,17 @@ class Checkbox extends ElementList
 	 *
 	 * @return  array  form data
 	 */
-
 	public function getEmptyDataValue(&$data)
 	{
 		$params = $this->getParams();
 		$element = $this->getElement();
 
-		$value = ArrayHelper::getValue($data, $element->name, '');
+		$value = ArrayHelper::getValue($data, $element->get('name'), '');
 		
 		if ($value === '')
 		{
-			$data[$element->name] = $params->get('sub_default_value');
-			$data[$element->name . '_raw'] = array($params->get('sub_default_value'));
+			$data[$element->get('name')] = $params->get('sub_default_value');
+			$data[$element->get('name') . '_raw'] = array($params->get('sub_default_value'));
 		}
 	}
 
@@ -165,7 +161,6 @@ class Checkbox extends ElementList
 	 *
 	 * @return  string
 	 */
-
 	protected function prepareFilterVal($value)
 	{
 		$values = $this->getSubOptionValues();
@@ -188,7 +183,6 @@ class Checkbox extends ElementList
 	 *
 	 * @return  string	default filter condition ('=', 'REGEXP' etc.)
 	 */
-
 	public function getDefaultFilterCondition()
 	{
 		return '=';
@@ -202,7 +196,6 @@ class Checkbox extends ElementList
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		if (is_array($val))

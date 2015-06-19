@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
@@ -46,24 +47,21 @@ class JFormFieldPluginList extends JFormFieldList
 		$key = $this->element['key'];
 		$key = ($key == 'visualization.plugin') ? "CONCAT('visualization.',element) " : 'element';
 
-		// Initialize variables.
-		$options = array();
-
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select($key . ' AS value, element AS text');
 		$query->from('#__extensions AS p');
-		$query->where($db->quoteName('type') . ' = ' . $db->q('plugin'));
-		$query->where($db->quoteName('enabled') . ' = 1 AND state != -1');
-		$query->where($db->quoteName('folder') . ' = ' . $db->q($group));
+		$query->where($db->qn('type') . ' = ' . $db->q('plugin'));
+		$query->where($db->qn('enabled') . ' = 1 AND state != -1');
+		$query->where($db->qn('folder') . ' = ' . $db->q($group));
 		$query->order('text');
 
 		// Get the options.
 		$db->setQuery($query);
 		$options = $db->loadObjectList();
 
-		array_unshift($options, JHtml::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT')));
+		array_unshift($options, JHtml::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT')));
 
 		return $options;
 	}

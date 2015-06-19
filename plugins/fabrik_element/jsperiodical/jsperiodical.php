@@ -12,6 +12,8 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \stdClass;
+
 /**
  * Plugin element: js periodical will fire a JavaScript function at a definable interval
  *
@@ -42,20 +44,6 @@ class JSPeriodical extends Element
 		}
 
 		return parent::renderListData($data, $thisRow);
-	}
-
-	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
 	}
 
 	/**

@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 
 require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
@@ -143,7 +143,7 @@ class Amazons3storage extends FabrikStorageAdaptor
 	{
 		if (String::substr($filepath, 0, String::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
 		{
-			$filepath = Fabrikstring::ltrimword($filepath, COM_FABRIK_BASE);
+			$filepath = String::ltrimword($filepath, COM_FABRIK_BASE);
 		}
 
 		return $filepath;
@@ -359,7 +359,7 @@ class Amazons3storage extends FabrikStorageAdaptor
 		{
 			// If we are cleaning up a full url then check that fabrik hasn't unwittingly prepended the JPATH_SITE to the start of the url
 			$path = $this->removePrependedURL($path);
-			$part = Fabrikstring::ltrimword($path, $prefix);
+			$part = String::ltrimword($path, $prefix);
 			$path = $prefix . JPath::clean($part);
 		}
 		else

@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
 
@@ -29,9 +30,10 @@ class FabrikViewCron extends JViewLegacy
 	 *
 	 * @param   string  $tmpl  Template
 	 *
+	 * @throws Exception
+	 *
 	 * @return  void
 	 */
-
 	public function display($tmpl = 'default')
 	{
 		$srcs = HTML::framework();
@@ -50,7 +52,7 @@ class FabrikViewCron extends JViewLegacy
 
 		if ($visualization->published == 0)
 		{
-			return JError::raiseWarning(500, FText::_('COM_FABRIK_SORRY_THIS_VISUALIZATION_IS_UNPUBLISHED'));
+			throw new Exception(Text::_('COM_FABRIK_SORRY_THIS_VISUALIZATION_IS_UNPUBLISHED'));
 		}
 
 		// Plugin is basically a model
@@ -61,7 +63,6 @@ class FabrikViewCron extends JViewLegacy
 		$tmpl = $plugin->getParams()->get('calendar_layout', $tmpl);
 		$plugin->$pluginTask($this);
 		$this->plugin = $plugin;
-		$viewName = $this->getName();
 		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->_name . '/tmpl/' . $tmpl);
 		$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $app->getTemplate() . '/html/com_fabrik/visualization/' . $plugin->_name . '/' . $tmpl);

@@ -16,6 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
+use \stdClass;
+use \JFactory;
 
 /**
  * Plugin element to render rating widget
@@ -80,7 +83,7 @@ class Rating extends Element
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$params = $this->getParams();
-		$formid = $this->getFormModel()->getId();
+		$formId = $this->getFormModel()->getId();
 		$listId = $this->getListModel()->getId();
 		$row_id = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
 
@@ -88,7 +91,7 @@ class Rating extends Element
 		{
 			$d = $this->getListModel()->getData();
 			$ids = ArrayHelper::getColumn($d, '__pk_val');
-			list($data, $total) = $this->getRatingAverage($data, $listId, $formid, $row_id, $ids);
+			list($data, $total) = $this->getRatingAverage($data, $listId, $formId, $row_id, $ids);
 		}
 
 		$data = Worker::JSONtoData($data, true);
@@ -159,11 +162,11 @@ class Rating extends Element
 		{
 			$list = $this->getlistModel()->getTable();
 			$listId = $list->id;
-			$formid = $list->form_id;
+			$formId = $list->form_id;
 			$d = $this->getListModel()->getData();
 			$ids = ArrayHelper::getColumn($d, '__pk_val');
 			$row_id = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
-			list($avg, $total) = $this->getRatingAverage($data, $listId, $formid, $row_id, $ids);
+			list($avg, $total) = $this->getRatingAverage($data, $listId, $formId, $row_id, $ids);
 
 			return $avg;
 		}
@@ -174,14 +177,14 @@ class Rating extends Element
 	 *
 	 * @param   mixed  $data    String/int
 	 * @param   int    $listId  List id
-	 * @param   int    $formid  Form id
+	 * @param   int    $formId  Form id
 	 * @param   int    $row_id  Row id
 	 * @param   array  $ids     Row ids
 	 *
 	 * @return array(int average rating, int total)
 	 */
 
-	protected function getRatingAverage($data, $listId, $formid, $row_id, $ids = array())
+	protected function getRatingAverage($data, $listId, $formId, $row_id, $ids = array())
 	{
 		if (empty($ids))
 		{
@@ -192,11 +195,11 @@ class Rating extends Element
 		{
 			ArrayHelper::toInteger($ids);
 			$db = Worker::getDbo(true);
-			$elementId = $this->getElement()->id;
+			$elementId = $this->getElement()->get('id');
 
 			$query = $db->getQuery(true);
 			$query->select('row_id, AVG(rating) AS r, COUNT(rating) AS total')->from(' #__fabrik_ratings')
-				->where(array('rating <> -1', 'listid = ' . (int) $listId, 'formid = ' . (int) $formid, 'element_id = ' . (int) $elementId))
+				->where(array('rating <> -1', 'listid = ' . (int) $listId, 'formid = ' . (int) $formId, 'element_id = ' . (int) $elementId))
 				->where('row_id IN (' . implode(',', $ids) . ')')->group('row_id');
 
 			// Do this  query so that list view only needs one query to load up all ratings
@@ -217,14 +220,14 @@ class Rating extends Element
 	 * Get creator ids
 	 *
 	 * @param   int    $listId  int list id
-	 * @param   int    $formid  int form id
+	 * @param   int    $formId  int form id
 	 * @param   int    $row_id  int row id
 	 * @param   array  $ids     all row ids
 	 *
 	 * @return  int  user id
 	 */
 
-	protected function getCreatorId($listId, $formid, $row_id, $ids = array())
+	protected function getCreatorId($listId, $formId, $row_id, $ids = array())
 	{
 		if (!isset($this->creatorIds))
 		{
@@ -235,10 +238,10 @@ class Rating extends Element
 
 			ArrayHelper::toInteger($ids);
 			$db = Worker::getDbo(true);
-			$elementId = $this->getElement()->id;
+			$elementId = $this->getElement()->get('id');
 			$query = $db->getQuery(true);
 			$query->select('row_id, user_id')->from('#__fabrik_ratings')
-				->where(array('rating <> -1', 'listid = ' . (int) $listId, 'formid = ' . (int) $formid, 'element_id = ' . (int) $elementId))
+				->where(array('rating <> -1', 'listid = ' . (int) $listId, 'formid = ' . (int) $formId, 'element_id = ' . (int) $elementId))
 				->where('row_id IN (' . implode(',', $ids) . ')')->group('row_id');
 
 			// Do this  query so that table view only needs one query to load up all ratings
@@ -250,20 +253,6 @@ class Rating extends Element
 	}
 
 	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
-	}
-
-	/**
 	 * Can we rate this row
 	 *
 	 * @param   int    $row_id  row id
@@ -271,7 +260,6 @@ class Rating extends Element
 	 *
 	 * @return bool
 	 */
-
 	protected function canRate($row_id = null, $ids = array())
 	{
 		$params = $this->getParams();
@@ -289,11 +277,11 @@ class Rating extends Element
 		}
 
 		$list = $this->getListModel()->getTable();
-		$listId = $list->id;
-		$formid = $list->form_id;
-		$creatorid = $this->getCreatorId($listId, $formid, $row_id, $ids);
+		$listId = $list->get('id');
+		$formId = $list->get('list.form_id');
+		$creatorId = $this->getCreatorId($listId, $formId, $row_id, $ids);
 		$userId = $this->getStoreUserId($listId, $row_id);
-		$this->canRate = ($creatorid == $userId || $row_id == 0);
+		$this->canRate = ($creatorId == $userId || $row_id == 0);
 
 		return $this->canRate;
 	}
@@ -306,7 +294,6 @@ class Rating extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$input = $this->app->input;
@@ -316,7 +303,7 @@ class Rating extends Element
 
 		if ($input->get('view') == 'form' && $params->get('rating-rate-in-form', true) == 0)
 		{
-			return FText::_('PLG_ELEMENT_RATING_ONLY_ACCESSIBLE_IN_DETAILS_VIEW');
+			return Text::_('PLG_ELEMENT_RATING_ONLY_ACCESSIBLE_IN_DETAILS_VIEW');
 		}
 
 		$css = $this->canRate() ? 'cursor:pointer;' : '';
@@ -368,7 +355,7 @@ class Rating extends Element
 		$input = $this->app->input;
 		$params = $this->getParams();
 		$listId = $input->getString('listid');
-		$formid = $input->getString('formid');
+		$formId = $input->getString('formid');
 		$row_id = $input->get('rowid', '', 'string');
 
 		if (empty($listId))
@@ -379,7 +366,7 @@ class Rating extends Element
 		
 		if ($params->get('rating-mode') == 'user-rating')
 		{
-			list($val, $total) = $this->getRatingAverage($val, $listId, $formid, $row_id);
+			list($val, $total) = $this->getRatingAverage($val, $listId, $formId, $row_id);
 		}
 
 		return $val;
@@ -399,10 +386,10 @@ class Rating extends Element
 		$listModel = $this->getListModel();
 		$list = $listModel->getTable();
 		$listId = $list->id;
-		$formid = $listModel->getFormModel()->getId();
+		$formId = $listModel->getFormModel()->getId();
 		$row_id = $input->get('row_id');
 		$rating = $input->getInt('rating');
-		$this->doRating($listId, $formid, $row_id, $rating);
+		$this->doRating($listId, $formId, $row_id, $rating);
 
 		if ($input->get('mode') == 'creator-rating')
 		{
@@ -420,7 +407,7 @@ class Rating extends Element
 			$db->execute();
 		}
 
-		$this->getRatingAverage('', $listId, $formid, $row_id);
+		$this->getRatingAverage('', $listId, $formId, $row_id);
 		echo $this->avg;
 	}
 
@@ -472,14 +459,14 @@ class Rating extends Element
 	 * Main method to store a rating
 	 *
 	 * @param   int     $listId  List id
-	 * @param   int     $formid  Form id
+	 * @param   int     $formId  Form id
 	 * @param   string  $row_id  Row reference
 	 * @param   int     $rating  Rating
 	 *
 	 * @return  void
 	 */
 
-	private function doRating($listId, $formid, $row_id, $rating)
+	private function doRating($listId, $formId, $row_id, $rating)
 	{
 		$this->createRatingTable();
 		$db = Worker::getDbo(true);
@@ -487,15 +474,15 @@ class Rating extends Element
 		$date = JFactory::getDate('now', $tzoffset);
 		$strDate = $db->q($date->toSql());
 		$userId = $db->q($this->getStoreUserId($listId, $row_id));
-		$elementId = (int) $this->getElement()->id;
-		$formid = (int) $formid;
+		$elementId = (int) $this->getElement()->get('id');
+		$formId = (int) $formId;
 		$listId = (int) $listId;
 		$rating = (int) $rating;
 		$row_id = $db->q($row_id);
 		$db
 			->setQuery(
 				"INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
-		values ($userId, $listId, $formid, $row_id, $rating, $strDate, $elementId)
+		values ($userId, $listId, $formId, $row_id, $rating, $strDate, $elementId)
 			ON DUPLICATE KEY UPDATE date_created = $strDate, rating = $rating"
 		);
 
@@ -535,7 +522,6 @@ class Rating extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$input = $this->app->input;
@@ -547,25 +533,24 @@ class Rating extends Element
 		}
 
 		$id = $this->getHTMLId($repeatCounter);
-		$element = $this->getElement();
 		$data = $this->getFormModel()->data;
 		$listModel = $this->getlistModel();
 		$listId = $listModel->getTable()->id;
-		$formid = $listModel->getFormModel()->getId();
+		$formId = $listModel->getFormModel()->getId();
 		$row_id = $input->get('rowid', '', 'string');
 		$value = $this->getValue($data, $repeatCounter);
 
 		if ($params->get('rating-mode') != 'creator-rating')
 		{
-			list($value, $total) = $this->getRatingAverage($value, $listId, $formid, $row_id);
+			list($value, $total) = $this->getRatingAverage($value, $listId, $formId, $row_id);
 		}
 
 		$opts = new stdClass;
 
 		$opts->row_id = $row_id;
-		$opts->elid = $this->getElement()->id;
+		$opts->elid = $this->getElement()->get('id');
 		$opts->userid = (int) $this->user->get('id');
-		$opts->formid = $formid;
+		$opts->formid = $formId;
 		$opts->canRate = (bool) $this->canRate();
 		$opts->mode = $params->get('rating-mode');
 		$opts->view = $input->get('view');
@@ -583,7 +568,6 @@ class Rating extends Element
 	 *
 	 * @return string
 	 */
-
 	public function elementListJavascript()
 	{
 		$params = $this->getParams();
@@ -592,9 +576,9 @@ class Rating extends Element
 		$list = $listModel->getTable();
 		$opts = new stdClass;
 		$opts->listid = $list->id;
-		$imagepath = JUri::root() . '/plugins/fabrik_element/rating/images/';
-		$opts->imagepath = $imagepath;
-		$opts->elid = $this->getElement()->id;
+		$imagePath = JUri::root() . '/plugins/fabrik_element/rating/images/';
+		$opts->imagepath = $imagePath;
+		$opts->elid = $this->getElement()->get('id');
 
 		$opts->canRate = $params->get('rating-mode') == 'creator-rating' ? true : $this->canRate();
 		$opts->ajaxloader = HTML::image("ajax-loader.gif", 'list', @$this->tmpl, array(), true);
@@ -615,12 +599,11 @@ class Rating extends Element
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array  text/value objects
 	 */
-
-	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$params = $this->getParams();
@@ -633,11 +616,11 @@ class Rating extends Element
 
 		if ($filter_build == 2)
 		{
-			return $this->filterValueList_All($normal, $tableName, $label, $id, $incjoin);
+			return $this->filterValueList_All($normal, $tableName, $label, $id, $incJoin);
 		}
 		else
 		{
-			return $this->filterValueList_Exact($normal, $tableName, $label, $id, $incjoin);
+			return $this->filterValueList_Exact($normal, $tableName, $label, $id, $incJoin);
 		}
 	}
 
@@ -649,12 +632,12 @@ class Rating extends Element
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array	filter value and labels
 	 */
 
-	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		for ($i = 0; $i < 6; $i++)
 		{
@@ -674,7 +657,6 @@ class Rating extends Element
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s = new stdClass;

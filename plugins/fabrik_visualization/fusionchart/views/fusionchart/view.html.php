@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use \Fabrik\Admin\Models\PluginManager;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
 
@@ -48,7 +49,7 @@ class FabrikViewFusionchart extends JViewLegacy
 
 		if (!$model->canView())
 		{
-			echo FText::_('JERROR_ALERTNOAUTHOR');
+			echo Text::_('JERROR_ALERTNOAUTHOR');
 
 			return false;
 		}

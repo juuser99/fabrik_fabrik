@@ -17,6 +17,7 @@ use \Fabrik\Models\Lizt as Model;
 use \JFactory as JFactory;
 use \JURI as JURI;
 use \Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 /**
  * Fabrik List Controller
@@ -114,7 +115,7 @@ class Lizt extends Controller
 	 */
 	public function clearfilter()
 	{
-		$this->app->enqueueMessage(FText::_('COM_FABRIK_FILTERS_CLEARED'));
+		$this->app->enqueueMessage(Text::_('COM_FABRIK_FILTERS_CLEARED'));
 		/**
 		 * $$$ rob 28/12/20111 changed from clearfilters as clearfilters removes jpluginfilters (filters
 		 * set by content plugin which we want to remain sticky. Otherwise list clear button removes the
@@ -172,7 +173,7 @@ class Lizt extends Controller
 		try
 		{
 			$ok      = $model->deleteRows($ids);
-			$msg     = $ok ? count($ids) . ' ' . FText::_('COM_FABRIK_RECORDS_DELETED') : '';
+			$msg     = $ok ? count($ids) . ' ' . Text::_('COM_FABRIK_RECORDS_DELETED') : '';
 			$msgType = 'message';
 		} catch (Exception $e)
 		{

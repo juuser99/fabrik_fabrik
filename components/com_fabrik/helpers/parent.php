@@ -13,8 +13,6 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
-use Fabrik\Helpers\ArrayHelper;
 use \JFactory as JFactory;
 use \JDatabaseDriver as JDatabaseDriver;
 use \JComponentHelper as JComponentHelper;
@@ -260,8 +258,8 @@ class Worker
 			return;
 		}
 
-		$shortMonths = array(FText::_('Jan'), FText::_('Feb'), FText::_('Mar'), FText::_('Apr'), FText::_('May'), FText::_('Jun'), FText::_('Jul'),
-			FText::_('Aug'), FText::_('Sept'), FText::_('Oct'), FText::_('Nov'), FText::_('Dec'));
+		$shortMonths = array(Text::_('Jan'), Text::_('Feb'), Text::_('Mar'), Text::_('Apr'), Text::_('May'), Text::_('Jun'), Text::_('Jul'),
+			Text::_('Aug'), Text::_('Sept'), Text::_('Oct'), Text::_('Nov'), Text::_('Dec'));
 
 		/*$$ rob set day default to 1, so that if you have a date format string of %m-%Y the day is set to the first day of the month
 		 * and not the last day of the previous month (which is what a 0 here would represent)
@@ -508,23 +506,23 @@ class Worker
 	{
 		if ($abrv)
 		{
-			$date = str_replace(FText::_('SUN'), '', $date);
-			$date = str_replace(FText::_('MON'), '', $date);
-			$date = str_replace(FText::_('TUE'), '', $date);
-			$date = str_replace(FText::_('WED'), '', $date);
-			$date = str_replace(FText::_('THU'), '', $date);
-			$date = str_replace(FText::_('FRI'), '', $date);
-			$date = str_replace(FText::_('SAT'), '', $date);
+			$date = str_replace(Text::_('SUN'), '', $date);
+			$date = str_replace(Text::_('MON'), '', $date);
+			$date = str_replace(Text::_('TUE'), '', $date);
+			$date = str_replace(Text::_('WED'), '', $date);
+			$date = str_replace(Text::_('THU'), '', $date);
+			$date = str_replace(Text::_('FRI'), '', $date);
+			$date = str_replace(Text::_('SAT'), '', $date);
 		}
 		else
 		{
-			$date = str_replace(FText::_('SUNDAY'), '', $date);
-			$date = str_replace(FText::_('MONDAY'), '', $date);
-			$date = str_replace(FText::_('TUESDAY'), '', $date);
-			$date = str_replace(FText::_('WEDNESDAY'), '', $date);
-			$date = str_replace(FText::_('THURSDAY'), '', $date);
-			$date = str_replace(FText::_('FRIDAY'), '', $date);
-			$date = str_replace(FText::_('SATURDAY'), '', $date);
+			$date = str_replace(Text::_('SUNDAY'), '', $date);
+			$date = str_replace(Text::_('MONDAY'), '', $date);
+			$date = str_replace(Text::_('TUESDAY'), '', $date);
+			$date = str_replace(Text::_('WEDNESDAY'), '', $date);
+			$date = str_replace(Text::_('THURSDAY'), '', $date);
+			$date = str_replace(Text::_('FRIDAY'), '', $date);
+			$date = str_replace(Text::_('SATURDAY'), '', $date);
 		}
 
 		return $date;
@@ -543,33 +541,33 @@ class Worker
 	{
 		if ($abrv)
 		{
-			$date = str_replace(FText::_('JANUARY_SHORT'), '01', $date);
-			$date = str_replace(FText::_('FEBRUARY_SHORT'), '02', $date);
-			$date = str_replace(FText::_('MARCH_SHORT'), '03', $date);
-			$date = str_replace(FText::_('APRIL_SHORT'), '04', $date);
-			$date = str_replace(FText::_('MAY_SHORT'), '05', $date);
-			$date = str_replace(FText::_('JUNE_SHORT'), '06', $date);
-			$date = str_replace(FText::_('JULY_SHORT'), '07', $date);
-			$date = str_replace(FText::_('AUGUST_SHORT'), '08', $date);
-			$date = str_replace(FText::_('SEPTEMBER_SHORT'), '09', $date);
-			$date = str_replace(FText::_('OCTOBER_SHORT'), 10, $date);
-			$date = str_replace(FText::_('NOVEMBER_SHORT'), 11, $date);
-			$date = str_replace(FText::_('DECEMBER_SHORT'), 12, $date);
+			$date = str_replace(Text::_('JANUARY_SHORT'), '01', $date);
+			$date = str_replace(Text::_('FEBRUARY_SHORT'), '02', $date);
+			$date = str_replace(Text::_('MARCH_SHORT'), '03', $date);
+			$date = str_replace(Text::_('APRIL_SHORT'), '04', $date);
+			$date = str_replace(Text::_('MAY_SHORT'), '05', $date);
+			$date = str_replace(Text::_('JUNE_SHORT'), '06', $date);
+			$date = str_replace(Text::_('JULY_SHORT'), '07', $date);
+			$date = str_replace(Text::_('AUGUST_SHORT'), '08', $date);
+			$date = str_replace(Text::_('SEPTEMBER_SHORT'), '09', $date);
+			$date = str_replace(Text::_('OCTOBER_SHORT'), 10, $date);
+			$date = str_replace(Text::_('NOVEMBER_SHORT'), 11, $date);
+			$date = str_replace(Text::_('DECEMBER_SHORT'), 12, $date);
 		}
 		else
 		{
-			$date = str_replace(FText::_('JANUARY'), '01', $date);
-			$date = str_replace(FText::_('FEBRUARY'), '02', $date);
-			$date = str_replace(FText::_('MARCH'), '03', $date);
-			$date = str_replace(FText::_('APRIL'), '04', $date);
-			$date = str_replace(FText::_('MAY'), '05', $date);
-			$date = str_replace(FText::_('JUNE'), '06', $date);
-			$date = str_replace(FText::_('JULY'), '07', $date);
-			$date = str_replace(FText::_('AUGUST'), '08', $date);
-			$date = str_replace(FText::_('SEPTEMBER'), '09', $date);
-			$date = str_replace(FText::_('OCTOBER'), 10, $date);
-			$date = str_replace(FText::_('NOVEMBER'), 11, $date);
-			$date = str_replace(FText::_('DECEMBER'), 12, $date);
+			$date = str_replace(Text::_('JANUARY'), '01', $date);
+			$date = str_replace(Text::_('FEBRUARY'), '02', $date);
+			$date = str_replace(Text::_('MARCH'), '03', $date);
+			$date = str_replace(Text::_('APRIL'), '04', $date);
+			$date = str_replace(Text::_('MAY'), '05', $date);
+			$date = str_replace(Text::_('JUNE'), '06', $date);
+			$date = str_replace(Text::_('JULY'), '07', $date);
+			$date = str_replace(Text::_('AUGUST'), '08', $date);
+			$date = str_replace(Text::_('SEPTEMBER'), '09', $date);
+			$date = str_replace(Text::_('OCTOBER'), 10, $date);
+			$date = str_replace(Text::_('NOVEMBER'), 11, $date);
+			$date = str_replace(Text::_('DECEMBER'), 12, $date);
 		}
 
 		return $date;
@@ -1371,7 +1369,7 @@ class Worker
 
 		$enqMsgType = 'error';
 		$indentHTML = '<br/>&nbsp;&nbsp;&nbsp;&nbsp;Debug:&nbsp;';
-		$errString = FText::_('COM_FABRIK_EVAL_ERROR_USER_WARNING');
+		$errString = Text::_('COM_FABRIK_EVAL_ERROR_USER_WARNING');
 
 		// Give a technical error message to the developer
 		if (version_compare(phpversion(), '5.2.0', '>=') && $error && is_array($error))
@@ -1893,7 +1891,7 @@ class Worker
 
 			if ($usercol != '')
 			{
-				$usercol = FabrikString::safeColNameToArrayKey($usercol);
+				$usercol = String::safeColNameToArrayKey($usercol);
 
 				if (!array_key_exists($usercol, $row))
 				{
@@ -1953,7 +1951,7 @@ class Worker
 
 		if (!JFile::exists($file))
 		{
-			throw new RuntimeException(FText::_('COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND'));
+			throw new RuntimeException(Text::_('COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND'));
 		}
 
 		return true;

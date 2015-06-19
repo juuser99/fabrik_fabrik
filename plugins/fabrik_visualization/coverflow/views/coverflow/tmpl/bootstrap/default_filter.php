@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 if ($this->showFilters) :
 ?>
 <form method="post" name="filter" action="<?php echo $this->filterFormURL; ?>">
@@ -25,7 +27,7 @@ if ($this->showFilters) :
 	  		<th><?php echo $table ?></th>
 	  		<th style="text-align:right">
 	  			<a href="#" class="clearFilters">
-	  				<i class="icon-refresh"></i> <?php echo FText::_('COM_FABRIK_CLEAR'); ?>
+	  				<i class="icon-refresh"></i> <?php echo Text::_('COM_FABRIK_CLEAR'); ?>
 	  			</a>
 	  		</th>
 	  	</tr>
@@ -35,7 +37,7 @@ if ($this->showFilters) :
 	  	<tr>
 	  		<th colspan="2" style="text-align:right;">
 	  			<button type="submit" class="btn btn-primary">
-	  				<i class="icon-filter"></i> <?php echo FText::_('COM_FABRIK_GO') ?>
+	  				<i class="icon-filter"></i> <?php echo Text::_('COM_FABRIK_GO') ?>
 	  			</button>
 	  		</th>
 	  	</tr>

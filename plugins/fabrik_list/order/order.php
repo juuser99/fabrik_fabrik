@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -82,7 +83,7 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 		$orderEl = $model->getFormModel()->getElement($params->get('order_element'), true);
 		$form_id = $model->getFormModel()->getId();
 		$opts = $this->getElementJSOptions();
-		$opts->enabled = (FabrikString::safeColNameToArrayKey($model->orderEls[0]) == FabrikString::safeColNameToArrayKey($orderEl->getOrderByName())) ? true
+		$opts->enabled = (String::safeColNameToArrayKey($model->orderEls[0]) == FabrikString::safeColNameToArrayKey($orderEl->getOrderByName())) ? true
 			: false;
 		$opts->listid = $model->getId();
 		$opts->orderElementId = $params->get('order_element');
@@ -119,7 +120,7 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 		$orderEl = $model->getFormModel()->getElement($input->getInt('orderelid'), true);
 		$table = $model->getTable();
 		$origOrder = $input->get('origorder', array(), 'array');
-		$orderBy = $db->quoteName($orderEl->getElement()->name);
+		$orderBy = $db->qn($orderEl->getElement()->name);
 		$order = $input->get('order', array(), 'array');
 		$dragged = $input->get('dragged');
 

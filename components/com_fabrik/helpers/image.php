@@ -12,8 +12,8 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use \JHtml as JHtml;
+use \Exception;
 
 /**
  * Image manipulation class
@@ -237,7 +237,7 @@ class Fabimage
 	 * @param   string  $src       Remote URI to image
 	 * @param   string  $path      Local folder to store the image in e.g. 'cache/com_fabrik/images'
 	 * @param   string  $file      Local filename
-	 * @param   number  $lifeTime  Number of days to cache the image for
+	 * @param   int     $lifeTime  Number of days to cache the image for
 	 *
 	 * @return  string  Local URI to cached image
 	 */
@@ -333,7 +333,6 @@ class Fabimage
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.0
  */
-
 class FabimageGD extends Fabimage
 {
 	/**
@@ -341,9 +340,10 @@ class FabimageGD extends Fabimage
 	 *
 	 * @param   string  $file  file to create image from
 	 *
+	 * @throws Exception
+	 *
 	 * @return  array  (image, header string)
 	 */
-
 	public function imageFromFile($file)
 	{
 		$img = false;
@@ -703,15 +703,16 @@ class FabimageGD2 extends FabimageGD
 	 * @param   string  $origFile   current images folder path (must have trailing end slash)
 	 * @param   string  $destFile   destination folder path for resized image (must have trailing end slash)
 	 *
+	 * @throws Exception
+	 *
 	 * @return  object  image
 	 */
-
 	public function resize($maxWidth, $maxHeight, $origFile, $destFile)
 	{
 		// Check if the file exists
 		if (!$this->storage->exists($origFile))
 		{
-			throw new RuntimeException("no file found for $origFile");
+			throw new Exception("no file found for $origFile");
 		}
 
 		// Load image
@@ -725,9 +726,9 @@ class FabimageGD2 extends FabimageGD
 
 		ini_set('display_errors', true);
 		$memory = ini_get('memory_limit');
-		$intmemory = FabrikString::rtrimword($memory, 'M');
+		$intMemory = String::rtrimword($memory, 'M');
 
-		if ($intmemory < 50)
+		if ($intMemory < 50)
 		{
 			ini_set('memory_limit', '50M');
 		}
@@ -753,7 +754,7 @@ class FabimageGD2 extends FabimageGD
 			}
 			else
 			{
-				JError::raiseWarning(21, "imagecreate from gif not available");
+				throw new Exception("imagecreate from gif not available");
 			}
 		}
 		// If an image was successfully loaded, test the image for size
@@ -789,7 +790,7 @@ class FabimageGD2 extends FabimageGD
 
 		if (!$img)
 		{
-			JError::raiseWarning(21, "no image created for $origFile, extension = $ext , destination = $destFile ");
+			throw new Exception("no image created for $origFile, extension = $ext , destination = $destFile ");
 		}
 
 		/* save the file

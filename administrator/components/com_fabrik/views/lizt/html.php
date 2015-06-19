@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \JToolBarHelper as JToolBarHelper;
 use \Fabrik\Helpers\HTML as HelperHTML;
 use \stdClass as stdClass;
@@ -77,8 +77,8 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		if ($this->item->get('view') == '')
 		{
-			$this->order_by = array(FText::_('COM_FABRIK_AVAILABLE_AFTER_SAVE'));
-			$this->group_by = FText::_('COM_FABRIK_AVAILABLE_AFTER_SAVE');
+			$this->order_by = array(Text::_('COM_FABRIK_AVAILABLE_AFTER_SAVE'));
+			$this->group_by = Text::_('COM_FABRIK_AVAILABLE_AFTER_SAVE');
 		}
 		else
 		{
@@ -95,8 +95,8 @@ class Html extends \Fabrik\Admin\Views\Html
 				$this->order_by[] = $model->getElementList('order_by[]', '', true, false, false, 'id');
 			}
 
-			$orderDir[] = JHTML::_('select.option', 'ASC', FText::_('COM_FABRIK_ASCENDING'));
-			$orderDir[] = JHTML::_('select.option', 'DESC', FText::_('COM_FABRIK_DESCENDING'));
+			$orderDir[] = JHTML::_('select.option', 'ASC', Text::_('COM_FABRIK_ASCENDING'));
+			$orderDir[] = JHTML::_('select.option', 'DESC', Text::_('COM_FABRIK_DESCENDING'));
 
 			$orderdirs       = Worker::JSONtoData($this->item->get('list.order_dir'), true);
 			$this->order_dir = array();
@@ -212,7 +212,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$isNew      = ($this->item->get('view', '') == '');
 		$checkedOut = !($this->item->get('checked_out') == 0 || $this->item->get('checked_out') == $user->get('id'));
 		$canDo      = Fabrik::getActions($this->state->get('filter.category_id'));
-		$title      = $isNew ? FText::_('COM_FABRIK_MANAGER_LIST_NEW') : FText::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->get('list.label') . '"';
+		$title      = $isNew ? Text::_('COM_FABRIK_MANAGER_LIST_NEW') : Text::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->get('list.label') . '"';
 		JToolBarHelper::title($title, 'list.png');
 
 		if ($isNew)
@@ -255,7 +255,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_LISTS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_LISTS_EDIT'));
 	}
 
 	/**
@@ -268,7 +268,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_LINKED_ELEMENTS'), 'list.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_LIST_LINKED_ELEMENTS'), 'list.png');
 		JToolBarHelper::cancel('list.cancel', 'JTOOLBAR_CLOSE');
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS_EDIT');

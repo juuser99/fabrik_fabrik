@@ -13,11 +13,10 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use \Fabrik\Helpers\HTML;
-use \FabrikString as FabrikString;
+use \Fabrik\Helpers\String;
 use \JApplicationHelper as JApplicationHelper;
 use \JDispatcher as JDispatcher;
 use \JEventDispatcher as JEventDispatcher;
@@ -30,6 +29,7 @@ use \JProfiler as JProfiler;
 use \RuntimeException as RuntimeException;
 use Joomla\Registry\Registry as JRegistry;
 use Fabrik\Admin\Models\Group as Group;
+use Fabrik\Helpers\Text;
 
 
 jimport('joomla.filesystem.file');
@@ -90,23 +90,23 @@ class PluginManager extends Base
 	 * @param   string  $default       Selected option
 	 * @param   string  $name          Html name for drop down
 	 * @param   string  $extra         Extra info for drop down
-	 * @param   string  $defaultlabel  Html element type list
+	 * @param   string  $defaultLabel  Html element type list
 	 *
 	 * @return  string
 	 */
 
-	public function getElementTypeDd($default, $name = 'plugin', $extra = 'class="inputbox elementtype"  size="1"', $defaultlabel = '')
+	public function getElementTypeDd($default, $name = 'plugin', $extra = 'class="inputbox elementtype"  size="1"', $defaultLabel = '')
 	{
-		$hash = $default . $name . $extra . $defaultlabel;
+		$hash = $default . $name . $extra . $defaultLabel;
 
 		if (!array_key_exists($hash, $this->elementLists))
 		{
-			if ($defaultlabel == '')
+			if ($defaultLabel == '')
 			{
-				$defaultlabel = FText::_('COM_FABRIK_PLEASE_SELECT');
+				$defaultLabel = Text::_('COM_FABRIK_PLEASE_SELECT');
 			}
 
-			$a = array(JHTML::_('select.option', '', $defaultlabel));
+			$a = array(JHTML::_('select.option', '', $defaultLabel));
 			$elementTypes = $this->_getList();
 			$elementTypes = array_merge($a, $elementTypes);
 			$this->elementLists[$hash] = JHTML::_('select.genericlist', $elementTypes, $name, $extra, 'value', 'text', $default);
@@ -215,7 +215,7 @@ class PluginManager extends Base
 			$f = str_replace("\\", "/", str_replace(JPATH_SITE, '', $f));
 			$file = basename($f);
 			$folder = dirname($f);
-			$folder = FabrikString::ltrimword($folder, '/') . '/';
+			$folder = String::ltrimword($folder, '/') . '/';
 			HTML::script($folder . $file);
 		}
 	}
@@ -417,6 +417,8 @@ class PluginManager extends Base
 					JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:' . $element->get('name') . '' . $plugin) : null;
 					require_once JPATH_PLUGINS . '/fabrik_element/' . $plugin . '/' . $plugin . '.php';
 					$class = 'Fabrik\\Plugins\\Element\\' . String::ucfirst($element->plugin);
+
+					/** @var $pluginModel \Fabrik\Plugins\Element */
 					$pluginModel = new $class($dispatcher, array());
 
 					if (!is_object($pluginModel))
@@ -434,7 +436,7 @@ class PluginManager extends Base
 					$listModel = $model->getListModel();
 
 					$pluginModel->setContext($groupModel, $model, $listModel);
-					$pluginModel->bindToElement(new JRegistry($element));
+					$pluginModel->setItem(new JRegistry($element));
 					$groupModel->elements[$element->name] = $pluginModel;
 				}
 			}
@@ -511,7 +513,7 @@ class PluginManager extends Base
 			 * $$$ rob allow for list plugins to hook into form plugin calls - methods are mapped as:
 			 * form method = 'onLoad' => list method => 'onFormLoad'
 			 */
-			$tmethod = 'onForm' . FabrikString::ltrimword($method, 'on');
+			$tmethod = 'onForm' . String::ltrimword($method, 'on');
 			$listModel = $parentModel->getListModel();
 			$this->runPlugins($tmethod, $listModel, 'list');
 		}

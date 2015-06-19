@@ -13,8 +13,12 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Fabrik\Helpers\HTML;
+use \stdClass;
+use Fabrik\Helpers\String;
+use \JFactory;
+use Fabrik\Helpers\Text;
+use \JHTML;
 
 /**
  * Plugin element to render text area or wysiwyg editor
@@ -39,7 +43,6 @@ class Textarea extends Element
 	 *
 	 * @return  string	Tagified string
 	 */
-
 	protected function tagify($data)
 	{
 		$name = $this->getFullName(true, false);
@@ -80,23 +83,23 @@ class Textarea extends Element
 				{
 					if (substr($url, -1) === '?')
 					{
-						$thisurl = $url . $name . '[value]=' . $d;
+						$thisUrl = $url . $name . '[value]=' . $d;
 					}
 					else
 					{
-						$thisurl = strstr($url, '?') ? $url . '&' . $name . '[value]=' . urlencode($d) : $url . '?' . $name . '[value]=' . urlencode($d);
+						$thisUrl = strstr($url, '?') ? $url . '&' . $name . '[value]=' . urlencode($d) : $url . '?' . $name . '[value]=' . urlencode($d);
 					}
 
-					$thisurl .= '&' . $name . '[condition]=CONTAINS';
-					$thisurl .= '&resetfilters=1';
+					$thisUrl .= '&' . $name . '[condition]=CONTAINS';
+					$thisUrl .= '&resetfilters=1';
 				}
 				else
 				{
-					$thisurl = str_replace('{tag}', urlencode($d), $url);
+					$thisUrl = str_replace('{tag}', urlencode($d), $url);
 				}
 
 				$o = new stdClass;
-				$o->url = $thisurl;
+				$o->url = $thisUrl;
 				$o->icon = $icon;
 				$o->label = $d;
 				$tmplData->tags[] = $o;
@@ -116,7 +119,6 @@ class Textarea extends Element
 	 *
 	 * @return  string	Formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$data = parent::renderListData($data, $thisRow);
@@ -157,7 +159,7 @@ class Textarea extends Element
 			$opts['wordcount'] = (int) $params->get('textarea-truncate', 0);
 			$opts['tip'] = $params->get('textarea-hover');
 			$opts['position'] = $params->get('textarea_hover_location', 'top');
-			$data = fabrikString::truncate($data, $opts);
+			$data = String::truncate($data, $opts);
 			$listModel = $this->getListModel();
 			$data = $listModel->_addLink($data, $this, $thisRow);
 		}
@@ -173,7 +175,6 @@ class Textarea extends Element
 	 *
 	 * @return  string  label
 	 */
-
 	public function getLabel($repeatCounter = 0, $tmpl = '')
 	{
 		$params = $this->getParams();
@@ -181,7 +182,7 @@ class Textarea extends Element
 
 		if ($params->get('textarea_showlabel') == '0')
 		{
-			$element->label = '';
+			$element->set('label', '');
 		}
 
 		return parent::getLabel($repeatCounter, $tmpl);
@@ -192,31 +193,18 @@ class Textarea extends Element
 	 *
 	 * @return  mixed	False if not using the wysiwyg editor. String (element name) if it is
 	 */
-
 	public function useEditor()
 	{
 		$element = $this->getElement();
 
 		if ($this->useWysiwyg())
 		{
-			return preg_replace("/[^A-Za-z0-9]/", "_", $element->name);
+			return preg_replace("/[^A-Za-z0-9]/", "_", $element->get('name'));
 		}
 		else
 		{
 			return false;
 		}
-	}
-
-	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
 	}
 
 	/**
@@ -226,7 +214,6 @@ class Textarea extends Element
 	 *
 	 * @return  bool
 	 */
-
 	protected function useWysiwyg()
 	{
 		$params = $this->getParams();
@@ -266,7 +253,6 @@ class Textarea extends Element
 	 *
 	 * @return  string	Elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -279,8 +265,8 @@ class Textarea extends Element
 		}
 
 		$params = $this->getParams();
-		$cols = $params->get('width', $element->width);
-		$rows = $params->get('height', $element->height);
+		$cols = $params->get('width', $element->get('width'));
+		$rows = $params->get('height', $element->get('height'));
 		$value = $this->getValue($data, $repeatCounter);
 		$bits = array();
 		$bits['class'] = "fabrikinput inputbox " . $params->get('bootstrap_class');
@@ -307,7 +293,7 @@ class Textarea extends Element
 					$opts['wordcount'] = (int) $params->get('textarea-truncate', 0);
 					$opts['tip'] = $params->get('textarea-hover');
 					$opts['position'] = $params->get('textarea_hover_location', 'top');
-					$value = fabrikString::truncate($value, $opts);
+					$value = String::truncate($value, $opts);
 				}
 			}
 			
@@ -377,12 +363,12 @@ class Textarea extends Element
 		{
 			if ($params->get('textarea_limit_type', 'char') === 'char')
 			{
-				$label = FText::_('PLG_ELEMENT_TEXTAREA_CHARACTERS_LEFT');
+				$label = Text::_('PLG_ELEMENT_TEXTAREA_CHARACTERS_LEFT');
 				$charsLeft = $params->get('textarea-maxlength') - String::strlen($value);
 			}
 			else
 			{
-				$label = FText::_('PLG_ELEMENT_TEXTAREA_WORDS_LEFT');
+				$label = Text::_('PLG_ELEMENT_TEXTAREA_WORDS_LEFT');
 				$charsLeft = $params->get('textarea-maxlength') - count(explode(' ', $value));
 			}
 
@@ -403,7 +389,6 @@ class Textarea extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		$groupModel = $this->getGroup();
@@ -424,12 +409,11 @@ class Textarea extends Element
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array  text/value objects
 	 */
-
-	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$params = $this->getParams();
 
@@ -439,7 +423,7 @@ class Textarea extends Element
 		}
 		else
 		{
-			return parent::filterValueList($normal, $tableName, $label, $id, $incjoin);
+			return parent::filterValueList($normal, $tableName, $label, $id, $incJoin);
 		}
 	}
 
@@ -450,11 +434,10 @@ class Textarea extends Element
 	 *
 	 * @return   array
 	 */
-
 	protected function getTags()
 	{
 		$listModel = $this->getListModel();
-		$id = $this->getElement()->id;
+		$id = $this->getElement()->get('id');
 		$cols = $listModel->getColumnData($id);
 		$tags = array();
 
@@ -557,7 +540,7 @@ class Textarea extends Element
 
 	public function getValidationErr()
 	{
-		return FText::_('PLG_ELEMENT_TEXTAREA_CONTENT_TOO_LONG');
+		return Text::_('PLG_ELEMENT_TEXTAREA_CONTENT_TOO_LONG');
 	}
 
 	/**

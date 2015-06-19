@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -570,7 +571,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 		}
 		else
 		{
-			echo FText::_("thanks");
+			echo Text::_("thanks");
 		}
 	}
 
@@ -699,7 +700,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 					{
 						$query = $db->getQuery(true);
 						$query->select($ipn_status_field)->from('#__fabrik_subs_invoices')
-						->where($db->quoteName($ipn_txn_field) . ' = ' . $db->q($txn_id));
+						->where($db->qn($ipn_txn_field) . ' = ' . $db->q($txn_id));
 						$db->setQuery($query);
 						$txn_result = $db->loadResult();
 
@@ -779,7 +780,7 @@ class PlgFabrik_FormSubscriptions extends PlgFabrik_Form
 									foreach ($set_list as $set_field => $set_value)
 									{
 										$set_value = $db->q($set_value);
-										$set_field = $db->quoteName($set_field);
+										$set_field = $db->qn($set_field);
 										$set_array[] = "$set_field = $set_value";
 									}
 

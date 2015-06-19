@@ -13,6 +13,8 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \stdClass;
+
 /**
  * Plugin element to render button
  *
@@ -30,7 +32,6 @@ class Button extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -45,7 +46,7 @@ class Button extends Element
 		$displayData->class = $class;
 		$displayData->id = $id;
 		$displayData->name = $name;
-		$displayData->label = $element->label;
+		$displayData->label = $element->get('label');
 		$displayData->icon = $icon;
 
 		return $layout->render($displayData);
@@ -59,7 +60,6 @@ class Button extends Element
 	 *
 	 * @return  string  label
 	 */
-
 	public function getLabel($repeatCounter, $tmpl = '')
 	{
 		return '';
@@ -72,7 +72,6 @@ class Button extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -90,7 +89,6 @@ class Button extends Element
 	 *
 	 * @return  array  html ids to watch for validation
 	 */
-
 	public function getValidationWatchElements($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);

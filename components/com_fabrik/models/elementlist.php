@@ -13,13 +13,12 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \JPath as JPath;
 use \Fabrik\Helpers\HTML as HTML;
 use \JFactory;
-use \FabrikString;
+use Fabrik\Helpers\String;
 use \JHTML;
 
 /**
@@ -249,10 +248,10 @@ class ElementList extends Element
 					foreach ($originalValue as &$v)
 					{
 						$v = trim($v);
-						$v = FabrikString::ltrimword($v, '"');
-						$v = FabrikString::ltrimword($v, "'");
-						$v = FabrikString::rtrimword($v, '"');
-						$v = FabrikString::rtrimword($v, "'");
+						$v = String::ltrimword($v, '"');
+						$v = String::ltrimword($v, "'");
+						$v = String::rtrimword($v, '"');
+						$v = String::rtrimword($v, "'");
 					}
 					break;
 				default:
@@ -521,14 +520,14 @@ class ElementList extends Element
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array  Text/value objects
 	 */
 
-	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
-		$rows = parent::filterValueList($normal, $tableName, $label, $id, $incjoin);
+		$rows = parent::filterValueList($normal, $tableName, $label, $id, $incJoin);
 		$this->unmergeFilterSplits($rows);
 		$this->reapplyFilterLabels($rows);
 

@@ -18,7 +18,7 @@ use JFactory;
 use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use Fabrik\Admin\Helpers\Fabrik;
 
 /**
@@ -89,7 +89,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected function addToolbar()
 	{
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
 
 		if ($canDo->get('core.create'))
 		{
@@ -132,21 +132,21 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS', false, FText::_('JHELP_COMPONENTS_FABRIK_FORMS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS', false, Text::_('JHELP_COMPONENTS_FABRIK_FORMS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=forms');
 		$opts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
 		JHtmlSidebar::addFilter(
-		FText::_('JOPTION_SELECT_PUBLISHED'),
+		Text::_('JOPTION_SELECT_PUBLISHED'),
 		'filter_published',
 		JHtml::_('select.options', $opts, 'value', 'text', $this->state->get('filter.published'), true)
 		);
 
 		if (!empty($this->packageOptions))
 		{
-			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
+			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			JHtmlSidebar::addFilter(
-			FText::_('JOPTION_SELECT_PUBLISHED'),
+			Text::_('JOPTION_SELECT_PUBLISHED'),
 			'package',
 			JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);

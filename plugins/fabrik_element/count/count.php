@@ -50,35 +50,21 @@ class Count extends Element
 	 *
 	 * @return  void
 	 */
-
 	public function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
-		$dbtable = $this->actualTableName();
+		$dbTable = $this->actualTableName();
 		$db = Worker::getDbo();
 
 		if ($this->app->input->get('c') != 'form')
 		{
 			$params = $this->getParams();
-			$fullElName = ArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___' . $this->getElement()->name));
+			$name = $this->getElement()->get('name');
+			$fullElName = ArrayHelper::getValue($opts, 'alias', $db->qn($dbTable . '___' . $name));
 			$r = 'COUNT(' . $params->get('count_field', '*') . ')';
 			$aFields[] = $r . ' AS ' . $fullElName;
 			$aAsFields[] = $fullElName;
-			$aAsFields[] = $db->quoteName($dbtable . '___' . $this->getElement()->name . '_raw');
+			$aAsFields[] = $db->qn($dbTable . '___' . $name . '_raw');
 		}
-	}
-
-	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return false;
 	}
 
 	/**
@@ -89,7 +75,6 @@ class Count extends Element
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return false;
@@ -103,7 +88,6 @@ class Count extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		return '';
@@ -116,7 +100,6 @@ class Count extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);

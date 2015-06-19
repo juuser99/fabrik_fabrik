@@ -15,11 +15,9 @@ namespace Fabrik\Admin\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Storage\MySql as Storage;
-use Joomla\String\String;
-use \JText as JText;
-use \FText as FText;
+use \Text as Text;
 use \stdClass as stdClass;
-use \JHTML as JHTML;
+use \JHtml as JHtml;
 use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
 use Fabrik\Helpers\ArrayHelper;
@@ -27,7 +25,6 @@ use \RuntimeException as RuntimeException;
 use \Joomla\Registry\Registry as Registry;
 use \JEventDispatcher as JEventDispatcher;
 use \JDatabaseQuery as JDatabaseQuery;
-
 use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\Pagination;
 use Fabrik\Admin\Models\Group as Group;
@@ -37,12 +34,13 @@ use \Fabrik\Helpers\HTML;
 use \JFilterInput as JFilterInput;
 use \JProfiler as JProfiler;
 use \Exception as Exception;
-use \FabrikString as FabrikString;
+use \Fabrik\Helpers\String as String;
 use \JUri as JUri;
 use \JRoute as JRoute;
 use \JSession as JSession;
 use \JFile as JFile;
 use \JApplication as JApplication;
+use Fabrik\Helpers\Text;
 
 interface ModelFormLiztInterface
 {
@@ -567,7 +565,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				{
 					// Prune items that you can't change.
 					unset($pks[$i]);
-					$this->app->enqueueMessage(FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'), 'warning');
+					$this->app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'), 'warning');
 				}
 			}
 		}
@@ -607,10 +605,10 @@ class Lizt extends View implements ModelFormLiztInterface
 	protected function getFilterJoinDd($addSlashes = true, $name = 'join')
 	{
 		$aConditions   = array();
-		$aConditions[] = JHTML::_('select.option', 'AND');
-		$aConditions[] = JHTML::_('select.option', 'OR');
+		$aConditions[] = JHtml::_('select.option', 'AND');
+		$aConditions[] = JHtml::_('select.option', 'OR');
 		$attribs       = 'class="inputbox input-small" size="1"';
-		$dd            = str_replace("\n", "", JHTML::_('select.genericlist', $aConditions, $name, $attribs, 'value', 'text', ''));
+		$dd            = str_replace("\n", "", JHtml::_('select.genericlist', $aConditions, $name, $attribs, 'value', 'text', ''));
 
 		if ($addSlashes)
 		{
@@ -637,45 +635,45 @@ class Lizt extends View implements ModelFormLiztInterface
 		switch ($mode)
 		{
 			case 1: /* used for search filter */
-				$aConditions[] = JHTML::_('select.option', '<>', 'NOT EQUALS');
-				$aConditions[] = JHTML::_('select.option', '=', 'EQUALS');
-				$aConditions[] = JHTML::_('select.option', 'like', 'BEGINS WITH');
-				$aConditions[] = JHTML::_('select.option', 'like', 'CONTAINS');
-				$aConditions[] = JHTML::_('select.option', 'like', 'ENDS WITH');
-				$aConditions[] = JHTML::_('select.option', '>', 'GREATER THAN');
-				$aConditions[] = JHTML::_('select.option', '>=', 'GREATER THAN OR EQUALS');
-				$aConditions[] = JHTML::_('select.option', '<', 'LESS THAN');
-				$aConditions[] = JHTML::_('select.option', '<=', 'LESS THAN OR EQUALS');
+				$aConditions[] = JHtml::_('select.option', '<>', 'NOT EQUALS');
+				$aConditions[] = JHtml::_('select.option', '=', 'EQUALS');
+				$aConditions[] = JHtml::_('select.option', 'like', 'BEGINS WITH');
+				$aConditions[] = JHtml::_('select.option', 'like', 'CONTAINS');
+				$aConditions[] = JHtml::_('select.option', 'like', 'ENDS WITH');
+				$aConditions[] = JHtml::_('select.option', '>', 'GREATER THAN');
+				$aConditions[] = JHtml::_('select.option', '>=', 'GREATER THAN OR EQUALS');
+				$aConditions[] = JHtml::_('select.option', '<', 'LESS THAN');
+				$aConditions[] = JHtml::_('select.option', '<=', 'LESS THAN OR EQUALS');
 				break;
 			case 2: /* used for prefilter */
-				$aConditions[] = JHTML::_('select.option', 'equals', 'EQUALS');
-				$aConditions[] = JHTML::_('select.option', 'notequals', 'NOT EQUAL TO');
-				$aConditions[] = JHTML::_('select.option', 'begins', 'BEGINS WITH');
-				$aConditions[] = JHTML::_('select.option', 'contains', 'CONTAINS');
-				$aConditions[] = JHTML::_('select.option', 'ends', 'ENDS WITH');
-				$aConditions[] = JHTML::_('select.option', '>', 'GREATER THAN');
-				$aConditions[] = JHTML::_('select.option', '>=', 'GREATER THAN OR EQUALS');
-				$aConditions[] = JHTML::_('select.option', '<', 'LESS THAN');
-				$aConditions[] = JHTML::_('select.option', 'IS NULL', 'IS NULL');
-				$aConditions[] = JHTML::_('select.option', '<=', 'LESS THAN OR EQUALS');
-				$aConditions[] = JHTML::_('select.option', 'in', 'IN');
-				$aConditions[] = JHTML::_('select.option', 'not_in', 'NOT IN');
-				$aConditions[] = JHTML::_('select.option', 'exists', 'EXISTS');
-				$aConditions[] = JHTML::_('select.option', 'earlierthisyear', FText::_('COM_FABRIK_EARLIER_THIS_YEAR'));
-				$aConditions[] = JHTML::_('select.option', 'laterthisyear', FText::_('COM_FABRIK_LATER_THIS_YEAR'));
+				$aConditions[] = JHtml::_('select.option', 'equals', 'EQUALS');
+				$aConditions[] = JHtml::_('select.option', 'notequals', 'NOT EQUAL TO');
+				$aConditions[] = JHtml::_('select.option', 'begins', 'BEGINS WITH');
+				$aConditions[] = JHtml::_('select.option', 'contains', 'CONTAINS');
+				$aConditions[] = JHtml::_('select.option', 'ends', 'ENDS WITH');
+				$aConditions[] = JHtml::_('select.option', '>', 'GREATER THAN');
+				$aConditions[] = JHtml::_('select.option', '>=', 'GREATER THAN OR EQUALS');
+				$aConditions[] = JHtml::_('select.option', '<', 'LESS THAN');
+				$aConditions[] = JHtml::_('select.option', 'IS NULL', 'IS NULL');
+				$aConditions[] = JHtml::_('select.option', '<=', 'LESS THAN OR EQUALS');
+				$aConditions[] = JHtml::_('select.option', 'in', 'IN');
+				$aConditions[] = JHtml::_('select.option', 'not_in', 'NOT IN');
+				$aConditions[] = JHtml::_('select.option', 'exists', 'EXISTS');
+				$aConditions[] = JHtml::_('select.option', 'earlierthisyear', Text::_('COM_FABRIK_EARLIER_THIS_YEAR'));
+				$aConditions[] = JHtml::_('select.option', 'laterthisyear', Text::_('COM_FABRIK_LATER_THIS_YEAR'));
 
-				$aConditions[] = JHTML::_('select.option', 'yesterday', FText::_('COM_FABRIK_YESTERDAY'));
-				$aConditions[] = JHTML::_('select.option', 'today', FText::_('COM_FABRIK_TODAY'));
-				$aConditions[] = JHTML::_('select.option', 'tomorrow', FText::_('COM_FABRIK_TOMORROW'));
-				$aConditions[] = JHTML::_('select.option', 'thismonth', FText::_('COM_FABRIK_THIS_MONTH'));
-				$aConditions[] = JHTML::_('select.option', 'lastmonth', FText::_('COM_FABRIK_LAST_MONTH'));
-				$aConditions[] = JHTML::_('select.option', 'nextmonth', FText::_('COM_FABRIK_NEXT_MONTH'));
-				$aConditions[] = JHTML::_('select.option', 'birthday', FText::_('COM_FABRIK_BIRTHDAY_TODAY'));
+				$aConditions[] = JHtml::_('select.option', 'yesterday', Text::_('COM_FABRIK_YESTERDAY'));
+				$aConditions[] = JHtml::_('select.option', 'today', Text::_('COM_FABRIK_TODAY'));
+				$aConditions[] = JHtml::_('select.option', 'tomorrow', Text::_('COM_FABRIK_TOMORROW'));
+				$aConditions[] = JHtml::_('select.option', 'thismonth', Text::_('COM_FABRIK_THIS_MONTH'));
+				$aConditions[] = JHtml::_('select.option', 'lastmonth', Text::_('COM_FABRIK_LAST_MONTH'));
+				$aConditions[] = JHtml::_('select.option', 'nextmonth', Text::_('COM_FABRIK_NEXT_MONTH'));
+				$aConditions[] = JHtml::_('select.option', 'birthday', Text::_('COM_FABRIK_BIRTHDAY_TODAY'));
 
 				break;
 		}
 
-		$dd = str_replace("\n", "", JHTML::_('select.genericlist', $aConditions, $name, 'class="inputbox input-small"  size="1" ', 'value', 'text', ''));
+		$dd = str_replace("\n", "", JHtml::_('select.genericlist', $aConditions, $name, 'class="inputbox input-small"  size="1" ', 'value', 'text', ''));
 
 		if ($addSlashes)
 		{
@@ -736,9 +734,9 @@ class Lizt extends View implements ModelFormLiztInterface
 		JText::script('COM_FABRIK_PUBLISHED');
 
 		$joinTypeOpts      = array();
-		$joinTypeOpts[]    = array('inner', FText::_('INNER JOIN'));
-		$joinTypeOpts[]    = array('left', FText::_('LEFT JOIN'));
-		$joinTypeOpts[]    = array('right', FText::_('RIGHT JOIN'));
+		$joinTypeOpts[]    = array('inner', Text::_('INNER JOIN'));
+		$joinTypeOpts[]    = array('left', Text::_('LEFT JOIN'));
+		$joinTypeOpts[]    = array('right', Text::_('RIGHT JOIN'));
 		$activeTableOpts[] = "";
 		$activeTableOpts[] = $item->get('list.db_table_name');
 
@@ -880,7 +878,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (empty($data['_database_name']) && ArrayHelper::getValue($data, 'db_table_name') == '')
 		{
-			$this->app->enqueueMessage(FText::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_SELECT_DB_OR_ENTER_NAME'));
 
 			return false;
 		}
@@ -978,7 +976,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				$db     = Worker::getDbo(true);
 				$pk_col = $join->table_join . '.' . $pk_col;
-				$join->params->set('pk', $db->quoteName($pk_col));
+				$join->params->set('pk', $db->qn($pk_col));
 				$join->params = (string) $join->params;
 			}
 		}
@@ -1061,7 +1059,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$db    = $this->_db;
-		$query = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName($name) . ' (';
+		$query = 'CREATE TABLE IF NOT EXISTS ' . $db->qn($name) . ' (';
 
 		foreach ($data as $fname => $type)
 		{
@@ -1232,7 +1230,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			if (trim($this->table->get('db_primary_key')) !== '')
 			{
-				$this->table->set('db_primary_key', FabrikString::safeColName($this->table->get('db_primary_key')));
+				$this->table->set('db_primary_key', String::safeColName($this->table->get('db_primary_key')));
 			}
 		}
 
@@ -1256,7 +1254,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (is_null($id) || $id == '0')
 		{
-			throw new RuntimeException(FText::_('COM_FABRIK_INCORRECT_LIST_ID'), 500);
+			throw new RuntimeException(Text::_('COM_FABRIK_INCORRECT_LIST_ID'), 500);
 		}
 
 		if ($this->outputFormat == 'fabrikfeed')
@@ -1268,7 +1266,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($item->get('list.db_table_name') == '')
 		{
-			throw new RuntimeException(FText::_('COM_FABRIK_INCORRECT_LIST_ID'), 500);
+			throw new RuntimeException(Text::_('COM_FABRIK_INCORRECT_LIST_ID'), 500);
 		}
 
 		// Cant set time limit in safe mode so suppress warning
@@ -1477,7 +1475,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			if ($value == '' && $eval == FABRIKFILTER_QUERY)
 			{
-				throw new RuntimeException(FText::_('COM_FABRIK_QUERY_PREFILTER_WITH_NO_VALUE'), 500);
+				throw new RuntimeException(Text::_('COM_FABRIK_QUERY_PREFILTER_WITH_NO_VALUE'), 500);
 			}
 
 			list($value, $condition) = $elementModel->getFilterValue($value, $condition, $eval);
@@ -2186,7 +2184,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 
 			$groupedData = array();
-			$groupBy     = FabrikString::safeColNameToArrayKey($groupBy);
+			$groupBy     = String::safeColNameToArrayKey($groupBy);
 			$groupBy .= '_raw';
 			$groupTitle   = null;
 			$aGroupTitles = array();
@@ -2669,15 +2667,15 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	protected function deleteButton($tpl = '', $heading = false)
 	{
-		$label        = FText::_('COM_FABRIK_DELETE');
+		$label        = Text::_('COM_FABRIK_DELETE');
 		$buttonAction = $this->actionMethod();
 		$tpl          = $this->getTmpl();
 		$text         = $buttonAction == 'dropdown' ? $label : '<span class="hidden">' . $label . '</span>';
 		$btnClass     = $buttonAction != 'dropdown' ? 'btn ' : '';
 		$iconClass    = 'icon-remove';
-		$label        = ' ' . FText::_('COM_FABRIK_DELETE');
+		$label        = ' ' . Text::_('COM_FABRIK_DELETE');
 		$btn          = '<a href="#" class="' . $btnClass . 'delete" data-listRef="list_' . $this->getRenderContext()
-			. '" title="' . FText::_('COM_FABRIK_DELETE') . '">'
+			. '" title="' . Text::_('COM_FABRIK_DELETE') . '">'
 			. HTML::image('delete.png', 'list', $tpl, array('alt' => $label, 'icon-class' => $iconClass)) . ' ' . $text . '</a>';
 
 		return $btn;
@@ -2756,7 +2754,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$db           = $listModel->getDb();
 		$elementModel = $listModel->getFormModel()->getElement($element->element_id, true);
 		$key          = $elementModel->getFullName(false, false);
-		$linkKey      = FabrikString::safeColName($key);
+		$linkKey      = String::safeColName($key);
 		$fparams      = $listModel->getParams();
 
 		// Ensure that the faceted list's "require filters" option is set to false
@@ -2778,7 +2776,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		// Trigger load of joins without cdd elements - seems to mess up count otherwise
 		$listModel->set('includeCddInJoin', false);
-		$k2 = $db->q(FabrikString::safeColNameToArrayKey($key));
+		$k2 = $db->q(String::safeColNameToArrayKey($key));
 
 		// $$$ Jannus - see http://fabrikar.com/forums/showthread.php?t=20751
 		$distinct = $listModel->mergeJoinedData() ? 'DISTINCT ' : '';
@@ -2790,7 +2788,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$query->group($linkKey);
 		$db->setQuery($query);
 		$this->recordCounts[$k]            = $db->loadObjectList('id');
-		$this->recordCounts[$k]['linkKey'] = FabrikString::safeColNameToArrayKey($key);
+		$this->recordCounts[$k]['linkKey'] = String::safeColNameToArrayKey($key);
 		HTML::debug($query->dump(), 'getRecordCounts query: ' . $linkKey);
 		HTML::debug($this->recordCounts[$k], 'getRecordCounts data: ' . $linkKey);
 		$input->set('fabrik_incsessionfilters', $origIncSesssionFilters);
@@ -2843,8 +2841,8 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!$facetTable->canAdd())
 		{
-			return '<div style="text-align:center"><a title="' . FText::_('JERROR_ALERTNOAUTHOR')
-			. '"><img src="' . COM_FABRIK_LIVESITE . 'media/com_fabrik/images/login.png" alt="' . FText::_('JERROR_ALERTNOAUTHOR') . '" /></a></div>';
+			return '<div style="text-align:center"><a title="' . Text::_('JERROR_ALERTNOAUTHOR')
+			. '"><img src="' . COM_FABRIK_LIVESITE . 'media/com_fabrik/images/login.png" alt="' . Text::_('JERROR_ALERTNOAUTHOR') . '" /></a></div>';
 		}
 
 		if ($this->app->isAdmin())
@@ -2869,7 +2867,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($useKey and $key != '' and !is_null($row))
 		{
-			$bits[] = 'usekey=' . FabrikString::shortColName($key);
+			$bits[] = 'usekey=' . String::shortColName($key);
 			$bits[] = 'rowid=' . $row->slug;
 		}
 
@@ -2878,7 +2876,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (is_null($label) || $label == '')
 		{
-			$label = FText::_('COM_FABRIK_LINKED_FORM_ADD');
+			$label = Text::_('COM_FABRIK_LINKED_FORM_ADD');
 		}
 
 		$icon    = '<i class="icon-plus"></i> ';
@@ -2955,13 +2953,13 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!$facetTable->canView())
 		{
-			return '<div style="text-align:center"><a title="' . FText::_('COM_FABRIK_NO_ACCESS_PLEASE_LOGIN')
+			return '<div style="text-align:center"><a title="' . Text::_('COM_FABRIK_NO_ACCESS_PLEASE_LOGIN')
 			. '"><img src="' . COM_FABRIK_LIVESITE . 'media/com_fabrik/images/login.png"
-				alt="' . FText::_('COM_FABRIK_NO_ACCESS_PLEASE_LOGIN') . '" /></a></div>';
+				alt="' . Text::_('COM_FABRIK_NO_ACCESS_PLEASE_LOGIN') . '" /></a></div>';
 		}
 
 		$showRelated         = (int) $params->get('show_related_info', 0);
-		$emptyLabel          = $showRelated === 1 ? FText::_('COM_FABRIK_NO_RECORDS') : '';
+		$emptyLabel          = $showRelated === 1 ? Text::_('COM_FABRIK_NO_RECORDS') : '';
 		$tlabel              = ($count === 0) ? $emptyLabel : '(0) ' . $label;
 		$showRelatedAdd      = (int) $params->get('show_related_add', 0);
 		$existingLinkedForms = (array) $params->get('linkedform');
@@ -2977,7 +2975,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($label === '')
 		{
-			$label = FText::_('COM_FABRIK_VIEW');
+			$label = Text::_('COM_FABRIK_VIEW');
 		}
 
 		$title = $label;
@@ -3476,20 +3474,20 @@ class Lizt extends View implements ModelFormLiztInterface
 	private function selectSlug(&$fields)
 	{
 		$item      = $this->getTable();
-		$pk        = FabrikString::safeColName($item->get('list.db_primary_key'));
+		$pk        = String::safeColName($item->get('list.db_primary_key'));
 		$params    = $this->getParams();
 
 		if (in_array($this->outputFormat, array('raw', 'html', 'feed', 'pdf', 'phocapdf')))
 		{
 			$slug        = $params->get('sef-slug');
 			$raw         = String::substr($slug, String::strlen($slug) - 4, 4) == '_raw' ? true : false;
-			$slug        = FabrikString::rtrimword($slug, '_raw');
+			$slug        = String::rtrimword($slug, '_raw');
 			$slugElement = $this->getElement($slug);
 
 			if ($slugElement)
 			{
 				$slug     = $slugElement->getSlugName($raw);
-				$slug     = FabrikString::safeColName($slug);
+				$slug     = String::safeColName($slug);
 				$fields[] = "CONCAT_WS(':', $pk, $slug) AS slug";
 			}
 			else
@@ -3520,7 +3518,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$this->getGroupsHierarchy();
 		JDEBUG ? $profiler->mark('queryselect: fields load start') : null;
 		$fields = $this->getAsFields($mode);
-		$pk     = FabrikString::safeColName($table->get('list.db_primary_key'));
+		$pk     = String::safeColName($table->get('list.db_primary_key'));
 		$params = $this->getParams();
 		$this->selectSlug($fields);
 		JDEBUG ? $profiler->mark('queryselect: fields loaded') : null;
@@ -3623,7 +3621,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 					if ($dir != '' && $dir != '-' && trim($dir) != 'Array')
 					{
-						$orderByName       = FabrikString::safeNameq($element->getOrderByName(), false);
+						$orderByName       = String::safeNameq($element->getOrderByName(), false);
 						$this->orderEls[]  = $orderByName;
 						$this->orderDirs[] = $dir;
 						$element->getAsField_html($this->selectedOrderFields, $aAsFields);
@@ -3698,7 +3696,7 @@ class Lizt extends View implements ModelFormLiztInterface
 						 */
 						if (!String::stristr($orderByRaw, 'CONCAT(') && !String::stristr($orderByRaw, 'CONCAT_WS('))
 						{
-							$orderByRaw = FabrikString::safeColName($orderByRaw);
+							$orderByRaw = String::safeColName($orderByRaw);
 
 							if (array_key_exists($orderByRaw, $els))
 							{
@@ -3710,7 +3708,7 @@ class Lizt extends View implements ModelFormLiztInterface
 								 */
 								if (!String::stristr($field, 'CONCAT(') && !String::stristr($field, 'CONCAT_WS('))
 								{
-									$field = FabrikString::safeColName($field);
+									$field = String::safeColName($field);
 								}
 
 								$bits[]            = " $field $dir";
@@ -3721,7 +3719,7 @@ class Lizt extends View implements ModelFormLiztInterface
 							{
 								if (strstr($orderByRaw, '_raw`'))
 								{
-									$orderByRaw = FabrikString::safeColNameToArrayKey($orderByRaw);
+									$orderByRaw = String::safeColNameToArrayKey($orderByRaw);
 								}
 
 								$bits[]            = " $orderByRaw $dir";
@@ -3756,7 +3754,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		if ($groupOrderBy != '')
 		{
 			$groupOrderDir = $params->get('group_by_order_dir');
-			$orderBy       = strstr($groupOrderBy, '_raw`') ? FabrikString::safeColNameToArrayKey($groupOrderBy) : FabrikString::safeColName($groupOrderBy);
+			$orderBy       = strstr($groupOrderBy, '_raw`') ? String::safeColNameToArrayKey($groupOrderBy) : String::safeColName($groupOrderBy);
 
 			$query->order($orderBy . ' ' . $groupOrderDir);
 
@@ -3856,7 +3854,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 
 			$sql = String::strtoupper($join->join_type) . ' JOIN ' . $db->qn($join->table_join);
-			$k   = FabrikString::safeColName($join->keytable . '.' . $join->table_key);
+			$k   = String::safeColName($join->keytable . '.' . $join->table_key);
 
 			// Check we only get the field name
 			$join->table_join_key = explode('.', $join->table_join_key);
@@ -3864,13 +3862,13 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			if ($join->table_join_alias == '')
 			{
-				$on = FabrikString::safeColName($join->table_join . '.' . $join->table_join_key);
+				$on = String::safeColName($join->table_join . '.' . $join->table_join_key);
 				$sql .= ' ON ' . $on . ' = ' . $k;
 			}
 			else
 			{
-				$on = FabrikString::safeColName($join->table_join_alias . '.' . $join->table_join_key);
-				$sql .= ' AS ' . FabrikString::safeColName($join->table_join_alias) . ' ON ' . $on . ' = ' . $k . "\n";
+				$on = String::safeColName($join->table_join_alias . '.' . $join->table_join_key);
+				$sql .= ' AS ' . String::safeColName($join->table_join_alias) . ' ON ' . $on . ' = ' . $k . "\n";
 			}
 
 			/*
@@ -3908,7 +3906,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 
 			// Go through the deferred join statements and see if their table has now been selected
-			foreach ($statements as $joinid => $ar)
+			foreach ($statements as $joinId => $ar)
 			{
 				$t = $ar[0];
 				$s = $ar[1];
@@ -3925,7 +3923,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 		// $$$rob test for bug #376
-		foreach ($statements as $joinid => $ar)
+		foreach ($statements as $joinId => $ar)
 		{
 			$s = $ar[1];
 
@@ -3963,7 +3961,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	public function buildQueryPrefilterWhere($element)
 	{
-		$elementName = FabrikString::safeColName($element->getFullName(false, false));
+		$elementName = String::safeColName($element->getFullName(false, false));
 		$filters     = $this->getFilterArray();
 		$keys        = array_keys($filters);
 		$valueKeys   = array_keys(ArrayHelper::getValue($filters, 'value', array()));
@@ -4353,7 +4351,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!in_array($longGroupBy, $searchAllFields) && trim($table->group_by) != '')
 		{
-			$this->searchAllAsFields[] = FabrikString::safeColName($this->getGroupBy()) . ' AS ' . $longGroupBy;
+			$this->searchAllAsFields[] = String::safeColName($this->getGroupBy()) . ' AS ' . $longGroupBy;
 			$searchAllFields[]         = $longGroupBy;
 		}
 
@@ -4430,7 +4428,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			if (!$this->temp_db_key_addded && $table->get('list.db_primary_key') != '')
 			{
-				$this->fields[] = $db->qn(FabrikString::safeColNameToArrayKey($table->get('list.db_primary_key')));
+				$this->fields[] = $db->qn(String::safeColNameToArrayKey($table->get('list.db_primary_key')));
 			}
 		}
 
@@ -4439,7 +4437,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		// For raw data in packages
 		if ($this->outputFormat == 'raw')
 		{
-			$str            = FabrikString::safeColName($table->get('list.db_primary_key')) . ' AS __pk_val';
+			$str            = String::safeColName($table->get('list.db_primary_key')) . ' AS __pk_val';
 			$this->fields[] = $str;
 		}
 
@@ -4450,7 +4448,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (!in_array($longGroupBy, $this->fields) && trim($longGroupBy) != '')
 		{
-			$this->asfields[]     = FabrikString::safeColName($longGroupBy) . ' AS ' . $longGroupBy;
+			$this->asfields[]     = String::safeColName($longGroupBy) . ' AS ' . $longGroupBy;
 			$this->fields         = $longGroupBy;
 			$this->group_by_added = true;
 		}
@@ -4492,7 +4490,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		$groupBy = $elementModel->getFullName(true, false);
 
-		return $db->qn(FabrikString::safeColNameToArrayKey($groupBy));
+		return $db->qn(String::safeColNameToArrayKey($groupBy));
 	}
 
 	/**
@@ -4576,7 +4574,6 @@ class Lizt extends View implements ModelFormLiztInterface
 	 *
 	 * @return  object    connection
 	 */
-
 	public function &getConnection()
 	{
 		$this->connection = Worker::getConnection($this->getTable());
@@ -5002,12 +4999,12 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 
 		$sig = $tbl . $key;
-		$tbl = FabrikString::safeColName($tbl);
+		$tbl = String::safeColName($tbl);
 
 		if (!isset($this->dbFields[$sig]))
 		{
 			$db  = $this->getDb();
-			$tbl = FabrikString::safeColName($tbl);
+			$tbl = String::safeColName($tbl);
 			$db->setQuery("DESCRIBE " . $tbl);
 
 			try
@@ -5106,8 +5103,8 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		$existingFields = array_keys($descriptions);
 		$lastField      = $existingFields[count($existingFields) - 1];
-		$tableName      = FabrikString::safeColName($tableName);
-		$lastField      = FabrikString::safeColName($lastField);
+		$tableName      = String::safeColName($tableName);
+		$lastField      = String::safeColName($lastField);
 		$altered        = false;
 
 		if (!array_key_exists($element->get('name'), $descriptions))
@@ -5117,7 +5114,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				if ($this->canAddFields())
 				{
 					$fabrikDb
-						->setQuery("ALTER TABLE $tableName ADD COLUMN " . FabrikString::safeColName($element->get('name')) . " $type AFTER $lastField");
+						->setQuery("ALTER TABLE $tableName ADD COLUMN " . String::safeColName($element->get('name')) . " $type AFTER $lastField");
 
 					try
 					{
@@ -5187,7 +5184,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		elseif ($this->canAlterFields() === false)
 		{
 			// Give a notice if the user cant alter the field type but selections he has made would normally do so:
-			$this->app->enqueueMessage(FText::_('COM_FABRIK_NOTICE_ELEMENT_SAVED_BUT_STRUCTUAL_CHANGES_NOT_APPLIED'), 'notice');
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_NOTICE_ELEMENT_SAVED_BUT_STRUCTUAL_CHANGES_NOT_APPLIED'), 'notice');
 
 			return $return;
 		}
@@ -5195,8 +5192,8 @@ class Lizt extends View implements ModelFormLiztInterface
 		$return[4]      = $existingDef;
 		$existingFields = array_keys($descriptions);
 		$lastField      = $existingFields[count($existingFields) - 1];
-		$tableName      = FabrikString::safeColName($tableName);
-		$lastField      = FabrikString::safeColName($lastField);
+		$tableName      = String::safeColName($tableName);
+		$lastField      = String::safeColName($lastField);
 
 		if (empty($origColName) || !in_array($origColName, $existingFields) || ($this->input->get('task') === 'save2copy' && $this->canAddFields()))
 		{
@@ -5204,7 +5201,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				if (!in_array($element->get('name'), $existingFields))
 				{
-					$fabrikDb->setQuery("ALTER TABLE $tableName ADD COLUMN " . FabrikString::safeColName($element->get('name')) . " $type AFTER $lastField");
+					$fabrikDb->setQuery("ALTER TABLE $tableName ADD COLUMN " . String::safeColName($element->get('name')) . " $type AFTER $lastField");
 
 					try
 					{
@@ -5233,9 +5230,9 @@ class Lizt extends View implements ModelFormLiztInterface
 					$dropKey = true;
 				}
 
-				$q = 'ALTER TABLE ' . $tableName . ' CHANGE ' . $origColName . ' ' . FabrikString::safeColName($element->get('name')) . ' ' . $type . ' ';
+				$q = 'ALTER TABLE ' . $tableName . ' CHANGE ' . $origColName . ' ' . String::safeColName($element->get('name')) . ' ' . $type . ' ';
 
-				if (FabrikString::safeColName($primaryKey) == $tableName . '.' . FabrikString::safeColName($element->get('name')) && $table->auto_inc)
+				if (String::safeColName($primaryKey) == $tableName . '.' . String::safeColName($element->get('name')) && $table->auto_inc)
 				{
 					if (!stripos($q, ' NOT NULL'))
 					{
@@ -5248,7 +5245,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					}
 				}
 
-				$origColName = FabrikString::safeColName($origColName);
+				$origColName = String::safeColName($origColName);
 				$return[0]   = true;
 				$return[1]   = $q;
 				$return[2]   = $origColName;
@@ -5311,9 +5308,9 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 
 			$lastField = $fieldName;
-			$element->set('name', FabrikString::safeColName($element->get('name')));
-			$tableName = FabrikString::safeColName($tableName);
-			$lastField = FabrikString::safeColName($lastField);
+			$element->set('name', String::safeColName($element->get('name')));
+			$tableName = String::safeColName($tableName);
+			$lastField = String::safeColName($lastField);
 
 			if (empty($origColName) || !in_array(String::strtolower($origColName), $existingFields))
 			{
@@ -5336,7 +5333,7 @@ class Lizt extends View implements ModelFormLiztInterface
 						$origColName = $element->get('name');
 					}
 
-					$origColName = FabrikString::safeColName($origColName);
+					$origColName = String::safeColName($origColName);
 					$fabrikDb->setQuery("ALTER TABLE $tableName CHANGE $origColName " . $element->get('name') . ' ' . $type);
 
 					try
@@ -5613,8 +5610,8 @@ class Lizt extends View implements ModelFormLiztInterface
 				}
 
 				$raw          = preg_match("/_raw$/", $filter) > 0;
-				$tmpFilter    = $raw ? FabrikString::rtrimword($filter, '_raw') : $filter;
-				$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpFilter), false);
+				$tmpFilter    = $raw ? String::rtrimword($filter, '_raw') : $filter;
+				$elementModel = ArrayHelper::getValue($elements, String::safeColName($tmpFilter), false);
 
 				if ($elementModel === false)
 				{
@@ -5625,7 +5622,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					 * For this we'll just remove that to find the correct element.
 					 */
 					$tmpFilter    = str_replace('_0.', '.', $tmpFilter);
-					$elementModel = ArrayHelper::getValue($elements, FabrikString::safeColName($tmpFilter), false);
+					$elementModel = ArrayHelper::getValue($elements, String::safeColName($tmpFilter), false);
 				}
 
 				if ($elementModel && $elementModel->getElement()->get('published') == 0)
@@ -5637,7 +5634,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					JLog::addLogger(array('text_file' => 'fabrik.log.php'));
 
 					// Start logging...
-					$msg = JText::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', FabrikString::safeColName($tmpFilter));
+					$msg = JText::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', String::safeColName($tmpFilter));
 					JLog::add($msg, JLog::NOTICE, 'com_fabrik');
 
 					$this->app->enqueueMessage($msg, 'notice');
@@ -6040,7 +6037,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		$params = $this->getParams();
 
-		return FText::_($params->get('empty_data_msg', 'COM_FABRIK_LIST_NO_DATA_MSG'));
+		return Text::_($params->get('empty_data_msg', 'COM_FABRIK_LIST_NO_DATA_MSG'));
 	}
 
 	/**
@@ -6069,14 +6066,14 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		if ($this->listRequiresFiltering() && !$this->gotOptionalFilters())
 		{
-			$this->emptyMsg = FText::_('COM_FABRIK_SELECT_AT_LEAST_ONE_FILTER');
+			$this->emptyMsg = Text::_('COM_FABRIK_SELECT_AT_LEAST_ONE_FILTER');
 
 			return false;
 		}
 
 		if ($this->hasRequiredElementFilters() && !$this->getRequiredFiltersFound())
 		{
-			$this->emptyMsg = FText::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS');
+			$this->emptyMsg = Text::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS');
 
 			return false;
 		}
@@ -6199,7 +6196,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		// If no filter keys, by definition we don't have required ones
 		if (!array_key_exists('key', $filters) || !is_array($filters['key']))
 		{
-			$this->emptyMsg = FText::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS');
+			$this->emptyMsg = Text::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS');
 
 			return false;
 		}
@@ -6208,7 +6205,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			if ($elementModel->getParams()->get('filter_required') == 1)
 			{
-				$name = FabrikString::safeColName($elementModel->getFullName(false, false));
+				$name = String::safeColName($elementModel->getFullName(false, false));
 				reset($filters['key']);
 				$found = false;
 
@@ -6223,7 +6220,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 				if (!$found || $filters['origvalue'][$key] == '')
 				{
-					$this->emptyMsg = FText::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS');
+					$this->emptyMsg = Text::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS');
 
 					return false;
 				}
@@ -6315,7 +6312,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$requestKey  = $this->getFilterModel()->getSearchAllRequestKey();
 			$v           = $this->getFilterModel()->getSearchAllValue('html');
 			$o           = new stdClass;
-			$searchLabel = $params->get('search-all-label', FText::_('COM_FABRIK_SEARCH'));
+			$searchLabel = $params->get('search-all-label', Text::_('COM_FABRIK_SEARCH'));
 			$class       = 'fabrik_filter search-query input-medium';
 			$o->filter   = '<input type="search" size="20" placeholder="' . $searchLabel . '" value="' . $v
 				. '" class="' . $class . '" name="' . $requestKey . '" />';
@@ -6323,13 +6320,13 @@ class Lizt extends View implements ModelFormLiztInterface
 			if ($params->get('search-mode-advanced') == 1)
 			{
 				$opts   = array();
-				$opts[] = JHTML::_('select.option', 'all', FText::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
-				$opts[] = JHTML::_('select.option', 'any', FText::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
-				$opts[] = JHTML::_('select.option', 'exact', FText::_('COM_FABRIK_EXACT_TERMS'));
-				$opts[] = JHTML::_('select.option', 'none', FText::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
+				$opts[] = JHtml::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
+				$opts[] = JHtml::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
+				$opts[] = JHtml::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
+				$opts[] = JHtml::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
 				$mode   = $this->app->getUserStateFromRequest('com_' . $package . '.list' . $this->getRenderContext() . '.searchallmode', 'search-mode-advanced');
 				$o->filter .= '&nbsp;'
-					. JHTML::_('select.genericList', $opts, 'search-mode-advanced', "class='fabrik_filter'", 'value', 'text', $mode);
+					. JHtml::_('select.genericList', $opts, 'search-mode-advanced', "class='fabrik_filter'", 'value', 'text', $mode);
 			}
 
 			$o->name    = 'all';
@@ -6408,7 +6405,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					$o->filter .= $elementModel->getFilter($counter, true);
 				}
 
-				$o->name    = FabrikString::safeColNameToArrayKey($filters['key'][$i]);
+				$o->name    = String::safeColNameToArrayKey($filters['key'][$i]);
 				$o->label   = $filters['label'][$i];
 				$aFilters[] = $o;
 				$counter++;
@@ -6432,8 +6429,8 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			$tmpl  = $this->getTmpl();
 			$url   = $this->getAdvancedSearchURL();
-			$title = '<span>' . FText::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
-			$opts  = array('alt' => FText::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
+			$title = '<span>' . Text::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
+			$opts  = array('alt' => Text::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
 			$img   = HTML::image('find.png', 'list', $tmpl, $opts);
 
 			return '<a href="' . $url . '" class="advanced-search-link">' . $img . '</a>';
@@ -6487,9 +6484,9 @@ class Lizt extends View implements ModelFormLiztInterface
 		$opts->conditionList = HTML::conditionList($listRef, '');
 		list($fieldNames, $firstFilter) = $this->getAdvancedSearchElementList();
 		$statements          = $this->getStatementsOpts();
-		$opts->elementList   = JHTML::_('select.genericlist', $fieldNames, 'fabrik___filter[list_' . $listRef . '][key][]',
+		$opts->elementList   = JHtml::_('select.genericlist', $fieldNames, 'fabrik___filter[list_' . $listRef . '][key][]',
 			'class="inputbox key" size="1" ', 'value', 'text');
-		$opts->statementList = JHTML::_('select.genericlist', $statements, 'fabrik___filter[list_' . $listRef . '][condition][]',
+		$opts->statementList = JHtml::_('select.genericlist', $statements, 'fabrik___filter[list_' . $listRef . '][condition][]',
 			'class="inputbox" size="1" ', 'value', 'text');
 		$opts->listid        = \JFilterInput::getInstance()->clean($list->get('id'), 'WORD');
 		$opts->listref       = $listRef;
@@ -6519,7 +6516,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$first         = false;
 		$firstFilter   = false;
-		$fieldNames[]  = JHTML::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT'));
+		$fieldNames[]  = JHtml::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT'));
 		$elementModels = $this->getElements();
 
 		foreach ($elementModels as $elementModel)
@@ -6542,7 +6539,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					$firstFilter = $elementModel->getFilter(0, false);
 				}
 
-				$fieldNames[] = JHTML::_('select.option', $elName, strip_tags(FText::_($element->get('label'))));
+				$fieldNames[] = JHtml::_('select.option', $elName, strip_tags(Text::_($element->get('label'))));
 			}
 		}
 
@@ -6552,20 +6549,20 @@ class Lizt extends View implements ModelFormLiztInterface
 	/**
 	 * Get a list of advanced search options
 	 *
-	 * @return array of JHTML options
+	 * @return array of JHtml options
 	 */
 
 	private function getStatementsOpts()
 	{
 		$statements   = array();
-		$statements[] = JHTML::_('select.option', '=', FText::_('COM_FABRIK_EQUALS'));
-		$statements[] = JHTML::_('select.option', '<>', FText::_('COM_FABRIK_NOT_EQUALS'));
-		$statements[] = JHTML::_('select.option', 'BEGINS WITH', FText::_('COM_FABRIK_BEGINS_WITH'));
-		$statements[] = JHTML::_('select.option', 'CONTAINS', FText::_('COM_FABRIK_CONTAINS'));
-		$statements[] = JHTML::_('select.option', 'ENDS WITH', FText::_('COM_FABRIK_ENDS_WITH'));
-		$statements[] = JHTML::_('select.option', '>', FText::_('COM_FABRIK_GREATER_THAN'));
-		$statements[] = JHTML::_('select.option', '<', FText::_('COM_FABRIK_LESS_THAN'));
-		$statements[] = JHTML::_('select.option', 'EMPTY', FText::_('COM_FABRIK_IS_EMPTY'));
+		$statements[] = JHtml::_('select.option', '=', Text::_('COM_FABRIK_EQUALS'));
+		$statements[] = JHtml::_('select.option', '<>', Text::_('COM_FABRIK_NOT_EQUALS'));
+		$statements[] = JHtml::_('select.option', 'BEGINS WITH', Text::_('COM_FABRIK_BEGINS_WITH'));
+		$statements[] = JHtml::_('select.option', 'CONTAINS', Text::_('COM_FABRIK_CONTAINS'));
+		$statements[] = JHtml::_('select.option', 'ENDS WITH', Text::_('COM_FABRIK_ENDS_WITH'));
+		$statements[] = JHtml::_('select.option', '>', Text::_('COM_FABRIK_GREATER_THAN'));
+		$statements[] = JHtml::_('select.option', '<', Text::_('COM_FABRIK_LESS_THAN'));
+		$statements[] = JHtml::_('select.option', 'EMPTY', Text::_('COM_FABRIK_IS_EMPTY'));
 
 		return $statements;
 	}
@@ -6635,7 +6632,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				foreach ($elementModels as $elementModel)
 				{
-					$testkey = FabrikString::safeColName($elementModel->getFullName(false, false));
+					$testkey = String::safeColName($elementModel->getFullName(false, false));
 
 					if ($testkey == $key)
 					{
@@ -6692,20 +6689,20 @@ class Lizt extends View implements ModelFormLiztInterface
 
 				if ($counter == 0)
 				{
-					$join = FText::_('COM_FABRIK_WHERE') . '<input type="hidden" value="WHERE" name="' . $prefix . 'join][]" />';
+					$join = Text::_('COM_FABRIK_WHERE') . '<input type="hidden" value="WHERE" name="' . $prefix . 'join][]" />';
 				}
 				else
 				{
 					$join = HTML::conditionList($this->getRenderContext(), $join);
 				}
 
-				$lineElname = FabrikString::safeColName($elementModel->getFullName(true, false));
+				$lineElname = String::safeColName($elementModel->getFullName(true, false));
 				$orig       = $input->get($lineElname);
 				$input->set($lineElname, array('value' => $value));
 				$filter = $elementModel->getFilter($counter, false);
 				$input->set($lineElname, $orig);
-				$key    = JHTML::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key input-small" size="1" ', 'value', 'text', $key);
-				$jsSel  = JHTML::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox input-small" size="1" ', 'value', 'text', $jsSel);
+				$key    = JHtml::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key input-small" size="1" ', 'value', 'text', $key);
+				$jsSel  = JHtml::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox input-small" size="1" ', 'value', 'text', $jsSel);
 				$rows[] = array('join' => $join, 'element' => $key, 'condition' => $jsSel, 'filter' => $filter, 'type' => $type,
 					'grouped' => $grouped);
 				$counter++;
@@ -6714,9 +6711,9 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($counter == 0)
 		{
-			$join   = FText::_('COM_FABRIK_WHERE') . '<input type="hidden" name="' . $prefix . 'join][]" value="WHERE" />';
-			$key    = JHTML::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key" size="1" ', 'value', 'text', '');
-			$jsSel  = JHTML::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox" size="1" ', 'value', 'text', '');
+			$join   = Text::_('COM_FABRIK_WHERE') . '<input type="hidden" name="' . $prefix . 'join][]" value="WHERE" />';
+			$key    = JHtml::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key" size="1" ', 'value', 'text', '');
+			$jsSel  = JHtml::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox" size="1" ', 'value', 'text', '');
 			$rows[] = array('join' => $join, 'element' => $key, 'condition' => $jsSel, 'filter' => $firstFilter, 'type' => $type,
 				'grouped' => $grouped);
 		}
@@ -6898,18 +6895,18 @@ class Lizt extends View implements ModelFormLiztInterface
 						case 'desc':
 							$orderDir = '-';
 							$class    = 'class="fabrikorder-desc"';
-							$img      = HTML::image('arrow-up.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+							$img      = HTML::image('arrow-up.png', 'list', $tmpl, array('alt' => Text::_('COM_FABRIK_ORDER')));
 							break;
 						case 'asc':
 							$orderDir = 'desc';
 							$class    = 'class="fabrikorder-asc"';
-							$img      = HTML::image('arrow-down.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+							$img      = HTML::image('arrow-down.png', 'list', $tmpl, array('alt' => Text::_('COM_FABRIK_ORDER')));
 							break;
 						case '':
 						case '-':
 							$orderDir = 'asc';
 							$class    = 'class="fabrikorder"';
-							$img      = HTML::image('menu-2.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+							$img      = HTML::image('menu-2.png', 'list', $tmpl, array('alt' => Text::_('COM_FABRIK_ORDER')));
 							break;
 					}
 
@@ -6920,7 +6917,7 @@ class Lizt extends View implements ModelFormLiztInterface
 							if ($item->order_dir === 'desc')
 							{
 								$class = 'class="fabrikorder-desc"';
-								$img   = HTML::image('orderdesc.png', 'list', $tmpl, array('alt' => FText::_('COM_FABRIK_ORDER')));
+								$img   = HTML::image('orderdesc.png', 'list', $tmpl, array('alt' => Text::_('COM_FABRIK_ORDER')));
 							}
 						}
 					}
@@ -7029,7 +7026,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					if ($linkedTable != '0')
 					{
 						$prefix                  = $join->element_id . '___' . $linkedTable . '_list_heading';
-						$aTableHeadings[$prefix] = empty($heading) ? $join->listlabel . ' ' . FText::_('COM_FABRIK_LIST') : $heading;
+						$aTableHeadings[$prefix] = empty($heading) ? $join->listlabel . ' ' . Text::_('COM_FABRIK_LIST') : $heading;
 						$headingClass[$prefix]   = array('class' => 'fabrik_ordercell related ' . $prefix,
 							'style' => '');
 						$cellClass[$prefix]      = array('class' => $prefix . ' fabrik_element related');
@@ -7052,7 +7049,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				{
 					$heading                 = $faceted->linkedformheader->$key;
 					$prefix                  = $join->db_table_name . '___' . $join->name . '_form_heading';
-					$aTableHeadings[$prefix] = empty($heading) ? $join->listlabel . ' ' . FText::_('COM_FABRIK_FORM') : $heading;
+					$aTableHeadings[$prefix] = empty($heading) ? $join->listlabel . ' ' . Text::_('COM_FABRIK_FORM') : $heading;
 					$headingClass[$prefix]   = array('class' => 'fabrik_ordercell related ' . $prefix,
 						'style' => '');
 					$cellClass[$prefix]      = array('class' => $prefix . ' fabrik_element related');
@@ -7669,7 +7666,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			}
 		}
 
-		$primaryKey = FabrikString::shortColName($this->getTable()->get('list.db_primary_key'));
+		$primaryKey = String::shortColName($this->getTable()->get('list.db_primary_key'));
 
 		if ($rowId != '' && $c == 1 && $lastKey == $primaryKey)
 		{
@@ -8040,7 +8037,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					continue;
 				}
 
-				$key = FabrikString::shortColName($key);
+				$key = String::shortColName($key);
 
 				/* $$$ hugh - trying to fix issue where encrypted elements from a main group end up being added to
 				 * a joined group's field list for the update/insert on the joined row(s).
@@ -8538,7 +8535,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			$table      = array_shift($fieldParts);
 		}
 
-		$field = FabrikString::shortColName($field);
+		$field = String::shortColName($field);
 
 		$indexes = $this->getIndexes($table);
 
@@ -8595,7 +8592,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$db    = $this->getDb();
 		$table = $table == '' ? $this->getTable()->get('list.db_table_name') : $table;
-		$field = FabrikString::shortColName($field);
+		$field = String::shortColName($field);
 
 		if ($field == '')
 		{
@@ -8640,7 +8637,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$db    = $this->getDb();
 		$table = $table == '' ? $this->getTable()->get('list.db_table_name') : $table;
-		$field = FabrikString::shortColName($field);
+		$field = String::shortColName($field);
 
 		if ($field == '')
 		{
@@ -8718,7 +8715,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			if ($key == '')
 			{
-				throw new Exception(FText::_("COM_FABRIK_NO_KEY_FOUND_FOR_THIS_TABLE"));
+				throw new Exception(Text::_("COM_FABRIK_NO_KEY_FOUND_FOR_THIS_TABLE"));
 			}
 		}
 
@@ -8787,7 +8784,6 @@ class Lizt extends View implements ModelFormLiztInterface
 		if ($removed_id)
 		{
 			$val = $ids;
-			$c   = count($val);
 
 			foreach ($val as &$v)
 			{
@@ -8867,7 +8863,6 @@ class Lizt extends View implements ModelFormLiztInterface
 	 *
 	 * @return  mixed
 	 */
-
 	public function dropData()
 	{
 		$db    = $this->getDb();
@@ -8875,11 +8870,8 @@ class Lizt extends View implements ModelFormLiztInterface
 		$table = $this->getTable();
 		$query->delete($db->qn($table->get('list.db_table_name')));
 		$db->setQuery($query);
+		!$db->execute();
 
-		if (!$db->execute())
-		{
-			return JError::raiseWarning(FText::_($db->getErrorMsg()));
-		}
 		// Clean the cache.
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		JFactory::getCache('com_' . $package)->clean();
@@ -8892,7 +8884,6 @@ class Lizt extends View implements ModelFormLiztInterface
 	 *
 	 * @return  void
 	 */
-
 	public function truncate()
 	{
 		$db   = $this->getDb();
@@ -8983,7 +8974,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($incSelect != '')
 		{
-			$fieldNames[] = JHTML::_('select.option', '', $incSelect);
+			$fieldNames[] = JHtml::_('select.option', '', $incSelect);
 		}
 
 		if (is_array($aFields))
@@ -8992,17 +8983,17 @@ class Lizt extends View implements ModelFormLiztInterface
 			{
 				if ($incTableName)
 				{
-					$fieldNames[] = JHTML::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
+					$fieldNames[] = JHtml::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
 				}
 				else
 				{
-					$fieldNames[] = JHTML::_('select.option', $oField->Field);
+					$fieldNames[] = JHtml::_('select.option', $oField->Field);
 				}
 			}
 		}
 
 		$opts          = 'class="' . $className . '" size="1" ';
-		$fieldDropDown = JHTML::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
+		$fieldDropDown = JHtml::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
 
 		return str_replace("\n", "", $fieldDropDown);
 	}
@@ -9339,7 +9330,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$fields     = $this->getStorage()->getDBFields($table);
 		$primaryKey = "";
 		$sql        = "";
-		$table      = FabrikString::safeColName($table);
+		$table      = String::safeColName($table);
 
 		if (is_array($fields))
 		{
@@ -9347,7 +9338,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			foreach ($fields as $field)
 			{
-				$field->Field = FabrikString::safeColName($field->Field);
+				$field->Field = String::safeColName($field->Field);
 
 				if ($field->Key == 'PRI' && $field->Extra == 'auto_increment')
 				{
@@ -9734,7 +9725,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$col                = $db->qn($col);
 		$el->encryptFieldName($col);
 		$tableName = $table->get('list.db_table_name');
-		$tableName = FabrikString::safeColName($tableName);
+		$tableName = String::safeColName($tableName);
 		$query     = $db->getQuery(true);
 		$query->select('DISTINCT(' . $col . ')')->from($tableName);
 		$query       = $listModel->buildQueryJoin($query);
@@ -9889,7 +9880,7 @@ class Lizt extends View implements ModelFormLiztInterface
 							// $$$ rob if prefilter was using _raw field then we need to assign the model twice to both possible keys
 							if (is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
 							{
-								$dbkey2                        = FabrikString::safeColName($elementModel->getFullName(false, false));
+								$dbkey2                        = String::safeColName($elementModel->getFullName(false, false));
 								$this->elements[$sig][$dbkey2] = $elementModel;
 							}
 
@@ -10029,7 +10020,7 @@ class Lizt extends View implements ModelFormLiztInterface
 	{
 		$params = $this->getParams();
 
-		return FText::_($params->get('addlabel', FText::_('COM_FABRIK_ADD')));
+		return Text::_($params->get('addlabel', Text::_('COM_FABRIK_ADD')));
 	}
 
 	/**
@@ -10047,7 +10038,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$params = $this->getParams();
 		$row    = ArrayHelper::fromObject($row);
 
-		return FText::_($this->parseMessageForRowHolder($params->get('detaillabel', FText::_('COM_FABRIK_VIEW')), $row));
+		return Text::_($this->parseMessageForRowHolder($params->get('detaillabel', Text::_('COM_FABRIK_VIEW')), $row));
 	}
 
 	/**
@@ -10065,7 +10056,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$params = $this->getParams();
 		$row    = ArrayHelper::fromObject($row);
 
-		return FText::_($this->parseMessageForRowHolder($params->get('editlabel', FText::_('COM_FABRIK_EDIT')), $row));
+		return Text::_($this->parseMessageForRowHolder($params->get('editlabel', Text::_('COM_FABRIK_EDIT')), $row));
 	}
 
 	/**
@@ -10097,7 +10088,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			// Append content plugin filters or querystring filters
 			if (in_array($ftype, array('jpluginfilters', 'querystring')))
 			{
-				$qs[FabrikString::safeColNameToArrayKey($keys[$i]) . '_raw'] = $vals[$i];
+				$qs[String::safeColNameToArrayKey($keys[$i]) . '_raw'] = $vals[$i];
 			}
 		}
 
@@ -10248,7 +10239,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		foreach ($queryvars as $k => $v)
 		{
-			$rawK = FabrikString::rtrimword($k, '_raw');
+			$rawK = String::rtrimword($k, '_raw');
 			$el   = $form->getElement($k);
 
 			if ($el === false)
@@ -10316,8 +10307,8 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		$action            = $page . implode('&amp;', $qs);
 		$action            = preg_replace("/limitstart{$this->getId()}=(\d+)?(&amp;|)/", '', $action);
-		$action            = FabrikString::removeQSVar($action, 'fabrik_incsessionfilters');
-		$action            = FabrikString::rtrimword($action, '&');
+		$action            = String::removeQSVar($action, 'fabrik_incsessionfilters');
+		$action            = String::rtrimword($action, '&');
 		$this->tableAction = JRoute::_($action);
 
 		return $this->tableAction;
@@ -10392,8 +10383,8 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			$table = $this->getTable();
 			$tmpl  = $this->getTmpl();
-			$title = '<span>' . FText::_('COM_FABRIK_CLEAR') . '</span>';
-			$opts  = array('alt' => FText::_('COM_FABRIK_CLEAR'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
+			$title = '<span>' . Text::_('COM_FABRIK_CLEAR') . '</span>';
+			$opts  = array('alt' => Text::_('COM_FABRIK_CLEAR'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
 			$img   = HTML::image('filter_delete.png', 'list', $tmpl, $opts);
 
 			return '<a href="#" class="clearFilters">' . $img . '</a>';
@@ -10492,7 +10483,7 @@ class Lizt extends View implements ModelFormLiztInterface
 			return;
 		}
 
-		$dbPrimaryKey = FabrikString::safeColNameToArrayKey($this->getTable()->get('list.db_primary_key'));
+		$dbPrimaryKey = String::safeColNameToArrayKey($this->getTable()->get('list.db_primary_key'));
 		$db           = $this->getDb();
 		HTML::debug($data, 'render:before formatForJoins');
 
@@ -10515,7 +10506,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		*/
 		foreach ($data[0] as $key => $val)
 		{
-			$shortKey = FabrikString::rtrimword($key, '_raw');
+			$shortKey = String::rtrimword($key, '_raw');
 			/* $$$ hugh - had to cache this stuff, because if you have a lot of rows and a lot of elements,
 			 * doing this many hundreds of times causes huge slowdown, exceeding max script execution time!
 			* And we really only need to do it once for the first row.
@@ -10560,7 +10551,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 								if (!empty($join_pk))
 								{
-									$can_repeats_tables[$join_table_name] = array('colname' => FabrikString::shortColName($join_pk));
+									$can_repeats_tables[$join_table_name] = array('colname' => String::shortColName($join_pk));
 								}
 							}
 						}
@@ -10599,7 +10590,7 @@ class Lizt extends View implements ModelFormLiztInterface
 				foreach ($data[$i] as $key => $val)
 				{
 					$origKey  = $key;
-					$shortKey = FabrikString::rtrimword($key, '_raw');
+					$shortKey = String::rtrimword($key, '_raw');
 
 					if ($can_repeats[$shortKey])
 					{
@@ -10680,7 +10671,7 @@ class Lizt extends View implements ModelFormLiztInterface
 					foreach ($data[$i] as $key => $val)
 					{
 						$origKey  = $key;
-						$shortKey = FabrikString::rtrimword($key, '_raw');
+						$shortKey = String::rtrimword($key, '_raw');
 
 						if ($can_repeats[$shortKey]
 							&& !isset($can_repeats_pk_vals[$can_repeats_keys[$shortKey]][$i])
@@ -10755,7 +10746,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$data[$key] = $value;
 
 		// Ensure the primary key is set in $data
-		$primaryKey = FabrikString::shortColName($this->getTable()->get('list.db_primary_key'));
+		$primaryKey = String::shortColName($this->getTable()->get('list.db_primary_key'));
 		$primaryKey = str_replace("`", "", $primaryKey);
 
 		if (!isset($data[$primaryKey]))
@@ -10926,7 +10917,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 	public function updateRow($id, $col, $val)
 	{
-		$field = FabrikString::shortColname($col);
+		$field = String::shortColname($col);
 
 		if (empty($field) || empty($id))
 		{
@@ -11280,8 +11271,8 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if (String::stristr($qs, 'group_by'))
 		{
-			$qs = FabrikString::removeQSVar($qs, 'group_by');
-			$qs = FabrikString::ltrimword($qs, '?');
+			$qs = String::removeQSVar($qs, 'group_by');
+			$qs = String::ltrimword($qs, '?');
 			$qs = str_replace('&', '&amp;', $qs);
 		}
 
@@ -11297,7 +11288,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		$a = array();
 		list($h, $x, $b, $c) = $this->getHeadings();
 		$o                      = new stdClass;
-		$o->label               = FText::_('COM_FABRIK_NONE');
+		$o->label               = Text::_('COM_FABRIK_NONE');
 		$o->group_by            = '';
 		$a[$url . 'group_by=0'] = $o;
 
@@ -11655,7 +11646,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		{
 			$params          = $this->getParams();
 			$tabsField       = $params->get('tabs_field', '');
-			$this->tabsField = FabrikString::safeColNameToArrayKey($tabsField);
+			$this->tabsField = String::safeColNameToArrayKey($tabsField);
 		}
 
 		return $this->tabsField;
@@ -11688,7 +11679,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 		if ($tableName != $table->get('list.db_table_name'))
 		{
-			$this->app->enqueueMessage(sprintf(FText::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->get('list.db_table_name')), 'error');
+			$this->app->enqueueMessage(sprintf(Text::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->get('list.db_table_name')), 'error');
 
 			return;
 		}
@@ -11713,7 +11704,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		}
 		else
 		{
-			$this->app->enqueueMessage(sprintf(FText::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->get('list.db_table_name')), 'error');
+			$this->app->enqueueMessage(sprintf(Text::_('COM_FABRIK_LIST_TABS_TABLE_ERROR'), $tableName, $table->get('list.db_table_name')), 'error');
 			$joinTable = $elementModel->getJoinModel()->getJoin();
 
 			return;
@@ -11740,7 +11731,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		 **/
 		if (count($counts) - $tabsMax > 100)
 		{
-			$this->app->enqueueMessage(sprintf(FText::_('COM_FABRIK_LIST_TABS_MERGE_ERROR'), count($counts), $tabsMax), 'notice');
+			$this->app->enqueueMessage(sprintf(Text::_('COM_FABRIK_LIST_TABS_MERGE_ERROR'), count($counts), $tabsMax), 'notice');
 
 			return;
 		}
@@ -11750,7 +11741,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		if ($tabsAll)
 		{
 			// Set value to null to differentiate between all and empty string values
-			$tabs[] = array(FText::_('COM_FABRIK_LIST_TABS_ALL'), null);
+			$tabs[] = array(Text::_('COM_FABRIK_LIST_TABS_ALL'), null);
 		}
 
 		while (count($counts) > $tabsMax)
@@ -11899,7 +11890,7 @@ class Lizt extends View implements ModelFormLiztInterface
 
 			if ($userDoCol != '')
 			{
-				$userDoCol = FabrikString::safeColNameToArrayKey($userDoCol);
+				$userDoCol = String::safeColNameToArrayKey($userDoCol);
 
 				if ($userDoCol == $name)
 				{

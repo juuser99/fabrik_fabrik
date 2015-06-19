@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -56,12 +57,11 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	 *
 	 * @return void
 	 */
-
 	public function getBottomContent()
 	{
 		if (!class_exists('SoapClient'))
 		{
-			JError::raiseWarning(E_WARNING, FText::_('PLG_FORM_SALESFORCE_ERR_SOAP_NOT_INSTALLED'));
+			$this->app->enqueueMessage(Text::_('PLG_FORM_SALESFORCE_ERR_SOAP_NOT_INSTALLED'));
 		}
 	}
 
@@ -117,7 +117,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 			}
 		}
 
-		$key = FabrikString::safeColNameToArrayKey($formModel->getlistModel()->getTable()->get('list.db_primary_key'));
+		$key = String::safeColNameToArrayKey($formModel->getlistModel()->getTable()->get('list.db_primary_key'));
 		$customkey = $params->get('salesforce_customid') . '__c';
 
 		if ($params->get('salesforce_allowupsert', 0))
@@ -161,17 +161,17 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 				{
 					foreach ($result->errors as $error)
 					{
-						JError::raiseWarning(500, FText::_('SALESFORCE_ERR') . $errors->message);
+						$this->app->enqueueMessage(Text::_('SALESFORCE_ERR') . $errors->message, 'error');
 					}
 				}
 				else
 				{
-					JError::raiseWarning(500, FText::_('SALESFORCE_ERR') . $result->errors->message);
+					$this->app->enqueueMessage(Text::_('SALESFORCE_ERR') . $result->errors->message, 'error');
 				}
 			}
 			else
 			{
-				JError::raiseWarning(500, JText::sprintf(SALESFORCE_NOCREATE, $updateObject));
+				$this->app->enqueueMessage(JText::sprintf(SALESFORCE_NOCREATE, $updateObject), 'error');
 			}
 		}
 	}

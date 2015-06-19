@@ -59,7 +59,6 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 *
 	 * @return void
 	 */
-
 	public function getBottomContent()
 	{
 		$this->html = '';
@@ -71,7 +70,8 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 
 			if ($this->html === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'warning');
+				return false;
 			}
 		}
 
@@ -196,7 +196,6 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 *
 	 * @return	bool
 	 */
-
 	public function onBeforeCalculations()
 	{
 		$params = $this->getParams();
@@ -205,7 +204,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		{
 			if ($this->_runPHP() === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'warning');
+
+				return false;
 			}
 		}
 
@@ -219,7 +220,6 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 *
 	 * @return	bool
 	 */
-
 	public function onDeleteRowsForm(&$groups)
 	{
 		$params = $this->getParams();
@@ -228,7 +228,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		{
 			if ($this->_runPHP(null, $groups) === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'warning');
+
+				return false;
 			}
 		}
 
@@ -242,7 +244,6 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 *
 	 * @return	bool
 	 */
-	
 	public function onAfterDeleteRowsForm(&$groups)
 	{
 		$params = $this->getParams();
@@ -251,7 +252,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		{
 			if ($this->_runPHP(null, $groups) === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'waring');
+
+				return false;
 			}
 		}
 	

@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -96,7 +98,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 		foreach ($groups as &$group)
 		{
 			$group = trim($group);
-			$group = FabrikString::safeColName($group);
+			$group = String::safeColName($group);
 		}
 
 		$group = implode(', ', $groups);
@@ -119,13 +121,13 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 		foreach ($sums as &$sum)
 		{
 			$sum = trim($sum);
-			$sum = FabrikString::rtrimword($sum, '_raw');
-			$as = FabrikString::safeColNameToArrayKey($sum);
+			$sum = String::rtrimword($sum, '_raw');
+			$as = String::safeColNameToArrayKey($sum);
 
-			$statement = $fn .'(' . FabrikString::safeColName($sum) . ')';
-			$statement .= ' AS ' . $db->quoteName($as);
-			$statement .= ', ' . $fn .'(' . FabrikString::safeColName($sum) . ')';
-			$statement .= ' AS ' . $db->quoteName($as . '_raw');
+			$statement = $fn .'(' . String::safeColName($sum) . ')';
+			$statement .= ' AS ' . $db->qn($as);
+			$statement .= ', ' . $fn .'(' . String::safeColName($sum) . ')';
+			$statement .= ' AS ' . $db->qn($as . '_raw');
 
 			$sum = $statement;
 		}
@@ -143,7 +145,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 
 		if ($xCol === '' || $yCol === '')
 		{
-			throw new UnexpectedValueException(FText::_('PLG_LIST_PIVOT_ERROR_X_AND_Y_COL_MUST_BE_SELECTED'));
+			throw new UnexpectedValueException(Text::_('PLG_LIST_PIVOT_ERROR_X_AND_Y_COL_MUST_BE_SELECTED'));
 		}
 		//pivot___date
 
@@ -184,7 +186,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 			}
 		}
 
-		$headings['pivot_total'] = FText::_('PLG_LIST_PIVOT_LIST_X_TOTAL');
+		$headings['pivot_total'] = Text::_('PLG_LIST_PIVOT_LIST_X_TOTAL');
 		$args['headingClass']['pivot_total'] = $headingClass;
 		$args['cellClass']['pivot_total'] = $cellClass;
 
@@ -360,7 +362,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 		
 		// Add totals @ bottom
 		$yColTotals = new stdClass;
-		$yColTotals->$yCol = FText::_('PLG_LIST_PIVOT_LIST_Y_TOTAL');
+		$yColTotals->$yCol = Text::_('PLG_LIST_PIVOT_LIST_Y_TOTAL');
 		$total = 0;
 
 		foreach ($xCols as $x)

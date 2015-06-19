@@ -20,6 +20,7 @@ use \JApplicationHelper;
 use \JCryptKey;
 use \JCrypt;
 use \JCryptCipherSimple;
+use Fabrik\Helpers\Text;
 
 /**
  * Fabrik Form Session Model
@@ -249,7 +250,7 @@ class FormSession extends \JModelBase
 		if ((int) $user->get('id') !== 0)
 		{
 			$hash = $this->getHash();
-			$this->status = FText::_('LOADING FROM DATABASE');
+			$this->status = Text::_('LOADING FROM DATABASE');
 			$this->statusid = _FABRIKFORMSESSION_LOADED_FROM_TABLE;
 		}
 		else
@@ -262,7 +263,7 @@ class FormSession extends \JModelBase
 
 				if ($cookieVal !== '')
 				{
-					$this->status = FText::_('COM_FABRIK_LOADING_FROM_COOKIE');
+					$this->status = Text::_('COM_FABRIK_LOADING_FROM_COOKIE');
 					$this->statusid = _FABRIKFORMSESSION_LOADED_FROM_COOKIE;
 					$hash = $crypt->decrypt($cookieVal);
 				}

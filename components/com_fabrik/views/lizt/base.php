@@ -18,13 +18,13 @@ use \JComponentHelper as JComponentHelper;
 use \JProfiler as JProfiler;
 use \JRegistry as JRegistry;
 use \Fabrik\Helpers\HTML as HelperHTML;
-use \FText as FText;
 use \stdClass as stdClass;
-use \FabrikString as FabrikString;
+use Fabrik\Helpers\String;
 use \JRoute as JRoute;
 use \JHtml as JHtml;
 use \JFile as JFile;
 use \JText as JText;
+use Fabrik\Helpers\Text;
 
 /**
  * Base List view class
@@ -434,9 +434,9 @@ class Base extends \Fabrik\Admin\Views\Html
 
 		// Deprecated (keep in case people use them in old templates)
 		$this->table                = new stdClass;
-		$this->table->label         = FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.label'), $_REQUEST));
-		$this->table->intro         = $params->get('show_into', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($item->get('list.introduction')));
-		$this->table->outro         = $params->get('show_outro', 1) == 0 ? '' : FabrikString::translate($w->parseMessageForPlaceHolder($params->get('outro')));
+		$this->table->label         = String::translate($w->parseMessageForPlaceHolder($item->get('list.label'), $_REQUEST));
+		$this->table->intro         = $params->get('show_into', 1) == 0 ? '' : String::translate($w->parseMessageForPlaceHolder($item->get('list.introduction')));
+		$this->table->outro         = $params->get('show_outro', 1) == 0 ? '' : String::translate($w->parseMessageForPlaceHolder($params->get('outro')));
 		$this->table->id            = \JFilterInput::getInstance()->clean($item->get('id'), 'WORD');
 		$this->table->renderid      = $model->getRenderContext();
 		$this->table->db_table_name = $item->get('list.db_table_name');
@@ -573,14 +573,14 @@ class Base extends \Fabrik\Admin\Views\Html
 	{
 		if (!$model->canPublish())
 		{
-			echo FText::_('COM_FABRIK_LIST_NOT_PUBLISHED');
+			echo Text::_('COM_FABRIK_LIST_NOT_PUBLISHED');
 
 			return false;
 		}
 
 		if (!$model->canView())
 		{
-			echo FText::_('JERROR_ALERTNOAUTHOR');
+			echo Text::_('JERROR_ALERTNOAUTHOR');
 
 			return false;
 		}
@@ -645,7 +645,6 @@ class Base extends \Fabrik\Admin\Views\Html
 	 *
 	 * @return  void
 	 */
-
 	protected function output()
 	{
 		$profiler = JProfiler::getInstance('Application');
@@ -676,25 +675,25 @@ class Base extends \Fabrik\Admin\Views\Html
 		$model                     = $this->model;
 		$this->buttons             = new stdClass;
 		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => "{notice:true}",
-			'title' => '<span>' . FText::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
-		$buttonProperties['alt']   = FText::_('COM_FABRIK_EXPORT_TO_CSV');
+			'title' => '<span>' . Text::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
+		$buttonProperties['alt']   = Text::_('COM_FABRIK_EXPORT_TO_CSV');
 		$this->buttons->csvexport  = HelperHTML::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);
-		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_IMPORT_FROM_CSV') . '</span>';
-		$buttonProperties['alt']   = FText::_('COM_FABRIK_IMPORT_TO_CSV');
+		$buttonProperties['title'] = '<span>' . Text::_('COM_FABRIK_IMPORT_FROM_CSV') . '</span>';
+		$buttonProperties['alt']   = Text::_('COM_FABRIK_IMPORT_TO_CSV');
 		$this->buttons->csvimport  = HelperHTML::image('csv-import.png', 'list', $this->tmpl, $buttonProperties);
-		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_SUBSCRIBE_RSS') . '</span>';
-		$buttonProperties['alt']   = FText::_('COM_FABRIK_SUBSCRIBE_RSS');
+		$buttonProperties['title'] = '<span>' . Text::_('COM_FABRIK_SUBSCRIBE_RSS') . '</span>';
+		$buttonProperties['alt']   = Text::_('COM_FABRIK_SUBSCRIBE_RSS');
 		$this->buttons->feed       = HelperHTML::image('feed.png', 'list', $this->tmpl, $buttonProperties);
-		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_EMPTY') . '</span>';
-		$buttonProperties['alt']   = FText::_('COM_FABRIK_EMPTY');
+		$buttonProperties['title'] = '<span>' . Text::_('COM_FABRIK_EMPTY') . '</span>';
+		$buttonProperties['alt']   = Text::_('COM_FABRIK_EMPTY');
 		$this->buttons->empty      = HelperHTML::image('trash.png', 'list', $this->tmpl, $buttonProperties);
 
-		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_GROUP_BY') . '</span>';
-		$buttonProperties['alt']   = FText::_('COM_FABRIK_GROUP_BY');
+		$buttonProperties['title'] = '<span>' . Text::_('COM_FABRIK_GROUP_BY') . '</span>';
+		$buttonProperties['alt']   = Text::_('COM_FABRIK_GROUP_BY');
 		$this->buttons->groupby    = HelperHTML::image('group_by.png', 'list', $this->tmpl, $buttonProperties);
 
 		unset($buttonProperties['title']);
-		$buttonProperties['alt'] = FText::_('COM_FABRIK_FILTER');
+		$buttonProperties['alt'] = Text::_('COM_FABRIK_FILTER');
 		$this->buttons->filter   = HelperHTML::image('filter.png', 'list', $this->tmpl, $buttonProperties);
 
 		$addLabel                  = $model->addLabel();
@@ -702,8 +701,8 @@ class Base extends \Fabrik\Admin\Views\Html
 		$buttonProperties['alt']   = $addLabel;
 		$this->buttons->add        = HelperHTML::image('plus-sign.png', 'list', $this->tmpl, $buttonProperties);
 
-		$buttonProperties['title'] = '<span>' . FText::_('COM_FABRIK_PDF') . '</span>';
-		$buttonProperties['alt']   = FText::_('COM_FABRIK_PDF');
+		$buttonProperties['title'] = '<span>' . Text::_('COM_FABRIK_PDF') . '</span>';
+		$buttonProperties['alt']   = Text::_('COM_FABRIK_PDF');
 		$this->buttons->pdf        = HelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties);
 	}
 
@@ -869,7 +868,7 @@ class Base extends \Fabrik\Admin\Views\Html
 		$item   = $model->getTable();
 
 		$referer           = str_replace('&', '&amp;', $input->server->get('REQUEST_URI', '', 'string'));
-		$referer           = FabrikString::removeQSVar($referer, 'fabrik_incsessionfilters');
+		$referer           = String::removeQSVar($referer, 'fabrik_incsessionfilters');
 		$this->hiddenFields = array();
 
 		// $$$ rob 15/12/2011 - if in com_content then doing this means you cant delete rows

@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
@@ -24,7 +25,6 @@ JFormHelper::loadFieldClass('list');
  * @subpackage  Form
  * @since       1.6
  */
-
 class JFormFieldVisualizationlist extends JFormFieldList
 {
 	/**
@@ -40,17 +40,16 @@ class JFormFieldVisualizationlist extends JFormFieldList
 	 *
 	 * @return  array  The field option objects.
 	 */
-
 	protected function getOptions()
 	{
-		$a = array(JHTML::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT')));
+		$a = array(JHTML::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT')));
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id AS value, label AS text')->from('#__fabrik_visualizations')->where('published = 1')->order('text');
 		$db->setQuery($query);
-		$elementstypes = $db->loadObjectList();
-		$elementstypes = array_merge($a, $elementstypes);
+		$elementTypes = $db->loadObjectList();
+		$elementTypes = array_merge($a, $elementTypes);
 
-		return $elementstypes;
+		return $elementTypes;
 	}
 }

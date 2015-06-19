@@ -14,8 +14,10 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\String;
 
 /**
  * Plugin element to render time dropdowns - derived from birthday element
@@ -69,7 +71,7 @@ class Time extends Element
 		}
 
 		$value = $this->getValue($data, $repeatCounter);
-		$sep = $params->get('time_separatorlabel', FText::_(':'));
+		$sep = $params->get('time_separatorlabel', Text::_(':'));
 		$fd = $params->get('details_time_format', 'H:i:s');
 
 		if (!$this->isEditable())
@@ -131,7 +133,7 @@ class Time extends Element
 			$minvalue = ArrayHelper::getValue($value, 1);
 			$secvalue = ArrayHelper::getValue($value, 2);
 
-			$hours = array(JHTML::_('select.option', '', $params->get('time_hourlabel', FText::_('PLG_ELEMENT_TIME_SEPARATOR_HOUR'))));
+			$hours = array(JHTML::_('select.option', '', $params->get('time_hourlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_HOUR'))));
 
 			for ($i = 0; $i < 24; $i++)
 			{
@@ -139,18 +141,16 @@ class Time extends Element
 				$hours[] = JHTML::_('select.option', $i);
 			}
 
-			$mins = array(JHTML::_('select.option', '', $params->get('time_minlabel', FText::_('PLG_ELEMENT_TIME_SEPARATOR_MINUTE'))));
+			$mins = array(JHTML::_('select.option', '', $params->get('time_minlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_MINUTE'))));
 			$increment = (int) $params->get('minutes_increment', 1);
 
-			// Siin oli enne $monthlabels, viisin ülespoole
-			// google translation: "this was before the $monthlabels, took up the"
 			for ($i = 0; $i < 60; $i += $increment)
 			{
 				$i = str_pad($i, 2, '0', STR_PAD_LEFT);
 				$mins[] = JHTML::_('select.option', $i);
 			}
 
-			$secs = array(JHTML::_('select.option', '', $params->get('time_seclabel', FText::_('PLG_ELEMENT_TIME_SEPARATOR_SECOND'))));
+			$secs = array(JHTML::_('select.option', '', $params->get('time_seclabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_SECOND'))));
 
 			for ($i = 0; $i < 60; $i++)
 			{
@@ -281,7 +281,7 @@ class Time extends Element
 		$valueSelect = 'substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60 + substr(' . $name . ' FROM 7 FOR 2)';
 
 		// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-		return "SELECT ROUND(AVG($valueSelect), $roundTo) AS value, $label FROM " . FabrikString::safeColName($item->get('list.db_table_name'))
+		return "SELECT ROUND(AVG($valueSelect), $roundTo) AS value, $label FROM " . String::safeColName($item->get('list.db_table_name'))
 		. " $joinSQL $whereSQL";
 	}
 
@@ -354,7 +354,7 @@ class Time extends Element
 		$data = $groupModel->isJoin() ? Worker::JSONtoData($data, true) : array($data);
 		$data = (array) $data;
 		$ft = $params->get('list_time_format', 'H:i:s');
-		$sep = $params->get('time_separatorlabel', FText::_(':'));
+		$sep = $params->get('time_separatorlabel', Text::_(':'));
 		$format = array();
 
 		foreach ($data as $d)

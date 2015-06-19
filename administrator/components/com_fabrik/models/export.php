@@ -13,8 +13,8 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\String;
 
 /**
  * Old package? export code
@@ -435,7 +435,7 @@ class Export  extends Base
 		$fileName = $archiveName . '.xml';
 		$fileName = $this->_bufferFile;
 		$fileName = str_replace(JPATH_SITE, '', $this->_bufferFile);
-		$fileName = FabrikString::ltrimword($fileName, "/administrator/");
+		$fileName = String::ltrimword($fileName, "/administrator/");
 		$ok = $zip->addModify($fileName, '', "components/com_fabrik");
 
 		for ($i = 0; $i < count($this->files); $i++)

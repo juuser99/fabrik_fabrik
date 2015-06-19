@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -147,7 +148,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 		if ($content->remaining_hits <= 0)
 		{
-			$app->enqueueMessage(FText::_('TWITTER_ACCOUNT_LIMIT_REACHED'));
+			$app->enqueueMessage(Text::_('TWITTER_ACCOUNT_LIMIT_REACHED'));
 		} */
 
 		// Get logged in user to help with tests
@@ -164,11 +165,11 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 			case '304':
 				if ($show_success == 1)
 				{
-					$this->app->enqueueMessage(FText::_('PLG_FORM_TWITTER_SUCCESS'));
+					$this->app->enqueueMessage(Text::_('PLG_FORM_TWITTER_SUCCESS'));
 				}
 				break;
 			default:
-				$this->app->enqueueMessage(FText::_('PLG_FORM_TWITTER_ERR') . ": $connection->http_code : $status->error");
+				$this->app->enqueueMessage(Text::_('PLG_FORM_TWITTER_ERR') . ": $connection->http_code : $status->error");
 		}
 
 		$url = $input->get('fabrik_referrer', '', 'string');
@@ -201,12 +202,12 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 		if ($params->get('twitter_oauth_token') == '')
 		{
-			throw new RuntimeException(FText::_('PLG_FORM_TWITTER_ERR_NO_OAUTH_TOKEN'), 500);
+			throw new RuntimeException(Text::_('PLG_FORM_TWITTER_ERR_NO_OAUTH_TOKEN'), 500);
 		}
 
 		if ($params->get('twitter_oauth_token_secret') == '')
 		{
-			throw new RuntimeException(FText::_('PLG_FORM_TWITTER_ERR_NO_OAUTH_SECRET_TOKEN'), 500);
+			throw new RuntimeException(Text::_('PLG_FORM_TWITTER_ERR_NO_OAUTH_SECRET_TOKEN'), 500);
 		}
 
 		if ($params->get('twitter_oauth_token_secret') !== '')
@@ -284,10 +285,10 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		// $$$ hugh - so let's add edit_link and view_link as well, just for consistency
 		$data['fabrik_edit_url'] = $data['fabrik_editurl'];
 		$data['fabrik_view_url'] = $data['fabrik_viewurl'];
-		$data['fabrik_editlink'] = "<a href=\"{$data['fabrik_editurl']}\">" . FText::_('EDIT') . "</a>";
-		$data['fabrik_viewlink'] = "<a href=\"{$data['fabrik_viewurl']}\">" . FText::_('VIEW') . "</a>";
-		$data['fabrik_edit_link'] = "<a href=\"{$data['fabrik_editurl']}\">" . FText::_('EDIT') . "</a>";
-		$data['fabrik_view_link'] = "<a href=\"{$data['fabrik_viewurl']}\">" . FText::_('VIEW') . "</a>";
+		$data['fabrik_editlink'] = "<a href=\"{$data['fabrik_editurl']}\">" . Text::_('EDIT') . "</a>";
+		$data['fabrik_viewlink'] = "<a href=\"{$data['fabrik_viewurl']}\">" . Text::_('VIEW') . "</a>";
+		$data['fabrik_edit_link'] = "<a href=\"{$data['fabrik_editurl']}\">" . Text::_('EDIT') . "</a>";
+		$data['fabrik_view_link'] = "<a href=\"{$data['fabrik_viewurl']}\">" . Text::_('VIEW') . "</a>";
 
 		return $data;
 	}
@@ -421,7 +422,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 		if (!function_exists('curl_init'))
 		{
-			throw new RuntimeException(FText::_('PLG_FORM_TWITTER_ERR_CURL'), 500);
+			throw new RuntimeException(Text::_('PLG_FORM_TWITTER_ERR_CURL'), 500);
 		}
 
 		// Build TwitterOAuth object with client credentials.
@@ -503,17 +504,13 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		}
 
 		$row->params = json_encode($opts);
-
-		if (!$row->store())
-		{
-			JError::raiseWarning(500, $row->getError());
-		}
+		$row->store();
 
 		$langfile = 'com_fabrik.plg.form.fabriktwitter';
 		$this->language->load($langfile, JPATH_ADMINISTRATOR, null, true);
 
 		// If we had already authorized the app then we will still be in the admin page - so update the fields:
-		echo FText::_('PLG_FORM_TWITTER_CREDENTIALS_SAVED');
+		echo Text::_('PLG_FORM_TWITTER_CREDENTIALS_SAVED');
 		$document = JFactory::getDocument();
 		$script = implode("\n", $js) . "
 		(function() {window.close()}).delay(4000);

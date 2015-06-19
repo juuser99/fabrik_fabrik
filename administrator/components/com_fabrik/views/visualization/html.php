@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use \Fabrik\Helpers\HTML as HelperHTML;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \JToolBarHelper as JToolBarHelper;
 use \stdClass as stdClass;
 
@@ -114,7 +114,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$userId = $user->get('id');
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
-		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_VISUALIZATION_NEW') : FText::_('COM_FABRIK_MANAGER_VISUALIZATION_EDIT');
+		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_VISUALIZATION_NEW') : Text::_('COM_FABRIK_MANAGER_VISUALIZATION_EDIT');
 		$title .= $isNew ? '' : ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'visualization.png');
 
@@ -158,6 +158,6 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_VISUALIZATIONS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_VISUALIZATIONS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_VISUALIZATIONS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_VISUALIZATIONS_EDIT'));
 	}
 }

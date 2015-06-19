@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Admin\Models\Visualization;
@@ -63,7 +63,7 @@ class FabrikModelCoverflow extends Visualization
 			if ($listModel->canView() || $listModel->canEdit())
 			{
 				$elements = $listModel->getElements();
-				$imageElement = ArrayHelper::getValue($elements, FabrikString::safeColName($image));
+				$imageElement = ArrayHelper::getValue($elements, String::safeColName($image));
 				$action = $app->isAdmin() ? "task" : "view";
 				$nextview = $listModel->canEdit() ? "form" : "details";
 

@@ -13,6 +13,11 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+use \stdClass;
+use \JFolder;
+use \JHtml;
+
 /**
  * Plugin element to render folder list
  *
@@ -30,7 +35,6 @@ class Folder extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -44,7 +48,7 @@ class Folder extends Element
 
 		if ($params->get('folder_allownone', true))
 		{
-			$opts[] = JHTML::_('select.option', '', FText::_('NONE'));
+			$opts[] = JHTML::_('select.option', '', Text::_('NONE'));
 		}
 
 		if ($params->get('folder_listfolders', true))
@@ -100,7 +104,6 @@ class Folder extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -109,7 +112,7 @@ class Folder extends Element
 		$path = JPATH_ROOT . '/' . $params->get('fbfbfolder_path');
 		$folders = JFolder::folders($path);
 		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts->defaultVal = $element->default;
+		$opts->defaultVal = $element->get('default');
 		$opts->data = $folders;
 
 		return array('FbFolder', $id, $opts);

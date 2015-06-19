@@ -13,10 +13,10 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use \FabrikString as FabrikString;
+use \Fabrik\Helpers\String as String;
+use Fabrik\Helpers\Text;
 use \JFile as JFile;
 use \stdClass as stdClass;
 use \JModel;
@@ -131,7 +131,7 @@ class CsvExport extends Base
 			if (empty($headings))
 			{
 				$url = $input->server->get('HTTP_REFERER', '');
-				$app->enqueueMessage(FText::_('No data to export'));
+				$app->enqueueMessage(Text::_('No data to export'));
 				$app->redirect($url);
 
 				return;
@@ -144,7 +144,7 @@ class CsvExport extends Base
 		$incData = $input->get('inctabledata', true);
 		$data = $this->model->getData();
 		$exportFormat = $this->model->getParams()->get('csvfullname');
-		$shortKey = FabrikString::shortColName($table->get('list.db_primary_key'));
+		$shortKey = String::shortColName($table->get('list.db_primary_key'));
 
 		foreach ($data as $group)
 		{
@@ -502,7 +502,7 @@ class CsvExport extends Base
 		$incRaw = $input->get('incraw', true);
 		$incData = $input->get('inctabledata', true);
 
-		$shortKey = FabrikString::shortColName($table->get('list.db_primary_key'));
+		$shortKey = String::shortColName($table->get('list.db_primary_key'));
 
 		foreach ($r as $heading => $value)
 		{
@@ -590,7 +590,7 @@ class CsvExport extends Base
 
 		if ($input->get('inccalcs') == 1)
 		{
-			array_unshift($h, FText::_('Calculation'));
+			array_unshift($h, Text::_('Calculation'));
 		}
 
 		$h = array_map(array($this, "quote"), $h);

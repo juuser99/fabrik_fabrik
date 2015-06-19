@@ -14,7 +14,7 @@ namespace Fabrik\Admin\Views\Plugin;
 defined('_JEXEC') or die('Restricted access');
 
 use \JFactory as JFactory;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \JForm as JForm;
 
 /**
@@ -87,7 +87,7 @@ class Raw extends \JViewHtml
 		$str[] = '</ul>';
 		$str[] = '<div class="pluginOpts" style="clear:left"></div>';
 		$str[] = '<div class="form-actions"><a href="#" class="btn btn-danger" data-button="removeButton">';
-		$str[] = '<i class="icon-delete"></i> ' . FText::_('COM_FABRIK_DELETE') . '</a></div>';
+		$str[] = '<i class="icon-delete"></i> ' . Text::_('COM_FABRIK_DELETE') . '</a></div>';
 		$str[] = '</fieldset>';
 		$str[] = '</div>';
 

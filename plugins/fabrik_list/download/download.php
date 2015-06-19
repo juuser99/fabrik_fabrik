@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -153,9 +154,9 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 			$db = Worker::getDbo();
 			ArrayHelper::toInteger($ids);
 			$query = $db->getQuery(true);
-			$query->select($db->quoteName($download_file))
-			->from($db->quoteName($download_table))
-			->where($db->quoteName($download_fk) . ' IN (' . implode(',', $ids) . ')');
+			$query->select($db->qn($download_file))
+			->from($db->qn($download_table))
+			->where($db->qn($download_fk) . ' IN (' . implode(',', $ids) . ')');
 			$db->setQuery($query);
 			$results = $db->loadObjectList();
 
@@ -212,13 +213,13 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 					}
 					else
 					{
-						$zipError .= FText::_('ZipArchive add error: ' . $zipAdd);
+						$zipError .= Text::_('ZipArchive add error: ' . $zipAdd);
 					}
 				}
 
 				if (!$zip->close())
 				{
-					$zipError = FText::_('ZipArchive close error') . ($zip->status);
+					$zipError = Text::_('ZipArchive close error') . ($zip->status);
 				}
 
 				if ($download_resize)
@@ -245,13 +246,13 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 					}
 					else
 					{
-						$zipError .= FText::_('ZIP is empty');
+						$zipError .= Text::_('ZIP is empty');
 					}
 				}
 			}
 			else
 			{
-				$zipError = FText::_('ZipArchive open error: ' . $zipRes);
+				$zipError = Text::_('ZipArchive open error: ' . $zipRes);
 			}
 		}
 		else

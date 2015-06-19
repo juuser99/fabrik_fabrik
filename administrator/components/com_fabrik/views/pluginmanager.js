@@ -24,7 +24,6 @@ var PluginManager = new Class({
 		this.options = options;
 
 		// 3.5 - set to use the view model ref (not the element/etc id)
-		console.log('options', options);
 		this.id = options.id;
 		this.plugins = plugins;
 		this.type = type;

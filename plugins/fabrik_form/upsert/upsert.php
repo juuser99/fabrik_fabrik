@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\String;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -56,7 +57,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		}
 
 		$table = $this->getTableName();
-		$pk = FabrikString::safeColName($params->get('primary_key'));
+		$pk = String::safeColName($params->get('primary_key'));
 
 		$rowId = $params->get('row_value', '');
 
@@ -139,7 +140,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 				$row_value = $params->get('row_value', '');
 				if ($row_value == '{origid}')
 				{				
-					$fk = FabrikString::safeColName($params->get('primary_key'));
+					$fk = String::safeColName($params->get('primary_key'));
 					$rowId = $formModel->getInsertId();
 					$fields[] = $fk . ' = ' . $upsert_db->q($rowId);
 				}
@@ -148,8 +149,8 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		
 		for ($i = 0; $i < count($upsert->upsert_key); $i++)
 		{
-			$k = FabrikString::shortColName($upsert->upsert_key[$i]);
-			$k = $upsert_db->quoteName($k);
+			$k = String::shortColName($upsert->upsert_key[$i]);
+			$k = $upsert_db->qn($k);
 			$v = $upsert->upsert_value[$i];
 			$v = $w->parseMessageForPlaceholder($v, $this->data);
 

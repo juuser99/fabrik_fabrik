@@ -13,7 +13,7 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\HTML;
@@ -335,7 +335,7 @@ class Image extends Element
 			}
 
 			// $$$rob not sure about his name since we are adding $repeatCounter to getHTMLName();
-			$layoutData->imageName = $this->getGroupModel()->canRepeat() ? FabrikString::rtrimWord($name, "][$repeatCounter]") . "_image][$repeatCounter]"
+			$layoutData->imageName = $this->getGroupModel()->canRepeat() ? String::rtrimWord($name, "][$repeatCounter]") . "_image][$repeatCounter]"
 				: $id . '_image';
 			$bits = explode('/', $value);
 			$image = array_pop($bits);

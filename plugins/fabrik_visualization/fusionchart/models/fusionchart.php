@@ -627,7 +627,7 @@ class FabrikModelFusionchart extends Visualization
 
 							if (!array_key_exists($column, $row))
 							{
-								JError::raiseWarning(E_NOTICE, $column . ': NOT FOUND - PLEASE CHECK IT IS PUBLISHED');
+								$this->app->enqueueMessage($column . ': NOT FOUND - PLEASE CHECK IT IS PUBLISHED', 'error');
 								continue;
 							}
 						}

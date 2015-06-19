@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -77,7 +78,7 @@ class JFormFieldSpecificordering extends JFormFieldList
 		}
 		else
 		{
-			$text = FText::_('COM_FABRIK_NEW_ITEMS_LAST');
+			$text = Text::_('COM_FABRIK_NEW_ITEMS_LAST');
 			$ordering = '<input type="text" size="40" readonly="readonly" class="readonly" name="' . $this->name . '" value="' . $this->value . $text
 				. '" />';
 		}

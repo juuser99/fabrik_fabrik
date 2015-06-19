@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 if ($this->showFilters) : ?>
 <form method="post" name="filter">
 <?php
@@ -40,7 +42,7 @@ if ($this->showFilters) : ?>
 			<th colspan="2" style="text-align:right;">
   				<i class="icon-filter"></i>
   				<button type="submit" class="btn btn-primary">
-  					<?php echo FText::_('GO') ?>
+  					<?php echo Text::_('GO') ?>
   				</button>
 			</th>
 		</tr>

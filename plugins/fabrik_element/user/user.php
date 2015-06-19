@@ -15,6 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \InvalidArgumentException;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render drop-down list to select user
@@ -528,7 +531,7 @@ class User extends Databasejoin
 	 */
 	protected function _getSelectLabel($filter = false)
 	{
-		return $this->getParams()->get('user_noselectionlabel', FText::_('COM_FABRIK_PLEASE_SELECT'));
+		return $this->getParams()->get('user_noselectionlabel', Text::_('COM_FABRIK_PLEASE_SELECT'));
 	}
 
 	/**
@@ -559,8 +562,8 @@ class User extends Databasejoin
 
 			// $$$ rob in csv import keytable not set
 			$k = isset($join->keytable) ? $join->keytable : $join->join_from_table;
-			$k = FabrikString::safeColName($k . '.' . $element->name);
-			$k2 = FabrikString::safeColName($this->getJoinLabelColumn());
+			$k = String::safeColName($k . '.' . $element->name);
+			$k2 = String::safeColName($this->getJoinLabelColumn());
 
 			if (ArrayHelper::getValue($opts, 'inc_raw', true))
 			{
@@ -587,6 +590,8 @@ class User extends Databasejoin
 	 * Called when the element is saved
 	 *
 	 * @param   array  $data  posted element save data
+	 *
+	 * @throws InvalidArgumentException
 	 *
 	 * @return  bool  save ok or not
 	 */
@@ -714,11 +719,11 @@ class User extends Databasejoin
 		$return = array();
 		$tableType = $this->getLabelOrConcatVal();
 		$join = $this->getJoin();
-		$joinTableName = FabrikString::safeColName($join->table_join_alias);
+		$joinTableName = String::safeColName($join->table_join_alias);
 		$filterType = $element->get('filter_type');
 
 		// If filter type isn't set was blowing up in switch below 'cos no $rows
-		// so added '' to this test.  Should probably set $element->filter_type to a default somewhere.
+		// so added '' to this test.  Should probably set $element->get('filter_type') to a default somewhere.
 		if (in_array($filterType, array('range', 'dropdown', '', 'checkbox')))
 		{
 			$rows = $this->filterValueList($normal, '', $joinTableName . '.' . $tableType, '', false);
@@ -802,11 +807,11 @@ class User extends Databasejoin
 	protected function buildFilterJoin()
 	{
 		$params = $this->getParams();
-		$joinTable = FabrikString::safeColName($params->get('join_db_name'));
+		$joinTable = String::safeColName($params->get('join_db_name'));
 		$join = $this->getJoin();
-		$joinTableName = FabrikString::safeColName($join->table_join_alias);
+		$joinTableName = String::safeColName($join->table_join_alias);
 		$joinKey = $this->getJoinValueColumn();
-		$elName = FabrikString::safeColName($this->getFullName(true, false));
+		$elName = String::safeColName($this->getFullName(true, false));
 
 		return 'INNER JOIN ' . $joinTable . ' AS ' . $joinTableName . ' ON ' . $joinKey . ' = ' . $elName;
 	}
@@ -848,7 +853,7 @@ class User extends Databasejoin
 
 		if ($type == 'querystring' || $type == 'jpluginfilters')
 		{
-			$key = FabrikString::safeColNameToArrayKey($key);
+			$key = String::safeColNameToArrayKey($key);
 			/* $$$ rob no matter whether you use elementname_raw or elementname in the querystring filter
 			 * by the time it gets here we have normalized to elementname. So we check if the original qs filter was looking at the raw
 			 * value if it was then we want to filter on the key and not the label
@@ -1005,7 +1010,7 @@ class User extends Databasejoin
 	{
 		$elName = $this->getFullName(true, false);
 
-		return FabrikString::safeColName($elName);
+		return String::safeColName($elName);
 	}
 
 	/**
@@ -1064,7 +1069,7 @@ class User extends Databasejoin
 
 			if (!isset($displayMessage))
 			{
-				$this->app->enqueueMessage(JText::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->id), 'notice');
+				$this->app->enqueueMessage(JText::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->get('id')), 'notice');
 				$displayMessage = true;
 			}
 		}

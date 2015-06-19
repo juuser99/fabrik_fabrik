@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Text;
 
 $doc       = JFactory::getDocument();
 $rtlDir    = $doc->direction === 'rtl' ? 'left' : 'right';
@@ -23,27 +24,27 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 	<ul class="nav nav-tabs">
 		<li class="active">
 			<a data-toggle="tab" href="#data-data">
-				<?php echo FText::_('COM_FABRIK_DATA'); ?>
+				<?php echo Text::_('COM_FABRIK_DATA'); ?>
 			</a>
 		</li>
 		<li>
 			<a data-toggle="tab" href="#data-groupby">
-				<?php echo FText::_('COM_FABRIK_GROUP_BY') ?>
+				<?php echo Text::_('COM_FABRIK_GROUP_BY') ?>
 			</a>
 		</li>
 		<li>
 			<a data-toggle="tab" href="#data-prefilter">
-				<?php echo FText::_('COM_FABRIK_PREFILTER') ?>
+				<?php echo Text::_('COM_FABRIK_PREFILTER') ?>
 			</a>
 		</li>
 		<li>
 			<a data-toggle="tab" href="#table-sliders-data-joins">
-				<?php echo FText::_('COM_FABRIK_JOINS') ?>
+				<?php echo Text::_('COM_FABRIK_JOINS') ?>
 			</a>
 		</li>
 		<li>
 			<a data-toggle="tab" href="#data-faceted">
-				<?php echo FText::_('COM_FABRIK_RELATED_DATA') ?>
+				<?php echo Text::_('COM_FABRIK_RELATED_DATA') ?>
 			</a>
 		</li>
 	</ul>
@@ -67,7 +68,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 				require '_control_group.php';
 				?>
 
-				<label for="order_by"><?php echo FText::_('COM_FABRIK_FIELD_ORDER_BY_LABEL'); ?></label>
+				<label for="order_by"><?php echo Text::_('COM_FABRIK_FIELD_ORDER_BY_LABEL'); ?></label>
 
 				<div id="orderByTd" style="margin:4px 0 0 2px">
 					<?php
@@ -103,10 +104,10 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 
 		<div class="tab-pane" id="data-prefilter">
 			<fieldset class="form-horizontal">
-				<legend><?php echo FText::_('COM_FABRIK_PREFILTERS') ?></legend>
+				<legend><?php echo Text::_('COM_FABRIK_PREFILTERS') ?></legend>
 
 				<a class="btn" href="#" onclick="oAdminFilters.addFilterOption(); return false;">
-					<i class="icon-plus"></i> <?php echo FText::_('COM_FABRIK_ADD'); ?>
+					<i class="icon-plus"></i> <?php echo Text::_('COM_FABRIK_ADD'); ?>
 				</a>
 
 				<div id="prefilters" style="padding-top:20px">
@@ -125,12 +126,12 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 		<div class="tab-pane" id="table-sliders-data-joins">
 			<fieldset>
 				<legend>
-					<?php echo FText::_('COM_FABRIK_JOINS'); ?>
+					<?php echo Text::_('COM_FABRIK_JOINS'); ?>
 				</legend>
 				<?php if ($this->item->get('view') != '')
 				{ ?>
 					<a href="#" id="addAJoin" class="btn">
-						<i class="icon-plus"></i>  <?php echo FText::_('COM_FABRIK_ADD'); ?>
+						<i class="icon-plus"></i>  <?php echo Text::_('COM_FABRIK_ADD'); ?>
 					</a>
 					<div id="joindtd" style="margin-top:20px"></div>
 					<?php
@@ -142,7 +143,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 				}
 				else
 				{
-					echo FText::_('COM_FABRIK_AVAILABLE_ONCE_SAVED');
+					echo Text::_('COM_FABRIK_AVAILABLE_ONCE_SAVED');
 				}
 				?>
 			</fieldset>
@@ -150,7 +151,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 
 		<div class="tab-pane" id="data-faceted">
 			<fieldset>
-				<legend><?php echo FText::_('COM_FABRIK_RELATED_DATA') ?></legend>
+				<legend><?php echo Text::_('COM_FABRIK_RELATED_DATA') ?></legend>
 
 				<?php foreach ($this->form->getFieldset('facetedlinks2') as $this->field):
 					require '_control_group.php';

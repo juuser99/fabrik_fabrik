@@ -10,6 +10,7 @@
  */
 
 use \Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +33,7 @@ JHtml::_('behavior.keepalive');
 			window.fireEvent('form.save');
 			Joomla.submitform(task, document.getElementById('adminForm'));
 		} else {
-			alert('<?php echo $this->escape(FText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
+			alert('<?php echo $this->escape(Text::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
 	}
 </script>
@@ -42,7 +43,7 @@ JHtml::_('behavior.keepalive');
 		<div class="span6">
 			<fieldset class="form-horizontal">
 				<legend>
-					<?php echo FText::_('COM_FABRIK_DETAILS'); ?>
+					<?php echo Text::_('COM_FABRIK_DETAILS'); ?>
 				</legend>
 				<?php
 				foreach ($this->form->getFieldset('details') as $key => $this->field) :
@@ -70,7 +71,7 @@ JHtml::_('behavior.keepalive');
 
 			<fieldset class="form-horizontal">
 				<legend>
-					<?php echo FText::_('COM_FABRIK_RUN'); ?>
+					<?php echo Text::_('COM_FABRIK_RUN'); ?>
 				</legend>
 				<?php foreach ($this->form->getFieldset('run') as $this->field) :
 					require '_control_group.php';
@@ -80,7 +81,7 @@ JHtml::_('behavior.keepalive');
 
 			<fieldset class="form-horizontal">
 				<legend>
-					<?php echo FText::_('COM_FABRIK_LOG'); ?>
+					<?php echo Text::_('COM_FABRIK_LOG'); ?>
 				</legend>
 				<?php foreach ($this->form->getFieldset('log') as $this->field) :
 					require '_control_group.php';

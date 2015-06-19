@@ -15,8 +15,8 @@ namespace Fabrik\Admin\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use \JSimplepieFactory as JSimplepieFactory;
-use \FText as FText;
-use \FabrikString as FabrikString;
+use Fabrik\Helpers\Text;
+use \Fabrik\Helpers\String as String;
 use Fabrik\Helpers\Worker;
 
 /**
@@ -79,7 +79,7 @@ class Home extends \JModelBase
 
 		if ($rssDoc == false)
 		{
-			$output = FText::_('Error: Feed not retrieved');
+			$output = Text::_('Error: Feed not retrieved');
 		}
 		else
 		{
@@ -88,14 +88,14 @@ class Home extends \JModelBase
 			$link = $rssDoc->get_link();
 
 			$output = '<table class="adminlist">';
-			$output .= '<tr><th colspan="3"><a href="' . $link . '" target="_blank">' . FText::_($title) . '</th></tr>';
+			$output .= '<tr><th colspan="3"><a href="' . $link . '" target="_blank">' . Text::_($title) . '</th></tr>';
 
 			$items = array_slice($rssDoc->get_items(), 0, 3);
 			$numItems = count($items);
 
 			if ($numItems == 0)
 			{
-				$output .= '<tr><th>' . FText::_('No news items found') . '</th></tr>';
+				$output .= '<tr><th>' . Text::_('No news items found') . '</th></tr>';
 			}
 			else
 			{
@@ -110,7 +110,7 @@ class Home extends \JModelBase
 
 					if ($item->get_description())
 					{
-						$description = FabrikString::truncate($item->get_description(), array('wordcount' => 50));
+						$description = String::truncate($item->get_description(), array('wordcount' => 50));
 						$output .= '<br />' . $description;
 					}
 
@@ -147,11 +147,7 @@ class Home extends \JModelBase
 		$group->label = "Contact Details";
 		$group->published = 1;
 
-		if (!$group->store())
-		{
-			return JError::raiseWarning(500, $group->getError());
-		}
-
+		$group->store();
 		$groupId = $db->insertid();
 
 		$defaulDb->dropTable($dbTableName);
@@ -164,11 +160,7 @@ class Home extends \JModelBase
 		$group->label = "Your Enquiry";
 		$group->published = 1;
 
-		if (!$group->store())
-		{
-			return JError::raiseWarning(500, $group->getError());
-		}
-
+		$group->store();
 		$group2Id = $db->insertid();
 		echo "<li>Group 'Your Enquiry' created</li>";
 
@@ -185,10 +177,7 @@ class Home extends \JModelBase
 		$form->form_template = "default";
 		$form->view_only_template = "default";
 
-		if (!$form->store())
-		{
-			return JError::raiseWarning(500, $form->getError());
-		}
+		$form->store();
 
 		echo "<li>Form 'Contact Us' created</li>";
 		$formId = $db->insertid();

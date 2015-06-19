@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use \JComponentHelper as JComponentHelper;
 use \JHtml as JHtml;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
 use Joomla\Registry\Registry as JRegistry;
 
@@ -251,7 +251,7 @@ class Elements extends Base implements ModelElementsInterface
 
 	public function getShowInListOptions()
 	{
-		return array(JHtml::_('select.option', 0, FText::_('JNO')), JHtml::_('select.option', 1, FText::_('JYES')));
+		return array(JHtml::_('select.option', 0, Text::_('JNO')), JHtml::_('select.option', 1, Text::_('JYES')));
 	}
 
 	/**
@@ -322,7 +322,7 @@ class Elements extends Base implements ModelElementsInterface
 
 		if (!empty($blocked))
 		{
-			$this->app->enqueueMessage(FText::_('COM_FABRIK_CANT_UNPUBLISHED_PK_ELEMENT'), 'warning');
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_CANT_UNPUBLISHED_PK_ELEMENT'), 'warning');
 		}
 
 		return array_diff($ids, $blocked);

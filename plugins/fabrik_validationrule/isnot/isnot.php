@@ -13,7 +13,7 @@ namespace Fabrik\Plugins\Validation;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \FText;
+use Fabrik\Helpers\Text;
 
 /**
  * Is Not Validation Rule
@@ -73,11 +73,11 @@ class IsNot extends Validation
 
 		if ($tipText !== '')
 		{
-			return FText::_($tipText);
+			return Text::_($tipText);
 		}
 
 		$isNot = $params->get('isnot-isnot');
 
-		return FText::sprintf('PLG_VALIDATIONRULE_ISNOT_LABEL', $isNot);
+		return Text::sprintf('PLG_VALIDATIONRULE_ISNOT_LABEL', $isNot);
 	}
 }

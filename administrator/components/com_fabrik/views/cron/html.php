@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use \Fabrik\Helpers\HTML as HTMLHelper;
 use \JFactory as JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \JToolBarHelper as JToolBarHelper;
 use \stdClass as stdClass;
 
@@ -113,7 +113,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$isNew      = ($this->item->get('id') == '');
 		$checkedOut = !($this->item->get('checked_out') == 0 || $this->item->get('checked_out') == $user->get('id'));
 		$canDo      = Fabrik::getActions($this->state->get('filter.category_id'));
-		$title      = $isNew ? FText::_('COM_FABRIK_MANAGER_CRON_NEW') : FText::_('COM_FABRIK_MANAGER_CRON_EDIT') . ' "' . $this->item->label . '"';
+		$title      = $isNew ? Text::_('COM_FABRIK_MANAGER_CRON_NEW') : Text::_('COM_FABRIK_MANAGER_CRON_EDIT') . ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'cron.png');
 
 		if ($isNew)
@@ -156,6 +156,6 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_CRONS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_CRONS_EDIT'));
 	}
 }

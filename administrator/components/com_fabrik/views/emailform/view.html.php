@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML as HelperHTML;
+use Fabrik\Helpers\Text;
 
 /**
  * View when emailing a form to a user
@@ -74,14 +75,14 @@ class FabrikAdminViewemailform extends JViewLegacy
 		 */
 		if (!isset($_SERVER['HTTP_USER_AGENT']))
 		{
-			throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
+			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 500);
 		}
 
 		// Make sure the form was indeed POST'ed:
 		//  (requires your html form to use: action="post")
 		if (!$_SERVER['REQUEST_METHOD'] == 'POST')
 		{
-			throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
+			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 500);
 		}
 
 		// Attempt to defend against header injections:
@@ -95,7 +96,7 @@ class FabrikAdminViewemailform extends JViewLegacy
 			{
 				if (String::strpos($v, $v2) !== false)
 				{
-					throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
+					throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 500);
 				}
 			}
 		}
@@ -112,7 +113,7 @@ class FabrikAdminViewemailform extends JViewLegacy
 
 		if (!$email || !$youremail || (Worker::isEmail($email) == false) || (Worker::isEmail($youremail) == false))
 		{
-			$app->enqueueMessage(FText::_('PHPMAILER_INVALID_ADDRESS'));
+			$app->enqueueMessage(Text::_('PHPMAILER_INVALID_ADDRESS'));
 		}
 
 		$config = JFactory::getConfig();

@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -152,7 +153,6 @@ class PlgFabrik_ListPhp extends plgFabrik_List
 	 *
 	 * @return  string
 	 */
-
 	public function process_result($c)
 	{
 		if (isset($this->msg))
@@ -162,7 +162,7 @@ class PlgFabrik_ListPhp extends plgFabrik_List
 		else
 		{
 			$params = $this->getParams();
-			$msg = $params->get('table_php_msg', FText::_('PLG_LIST_PHP_CODE_RUN'));
+			$msg = $params->get('table_php_msg', Text::_('PLG_LIST_PHP_CODE_RUN'));
 
 			return $msg;
 		}

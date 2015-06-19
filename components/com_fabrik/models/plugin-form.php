@@ -17,6 +17,7 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\LayoutFile;
 use \JProfiler;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
 
 /**
  * Fabrik Plugin From Model
@@ -412,7 +413,7 @@ class Form extends Plugin
 
 		if (is_object($listModel))
 		{
-			$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
+			$pk = String::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
 			$this->emailData[$pk] = $listModel->lastInsertId;
 			$this->emailData[$pk . '_raw'] = $listModel->lastInsertId;
 		}

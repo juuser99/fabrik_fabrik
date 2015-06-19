@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
 
@@ -23,7 +24,6 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik.visualization.calendar
  * @since       3.0
  */
-
 class FabrikViewCalendar extends JViewLegacy
 {
 	/**
@@ -48,7 +48,7 @@ class FabrikViewCalendar extends JViewLegacy
 
 		if (!$model->canView())
 		{
-			echo FText::_('JERROR_ALERTNOAUTHOR');
+			echo Text::_('JERROR_ALERTNOAUTHOR');
 
 			return false;
 		}
@@ -68,7 +68,7 @@ class FabrikViewCalendar extends JViewLegacy
 
 		if ($params->get('calendar_show_messages', '1') == '1' && $this->canAdd && $this->requiredFiltersFound)
 		{
-			$msg = FText::_('PLG_VISUALIZATION_CALENDAR_DOUBLE_CLICK_TO_ADD');
+			$msg = Text::_('PLG_VISUALIZATION_CALENDAR_DOUBLE_CLICK_TO_ADD');
 			$msg .= $model->getDateLimitsMsg();
 			$app->enqueueMessage($msg);
 		}
@@ -118,15 +118,15 @@ class FabrikViewCalendar extends JViewLegacy
 		$options->Itemid = $Itemid;
 		$options->show_day = (bool) $params->get('show_day', true);
 		$options->show_week = (bool) $params->get('show_week', true);
-		$options->days = array(FText::_('SUNDAY'), FText::_('MONDAY'), FText::_('TUESDAY'), FText::_('WEDNESDAY'), FText::_('THURSDAY'),
-			FText::_('FRIDAY'), FText::_('SATURDAY'));
-		$options->shortDays = array(FText::_('SUN'), FText::_('MON'), FText::_('TUE'), FText::_('WED'), FText::_('THU'), FText::_('FRI'),
-			FText::_('SAT'));
-		$options->months = array(FText::_('JANUARY'), FText::_('FEBRUARY'), FText::_('MARCH'), FText::_('APRIL'), FText::_('MAY'), FText::_('JUNE'),
-			FText::_('JULY'), FText::_('AUGUST'), FText::_('SEPTEMBER'), FText::_('OCTOBER'), FText::_('NOVEMBER'), FText::_('DECEMBER'));
-		$options->shortMonths = array(FText::_('JANUARY_SHORT'), FText::_('FEBRUARY_SHORT'), FText::_('MARCH_SHORT'), FText::_('APRIL_SHORT'),
-			FText::_('MAY_SHORT'), FText::_('JUNE_SHORT'), FText::_('JULY_SHORT'), FText::_('AUGUST_SHORT'), FText::_('SEPTEMBER_SHORT'),
-			FText::_('OCTOBER_SHORT'), FText::_('NOVEMBER_SHORT'), FText::_('DECEMBER_SHORT'));
+		$options->days = array(Text::_('SUNDAY'), Text::_('MONDAY'), Text::_('TUESDAY'), Text::_('WEDNESDAY'), Text::_('THURSDAY'),
+			Text::_('FRIDAY'), Text::_('SATURDAY'));
+		$options->shortDays = array(Text::_('SUN'), Text::_('MON'), Text::_('TUE'), Text::_('WED'), Text::_('THU'), Text::_('FRI'),
+			Text::_('SAT'));
+		$options->months = array(Text::_('JANUARY'), Text::_('FEBRUARY'), Text::_('MARCH'), Text::_('APRIL'), Text::_('MAY'), Text::_('JUNE'),
+			Text::_('JULY'), Text::_('AUGUST'), Text::_('SEPTEMBER'), Text::_('OCTOBER'), Text::_('NOVEMBER'), Text::_('DECEMBER'));
+		$options->shortMonths = array(Text::_('JANUARY_SHORT'), Text::_('FEBRUARY_SHORT'), Text::_('MARCH_SHORT'), Text::_('APRIL_SHORT'),
+			Text::_('MAY_SHORT'), Text::_('JUNE_SHORT'), Text::_('JULY_SHORT'), Text::_('AUGUST_SHORT'), Text::_('SEPTEMBER_SHORT'),
+			Text::_('OCTOBER_SHORT'), Text::_('NOVEMBER_SHORT'), Text::_('DECEMBER_SHORT'));
 		$options->first_week_day = (int) $params->get('first_week_day', 0);
 
 		$options->monthday = new stdClass;
@@ -218,12 +218,12 @@ class FabrikViewCalendar extends JViewLegacy
 		$o = $model->getAddStandardEventFormInfo();
 		$calendar = $model->getVisualization();
 		$options = array();
-		$options[] = JHTML::_('select.option', '', FText::_('PLG_VISUALIZATION_CALENDAR_PLEASE_SELECT'));
+		$options[] = JHTML::_('select.option', '', Text::_('PLG_VISUALIZATION_CALENDAR_PLEASE_SELECT'));
 
 		if ($o != null)
 		{
 			$listId = $o->id;
-			$options[] = JHTML::_('select.option', $listId, FText::_('PLG_VISUALIZATION_CALENDAR_STANDARD_EVENT'));
+			$options[] = JHTML::_('select.option', $listId, Text::_('PLG_VISUALIZATION_CALENDAR_STANDARD_EVENT'));
 		}
 
 		$model->getEvents();
@@ -265,7 +265,7 @@ class FabrikViewCalendar extends JViewLegacy
 		$script[] = "});";
 		//$script[] = "});";
 
-		echo '<h2>' . FText::_('PLG_VISUALIZATION_CALENDAR_PLEASE_CHOOSE_AN_EVENT_TYPE') . ':</h2>';
+		echo '<h2>' . Text::_('PLG_VISUALIZATION_CALENDAR_PLEASE_CHOOSE_AN_EVENT_TYPE') . ':</h2>';
 		echo $this->_eventTypeDd;
 		HTML::addScriptDeclaration(implode("\n", $script));
 	}

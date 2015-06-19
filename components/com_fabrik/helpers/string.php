@@ -8,34 +8,35 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Worker;
-use Joomla\String\String;
-use Fabrik\Helpers\ArrayHelper;
+use Joomla\String\String as JString;
 use \Fabrik\Helpers\HTML as HelperHTML;
+use \JFilterInput;
+use \stdClass;
+use \JFactory;
 
 /**
  * String helpers
  *
  * @package     Joomla
  * @subpackage  Fabrik.helpers
- * @since       3.0
+ * @since       3.5
  */
-
-class FabrikString extends String
+class String extends JString
 {
 	/**
 	 * UTF-8 aware - replace the first word
 	 *
 	 * @param   string  $str         The string to be trimmed
-	 * @param   string  $word        The word to trim
-	 * @param   string  $whitespace  Ignore but preserve leading whitespace
+	 * @param   string|bool  $word        The word to trim
+	 * @param   string|bool  $whitespace  Ignore but preserve leading whitespace
 	 *
 	 * @return  string  the trimmed string
 	 */
-
 	public static function ltrimword($str, $word = false, $whitespace = false)
 	{
 		if ($word === false)
@@ -65,11 +66,10 @@ class FabrikString extends String
 	 * Right trim a word from a string
 	 *
 	 * @param   string  &$str  The string to be trimmed
-	 * @param   string  $word  The word to trim
+	 * @param   string|bool  $word  The word to trim
 	 *
 	 * @return  string  the trimmed string
 	 */
-
 	public static function rtrimword(&$str, $word = false)
 	{
 		$l = String::strlen($word);
@@ -90,11 +90,10 @@ class FabrikString extends String
 	 * CASE INSENSITIVE
 	 *
 	 * @param   string  $str   The string to be trimmed
-	 * @param   string  $word  The word to trim
+	 * @param   string|bool  $word  The word to trim
 	 *
 	 * @return  string  the trimmed string
 	 */
-
 	public static function ltrimiword($str, $word = false)
 	{
 		$pos = stripos($str, $word);
@@ -116,7 +115,6 @@ class FabrikString extends String
 	 *
 	 * @return string in `table`.field` format
 	 */
-
 	public static function safeColName($col)
 	{
 		$db = Worker::getDbo();
@@ -135,7 +133,7 @@ class FabrikString extends String
 
 		if ($splitter == '')
 		{
-			return $db->quoteName($col);
+			return $db->qn($col);
 		}
 
 		if (strstr($col, $splitter))
@@ -144,7 +142,7 @@ class FabrikString extends String
 
 			foreach ($col as &$c)
 			{
-				$c = $db->quoteName($c);
+				$c = $db->qn($c);
 			}
 
 			return implode('.', $col);
@@ -161,7 +159,6 @@ class FabrikString extends String
 	 *
 	 * @return  string  in table___field format
 	 */
-
 	public static function safeColNameToArrayKey($col)
 	{
 		$col = str_replace(array("`.`", "."), '___', $col);
@@ -178,7 +175,6 @@ class FabrikString extends String
 	 *
 	 * @return  string  element name
 	 */
-
 	public static function shortColName($col)
 	{
 		if (strstr($col, '.'))
@@ -230,7 +226,6 @@ class FabrikString extends String
 	 *
 	 * @return  string
 	 */
-
 	public static function dbFieldName($str)
 	{
 		$name = JFilterInput::getInstance()->clean($str, 'CMD');
@@ -245,7 +240,7 @@ class FabrikString extends String
 	}
 
 	/**
-	 * is it a raw element name, i.e. ends in _raw
+	 * Is it a raw element name, i.e. ends in _raw
 	 * 
 	 * @param   string  $str  Element name
 	 *
@@ -253,8 +248,8 @@ class FabrikString extends String
 	 *
 	 * @return  bool
 	 */
-	
-	public static function isRawName($str) {
+	public static function isRawName($str)
+	{
 		return substr($str, -4, 4) == '_raw';
 	}
 
@@ -267,9 +262,9 @@ class FabrikString extends String
 	 *
 	 * @return  bool
 	 */
-	
-	public static function stripRawName($str) {
-		return FabrikString::rtrimword($str, '_raw');
+	public static function stripRawName($str)
+	{
+		return String::rtrimword($str, '_raw');
 	}
 	
 	/**
@@ -286,7 +281,6 @@ class FabrikString extends String
 	 *
 	 * @return  string  cleaned
 	 */
-
 	public static function iclean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
 	{
 		// Replace umlauts
@@ -363,7 +357,6 @@ class FabrikString extends String
 	 *
 	 * @return  string  cleaned
 	 */
-
 	public static function clean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
 	{
 		return String::strtolower(self::iclean($str, $fromEnc, $toEnc));
@@ -377,7 +370,6 @@ class FabrikString extends String
 	 *
 	 * @return  string
 	 */
-
 	public static function truncate($text, $opts = array())
 	{
 		$text = htmlspecialchars(strip_tags($text), ENT_QUOTES);
@@ -423,7 +415,6 @@ class FabrikString extends String
 	 *
 	 * @return  string  url/querystring
 	 */
-
 	public static function removeQSVar($url, $key)
 	{
 		$pair = explode('?', $url);
@@ -471,7 +462,6 @@ class FabrikString extends String
 	 *
 	 * @return  encoded url
 	 */
-
 	public static function encodeurl($url)
 	{
 		if (strstr($url, '?'))
@@ -520,7 +510,6 @@ class FabrikString extends String
 	 *
 	 * @return  void
 	 */
-
 	public static function forHtml(&$string)
 	{
 		// Special chars such as <>
@@ -556,7 +545,6 @@ class FabrikString extends String
 	 *
 	 * @return  object  coords array and zoomlevel int
 	 */
-
 	public static function mapStrToCoords($v, $zoomlevel = 4)
 	{
 		$o = new stdClass;
@@ -591,7 +579,6 @@ class FabrikString extends String
 	 *
 	 * @return   string  RGB string
 	 */
-
 	public static function hex2rgb($hex)
 	{
 		$hex = str_replace('#', '', $hex);
@@ -624,7 +611,7 @@ class FabrikString extends String
 	public static function translate($text)
 	{
 		$plain = strip_tags($text);
-		$translated = FText::_($plain);
+		$translated = Text::_($plain);
 
 		if ($translated !== $plain)
 		{
@@ -635,13 +622,12 @@ class FabrikString extends String
 	}
 
 	/**
-	 * Is the string a CONCAT statemenet?
+	 * Is the string a CONCAT statement?
 	 *
 	 * @param   string  $text  Text to test
 	 *
 	 * @return  bool
 	 */
-
 	public static function isConcat($text)
 	{
 		return preg_match('/^\s*(CONCAT|CONCAT_WS)\b/i', preg_quote($text));
@@ -655,7 +641,6 @@ class FabrikString extends String
 	 *
 	 * @return string
 	 */
-
 	public static function stripSpace($text, $only_spaces = false)
 	{
 		if ($only_spaces)
@@ -699,7 +684,7 @@ class FabrikString extends String
 	}
 
 	/**
-	 * Replace last occurance of a string
+	 * Replace last occurrence of a string
 	 *
 	 * @param   string  $search   Text to search for
 	 * @param   string  $replace  Text to replace the search string
@@ -724,15 +709,17 @@ class FabrikString extends String
 	 * already quoted.  Which the J! $db->q() doesn't do, unfortunately.
 	 * Does NOT modify the input.  Does not quote if value starts with SELECT.
 	 *
-	 * @param unknown $values
+	 * @param mixed   $values
 	 * @param bool    $commaSeparated  individually quote a comma separated string of values
 	 *
 	 * @return   mixed   quoted values
 	 */
-	public static function safeQuote($values, $commaSeparated = true) {
+	public static function safeQuote($values, $commaSeparated = true)
+	{
 		$values2 = $values;
 
-		if ($commaSeparated) {
+		if ($commaSeparated)
+		{
 			$values2 = explode(',', $values2);
 		}
 
@@ -791,7 +778,7 @@ class FabrikString extends String
 	 */
 	public static function safeQuoteName($values, $commaSeparated = true)
 	{
-		return self::safeNameQuote($values, $commaSeperated);	
+		return self::safeNameQuote($values, $commaSeparated);
 	}
 		
 	/**
@@ -804,7 +791,8 @@ class FabrikString extends String
 	 *
 	 * @return   mixed   quoted values
 	 */
-	public static function safeNameQuote($values, $commaSeparated = true) {
+	public static function safeNameQuote($values, $commaSeparated = true)
+	{
 		$values2 = $values;
 
 		if ($commaSeparated) {
@@ -847,7 +835,7 @@ class FabrikString extends String
 			if (!preg_match("#^`.*`$#", $value))
 			{
 				$db = JFactory::getDbo();
-				$value = $db->quoteName($value);
+				$value = $db->qn($value);
 			}
 
 		}
@@ -855,63 +843,4 @@ class FabrikString extends String
 		return $value;
 	}
 
-}
-
-/**
- *
- * $$$ hugh JText::_() does funky stuff to strings with commas in them, like
- * truncating everything after the first comma, if what follows the first comma
- * is all "upper case".  But it tests for that using non MB safe code, so any non
- * ASCII strings (like Greek text) with a comma in them get truncated at the comma.
- * Corner case or what!  But we need to work round this behavior.
- *
- * So ... here's a wrapper for JText::_().
- */
-
-class FText extends JText
-{
-	/**
-	 * Translates a string into the current language.
-	 *
-	 * Examples:
-	 * <script>alert(Joomla.JText._('<?php echo FText::_("JDEFAULT", array("script"=>true));?>'));</script>
-	 * will generate an alert message containing 'Default'
-	 * <?php echo FText::_("JDEFAULT");?> it will generate a 'Default' string
-	 *
-	 * @param   string   $string                The string to translate.
-	 * @param   mixed    $jsSafe                Boolean: Make the result javascript safe.
-	 * @param   boolean  $interpretBackSlashes  To interpret backslashes (\\=\, \n=carriage return, \t=tabulation)
-	 * @param   boolean  $script                To indicate that the string will be push in the javascript language store
-	 *
-	 * @return  string  The translated string or the key is $script is true
-	 *
-	 * @since   11.1
-	 */
-	public static function _($string, $jsSafe = false, $interpretBackSlashes = true, $script = false)
-	{
-		/**
-		 * In JText::_(), it does the following tests to see if everything following a comma is all upp
-		 * case, and if it is, it does Funky Stuff to it.  We ned to avoid that behavior.  So us this
-		 * logic, and if it's true, return the string untouched.  We could just check for a comma and not
-		 * process anything with commas (unikely to be a translatable phrase), but unless this test adds
-		 * too much overhead, might as well do the whole J! test sequence.
-		 */
-
-		if (!(strpos($string, ',') === false))
-		{
-			$test = substr($string, strpos($string, ','));
-
-			if (strtoupper($test) === $test)
-			{
-				/**
-				 * This is where JText::_() would do Funky Stuff, chopping off everything after
-				 * the first comma.  So we'll just return the input string untouched.
-				 */
-				return $string;
-			}
-		}
-
-		// if we got this far, hand it to JText::_() as normal
-		return parent::_($string, $jsSafe, $interpretBackSlashes, $script);
-	}
 }

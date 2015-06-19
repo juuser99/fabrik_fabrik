@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 ?>
 <tr class="fabrik___heading">
 <?php foreach ($this->headings as $key => $heading) :
@@ -43,7 +45,7 @@ defined('_JEXEC') or die('Restricted access');
 			<div style="text-align:center">
 				<button class="btn-info btn fabrik_filter_submit button" name="filter" >
 				<i class="icon-filter"></i>
-				<?php echo FText::_('COM_FABRIK_GO');?>
+				<?php echo Text::_('COM_FABRIK_GO');?>
 				</button>
 			</div>
 		<?php endif;?>

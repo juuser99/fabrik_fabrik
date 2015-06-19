@@ -13,13 +13,11 @@ namespace Fabrik\Admin\Models;
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use \JRegistry as JRegistry;
+use Joomla\Registry\Registry as Registry;
 use \JForm as JForm;
-use \Fabrik\Admin\Models\Join as Join;
 use \stdClass as stdClass;
-use Joomla\String\String as String;
-use FText as FText;
-use \FabrikString as FabrikString;
+use Fabrik\Helpers\Text;
+use \Fabrik\Helpers\String as String;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -55,7 +53,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Group
 	 *
-	 * @var JRegistry
+	 * @var Registry
 	 */
 	protected $group = null;
 
@@ -69,7 +67,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Parameters
 	 *
-	 * @var JRegistry
+	 * @var Registry
 	 */
 	protected $params = null;
 
@@ -155,12 +153,12 @@ class Group extends Base implements ModelGroupInterface
 		$groupModel = new Group;
 		$groupModel->setId($data['id']);
 		$listModel     = $groupModel->getListModel();
-		$pk            = FabrikString::safeColName($listModel->getTable()->get('list.db_primary_key'));
+		$pk            = String::safeColName($listModel->getTable()->get('list.db_primary_key'));
 		$elementModels = $groupModel->getMyElements();
 
 		foreach ($elementModels as $elementModel)
 		{
-			if (FabrikString::safeColName($elementModel->getFullName(false, false)) == $pk)
+			if (String::safeColName($elementModel->getFullName(false, false)) == $pk)
 			{
 				return false;
 			}
@@ -326,8 +324,6 @@ class Group extends Base implements ModelGroupInterface
 		$join = $this->getTable('join');
 		$join->load(array('id' => $item->join_id));
 		$fkFieldName    = $join->table_join . '___' . $join->table_join_key;
-		$pkFieldName    = $join->join_from_table . '___' . $join->table_key;
-		$formModel      = $groupModel->getFormModel();
 		$fields         = $listModel->storage->getDBFields($join->join_from_table, 'Field');
 		$pkField        = ArrayHelper::getValue($fields, $join->table_key, false);
 
@@ -370,15 +366,15 @@ class Group extends Base implements ModelGroupInterface
 
 		foreach ($elements as $element)
 		{
-			$fname = $element->getElement()->get('name');
+			$name = $element->getElement()->get('name');
 			/**
 			 * if we are making a repeat group from the primary group then we don't want to
 			 * overwrite the repeat group tables id definition with that of the main tables
 			 */
-			if (!array_key_exists($fname, $names))
+			if (!array_key_exists($name, $names))
 			{
-				$str   = FabrikString::safeColName($fname);
-				$field = ArrayHelper::getValue($fields, $fname);
+				$str   = String::safeColName($name);
+				$field = ArrayHelper::getValue($fields, $name);
 
 				if (is_object($field))
 				{
@@ -389,11 +385,11 @@ class Group extends Base implements ModelGroupInterface
 						$str .= "NOT NULL ";
 					}
 
-					$names[$fname] = $str;
+					$names[$name] = $str;
 				}
 				else
 				{
-					$names[$fname] = $db->quoteName($fname) . ' ' . $element->getFieldDescription();
+					$names[$name] = $db->qn($name) . ' ' . $element->getFieldDescription();
 				}
 			}
 		}
@@ -418,7 +414,7 @@ class Group extends Base implements ModelGroupInterface
 			if (trim($list->get('list.db_table_name')) == '')
 			{
 				// New group not attached to a form
-				$this->setError(FText::_('COM_FABRIK_GROUP_CANT_MAKE_JOIN_NO_DB_TABLE'));
+				$this->app->enqueueMessage(Text::_('COM_FABRIK_GROUP_CANT_MAKE_JOIN_NO_DB_TABLE'), 'error');
 
 				return false;
 			}
@@ -442,8 +438,8 @@ class Group extends Base implements ModelGroupInterface
 		}
 		// Create the join as well
 
-		$pk = FabrikString::shortColName($list->get('list.db_primary_key'));
-		$jdata = array('list_id' => $list->id, 'element_id' => 0,
+		$pk = String::shortColName($list->get('list.db_primary_key'));
+		$jdata = array('list_id' => $list->get('id'), 'element_id' => 0,
 			'join_from_table' => $list->get('list.db_table_name'), 'table_join' => $newTableName,
 			'table_key' => $pk, 'table_join_key' => 'parent_id', 'join_type' => 'left',
 			'group_id' => $data['id']);
@@ -596,7 +592,7 @@ class Group extends Base implements ModelGroupInterface
 
 	public function setGroup($group)
 	{
-		$this->group = new JRegistry($group);
+		$this->group = new Registry($group);
 	}
 
 	/**
@@ -635,7 +631,7 @@ class Group extends Base implements ModelGroupInterface
 	/**
 	 * Get group
 	 *
-	 * @return JRegistry
+	 * @return Registry
 	 */
 	public function getGroup()
 	{
@@ -649,7 +645,7 @@ class Group extends Base implements ModelGroupInterface
 			{
 				if ($group->id == $this->get('id'))
 				{
-					$this->group = new JRegistry($group);
+					$this->group = new Registry($group);
 					return $this->group;
 				}
 			}
@@ -701,7 +697,7 @@ class Group extends Base implements ModelGroupInterface
 	{
 		if (!$this->params)
 		{
-			$this->params = new JRegistry($this->getGroup()->get('params'));
+			$this->params = new Registry($this->getGroup()->get('params'));
 		}
 
 		return $this->params;
@@ -1428,24 +1424,24 @@ class Group extends Base implements ModelGroupInterface
 
 		if (String::stristr($label, "{Add/Edit}"))
 		{
-			$replace = $formModel->isNewRecord() ? FText::_('COM_FABRIK_ADD') : FText::_('COM_FABRIK_EDIT');
+			$replace = $formModel->isNewRecord() ? Text::_('COM_FABRIK_ADD') : Text::_('COM_FABRIK_EDIT');
 			$label = str_replace("{Add/Edit}", $replace, $label);
 		}
 
 		$groupTable->set('label', $label);
 		$group->title = $w->parseMessageForPlaceHolder($groupTable->get('label'), $formModel->data, false);
-		$group->title = FText::_($group->title);
+		$group->title = Text::_($group->title);
 		$group->name = $groupTable->get('name');
 		$group->displaystate = ($group->canRepeat == 1 && $formModel->isEditable()) ? 1 : 0;
 		$group->maxRepeat = (int) $params->get('repeat_max');
 		$group->minRepeat = $params->get('repeat_min', '') === '' ? 1 : (int) $params->get('repeat_min', '');
 		$group->showMaxRepeats  = $params->get('show_repeat_max', '0') == '1';
 		$group->minMaxErrMsg = $params->get('repeat_error_message', '');
-		$group->minMaxErrMsg = FText::_($group->minMaxErrMsg);
+		$group->minMaxErrMsg = Text::_($group->minMaxErrMsg);
 		$group->canAddRepeat = $this->canAddRepeat();
 		$group->canDeleteRepeat = $this->canDeleteRepeat();
-		$group->intro = $text = FabrikString::translate($params->get('intro'));
-		$group->outro = FText::_($params->get('outro'));
+		$group->intro = $text = String::translate($params->get('intro'));
+		$group->outro = Text::_($params->get('outro'));
 		$group->columns = $params->get('group_columns', 1);
 		$group->splitPage = $params->get('split_page', 0);
 		$group->showLegend = $this->showLegend($group);
@@ -1486,9 +1482,9 @@ class Group extends Base implements ModelGroupInterface
 		// NewGroupNames set in table copy
 		$newNames = $input->get('newGroupNames', array(), 'array');
 
-		if (array_key_exists($group->id, $newNames))
+		if (array_key_exists($group->get('id'), $newNames))
 		{
-			$group->name = $newNames[$group->id];
+			$group->set('name', $newNames[$group->id]);
 		}
 
 		$group->id = null;
@@ -1913,7 +1909,6 @@ class Group extends Base implements ModelGroupInterface
 	 *
 	 * @return boolean
 	 */
-
 	public function fkPublished()
 	{
 		if ($this->canRepeat())
@@ -1933,7 +1928,7 @@ class Group extends Base implements ModelGroupInterface
 			}
 		}
 
-		JError::raiseWarning(E_ERROR, JText::sprintf('COM_FABRIK_JOINED_DATA_BUT_FK_NOT_PUBLISHED', $fullFk));
+		$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_JOINED_DATA_BUT_FK_NOT_PUBLISHED', $fullFk), 'error');
 
 		return false;
 	}
@@ -1945,7 +1940,6 @@ class Group extends Base implements ModelGroupInterface
 	 *
 	 * @return number
 	 */
-
 	public function repeatCount()
 	{
 		$data = $this->getFormModel()->getData();

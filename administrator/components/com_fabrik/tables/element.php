@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\Text;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
@@ -100,9 +101,10 @@ class FabrikTableElement extends FabTable
 	 * @param   integer  $state   The publishing state. e.g. [0 = unpublished, 1 = published]
 	 * @param   integer  $userId  The user id of the user performing the operation.
 	 *
+	 * @throws Exception
+	 *
 	 * @return  boolean	True on success.
 	 */
-
 	public function addToListView($pks = null, $state = 1, $userId = 0)
 	{
 		// Initialise variables.
@@ -123,10 +125,7 @@ class FabrikTableElement extends FabTable
 			// Nothing to set publishing state on, return false.
 			else
 			{
-				$e = new JException(FText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
-				$this->setError($e);
-
-				return false;
+				throw new Exception(Text::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
 			}
 		}
 
@@ -139,11 +138,11 @@ class FabrikTableElement extends FabTable
 		if (property_exists($this, 'checked_out') || property_exists($this, 'checked_out_time'))
 		{
 			$query->where('(checked_out = 0 OR checked_out = ' . (int) $userId . ')');
-			$checkin = true;
+			$checkIn = true;
 		}
 		else
 		{
-			$checkin = false;
+			$checkIn = false;
 		}
 
 		// Build the WHERE clause for the primary keys.
@@ -161,7 +160,7 @@ class FabrikTableElement extends FabTable
 		}
 
 		// If checkin is supported and all rows were adjusted, check them in.
-		if ($checkin && (count($pks) == $this->_db->getAffectedRows()))
+		if ($checkIn && (count($pks) == $this->_db->getAffectedRows()))
 		{
 			// Checkin the rows.
 			foreach ($pks as $pk)

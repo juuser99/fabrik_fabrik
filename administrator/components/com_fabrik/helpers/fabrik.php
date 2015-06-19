@@ -14,12 +14,15 @@ namespace Fabrik\Admin\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use \JFactory as JFactory;
 use \JHtmlSidebar as JHtmlSidebar;
-use \FText as FText;
 use Fabrik\Helpers\Worker;
 use \Joomla\Registry\Registry;
+use Fabrik\Helpers\Text;
+use \JComponentHelper;
+use \JAccess;
+use \JFilterInput;
 
 /**
  * Fabrik Admin Component Helper
@@ -41,13 +44,13 @@ class Fabrik
 		// Access check.
 		if (!JFactory::getUser()->authorise('core.manage', 'com_fabrik'))
 		{
-			throw new \Exception(JText::_('JERROR_ALERTNOAUTHOR'));
+			throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		// Test if the system plugin is installed and published
 		if (!defined('COM_FABRIK_FRONTEND'))
 		{
-			throw new \RuntimeException(JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
+			throw new \RuntimeException(Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
 		}
 
 		$db    = JFactory::getDbo();
@@ -58,7 +61,7 @@ class Fabrik
 
 		if (count($db->loadResult()) === 0)
 		{
-			$app->enqueueMessage(JText::_('COM_FABRIK_PUBLISH_AT_LEAST_ONE_ELEMENT_PLUGIN'), 'notice');
+			$app->enqueueMessage(Text::_('COM_FABRIK_PUBLISH_AT_LEAST_ONE_ELEMENT_PLUGIN'), 'notice');
 		}
 	}
 
@@ -69,7 +72,7 @@ class Fabrik
 	 * @param   Registry &$data Data to prepare
 	 * @param   string    $key   Key to prepare
 	 *
-	 * @return  JRegistry
+	 * @return  Registry
 	 */
 	public static function prepareSaveDate(&$data, $key)
 	{
@@ -79,7 +82,7 @@ class Fabrik
 		$db      = Worker::getDbo(true);
 
 		// Handle never unpublished dates
-		if (trim($strDate) == FText::_('Never') || trim($strDate) == '' || trim($strDate) == $db->getNullDate())
+		if (trim($strDate) == Text::_('Never') || trim($strDate) == '' || trim($strDate) == $db->getNullDate())
 		{
 			$strDate = $db->getNullDate();
 		}
@@ -147,14 +150,14 @@ class Fabrik
 	{
 		$vizUrl = 'index.php?option=com_fabrik&view=visualizations';
 
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_HOME'), 'index.php?option=com_fabrik', $vName == 'home');
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_LISTS'), 'index.php?option=com_fabrik&view=lists', $vName == 'lists');
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_FORMS'), 'index.php?option=com_fabrik&view=forms', $vName == 'forms');
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_GROUPS'), 'index.php?option=com_fabrik&view=groups', $vName == 'groups');
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_ELEMENTS'), 'index.php?option=com_fabrik&view=elements', $vName == 'elements');
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_VISUALIZATIONS'), $vizUrl, $vName == 'visualizations');
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_CONNECTIONS'), 'index.php?option=com_fabrik&view=connections', $vName == 'connections');
-		JHtmlSidebar::addEntry(FText::_('COM_FABRIK_SUBMENU_CRONS'), 'index.php?option=com_fabrik&view=crons', $vName == 'crons');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_HOME'), 'index.php?option=com_fabrik', $vName == 'home');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_LISTS'), 'index.php?option=com_fabrik&view=lists', $vName == 'lists');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_FORMS'), 'index.php?option=com_fabrik&view=forms', $vName == 'forms');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_GROUPS'), 'index.php?option=com_fabrik&view=groups', $vName == 'groups');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_ELEMENTS'), 'index.php?option=com_fabrik&view=elements', $vName == 'elements');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_VISUALIZATIONS'), $vizUrl, $vName == 'visualizations');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CONNECTIONS'), 'index.php?option=com_fabrik&view=connections', $vName == 'connections');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CRONS'), 'index.php?option=com_fabrik&view=crons', $vName == 'crons');
 	}
 
 	/**
@@ -181,7 +184,6 @@ class Fabrik
 		$whiteListTags       = array();
 		$whiteListAttributes = array();
 
-		$noHtml     = false;
 		$whiteList  = false;
 		$blackList  = false;
 		$unfiltered = false;
@@ -200,12 +202,7 @@ class Fabrik
 			$filterData = $filters->$groupId;
 			$filterType = String::strtoupper($filterData->filter_type);
 
-			if ($filterType == 'NH')
-			{
-				// Maximum HTML filtering.
-				$noHtml = true;
-			}
-			elseif ($filterType == 'NONE')
+			if ($filterType == 'NONE')
 			{
 				// No HTML filtering.
 				$unfiltered = true;

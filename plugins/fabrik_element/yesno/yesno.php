@@ -17,6 +17,10 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
+use \JHtml;
+use \stdClass;
 
 /**
  * Plugin element to yes/no radio options - render as tick/cross in list view
@@ -105,13 +109,13 @@ class Yesno extends Radiobutton
 		{
 			$icon = 'checkmark.png';
 
-			return HTML::image($icon, 'list', $this->tmpl, array('alt' => FText::_('JYES')));
+			return HTML::image($icon, 'list', $this->tmpl, array('alt' => Text::_('JYES')));
 		}
 		else
 		{
 			$icon = 'remove.png';
 
-			return HTML::image($icon, 'list', $this->tmpl, array('alt' => FText::_('JNO')));
+			return HTML::image($icon, 'list', $this->tmpl, array('alt' => Text::_('JNO')));
 		}
 	}
 
@@ -128,7 +132,7 @@ class Yesno extends Radiobutton
 	{
 	    $raw = $this->getFullName(true, false) . '_raw';
 	    $rawData = $thisRow->$raw;
-	    $data = (bool) $rawData ? FText::_('JYES') : FText::_('JNO');
+	    $data = (bool) $rawData ? Text::_('JYES') : Text::_('JNO');
 
 	    return $data;
 	}
@@ -158,7 +162,7 @@ class Yesno extends Radiobutton
 	 */
 	protected function getSubOptionLabels($data = array())
 	{
-		return array(FText::_('JNO'), FText::_('JYES'));
+		return array(Text::_('JNO'), Text::_('JYES'));
 	}
 
 	/**
@@ -301,7 +305,7 @@ class Yesno extends Radiobutton
 		$listModel = $this->getlistModel();
 		$elName = $this->getFullName(true, false);
 		$htmlId = $this->getHTMLId() . 'value';
-		$elName = FabrikString::safeColName($elName);
+		$elName = String::safeColName($elName);
 		$v = 'fabrik___filter[list_' . $listModel->getRenderContext() . '][value]';
 		$v .= ($normal) ? '[' . $counter . ']' : '[]';
 		$default = $this->getDefaultFilterVal($normal, $counter);
@@ -339,29 +343,29 @@ class Yesno extends Radiobutton
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array	filter value and labels
 	 */
 
-	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$o = new stdClass;
 		$o->value = '';
 		$o->text = $this->filterSelectLabel();
 		$opt = array($o);
-		$rows = parent::filterValueList_Exact($normal, $tableName, $label, $id, $incjoin);
+		$rows = parent::filterValueList_Exact($normal, $tableName, $label, $id, $incJoin);
 
 		foreach ($rows as &$row)
 		{
 			if ($row->value == 1)
 			{
-				$row->text = FText::_('JYES');
+				$row->text = Text::_('JYES');
 			}
 
 			if ($row->value == 0)
 			{
-				$row->text = FText::_('JNO');
+				$row->text = Text::_('JNO');
 			}
 		}
 
@@ -378,15 +382,14 @@ class Yesno extends Radiobutton
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array	filter value and labels
 	 */
-
-	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
-		$rows = array(JHTML::_('select.option', '', $this->filterSelectLabel()), JHTML::_('select.option', '0', FText::_('JNO')),
-			JHTML::_('select.option', '1', FText::_('JYES')));
+		$rows = array(JHTML::_('select.option', '', $this->filterSelectLabel()), JHTML::_('select.option', '0', Text::_('JNO')),
+			JHTML::_('select.option', '1', Text::_('JYES')));
 
 		return $rows;
 	}
@@ -396,7 +399,6 @@ class Yesno extends Radiobutton
 	 *
 	 * @return  string	=, begins or contains
 	 */
-
 	protected function getFilterCondition()
 	{
 		return '=';
@@ -409,9 +411,8 @@ class Yesno extends Radiobutton
 	 * @param   array  &$data          Data to store
 	 * @param   int    $repeatCounter  Repeat group index
 	 *
-	 * @return  void
+	 * @return  bool
 	 */
-
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
 		if (!parent::onStoreRow($data, $repeatCounter))
@@ -433,7 +434,7 @@ class Yesno extends Radiobutton
 	
 			$listModel = $this->getListModel();
 	
-			$name = $this->getElement()->name;
+			$name = $this->getElement()->get('name');
 			$db = $listModel->getDb();
 			$query = $db->getQuery(true);
 	
@@ -447,7 +448,7 @@ class Yesno extends Radiobutton
 				$pk = $listModel->getTable()->get('list.db_primary_key');
 			}
 	
-			$shortPk = FabrikString::shortColName($pk);
+			$shortPk = String::shortColName($pk);
 			$rowId = ArrayHelper::getValue($data, $shortPk, null);
 			
 			$query->update($this->actualTableName())->set($name . ' = 0');
@@ -458,7 +459,7 @@ class Yesno extends Radiobutton
 			}
 			
 			$toggle_where = $params->get('toggle_where', '');
-			FabrikString::ltrimiword($toggle_where, 'where');
+			String::ltrimiword($toggle_where, 'where');
 			
 			if (!empty($toggle_where))
 			{
@@ -470,6 +471,8 @@ class Yesno extends Radiobutton
 			$db->setQuery($query);
 			$db->execute();
 		}
+
+		return true;
 	}
 	
 	/**

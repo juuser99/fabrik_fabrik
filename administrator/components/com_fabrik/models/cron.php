@@ -16,9 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
-use \FabrikString as FabrikString;
-use \FText as FText;
-use \Fabrik\Admin\Models\PluginManager as PluginManager;
+use \Fabrik\Helpers\String as String;
+use Fabrik\Helpers\Text;
 
 interface CronInterface
 {
@@ -79,11 +78,11 @@ class Cron extends Base implements CronInterface
 		$pluginManager = new PluginManager;
 
 		// Trim old f2 cron prefix.
-		$plugin = FabrikString::ltrimiword($plugin, 'cron');
+		$plugin = String::ltrimiword($plugin, 'cron');
 
 		if ($plugin == '')
 		{
-			$str = '<div class="alert">' . FText::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
+			$str = '<div class="alert">' . Text::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
 		}
 		else
 		{

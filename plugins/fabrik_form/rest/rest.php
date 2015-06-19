@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\String;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -264,7 +265,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 				}
 				else
 				{
-					$v = FabrikString::safeColNameToArrayKey($v);
+					$v = String::safeColNameToArrayKey($v);
 					$v = $w->parseMessageForPlaceHolder('{' . $v . '}', $formModel->formData, true);
 				}
 
@@ -698,7 +699,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 			{
 				$key = $keys[$i];
 				$default = $defaults[$i];
-				$localKey = FabrikString::safeColNameToArrayKey($values[$i]);
+				$localKey = String::safeColNameToArrayKey($values[$i]);
 				$remoteData = ArrayHelper::getNestedValue($data, $key, $default, true);
 
 				if (!is_null($remoteData))

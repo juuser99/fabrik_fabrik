@@ -17,6 +17,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Text;
 
 /**
  * Renders a twitter sign in button
@@ -68,7 +69,7 @@ class JFormFieldTwittersignin extends JFormField
 		$str = '<a href="#" onclick="' . $js . '">';
 		$str .= '<img src="' . $src . '" alt="Sign in with Twitter"/></a>';
 		$str .= " | <button class=\"button btn\" href=\"#\" onclick=\"$clearjs\">";
-		$str .= FText::_('PLG_FORM_TWITTER_CLEAR_CREDENTIALS') . "</button><br/>";
+		$str .= Text::_('PLG_FORM_TWITTER_CLEAR_CREDENTIALS') . "</button><br/>";
 		$str .= "<br /><input type=\"hidden\" readonly=\"readonly\" name=\""
 			. $this->name . "\" id=\"" . $this->id . "\" value=\"" . $this->value . "\" />";
 

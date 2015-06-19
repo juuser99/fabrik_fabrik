@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use \FText;
+use Fabrik\Helpers\Text;
 
 /**
  * Email Already Registered Validation Rule
@@ -149,7 +149,7 @@ class EmailExists extends Validation
 
 		if ($cond == 'fail_if_not_exists')
 		{
-			return FText::_('PLG_VALIDATIONRULE_EMAILEXISTS_LABEL_NOT');
+			return Text::_('PLG_VALIDATIONRULE_EMAILEXISTS_LABEL_NOT');
 		}
 		else
 		{

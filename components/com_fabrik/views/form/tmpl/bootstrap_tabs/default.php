@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 $form = $this->form;
 $model = $this->getModel();
@@ -22,7 +23,7 @@ $active = ($form->error != '') ? '' : ' fabrikHide';
 if ($model->isMultiPage() && HTML::isDebug())
 {
 	$app = JFactory::getApplication();
-	$app->enqueueMessage(FText::_('COM_FABRIK_ERR_TAB_FORM_TEMPLATE_INCOMPATIBLE_WITH_MULTIPAGE_FORMS'), 'error');
+	$app->enqueueMessage(Text::_('COM_FABRIK_ERR_TAB_FORM_TEMPLATE_INCOMPATIBLE_WITH_MULTIPAGE_FORMS'), 'error');
 }
 
 if ($this->params->get('show_page_heading', 1)) : ?>

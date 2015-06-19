@@ -16,6 +16,7 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Admin\Models\Form;
 use Fabrik\Admin\Models\FormSession;
 use Fabrik\Admin\Models\Lizt;
+use Fabrik\Helpers\Text;
 
 /**
  * Fabrik Details Controller
@@ -124,7 +125,7 @@ class FabrikControllerDetails extends FabrikController
 
 		if (is_null($msg))
 		{
-			$msg = FText::_('COM_FABRIK_RECORD_ADDED_UPDATED');
+			$msg = Text::_('COM_FABRIK_RECORD_ADDED_UPDATED');
 		}
 
 		if ($this->app->isAdmin())
@@ -291,7 +292,7 @@ class FabrikControllerDetails extends FabrikController
 		else
 		{
 			// @TODO: test this
-			$this->app->enqueueMessage(count($ids) . " " . FText::_('COM_FABRIK_RECORDS_DELETED'));
+			$this->app->enqueueMessage(count($ids) . " " . Text::_('COM_FABRIK_RECORDS_DELETED'));
 			$this->app->redirect($ref);
 		}
 	}

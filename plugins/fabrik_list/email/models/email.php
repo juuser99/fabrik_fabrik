@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
@@ -159,8 +161,8 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			$toTableModel->setId($table);
 			$toDb = $toTableModel->getDb();
 
-			$tableName  = FabrikString::safeColName($tableName);
-			$tableEmail = FabrikString::safeColName($tableEmail);
+			$tableName  = String::safeColName($tableName);
+			$tableEmail = String::safeColName($tableEmail);
 			$emailTableTo_table       = $toDb->qn($toTableModel->getTable()->get('list.db_table_name'));
 
 			$query = $toDb->getQuery(true);
@@ -171,7 +173,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 			if (empty($results))
 			{
-				return FText::_('PLG_LIST_EMAIL_TO_TABLE_NO_DATA');
+				return Text::_('PLG_LIST_EMAIL_TO_TABLE_NO_DATA');
 			}
 
 			$empty   = new stdClass;
@@ -181,12 +183,12 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			{
 				$html = '<div class="pull-left" style="margin:0 20px 20px 0">';
 				$html .= JHTML::_('select.genericlist', $results, 'email_to_selectfrom[]', $attribs, 'email', 'name', '', 'email_to_selectfrom');
-				$html .= '<br /><a href="#" class="btn btn-small" id="email_add"><i class="icon-plus"></i> ' . FText::_('COM_FABRIK_ADD') . ' &gt;&gt;</a>';
+				$html .= '<br /><a href="#" class="btn btn-small" id="email_add"><i class="icon-plus"></i> ' . Text::_('COM_FABRIK_ADD') . ' &gt;&gt;</a>';
 				$html .= '</div>';
 				$html .= '<div class="span6">';
 				$html .= JHTML::_('select.genericlist', $empty, 'list_email_to[]', $attribs, 'email', 'name', '', 'list_email_to');
 				$html .= '<br /><a href="#" class="btn btn-small" id="email_remove">&lt;&lt; '
-					. FText::_('COM_FABRIK_DELETE') . ' <i class="icon-delete"></i></a>';
+					. Text::_('COM_FABRIK_DELETE') . ' <i class="icon-delete"></i></a>';
 				$html .= '</div>';
 				$html .= '<div style="clear:both"></div>';
 			}
@@ -287,13 +289,13 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 		if (empty($ids))
 		{
-			throw new RuntimeException(FText::_('PLG_LIST_EMAIL_ERR_NO_RECORDS_SELECTED'), 400);
+			throw new RuntimeException(Text::_('PLG_LIST_EMAIL_ERR_NO_RECORDS_SELECTED'), 400);
 		}
 
 		$params      = $this->getParams();
 		$model       = $this->listModel;
 		$pk          = $model->getTable()->get('list.db_primary_key');
-		$pk2         = FabrikString::safeColNameToArrayKey($pk) . '_raw';
+		$pk2         = String::safeColNameToArrayKey($pk) . '_raw';
 		$whereClause = '(' . $pk . ' IN (' . implode(',', $ids) . '))';
 		$cond        = $params->get('emailtable_condition');
 
@@ -354,7 +356,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 			if (!JFile::upload($file['tmp_name'], $path))
 			{
-				JError::raiseWarning(100, FText::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'));
+				$this->app->enqueueMessage(Text::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'), 'error');
 
 				return false;
 			}

@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -212,7 +213,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 			if ($loading)
 			{
-				$result_compare = FText::_('COMPARE_DATA_LOADING') . $sep_2compare;
+				$result_compare = Text::_('COMPARE_DATA_LOADING') . $sep_2compare;
 			}
 			else
 			{
@@ -253,9 +254,9 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 								{
 									if ($newData[$c]->$fullName != $origData[$c]->$fullName)
 									{
-										$result_compare .= FText::_('COMPARE_DATA_CHANGE_ON') . ' ' . $element->get('label') . ' ' . $sep_compare
-										. FText::_('COMPARE_DATA_FROM') . ' ' . $origData[0]->$fullName . ' ' . $sep_compare
-										. FText::_('COMPARE_DATA_TO') . ' ' . $newData[$c]->$fullName . ' ' . $sep_2compare;
+										$result_compare .= Text::_('COMPARE_DATA_CHANGE_ON') . ' ' . $element->get('label') . ' ' . $sep_compare
+										. Text::_('COMPARE_DATA_FROM') . ' ' . $origData[0]->$fullName . ' ' . $sep_compare
+										. Text::_('COMPARE_DATA_TO') . ' ' . $newData[$c]->$fullName . ' ' . $sep_2compare;
 									}
 								}
 							}
@@ -263,7 +264,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 						if (empty($result_compare))
 						{
-							$result_compare = FText::_('COMPARE_DATA_NO_DIFFERENCES');
+							$result_compare = Text::_('COMPARE_DATA_NO_DIFFERENCES');
 						}
 					}
 					else
@@ -299,8 +300,8 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		// Custom Message
 		if ($params->get('custom_msg') != '')
 		{
-			$rep_add_edit = $messageType == 'form.add' ? FText::_('REP_ADD')
-			: ($messageType == 'form.edit' ? FText::_('REP_EDIT') : FText::_('DETAILS'));
+			$rep_add_edit = $messageType == 'form.add' ? Text::_('REP_ADD')
+			: ($messageType == 'form.edit' ? Text::_('REP_EDIT') : Text::_('DETAILS'));
 			$custom_msg = $params->get('custom_msg');
 			$custom_msg = preg_replace('/{Add\/Edit}/', $rep_add_edit, $custom_msg);
 			$custom_msg = preg_replace('/{DATE}/', $date, $custom_msg);
@@ -324,14 +325,14 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 			if ($params->get('compare_data') == 1)
 			{
-				$clabels_csv .= ', "' . FText::_('PLG_FORM_LOG_COMPARE_DATA_LABEL_CSV') . '"';
+				$clabels_csv .= ', "' . Text::_('PLG_FORM_LOG_COMPARE_DATA_LABEL_CSV') . '"';
 			}
 
 			$clabels_createdb_imp = '';
 
 			foreach ($labtyp as $klb => $vlb)
 			{
-				$klb = $db->quoteName($klb);
+				$klb = $db->qn($klb);
 
 				if ($vlb == 'varchar')
 				{
@@ -351,7 +352,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 			if ($params->get('compare_data') == 1)
 			{
-				$clabels_createdb .= ', ' . $db->quoteName(FText::_('COMPARE_DATA_LABEL_DB')) . ' text NOT NULL';
+				$clabels_createdb .= ', ' . $db->qn(Text::_('COMPARE_DATA_LABEL_DB')) . ' text NOT NULL';
 			}
 
 			// @todo - what if we use different db driver which doesn't name quote with `??
@@ -361,7 +362,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 			if ($params->get('compare_data') == 1)
 			{
-				$clabels_db .= ', ' . $db->quoteName(FText::_('PLG_FORM_LOG_COMPARE_DATA_LABEL_DB'));
+				$clabels_db .= ', ' . $db->qn(Text::_('PLG_FORM_LOG_COMPARE_DATA_LABEL_DB'));
 			}
 
 			// Data for CSV & for DB
@@ -405,40 +406,40 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 			$clabelsDb = array();
 			$cdataDb = array();
 
-			$clabelsCreateDb[] = $db->quoteName('date') . " datetime NOT NULL";
-			$clabelsDb[] = $db->quoteName('date');
+			$clabelsCreateDb[] = $db->qn('date') . " datetime NOT NULL";
+			$clabelsDb[] = $db->qn('date');
 			$cdataDb[] = "NOW()";
 
-			$clabelsCreateDb[] = $db->quoteName('ip') . " varchar(32) NOT NULL";
-			$clabelsDb[] = $db->quoteName('ip');
+			$clabelsCreateDb[] = $db->qn('ip') . " varchar(32) NOT NULL";
+			$clabelsDb[] = $db->qn('ip');
 			$cdataDb[] = $params->get('logs_record_ip') == '1' ? $db->q($_SERVER['REMOTE_ADDR']) : $db->q('');
 
-			$clabelsCreateDb[] = $db->quoteName('referer') . " varchar(255) NOT NULL";
-			$clabelsDb[] = $db->quoteName('referer');
+			$clabelsCreateDb[] = $db->qn('referer') . " varchar(255) NOT NULL";
+			$clabelsDb[] = $db->qn('referer');
 			$cdataDb[] = $params->get('logs_record_referer') == '1' ? $db->q($http_referrer) : $db->q('');
 
-			$clabelsCreateDb[] = $db->quoteName('user_agent') . " varchar(255) NOT NULL";
-			$clabelsDb[] = $db->quoteName('user_agent');
+			$clabelsCreateDb[] = $db->qn('user_agent') . " varchar(255) NOT NULL";
+			$clabelsDb[] = $db->qn('user_agent');
 			$cdataDb[] = $params->get('logs_record_useragent') == '1' ? $db->q($_SERVER['HTTP_USER_AGENT']) : $db->q('');
 
-			$clabelsCreateDb[] = $db->quoteName('data_comparison') . " TEXT NOT NULL";
-			$clabelsDb[] = $db->quoteName('data_comparison');
+			$clabelsCreateDb[] = $db->qn('data_comparison') . " TEXT NOT NULL";
+			$clabelsDb[] = $db->qn('data_comparison');
 			$cdataDb[] = $params->get('compare_data') == '1' ? $db->q($result_compare) : $db->q('');
 
-			$clabelsCreateDb[] = $db->quoteName('rowid') . " INT(11) NOT NULL";
-			$clabelsDb[] = $db->quoteName('rowid');
+			$clabelsCreateDb[] = $db->qn('rowid') . " INT(11) NOT NULL";
+			$clabelsDb[] = $db->qn('rowid');
 			$cdataDb[] = $db->q($rowId);
 
-			$clabelsCreateDb[] = $db->quoteName('userid') . " INT(11) NOT NULL";
-			$clabelsDb[] = $db->quoteName('userid');
+			$clabelsCreateDb[] = $db->qn('userid') . " INT(11) NOT NULL";
+			$clabelsDb[] = $db->qn('userid');
 			$cdataDb[] = $db->q((int) $userId);
 
-			$clabelsCreateDb[] = $db->quoteName('tableid') . " INT(11) NOT NULL";
-			$clabelsDb[] = $db->quoteName('tableid');
+			$clabelsCreateDb[] = $db->qn('tableid') . " INT(11) NOT NULL";
+			$clabelsDb[] = $db->qn('tableid');
 			$cdataDb[] = $db->q($formModel->getTableModel()->getId());
 
-			$clabelsCreateDb[] = $db->quoteName('formid') . " INT(11) NOT NULL";
-			$clabelsDb[] = $db->quoteName('formid');
+			$clabelsCreateDb[] = $db->qn('formid') . " INT(11) NOT NULL";
+			$clabelsDb[] = $db->qn('formid');
 			$cdataDb[] = $db->q($formModel->getId());
 
 			$clabels_createdb = implode(", ", $clabelsCreateDb);
@@ -600,7 +601,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 						if ($params->get('compare_data') == 1)
 						{
-							$csvMsg[] = "\"" . FText::_('COMPARE_DATA_LABEL_CSV') . "\"";
+							$csvMsg[] = "\"" . Text::_('COMPARE_DATA_LABEL_CSV') . "\"";
 						}
 					}
 					// Inserting data in CSV with actual line break as row separator
@@ -660,11 +661,11 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 				$fid = $form->id;
 				$db
 				->setQuery(
-					"SELECT " . $db->quoteName('db_table_name') . " FROM " . $db->quoteName('#__fabrik_lists') . " WHERE "
-					. $db->quoteName('form_id') . " = " . (int) $fid
+					"SELECT " . $db->qn('db_table_name') . " FROM " . $db->qn('#__fabrik_lists') . " WHERE "
+					. $db->qn('form_id') . " = " . (int) $fid
 				);
 				$tname = $db->loadResult();
-				$rdb = $db->quoteName($tname . $db_suff);
+				$rdb = $db->qn($tname . $db_suff);
 			}
 
 			// Making the message to record
@@ -683,15 +684,15 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 			*/
 			if ($params->get('record_in') == '')
 			{
-				$in_db = "INSERT INTO $rdb (" . $db->quoteName('referring_url') . ", " . $db->quoteName('message_type') . ", "
-					. $db->quoteName('message') . ") VALUES (" . $db->q($http_referrer) . ", " . $db->q($messageType) . ", "
+				$in_db = "INSERT INTO $rdb (" . $db->qn('referring_url') . ", " . $db->qn('message_type') . ", "
+					. $db->qn('message') . ") VALUES (" . $db->q($http_referrer) . ", " . $db->q($messageType) . ", "
 						. $db->q($message) . ");";
 				$db->setQuery($in_db);
 				$db->execute();
 			}
 			else
 			{
-				$create_custom_table = "CREATE TABLE IF NOT EXISTS $rdb (" . $db->quoteName('id')
+				$create_custom_table = "CREATE TABLE IF NOT EXISTS $rdb (" . $db->qn('id')
 				. " int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, $clabels_createdb);";
 				$db->setQuery($create_custom_table);
 				$db->execute();

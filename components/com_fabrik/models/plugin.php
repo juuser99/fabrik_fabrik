@@ -21,10 +21,10 @@ use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
 use \JForm as JForm;
 use \JFile as JFile;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \stdClass as stdClass;
-use \Joomla\Registry\Registry as JRegistry;
-use \FabrikString as FabrikString;
+use \Joomla\Registry\Registry as Registry;
+use Fabrik\Helpers\String;
 use \JHTML as JHTML;
 use \FabTable as FabTable;
 use \Fabrik\Helpers\HTML;
@@ -49,7 +49,7 @@ class Plugin extends \JPlugin
 	/**
 	 * Params (must be public)
 	 *
-	 * @var JRegistry
+	 * @var Registry
 	 */
 	public $params = null;
 
@@ -63,9 +63,11 @@ class Plugin extends \JPlugin
 	/**
 	 * Plugin data
 	 *
-	 * @var JTable
+	 * //@var JTable
+	 * @var Registry
 	 */
-	protected $row = null;
+	//protected $row = null;
+	protected $item;
 
 	/**
 	 * Order that the plugin is rendered
@@ -219,7 +221,7 @@ class Plugin extends \JPlugin
 			$id .= '-' . $repeatCounter;
 			$output[] = '<li' . $class . '>
 				<a data-toggle="tab" href="#' . $id . '">
-					' . FText::_($fieldset->label) . '
+					' . Text::_($fieldset->label) . '
 						</a>
 		    </li>';
 			$i ++;
@@ -298,7 +300,7 @@ class Plugin extends \JPlugin
 
 		// Paul - If there is a string for plugin_DESCRIPTION then display this as a legend
 		$iniStr = strtoupper('PLG_' . $type . '_' . $this->_name . '_DESCRIPTION');
-		$iniVal = FText::_($iniStr);
+		$iniVal = Text::_($iniStr);
 
 		if ($iniStr != $iniVal)
 		{
@@ -383,15 +385,15 @@ class Plugin extends \JPlugin
 
 			if ($mode == '' && $fieldset->label != '')
 			{
-				$str[] = '<legend>' . FText::_($fieldset->label) . '</legend>';
+				$str[] = '<legend>' . Text::_($fieldset->label) . '</legend>';
 			}
 
 			$form->repeat = $repeat;
 
 			if ($repeat)
 			{
-				$str[] = '<a class="btn" href="#" data-button="addButton"><i class="icon-plus"></i> ' . FText::_('COM_FABRIK_ADD') . '</a>';
-				$str[] = '<a class="btn" href="#" data-button="deleteButton"><i class="icon-minus"></i> ' . FText::_('COM_FABRIK_REMOVE') . '</a>';
+				$str[] = '<a class="btn" href="#" data-button="addButton"><i class="icon-plus"></i> ' . Text::_('COM_FABRIK_ADD') . '</a>';
+				$str[] = '<a class="btn" href="#" data-button="deleteButton"><i class="icon-minus"></i> ' . Text::_('COM_FABRIK_REMOVE') . '</a>';
 			}
 
 			for ($r = 0; $r < $repeatDataMax; $r++)
@@ -462,6 +464,7 @@ class Plugin extends \JPlugin
 	 */
 	public function setParams(&$params, $repeatCounter)
 	{
+		echo "<h2>set params </h2>";
 		$opts = $params->toArray();
 		$data = array();
 
@@ -477,7 +480,7 @@ class Plugin extends \JPlugin
 			}
 		}
 
-		$this->params = new JRegistry(json_encode($data));
+		$this->params = new Registry(json_encode($data));
 
 		return $this->params;
 	}
@@ -485,58 +488,40 @@ class Plugin extends \JPlugin
 	/**
 	 * Load params
 	 *
-	 * @return  JRegistry  params
+	 * @return  Registry  params
 	 */
-
 	public function getParams()
 	{
 		if (!isset($this->params))
 		{
-			$row = $this->getRow();
-			$this->params = new JRegistry($row->params);
+			$row = $this->getItem();
+			$this->params = new Registry($row->params);
 		}
 
 		return $this->params;
 	}
 
 	/**
-	 * Get db row/item loaded with id
+	 * Get item
 	 *
-	 * @return  \JTable
+	 * @return  Registry
 	 */
-	protected function getRow()
+	public function getItem()
 	{
-		// FIXME 3.5
-		if (!isset($this->row))
-		{
-			$this->row = $this->getTable($this->_type);
-			$this->row->load($this->id);
-		}
-
-		return $this->row;
+		// Should always be set
+		return $this->item;
 	}
 
 	/**
-	 * Set db row/item
+	 * Set item
 	 *
-	 * @param   \JTable  $row  db item
+	 * @param   Registry  $item
 	 *
 	 * @return  void
 	 */
-	public function setRow($row)
+	public function setItem(Registry $item)
 	{
-		$this->row = $row;
-	}
-
-	/**
-	 *  Get db row/item loaded
-	 *
-	 * @return  JTable
-	 */
-	public function getTable()
-	{
-		// FIXME 3.5
-		return FabTable::getInstance('Extension', 'JTable');
+		$this->item = $item;
 	}
 
 	/**
@@ -641,7 +626,7 @@ class Plugin extends \JPlugin
 
 			foreach ($items as $id => $item)
 			{
-				$item = new JRegistry($item);
+				$item = new Registry($item);
 
 				if ((int) $item->get('list.connection_id') === $cid)
 				{
@@ -654,7 +639,7 @@ class Plugin extends \JPlugin
 
 			$default = new stdClass;
 			$default->id = '';
-			$default->label = FText::_('COM_FABRIK_PLEASE_SELECT');
+			$default->label = Text::_('COM_FABRIK_PLEASE_SELECT');
 			array_unshift($rows, $default);
 		}
 		else
@@ -731,7 +716,7 @@ class Plugin extends \JPlugin
 						$tid = $jDb->loadResult();
 					}
 
-					$db->setQuery('DESCRIBE ' . $db->quoteName($tid));
+					$db->setQuery('DESCRIBE ' . $db->qn($tid));
 					$rows = $db->loadObjectList();
 
 					if (is_array($rows))
@@ -744,7 +729,7 @@ class Plugin extends \JPlugin
 
 							if ($highlightPk && $r->Key === 'PRI')
 							{
-								$c->label .= ' [' . FText::_('COM_FABRIK_RECOMMENDED') . ']';
+								$c->label .= ' [' . Text::_('COM_FABRIK_RECOMMENDED') . ']';
 								array_unshift($arr, $c);
 							}
 							else
@@ -824,7 +809,7 @@ class Plugin extends \JPlugin
 
 						$c = new stdClass;
 						$c->value = $v;
-						$label = FabrikString::getShortDdLabel($element->label);
+						$label = String::getShortDdLabel($element->label);
 
 						if ($groupModel->isJoin())
 						{
@@ -838,7 +823,7 @@ class Plugin extends \JPlugin
 
 						if ($highlightPk && $pk === $db->qn($eVal->getFullName(false, false)))
 						{
-							$c->label .= ' [' . FText::_('COM_FABRIK_RECOMMENDED') . ']';
+							$c->label .= ' [' . Text::_('COM_FABRIK_RECOMMENDED') . ']';
 							array_unshift($arr, $c);
 						}
 						else
@@ -854,7 +839,7 @@ class Plugin extends \JPlugin
 							{
 								$c = new stdClass;
 								$c->value = 'sum___' . $v;
-								$c->label = FText::_('COM_FABRIK_SUM') . ': ' . $label;
+								$c->label = Text::_('COM_FABRIK_SUM') . ': ' . $label;
 								$arr[] = $c;
 							}
 
@@ -862,7 +847,7 @@ class Plugin extends \JPlugin
 							{
 								$c = new stdClass;
 								$c->value = 'avg___' . $v;
-								$c->label = FText::_('COM_FABRIK_AVERAGE') . ': ' . $label;
+								$c->label = Text::_('COM_FABRIK_AVERAGE') . ': ' . $label;
 								$arr[] = $c;
 							}
 
@@ -870,7 +855,7 @@ class Plugin extends \JPlugin
 							{
 								$c = new stdClass;
 								$c->value = 'med___' . $v;
-								$c->label = FText::_('COM_FABRIK_MEDIAN') . ': ' . $label;
+								$c->label = Text::_('COM_FABRIK_MEDIAN') . ': ' . $label;
 								$arr[] = $c;
 							}
 
@@ -878,7 +863,7 @@ class Plugin extends \JPlugin
 							{
 								$c = new stdClass;
 								$c->value = 'cnt___' . $v;
-								$c->label = FText::_('COM_FABRIK_COUNT') . ': ' . $label;
+								$c->label = Text::_('COM_FABRIK_COUNT') . ': ' . $label;
 								$arr[] = $c;
 							}
 
@@ -886,7 +871,7 @@ class Plugin extends \JPlugin
 							{
 								$c = new stdClass;
 								$c->value = 'cnt___' . $v;
-								$c->label = FText::_('COM_FABRIK_CUSTOM') . ': ' . $label;
+								$c->label = Text::_('COM_FABRIK_CUSTOM') . ': ' . $label;
 								$arr[] = $c;
 							}
 						}
@@ -899,7 +884,7 @@ class Plugin extends \JPlugin
 			// Ignore errors as you could be swapping between connections, with old db table name selected.
 		}
 
-		array_unshift($arr, JHTML::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT'), 'value', 'label'));
+		array_unshift($arr, JHTML::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT'), 'value', 'label'));
 		echo json_encode($arr);
 	}
 
@@ -955,7 +940,7 @@ class Plugin extends \JPlugin
 	 *
 	 * @param   string     $paramName  Param name which contains the PHP code to eval
 	 * @param   array      $data       Data
-	 * @param   JRegistry $params      Plugin parameters - hacky fix ini email plugin where in
+	 * @param   Registry $params      Plugin parameters - hacky fix ini email plugin where in
 	 *                                 php 5.3.29 email params were getting confused between multiple plugin instances
 	 *
 	 * @return  bool

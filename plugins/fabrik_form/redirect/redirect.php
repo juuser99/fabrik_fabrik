@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\String;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -344,7 +345,6 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 *
 	 * @return void
 	 */
-
 	protected function _storeInSession()
 	{
 		$formModel = $this->getModel();
@@ -353,7 +353,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$store = array();
 
-		$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
+		$pk = String::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
 
 		if ($this->data['save_in_session'] == '1')
 		{
@@ -410,7 +410,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 							if ($v != '')
 							{
 								$store['join'][] = $join;
-								$store['key'][] = FabrikString::safeColName($name);
+								$store['key'][] = String::safeColName($name);
 								$store['condition'][] = '=';
 								$store['search_type'][] = 'search';
 								$store['access'][] = 0;

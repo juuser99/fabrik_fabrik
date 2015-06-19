@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use \Fabrik\Admin\Models\Lizt;
 use \Fabrik\Admin\Models\Visualization;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 /**
  * Fabrik Gantt Chart Plug-in Model
@@ -67,23 +69,23 @@ class FabrikModelFusion_Gantt_Chart extends Visualization
 		$listModel->setId($listId);
 		$db = $listModel->getDB();
 		$process = (string) $params->get('fusion_gantt_chart_process');
-		$process = FabrikString::safeColNameToArrayKey($process);
+		$process = String::safeColNameToArrayKey($process);
 		$processraw = $process . '_raw';
 		$start = $params->get('fusion_gantt_chart_startdate');
-		$start = FabrikString::safeColNameToArrayKey($start);
+		$start = String::safeColNameToArrayKey($start);
 		$startraw = $start . '_raw';
 		$end = $params->get('fusion_gantt_chart_enddate');
-		$end = FabrikString::safeColNameToArrayKey($end);
+		$end = String::safeColNameToArrayKey($end);
 		$endraw = $end . '_raw';
 		$label = $params->get('fusion_gantt_chart_label');
-		$label = FabrikString::safeColNameToArrayKey($label);
+		$label = String::safeColNameToArrayKey($label);
 		$hover = $params->get('fusion_gantt_chart_hover');
-		$hover = FabrikString::safeColNameToArrayKey($hover);
+		$hover = String::safeColNameToArrayKey($hover);
 		$milestone = $params->get('fusion_gantt_chart_milestone');
-		$milestone = FabrikString::safeColNameToArrayKey($milestone);
+		$milestone = String::safeColNameToArrayKey($milestone);
 		$milestoneraw = $milestone . '_raw';
 		$connector = $params->get('fusion_gantt_chart_connector');
-		$connector = FabrikString::safeColNameToArrayKey($connector);
+		$connector = String::safeColNameToArrayKey($connector);
 		$connectorraw = $connector . '_raw';
 		$fields = array();
 		$names = array();
@@ -109,8 +111,8 @@ class FabrikModelFusion_Gantt_Chart extends Visualization
 		}
 
 		$groupByKeys = array_keys($data);
-		$mindate = null;
-		$maxdate = null;
+		$minDate = null;
+		$maxDate = null;
 		$usedProcesses = array();
 		$milestones = array();
 		$connectors = array();
@@ -166,21 +168,21 @@ class FabrikModelFusion_Gantt_Chart extends Visualization
 				}
 
 				// Increases max/min date range
-				if (is_null($mindate))
+				if (is_null($minDate))
 				{
-					$mindate = $startdate;
-					$maxdate = $enddate;
+					$minDate = $startdate;
+					$maxDate = $enddate;
 				}
 				else
 				{
-					if (JFactory::getDate($d->$startraw)->toUnix() < $mindate->toUnix())
+					if (JFactory::getDate($d->$startraw)->toUnix() < $minDate->toUnix())
 					{
-						$mindate = JFactory::getDate($d->$startraw);
+						$minDate = JFactory::getDate($d->$startraw);
 					}
 
-					if ($enddate->toUnix() > $maxdate->toUnix())
+					if ($enddate->toUnix() > $maxDate->toUnix())
 					{
-						$maxdate = $enddate;
+						$maxDate = $enddate;
 					}
 				}
 
@@ -188,16 +190,16 @@ class FabrikModelFusion_Gantt_Chart extends Visualization
 			}
 		}
 
-		$startyear = $mindate ? $mindate->format('Y') : date('Y');
-		$endyear = $maxdate ? $maxdate->format('Y') : 0;
+		$startyear = $minDate ? $minDate->format('Y') : date('Y');
+		$endyear = $maxDate ? $maxDate->format('Y') : 0;
 
 		$monthdisplay = $params->get('fusion_gannt_chart_monthdisplay');
 		$this->fc->addGanttCategorySet("bgColor=333333;fontColor=99cc00;isBold=1;fontSize=14");
 
 		for ($y = $startyear; $y <= $endyear; $y++)
 		{
-			$firstmonth = ($y == $startyear) ? (int) $mindate->format('m') : 1;
-			$lastmonth = ($y == $endyear) ? $maxdate->format('m') + 1 : 13;
+			$firstmonth = ($y == $startyear) ? (int) $minDate->format('m') : 1;
+			$lastmonth = ($y == $endyear) ? $maxDate->format('m') + 1 : 13;
 
 			$start = date('Y/m/d', mktime(0, 0, 0, $firstmonth, 1, $y));
 			$end = date('Y/m/d', mktime(0, 0, 0, $lastmonth, 0, $y));
@@ -210,8 +212,8 @@ class FabrikModelFusion_Gantt_Chart extends Visualization
 
 		for ($y = $startyear; $y <= $endyear; $y++)
 		{
-			$lastmonth = ($y == $endyear) ? $maxdate->format('m') + 1 : 13;
-			$firstmonth = ($y == $startyear) ? (int) $mindate->format('m') : 1;
+			$lastmonth = ($y == $endyear) ? $maxDate->format('m') + 1 : 13;
+			$firstmonth = ($y == $startyear) ? (int) $minDate->format('m') : 1;
 
 			for ($m = $firstmonth; $m < $lastmonth; $m++)
 			{
@@ -220,7 +222,7 @@ class FabrikModelFusion_Gantt_Chart extends Visualization
 
 				// Use day = 0 to load last day of next month
 				$end = date('Y/m/d', mktime(0, 0, 0, $m + 1, 0, $y));
-				$m2 = $monthdisplay == 'str' ? FText::_(date('M', $starttime)) : $m;
+				$m2 = $monthdisplay == 'str' ? Text::_(date('M', $starttime)) : $m;
 				$this->fc->addGanttCategory($m2, "start=" . $start . ";end=" . $end . ";");
 			}
 		}

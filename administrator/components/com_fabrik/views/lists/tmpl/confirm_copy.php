@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 ?>
 
 <script type="text/javascript">
@@ -31,7 +33,7 @@ defined('_JEXEC') or die('Restricted access');
 	<?php
 	foreach ($this->lists as $list) :
 		?>
-		<h2><?php echo FText::_('COM_FABRIK_LIST_COPY_RENAME_LIST') ?></h2>
+		<h2><?php echo Text::_('COM_FABRIK_LIST_COPY_RENAME_LIST') ?></h2>
 
 		<div class="control-group">
 
@@ -43,7 +45,7 @@ defined('_JEXEC') or die('Restricted access');
 				<input type="text" name="names[<?php echo $list->id ?>][listLabel]" id="listLabel<?php echo $list->id ?>" value="<?php echo $list->list->label ?>" />
 			</div>
 		</div>
-		<h2><?php echo FText::_('COM_FABRIK_LIST_COPY_RENAME_FORM') ?></h2>
+		<h2><?php echo Text::_('COM_FABRIK_LIST_COPY_RENAME_FORM') ?></h2>
 
 		<div class="control-group">
 			<label class="control-label" for="formLabel<?php echo $list->id ?>">
@@ -54,7 +56,7 @@ defined('_JEXEC') or die('Restricted access');
 				<input type="text" name="names[<?php echo $list->id ?>][formLabel]" id="formLabel<?php echo $list->id ?>" value="<?php echo $list->form->label ?>" />
 			</div>
 		</div>
-		<h2><?php echo FText::_('COM_FABRIK_LIST_COPY_RENAME_GROUPS') ?></h2>
+		<h2><?php echo Text::_('COM_FABRIK_LIST_COPY_RENAME_GROUPS') ?></h2>
 		<?php
 		foreach ($list->form->groups as $groupKey => $group) :
 			?>

@@ -16,8 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
 
 interface ModelVisualizationInterface
 {
@@ -330,8 +331,8 @@ class Visualization extends Base implements ModelVisualizationInterface
 			}
 		}
 
-		$title = '<span>' . FText::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
-		$opts = array('alt' => FText::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
+		$title = '<span>' . Text::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
+		$opts = array('alt' => Text::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
 		$img = HTML::image('find.png', 'list', '', $opts);
 
 		if (count($links) === 1)
@@ -429,7 +430,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 
 		// Limitstart gets added in the pagination model
 		$action = preg_replace("/limitstart" . $this->getState('id') . "}=(.*)?(&|)/", '', $action);
-		$action = FabrikString::rtrimword($action, "&");
+		$action = String::rtrimword($action, "&");
 		$this->getFilterFormURL = JRoute::_($action);
 
 		return $this->getFilterFormURL;
@@ -482,7 +483,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 
 				foreach ($fields as &$f)
 				{
-					$f = FabrikString::safeColName($f);
+					$f = String::safeColName($f);
 				}
 
 				$listParams->set('filter-fields', $fields);
@@ -677,7 +678,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 
 		if ($plugin == '')
 		{
-			$str = FText::_('COM_FABRIK_SELECT_A_PLUGIN');
+			$str = Text::_('COM_FABRIK_SELECT_A_PLUGIN');
 		}
 		else
 		{

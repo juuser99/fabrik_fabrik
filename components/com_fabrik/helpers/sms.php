@@ -39,7 +39,7 @@ class SMSHelper
 	{
 		if (!function_exists('curl_init'))
 		{
-			throw new RuntimeException(FText::_('COM_FABRIK_ERR_CURL_NOT_INSTALLED'));
+			throw new RuntimeException(Text::_('COM_FABRIK_ERR_CURL_NOT_INSTALLED'));
 
 			return;
 		}

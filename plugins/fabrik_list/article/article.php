@@ -11,7 +11,8 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-use \Fabrik\Admin\Models\PluginManager as PluginManager;
+use \Fabrik\Admin\Models\PluginManager;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -73,7 +74,7 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 */
 	protected function buttonLabel()
 	{
-		return FText::_('PLG_LIST_ARTICLE_UPDATE_ARTICLE');
+		return Text::_('PLG_LIST_ARTICLE_UPDATE_ARTICLE');
 	}
 
 	/**
@@ -83,7 +84,6 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 *
 	 * @return  bool
 	 */
-
 	public function process($opts = array())
 	{
 		$model = $this->getModel();

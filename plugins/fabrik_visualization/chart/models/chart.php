@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Admin\Models\Visualization;
 
@@ -133,7 +133,7 @@ class FabrikModelChart extends Visualization
 			}
 
 			$elements = $listModel->getElements('filtername');
-			$safename = FabrikString::safeColName($column);
+			$safename = String::safeColName($column);
 			$colElement = $elements[$safename];
 
 			if ($calcfound)
@@ -183,7 +183,7 @@ class FabrikModelChart extends Visualization
 
 							if (!array_key_exists($column, $row))
 							{
-								JError::raiseWarning(E_NOTICE, $column . ': NOT FOUND - PLEASE CHECK IT IS PUBLISHED');
+								$this->app->enqueueMessage($column . ': NOT FOUND - PLEASE CHECK IT IS PUBLISHED', 'error');
 								continue;
 							}
 						}

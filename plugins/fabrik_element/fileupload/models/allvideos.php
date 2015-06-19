@@ -11,7 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 /**
  * Fileupload adaptor to render allvideos
@@ -20,7 +21,6 @@ use Joomla\String\String;
  * @subpackage  Fabrik.element.fileupload
  * @since       3.0
  */
-
 class AllVideosRender
 {
 	/**
@@ -42,7 +42,6 @@ class AllVideosRender
 	 *
 	 * @return  void
 	 */
-
 	public function renderListData(&$model, &$params, $file, $thisRow)
 	{
 		$this->inTableView = true;
@@ -59,7 +58,6 @@ class AllVideosRender
 	 *
 	 * @return  void
 	 */
-
 	public function render(&$model, &$params, $file, $thisRow = null)
 	{
 		$src = str_replace("\\", "/", COM_FABRIK_LIVESITE . $file);
@@ -67,7 +65,7 @@ class AllVideosRender
 
 		if (!JPluginHelper::isEnabled('content', 'jw_allvideos'))
 		{
-			$this->output = FText::_('PLG_ELEMENT_FILEUPLOAD_INSTALL_ALL_VIDEOS');
+			$this->output = Text::_('PLG_ELEMENT_FILEUPLOAD_INSTALL_ALL_VIDEOS');
 			return;
 		}
 
@@ -112,7 +110,6 @@ class AllVideosRender
 	 *
 	 * @return  string  HTML
 	 */
-
 	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
 	{
 		$rendered = '';

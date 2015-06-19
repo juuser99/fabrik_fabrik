@@ -11,11 +11,14 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Helpers\Text;
+
 ?>
 <li class="dropdown togglecols">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 		<i class="icon-eye-open"></i>
-		<?php echo FText::_('COM_FABRIK_TOGGLE');?>
+		<?php echo Text::_('COM_FABRIK_TOGGLE');?>
 		<b class="caret"></b>
 	</a>
 	<ul class="dropdown-menu">

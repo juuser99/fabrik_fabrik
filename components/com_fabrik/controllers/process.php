@@ -15,13 +15,14 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Admin\Models\FormSession;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\String;
 use \Fabrik\Admin\Models\FormInlineEdit;
 use \JFactory;
 use \JProfiler;
 use \JSession;
 use \Fabrik\Admin\Models\Form;
 use \Fabrik\Helpers\HTML;
-
+use Fabrik\Helpers\Text;
 
 /**
  * Process Form data controller
@@ -251,7 +252,7 @@ class Process extends Controller
 				{
 					if (in_array($errorKey, $toValidate) && count($e[0]) > 0)
 					{
-						array_walk_recursive($e, array('FabrikString', 'forHtml'));
+						array_walk_recursive($e, array('String', 'forHtml'));
 						$messages[] = count($e[0]) === 1 ? '<li>' . $e[0][0] . '</li>' : '<ul><li>' . implode('</li><li>', $e[0]) . '</ul>';
 					}
 				}
@@ -259,7 +260,7 @@ class Process extends Controller
 				if (!empty($messages))
 				{
 					$messages = '<ul>' . implode('</li><li>', $messages) . '</ul>';
-					header('HTTP/1.1 500 ' . FText::_('COM_FABRIK_FAILED_VALIDATION') . $messages);
+					header('HTTP/1.1 500 ' . Text::_('COM_FABRIK_FAILED_VALIDATION') . $messages);
 					jexit();
 				}
 				else

@@ -46,6 +46,7 @@ class Plugin extends Base implements PluginInterface
 		$plugin->getJForm()->model = $feModel;
 
 		$data = $this->getData();
+		print_r($data);
 		$input->set('view', $this->get('type'));
 
 		$str = $plugin->onRenderAdminSettings($data, $this->get('c'), 'nav-tabs');
@@ -66,8 +67,15 @@ class Plugin extends Base implements PluginInterface
 
 		if ($type === 'validation')
 		{
-			//$item = FabTable::getInstance('Element', 'FabrikTable');
-			//$item->load($this->get('id'));
+			$form = new \Fabrik\Admin\Models\Form;
+			$form->setId($this->get('id'));
+
+			// FIXME - pass the elemetn id in as part of the ajax call.
+			$element = $form->getElement('55488ad55c073', true);
+
+			$validations = $element->getItem()->get('validations');;
+			$index = $this->get('c');
+			$data['params'] = \Joomla\Utilities\ArrayHelper::getValue($validations, $index, array());
 		}
 		elseif ($type === 'elementjavascript')
 		{
@@ -106,7 +114,7 @@ class Plugin extends Base implements PluginInterface
 	/**
 	 * Get the plugin model
 	 *
-	 * @return  object
+	 * @return  Lizt
 	 */
 	protected function getPluginModel()
 	{

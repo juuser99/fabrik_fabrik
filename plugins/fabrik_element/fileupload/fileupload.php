@@ -13,14 +13,14 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ImageHelper;
 use Fabrik\Helpers\UploaderHelper;
 use Fabrik\Helpers\HTML;
-
-//require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
+use \JError;
+use Fabrik\Helpers\Text;
 
 define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
@@ -109,11 +109,11 @@ class Fileupload extends Element
 			if ($groupModel->isJoin())
 			{
 				$name = $this->getFullName(true, false);
-				$joinid = $groupModel->getGroup()->join_id;
-				$fileJoinData = ArrayHelper::getValue($_FILES['join']['name'], $joinid, array());
+				$joinId = $groupModel->getGroup()->join_id;
+				$fileJoinData = ArrayHelper::getValue($_FILES['join']['name'], $joinId, array());
 				$fdata = ArrayHelper::getValue($fileJoinData, $name);
 
-				// $fdata = $_FILES['join']['name'][$joinid][$name];
+				// $fdata = $_FILES['join']['name'][$joinId][$name];
 			}
 			else
 			{
@@ -256,7 +256,7 @@ class Fileupload extends Element
 
 		$element = $this->getElement();
 		$paramsKey = $this->getFullName(true, false);
-		$paramsKey = Fabrikstring::rtrimword($paramsKey, $this->getElement()->name);
+		$paramsKey = String::rtrimword($paramsKey, $this->getElement()->get('name'));
 		$paramsKey .= 'params';
 		$formData = $this->getFormModel()->data;
 		$imgParams = ArrayHelper::getValue($formData, $paramsKey);
@@ -429,8 +429,8 @@ class Fileupload extends Element
 		$opts->dragdrop = true;
 		$icon = 'picture';
 		$resize = 'expand-2';
-		$opts->previewButton = HTML::image($icon, 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
-		$opts->resizeButton = HTML::image($resize, 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
+		$opts->previewButton = HTML::image($icon, 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
+		$opts->resizeButton = HTML::image($resize, 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
 		$opts->files = $oFiles;
 
 		$opts->winWidth = (int) $params->get('win_width', 400);
@@ -1018,7 +1018,7 @@ class Fileupload extends Element
 
 		if (!$this->_fileUploadFileTypeOK($fileName))
 		{
-			$errors[] = FText::_('PLG_ELEMENT_FILEUPLOAD_FILE_TYPE_NOT_ALLOWED');
+			$errors[] = Text::_('PLG_ELEMENT_FILEUPLOAD_FILE_TYPE_NOT_ALLOWED');
 			$ok = false;
 		}
 
@@ -1032,14 +1032,14 @@ class Fileupload extends Element
 		/**
 		 * @FIXME - need to check for Amazon S3 storage?
 		 */
-		$filepath = $this->_getFilePath($repeatCounter);
+		$filePath = $this->_getFilePath($repeatCounter);
 		jimport('joomla.filesystem.file');
 
-		if (JFile::exists($filepath))
+		if (JFile::exists($filePath))
 		{
 			if ($params->get('ul_file_increment', 0) == 0)
 			{
-				$errors[] = FText::_('PLG_ELEMENT_FILEUPLOAD_EXISTING_FILE_NAME');
+				$errors[] = Text::_('PLG_ELEMENT_FILEUPLOAD_EXISTING_FILE_NAME');
 				$ok = false;
 			}
 		}
@@ -1166,20 +1166,20 @@ class Fileupload extends Element
 			$files = array_keys($crop);
 			$groupModel = $this->getGroup();
 			$formModel = $this->getFormModel();
-			$isjoin = ($groupModel->isJoin() || $this->isJoin());
+			$isJoin = ($groupModel->isJoin() || $this->isJoin());
 
-			if ($isjoin)
+			if ($isJoin)
 			{
 				if (!$groupModel->canRepeat() && !$this->isJoin())
 				{
 					$files = $files[0];
 				}
 
-				$joinid = $groupModel->getGroup()->join_id;
+				$joinId = $groupModel->getGroup()->join_id;
 
 				if ($this->isJoin())
 				{
-					$joinid = $this->getJoinModel()->getJoin()->id;
+					$joinId = $this->getJoinModel()->getJoin()->id;
 				}
 
 				$j = $this->getJoinModel()->getJoin()->table_join;
@@ -1289,9 +1289,9 @@ class Fileupload extends Element
 			$oImage->setStorage($storage);
 			$fileCounter = 0;
 
-			foreach ($crop as $filepath => $json)
+			foreach ($crop as $filePath => $json)
 			{
-				$imgData = $cropData[$filepath];
+				$imgData = $cropData[$filePath];
 				$imgData = substr($imgData, strpos($imgData, ',') + 1);
 
 				// Need to decode before saving since the data we received is already base64 encoded
@@ -1318,13 +1318,13 @@ class Fileupload extends Element
 					}
 				}
 
-				$filepath = $storage->clean(JPATH_SITE . '/' . $filepath);
-				$fileURL = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $filepath));
+				$filePath = $storage->clean(JPATH_SITE . '/' . $filePath);
+				$fileURL = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $filePath));
 				$destCropFile = $storage->_getCropped($fileURL);
 				$destCropFile = $storage->urlToPath($destCropFile);
 				$destCropFile = $storage->clean($destCropFile);
 
-				if (!JFile::exists($filepath))
+				if (!JFile::exists($filePath))
 				{
 					unset($files[$fileCounter]);
 					$fileCounter++;
@@ -1345,21 +1345,21 @@ class Fileupload extends Element
 			}
 
 			$groupModel = $this->getGroup();
-			$isjoin = ($groupModel->isJoin() || $this->isJoin());
+			$isJoin = ($groupModel->isJoin() || $this->isJoin());
 			$formModel = $this->getFormModel();
 
-			if ($isjoin)
+			if ($isJoin)
 			{
 				if (!$groupModel->canRepeat() && !$this->isJoin())
 				{
 					$files = $files[0];
 				}
 
-				$joinid = $groupModel->getGroup()->join_id;
+				$joinId = $groupModel->getGroup()->join_id;
 
 				if ($this->isJoin())
 				{
-					$joinid = $this->getJoinModel()->getJoin()->id;
+					$joinId = $this->getJoinModel()->getJoin()->id;
 				}
 
 				$name = $this->getFullName(true, false);
@@ -1731,7 +1731,7 @@ class Fileupload extends Element
 			}
 			else
 			{
-				//$file = $joindata[$joinid][$name]['name'];
+				//$file = $joindata[$joinId][$name]['name'];
 				$file = JArrayHelper::getValue($files, 'name');
 			}
 
@@ -1744,13 +1744,13 @@ class Fileupload extends Element
 			if ($this->isJoin())
 			{
 				$join = $this->getJoinModel()->getJoin();
-				$joinid = $join->id;
+				$joinId = $join->id;
 				$joindata = $input->post->get('join', array(), 'array');
-				$joindata = ArrayHelper::getValue($joindata, $joinid, array());
+				$joindata = ArrayHelper::getValue($joindata, $joinId, array());
 				$joindata = ArrayHelper::getValue($joindata, $name, array());
-				$joinids = ArrayHelper::getValue($joindata, 'id', array());
+				$joinIds = ArrayHelper::getValue($joindata, 'id', array());
 
-				return empty($joinids) ? true : false;
+				return empty($joinIds) ? true : false;
 			}
 			else
 			{
@@ -1829,40 +1829,40 @@ class Fileupload extends Element
 			return;
 		}
 
-		$filepath = $this->_getFilePath($repeatGroupCounter);
+		$filePath = $this->_getFilePath($repeatGroupCounter);
 
 		if (!UploaderHelper::canUpload($file, $err, $params))
 		{
-			$this->setError(100, $file['name'] . ': ' . FText::_($err));
+			$this->setError(100, $file['name'] . ': ' . Text::_($err));
 		}
 
-		if ($storage->exists($filepath))
+		if ($storage->exists($filePath))
 		{
 			switch ($params->get('ul_file_increment', 0))
 			{
 				case 0:
 					break;
 				case 1:
-					$filepath = UploaderHelper::incrementFileName($filepath, $filepath, 1);
+					$filePath = UploaderHelper::incrementFileName($filePath, $filePath, 1);
 					break;
 				case 2:
-					JLog::add('Ind upload Delete file: ' . $filepath . '; user = ' . $this->user->get('id'), JLog::WARNING, 'com_fabrik.element.fileupload');
-					$storage->delete($filepath);
+					JLog::add('Ind upload Delete file: ' . $filePath . '; user = ' . $this->user->get('id'), JLog::WARNING, 'com_fabrik.element.fileupload');
+					$storage->delete($filePath);
 					break;
 			}
 		}
 
-		if (!$storage->upload($tmpFile, $filepath))
+		if (!$storage->upload($tmpFile, $filePath))
 		{
 			$uploader->moveError = true;
-			$this->setError(100, JText::sprintf('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR', $tmpFile, $filepath));
+			$this->setError(100, JText::sprintf('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR', $tmpFile, $filePath));
 
 			return;
 		}
 
-		$filepath = $storage->getUploadedFilePath();
+		$filePath = $storage->getUploadedFilePath();
 		jimport('joomla.filesystem.path');
-		$storage->setPermissions($filepath);
+		$storage->setPermissions($filePath);
 
 		// $$$ hugh @TODO - shouldn't we check to see if it's actually an image before we do any of this stuff???
 
@@ -1885,12 +1885,12 @@ class Fileupload extends Element
 				$mainWidth = (int) $mainHeight;
 			}
 
-			$oImage->resize($mainWidth, $mainHeight, $filepath, $filepath);
+			$oImage->resize($mainWidth, $mainHeight, $filePath, $filePath);
 		}
 		// $$$ hugh - if it's a PDF, make sure option is set to attempt PDF thumb
 		$make_thumbnail = $params->get('make_thumbnail') == '1' ? true : false;
 
-		if (JFile::getExt($filepath) == 'pdf' && $params->get('fu_make_pdf_thumb', '0') == '0')
+		if (JFile::getExt($filePath) == 'pdf' && $params->get('fu_make_pdf_thumb', '0') == '0')
 		{
 			$make_thumbnail = false;
 		}
@@ -1917,17 +1917,17 @@ class Fileupload extends Element
 				}
 			}
 
-			$fileURL = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $filepath));
+			$fileURL = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $filePath));
 			$destThumbFile = $storage->_getThumb($fileURL);
 			$destThumbFile = $storage->urlToPath($destThumbFile);
-			$oImage->resize($maxWidth, $maxHeight, $filepath, $destThumbFile);
+			$oImage->resize($maxWidth, $maxHeight, $filePath, $destThumbFile);
 			$storage->setPermissions($destThumbFile);
 		}
 
-		$storage->setPermissions($filepath);
-		$storage->finalFilePathParse($filepath);
+		$storage->setPermissions($filePath);
+		$storage->finalFilePathParse($filePath);
 
-		return $filepath;
+		return $filePath;
 	}
 
 	/**
@@ -1975,7 +1975,7 @@ class Fileupload extends Element
 			 * to rebuild it.  For instance, if the element data is changed by a onBeforeProcess
 			 * submission plugin, or by a 'replace' validation.
 			 */
-			if (!FabrikString::usesElementPlaceholders($params->get('ul_directory')))
+			if (!String::usesElementPlaceholders($params->get('ul_directory')))
 			{
 				return $this->_filePaths[$repeatCounter];
 			}
@@ -2239,7 +2239,7 @@ class Fileupload extends Element
 
 			if ($groupModel->canRepeat())
 			{
-				$ulname = FabrikString::rtrimword($name, "[$repeatCounter]") . "[ul_end_dir][$repeatCounter]";
+				$ulname = String::rtrimword($name, "[$repeatCounter]") . "[ul_end_dir][$repeatCounter]";
 			}
 			else
 			{
@@ -2275,7 +2275,7 @@ class Fileupload extends Element
 	{
 		$joinedGroupPkVal = $this->getJoinedGroupPkVal($repeatCounter);
 
-		return '<button class="btn button" data-file="' . $value . '" data-join-pk-val="' . $joinedGroupPkVal . '">' . FText::_('COM_FABRIK_DELETE') . '</button> ';
+		return '<button class="btn button" data-file="' . $value . '" data-join-pk-val="' . $joinedGroupPkVal . '">' . Text::_('COM_FABRIK_DELETE') . '</button> ';
 	}
 
 	/**
@@ -2492,9 +2492,9 @@ class Fileupload extends Element
 				'error' => $_FILES['file']['error'],
 				'size' => $_FILES['file']['size']
 			);
-			$filepath = $this->_processIndUpload($file, '', 0);
-			$uri = $this->getStorage()->pathToURL($filepath);
-			$o->filepath = $filepath;
+			$filePath = $this->_processIndUpload($file, '', 0);
+			$uri = $this->getStorage()->pathToURL($filePath);
+			$o->filepath = $filePath;
 			$o->uri = $uri;
 		}
 		else
@@ -2637,7 +2637,7 @@ class Fileupload extends Element
 		{
 			jimport('joomla.filesystem.file');
 			$elName = $this->getFullName(true, false);
-			$name = $this->getElement()->name;
+			$name = $this->getElement()->get('name');
 
 			foreach ($groups as $rows)
 			{
@@ -2649,8 +2649,8 @@ class Fileupload extends Element
 						{
 							$join = $this->getJoinModel()->getJoin();
 							$query = $db->getQuery(true);
-							$query->select('*')->from($db->quoteName($join->table_join))
-								->where($db->quoteName('parent_id') . ' = ' . $db->q($row->__pk_val));
+							$query->select('*')->from($db->qn($join->table_join))
+								->where($db->qn('parent_id') . ' = ' . $db->q($row->__pk_val));
 							$db->setQuery($query);
 							$imageRows = $db->loadObjectList('id');
 
@@ -2662,8 +2662,8 @@ class Fileupload extends Element
 								}
 
 								$query->clear();
-								$query->delete($db->quoteName($join->table_join))
-									->where($db->quoteName('id') . ' IN (' . implode(', ', array_keys($imageRows)) . ')');
+								$query->delete($db->qn($join->table_join))
+									->where($db->qn('id') . ' IN (' . implode(', ', array_keys($imageRows)) . ')');
 								$db->setQuery($query);
 								$logMsg = 'onDeleteRows Delete records query: ' . $db->getQuery() . '; user = ' . $this->user->get('id');
 								JLog::add($logMsg, JLog::WARNING, 'com_fabrik.element.fileupload');
@@ -2832,14 +2832,14 @@ class Fileupload extends Element
 
 		if (!$this->canView())
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_PERMISSION'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_PERMISSION'));
 			$this->app->redirect($url);
 			exit;
 		}
 
 		if (empty($rowId))
 		{
-			$errmsg = FText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE');
+			$errmsg = Text::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE');
 			$errmsg .= HTML::isDebug() ? ' (empty rowid)' : '';
 			$this->app->enqueueMessage($errmsg);
 			$this->app->redirect($url);
@@ -2848,7 +2848,7 @@ class Fileupload extends Element
 
 		if (empty($row))
 		{
-			$errmsg = FText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE');
+			$errmsg = Text::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE');
 			$errmsg .= HTML::isDebug() ? " (no such row)" : '';
 			$this->app->enqueueMessage($errmsg);
 			$this->app->redirect($url);
@@ -2866,29 +2866,29 @@ class Fileupload extends Element
 
 			if (!$canDownload)
 			{
-				$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_PERMISSION'));
+				$this->app->enqueueMessage(Text::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_PERMISSION'));
 				$this->app->redirect($url);
 			}
 		}
 
 		$storage = $this->getStorage();
 		$elName = $this->getFullName(true, false);
-		$filepath = $row->$elName;
-		$filepath = Worker::JSONtoData($filepath, false);
-		$filepath = is_object($filepath) ? ArrayHelper::fromObject($filepath) : (array)$filepath;
-		$foo = $filepath[$repeatcount];
-		$filepath = ArrayHelper::getValue($filepath, $repeatcount);
-		$filepath = $storage->getFullPath($filepath);
-		$filecontent = $storage->read($filepath);
+		$filePath = $row->$elName;
+		$filePath = Worker::JSONtoData($filePath, false);
+		$filePath = is_object($filePath) ? ArrayHelper::fromObject($filePath) : (array)$filePath;
+		$foo = $filePath[$repeatcount];
+		$filePath = ArrayHelper::getValue($filePath, $repeatcount);
+		$filePath = $storage->getFullPath($filePath);
+		$filecontent = $storage->read($filePath);
 
 		if ($filecontent !== false)
 		{
-			$thisFileInfo = $storage->getFileInfo($filepath);
+			$thisFileInfo = $storage->getFileInfo($filePath);
 
 			if ($thisFileInfo === false)
 			{
-				$errmsg = FText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE');
-				$errmsg .= HTML::isDebug(true) ? ' (path: ' . $filepath . ')' : '';
+				$errmsg = Text::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE');
+				$errmsg .= HTML::isDebug(true) ? ' (path: ' . $filePath . ')' : '';
 				$this->app->enqueueMessage($errmsg);
 				$this->app->redirect($url);
 				exit;
@@ -2907,16 +2907,16 @@ class Fileupload extends Element
 			// Serve up the file
 			echo $filecontent;
 
-			// $this->downloadEmail($row, $filepath);
+			// $this->downloadEmail($row, $filePath);
 			$this->downloadHit($rowId, $repeatcount);
-			$this->downloadLog($row, $filepath);
+			$this->downloadLog($row, $filePath);
 
 			// And we're done.
 			exit();
 		}
 		else
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -2953,14 +2953,14 @@ class Fileupload extends Element
 	 * Log the download
 	 *
 	 * @param   object  $row       Log download row
-	 * @param   string  $filepath  Downloaded file's path
+	 * @param   string  $filePath  Downloaded file's path
 	 *
 	 * @since 2.0.5
 	 *
 	 * @return  void
 	 */
 
-	protected function downloadLog($row, $filepath)
+	protected function downloadLog($row, $filePath)
 	{
 		$params = $this->getParams();
 
@@ -2971,7 +2971,7 @@ class Fileupload extends Element
 			$log = JTable::getInstance('log', 'Table');
 			$log->message_type = 'fabrik.fileupload.download';
 			$msg = new stdClass;
-			$msg->file = $filepath;
+			$msg->file = $filePath;
 			$msg->userid = $this->user->get('id');
 			$msg->username = $this->user->get('username');
 			$msg->email = $this->user->get('email');
@@ -3046,12 +3046,12 @@ class Fileupload extends Element
 		$this->setId($input->getInt('element_id'));
 		$this->getElement();
 
-		$filepath = $this->_getFilePath($repeatCounter);
-		$filepath = str_replace(JPATH_SITE, '', $filepath);
+		$filePath = $this->_getFilePath($repeatCounter);
+		$filePath = str_replace(JPATH_SITE, '', $filePath);
 
 		$storage = $this->getStorage();
 		$filename = $storage->cleanName($filename, $repeatCounter);
-		$filename = JPath::clean($filepath . '/' . $filename);
+		$filename = JPath::clean($filePath . '/' . $filename);
 		$this->deleteFile($filename);
 		$db = $this->getListModel()->getDb();
 		$query = $db->getQuery(true);
@@ -3060,8 +3060,8 @@ class Fileupload extends Element
 		if ($join->table_join != '')
 		{
 			// Use getString as if we have edited a record, added a file and deleted it the id is alphanumeric and not found in db.
-			$query->delete($db->quoteName($join->table_join))
-			->where($db->quoteName('id') . ' = ' . $db->q($input->getString('recordid')));
+			$query->delete($db->qn($join->table_join))
+			->where($db->qn('id') . ' = ' . $db->q($input->getString('recordid')));
 			$db->setQuery($query);
 
 			JLog::add('Delete join image entry: ' . $db->getQuery() . '; user = ' . $this->user->get('id'), JLog::WARNING, 'com_fabrik.element.fileupload');

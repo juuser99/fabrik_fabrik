@@ -11,6 +11,8 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\HTML;
 ?>
 <?php if ($this->params->get('show_page_heading', 1)) { ?>
@@ -57,11 +59,11 @@ echo "<div class='fabrikMainError fabrikError$active'>" . $form->error . "</div>
 						<div class="fabrikGroupRepeater">
 							<?php if ($group->canAddRepeat) {?>
 							<a class="addGroup" href="#">
-								<?php echo HTML::image('plus-sign.png', 'form', $this->tmpl, FText::_('COM_FABRIK_ADD_GROUP'));?>
+								<?php echo HTML::image('plus-sign.png', 'form', $this->tmpl, Text::_('COM_FABRIK_ADD_GROUP'));?>
 							</a>
 							<?php }?>
 							<a class="deleteGroup" href="#">
-								<?php echo HTML::image('minus-sign.png', 'form', $this->tmpl, FText::_('COM_FABRIK_DELETE_GROUP'));?>
+								<?php echo HTML::image('minus-sign.png', 'form', $this->tmpl, Text::_('COM_FABRIK_DELETE_GROUP'));?>
 							</a>
 						</div>
 					<?php } ?>

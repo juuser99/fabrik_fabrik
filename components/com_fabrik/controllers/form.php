@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Admin\Models\Lizt;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 use \Fabrik\Admin\Models\FormInlineEdit;
 use Fabrik\Admin\Models\Form as FormModel;
 use Fabrik\Admin\Models\FormSession;
@@ -286,7 +287,7 @@ class Form extends Controller
 		}
 		else
 		{
-			$msg = $ok ? count($ids) . ' ' . FText::_('COM_FABRIK_RECORDS_DELETED') : '';
+			$msg = $ok ? count($ids) . ' ' . Text::_('COM_FABRIK_RECORDS_DELETED') : '';
 			$this->app->enqueueMessage($msg);
 			$this->app->redirect($ref);
 		}

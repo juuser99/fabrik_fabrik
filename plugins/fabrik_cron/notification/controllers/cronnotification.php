@@ -10,10 +10,10 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+use Fabrik\Helpers\Text;
+
 
 jimport('joomla.application.component.controller');
-
-require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
 
 /**
  * Cron Notification Fabrik Plug-in Controller
@@ -30,7 +30,6 @@ class FabrikControllerCroncronnotification extends JControllerLegacy
 	 *
 	 * @return  void
 	 */
-
 	public function display()
 	{
 		$document = JFactory::getDocument();
@@ -58,11 +57,10 @@ class FabrikControllerCroncronnotification extends JControllerLegacy
 	 *
 	 * @return false
 	 */
-
 	public function delete()
 	{
 		$model = $this->getModel('cronnotification');
 		$model->delete();
-		$this->setRedirect('index.php?option=com_fabrik&view=cron&controller=cron.cronnotification', FText::_('NOTIFICATIONS_REMOVED'));
+		$this->setRedirect('index.php?option=com_fabrik&view=cron&controller=cron.cronnotification', Text::_('NOTIFICATIONS_REMOVED'));
 	}
 }

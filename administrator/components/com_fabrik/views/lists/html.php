@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use Fabrik\Admin\Helpers\Fabrik;
 use \Fabrik\Helpers\HTML as HelperHTML;
 use JFactory as JFactory;
@@ -73,11 +73,11 @@ class Html extends \Fabrik\Admin\Views\Html
 	/**
 	 * Render the view
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function render()
 	{
-		// @todo - test this - probaby should be moved into their own views
+		// @todo - test this - probably should be moved into their own views
 
 		switch ($this->getLayout())
 		{
@@ -102,7 +102,6 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->addToolbar();
 		Fabrik::addSubmenu('lists');
-		//$this->table_groups = $this->get('TableGroups');
 
 		$this->sidebar = JHtmlSidebar::render();
 
@@ -120,7 +119,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	protected function addToolbar()
 	{
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
 
 		if ($canDo->get('core.create'))
 		{
@@ -176,21 +175,21 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS', false, FText::_('JHELP_COMPONENTS_FABRIK_LISTS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS', false, Text::_('JHELP_COMPONENTS_FABRIK_LISTS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=lists');
 
 		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
 		JHtmlSidebar::addFilter(
-			FText::_('JOPTION_SELECT_PUBLISHED'), 'filter_published',
+			Text::_('JOPTION_SELECT_PUBLISHED'), 'filter_published',
 			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
 		);
 
 		if (!empty($this->packageOptions))
 		{
-			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
+			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			JHtmlSidebar::addFilter(
-				FText::_('JOPTION_SELECT_PUBLISHED'), 'package',
+				Text::_('JOPTION_SELECT_PUBLISHED'), 'package',
 				JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
 		}
@@ -207,7 +206,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	{
 		$app = JFactory::getApplication();
 		$app->input->set('hidemainmenu', true);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_CONFIRM_DELETE'), 'lizt.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_LIST_CONFIRM_DELETE'), 'lizt.png');
 		JToolBarHelper::save('lists.dodelete', 'JTOOLBAR_APPLY');
 		JToolBarHelper::cancel('lizt.cancel', 'JTOOLBAR_CANCEL');
 		JToolBarHelper::divider();
@@ -225,7 +224,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	{
 		$app = JFactory::getApplication();
 		$app->input->set('hidemainmenu', true);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_IMPORT'), 'lizt.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_LIST_IMPORT'), 'lizt.png');
 		JToolBarHelper::save('lists.doimport', 'JTOOLBAR_APPLY');
 		JToolBarHelper::cancel('lizt.cancel', 'JTOOLBAR_CANCEL');
 	}
@@ -253,7 +252,7 @@ class Html extends \Fabrik\Admin\Views\Html
 		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_LIST_COPY'), 'list.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_LIST_COPY'), 'list.png');
 		JToolBarHelper::cancel('lists.cancel', 'JTOOLBAR_CLOSE');
 		JToolBarHelper::save('lists.doCopy', 'JTOOLBAR_SAVE');
 		JToolBarHelper::divider();

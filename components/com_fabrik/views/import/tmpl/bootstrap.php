@@ -10,6 +10,8 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\HTML;
 
 $url = JRoute::_('index.php');
@@ -44,7 +46,7 @@ $listId = $app->input->getString('listid');
 	<input type="hidden" name="task" value="import.doimport" />
   	<?php echo JHTML::_('form.token');
 	echo JHTML::_('behavior.keepalive'); ?>
-	<input type="submit" class="btn btn-primary" value="<?php echo FText::_('COM_FABRIK_IMPORT_CSV')?>" />
+	<input type="submit" class="btn btn-primary" value="<?php echo Text::_('COM_FABRIK_IMPORT_CSV')?>" />
 </form>
 
 <script type="text/javascript">

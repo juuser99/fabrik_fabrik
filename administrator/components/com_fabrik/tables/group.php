@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
 /**
@@ -20,7 +22,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikTableGroup extends FabTable
 {
 	/**
@@ -34,7 +35,6 @@ class FabrikTableGroup extends FabTable
 	 *
 	 * @param   object  &$db  database object
 	 */
-
 	public function __construct(&$db)
 	{
 		parent::__construct('#__fabrik_groups', 'id', $db);
@@ -45,12 +45,11 @@ class FabrikTableGroup extends FabTable
 	 *
 	 * @return  bool
 	 */
-
 	public function check()
 	{
 		if (trim($this->name) == '')
 		{
-			$this->_error = FText::_("YOUR GROUP MUST CONTAIN A NAME");
+			$this->_error = Text::_("YOUR GROUP MUST CONTAIN A NAME");
 
 			return false;
 		}
@@ -68,7 +67,6 @@ class FabrikTableGroup extends FabTable
 	 *
 	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
 	 */
-
 	public function load($keys = null, $reset = true)
 	{
 		if (empty($keys))
@@ -103,7 +101,7 @@ class FabrikTableGroup extends FabTable
 
 		foreach ($keys as $field => $value)
 		{
-			$query->where($db->quoteName('#__fabrik_groups') . '.' . $db->quoteName($field) . ' = ' . $db->q($value));
+			$query->where($db->qn('#__fabrik_groups') . '.' . $db->qn($field) . ' = ' . $db->q($value));
 		}
 
 		$query->where(" (( element_id = 0 OR is_join = 0) OR element_id IS NULL)");
@@ -131,7 +129,6 @@ class FabrikTableGroup extends FabTable
 	 *
 	 * @return  boolean  True on success.
 	 */
-
 	public function store($updateNulls = false)
 	{
 		unset($this->join_id);

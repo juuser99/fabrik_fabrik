@@ -80,9 +80,9 @@ class JFormFieldSuboptions extends JFormField
 		$html[] = '<thead>';
 		$html[] = '<tr style="text-align:left">';
 		$html[] = '<th style="width: 5%"></th>';
-		$html[] = '<th style="width: 30%">' . FText::_('COM_FABRIK_VALUE') . '</th>';
-		$html[] = '<th style="width: 30%">' . FText::_('COM_FABRIK_LABEL') . '</th>';
-		$html[] = '<th style="width: 10%">' . FText::_('COM_FABRIK_DEFAULT') . '</th>';
+		$html[] = '<th style="width: 30%">' . Text::_('COM_FABRIK_VALUE') . '</th>';
+		$html[] = '<th style="width: 30%">' . Text::_('COM_FABRIK_LABEL') . '</th>';
+		$html[] = '<th style="width: 10%">' . Text::_('COM_FABRIK_DEFAULT') . '</th>';
 
 		$html[] = '<th style="width: 20%"><a class="btn btn-success" href="#" data-button="addSuboption"><i class="icon-plus"></i> </a></th>';
 

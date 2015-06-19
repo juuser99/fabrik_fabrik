@@ -175,7 +175,7 @@ class Notes extends Databasejoin
 		{
 			if ($field != '' && $field !== $fk)
 			{
-				$where[] = $db->quoteName($field) . ' = ' . $db->q($value);
+				$where[] = $db->qn($field) . ' = ' . $db->q($value);
 			}
 			else
 			{
@@ -185,12 +185,12 @@ class Notes extends Databasejoin
 		// Jaanus: when we choose WHERE field to be the same as FK then WHERE criteria is automatically FK = rowid, custom criteria(s) above may be added
 		if ($fk !== '' && $field === $fk && $rowId != '')
 		{
-			$where[] = $db->quoteName($fk) . ' = ' . $rowId;
+			$where[] = $db->qn($fk) . ' = ' . $rowId;
 		}
 
 		if ($this->loadRow != '')
 		{
-			$pk = $db->quoteName($this->getJoin()->table_join_alias . '.' . $params->get('join_key_column'));
+			$pk = $db->qn($this->getJoin()->table_join_alias . '.' . $params->get('join_key_column'));
 			$where[] = $pk . ' = ' . $this->loadRow;
 		}
 
@@ -239,7 +239,7 @@ class Notes extends Databasejoin
 		}
 		else
 		{
-			$order = $db->quoteName($orderBy) . ' ' . $params->get('notes_order_dir', 'ASC');
+			$order = $db->qn($orderBy) . ' ' . $params->get('notes_order_dir', 'ASC');
 
 			if ($query)
 			{
@@ -272,8 +272,8 @@ class Notes extends Databasejoin
 
 			if ($user !== '')
 			{
-				$tbl = $db->quoteName($this->getJoin()->table_join_alias);
-				$fields .= ',' . $tbl . '.' . $db->quoteName($user) . 'AS userid, u.name AS username';
+				$tbl = $db->qn($this->getJoin()->table_join_alias);
+				$fields .= ',' . $tbl . '.' . $db->qn($user) . 'AS userid, u.name AS username';
 			}
 		}
 
@@ -302,15 +302,15 @@ class Notes extends Databasejoin
 
 			if ($user !== '')
 			{
-				$tbl = $db->quoteName($this->getJoin()->table_join_alias);
+				$tbl = $db->qn($this->getJoin()->table_join_alias);
 
 				if (!$query)
 				{
-					$join .= ' LEFT JOIN #__users AS u ON u.id = ' . $tbl . '.' . $db->quoteName($user);
+					$join .= ' LEFT JOIN #__users AS u ON u.id = ' . $tbl . '.' . $db->qn($user);
 				}
 				else
 				{
-					$query->join('LEFT', '#__users AS u ON u.id = ' . $tbl . '.' . $db->quoteName($user));
+					$query->join('LEFT', '#__users AS u ON u.id = ' . $tbl . '.' . $db->qn($user));
 				}
 			}
 		}
@@ -345,9 +345,9 @@ class Notes extends Databasejoin
 		$db = $this->getDb();
 		$query = $db->getQuery(true);
 		$params = $this->getParams();
-		$table = $db->quoteName($params->get('join_db_name'));
+		$table = $db->qn($params->get('join_db_name'));
 		$col = $params->get('join_val_column');
-		$key = $db->quoteName($params->get('join_key_column'));
+		$key = $db->qn($params->get('join_key_column'));
 		$v = $input->get('v', '', '', 'string');
 		$rowId = $this->getFormModel()->getRowId();
 
@@ -359,14 +359,14 @@ class Notes extends Databasejoin
 
 			if ($user !== '')
 			{
-				$query->set($db->quoteName($user) . ' = ' . (int) $this->user->get('id'));
+				$query->set($db->qn($user) . ' = ' . (int) $this->user->get('id'));
 			}
 
 			$fk = $params->get('join_fk_column', '');
 
 			if ($fk !== '')
 			{
-				$query->set($db->quoteName($fk) . ' = ' . $db->q($input->get('rowid')));
+				$query->set($db->qn($fk) . ' = ' . $db->q($input->get('rowid')));
 			}
 
 			$db->setQuery($query);

@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
@@ -21,7 +22,7 @@ if ($pageClass !== '') :
 endif;
 
 if ($this->tablePicker != '') : ?>
-	<div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
+	<div style="text-align:right"><?php echo Text::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
 <?php
 endif;
 
@@ -97,7 +98,7 @@ endforeach;
 					<?php else: ?>
 						<a href="#" class="toggle fabrikTip" title="<?php echo $this->emptyDataMessage?>" opts='{trigger: "hover"}'>
 					<?php endif;?>
-							<?php echo HTML::image('arrow-down.png', 'list', $this->tmpl, FText::_('COM_FABRIK_TOGGLE'));?>
+							<?php echo HTML::image('arrow-down.png', 'list', $this->tmpl, Text::_('COM_FABRIK_TOGGLE'));?>
 							<span class="groupTitle">
 								<?php echo $this->grouptemplates[$groupedby]; ?> ( <?php echo count($group)?> )
 							</span>

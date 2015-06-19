@@ -10,8 +10,6 @@
 
 namespace Fabrik\Helpers;
 
-use Fabrik\Helpers\ArrayHelper;
-
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 

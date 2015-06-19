@@ -11,6 +11,8 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Helpers\Text;
 use Fabrik\Helpers\HTML;
 
 $d = $displayData;
@@ -28,12 +30,12 @@ endif;
 
 if ($data == '1') :
 	$icon = $format != 'pdf' ? 'checkmark.png' : '1.png';
-	$properties['alt'] = FText::_('JYES');
+	$properties['alt'] = Text::_('JYES');
 
 	echo HTML::image($icon, 'list', $tmpl, $properties, false, $opts);
 else :
 	$icon = $format != 'pdf' ? 'remove.png' : '0.png';
-	$properties['alt'] = FText::_('JNO');
+	$properties['alt'] = Text::_('JNO');
 	
 	echo HTML::image($icon, 'list', $tmpl, $properties, false, $opts);
 endif;

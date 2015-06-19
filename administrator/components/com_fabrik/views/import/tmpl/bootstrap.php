@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 JHtml::_('behavior.tooltip');
 HTML::formvalidation();
@@ -69,7 +70,7 @@ window.addEvent('domready', function () {
 	<fieldset class="form-horizontal">
 		<?php
 		if ($n == 0) :
-			echo '<legend>' . FText::_('COM_FABRIK_IMPORT_CSV') . '</legend>';
+			echo '<legend>' . Text::_('COM_FABRIK_IMPORT_CSV') . '</legend>';
 		endif;
 		foreach ($this->form->getFieldset($fieldset) as $this->field) :
 			echo $this->loadTemplate('control_group');

@@ -13,6 +13,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
+
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
 JHtml::_('behavior.tooltip');
@@ -26,7 +28,7 @@ JHtml::_('behavior.keepalive');
 
 		<div class="span6">
 			<fieldset class="form-horizontal">
-				<legend><?php echo FText::_('COM_FABRIK_DETAILS'); ?></legend>
+				<legend><?php echo Text::_('COM_FABRIK_DETAILS'); ?></legend>
 				<?php foreach ($this->form->getFieldset('details') as $this->field) :
 					require '_control_group.php';
 				endforeach;
@@ -38,7 +40,7 @@ JHtml::_('behavior.keepalive');
 			<div class="offset2">
 				<fieldset class="form-horizontal">
 					<legend>
-						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_PUBLISHING_DETAILS');?>
+						<?php echo Text::_('COM_FABRIK_GROUP_LABEL_PUBLISHING_DETAILS');?>
 					</legend>
 					<?php foreach ($this->form->getFieldset('publishing') as $this->field) :
 						require '_control_group.php';
@@ -48,7 +50,7 @@ JHtml::_('behavior.keepalive');
 
 				<fieldset class="form-horizontal">
 					<legend>
-						<?php echo FText::_('COM_FABRIK_VISUALIZATION_LABEL_VISUALIZATION_DETAILS');?>
+						<?php echo Text::_('COM_FABRIK_VISUALIZATION_LABEL_VISUALIZATION_DETAILS');?>
 					</legend>
 					<?php foreach ($this->form->getFieldset('more') as $this->field) :
 						require '_control_group.php';
@@ -63,7 +65,7 @@ JHtml::_('behavior.keepalive');
 		<div class="span12">
 			<fieldset class="form-horizontal">
 				<legend>
-					<?php echo FText::_('COM_FABRIK_OPTIONS');?>
+					<?php echo Text::_('COM_FABRIK_OPTIONS');?>
 				</legend>
 			</fieldset>
 			<div id="plugin-container">

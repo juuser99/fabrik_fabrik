@@ -13,10 +13,9 @@ namespace Fabrik\Helpers;
 use \JFactory as JFactory;
 use \JHtml as JHtml;
 use \stdClass as stdClass;
-use \FabrikString as FabrikString;
 use \JPaginationObject as JPaginationObject;
 use \JPagination as JPagination;
-use \FText as FText;
+use \Text as Text;
 use \JRoute as JRoute;
 use \JFile as JFile;
 
@@ -127,7 +126,7 @@ class Pagination extends JPagination
 
 		if ($this->showTotal)
 		{
-			$list['pagescounter'] .= ' ' . FText::_('COM_FABRIK_TOTAL') . ': ' . $list['total'];
+			$list['pagescounter'] .= ' ' . Text::_('COM_FABRIK_TOTAL') . ': ' . $list['total'];
 		}
 
 		$list['pageslinks'] = $this->getPagesLinks($listRef, $tmpl);
@@ -180,7 +179,7 @@ class Pagination extends JPagination
 
 		if ($this->showAllOption == true)
 		{
-			$limits[] = JHTML::_('select.option', '-1', FText::_('COM_FABRIK_ALL'));
+			$limits[] = JHTML::_('select.option', '-1', Text::_('COM_FABRIK_ALL'));
 		}
 
 		$selected = $this->viewAll ? '-1' : $this->limit;
@@ -380,11 +379,11 @@ class Pagination extends JPagination
 		// Initialize variables
 		$data = new stdClass;
 		$this->url = preg_replace("/limitstart{$this->id}=(.*)?(&|)/", '', $this->url);
-		$this->url = FabrikString::rtrimword($this->url, "&");
+		$this->url = String::rtrimword($this->url, "&");
 
 		// $$$ hugh - need to work out if we need & or ?
 		$sepchar = strstr($this->url, '?') ? '&amp;' : '?';
-		$data->all = new JPaginationObject(FText::_('COM_FABRIK_VIEW_ALL'));
+		$data->all = new JPaginationObject(Text::_('COM_FABRIK_VIEW_ALL'));
 
 		if (!$this->viewAll)
 		{
@@ -393,8 +392,8 @@ class Pagination extends JPagination
 		}
 
 		// Set the start and previous data objects
-		$data->start = new JPaginationObject(FText::_('COM_FABRIK_START'));
-		$data->previous = new JPaginationObject(FText::_('COM_FABRIK_PREV'));
+		$data->start = new JPaginationObject(Text::_('COM_FABRIK_START'));
+		$data->previous = new JPaginationObject(Text::_('COM_FABRIK_PREV'));
 
 		if ($this->get('pages.current') > 1)
 		{
@@ -410,8 +409,8 @@ class Pagination extends JPagination
 		}
 
 		// Set the next and end data objects
-		$data->next = new JPaginationObject(FText::_('COM_FABRIK_NEXT'));
-		$data->end = new JPaginationObject(FText::_('COM_FABRIK_END'));
+		$data->next = new JPaginationObject(Text::_('COM_FABRIK_NEXT'));
+		$data->end = new JPaginationObject(Text::_('COM_FABRIK_END'));
 
 		if ($this->get('pages.current') < $this->get('pages.total'))
 		{
@@ -460,7 +459,7 @@ class Pagination extends JPagination
 		// Initialize variables
 		$html = array();
 		$html[] = '<div class="list-footer">';
-		$limitLabel = $this->showDisplayNum ? FText::_('COM_FABRIK_DISPLAY_NUM') : '';
+		$limitLabel = $this->showDisplayNum ? Text::_('COM_FABRIK_DISPLAY_NUM') : '';
 		$html[] = '<div class="limit"><div class="input-prepend input-append"><span class="add-on"><small>';
 		$html[] = $limitLabel . '</small></span>' . $list['limitfield'] . '<span class="add-on"><small>';
 		$html[] = $list['pagescounter'] . '</small></span></div></div>';

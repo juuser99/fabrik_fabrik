@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -433,15 +434,14 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	 *
 	 * @return  string
 	 */
-
 	private function writeComment($params, $comment)
 	{
 		$dateformat = $params->get('comment-date-format');
-		$name = (int) $comment->annonymous == 0 ? $comment->name : FText::_('PLG_FORM_COMMENT_ANONYMOUS_SHORT');
+		$name = (int) $comment->annonymous == 0 ? $comment->name : Text::_('PLG_FORM_COMMENT_ANONYMOUS_SHORT');
 		$data = array();
 		$data[] = '<div class="metadata muted">';
 		$data[] = '<small><i class="icon-user"></i> ';
-		$data[] = $name . ', ' . FText::_('PLG_FORM_COMMENT_WROTE_ON') . ' </small>';
+		$data[] = $name . ', ' . Text::_('PLG_FORM_COMMENT_WROTE_ON') . ' </small>';
 		$data[] = '<i class="icon-calendar"></i> ';
 
 		/*
@@ -496,7 +496,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$input = $this->app->input;
 		$layoutData = new stdClass;
 		$layoutData->insrc = HTML::image("star_in.png", 'form', @$this->tmpl, array(), true);
-		$layoutData->name = (int) $comment->annonymous == 0 ? $comment->name : FText::_('PLG_FORM_COMMENT_ANONYMOUS_SHORT');
+		$layoutData->name = (int) $comment->annonymous == 0 ? $comment->name : Text::_('PLG_FORM_COMMENT_ANONYMOUS_SHORT');
 		$layoutData->comment = $comment;
 		$layoutData->dateFormat = $params->get('comment-date-format');
 		$layoutData->internalRating = $params->get('comment-internal-rating') == 1;
@@ -858,9 +858,9 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$sentto = array();
-		$title = FText::_('PLG_FORM_COMMENT_NEW_COMMENT_ADDED_TITLE');
-		$message = FText::_('PLG_FORM_COMMENT_NEW_COMMENT_ADDED');
-		$message .= "<br /><a href=\"{$row->url}\">" . FText::_('PLG_FORM_COMMENT_VIEW_COMMENT') . "</a>";
+		$title = Text::_('PLG_FORM_COMMENT_NEW_COMMENT_ADDED_TITLE');
+		$message = Text::_('PLG_FORM_COMMENT_NEW_COMMENT_ADDED');
+		$message .= "<br /><a href=\"{$row->url}\">" . Text::_('PLG_FORM_COMMENT_VIEW_COMMENT') . "</a>";
 		$mail = JFactory::getMailer();
 
 		if ((int) $params->get('comment-internal-notify') == 1)

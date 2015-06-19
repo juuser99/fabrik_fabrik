@@ -15,6 +15,7 @@ use \Fabrik\Admin\Models\Lizt;
 use \JFilterInput;
 use \JResponse as JResponse;
 use \JFile as JFile;
+use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -94,7 +95,7 @@ class CSV extends Base
 			if ((int) $total === 0)
 			{
 				$notice      = new stdClass;
-				$notice->err = FText::_('COM_FABRIK_CSV_EXPORT_NO_RECORDS');
+				$notice->err = Text::_('COM_FABRIK_CSV_EXPORT_NO_RECORDS');
 				echo json_encode($notice);
 
 				return;

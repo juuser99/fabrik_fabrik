@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use \Fabrik\Admin\Models\Form;
+use Fabrik\Helpers\String;
 
 jimport('joomla.application.component.controller');
 
@@ -134,7 +135,7 @@ class FabrikControllerVisualizationcalendar extends FabrikControllerVisualizatio
 			$datefield = $prefix . 'fabrik_calendar_events___start_date';
 		}
 
-		$datefield = FabrikString::safeColNameToArrayKey($datefield);
+		$datefield = String::safeColNameToArrayKey($datefield);
 		$rowId = $input->getString('rowid', '', 'string');
 		$listModel = new \Fabrik\Admin\Models\Lizt;
 		$listModel->setId($listId);

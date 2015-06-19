@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Admin\Models\Connections;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -53,7 +54,7 @@ class JFormFieldConnections extends JFormFieldList
 			$options[] = (object) array('value' => $id, 'text' => $connection->description, 'default' => '');
 		}
 
-		$sel          = JHtml::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT'));
+		$sel          = JHtml::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT'));
 		$sel->default = false;
 		array_unshift($options, $sel);
 

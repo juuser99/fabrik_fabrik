@@ -251,30 +251,4 @@ var fabrikAdminElement = new Class({
 		}
 		header.set('html', s);
 	}
-
-	/*setParentViz: function () {
-		if (this.options.parentid.toInt() !== 0) {
-			var myFX = new Fx.Tween('elementFormTable', {
-				property: 'opacity',
-				duration: 500,
-				wait: false
-			}).set(0);
-			document.id('unlink').addEvent('click', function (e) {
-				if (this.checked) {
-					myFX.start(0, 1);
-				} else {
-					myFX.start(1, 0);
-				}
-			});
-		}
-		if (document.id('swapToParent')) {
-			document.id('swapToParent').addEvent('click', function (e) {
-				var f = document.adminForm;
-				f.task.value = 'element.parentredirect';
-				var to = e.target.className.replace('element_', '');
-				f.redirectto.value = to;
-				f.submit();
-			});
-		}
-	}*/
 });

@@ -14,9 +14,8 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use GCore\Libs\Arr;
 use Joomla\Utilities\ArrayHelper;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \stdClass as stdClass;
 use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
@@ -66,7 +65,7 @@ class Connection extends Connections implements ConnectionInterface
 	{
 		if ($item->id == 0)
 		{
-			$this->app->enqueueMessage(FText::_('COM_FABRIK_ORIGINAL_CONNECTION'));
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_ORIGINAL_CONNECTION'));
 
 			if (!$this->matchesDefault($item))
 			{
@@ -74,7 +73,7 @@ class Connection extends Connections implements ConnectionInterface
 				$item->user     = $this->config->get('user');
 				$item->password = $this->config->get('password');
 				$item->database = $this->config->get('db');
-				$this->app->enqueueMessage(FText::_('COM_FABRIK_YOU_MUST_SAVE_THIS_CNN'), 'notice');
+				$this->app->enqueueMessage(Text::_('COM_FABRIK_YOU_MUST_SAVE_THIS_CNN'), 'notice');
 			}
 		}
 	}
@@ -128,7 +127,7 @@ class Connection extends Connections implements ConnectionInterface
 	{
 		if ($data['password'] !== $data['passwordConf'])
 		{
-			$this->app->enqueueMessage(FText::_('COM_FABRIK_PASSWORD_MISMATCH'), 'error');
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_PASSWORD_MISMATCH'), 'error');
 
 			return false;
 		}

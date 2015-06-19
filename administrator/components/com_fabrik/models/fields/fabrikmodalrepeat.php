@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.form.formfield');
 
@@ -135,7 +136,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		{
 			$names[] = (string) $field->element->attributes()->name;
 			$str[] = '<th>' . strip_tags($field->getLabel($field->name));
-			$str[] = '<br /><small style="font-weight:normal">' . FText::_($field->description) . '</small>';
+			$str[] = '<br /><small style="font-weight:normal">' . Text::_($field->description) . '</small>';
 			$str[] = '</th>';
 		}
 
@@ -209,7 +210,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 		$value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
 
 		$icon = $this->element['icon'] ? '<i class="icon-' . $this->element['icon'] . '"></i> ' : '';
-		$icon .= FText::_('JLIB_FORM_BUTTON_SELECT');
+		$icon .= Text::_('JLIB_FORM_BUTTON_SELECT');
 		$str[] = '<button class="btn" id="' . $modalId . '_button" data-modal="' . $modalId . '">' . $icon . '</button>';
 		$str[] = '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" />';
 

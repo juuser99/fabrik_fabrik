@@ -1,5 +1,8 @@
 <?php
 defined('JPATH_BASE') or die;
+
+use Fabrik\Helpers\Text;
+
 $d     = $displayData;
 ?>
 <form id="update_col<?php echo $d->listRef; ?>">
@@ -7,8 +10,8 @@ $d     = $displayData;
 	<table class="table table-striped" style="width:100%">
 		<thead>
 		<tr>
-			<th><?php echo FText::_('COM_FABRIK_ELEMENT'); ?></th>
-			<th><?php echo FText::_('COM_FABRIK_VALUE'); ?></th>
+			<th><?php echo Text::_('COM_FABRIK_ELEMENT'); ?></th>
+			<th><?php echo Text::_('COM_FABRIK_VALUE'); ?></th>
 			<th>
 				<a class="btn add button btn-primary" href="#">
 					<?php echo $d->addImg; ?>
@@ -34,5 +37,5 @@ $d     = $displayData;
 		</tr>
 		</tbody>
 	</table>
-	<input class="button btn button-primary" value="<?php echo FText::_('COM_FABRIK_APPLY'); ?>" type="button">
+	<input class="button btn button-primary" value="<?php echo Text::_('COM_FABRIK_APPLY'); ?>" type="button">
 </form>

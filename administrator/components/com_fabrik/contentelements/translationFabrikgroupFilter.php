@@ -13,6 +13,8 @@
 defined('JPATH_BASE') or die('Direct Access to this location is not allowed.');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
+
 /**
  * Joomfish translation class
  *
@@ -50,8 +52,8 @@ class TranslationFabrikGroupFilter extends translationFilter
 		}
 
 		$groupOptions = array();
-		$groupOptions[] = JHTML::_('select.option', '-1', FText::_('All Groups'));
-		$groupOptions[] = JHTML::_('select.option', '0', FText::_('Uncategorized'));
+		$groupOptions[] = JHTML::_('select.option', '-1', Text::_('All Groups'));
+		$groupOptions[] = JHTML::_('select.option', '0', Text::_('Uncategorized'));
 
 		// FIXME - jsonify
 		$query = $db->getQuery(true);
@@ -69,7 +71,7 @@ class TranslationFabrikGroupFilter extends translationFilter
 		}
 
 		$groupList = array();
-		$groupList["title"] = FText::_('Group filter');
+		$groupList["title"] = Text::_('Group filter');
 		$attribs = 'class="inputbox" size="1" onchange="document.adminForm.submit();"';
 		$groupList["html"] = JHTML::_('select.genericlist', $groupOptions, 'fabrikgroup_filter_value', $attribs, 'value', 'text', $this->filter_value);
 

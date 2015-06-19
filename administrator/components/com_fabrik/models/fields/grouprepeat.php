@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 JFormHelper::loadFieldClass('radio');
 
 /**
@@ -39,7 +41,7 @@ class JFormFieldGrouprepeat extends JFormFieldRadio
 	{
 		if ($this->form->getValue('form') === '')
 		{
-			return '<input class="readonly" size="60" value="' . FText::_('COM_FABRIK_FIELD_ASSIGN_GROUP_TO_FORM_FIRST') . '" type="readonly" />';
+			return '<input class="readonly" size="60" value="' . Text::_('COM_FABRIK_FIELD_ASSIGN_GROUP_TO_FORM_FIRST') . '" type="readonly" />';
 		}
 		else
 		{

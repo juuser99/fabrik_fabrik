@@ -13,12 +13,15 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\HTML;
-
-require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
+use \RuntimeException;
+use Fabrik\Helpers\String;
+use \JHtml;
+use \JFilterInput;
+use \JRoute;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render cascading dropdown
@@ -44,13 +47,19 @@ class Cascadingdropdown extends Databasejoin
 	protected $concatLabelParam = 'cascadingdropdown_label_concat';
 
 	/**
+	 * Loading image
+	 *
+	 * @var string
+	 */
+	protected $loadingImg = '';
+
+	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
 	 * @param   int  $repeatCounter  Repeat group counter
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$input = $this->app->input;
@@ -63,7 +72,7 @@ class Cascadingdropdown extends Databasejoin
 			$autoOpts['observerid'] = $this->getWatchId($repeatCounter);
 			$autoOpts['formRef'] = $this->getFormModel()->jsKey();
 			$autoOpts['storeMatchedResultsOnly'] = true;
-			HTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'cascadingdropdown', $autoOpts);
+			HTML::autoComplete($id, $this->getElement()->get('id'), $this->getFormModel()->getId(), 'cascadingdropdown', $autoOpts);
 		}
 
 		HTML::script('media/com_fabrik/js/lib/Event.mock.js');
@@ -97,13 +106,13 @@ class Cascadingdropdown extends Databasejoin
 
 		$watchGroup = $this->getWatchElement()->getGroup()->getGroup();
 		$group = $this->getGroup()->getGroup();
-		$opts->watchInSameGroup = $watchGroup->id === $group->id;
+		$opts->watchInSameGroup = $watchGroup->get('id') === $group->get('id');
 		$opts->editing = ($this->isEditable() && $rowId !== '');
 		$opts->showDesc = $params->get('cdd_desc_column', '') === '' ? false : true;
 		$opts->advanced = $this->getAdvancedSelectClass() != '';
 		$formId = $this->getFormModel()->getId();
 		$opts->autoCompleteOpts = $opts->displayType == 'auto-complete'
-				? HTML::autoCompleteOptions($opts->id, $this->getElement()->id, $formId, 'cascadingdropdown') : null;
+				? HTML::autoCompleteOptions($opts->id, $this->getElement()->get('id'), $formId, 'cascadingdropdown') : null;
 		$this->elementJavascriptJoinOpts($opts);
 
 		return array('FbCascadingdropdown', $id, $opts);
@@ -116,7 +125,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return	string join label column either returns concat statement or quotes `tablename`.`elementname`
 	 */
-
 	public function getJoinLabelColumn($useStep = false)
 	{
 		$params = $this->getParams();
@@ -138,13 +146,12 @@ class Cascadingdropdown extends Databasejoin
 			return 'CONCAT_WS(\'\', ' . $val . ')';
 		}
 
-		$label = FabrikString::shortColName($join->params->get('join-label'));
+		$label = String::shortColName($join->params->get('join-label'));
 
 		if ($label == '')
 		{
 			// This is being raised with checkbox rendering and using dropdown filter, everything seems to be working with using the element name though!
-			// JError::raiseWarning(500, 'Could not find the join label for ' . $this->getElement()->name . ' try unlinking and saving it');
-			$label = $this->getElement()->name;
+			$label = $this->getElement()->get('name');
 		}
 
 		if ($this->isJoin())
@@ -157,7 +164,7 @@ class Cascadingdropdown extends Databasejoin
 			$joinTableName = $join->table_join_alias;
 		}
 
-		return $useStep ? $joinTableName . '___' . $label : $db->quoteName($joinTableName . '.' . $label);
+		return $useStep ? $joinTableName . '___' . $label : $db->qn($joinTableName . '.' . $label);
 	}
 
 	/**
@@ -168,7 +175,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  void
 	 */
-
 	protected function _resetCache()
 	{
 		unset($this->optionVals);
@@ -183,7 +189,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$db = $this->getDb();
@@ -203,7 +208,7 @@ class Cascadingdropdown extends Databasejoin
 		 * elementJavascript() above, so the JS won't get options on init when editing an existing row
 		 */
 		$tmp = array();
-		$rowId = $this->app->input->string('rowid', '', 'string');
+		$rowId = $this->app->input->get('rowid', '', 'string');
 		$show_please = $this->showPleaseSelect();
 
 		// $$$ hugh testing to see if we need to load options after a validation failure, but I don't think we do, as JS will reload via AJAX
@@ -219,7 +224,7 @@ class Cascadingdropdown extends Databasejoin
 			}
 		}
 
-		$imageOpts = array('alt' => FText::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
+		$imageOpts = array('alt' => Text::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
 		$this->loadingImg = HTML::image("ajax-loader.gif", 'form', @$this->tmpl, $imageOpts);
 
 		// Get the default label for the drop down (use in read only templates)
@@ -280,7 +285,7 @@ class Cascadingdropdown extends Databasejoin
 					$maxWidth = $params->get('max-width', '') === '' ? '' : ' style="max-width:' . $params->get('max-width') . ';"';
 					$advancedClass = $this->getAdvancedSelectClass();
 					$attribs = 'class="' . $class . ' ' . $advancedClass . '" ' . $disabled . ' size="1"' . $maxWidth;
-					$html[] = JHTML::_('select.genericlist', $tmp, $name, $attribs, 'value', 'text', $default, $id);
+					$html[] = JHtml::_('select.genericlist', $tmp, $name, $attribs, 'value', 'text', $default, $id);
 					break;
 			}
 
@@ -346,7 +351,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return	bool
 	 */
-
 	public function isJoin()
 	{
 		if (in_array($this->getDisplayType(), array('checkbox', 'multilist')))
@@ -366,7 +370,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function getDisplayType()
 	{
 		return $this->getParams()->get('cdd_display_type', 'dropdown');
@@ -382,7 +385,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  array	option objects
 	 */
-
 	protected function _getOptions($data = array(), $repeatCounter = 0, $incWhere = true, $opts = array())
 	{
 		$tmp = $this->_getOptionVals($data, $repeatCounter);
@@ -395,7 +397,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  void
 	 */
-
 	public function onAjax_getOptions()
 	{
 		$input = $this->app->input;
@@ -458,7 +459,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  void
 	 */
-
 	protected function _replaceAjaxOptsWithDbJoinOpts(&$opts)
 	{
 		$groups = $this->getFormModel()->getGroupsHierarchy();
@@ -523,7 +523,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  array	option values
 	 */
-
 	protected function _getOptionVals($data = array(), $repeatCounter = 0, $incWhere = true, $opts = array())
 	{
 		$params = $this->getParams();
@@ -598,7 +597,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 *  @return  object
 	 */
-
 	private function selectOption()
 	{
 		$params = $this->getParams();
@@ -612,7 +610,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  bool
 	 */
-
 	protected function showPleaseSelect()
 	{
 		$params = $this->getParams();
@@ -641,7 +638,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function getWatchFullName()
 	{
 		$elementModel = $this->getWatchElement();
@@ -656,7 +652,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function getWatchId($repeatCounter = 0)
 	{
 		$elementModel = $this->getWatchElement();
@@ -667,9 +662,8 @@ class Cascadingdropdown extends Databasejoin
 	/**
 	 * Get the element to watch. Changes to this element will trigger the cdd's lookup
 	 *
-	 * @return  plgFabrik_Element
+	 * @return  \Fabrik\Plugins\Element\Element
 	 */
-
 	protected function getWatchElement()
 	{
 		if (!isset($this->watchElement))
@@ -678,7 +672,7 @@ class Cascadingdropdown extends Databasejoin
 
 			if ($watch == '')
 			{
-				throw new RuntimeException('No watch element set up for cdd' . $this->getElement()->id, 500);
+				throw new RuntimeException('No watch element set up for cdd' . $this->getElement()->get('id'));
 			}
 
 			$this->watchElement = $this->getFormModel()->getElement($watch, true);
@@ -688,8 +682,8 @@ class Cascadingdropdown extends Databasejoin
 	}
 
 	/**
-	 * Create the sql query used to get the possible selectionable value/labels used to create
-	 * the dropdown/checkboxes
+	 * Create the sql query used to get the possible selectable value/labels used to create
+	 * the drop-down/checkboxes
 	 *
 	 * @param   array  $data      data
 	 * @param   bool   $incWhere  include where
@@ -697,7 +691,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  mixed	JDatabaseQuery or false if query can't be built
 	 */
-
 	protected function buildQuery($data = array(), $incWhere = true, $opts = array())
 	{
 		$input = $this->app->input;
@@ -714,7 +707,7 @@ class Cascadingdropdown extends Databasejoin
 		$params = $this->getParams();
 		$watch = $this->getWatchFullName();
 		$whereVal = null;
-		$groups = $this->getForm()->getGroupsHierarchy();
+		$groups = $this->getFormModel()->getGroupsHierarchy();
 		$formModel = $this->getFormModel();
 		$watchElement = $this->getWatchElement();
 
@@ -817,18 +810,17 @@ class Cascadingdropdown extends Databasejoin
 					{
 						foreach ($v as &$vchild)
 						{
-							$vchild = FabrikString::safeQuote($vchild);
+							$vchild = String::safeQuote($vchild);
 						}
 						$v = implode(',', $v);
 					}
 					else
 					{
-						$v = FabrikString::safeQuote($v);
+						$v = String::safeQuote($v);
 					}
 				}
       
 				// Jaanus: if count of where values is 0 or if there are no letters or numbers, only commas in imploded array
-				
 				$where .= count($whereVal) == 0 || !preg_match('/\w/', implode(',', $whereVal)) ? '4 = -4' : $whereKey . ' IN ' . '(' . str_replace(',,', ',\'\',', implode(',', $whereVal)) . ')';
 			}
 			else
@@ -885,14 +877,14 @@ class Cascadingdropdown extends Databasejoin
 		}
 		else
 		{
-			$val = FabrikString::safeColName($params->get($this->labelParam));
-			$val = preg_replace("#^`($table)`\.#", $db->quoteName($join->table_join_alias) . '.', $val);
+			$val = String::safeColName($params->get($this->labelParam));
+			$val = preg_replace("#^`($table)`\.#", $db->qn($join->table_join_alias) . '.', $val);
 
 			foreach ($tables as $tid)
 			{
 				$listModel->setId($tid);
 				$listModel->getTable();
-				$formModel = $this->getForm();
+				$formModel = $this->getFormModel();
 				$formModel->getGroupsHierarchy();
 				$orderBy = $val;
 
@@ -914,19 +906,19 @@ class Cascadingdropdown extends Databasejoin
 			}
 		}
 
-		$val = str_replace($db->quoteName($table), $db->quoteName($join->table_join_alias), $val);
+		$val = str_replace($db->qn($table), $db->qn($join->table_join_alias), $val);
 		$query = $db->getQuery(true);
 		$query->select('DISTINCT(' . $key . ') AS value, ' . $val . 'AS text');
 		$desc = $params->get('cdd_desc_column', '');
 
 		if ($desc !== '')
 		{
-			$query->select(FabrikString::safeColName($desc) . ' AS description');
+			$query->select(String::safeColName($desc) . ' AS description');
 		}
 
-		$query->from($db->quoteName($table) . ' AS ' . $db->quoteName($join->table_join_alias));
+		$query->from($db->qn($table) . ' AS ' . $db->qn($join->table_join_alias));
 		$query = $this->buildQueryJoin($query);
-		$where = FabrikString::rtrimword($where);
+		$where = String::rtrimword($where);
 
 		if ($where !== '')
 		{
@@ -951,15 +943,14 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function queryKey()
 	{
 		$db = Worker::getDbo();
 		$join = $this->getJoin();
 		$table = $this->getDbName();
 		$params = $this->getParams();
-		$key = FabrikString::safeColName($params->get('cascadingdropdown_id'));
-		$key = str_replace($db->quoteName($table), $db->quoteName($join->table_join_alias), $key);
+		$key = String::safeColName($params->get('cascadingdropdown_id'));
+		$key = str_replace($db->qn($table), $db->qn($join->table_join_alias), $key);
 
 		return $key;
 	}
@@ -970,7 +961,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function getLabelOrConcatVal()
 	{
 		$params = $this->getParams();
@@ -995,7 +985,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  object	connection table
 	 */
-
 	protected function loadConnection()
 	{
 		$params = $this->getParams();
@@ -1020,7 +1009,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  db name or false if unable to get name
 	 */
-
 	protected function getDbName()
 	{
 		if (!isset($this->dbname) || $this->dbname == '')
@@ -1031,8 +1019,6 @@ class Cascadingdropdown extends Databasejoin
 			if ($id == '')
 			{
 				throw new RuntimeException('Unable to get table for cascading dropdown (ignore if creating a new element)');
-
-				return false;
 			}
 
 			$db = Worker::getDbo(true);
@@ -1054,7 +1040,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  void
 	 */
-
 	public function filterJS($normal, $container)
 	{
 		$element = $this->getElement();
@@ -1092,7 +1077,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s = new stdClass;
@@ -1108,13 +1092,12 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function getJoinValueFieldName()
 	{
 		$params = $this->getParams();
 		$full = $params->get('cascadingdropdown_id');
 
-		return FabrikString::shortColName($full);
+		return String::shortColName($full);
 	}
 
 	/**
@@ -1122,12 +1105,11 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return mixed element model or false
 	 */
-
 	protected function _getObserverElement()
 	{
 		$params = $this->getParams();
 		$observer = $params->get('cascadingdropdown_observe');
-		$formModel = $this->getForm();
+		$formModel = $this->getFormModel();
 		$groups = $formModel->getGroupsHierarchy();
 
 		foreach ($groups as $groupModel)
@@ -1155,7 +1137,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return null
 	 */
-
 	public function beforeSave(&$row)
 	{
 		/*
@@ -1175,7 +1156,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  array  html ids to watch for validation
 	 */
-
 	public function getValidationWatchElements($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
@@ -1195,7 +1175,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  mixed JError:void
 	 */
-
 	public function finalCopyCheck($elementMap)
 	{
 		$element = $this->getElement();
@@ -1212,8 +1191,9 @@ class Cascadingdropdown extends Databasejoin
 		$params->set('cascadingdropdown_observe', $newObserveId);
 
 		// Save params
-		$element->params = $params->toString();
+		$element->set('params', $params);
 
+		// FIXME for 3.5
 		if (!$element->store())
 		{
 			$this->app->enqueueMessage($element->getError());
@@ -1227,7 +1207,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function _getSelectLabel($filter = false)
 	{
 		$params = $this->getParams();
@@ -1244,7 +1223,7 @@ class Cascadingdropdown extends Databasejoin
 			$label = 'COM_FABRIK_PLEASE_SELECT';
 		}
 
-		return FText::_($label);
+		return Text::_($label);
 	}
 
 	/**
@@ -1255,7 +1234,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return boolean
 	 */
-
 	protected function quoteLabel()
 	{
 		$params = $this->getParams();
@@ -1270,14 +1248,13 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string  required join text to ensure exact filter list code produces a valid query.
 	 */
-
 	protected function buildFilterJoin()
 	{
-		$joinTable = FabrikString::safeColName($this->getDbName());
+		$joinTable = String::safeColName($this->getDbName());
 		$join = $this->getJoin();
-		$joinTableName = FabrikString::safeColName($join->table_join_alias);
+		$joinTableName = String::safeColName($join->table_join_alias);
 		$joinKey = $this->getJoinValueColumn();
-		$elName = FabrikString::safeColName($this->getFullName(true, false));
+		$elName = String::safeColName($this->getFullName(true, false));
 
 		return 'INNER JOIN ' . $joinTable . ' AS ' . $joinTableName . ' ON ' . $joinKey . ' = ' . $elName;
 	}
@@ -1297,7 +1274,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return boolean
 	 */
-
 	public function dataIsNull($data, $val)
 	{
 		return false;
@@ -1308,7 +1284,6 @@ class Cascadingdropdown extends Databasejoin
 	 *
 	 * @return  string
 	 */
-
 	protected function filterSelectLabel()
 	{
 		$params = $this->getParams();
@@ -1316,7 +1291,7 @@ class Cascadingdropdown extends Databasejoin
 
 		if (empty($label))
 		{
-			$label = $params->get('filter_required') == 1 ? FText::_('COM_FABRIK_PLEASE_SELECT') : FText::_('COM_FABRIK_FILTER_PLEASE_SELECT');
+			$label = $params->get('filter_required') == 1 ? Text::_('COM_FABRIK_PLEASE_SELECT') : Text::_('COM_FABRIK_FILTER_PLEASE_SELECT');
 		}
 
 		return $label;

@@ -16,12 +16,12 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \JFactory as JFactory;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \JProfiler as JProfiler;
 use \Fabrik\Helpers\HTML as HelperHTML;
 use \JComponentHelper as JComponentHelper;
 use \stdClass as stdClass;
-use \FabrikString as FabrikString;
+use Fabrik\Helpers\String;
 use \JText as JText;
 use \JRoute as JRoute;
 use \JHtml as JHtml;
@@ -95,7 +95,7 @@ class Base extends Html
 		{
 			if (!$app->isAdmin())
 			{
-				echo FText::_('COM_FABRIK_FORM_NOT_PUBLISHED');
+				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
 
 				return false;
 			}
@@ -127,9 +127,9 @@ class Base extends Html
 
 		$this->editable = $model->isEditable();
 
-		$form->label = FText::_($model->getLabel());
-		$form->intro = FText::_($model->getIntro());
-		$form->outro = FText::_($model->getOutro());
+		$form->label = Text::_($model->getLabel());
+		$form->intro = Text::_($model->getIntro());
+		$form->outro = Text::_($model->getOutro());
 		$form->action = $model->getAction();
 		$form->class = $model->getFormClass();
 		$form->formid = $model->isEditable() ? 'form_' . $model->getId() : 'details_' . $model->getId();
@@ -140,7 +140,7 @@ class Base extends Html
 			$form->formid .= '_' . $this->rowid;
 		}
 
-		$form->error = $form->error === '' ? FText::_('COM_FABRIK_FAILED_VALIDATION') : FText::_($form->error);
+		$form->error = $form->error === '' ? Text::_('COM_FABRIK_FAILED_VALIDATION') : Text::_($form->error);
 		$form->origerror = $form->error;
 		$clearErrors = false;
 
@@ -258,7 +258,7 @@ class Base extends Html
 			// if ($model->sessionModel->statusid == _FABRIKFORMSESSION_LOADED_FROM_COOKIE) {
 			if ($model->sessionModel->last_page > 0)
 			{
-				$message .= ' <a href="#" class="clearSession">' . FText::_('COM_FABRIK_CLEAR') . '</a>';
+				$message .= ' <a href="#" class="clearSession">' . Text::_('COM_FABRIK_CLEAR') . '</a>';
 			}
 		}
 
@@ -294,28 +294,28 @@ class Base extends Html
 			if (is_object($menu) && !$this->isMambot)
 			{
 				$menu_params = is_a($menu->params, 'JRegistry') ? $menu->params : new JRegistry($menu->params);
-				$params->set('page_heading', FText::_($menu_params->get('page_heading', '')));
+				$params->set('page_heading', Text::_($menu_params->get('page_heading', '')));
 				$params->set('show_page_heading', $menu_params->get('show_page_heading', 0));
-				$browserTitle = $model->getPageTitle(FText::_($menu_params->get('page_title')));
+				$browserTitle = $model->getPageTitle(Text::_($menu_params->get('page_title')));
 				$document->setTitle($w->parseMessageForPlaceHolder($browserTitle, $_REQUEST));
 			}
 			else
 			{
 				$params->set('show_page_heading', $input->getInt('show_page_heading', 0));
-				$params->set('page_heading', FText::_($input->get('title', $title, 'string')));
+				$params->set('page_heading', Text::_($input->get('title', $title, 'string')));
 				$params->set('show-title', $input->getInt('show-title', $params->get('show-title')));
 			}
 
 			if (!$this->isMambot)
 			{
 				$titleData = array_merge($_REQUEST, $model->data);
-				$title = $w->parseMessageForPlaceHolder(FText::_($params->get('page_heading')), $titleData, false);
+				$title = $w->parseMessageForPlaceHolder(Text::_($params->get('page_heading')), $titleData, false);
 				$params->set('page_heading', $title);
 			}
 		}
 		else
 		{
-			$params->set('page_heading', FText::_($title));
+			$params->set('page_heading', Text::_($title));
 			$params->set('show_page_heading', 0);
 		}
 	}
@@ -379,8 +379,8 @@ class Base extends Html
 
 		$this->showPDF = $params->get('pdf', $fbConfig->get('form_pdf', false));
 
-		$buttonProperties = array('class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => '<span>' . FText::_('COM_FABRIK_PDF') . '</span>',
-				'alt' => FText::_('COM_FABRIK_PDF'));
+		$buttonProperties = array('class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => '<span>' . Text::_('COM_FABRIK_PDF') . '</span>',
+				'alt' => Text::_('COM_FABRIK_PDF'));
 
 		if ($this->showPDF)
 		{
@@ -635,7 +635,7 @@ class Base extends Html
 		$opts->ajax = $model->isAjax();
 		$opts->ajaxValidation = (bool) $params->get('ajax_validations');
 		$opts->showLoader = (bool) $params->get('show_loader_on_submit', '0');
-		$key = FabrikString::safeColNameToArrayKey($item->get('list.db_primary_key'));
+		$key = String::safeColNameToArrayKey($item->get('list.db_primary_key'));
 		$opts->primaryKey = $key;
 		$opts->error = @$form->origerror;
 		$opts->pages = $model->getPages();
@@ -647,7 +647,7 @@ class Base extends Html
 
 		if ($start_page !== 0)
 		{
-			$app->enqueueMessage(FText::_('COM_FABRIK_RESTARTING_MULTIPAGE_FORM'));
+			$app->enqueueMessage(Text::_('COM_FABRIK_RESTARTING_MULTIPAGE_FORM'));
 		}
 		else
 		{
@@ -722,7 +722,7 @@ class Base extends Html
 					$joinParams = new JRegistry($joinParams);
 				}
 
-				$opts->group_pk_ids[$groupModel->getGroup()->id] = FabrikString::safeColNameToArrayKey($joinParams->get('pk'));
+				$opts->group_pk_ids[$groupModel->getGroup()->id] = String::safeColNameToArrayKey($joinParams->get('pk'));
 				$opts->join_group_ids[$groupModel->getGroup()->join_id] = (int) $groupModel->getGroup()->id;
 				$opts->group_join_ids[$groupModel->getGroup()->id] = (int) $groupModel->getGroup()->join_id;
 				$opts->group_repeats[$groupModel->getGroup()->id] = $groupModel->canRepeat();
@@ -823,7 +823,7 @@ class Base extends Html
 			// see http://fabrikar.com/forums/showthread.php?t=10297&page=5
 
 			$fields[] = '<input type="hidden" name="usekey" value="' . $usekey . '" />';
-			$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
+			$pk = String::safeColNameToArrayKey($listModel->getTable()->get('list.db_primary_key'));
 			$pk_val = ArrayHelper::getValue($model->data, $pk);
 
 			if (empty($pk_val))
@@ -852,15 +852,15 @@ class Base extends Html
 		}
 
 		$fields[] = JHTML::_('form.token');
-		$resetLabel = FText::_($params->get('reset_button_label'));
+		$resetLabel = Text::_($params->get('reset_button_label'));
 		$resetIcon = $params->get('reset_icon', '');
-		$copyLabel = FText::_($params->get('copy_button_label'));
+		$copyLabel = Text::_($params->get('copy_button_label'));
 		$copyIcon = $params->get('copy_icon', '');
-		$applyLabel = FText::_($params->get('apply_button_label'));
+		$applyLabel = Text::_($params->get('apply_button_label'));
 		$applyIcon = $params->get('apply_icon', '');
-		$deleteLabel = FText::_($params->get('delete_button_label', 'Delete'));
+		$deleteLabel = Text::_($params->get('delete_button_label', 'Delete'));
 		$deleteIcon = $params->get('delete_icon', '');
-		$goBackLabel = FText::_($params->get('goback_button_label'));
+		$goBackLabel = Text::_($params->get('goback_button_label'));
 		$goBackIcon = $params->get('goback_icon', '');
 
 		if ($resetIcon !== '')
@@ -917,9 +917,9 @@ class Base extends Html
 		if ($model->isEditable() && $params->get('submit_button', 1))
 		{
 			$button = $model->isAjax() ? "button" : "submit";
-			$submitClass = FabrikString::clean($form->submit_button_label);
+			$submitClass = String::clean($form->submit_button_label);
 			$submitIcon = $params->get('save_icon', '');
-			$submitLabel = FText::_($form->submit_button_label);
+			$submitLabel = Text::_($form->submit_button_label);
 
 			if ($submitIcon !== '')
 			{
@@ -939,9 +939,9 @@ class Base extends Html
 		if ($this->isMultiPage)
 		{
 			$form->prevButton = '<button type="button" class="btn fabrikPagePrevious button" name="fabrikPagePrevious"><i class="icon-previous"></i>&nbsp;'
-				. FText::_('COM_FABRIK_PREV') . '</button>';
+				. Text::_('COM_FABRIK_PREV') . '</button>';
 			$form->nextButton = '<button type="button" class="btn fabrikPageNext button" name="fabrikPageNext">'
-				. FText::_('COM_FABRIK_NEXT') . '&nbsp;<i class="icon-next"></i></button>';
+				. Text::_('COM_FABRIK_NEXT') . '&nbsp;<i class="icon-next"></i></button>';
 		}
 		else
 		{
@@ -1026,7 +1026,7 @@ class Base extends Html
 			// 	$$$ rob test if passing in _raw value via qs -used in fabsubs
 			if (!$formModel->hasElement($key))
 			{
-				$key = FabrikString::rtrimword($key, '_raw');
+				$key = String::rtrimword($key, '_raw');
 			}
 
 			if ($formModel->hasElement($key))
@@ -1134,7 +1134,7 @@ class Base extends Html
 				}
 			}
 
-			$safeKey = FabrikString::rtrimword($key, "[]");
+			$safeKey = String::rtrimword($key, "[]");
 
 			// $$$ rob - no don't do below as it will strip out join names join[x][fullname] => join
 			// $key = preg_replace("/\[(.*)\]/", '', $key);

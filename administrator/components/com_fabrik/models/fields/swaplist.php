@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 /**
  * Renders widget for (de)selecting available groups when editing a from
@@ -58,22 +59,22 @@ class JFormFieldSwapList extends JFormFieldList
 
 		if (empty($this->groups) && empty($this->currentGroups))
 		{
-			return FText::_('COM_FABRIK_NO_GROUPS_AVAILABLE');
+			return Text::_('COM_FABRIK_NO_GROUPS_AVAILABLE');
 		}
 		else
 		{
-			$str = FText::_('COM_FABRIK_AVAILABLE_GROUPS');
+			$str = Text::_('COM_FABRIK_AVAILABLE_GROUPS');
 			$str .= '<br />' . $this->groupList;
 			$str .= '<button class="button btn btn-success btn-small" type="button" id="' . $this->id . '-add">';
-			$str .= '<i class="icon-new"></i>' . FText::_('COM_FABRIK_ADD') . '</button>';
-			$str .= '<br />' . FText::_('COM_FABRIK_CURRENT_GROUPS');
+			$str .= '<i class="icon-new"></i>' . Text::_('COM_FABRIK_ADD') . '</button>';
+			$str .= '<br />' . Text::_('COM_FABRIK_CURRENT_GROUPS');
 			$str .= '<br />' . $this->currentGroupList;
 			$str .= '<button class="button btn btn-small" type="button" id="' . $this->id . '-up" >';
-			$str .= '<i class="icon-arrow-up"></i> ' . FText::_('COM_FABRIK_UP') . '</button> ';
+			$str .= '<i class="icon-arrow-up"></i> ' . Text::_('COM_FABRIK_UP') . '</button> ';
 			$str .= '<button class="button btn btn-small" type="button" id="' . $this->id . '-down" >';
-			$str .= '<i class="icon-arrow-down"></i> ' . FText::_('COM_FABRIK_DOWN') . '</button> ';
+			$str .= '<i class="icon-arrow-down"></i> ' . Text::_('COM_FABRIK_DOWN') . '</button> ';
 			$str .= '<button class="button btn btn-danger btn-small" type="button" id="' . $this->id . '-remove">';
-			$str .= '<i class="icon-delete"></i> ' . FText::_('COM_FABRIK_REMOVE');
+			$str .= '<i class="icon-delete"></i> ' . Text::_('COM_FABRIK_REMOVE');
 			$str .= '</button>';
 
 			return $str;

@@ -496,9 +496,7 @@ class PlgContentFabrik extends JPlugin
 			case 'details':
 				if ($id === 0)
 				{
-					JError::raiseWarning(500, 'No id set in fabrik plugin declaration');
-
-					return;
+					throw new Exception('No id set in fabrik plugin declaration');
 				}
 
 				$model->ajax = true;
@@ -545,9 +543,7 @@ class PlgContentFabrik extends JPlugin
 
 				if ($id === 0)
 				{
-					JError::raiseWarning(500, 'No id set in fabrik plugin declaration');
-
-					return;
+					throw new Exception('No id set in fabrik plugin declaration');
 				}
 
 				$model->setId($id);

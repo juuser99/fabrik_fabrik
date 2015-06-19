@@ -15,6 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use \Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
+use \stdClass;
 
 /**
  * Plugin element to render digital signature pad
@@ -71,7 +74,7 @@ class Digsig extends Element
 		$layoutData->val           = $val;
 		$listModel                 = $this->getListModel();
 		$pk                        = $listModel->getTable()->get('list.b_primary_key');
-		$pk                        = FabrikString::safeColNameToArrayKey($pk);
+		$pk                        = String::safeColNameToArrayKey($pk);
 
 		if (!$this->isEditable())
 		{
@@ -190,7 +193,7 @@ class Digsig extends Element
 
 		if (!$this->canView())
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -199,7 +202,7 @@ class Digsig extends Element
 
 		if (empty($rowId))
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FDIGSIG_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_FDIGSIG_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -209,7 +212,7 @@ class Digsig extends Element
 
 		if (empty($row))
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -247,7 +250,7 @@ class Digsig extends Element
 		}
 		else
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -305,7 +308,7 @@ class Digsig extends Element
 	 * @param   string $script Script to load once class has loaded
 	 * @param   array  &$shim  Dependant class names to load before loading the class - put in requirejs.config shim
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{

@@ -16,6 +16,8 @@ use Joomla\Utilities\ArrayHelper;
 use Fabrik\Admin\Helpers\AdminElement;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -108,7 +110,7 @@ class JFormFieldListfields extends JFormFieldList
 					$o->table_name = '';
 					$o->name = '';
 					$o->value = '';
-					$o->text = FText::_('COM_FABRIK_SELECT_A_TABLE_FIRST');
+					$o->text = Text::_('COM_FABRIK_SELECT_A_TABLE_FIRST');
 					$res[] = $o;
 				}
 				break;
@@ -165,7 +167,7 @@ class JFormFieldListfields extends JFormFieldList
 				$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 
 				$jsres = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
-				array_unshift($jsres, JHTML::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT')));
+				array_unshift($jsres, JHTML::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT')));
 				$this->js($jsres);
 				break;
 			case 'group':
@@ -177,7 +179,7 @@ class JFormFieldListfields extends JFormFieldList
 				$res = $formModel->getElementOptions($useStep, $valfield, $onlylistfields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 				break;
 			default:
-				return FText::_('The ListFields element is only usable by lists and elements');
+				return Text::_('The ListFields element is only usable by lists and elements');
 				break;
 		}
 
@@ -201,7 +203,7 @@ class JFormFieldListfields extends JFormFieldList
 						$s->value = $o->value;
 					}
 
-					$s->text = FabrikString::getShortDdLabel($o->text);
+					$s->text = String::getShortDdLabel($o->text);
 					$aEls[] = $s;
 				}
 			}
@@ -209,7 +211,7 @@ class JFormFieldListfields extends JFormFieldList
 			{
 				foreach ($res as &$o)
 				{
-					$o->text = FabrikString::getShortDdLabel($o->text);
+					$o->text = String::getShortDdLabel($o->text);
 				}
 
 				$aEls = $res;
@@ -239,7 +241,7 @@ class JFormFieldListfields extends JFormFieldList
 			{
 				$return = JHTML::_('select.genericlist', $aEls, $this->name, 'class="inputbox" size="1" ', 'value', 'text', $this->value, $this->id);
 				$return .= '<img style="margin-left:10px;display:none" id="' . $this->id
-				. '_loader" src="components/com_fabrik/images/ajax-loader.gif" alt="' . FText::_('LOADING') . '" />';
+				. '_loader" src="components/com_fabrik/images/ajax-loader.gif" alt="' . Text::_('LOADING') . '" />';
 			}
 		}
 
@@ -302,7 +304,7 @@ class JFormFieldListfields extends JFormFieldList
 			$str[] = '<input class="input" id="' . $this->id . '" name="' . $this->name . '" value="' . $this->value . '" />';
 		}
 
-		$str[] = '<button class="button btn"><span class="icon-arrow-left"></span> ' . FText::_('COM_FABRIK_ADD') . '</button>';
+		$str[] = '<button class="button btn"><span class="icon-arrow-left"></span> ' . Text::_('COM_FABRIK_ADD') . '</button>';
 		$str[] = '<select class="elements"></select>';
 
 		return implode("\n", $str);

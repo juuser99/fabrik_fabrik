@@ -15,6 +15,7 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Admin\Models\Form;
 use Fabrik\Admin\Models\FormInlineEdit;
+use Fabrik\Helpers\Text;
 
 require 'controller.php';
 
@@ -230,7 +231,7 @@ class FabrikControllerForm extends FabrikController
 
 		if (is_null($msg))
 		{
-			$msg = FText::_('COM_FABRIK_RECORD_ADDED_UPDATED');
+			$msg = Text::_('COM_FABRIK_RECORD_ADDED_UPDATED');
 		}
 
 		if ($this->app->isAdmin())

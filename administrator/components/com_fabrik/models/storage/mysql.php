@@ -14,6 +14,7 @@ use Fabrik\Helpers\ArrayHelper;
 use Joomla\Registry\Registry;
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\String;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -151,7 +152,7 @@ class MySql
 	public function dropIndex($field, $prefix = '', $type = 'INDEX')
 	{
 		$table = $this->table;
-		$field = \FabrikString::shortColName($field);
+		$field = String::shortColName($field);
 
 		if ($field == '')
 		{
@@ -209,7 +210,7 @@ class MySql
 
 		// $$$ rob 28/02/2011 if index in joined table we need to use that the make the key on
 		$table = !strstr($field, '___') ? $this->table : array_shift(explode('___', $field));
-		$field = \FabrikString::shortColName($field);
+		$field = String::shortColName($field);
 		ArrayHelper::filter($indexes, 'Column_name', $field);
 
 		if (!empty($indexes))
@@ -280,7 +281,7 @@ class MySql
 
 			if (!empty($join_pk))
 			{
-				$shortColName = \FabrikString::shortColName($join_pk);
+				$shortColName = String::shortColName($join_pk);
 				$key          = $origColName->Key;
 				$extra        = $origColName->Extra;
 				$type         = $origColName->Type;
@@ -312,7 +313,7 @@ class MySql
 		foreach ($fields as $name => $field)
 		{
 			// Replace all non alphanumeric characters with _
-			$name = \FabrikString::dbFieldName($name);
+			$name = String::dbFieldName($name);
 
 			if ($field->primary_key)
 			{
@@ -505,7 +506,7 @@ class MySql
 			}
 
 			$aPriKey  = $aPriKey[0];
-			$shortKey = \FabrikString::shortColName($fieldName);
+			$shortKey = String::shortColName($fieldName);
 
 			// $shortKey = $feModel->_shortKey($fieldName, true); // added true for second arg so it strips quotes, as was never matching colname with quotes
 			if ($fieldName != $aPriKey['colname'] && $shortKey != $aPriKey['colname'])

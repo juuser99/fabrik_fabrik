@@ -113,7 +113,7 @@ class Viewlevel extends ElementList
 			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('id, title');
-			$query->from($db->quoteName('#__viewlevels'));
+			$query->from($db->qn('#__viewlevels'));
 			$db->setQuery($query);
 			$this->allOpts = $db->loadObjectList('id');
 		}

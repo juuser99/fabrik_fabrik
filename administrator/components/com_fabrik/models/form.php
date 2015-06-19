@@ -22,10 +22,9 @@ use \JFactory as JFactory;
 use \JFolder as JFolder;
 use \JProfiler as JProfiler;
 use \JFilterInput as JFilterInput;
-use \FabrikString as FabrikString;
+use \Fabrik\Helpers\String as String;
 use \Fabrik\Helpers\HTML;
-use Joomla\String\String as String;
-use FText as FText;
+use Fabrik\Helpers\Text;
 use \stdClass as stdClass;
 use \JFile as JFile;
 use \JUri;
@@ -1009,7 +1008,7 @@ class Form extends View implements ModelFormFormInterface
 
 		foreach ($clean_request as $key => $value)
 		{
-			$test_key = FabrikString::rtrimword($key, '_raw');
+			$test_key = String::rtrimword($key, '_raw');
 			$elementModel = $this->getElement($test_key, false, false);
 
 			if ($elementModel !== false)
@@ -1173,7 +1172,7 @@ class Form extends View implements ModelFormFormInterface
 								if (empty($useKey) && !$this->isMambot && in_array($input->get('view'), array('form', 'details')))
 								{
 									$this->rowId = '';
-									$this->app->enqueueMessage(FText::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'), 'error');
+									$this->app->enqueueMessage(Text::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'), 'error');
 								}
 								else
 								{
@@ -2137,7 +2136,7 @@ class Form extends View implements ModelFormFormInterface
 			 * $$$ hugh - There HAS to be an easier way of getting the PK element name, that doesn't involve calling getPrimaryKeyAndExtra(),
 			 * which is a horribly expensive operation.
 			 */
-			$primaryKey = FabrikString::safeColNameToArrayKey($this->getItem()->get('list.db_primary_key'));
+			$primaryKey = String::safeColNameToArrayKey($this->getItem()->get('list.db_primary_key'));
 			$data['__pk_val'] = ArrayHelper::getValue($data, $primaryKey . '_raw', ArrayHelper::getValue($data, $primaryKey, ''));
 		}
 
@@ -2270,7 +2269,7 @@ class Form extends View implements ModelFormFormInterface
 	{
 		$item = $this->getItem();
 		$k = $item->get('list.db_primary_key');
-		$k = FabrikString::safeColNameToArrayKey($k);
+		$k = String::safeColNameToArrayKey($k);
 		$origId = ArrayHelper::getValue($this->formData, $k, '');
 
 		// COPY function should create new records
@@ -2321,8 +2320,8 @@ class Form extends View implements ModelFormFormInterface
 		$tmpKey = str_replace('.', '___', $tmpKey);
 		$this->formData[$tmpKey] = $insertId;
 		$this->formData[$tmpKey . '_raw'] = $insertId;
-		$this->formData[FabrikString::shortColName($pk)] = $insertId;
-		$this->formData[FabrikString::shortColName($pk) . '_raw'] = $insertId;
+		$this->formData[String::shortColName($pk)] = $insertId;
+		$this->formData[String::shortColName($pk) . '_raw'] = $insertId;
 
 		$this->fullFormData[$tmpKey] = $insertId;
 		$this->fullFormData[$tmpKey . '_raw'] = $insertId;
@@ -3131,7 +3130,7 @@ class Form extends View implements ModelFormFormInterface
 			foreach ($afilterFields as $name)
 			{
 				$raw = preg_match("/_raw$/", $name) > 0;
-				$name = $name ? FabrikString::rtrimword($name, '_raw') : $name;
+				$name = $name ? String::rtrimword($name, '_raw') : $name;
 				$elementModel = $this->getElement($name);
 			}
 		}
@@ -3182,7 +3181,7 @@ class Form extends View implements ModelFormFormInterface
 		$rowId = $input->getString('rowid', '', 'string');
 		$query = $db->getQuery(true);
 		$pk = $item->get('list.db_primary_key');
-		$query->select($pk . ' AS ' . FabrikString::safeColNameToArrayKey($pk))->from($item->get('list.db_table_name'))
+		$query->select($pk . ' AS ' . String::safeColNameToArrayKey($pk))->from($item->get('list.db_table_name'))
 			->where($pk . ' ' . $c . ' ' . $db->q($rowId));
 		$query = $listModel->buildQueryOrder($query);
 		$db->setQuery($query, 0, $intLimit);
@@ -3489,7 +3488,7 @@ class Form extends View implements ModelFormFormInterface
 			foreach ($useKey as &$tmpk)
 			{
 				$tmpk = !strstr($tmpk, '.') ? $item->get('list.db_table_name') . '.' . $tmpk : $tmpk;
-				$tmpk = FabrikString::safeColName($tmpk);
+				$tmpk = String::safeColName($tmpk);
 			}
 
 			if (!is_array($this->rowId))
@@ -3891,7 +3890,7 @@ class Form extends View implements ModelFormFormInterface
 			$text = preg_replace("/{\s*.*?}/i", '', $text);
 		}
 
-		$text = FabrikString::translate($text);
+		$text = String::translate($text);
 
 		return $text;
 	}
@@ -3910,7 +3909,7 @@ class Form extends View implements ModelFormFormInterface
 		$m = explode(":", $match[0]);
 		array_shift($m);
 		$m = implode(":", $m);
-		return FabrikString::rtrimword($m, "}");
+		return String::rtrimword($m, "}");
 	}
 
 	/**
@@ -3944,11 +3943,11 @@ class Form extends View implements ModelFormFormInterface
 
 		if (String::stristr($label, "{Add/Edit}"))
 		{
-			$replace = $this->isNewRecord() ? FText::_('COM_FABRIK_ADD') : FText::_('COM_FABRIK_EDIT');
+			$replace = $this->isNewRecord() ? Text::_('COM_FABRIK_ADD') : Text::_('COM_FABRIK_EDIT');
 			$label = str_replace("{Add/Edit}", $replace, $label);
 		}
 
-		return FText::_($label);
+		return Text::_($label);
 	}
 
 	/**
@@ -4208,7 +4207,7 @@ class Form extends View implements ModelFormFormInterface
 		{
 			$parts = explode('=', $bit);
 			$key = $parts[0];
-			$key = FabrikString::rtrimword($key, '_raw');
+			$key = String::rtrimword($key, '_raw');
 
 			if (!$this->hasElement($key))
 			{
@@ -4923,7 +4922,7 @@ class Form extends View implements ModelFormFormInterface
 
 			$params = $this->getParams();
 
-			return FText::_($params->get('submit-success-msg', 'COM_FABRIK_RECORD_ADDED_UPDATED'));
+			return Text::_($params->get('submit-success-msg', 'COM_FABRIK_RECORD_ADDED_UPDATED'));
 		}
 		else
 		{
@@ -4965,7 +4964,7 @@ class Form extends View implements ModelFormFormInterface
 		$input = $this->app->input;
 		$msg = $input->get('rowid', '', 'string') == 0 ? 'COM_FABRIK_NOTICE_CANT_ADD_RECORDS' : 'COM_FABRIK_NOTICE_CANT_EDIT_RECORDS';
 
-		return FText::_($msg);
+		return Text::_($msg);
 	}
 
 	/**
@@ -5084,7 +5083,7 @@ class Form extends View implements ModelFormFormInterface
 
 	public function jsKey()
 	{
-		$id = FabrikString::clean($this->getId());
+		$id = String::clean($this->getId());
 		$key = $this->isEditable() ? 'form_' . $id : 'details_' . $id;
 
 		if ($this->getRowId() != '')

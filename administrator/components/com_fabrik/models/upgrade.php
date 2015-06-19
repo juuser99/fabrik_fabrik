@@ -73,7 +73,7 @@ class Upgrade extends Base
 
 			$listModel->set('connection', $connModel);
 			$qTable = $cDb->qn('bkup_' . $item->db_table_name);
-			$qItemTable = $cDb->quoteName($item->db_table_name);
+			$qItemTable = $cDb->qn($item->db_table_name);
 
 			// Drop the bkup table
 			$cDb->dropTable($qTable);

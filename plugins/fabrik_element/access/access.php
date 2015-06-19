@@ -13,6 +13,9 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
+use \stdClass;
+use \JHtml;
+use Fabrik\Helpers\Text;
 
 /**
  * Access element
@@ -38,7 +41,6 @@ class Access extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		// $$$ hugh - nope!
@@ -54,7 +56,6 @@ class Access extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -98,7 +99,6 @@ class Access extends Element
 	 *
 	 * @return  array
 	 */
-
 	private function getOpts($allowAll = true)
 	{
 		$db = $this->db;
@@ -119,7 +119,7 @@ class Access extends Element
 			// If in front end we need to load the admin language..
 			$this->language->load('joomla', JPATH_ADMINISTRATOR, null, false, false);
 
-			array_unshift($options, JHtml::_('select.option', '', FText::_('JOPTION_ACCESS_SHOW_ALL_GROUPS')));
+			array_unshift($options, JHtml::_('select.option', '', Text::_('JOPTION_ACCESS_SHOW_ALL_GROUPS')));
 		}
 
 		return $options;

@@ -15,6 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
+use \stdClass;
 
 /**
  * Plugin element to render colour picker
@@ -47,7 +49,6 @@ class Colourpicker extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$data = Worker::JSONtoData($data, true);
@@ -73,7 +74,6 @@ class Colourpicker extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		$val = parent::storeDatabaseFormat($val, $data);
@@ -88,7 +88,6 @@ class Colourpicker extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		if (!$this->isEditable())
@@ -139,11 +138,10 @@ class Colourpicker extends Element
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$value = parent::getValue($data, $repeatCounter, $opts);
-		$value = strstr($value, '#') ? FabrikString::hex2rgb($value) : $value;
+		$value = strstr($value, '#') ? String::hex2rgb($value) : $value;
 
 		return $value;
 	}
@@ -156,7 +154,6 @@ class Colourpicker extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$value = $this->getValue($data, $repeatCounter);
@@ -178,7 +175,6 @@ class Colourpicker extends Element
 	 *
 	 * @return  string  Bb field type
 	 */
-
 	public function getFieldDescription()
 	{
 		if ($this->encryptMe())

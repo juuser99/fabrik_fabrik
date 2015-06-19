@@ -9,11 +9,17 @@
  */
 
 namespace Fabrik\Plugins\Element;
+use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
+use \JText;
+use \Text;
+use Fabrik\Helpers\String;
+use \JUserHelper;
+use \stdClass;
 
 /**
  * Plugin element to render 2 fields to capture and confirm a password
@@ -32,18 +38,17 @@ class Password extends Element
 	 *
 	 * @return  bool
 	 */
-
 	public function recordInDatabase($data = null)
 	{
 		$element = $this->getElement();
 
 		// If storing from inline edit then key may not exist
-		if (!array_key_exists($element->name, $data))
+		if (!array_key_exists($element->get('name'), $data))
 		{
 			return false;
 		}
 
-		if (trim($data[$element->name]) === '')
+		if (trim($data[$element->get('name')]) === '')
 		{
 			return false;
 		}
@@ -61,7 +66,6 @@ class Password extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		jimport('joomla.user.helper');
@@ -73,20 +77,6 @@ class Password extends Element
 	}
 
 	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
-	}
-
-	/**
 	 * Draws the html form element
 	 *
 	 * @param   array $data          To pre-populate element with
@@ -94,7 +84,6 @@ class Password extends Element
 	 *
 	 * @return  string    elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$layout     = $this->getLayout('form');
@@ -110,24 +99,23 @@ class Password extends Element
 
 		$bits                = $this->inputProperties($repeatCounter, 'password');
 		$bits['value']       = $value;
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_PASSWORD_TYPE_PASSWORD');
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_PASSWORD_TYPE_PASSWORD');
 
 		$layoutData->pw1Attributes = $bits;
 
-		$origname            = $element->name;
-		$element->name       = $element->name . '_check';
+		$origName            = $element->get('name');
+		$element->set('name', $element->get('name') . '_check');
 		$name                = $this->getHTMLName($repeatCounter);
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_PASSWORD_CONFIRM_PASSWORD');
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_PASSWORD_CONFIRM_PASSWORD');
 		$bits['class'] .= ' fabrikSubElement';
 		$bits['name'] = $name;
 		$bits['id']   = $name;
 
 		$layoutData->pw2Attributes     = $bits;
-		$element->name                 = $origname;
+		$element->set('name', $origName);
 		$layoutData->showStrengthMeter = $params->get('strength_meter', 1) == 1;
 
 		return $layout->render($layoutData);
-
 	}
 
 	/**
@@ -138,7 +126,6 @@ class Password extends Element
 	 *
 	 * @return bool
 	 */
-
 	public function validate($data, $repeatCounter = 0)
 	{
 		if ($this->isEditable() === false)
@@ -148,9 +135,9 @@ class Password extends Element
 
 		$input    = $this->app->input;
 		$k        = $this->getlistModel()->getTable()->get('list.db_primary_key');
-		$k        = FabrikString::safeColNameToArrayKey($k);
+		$k        = String::safeColNameToArrayKey($k);
 		$element  = $this->getElement();
-		$origname = $element->name;
+		$origName = $element->get('name');
 
 		/**
 		 * $$$ hugh - need to fetch the value for the main data, as well as the confirmation,
@@ -159,7 +146,7 @@ class Password extends Element
 		 */
 		$value      = urldecode($this->getValue($_REQUEST, $repeatCounter));
 		$name       = $this->getFullName(true, false);
-		$check_name = str_replace($element->name, $element->name . '_check', $name);
+		$check_name = str_replace($element->get('name'), $element->get('name') . '_check', $name);
 
 		/**
 		 * $$$ hugh - there must be a better way of doing this, but ...
@@ -176,8 +163,8 @@ class Password extends Element
 
 		$this->setFullName($check_name, true, false);
 		$this->reset();
-		$checkvalue    = urldecode($this->getValue($_REQUEST, $repeatCounter));
-		$element->name = $origname;
+		$checkValue    = urldecode($this->getValue($_REQUEST, $repeatCounter));
+		$element->set('name', $origName);
 
 		if ($this->getParams()->get('password_j_validate', false))
 		{
@@ -187,9 +174,9 @@ class Password extends Element
 			}
 		}
 
-		if ($checkvalue != $value)
+		if ($checkValue != $value)
 		{
-			$this->validationError = FText::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_DOES_NOT_MATCH');
+			$this->validationError = Text::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_DOES_NOT_MATCH');
 
 			return false;
 		}
@@ -211,7 +198,7 @@ class Password extends Element
 				/**
 				 * Why are we using .= here, but nowhere else?
 				 */
-				$this->validationError .= FText::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_EMPTY_NOT_ALLOWED');
+				$this->validationError .= Text::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_EMPTY_NOT_ALLOWED');
 
 				return false;
 			}
@@ -227,13 +214,12 @@ class Password extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id                    = $this->getHTMLId($repeatCounter);
 		$opts                  = $this->getElementJSOptions($repeatCounter);
-		$formparams            = $this->getForm()->getParams();
-		$opts->ajax_validation = $formparams->get('ajax_validations') === '1';
+		$formParams            = $this->getFormModel()->getParams();
+		$opts->ajax_validation = $formParams->get('ajax_validations') === '1';
 		$opts->progressbar     = true;
 
 		JText::script('PLG_ELEMENT_PASSWORD_STRONG');
@@ -254,7 +240,6 @@ class Password extends Element
 	 *
 	 * @return  array  html ids to watch for validation
 	 */
-
 	public function getValidationWatchElements($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter) . '_check';
@@ -268,7 +253,6 @@ class Password extends Element
 	 *
 	 * @return  string
 	 */
-
 	public function internalValidationIcon()
 	{
 		return 'star';
@@ -279,9 +263,8 @@ class Password extends Element
 	 *
 	 * @return  string
 	 */
-
-	public function internalValidataionText()
+	public function internalValidationText()
 	{
-		return FText::_('PLG_ELEMENT_PASSWORD_VALIDATION_TIP');
+		return Text::_('PLG_ELEMENT_PASSWORD_VALIDATION_TIP');
 	}
 }

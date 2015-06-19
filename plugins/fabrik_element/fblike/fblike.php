@@ -228,7 +228,7 @@ class Fblike extends Element
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->listid = $this->getListModel()->getId();
-		$opts->elid = $this->getElement()->id;
+		$opts->elid = $this->getElement()->get('id');
 		$opts->row_id = $this->getFormModel()->getRowId();
 
 		return array('FbLike', $id, $opts);

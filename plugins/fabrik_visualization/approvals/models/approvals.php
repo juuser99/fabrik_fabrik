@@ -17,6 +17,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
 use \Fabrik\Admin\Models\Form;
 use \Fabrik\Admin\Models\Lizt;
 use \Fabrik\Admin\Models\Visualization;
+use Fabrik\Helpers\String;
 
 /**
  * Approval viz Model
@@ -161,7 +162,7 @@ class FabrikModelApprovals extends Visualization
 				$item = $listModel->getTable();
 				$db = $listModel->getDbo();
 				$query = $db->getQuery(true);
-				$el = FabrikString::safeColName($approveEls[$key]);
+				$el = String::safeColName($approveEls[$key]);
 				$pk = $db->qn($item->get('list.db_primary_key'));
 				$query->update($db->qn($item->get('list.db_table_name')))
 					->set($el . ' = ' . $db->q($v))

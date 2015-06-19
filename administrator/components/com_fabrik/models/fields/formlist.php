@@ -10,10 +10,11 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+use Fabrik\Helpers\Text;
 
 // Needed for when you make a menu item link to a form.
-require_once JPATH_SITE . '/components/com_fabrik/helpers/parent.php';
-require_once JPATH_SITE . '/components/com_fabrik/helpers/string.php';
+//require_once JPATH_SITE . '/components/com_fabrik/helpers/parent.php';
+//require_once JPATH_SITE . '/components/com_fabrik/helpers/string.php';
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -64,10 +65,10 @@ class JFormFieldFormList extends JFormFieldList
 			switch ($item->get('published'))
 			{
 				case '0':
-					$option->text .= ' [' . FText::_('JUNPUBLISHED') . ']';
+					$option->text .= ' [' . Text::_('JUNPUBLISHED') . ']';
 					break;
 				case '-2':
-					$option->text .= ' [' . FText::_('JTRASHED') . ']';
+					$option->text .= ' [' . Text::_('JTRASHED') . ']';
 					break;
 			}
 

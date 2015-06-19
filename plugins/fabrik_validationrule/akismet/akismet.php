@@ -49,7 +49,7 @@ class Akismet extends Validation
 
 		if ($params->get('akismet-key') != '')
 		{
-			$username = $this->user->get('username') != '' ? $this->user->get('username') : $this->_randomSring();
+			$username = $this->user->get('username') != '' ? $this->user->get('username') : $this->_randomString();
 			require_once JPATH_SITE . '/plugins/fabrik_validationrule/akismet/libs/akismet.class.php';
 			$comment = array('author' => $username, 'email' => $this->user->get('email'), 'website' => JUri::base(), 'body' => $data);
 			$validator = new \Akismet(JURI::base(), $params->get('akismet-key'), $comment);
@@ -75,7 +75,7 @@ class Akismet extends Validation
 	 *
 	 * @return string
 	 */
-	protected function _randomSring()
+	protected function _randomString()
 	{
 		return preg_replace('/([ ])/e', 'chr(rand(97,122))', '     ');
 	}

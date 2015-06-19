@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -93,7 +94,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 
 	protected function buttonLabel()
 	{
-		return FText::_($this->getParams()->get('button_label', parent::buttonLabel()));
+		return Text::_($this->getParams()->get('button_label', parent::buttonLabel()));
 	}
 
 	/**
@@ -499,12 +500,11 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	 *
 	 * @return  string  HTML Form
 	 */
-
 	protected function userSelectForm()
 	{
 		$model = $this->getModel();
 		JText::script('PLG_LIST_UPDATE_COL_UPDATE');
-		$options[] = '<option value="">' . FText::_('COM_FABRIK_PLEASE_SELECT') . '</option>';
+		$options[] = '<option value="">' . Text::_('COM_FABRIK_PLEASE_SELECT') . '</option>';
 		$elementModels = $model->getElements(0, false, true);
 
 		foreach ($elementModels as $elementModel)

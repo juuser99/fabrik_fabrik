@@ -17,9 +17,8 @@ defined('_JEXEC') or die('Restricted access');
 use Exception;
 use JDate;
 use JEventDispatcher;
-use Joomla\String\String;
+use Joomla\Registry\Registry;
 use \JPluginHelper as JPluginHelper;
-use \FText as FText;
 use RuntimeException;
 use \stdClass as stdClass;
 use Fabrik\Helpers\ArrayHelper;
@@ -28,7 +27,8 @@ use \JText as JText;
 use \JComponentHelper as JComponentHelper;
 use \JForm as JForm;
 use \Joomla\Registry\Registry as JRegistry;
-use \FabrikString as FabrikString;
+use \Fabrik\Helpers\String as String;
+use Fabrik\Helpers\Text;
 
 interface ModelElementFormInterface
 {
@@ -79,7 +79,6 @@ class Element extends Base implements ModelElementFormInterface
 		'#__update_categories', '#__update_sites', '#__update_sites_extensions', '#__updates', '#__user_profiles', '#__user_usergroup_map',
 		'#__usergroups', '#__users', '#__viewlevels', '#__weblinks');
 
-
 	/**
 	 * Toggle adding / removing the element from the list view
 	 *
@@ -109,7 +108,7 @@ class Element extends Base implements ModelElementFormInterface
 				{
 					// Prune items that you can't change.
 					unset($pks[$i]);
-					JError::raiseWarning(403, FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+					$this->app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'), 'error');
 				}
 			}
 		}
@@ -153,33 +152,12 @@ class Element extends Base implements ModelElementFormInterface
 	/**
 	 * Load the actual validation plugins that the element uses
 	 *
-	 * @return  array  plugins
+	 * @return  stdClass[]  plugins
 	 */
 
 	public function getPlugins($subView = 'list')
 	{
 		return $this->element->get('validations', array());
-		/*	$item = $this->getItem();
-			$plugins = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
-			$published = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
-			$icons = (array) ArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
-			$in = (array) ArrayHelper::getNestedValue($item->params, 'validations.validate_in', array());
-			$on = (array) ArrayHelper::getNestedValue($item->params, 'validations.validation_on', array());
-
-			$return = array();
-
-			for ($i = 0; $i < count($plugins); $i ++)
-			{
-				$o = new stdClass;
-				$o->plugin = $plugins[$i];
-				$o->published = ArrayHelper::getValue($published, $i, 1);
-				$o->show_icon = ArrayHelper::getValue($icons, $i, 1);
-				$o->validate_in = ArrayHelper::getValue($in, $i, 'both');
-				$o->validation_on = ArrayHelper::getValue($on, $i, 'both');
-				$return[] = $o;
-			}
-
-			return $return;*/
 	}
 
 	/**
@@ -195,7 +173,7 @@ class Element extends Base implements ModelElementFormInterface
 		$opts->elementId    = $this->element->get('id');
 		$opts->id           = $this->get('id');
 		$opts->deleteButton = '<a class="btn btn-danger"><i class="icon-delete"></i> ';
-		$opts->deleteButton .= FText::_('COM_FABRIK_DELETE') . '</a>';
+		$opts->deleteButton .= Text::_('COM_FABRIK_DELETE') . '</a>';
 		$opts = json_encode($opts);
 		JText::script('COM_FABRIK_PLEASE_SELECT');
 		JText::script('COM_FABRIK_JS_SELECT_EVENT');
@@ -239,7 +217,7 @@ class Element extends Base implements ModelElementFormInterface
 
 		if ($plugin == '')
 		{
-			$str = '<div class="alert">' . FText::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
+			$str = '<div class="alert">' . Text::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
 		}
 		else
 		{
@@ -296,24 +274,24 @@ class Element extends Base implements ModelElementFormInterface
 
 			if ($listModel->canAddFields() === false && $listModel->noTable() === false)
 			{
-				throw new RuntimeException(FText::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
+				throw new RuntimeException(Text::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
 			}
 
 			if (Worker::isReserved($data['name']))
 			{
-				throw new RuntimeException(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
+				throw new RuntimeException(Text::_('COM_FABRIK_RESEVED_NAME_USED'));
 			}
 		}
 		else
 		{
 			if ($listModel->canAlterFields() === false && $nameChanged && $listModel->noTable() === false)
 			{
-				throw new RuntimeException(FText::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
+				throw new RuntimeException(Text::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
 			}
 
 			if ($nameChanged && Worker::isReserved($data['name'], false))
 			{
-				throw new RuntimeException(FText::_('COM_FABRIK_RESEVED_NAME_USED'));
+				throw new RuntimeException(Text::_('COM_FABRIK_RESEVED_NAME_USED'));
 			}
 		}
 
@@ -338,7 +316,7 @@ class Element extends Base implements ModelElementFormInterface
 			{
 				if ($listModel->fieldExists($data['name'], $ignore))
 				{
-					throw new Exception(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
+					throw new Exception(Text::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
 				}
 			}
 			else
@@ -357,7 +335,7 @@ class Element extends Base implements ModelElementFormInterface
 
 				if ($joinListModel->fieldExists($data['name'], $ignore))
 				{
-					throw new Exception(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
+					throw new Exception(Text::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
 				}
 			}
 		}
@@ -411,7 +389,7 @@ class Element extends Base implements ModelElementFormInterface
 
 		$input        = $this->app->input;
 		$new          = $data['id'] == 0 ? true : false;
-		$data['name'] = FabrikString::iclean($data['name']);
+		$data['name'] = String::iclean($data['name']);
 		$name         = $data['name'];
 		$elementModel = $this->getElementPluginModel($data);
 		$row          = $elementModel->getElement()->loadArray($data);
@@ -423,9 +401,9 @@ class Element extends Base implements ModelElementFormInterface
 		}
 		$origId = $input->getString('id');
 
-		$listModel = $elementModel->getListModel();
+		$listModel       = $elementModel->getListModel();
 		$this->listModel = $listModel;
-		$item      = $listModel->getItem();
+		$item            = $listModel->getItem();
 
 		// Only update the element name if we can alter existing columns, otherwise the name and field name become out of sync
 		$name = ($listModel->canAlterFields() || $new || $listModel->noTable()) ? $name : $input->get('name_orig', '');
@@ -441,9 +419,10 @@ class Element extends Base implements ModelElementFormInterface
 		 */
 		$elementModel->beforeSave($row);
 		$this->prepareSaveDates($row);
+
 		$this->prepareSaveValidations($elementModel, $row);
 
-		// FIXME - ordering of elements
+		// FIXME 3.5- ordering of elements
 
 		$origName = $input->get('name_orig', '');
 		list($update, $q, $oldName, $newDesc, $origDesc) = $listModel->shouldUpdateElement($elementModel, $origName);
@@ -458,13 +437,13 @@ class Element extends Base implements ModelElementFormInterface
 
 			if (in_array($tableName, $this->core))
 			{
-				$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
+				$this->app->enqueueMessage(Text::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
 			}
 			else
 			{
 				if ($hasPrefix)
 				{
-					$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
+					$this->app->enqueueMessage(Text::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
 				}
 			}
 
@@ -495,7 +474,6 @@ class Element extends Base implements ModelElementFormInterface
 			$this->updateIndexes($elementModel, $listModel, $row);
 		}
 
-
 		$this->updateJavascript($row);
 		$elementModel->setId($row->get('id'));
 		$this->createRepeatElement($elementModel, $row);
@@ -510,19 +488,20 @@ class Element extends Base implements ModelElementFormInterface
 
 		parent::cleanCache('com_fabrik');
 
-		$groupKey = $this->groupKey($row->get('group_id'));
-		$fields = $item->get("form.groups.$groupKey.fields");
+		$groupKey      = $this->groupKey($row->get('group_id'));
+		$fields        = $item->get("form.groups.$groupKey.fields");
 		$fields->$name = $row->toObject();
 		$item->set("form.groups.$groupKey.fields", $fields);
-		$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $item->get('view') . '.json';
+		$file   = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $item->get('view') . '.json';
 		$output = json_encode($item->toObject(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 		file_put_contents($file, $output);
+
 		return true;
 	}
 
 	protected function groupKey($groupId)
 	{
-		$item = $this->getListModel()->getItem();
+		$item   = $this->getListModel()->getItem();
 		$groups = $item->get('form.groups');
 
 		foreach ($groups as $groupKey => $group)
@@ -537,12 +516,12 @@ class Element extends Base implements ModelElementFormInterface
 	protected function prepareSaveListPrimaryKey(&$item, $row)
 	{
 		// Are we updating the name of the primary key element?
-		if ($row->get('name') === FabrikString::shortColName($item->get('list.db_primary_key')))
+		if ($row->get('name') === String::shortColName($item->get('list.db_primary_key')))
 		{
-			$pk = $item->get('list.db_primary_key');
-			$bits = explode('.', $pk);
+			$pk      = $item->get('list.db_primary_key');
+			$bits    = explode('.', $pk);
 			$bits[1] = $row->get('name');
-			$pk = join('.', $pk);
+			$pk      = join('.', $pk);
 			$item->set('list.db_primary_key', $pk);
 		}
 
@@ -577,61 +556,53 @@ class Element extends Base implements ModelElementFormInterface
 		}
 	}
 
+	/**
+	 * @param          $elementModel
+	 * @param Registry $row
+	 */
 	protected function prepareSaveValidations($elementModel, &$row)
 	{
-		/**
-		 * $$$ hugh
-		 * This insane chunk of code is needed because the validation rule params are not in sequential,
-		 * completely indexed arrays.  What we have is single item arrays, with specific numeric
-		 * keys, like foo-something[0], bar-otherthing[2], etc.  And if you json_encode an array with incomplete
-		 * or out of sequence numeric indexes, it encodes it as an object instead of an array.  Which means the first
-		 * validation plugin will encode as an array, as it's params are single [0] index, and the rest as objects.
-		 * This foobars things, as we then don't know if validation params are arrays or objects!
-		 *
-		 * One option would be to modify every validation, and test every param we use, and if necessary convert it,
-		 * but that would be a major pain in the ass.
-		 *
-		 * So ... we need to fill in the blanks in the arrays, and ksort them.  But, we need to know the param names
-		 * for each validation.  But as they are just stuck in with the rest of the element params, there is no easy
-		 * way of knowing which are validation params and which are element params.
-		 *
-		 * So ... we need to load the validation objects, then load the XML file for each one, and iterate through
-		 * the fieldsets!  Well, that's the only way I could come up with doing it.  Hopefully Rob can come up with
-		 * a quicker and simpler way of doing this!
-		 */
-		$validations        = ArrayHelper::getValue($params['validations'], 'plugin', array());
-		$num_validations    = count($validations);
-		$validation_plugins = $this->getValidations($elementModel, $validations);
+		$commonSettings = array_keys($row->get('params.validations'));
+		$validations    = $row->get('params.validations.plugin', array());
 
-		foreach ($validation_plugins as $plugin)
+		$return = array();
+		$data   = $row->toObject();
+
+		foreach ($validations as $i => $validation)
 		{
-			$plugin_form = $plugin->getJForm();
+			$return[$i] = new stdClass;
+
+			foreach ($commonSettings as $commonSetting)
+			{
+				$return[$i]->$commonSetting = $row->get('params.validations.' . $commonSetting . '.' . $i);
+			}
+
+			$plugin     = $this->getValidation($elementModel, $validation);
+			$pluginForm = $plugin->getJForm();
 			JForm::addFormPath(JPATH_SITE . '/plugins/fabrik_validationrule/' . $plugin->get('pluginName'));
 			$xmlFile = JPATH_SITE . '/plugins/fabrik_validationrule/' . $plugin->get('pluginName') . '/forms/fields.xml';
 			$plugin->jform->loadFile($xmlFile, false);
 
-			foreach ($plugin_form->getFieldsets() as $fieldset)
+			foreach ($pluginForm->getFieldsets() as $fieldset)
 			{
-				foreach ($plugin_form->getFieldset($fieldset->name) as $field)
+				foreach ($pluginForm->getFieldset($fieldset->name) as $field)
 				{
-					if (isset($params[$field->fieldname]))
-					{
-						if (is_array($params[$field->fieldname]))
-						{
-							for ($x = 0; $x < $num_validations; $x++)
-							{
-								if (!(array_key_exists($x, $params[$field->fieldname])))
-								{
-									$params[$field->fieldname][$x] = '';
-								}
-							}
-
-							ksort($params[$field->fieldname]);
-						}
-					}
+					$name              = $field->fieldname;
+					$names[]           = $name;
+					$return[$i]->$name = $row->get('params.' . $name . '.' . $i, '');
 				}
 			}
 		}
+
+		foreach ($names as $name)
+		{
+			unset($data->params->$name);
+		}
+
+		unset($data->params->validations);
+		unset($data->validationrule);
+		$row = new Registry($data);
+		$row->set('validations', $return);
 	}
 
 	/**
@@ -985,7 +956,7 @@ class Element extends Base implements ModelElementFormInterface
 		$join->load(array('element_id' => $data['element_id']));
 		$opts           = new stdClass;
 		$opts->type     = 'repeatElement';
-		$opts->pk       = FabrikString::safeqn($tableName . '.id');
+		$opts->pk       = String::safeqn($tableName . '.id');
 		$data['params'] = json_encode($opts);
 		$join->bind($data);
 		$join->store();
@@ -1077,12 +1048,11 @@ class Element extends Base implements ModelElementFormInterface
 	 * params, which means knowing all the param names, but we can't call the FE model
 	 * version of this method 'cos ... well, it breaks.
 	 *
-	 * @param   object $elementModel a front end element model
-	 * @param   array  $usedPlugins  an array of validation plugin names to load
+	 * @param   \Fabrik\Plugins\Element\Element $elementModel Element model
+	 * @param   array                           $usedPlugins  an array of validation plugin names to load
 	 *
-	 * @return  array    validation objects
+	 * @return  \Fabrik\Plugins\Validation[]    Validation plugins
 	 */
-
 	private function getValidations($elementModel, $usedPlugins = array())
 	{
 		if (isset($this->_aValidations))
@@ -1094,25 +1064,37 @@ class Element extends Base implements ModelElementFormInterface
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 
-		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('fabrik_validationrule');
 
 		foreach ($usedPlugins as $usedPlugin)
 		{
 			if ($usedPlugin !== '')
 			{
-				$class                = 'plgFabrik_Validationrule' . String::ucfirst($usedPlugin);
-				$conf                 = array();
-				$conf['name']         = String::strtolower($usedPlugin);
-				$conf['type']         = String::strtolower('fabrik_Validationrule');
-				$plugIn               = new $class($dispatcher, $conf);
-				$oPlugin              = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
-				$plugIn->elementModel = $elementModel;
-				$this->aValidations[] = $plugIn;
+				$this->aValidations[] = $this->getValidation($elementModel, $usedPlugin);
 			}
 		}
 
 		return $this->aValidations;
+	}
+
+	/**
+	 * @param \Fabrik\Plugins\Element\Element $elementModel
+	 * @param string                          $usedPlugin
+	 *
+	 * @return \Fabrik\Plugins\Validation\
+	 */
+	private function getValidation($elementModel, $usedPlugin)
+	{
+		$dispatcher   = JEventDispatcher::getInstance();
+		$class        = '\Fabrik\Plugins\Validation\\' . String::ucfirst($usedPlugin);
+		$conf         = array();
+		$conf['name'] = String::strtolower($usedPlugin);
+		$conf['type'] = String::strtolower('fabrik_Validationrule');
+		$plugIn       = new $class($dispatcher, $conf);
+		JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
+		$plugIn->elementModel = $elementModel;
+
+		return $plugIn;
 	}
 
 	/**

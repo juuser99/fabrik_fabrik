@@ -9,9 +9,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -238,7 +239,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		try
 		{
 			$query = $db->getQuery(true)
-				->update($db->quoteName('#__content'))
+				->update($db->qn('#__content'))
 				->set('featured = ' . (int) $value)
 				->where('id IN (' . implode(',', $pks) . ')');
 			$db->setQuery($query);
@@ -249,7 +250,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 				// Adjust the mapping table.
 				// Clear the existing features settings.
 				$query = $db->getQuery(true)
-					->delete($db->quoteName('#__content_frontpage'))
+					->delete($db->qn('#__content_frontpage'))
 					->where('content_id IN (' . implode(',', $pks) . ')');
 				$db->setQuery($query);
 				$db->execute();
@@ -279,8 +280,8 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 				{
 					$columns = array('content_id', 'ordering');
 					$query = $db->getQuery(true)
-						->insert($db->quoteName('#__content_frontpage'))
-						->columns($db->quoteName($columns))
+						->insert($db->qn('#__content_frontpage'))
+						->columns($db->qn($columns))
 						->values($tuples);
 					$db->setQuery($query);
 					$db->execute();
@@ -358,7 +359,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 			if ($file !== '')
 			{
 				$img->image_intro = str_replace('\\', '/', $file);
-				$img->image_intro = FabrikString::ltrimword($img->image_intro, '/');
+				$img->image_intro = String::ltrimword($img->image_intro, '/');
 				$img->float_intro = '';
 				$img->image_intro_alt = '';
 				$img->image_intro_caption = '';
@@ -381,7 +382,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 			if ($file !== '')
 			{
 				$img->image_fulltext = str_replace('\\', '/', $file);
-				$img->image_fulltext = FabrikString::ltrimword($img->image_fulltext, '/');
+				$img->image_fulltext = String::ltrimword($img->image_fulltext, '/');
 				$img->float_fulltext = '';
 				$img->image_fulltext_alt = '';
 				$img->image_fulltext_caption = '';
@@ -471,7 +472,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 
 			if ($first === '\\' || $first == '/')
 			{
-				$file = FabrikString::ltrimiword($file, $first);
+				$file = String::ltrimiword($file, $first);
 			}
 		}
 
@@ -670,8 +671,8 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 			. $input->get('rowid', '', 'string');
 		$viewURL = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&amp;view=details&amp;formid=' . $formModel->get('id') . '&amp;rowid='
 			. $input->get('rowid', '', 'string');
-		$editlink = '<a href="' . $editURL . '">' . FText::_('EDIT') . '</a>';
-		$viewlink = '<a href="' . $viewURL . '">' . FText::_('VIEW') . '</a>';
+		$editlink = '<a href="' . $editURL . '">' . Text::_('EDIT') . '</a>';
+		$viewlink = '<a href="' . $viewURL . '">' . Text::_('VIEW') . '</a>';
 		$message = str_replace('{fabrik_editlink}', $editlink, $message);
 		$message = str_replace('{fabrik_viewlink}', $viewlink, $message);
 		$message = str_replace('{fabrik_editurl}', $editURL, $message);
@@ -741,7 +742,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		{
 			$db = $this->db;
 			$query = $db->getQuery(true);
-			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
+			$query->select('introtext, ' . $db->qn('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
 			$db->setQuery($query);
 			$res = $db->loadObject();
 		}

@@ -16,6 +16,7 @@ use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
 use \Fabrik\Plugins\Plugin;
+use Fabrik\Helpers\Text;
 
 /**
  * Fabrik Validation Rule Model
@@ -196,7 +197,7 @@ class Validation extends Plugin
 			$v = 'COM_FABRIK_FAILED_VALIDATION';
 		}
 
-		$this->errorMsg = FText::_($v);
+		$this->errorMsg = Text::_($v);
 
 		return $this->errorMsg;
 	}
@@ -241,7 +242,6 @@ class Validation extends Plugin
 	 *
 	 * @return  string
 	 */
-
 	public function iconImage()
 	{
 		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
@@ -297,16 +297,16 @@ class Validation extends Plugin
 
 		if ($tipText !== '')
 		{
-			return FText::_($tipText);
+			return Text::_($tipText);
 		}
 
 		if ($this->allowEmpty())
 		{
-			return FText::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_ALLOWEMPTY_LABEL');
+			return Text::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_ALLOWEMPTY_LABEL');
 		}
 		else
 		{
-			return FText::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_LABEL');
+			return Text::_('PLG_VALIDATIONRULE_' . String::strtoupper($this->pluginName) . '_LABEL');
 		}
 	}
 

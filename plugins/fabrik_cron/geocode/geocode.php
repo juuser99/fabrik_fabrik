@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\String;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
@@ -59,7 +60,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		$table = $listModel->getTable();
 		$tableName = $table->get('list.db_table_name');
 		$primaryKey = $table->get('list.db_primary_key');
-		$primaryKeyElement = FabrikString::shortColName($table->get('list.db_primary_key'));
+		$primaryKeyElement = String::shortColName($table->get('list.db_primary_key'));
 
 		$connection = (int) $params->get('connection');
 
@@ -82,19 +83,19 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		$geocode_is_empty = $params->get('geocode_is_empty');
 		$geocode_zoom_level = $params->get('geocode_zoom_level', '4');
 		$geocode_map_element_long = $params->get('geocode_map_element');
-		$geocode_map_element = FabrikString::shortColName($geocode_map_element_long);
+		$geocode_map_element = String::shortColName($geocode_map_element_long);
 		$geocode_addr1_element_long = $params->get('geocode_addr1_element');
-		$geocode_addr1_element = $geocode_addr1_element_long ? FabrikString::shortColName($geocode_addr1_element_long) : '';
+		$geocode_addr1_element = $geocode_addr1_element_long ? String::shortColName($geocode_addr1_element_long) : '';
 		$geocode_addr2_element_long = $params->get('geocode_addr2_element');
-		$geocode_addr2_element = $geocode_addr2_element_long ? FabrikString::shortColName($geocode_addr2_element_long) : '';
+		$geocode_addr2_element = $geocode_addr2_element_long ? String::shortColName($geocode_addr2_element_long) : '';
 		$geocode_city_element_long = $params->get('geocode_city_element');
-		$geocode_city_element = $geocode_city_element_long ? FabrikString::shortColName($geocode_city_element_long) : '';
+		$geocode_city_element = $geocode_city_element_long ? String::shortColName($geocode_city_element_long) : '';
 		$geocode_state_element_long = $params->get('geocode_state_element');
-		$geocode_state_element = $geocode_state_element_long ? FabrikString::shortColName($geocode_state_element_long) : '';
+		$geocode_state_element = $geocode_state_element_long ? String::shortColName($geocode_state_element_long) : '';
 		$geocode_zip_element_long = $params->get('geocode_zip_element');
-		$geocode_zip_element = $geocode_zip_element_long ? FabrikString::shortColName($geocode_zip_element_long) : '';
+		$geocode_zip_element = $geocode_zip_element_long ? String::shortColName($geocode_zip_element_long) : '';
 		$geocode_country_element_long = $params->get('geocode_country_element');
-		$geocode_country_element = $geocode_country_element_long ? FabrikString::shortColName($geocode_country_element_long) : '';
+		$geocode_country_element = $geocode_country_element_long ? String::shortColName($geocode_country_element_long) : '';
 		$geocode_when = $params->get('geocode_when', '1');
 
 		$gmap = new GeoCode;

@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\String;
 use Fabrik\Helpers\LayoutFile;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use \stdClass as stdClass;
 use Fabrik\Helpers\HTML;
 
@@ -108,7 +108,7 @@ class Lizt extends Plugin
 	{
 		$s = String::strtoupper($this->buttonPrefix);
 
-		return FText::_('PLG_LIST_' . $s . '_' . $s);
+		return Text::_('PLG_LIST_' . $s . '_' . $s);
 	}
 
 	/**

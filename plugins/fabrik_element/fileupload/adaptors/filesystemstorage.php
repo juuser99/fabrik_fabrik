@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
 
@@ -46,7 +47,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 		    return true;
 		}
 
-		$filepath = COM_FABRIK_BASE . '/' . FabrikString::ltrimword($filepath, COM_FABRIK_BASE . '/');
+		$filepath = COM_FABRIK_BASE . '/' . String::ltrimword($filepath, COM_FABRIK_BASE . '/');
 
 		return JFile::exists($filepath);
 	}
@@ -84,7 +85,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 		if (!$this->exists($index_file))
 		{
-			$content = FText::_('PLG_ELEMENT_FILEUPLOAD_INDEX_FILE_CONTENT');
+			$content = Text::_('PLG_ELEMENT_FILEUPLOAD_INDEX_FILE_CONTENT');
 
 			return JFile::write($index_file, $content);
 		}

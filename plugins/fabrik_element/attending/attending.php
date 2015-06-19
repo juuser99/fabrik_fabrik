@@ -12,10 +12,9 @@ namespace Fabrik\Plugins\Element;
 defined('_JEXEC') or die();
 
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use \stdClass;
+use \Exception;
+use \JFactory;
 
 /**
  * Plugin element to allow user to attend events, join groups etc.
@@ -39,20 +38,6 @@ class Attending extends Element
 	 * @var string
 	 */
 	protected $fieldSize = '1';
-
-	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
-	}
 
 	/**
 	 * Draws the html form element
@@ -87,7 +72,7 @@ class Attending extends Element
 		$input     = $this->app->input;
 		$listModel = $this->getListModel();
 		$list      = $listModel->getTable();
-		$listId    = $list->id;
+		$listId    = $list->get('id');
 		$formId    = $listModel->getFormModel()->getId();
 		$db        = $listModel->getDb();
 		$query     = $db->getQuery(true);
@@ -102,7 +87,7 @@ class Attending extends Element
 
 		foreach ($attending as &$attend)
 		{
-			$attend->user = JFactory::getUser($attend->user_id);
+			$attend->user = \JFactory::getUser($attend->user_id);
 		}
 
 		return $attending;
@@ -113,7 +98,6 @@ class Attending extends Element
 	 *
 	 * @return  void
 	 */
-
 	public function onAjax_rate()
 	{
 		$input = $this->app->input;
@@ -121,11 +105,11 @@ class Attending extends Element
 		$this->loadMeForAjax();
 		$listModel = $this->getListModel();
 		$list      = $listModel->getTable();
-		$listId    = $list->id;
-		$formid    = $listModel->getFormModel()->getId();
+		$listId    = $list->get('id');
+		$formId    = $listModel->getFormModel()->getId();
 		$rowId    = $input->get('row_id');
 		$rating    = $input->getInt('rating');
-		$this->doRating($listId, $formid, $rowId, $rating);
+		$this->doRating($listId, $formId, $rowId, $rating);
 
 		if ($input->get('mode') == 'creator-rating')
 		{
@@ -137,12 +121,13 @@ class Attending extends Element
 			$query   = $db->getQuery(true);
 			$pk = $db->qn($list->get('list.db_primary_key'));
 			$query->update($db->qn($list->get('list.db_table_name')))
-				->set($element->name . '=' . $rating)->where($pk . ' = ' . $db->q($rowId));
+				->set($element->get('name') . '=' . $rating)->where($pk . ' = ' . $db->q($rowId));
 			$db->setQuery($query);
 			$db->execute();
 		}
 
-		$this->getRatingAverage('', $listId, $formid, $rowId);
+		$this->getRatingAverage('', $listId, $formId, $rowId);
+
 		echo $this->avg;
 	}
 
@@ -150,30 +135,29 @@ class Attending extends Element
 	 * Main method to store a rating
 	 *
 	 * @param   int    $listId List id
-	 * @param   int    $formid Form id
+	 * @param   int    $formId Form id
 	 * @param   string $rowId Row reference
 	 * @param   int    $rating Rating
 	 *
 	 * @return  void
 	 */
-
-	private function doRating($listId, $formid, $rowId, $rating)
+	private function doRating($listId, $formId, $rowId, $rating)
 	{
 		$this->createRatingTable();
 		$db        = Worker::getDbo(true);
-		$tzoffset  = $this->config->get('offset');
-		$date      = JFactory::getDate('now', $tzoffset);
+		$tzOffset  = $this->config->get('offset');
+		$date      = JFactory::getDate('now', $tzOffset);
 		$strDate   = $db->q($date->toSql());
-		$userid    = $this->user->get('id');
-		$elementId = (int) $this->getElement()->id;
-		$formid    = (int) $formid;
+		$userId    = $this->user->get('id');
+		$elementId = (int) $this->getElement()->get('id');
+		$formId    = (int) $formId;
 		$listId    = (int) $listId;
 		$rating    = (int) $rating;
 		$rowId    = $db->q($rowId);
 		$db
 			->setQuery(
 				"INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
-		values ($userid, $listId, $formid, $rowId, $rating, $strDate, $elementId)
+		values ($userId, $listId, $formId, $rowId, $rating, $strDate, $elementId)
 			ON DUPLICATE KEY UPDATE date_created = $strDate, rating = $rating"
 			);
 		$db->execute();
@@ -186,18 +170,15 @@ class Attending extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$input  = $this->app->input;
 		$user   = $this->user;
-
 		$id      = $this->getHTMLId($repeatCounter);
 		$rowId  = $input->get('rowid', '', 'string');
-
 		$opts         = new stdClass;
 		$opts->row_id = $rowId;
-		$opts->elid   = $this->getElement()->id;
+		$opts->elid   = $this->getElement()->get('id');
 		$opts->userid = (int) $user->get('id');
 		$opts->view   = $input->get('view');
 
@@ -214,7 +195,6 @@ class Attending extends Element
 	 *
 	 * @return void
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$s                                   = new stdClass;

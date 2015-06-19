@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Admin\Models\Form;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\HTML;
@@ -181,13 +181,12 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 			return;
 		}
 
-		$app = JFactory::getApplication();
 		$input = $this->app->input;
 		$opts = new stdClass;
 		$opts->liveSite = COM_FABRIK_LIVESITE;
 		$opts->view = $input->get('view');
 		$opts->ids = $this->ids;
-		$opts->pkey = FabrikString::safeColNameToArrayKey($formModel->getTableModel()->getTable()->get('list.db_primary_key'));
+		$opts->pkey = String::safeColNameToArrayKey($formModel->getTableModel()->getTable()->get('list.db_primary_key'));
 		$opts = json_encode($opts);
 		$container = $formModel->jsKey();
 		$this->formJavascriptClass($params, $formModel);

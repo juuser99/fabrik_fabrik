@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
 
@@ -48,16 +49,14 @@ class FabrikViewFusion_Gantt_Chart extends JViewLegacy
 
 		if (!$model->canView())
 		{
-			echo FText::_('JERROR_ALERTNOAUTHOR');
+			echo Text::_('JERROR_ALERTNOAUTHOR');
 
 			return false;
 		}
 
 		if ($this->row->published == 0)
 		{
-			JError::raiseWarning(500, FText::_('JERROR_ALERTNOAUTHOR'));
-
-			return '';
+			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		$this->requiredFiltersFound = $this->get('RequiredFiltersFound');

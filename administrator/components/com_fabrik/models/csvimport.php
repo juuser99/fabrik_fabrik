@@ -8,19 +8,22 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace \Fabrik\Admin\Models;
+namespace Fabrik\Admin\Models;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use \Exception as Exception;
 use \JFile as JFile;
-use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
-use \Fabrik\Admin\Models\PluginManager as PluginManager;
-use \Fabrik\Admin\Models\Base as Base;
 use \RuntimeException as RuntimeException;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
+use \JPath;
+use \JFilterInput;
+use \JFactory;
+
 /**
  * Import CSV class
  *
@@ -181,7 +184,7 @@ class CsvImport extends Base
 	{
 		if (!(bool) ini_get('file_uploads'))
 		{
-			throw new Exception(FText::_('COM_FABRIK_ERR_UPLOADS_DISABLED'));
+			throw new Exception(Text::_('COM_FABRIK_ERR_UPLOADS_DISABLED'));
 
 			return false;
 		}
@@ -192,7 +195,7 @@ class CsvImport extends Base
 
 		if (!$userFile)
 		{
-			throw new Exception(FText::_('COM_FABRIK_IMPORT_CSV_NO_FILE_SELECTED'));
+			throw new Exception(Text::_('COM_FABRIK_IMPORT_CSV_NO_FILE_SELECTED'));
 		}
 
 		jimport('joomla.filesystem.file');
@@ -210,9 +213,7 @@ class CsvImport extends Base
 
 		if ($resultDir == false && !JFile::exists($to))
 		{
-			throw new Exception(FText::_('Upload Error'));
-
-			return false;
+			throw new Exception(Text::_('Upload Error'));
 		}
 
 		return true;
@@ -572,7 +573,6 @@ class CsvImport extends Base
 
 		foreach ($elementMap as $key => $elementModel)
 		{
-			$element = $elementModel->getElement();
 			$elementModel->prepareCSVData($this->data, $key, $rawMap[$key]);
 		}
 	}
@@ -597,7 +597,7 @@ class CsvImport extends Base
 			if (!array_key_exists($e2, $this->matchedHeadings) && !array_key_exists($e2 . '_raw', $this->matchedHeadings))
 			{
 				$elementModel = $elements[$e];
-				$defaultsToAdd[FabrikString::safeColNameToArrayKey($e)] = $elementModel;
+				$defaultsToAdd[String::safeColNameToArrayKey($e)] = $elementModel;
 			}
 		}
 
@@ -642,7 +642,7 @@ class CsvImport extends Base
 		$tableParams = $model->getParams();
 		$csvFullName = $tableParams->get('csvfullname', 0);
 
-		$key = FabrikString::shortColName($item->get('list.db_primary_key'));
+		$key = String::shortColName($item->get('list.db_primary_key'));
 
 		// Get a list of existing primary key vals
 		$db = $model->getDb();
@@ -719,7 +719,7 @@ class CsvImport extends Base
 			else
 			{
 				// If not overwriting ensure the any existing primary keys are removed and the form rowId set to ''
-				$pk = FabrikString::safeColNameToArrayKey($item->get('list.db_primary_key'));
+				$pk = String::safeColNameToArrayKey($item->get('list.db_primary_key'));
 				$rawPk = $pk . '_raw';
 				unset($aRow[$pk]);
 				unset($aRow[$rawPk]);
@@ -1123,7 +1123,7 @@ class CsvImport extends Base
 	 */
 	public function makeError()
 	{
-		$str = FText::_('COM_FABRIK_CSV_FIELDS_NOT_IN_TABLE');
+		$str = Text::_('COM_FABRIK_CSV_FIELDS_NOT_IN_TABLE');
 
 		foreach ($this->newHeadings as $heading)
 		{
@@ -1272,13 +1272,13 @@ class Csv_Bv
 
 	/**
 	 * Enclose character
-	 * @var char
+	 * @var string
 	 */
 	protected $mFldEnclosure;
 
 	/**
 	 * Escape character
-	 * @var char
+	 * @var string
 	 */
 	protected $mFldEscapor;
 
@@ -1359,7 +1359,7 @@ class Csv_Bv
 	 *
 	 * @param   string  $string  decode strong
 	 *
-	 * @return unknown|mixed
+	 * @return string|mixed
 	 */
 
 	protected function charset_decode_utf_8($string)

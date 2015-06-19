@@ -10,7 +10,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
+use \JStringNormalise;
 
 /**
  * Abstract Form Field class for the Joomla Platform.
@@ -503,7 +505,7 @@ abstract class JFormField
 
 		// Get the label text from the XML element, defaulting to the element name.
 		$title = $this->element['label'] ? (string) $this->element['label'] : (string) $this->element['name'];
-		$title = $this->translateLabel ? FText::_($title) : $title;
+		$title = $this->translateLabel ? Text::_($title) : $title;
 
 		return $title;
 	}
@@ -527,7 +529,7 @@ abstract class JFormField
 
 		// Get the label text from the XML element, defaulting to the element name.
 		$text = $this->element['label'] ? (string) $this->element['label'] : (string) $this->element['name'];
-		$text = $this->translateLabel ? FText::_($text) : $text;
+		$text = $this->translateLabel ? Text::_($text) : $text;
 
 		// Build the class for the label.
 		$class = !empty($this->description) ? 'hasTip' : '';
@@ -542,7 +544,7 @@ abstract class JFormField
 		{
 			$label .= ' title="'
 				. htmlspecialchars(
-				trim($text, ':') . '::' . ($this->translateDescription ? FText::_($this->description) : $this->description),
+				trim($text, ':') . '::' . ($this->translateDescription ? Text::_($this->description) : $this->description),
 				ENT_COMPAT, 'UTF-8'
 			) . '"';
 		}

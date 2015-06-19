@@ -125,7 +125,7 @@ class PlgFabrik_CronRest extends PlgFabrik_Cron
 
 		// See if we have a list that already points to the table
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->quoteName($table));
+		$query->select('id')->from('#__fabrik_lists')->where('db_table_name = ' . $db->qn($table));
 		$db->setQuery($query);
 		$res = (int) $db->loadResult();
 

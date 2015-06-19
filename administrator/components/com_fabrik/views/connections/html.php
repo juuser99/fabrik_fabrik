@@ -16,11 +16,10 @@ defined('_JEXEC') or die('Restricted access');
 use \JHtml as JHtml;
 use \JToolBarHelper as JToolBarHelper;
 use \JHtmlSidebar as JHtmlSidebar;
-use \FText as FText;
 use Fabrik\Admin\Helpers\Fabrik;
 use \JFactory as JFactory;
-//use \HTML as HTML;
 use Fabrik\Helpers\HTMLHelper;
+use Fabrik\Helpers\Text;
 
 /**
  * View class for a list of connections.
@@ -88,7 +87,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		$canDo	= Fabrik::getActions($this->state->get('filter.category_id'));
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_CONNECTIONS'), 'connections.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_CONNECTIONS'), 'connections.png');
 
 		if ($canDo->get('core.create'))
 		{
@@ -131,22 +130,22 @@ class Html extends \Fabrik\Admin\Views\Html
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, FText::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, Text::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=connections');
 
 		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
 		JHtmlSidebar::addFilter(
-		FText::_('JOPTION_SELECT_PUBLISHED'),
+		Text::_('JOPTION_SELECT_PUBLISHED'),
 		'filter_published',
 		JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
 		);
 
 		if (!empty($this->packageOptions))
 		{
-			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
+			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			JHtmlSidebar::addFilter(
-			FText::_('JOPTION_SELECT_PUBLISHED'),
+			Text::_('JOPTION_SELECT_PUBLISHED'),
 			'package',
 			JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);

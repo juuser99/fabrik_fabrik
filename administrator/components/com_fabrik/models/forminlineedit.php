@@ -14,6 +14,7 @@ namespace Fabrik\Admin\Models;
 defined('_JEXEC') or die('Restricted access');
 
 use \Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 /**
  * Fabrik Form Model
@@ -98,7 +99,7 @@ class FormInlineEdit extends Base
 		$input = $this->app->input;
 		$html = array();
 		$html[] = '<div class="modal">';
-		$html[] = ' <div class="modal-header"><h3>' . FText::_('COM_FABRIK_EDIT') . '</h3></div>';
+		$html[] = ' <div class="modal-header"><h3>' . Text::_('COM_FABRIK_EDIT') . '</h3></div>';
 		$html[] = '<div class="modal-body">';
 		$html[] = '<form>';
 
@@ -125,15 +126,15 @@ class FormInlineEdit extends Base
 			if ($input->getBool('inlinecancel') == true)
 			{
 				$html[] = '<a href="#" class="btn inline-cancel">';
-				$html[] = HTML::image('delete.png', 'list', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_CANCEL')));
-				$html[] = '<span>' . FText::_('COM_FABRIK_CANCEL') . '</span></a>';
+				$html[] = HTML::image('delete.png', 'list', @$this->tmpl, array('alt' => Text::_('COM_FABRIK_CANCEL')));
+				$html[] = '<span>' . Text::_('COM_FABRIK_CANCEL') . '</span></a>';
 			}
 
 			if ($input->getBool('inlinesave') == true)
 			{
 				$html[] = '<a href="#" class="btn btn-primary inline-save">';
-				$html[] = HTML::image('save.png', 'list', @$this->tmpl, array('alt' => FText::_('COM_FABRIK_SAVE')));
-				$html[] = '<span>' . FText::_('COM_FABRIK_SAVE') . '</span></a>';
+				$html[] = HTML::image('save.png', 'list', @$this->tmpl, array('alt' => Text::_('COM_FABRIK_SAVE')));
+				$html[] = '<span>' . Text::_('COM_FABRIK_SAVE') . '</span></a>';
 			}
 
 			$html[] = '</div>';

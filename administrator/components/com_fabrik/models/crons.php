@@ -14,10 +14,7 @@ namespace Fabrik\Admin\Models;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
 use \JComponentHelper as JComponentHelper;
-use \JHtml as JHtml;
-use \FText as FText;
 
 interface ModelCronsInterface
 {

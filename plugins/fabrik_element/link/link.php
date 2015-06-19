@@ -16,6 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render two fields to capture a link (url/label)
@@ -267,12 +269,12 @@ class Link extends Element
 			return HTML::a($href, $lbl, $opts);
 		}
 
-		$labelname = FabrikString::rtrimword($name, '[]') . '[label]';
-		$linkname = FabrikString::rtrimword($name, '[]') . '[link]';
+		$labelname = String::rtrimword($name, '[]') . '[label]';
+		$linkname = String::rtrimword($name, '[]') . '[link]';
 
 		$html = array();
 		$bits['name'] = $labelname;
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_LABEL');
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_LINK_LABEL');
 		$bits['value'] = $value['label'];
 		$bits['class'] .= ' fabrikSubElement';
 		unset($bits['id']);
@@ -283,7 +285,7 @@ class Link extends Element
 		$layoutData->name = $name;
 		$layoutData->linkAttributes = $bits;
 
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_URL');
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_LINK_URL');
 		$bits['name'] = $linkname;
 		$bits['value'] = ArrayHelper::getValue($value, 'link');
 
@@ -372,7 +374,7 @@ class Link extends Element
 				{
 					if ($key == 'link')
 					{
-						$v = FabrikString::encodeurl($v);
+						$v = String::encodeurl($v);
 					}
 					// Not in repeat group
 					if ($key == 'link' && $params->get('use_bitly'))

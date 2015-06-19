@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ListHelper;
@@ -171,7 +171,7 @@ class FabrikModelGooglemap extends Visualization
 
 		foreach ($listModels as $listModel)
 		{
-			$k = FabrikString::safeColName(FabrikString::rtrimword($polyelements[$c], '[]'));
+			$k = String::safeColName(String::rtrimword($polyelements[$c], '[]'));
 
 			if ($k == '``')
 			{
@@ -225,7 +225,7 @@ class FabrikModelGooglemap extends Visualization
 	private function getCordsFromData($d)
 	{
 		$v = trim($d);
-		$v = FabrikString::ltrimword($v, "(");
+		$v = String::ltrimword($v, "(");
 
 		if (strstr($v, ","))
 		{
@@ -240,7 +240,7 @@ class FabrikModelGooglemap extends Visualization
 				$v = explode(",", $v);
 			}
 
-			$v[1] = FabrikString::rtrimword($v[1], ")");
+			$v[1] = String::rtrimword($v[1], ")");
 		}
 		else
 		{
@@ -305,7 +305,7 @@ class FabrikModelGooglemap extends Visualization
 			* which isn't set for list display, which then wouldn't get rendered unless we do this.
 			*/
 
-			if (FabrikString::usesElementPlaceholders($template))
+			if (String::usesElementPlaceholders($template))
 			{
 				$listModel->formatAll(true);
 			}

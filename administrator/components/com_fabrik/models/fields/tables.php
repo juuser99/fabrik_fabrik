@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Admin\Helpers\AdminElement as AdminElement;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -115,7 +116,7 @@ class JFormFieldTables extends JFormFieldList
 
 		$html = parent::getInput();
 		$html .= "<img style='margin-left:10px;display:none' id='" . $this->id . "_loader' src='components/com_fabrik/images/ajax-loader.gif' alt='"
-			. FText::_('LOADING') . "' />";
+			. Text::_('LOADING') . "' />";
 		HTML::framework();
 		HTML::iniRequireJS();
 

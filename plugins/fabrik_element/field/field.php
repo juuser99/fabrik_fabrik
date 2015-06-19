@@ -16,6 +16,9 @@ use Joomla\String\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use \stdClass;
+use \JComponentHelper;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render fields
@@ -34,7 +37,6 @@ class Field extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$params = $this->getParams();
@@ -84,7 +86,6 @@ class Field extends Element
 		return $o;
 	}
 
-
 	/**
 	 * Prepares the element data for CSV export
 	 *
@@ -93,7 +94,6 @@ class Field extends Element
 	 *
 	 * @return  string	Formatted CSV export value
 	 */
-
 	public function renderListData_csv($data, &$thisRow)
 	{
 		$params = $this->getParams();
@@ -106,20 +106,6 @@ class Field extends Element
 		}
 
 		return $data;
-	}
-
-	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
 	}
 
 	/**
@@ -246,7 +232,6 @@ class Field extends Element
 	protected function _guessLinkType(&$value, $data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
-		$guessed = false;
 
 		if ($params->get('guess_linktype') == '1')
 		{
@@ -254,14 +239,9 @@ class Field extends Element
 			$opts = $this->linkOpts();
 			$title = $params->get('link_title', '');
 
-			if (Worker::isEmail($value) || String::stristr($value, 'http'))
-			{
-				$guessed = true;
-			}
-			elseif (String::stristr($value, 'www.'))
+			if (!(Worker::isEmail($value) || String::stristr($value, 'http')) && String::stristr($value, 'www.'))
 			{
 				$value = 'http://' . $value;
-				$guessed = true;
 			}
 
 			if ($title !== '')
@@ -278,7 +258,6 @@ class Field extends Element
 	 *
 	 * @return  array
 	 */
-
 	protected function linkOpts()
 	{
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
@@ -316,7 +295,6 @@ class Field extends Element
 	 *
 	 * @return  array
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
@@ -324,12 +302,12 @@ class Field extends Element
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
-		$input_mask = trim($params->get('text_input_mask', ''));
+		$inputMask = trim($params->get('text_input_mask', ''));
 
-		if (!empty($input_mask))
+		if (!empty($inputMask))
 		{
 			$opts->use_input_mask = true;
-			$opts->input_mask = $input_mask;
+			$opts->input_mask = $inputMask;
 		}
 		else
 		{
@@ -342,7 +320,7 @@ class Field extends Element
 			$autoOpts = array();
 			$autoOpts['max'] = $this->getParams()->get('autocomplete_rows', '10');
 			$autoOpts['storeMatchedResultsOnly'] = false;
-			HTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'field', $autoOpts);
+			HTML::autoComplete($id, $this->getElement()->get('id'), $this->getFormModel()->getId(), 'field', $autoOpts);
 		}
 
 		return array('FbField', $id, $opts);
@@ -356,15 +334,14 @@ class Field extends Element
 	 * @param   string  $script  Script to load once class has loaded
 	 * @param   array   &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
 	 *
-	 * @return void
+	 * @return bool
 	 */
-
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$params = $this->getParams();
-		$input_mask = trim($params->get('text_input_mask', ''));
+		$inputMask = trim($params->get('text_input_mask', ''));
 
-		if (!empty($input_mask))
+		if (!empty($inputMask))
 		{
 			$s = new stdClass;
 			$s->deps = array('fab/element');
@@ -384,7 +361,6 @@ class Field extends Element
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		$p = $this->getParams();
@@ -417,7 +393,6 @@ class Field extends Element
 	 *
 	 * @return  bool
 	 */
-
 	public function canEncrypt()
 	{
 		return true;
@@ -431,7 +406,6 @@ class Field extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		if (is_array($val))
@@ -458,7 +432,6 @@ class Field extends Element
 	 *
 	 * @return  string
 	 */
-
 	protected function _indStoreDatabaseFormat($val)
 	{
 		return $this->unNumberFormat($val);
@@ -471,7 +444,6 @@ class Field extends Element
 	 *
 	 * @return  string	css classes
 	 */
-
 	public function getCellClass()
 	{
 		$params = $this->getParams();
@@ -491,7 +463,6 @@ class Field extends Element
 	 *
 	 * @since 3.1
 	 */
-
 	public function onAjax_renderQRCode()
 	{
 		$input = $this->app->input;
@@ -503,7 +474,7 @@ class Field extends Element
 
 		if (!$this->canView())
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_PERMISSION'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_FIELD_NO_PERMISSION'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -512,7 +483,7 @@ class Field extends Element
 
 		if (empty($rowId))
 		{
-			// $app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
+			// $app->enqueueMessage(Text::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -522,7 +493,7 @@ class Field extends Element
 
 		if (empty($row))
 		{
-			// $app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
+			// $app->enqueueMessage(Text::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -533,7 +504,7 @@ class Field extends Element
 		require JPATH_SITE . '/components/com_fabrik/libs/qrcode/qrcode.php';
 
 		// Usage: $a=new QR('234DSKJFH23YDFKJHaS');$a->image(4);
-		$qr = new QR($value);
+		$qr = new \QR($value);
 		$img = $qr->image(4);
 
 		if (!empty($img))
@@ -556,7 +527,7 @@ class Field extends Element
 		}
 		else
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_FIELD_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -565,14 +536,13 @@ class Field extends Element
 	/**
 	 * Get a link to this element which will call onAjax_renderQRCode().
 	 *
-	 * @param   value  string  element's value
-	 * @param   thisRow  array  row data
+	 * @param   string $value    element's value
+	 * @param   array  $thisRow  row data
 	 *
 	 * @since 3.1
 	 *
 	 * @return   string  QR code link
 	 */
-
 	protected function qrCodeLink($value, $thisRow)
 	{
 		if (is_object($thisRow))
@@ -641,7 +611,6 @@ class Field extends Element
 	 *
 	 * @return  string  email formatted value
 	 */
-	
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		$params = $this->getParams();
@@ -655,5 +624,4 @@ class Field extends Element
 			return parent::getIndEmailValue($value, $data, $repeatCounter);
 		}
 	}
-	
 }

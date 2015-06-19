@@ -13,16 +13,15 @@ namespace Fabrik\Admin\Models;
 use \JForm as JForm;
 use Joomla\Utilities\ArrayHelper;
 use \JDate as Date;
-use \FText as FText;
+use Fabrik\Helpers\Text;
 use Fabrik\Storage\MySql as Storage;
 use \JPluginHelper as JPluginHelper;
-use Joomla\String\String as String;
 use Fabrik\Helpers\Worker as Worker;
 use \JHTML as JHTML;
 use \stdClass as stdClass;
 use Joomla\Registry\Registry as Registry;
 use \JFactory as JFactory;
-use \FabrikString as FabrikString;
+use \Fabrik\Helpers\String;
 use \JEventDispatcher as JEventDispatcher;
 use \Fabrik\Plugins\Element\Element as Element;
 use \JComponentHelper as JComponentHelper;
@@ -416,19 +415,19 @@ class Base extends \JModelBase
 
 			$newTable = trim($data->get('list._database_name', ''));
 			// Mysql will force db table names to lower case even if you set the db name to upper case - so use clean()
-			$newTable = FabrikString::clean($newTable);
+			$newTable = String::clean($newTable);
 
 			// Check the entered database table does not already exist
 			if ($newTable != '' && $this->storage->tableExists($newTable))
 			{
-				throw new RuntimeException(FText::_('COM_FABRIK_DATABASE_TABLE_ALREADY_EXISTS'));
+				throw new RuntimeException(Text::_('COM_FABRIK_DATABASE_TABLE_ALREADY_EXISTS'));
 
 				return false;
 			}
 
 			if (!$this->storage->canCreate())
 			{
-				throw new RuntimeException(FText::_('COM_FABRIK_INSUFFICIENT_RIGHTS_TO_CREATE_TABLE'));
+				throw new RuntimeException(Text::_('COM_FABRIK_INSUFFICIENT_RIGHTS_TO_CREATE_TABLE'));
 
 				return false;
 			}
@@ -438,7 +437,7 @@ class Base extends \JModelBase
 
 			// Create fabrik group
 			$groupData       = Worker::formDefaults('group');
-			$groupName       = FabrikString::clean($data->get('list.label'));
+			$groupName       = String::clean($data->get('list.label'));
 			$groupData->name = $groupName;
 
 			$data->set('form.groups', new stdClass);
@@ -769,98 +768,6 @@ class Base extends \JModelBase
 	}
 
 	/**
-	 * Creates options array to be then used by getElementList to create a drop down of elements in the form
-	 * separated as elements need to collate this options from multiple forms
-	 *
-	 * @param   bool   $useStep                concat table name and el name with '___' (true) or "." (false)
-	 * @param   string $key                    name of key to use (default "name")
-	 * @param   bool   $show_in_list_summary   only show those elements shown in table summary
-	 * @param   bool   $incRaw                 include raw labels in list (default = false) Only works if $key = name
-	 * @param   array  $filter                 list of plugin names that should be included in the list - if empty
-	 *                                         include all plugin types
-	 * @param   string $labelMethod            An element method that if set can alter the option's label
-	 *                                         Used to only show elements that can be selected for search all
-	 * @param   bool   $noJoins                do not include elements in joined tables (default false)
-	 *
-	 * @return    array    html options
-	 */
-	public function getElementOptions($useStep = false, $key = 'name', $show_in_list_summary = false, $incRaw = false,
-		$filter = array(), $labelMethod = '', $noJoins = false)
-	{
-		$groups = $this->getGroupsHierarchy();
-		$aEls   = array();
-
-		foreach ($groups as $gid => $groupModel)
-		{
-			if ($noJoins && $groupModel->isJoin())
-			{
-				continue;
-			}
-
-			$elementModels = $groupModel->getMyElements();
-			$prefix        = $groupModel->isJoin() ? $groupModel->getJoinModel()->getJoin()->table_join . '.' : '';
-
-			foreach ($elementModels as $elementModel)
-			{
-				$el = $elementModel->getElement();
-
-				if (!empty($filter) && !in_array($el->get('plugin'), $filter))
-				{
-					continue;
-				}
-
-				if ($show_in_list_summary == true && $el->get('show_in_list_summary') != 1)
-				{
-					continue;
-				}
-
-				$val   = $el->get($key);
-				$label = strip_tags($prefix . $el->get('label'));
-
-				if ($labelMethod !== '')
-				{
-					$elementModel->$labelMethod($label);
-				}
-
-				if ($key != 'id')
-				{
-					$val = $elementModel->getFullName($useStep, false);
-
-					if ($this->addDbQuote)
-					{
-						$val = FabrikString::safeColName($val);
-					}
-
-					if ($incRaw && is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
-					{
-						/* @FIXME - next line had been commented out, causing undefined warning for $rawValue
-						 * on following line.  Not sure if getrawColumn is right thing to use here though,
-						 * like, it adds filed quotes, not sure if we need them.
-						 */
-						if ($elementModel->getElement()->get('published') != 0)
-						{
-							$rawValue = $elementModel->getRawColumn($useStep);
-
-							if (!$this->addDbQuote)
-							{
-								$rawValue = str_replace('`', '', $rawValue);
-							}
-
-							$aEls[$label . '(raw)'] = JHTML::_('select.option', $rawValue, $label . '(raw)');
-						}
-					}
-				}
-
-				$aEls[] = JHTML::_('select.option', $val, $label);
-			}
-		}
-		// Paul - Sort removed so that list is presented in group/id order regardless of whether $key is name or id
-		// asort($aEls);
-
-		return $aEls;
-	}
-
-	/**
 	 * Set a state property
 	 *
 	 * @param   string $key
@@ -1122,7 +1029,7 @@ class Base extends \JModelBase
 
 		if (!$this->can('delete'))
 		{
-			$this->app->enqueueMessage(\FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+			$this->app->enqueueMessage(\Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
 
 			return $count;
 		}
@@ -1243,8 +1150,8 @@ class Base extends \JModelBase
 			$form->created             = $createDate;
 			$form->created_by          = $user->get('id');
 			$form->created_by_alias    = $user->get('username');
-			$form->error               = FText::_('COM_FABRIK_FORM_ERROR_MSG_TEXT');
-			$form->submit_button_label = FText::_('COM_FABRIK_SAVE');
+			$form->error               = Text::_('COM_FABRIK_FORM_ERROR_MSG_TEXT');
+			$form->submit_button_label = Text::_('COM_FABRIK_SAVE');
 			$form->published           = $view->get('list.published');
 			$form->form_template       = 'bootstrap';
 			$form->view_only_template  = 'bootstrap';

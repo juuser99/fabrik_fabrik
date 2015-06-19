@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Fabrik\Admin\Models\PluginManager as PluginManager;
+use \Fabrik\Admin\Models\PluginManager;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
 
@@ -30,6 +31,8 @@ class FabrikViewVisualization extends JViewLegacy
 	 * Display
 	 *
 	 * @param   string  $tmpl  Template
+	 *
+	 * @throws Exception
 	 *
 	 * @return  void
 	 */
@@ -50,7 +53,7 @@ class FabrikViewVisualization extends JViewLegacy
 
 		if ($visualization->published == 0)
 		{
-			return JError::raiseWarning(500, FText::_('COM_FABRIK_SORRY_THIS_VISUALIZATION_IS_UNPUBLISHED'));
+			throw new Exception(Text::_('COM_FABRIK_SORRY_THIS_VISUALIZATION_IS_UNPUBLISHED'));
 		}
 
 		// Plugin is basically a model
@@ -61,7 +64,6 @@ class FabrikViewVisualization extends JViewLegacy
 		$tmpl = $plugin->getParams()->get('calendar_layout', $tmpl);
 		$plugin->$pluginTask($this);
 		$this->plugin = $plugin;
-		$viewName = $this->getName();
 		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->_name . '/tmpl/' . $tmpl);
 
 		$root = $app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;

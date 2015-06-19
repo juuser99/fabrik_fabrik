@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\String;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -64,7 +65,7 @@ class PlgFabrik_FormClone extends PlgFabrik_Form
 				$formModel->formData[$id_element->name . '_raw'] = $formModel->fullFormData['rowid'];
 				$listModel = $formModel->getlistModel();
 				$listModel->setFormModel($formModel);
-				$primaryKey = FabrikString::shortColName($listModel->getTable()->get('list.db_primary_key'));
+				$primaryKey = String::shortColName($listModel->getTable()->get('list.db_primary_key'));
 				$formModel->formData[$primaryKey] = $formModel->fullFormData['rowid'];
 				$formModel->formData[$primaryKey . '_raw'] = $formModel->fullFormData['rowid'];
 				$listModel->storeRow($formModel->formData, $formModel->fullFormData['rowid']);

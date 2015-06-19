@@ -2,6 +2,8 @@
 
 defined('JPATH_BASE') or die;
 
+use Fabrik\Helpers\Text;
+
 $d = $displayData;
 $readOnly = $d->timerReadOnly ? 'readonly=\"readonly\"' : '';
 $kls = $d->timerReadOnly ? 'readonly' : '';
@@ -29,7 +31,7 @@ endif;
 	if (!$d->timerReadOnly) :
 	?>
 	<button class="btn" id="<?php echo $d->id; ?>_button">
-		<i class="<?php echo $d->icon; ?>"></i> <span><?php echo FText::_('PLG_ELEMENT_TIMER_START'); ?></span>
+		<i class="<?php echo $d->icon; ?>"></i> <span><?php echo Text::_('PLG_ELEMENT_TIMER_START'); ?></span>
 	</button>
 </div>
 <?php

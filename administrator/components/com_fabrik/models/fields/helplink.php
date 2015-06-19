@@ -12,13 +12,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 /**
  * Renders a Fabrik Help link
  *
  * @package  Fabrik
  * @since    3.0.9
  */
-
 class JFormFieldHelpLink extends JFormField
 {
 	/**
@@ -26,7 +27,6 @@ class JFormFieldHelpLink extends JFormField
 	 *
 	 * @return  string  The field label markup.
 	 */
-
 	protected function getLabel()
 	{
 		return '';
@@ -37,14 +37,13 @@ class JFormFieldHelpLink extends JFormField
 	 *
 	 * @return string
 	 */
-
 	public function getInput()
 	{
 		$url = $this->element['url'] ? (string) $this->element['url'] : '';
-		$js = 'Joomla.popupWindow(\'' . FText::_($url) . '\', \'Help\', 800, 600, 1);return false';
+		$js = 'Joomla.popupWindow(\'' . Text::_($url) . '\', \'Help\', 800, 600, 1);return false';
 		$label = '<div style="float:right;">';
 		$label .= '<a class="btn btn-small btn-info" href="#" rel="help" onclick="' . $js . '">';
-		$label .= '<i class="icon-help icon-32-help icon-question-sign"></i> ' . FText::_('JHELP') . '</a></div>';
+		$label .= '<i class="icon-help icon-32-help icon-question-sign"></i> ' . Text::_('JHELP') . '</a></div>';
 
 		return $label;
 	}

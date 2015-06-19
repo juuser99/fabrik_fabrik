@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Admin\Helpers\Fabrik;
+use Fabrik\Helpers\Text;
 
 /**
  * View to edit a form.
@@ -51,7 +52,6 @@ class FabrikAdminViewForm extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -62,7 +62,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		{
 			if (!$app->isAdmin())
 			{
-				echo FText::_('COM_FABRIK_FORM_NOT_PUBLISHED');
+				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
 
 				return false;
 			}
@@ -72,7 +72,7 @@ class FabrikAdminViewForm extends JViewLegacy
 
 		if ($this->access == 0)
 		{
-			return JError::raiseWarning(500, FText::_('JERROR_ALERTNOAUTHOR'));
+			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		$model->getJoinGroupIds();
@@ -84,10 +84,6 @@ class FabrikAdminViewForm extends JViewLegacy
 		for ($i = 0; $i < count($gkeys); $i++)
 		{
 			$groupModel = $groups[$gkeys[$i]];
-			$groupTable = $groupModel->getGroup();
-			$group = new stdClass;
-			$groupParams = $groupModel->getParams();
-			$aElements = array();
 
 			// Check if group is actually a table join
 			$repeatGroup = 1;
@@ -99,12 +95,9 @@ class FabrikAdminViewForm extends JViewLegacy
 				{
 					$joinModel = $groupModel->getJoinModel();
 					$joinTable = $joinModel->getJoin();
-					$foreignKey = '';
 
 					if (is_object($joinTable))
 					{
-						$foreignKey = $joinTable->table_join_key;
-
 						// $$$ rob test!!!
 						if (!$groupModel->canView())
 						{
@@ -121,12 +114,9 @@ class FabrikAdminViewForm extends JViewLegacy
 			}
 
 			$groupModel->repeatTotal = $repeatGroup;
-			$aSubGroups = array();
 
 			for ($c = 0; $c < $repeatGroup; $c++)
 			{
-				$aSubGroupElements = array();
-				$elCount = 0;
 				$elementModels = $groupModel->getPublishedElements();
 
 				foreach ($elementModels as $elementModel)
@@ -198,7 +188,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		$isNew = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
-		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_FORM_NEW') : FText::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "' . $this->item->label . '"';
+		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_FORM_NEW') : Text::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'form.png');
 
 		if ($isNew)

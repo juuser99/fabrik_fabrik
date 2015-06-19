@@ -10,6 +10,7 @@
  */
 
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -35,7 +36,7 @@ JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 			window.fireEvent('form.save');
 			Joomla.submitform(task, document.getElementById('adminForm'));
 		} else {
-			alert('<?php echo $this->escape(FText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
+			alert('<?php echo $this->escape(Text::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
 	}
 </script>
@@ -48,32 +49,32 @@ JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 			<ul class="nav nav-list">
 				<li class="active">
 					<a data-toggle="tab" href="#tab-details">
-						<?php echo FText::_('COM_FABRIK_DETAILS') ?>
+						<?php echo Text::_('COM_FABRIK_DETAILS') ?>
 					</a>
 				</li>
 				<li>
 					<a data-toggle="tab" href="#tab-publishing">
-						<?php echo FText::_('COM_FABRIK_PUBLISHING') ?>
+						<?php echo Text::_('COM_FABRIK_PUBLISHING') ?>
 					</a>
 				</li>
 				<li>
 					<a data-toggle="tab" href="#tab-access">
-						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS') ?>
+						<?php echo Text::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS') ?>
 					</a>
 				</li>
 				<li>
 					<a data-toggle="tab" href="#tab-listview">
-						<?php echo FText::_('COM_FABRIK_LIST_VIEW_SETTINGS') ?>
+						<?php echo Text::_('COM_FABRIK_LIST_VIEW_SETTINGS') ?>
 					</a>
 				</li>
 				<li>
 					<a data-toggle="tab" href="#tab-validations">
-						<?php echo FText::_('COM_FABRIK_VALIDATIONS') ?>
+						<?php echo Text::_('COM_FABRIK_VALIDATIONS') ?>
 					</a>
 				</li>
 				<li>
 					<a data-toggle="tab" href="#tab-javascript">
-						<?php echo FText::_('COM_FABRIK_JAVASCRIPT') ?>
+						<?php echo Text::_('COM_FABRIK_JAVASCRIPT') ?>
 					</a>
 				</li>
 			</ul>

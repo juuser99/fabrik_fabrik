@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\Registry\Registry as JRegistry;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -56,7 +57,7 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 		// Add please select
 		$sel = new stdClass;
 		$sel->value = '';
-		$sel->text = FText::_('COM_FABRIK_PLEASE_SELECT');
+		$sel->text = Text::_('COM_FABRIK_PLEASE_SELECT');
 		$options[''][] = $sel;
 
 		foreach ($items as $item)

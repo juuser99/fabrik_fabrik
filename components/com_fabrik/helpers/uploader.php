@@ -13,7 +13,9 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use \JFolder;
+use \JFile;
+use \JParams;
 
 /**
  * Fabrik upload helper
@@ -44,7 +46,6 @@ class UploaderHelper extends \JObject
 	 *
 	 * @param   object  $formModel  form model
 	 */
-
 	public function __construct($formModel)
 	{
 		$this->form = $formModel;
@@ -55,7 +56,6 @@ class UploaderHelper extends \JObject
 	 *
 	 * @return  bool true if error occurred
 	 */
-
 	public function upload()
 	{
 		$groups = $this->form->getGroupsHierarchy();
@@ -85,7 +85,6 @@ class UploaderHelper extends \JObject
 	 *
 	 * @return  bool  do we overwrite any existing files found at pathTo?
 	 */
-
 	public function move($pathFrom, $pathTo, $overwrite = true)
 	{
 		if (file_exists($pathTo))
@@ -136,7 +135,6 @@ class UploaderHelper extends \JObject
 	 *
 	 * @return  bool  true if files uploaded
 	 */
-
 	public function check()
 	{
 		if (isset($_FILES) and !empty($_FILES))
@@ -162,7 +160,6 @@ class UploaderHelper extends \JObject
 	 *
 	 * @return  bool
 	 */
-
 	public static function canUpload($file, &$err, &$params)
 	{
 		if (empty($file['name']))
@@ -175,7 +172,7 @@ class UploaderHelper extends \JObject
 		if (!is_uploaded_file($file['tmp_name']))
 		{
 			// Handle potential malicious attack
-			$err = FText::_('File has not been uploaded');
+			$err = Text::_('File has not been uploaded');
 
 			return false;
 		}
@@ -183,7 +180,7 @@ class UploaderHelper extends \JObject
 		jimport('joomla.filesystem.file');
 		$format = String::strtolower(JFile::getExt($file['name']));
 		$allowable = explode(',', String::strtolower($params->get('ul_file_types')));
-		$format = FabrikString::ltrimword($format, '.');
+		$format = String::ltrimword($format, '.');
 		$format2 = ".$format";
 
 		if (!in_array($format, $allowable) && !in_array($format2, $allowable))
@@ -203,7 +200,6 @@ class UploaderHelper extends \JObject
 		}
 
 		$ignored = array();
-		$user = JFactory::getUser();
 		$imginfo = null;
 
 		if ($params->get('restrict_uploads', 1))
@@ -260,7 +256,6 @@ class UploaderHelper extends \JObject
 	 *
 	 * @return  string  New file name
 	 */
-
 	public static function incrementFileName($origFileName, $newFileName, $version)
 	{
 		if (JFile::exists($newFileName))

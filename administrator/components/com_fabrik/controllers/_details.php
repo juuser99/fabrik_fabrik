@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Admin\Helpers\Fabrik;
+use Fabrik\Helpers\Text;
 
 require_once 'fabcontrollerform.php';
 
@@ -54,7 +55,7 @@ class FabrikAdminControllerDetails extends FabControllerForm
 		$view->setLayout($viewLayout);
 
 		// @TODO check for cached version
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_FORMS'), 'forms.png');
 
 		$view->display();
 		Fabrik::addSubmenu($this->getName());

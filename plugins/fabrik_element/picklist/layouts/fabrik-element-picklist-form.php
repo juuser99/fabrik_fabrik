@@ -2,6 +2,7 @@
 
 defined('JPATH_BASE') or die;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 $d = $displayData;
 HTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist.css');
@@ -10,7 +11,7 @@ HTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist
 	<div class="row">
 		<div class="span6 <?php echo $d->errorCSS; ?>">
 
-			<?php echo FText::_('PLG_FABRIK_PICKLIST_FROM'); ?>:
+			<?php echo Text::_('PLG_FABRIK_PICKLIST_FROM'); ?>:
 			<ul id="<?php echo $d->id; ?>_fromlist" class="picklist well well-small fromList">
 
 				<?php
@@ -24,12 +25,12 @@ HTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist
 				?>
 
 				<li class="emptyplicklist" style="display:none"><i class="icon-move"></i>
-					<?php echo FText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE'); ?>
+					<?php echo Text::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE'); ?>
 				</li>
 			</ul>
 		</div>
 		<div class="span6">
-			<?php echo FText::_('PLG_FABRIK_PICKLIST_TO'); ?>:
+			<?php echo Text::_('PLG_FABRIK_PICKLIST_TO'); ?>:
 			<ul id="<?php echo $d->id; ?>_tolist" class="picklist well well-small toList">
 
 				<?php
@@ -43,7 +44,7 @@ HTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist
 				?>
 
 				<li class="emptyplicklist" style="display:none"><i class="icon-move"></i>
-					<?php echo FText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE'); ?>
+					<?php echo Text::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE'); ?>
 				</li>
 			</ul>
 		</div>

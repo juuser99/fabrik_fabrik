@@ -10,7 +10,9 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
 ?>
 <form method="post" enctype="multipart/form-data" action="<?php echo JURI::base();?>index.php" name="emailtable" id="emailtable">
@@ -22,7 +24,7 @@ use Fabrik\Helpers\HTML;
 	{
 	?>
 	<label>
-		<?php echo FText::_('PLG_LIST_EMAIL_TO') ?><br />
+		<?php echo ::_('PLG_LIST_EMAIL_TO') ?><br />
 	</label>
 	<?php echo $this->fieldList ?>
 	<?php
@@ -33,14 +35,15 @@ use Fabrik\Helpers\HTML;
 	{
 	?>
 	<label>
-		<?php echo FText::_('PLG_LIST_EMAIL_SUBJECT') ?><br />
+		<?php echo
+		::_('PLG_LIST_EMAIL_SUBJECT') ?><br />
 		<input class="inputbox fabrikinput span12" type="text" name="subject" id="subject" value="<?php echo $this->subject?>" size="50" />
 	</label>
 	<?php
 	}
 	?>
 	<label>
-		<?php echo FText::_('PLG_LIST_EMAIL_MESSAGE') ?><br />
+		<?php echo ::_('PLG_LIST_EMAIL_MESSAGE') ?><br />
 	</label>
 	<?php
 	echo $this->editor;
@@ -49,21 +52,21 @@ use Fabrik\Helpers\HTML;
 {?>
 	<div class="attachment">
 		<label>
-			<?php echo FText::_('PLG_LIST_EMAIL_ATTACHMENTS') ?><br />
+			<?php echo ::_('PLG_LIST_EMAIL_ATTACHMENTS') ?><br />
 			<input class="inputbox fabrikinput" name="attachment[]" type="file" id="attachment" />
 		</label>
 		<a href="#" class="addattachment">
-		<?php echo HTML::image('plus.png', 'form', @$this->tmpl, FText::_('COM_FABRIK_ADD'));?>
+		<?php echo HTML::image('plus.png', 'form', @$this->tmpl, ::_('COM_FABRIK_ADD'));?>
 		</a>
 		<a href="#" class="delattachment">
-			<?php echo HTML::image('minus-sign.png', 'form', @$this->tmpl, FText::_('COM_FABRIK_DELETE'));?>
+			<?php echo HTML::image('minus-sign.png', 'form', @$this->tmpl, ::_('COM_FABRIK_DELETE'));?>
 		</a>
 	</div>
 	<?php
 }
 		?>
 	<div class="form-actions">
-		<input type="submit" id="submit" value="<?php echo FText::_('PLG_LIST_EMAIL_SEND') ?>" class="button btn btn-primary" />
+		<input type="submit" id="submit" value="<?php echo ::_('PLG_LIST_EMAIL_SEND') ?>" class="button btn btn-primary" />
 	</div>
 	<input type="hidden" name="option" value="com_fabrik" />
 	<input type="hidden" name="controller" value=list.email />

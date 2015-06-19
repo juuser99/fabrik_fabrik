@@ -16,9 +16,13 @@ defined('_JEXEC') or die();
 use Joomla\String\String;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \JFactory;
+use \stdClass;
+use \JHtml;
+use Fabrik\Helpers\Text;
 
 /**
- * Plugin element to render day/month/year dropdowns
+ * Plugin element to render day/month/year drop-downs
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.birthday
@@ -52,7 +56,6 @@ class Birthday extends Element
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$value = parent::getValue($data, $repeatCounter, $opts);
@@ -76,7 +79,6 @@ class Birthday extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		/**
@@ -89,8 +91,8 @@ class Birthday extends Element
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 		$element = $this->getElement();
-		$monthLabels = array(FText::_('January'), FText::_('February'), FText::_('March'), FText::_('April'), FText::_('May'), FText::_('June'),
-			FText::_('July'), FText::_('August'), FText::_('September'), FText::_('October'), FText::_('November'), FText::_('December'));
+		$monthLabels = array(Text::_('January'), Text::_('February'), Text::_('March'), Text::_('April'), Text::_('May'), Text::_('June'),
+			Text::_('July'), Text::_('August'), Text::_('September'), Text::_('October'), Text::_('November'), Text::_('December'));
 		$monthNumbers = array('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 		$daySys = array('01', '02', '03', '04', '05', '06', '07', '08', '09');
 		$daySimple = array('1', '2', '3', '4', '5', '6', '7', '8', '9');
@@ -184,7 +186,7 @@ class Birthday extends Element
 
 						if (date('m-d') == $month . '-' . $day)
 						{
-							$detailValue .= '<span style="color:#CC0000"><b> ' . FText::_('TODAY') . '!</b></span>';
+							$detailValue .= '<span style="color:#CC0000"><b> ' . Text::_('TODAY') . '!</b></span>';
 
 							if (date('m') == '12')
 							{
@@ -244,14 +246,14 @@ class Birthday extends Element
 			$yearValue = ArrayHelper::getValue($value, 0);
 			$monthValue = ArrayHelper::getValue($value, 1);
 			$dayValue = ArrayHelper::getValue($value, 2);
-			$days = array(JHTML::_('select.option', '', $params->get('birthday_daylabel', FText::_('DAY'))));
+			$days = array(JHTML::_('select.option', '', $params->get('birthday_daylabel', Text::_('DAY'))));
 
 			for ($i = 1; $i < 32; $i++)
 			{
 				$days[] = JHTML::_('select.option', $i);
 			}
 
-			$months = array(JHTML::_('select.option', '', $params->get('birthday_monthlabel', FText::_('MONTH'))));
+			$months = array(JHTML::_('select.option', '', $params->get('birthday_monthlabel', Text::_('MONTH'))));
 
 			// Siin oli enne $monthLabels, viisin ülespoole
 			// google translation: this was before the $monthLabels, took up the
@@ -260,7 +262,7 @@ class Birthday extends Element
 				$months[] = JHTML::_('select.option', $i + 1, $monthLabels[$i]);
 			}
 
-			$years = array(JHTML::_('select.option', '', $params->get('birthday_yearlabel', FText::_('YEAR'))));
+			$years = array(JHTML::_('select.option', '', $params->get('birthday_yearlabel', Text::_('YEAR'))));
 
 			// Jaanus: now we can choose one exact year A.C to begin the dropdown AND would the latest year be current year or some years earlier/later.
 			$date = date('Y') + (int) $params->get('birthday_forward', 0);
@@ -281,7 +283,7 @@ class Birthday extends Element
 			$layout = $this->getLayout('form');
 			$layoutData = new stdClass;
 			$layoutData->id = $id;
-			$layoutData->separator = $params->get('birthday_separatorlabel', FText::_('/'));
+			$layoutData->separator = $params->get('birthday_separatorlabel', Text::_('/'));
 			$layoutData->attribs = $attribs;
 			$layoutData->day_name = preg_replace('#(\[\])$#', '[0]', $name);
 			$layoutData->day_id = $id . '_0';
@@ -330,10 +332,8 @@ class Birthday extends Element
 	 * Could anyone find a solution? I give up :-(
 	 * Paul 20130904 I fixed the id fields and I am getting a string passed in as $val here yyyy-m-d.
 	 *
-	 *
 	 * @return  string	yyyy-mm-dd
 	 */
-
 	private function _indStoreDBFormat($val)
 	{
 		$params = $this->getParams();
@@ -347,11 +347,13 @@ class Birthday extends Element
 		}
 		else
 		{
-			if ($params->get('empty_is_null', '1') == '0' || !in_array('', explode('-',$val)))
+			if ($params->get('empty_is_null', '1') == '0' || !in_array('', explode('-', $val)))
 			{
 				return $val;
 			}
 		}
+
+		return $val;
 	}
 
 	/**
@@ -399,7 +401,7 @@ class Birthday extends Element
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts->separator = $params->get('birthday_separatorlabel', FText::_('/'));
+		$opts->separator = $params->get('birthday_separatorlabel', Text::_('/'));
 
 		return array('FbBirthday', $id, $opts);
 	}
@@ -455,8 +457,8 @@ class Birthday extends Element
 
 		$params = $this->getParams();
 
-		$monthLabels = array(FText::_('January'), FText::_('February'), FText::_('March'), FText::_('April'), FText::_('May'), FText::_('June'),
-				FText::_('July'), FText::_('August'), FText::_('September'), FText::_('October'), FText::_('November'), FText::_('December'));
+		$monthLabels = array(Text::_('January'), Text::_('February'), Text::_('March'), Text::_('April'), Text::_('May'), Text::_('June'),
+				Text::_('July'), Text::_('August'), Text::_('September'), Text::_('October'), Text::_('November'), Text::_('December'));
 
 		$monthNumbers = array('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 		$daySys = array('01', '02', '03', '04', '05', '06', '07', '08', '09');
@@ -520,23 +522,23 @@ class Birthday extends Element
 			{
 				if ($fta == '{age}')
 				{
-					return '<font color ="#DD0000"><b>' . ($thisYear - $year) . "</b></font>";
+					return '<span style="color:#DD0000"><b>' . ($thisYear - $year) . "</b></span>";
 				}
 				else
 				{
 					if ($fta == '{age} date')
 					{
-						return '<font color ="#DD0000"><b>' . $datedisp . ' (' . ($thisYear - $year) . ')</b></font>';
+						return '<span style="color:#DD0000"><b>' . $datedisp . ' (' . ($thisYear - $year) . ')</b></span>';
 					}
 
 					if ($fta == '{age} this')
 					{
-						return '<font color ="#DD0000"><b>' . ($thisYear - $year) . ' (' . $datedisp . ')</b></font>';
+						return '<span style="color:#DD0000"><b>' . ($thisYear - $year) . ' (' . $datedisp . ')</b></span>';
 					}
 
 					if ($fta == '{age} next')
 					{
-						return '<font color ="#DD0000"><b>' . ($nextYear - $year) . ' (' . $datedisp . ')</b></font>';
+						return '<span style="color:#DD0000"><b>' . ($nextYear - $year) . ' (' . $datedisp . ')</b></span>';
 					}
 				}
 			}
@@ -595,6 +597,8 @@ class Birthday extends Element
 				}
 			}
 		}
+
+		return '';
 	}
 
 	/**
@@ -605,14 +609,14 @@ class Birthday extends Element
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array  text/value objects
 	 */
 
-	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
-		$rows = parent::filterValueList($normal, $tableName, $label, $id, $incjoin);
+		$rows = parent::filterValueList($normal, $tableName, $label, $id, $incJoin);
 		$return = array();
 
 		foreach ($rows as &$row)
@@ -676,7 +680,7 @@ class Birthday extends Element
 				$value[0] = $startDate->toSql();
 
 				// Set end date to today's month/day of year after end year (means search on age between 35 & 35 returns results)
-				$endYear = JFactory::getDate($value[1])->format('Y');
+				$endYear = (int) JFactory::getDate($value[1])->format('Y');
 				$endDate = JFactory::getDate();
 				$endDate->setDate($endYear + 1, $thisMonth, $thisDay)->setTime(23, 59, 59);
 				$value[1] = $endDate->toSql();

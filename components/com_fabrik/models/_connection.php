@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use \JFactory as JFactory;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 /**
  * Fabrik Connection Model
@@ -359,7 +361,7 @@ class Connection extends \JModelBase
 	 */
 	private function getBaseDriverName($driverName = '')
 	{
-		return FabrikString::rtrimword($driverName, '_fab');
+		return String::rtrimword($driverName, '_fab');
 	}
 
 	/**
@@ -458,7 +460,7 @@ class Connection extends \JModelBase
 			$id = $name;
 		}
 
-		$cnns[] = JHTML::_('select.option', '-1', FText::_('COM_FABRIK_PLEASE_SELECT'));
+		$cnns[] = JHTML::_('select.option', '-1', Text::_('COM_FABRIK_PLEASE_SELECT'));
 		$cnns   = array_merge($cnns, $connections);
 		$attribs .= $javascript;
 
@@ -480,7 +482,7 @@ class Connection extends \JModelBase
 	{
 		$connectionTableFields       = array();
 		$connectionTableFields[-1]   = array();
-		$connectionTableFields[-1][] = JHTML::_('select.option', '-1', FText::_('COM_FABRIK_PLEASE_SELECT'));
+		$connectionTableFields[-1][] = JHTML::_('select.option', '-1', Text::_('COM_FABRIK_PLEASE_SELECT'));
 
 		foreach ($connections as $cn)
 		{
@@ -512,7 +514,7 @@ class Connection extends \JModelBase
 	{
 		$connectionTables       = array();
 		$connectionTables[-1]   = array();
-		$connectionTables[-1][] = JHTML::_('select.option', '-1', FText::_('COM_FABRIK_PLEASE_SELECT'));
+		$connectionTables[-1][] = JHTML::_('select.option', '-1', Text::_('COM_FABRIK_PLEASE_SELECT'));
 
 		foreach ($connections as $cn)
 		{

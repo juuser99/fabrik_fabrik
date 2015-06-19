@@ -9,6 +9,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -73,7 +76,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		{
 			$msg = $params->get('limit_reached_message', JText::sprintf('PLG_FORM_LIMIT_LIMIT_REACHED', $limit));
 			$msg = str_replace('{limit}', $limit, $msg);
-			$app->enqueueMessage(FText::_($msg), 'notice');
+			$app->enqueueMessage(Text::_($msg), 'notice');
 
 			return false;
 		}
@@ -106,10 +109,10 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		{
 			$fkVal = FArrayHelper::getValue(
 					$formModel->data,
-					FabrikString::safeColNameToArrayKey($fk),
+					String::safeColNameToArrayKey($fk),
 					FArrayHelper::getValue(
 							$formModel->data,
-							FabrikString::safeColNameToArrayKey($fk) . '_raw',
+							String::safeColNameToArrayKey($fk) . '_raw',
 							''
 					)
 			);
@@ -123,7 +126,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 
 		if (!empty($fkVal))
 		{
-			$query->where($db->quoteName($fk) . ' = ' . $db->quote($fkVal), 'AND');
+			$query->where($db->qn($fk) . ' = ' . $db->quote($fkVal), 'AND');
 		}
 
 		$db->setQuery($query);
@@ -171,8 +174,8 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 		$dbTable = $listModel->getTable()->get('list.db_table_name');
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);
-		$lookup = FabrikString::safeColName($params->get('limit_user'));
-		$max = FabrikString::safeColName($params->get('limit_max'));
+		$lookup = String::safeColName($params->get('limit_user'));
+		$max = String::safeColName($params->get('limit_max'));
 		$query->select('MAX(' . $max . ')')->from($dbTable);
 		$type = $params->get('lookup_type', '');
 

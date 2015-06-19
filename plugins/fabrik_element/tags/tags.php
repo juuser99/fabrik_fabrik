@@ -148,7 +148,7 @@ class Tags extends Databasejoin
 		$rowId = $this->getFormModel()->getRowId();
 		$db = $this->getDb();
 		$join = $this->getJoin();
-		$fk = $db->quoteName($join->table_join_alias . '.' . $join->table_join_key);
+		$fk = $db->qn($join->table_join_alias . '.' . $join->table_join_key);
 		$params = $this->getParams();
 		$formModel = $this->getFormModel();
 
@@ -157,7 +157,7 @@ class Tags extends Databasejoin
 
 		if ($formModel->failedValidation())
 		{
-			$pk = $db->quoteName($join->table_join_alias . '.' . $join->table_key);
+			$pk = $db->qn($join->table_join_alias . '.' . $join->table_key);
 			$name = $this->getFullName(true, false) . '_raw';
 			$tagIds = ArrayHelper::getValue($data, $name, array());
 			ArrayHelper::toInteger($tagIds);
@@ -188,7 +188,7 @@ class Tags extends Databasejoin
 	protected function buildQueryJoin($query = false)
 	{
 		$db = $this->getDb();
-		$f = $db->quoteName($this->getJoin()->table_join_alias . '.tags');
+		$f = $db->qn($this->getJoin()->table_join_alias . '.tags');
 
 		if ($query !== false)
 		{
@@ -320,9 +320,9 @@ class Tags extends Databasejoin
 		$query = $db->getQuery(true);
 		$join = $this->getJoin();
 		$query = $this->buildQueryWhere($data, $incWhere, null, $opts, $query);
-		$query->select('DISTINCT(t.id) AS value,' . $db->quoteName('title') . ' AS text')
-		->from($db->quoteName($join->table_join) . ' AS ' . $db->quoteName($join->table_join_alias))
-		->join('LEFT', '#__tags AS t ON t.id = ' . $db->quoteName($join->table_join_alias . '.' . $join->table_key));
+		$query->select('DISTINCT(t.id) AS value,' . $db->qn('title') . ' AS text')
+		->from($db->qn($join->table_join) . ' AS ' . $db->qn($join->table_join_alias))
+		->join('LEFT', '#__tags AS t ON t.id = ' . $db->qn($join->table_join_alias . '.' . $join->table_key));
 
 		return $query;
 	}

@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -20,7 +22,6 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikViewForm extends JViewLegacy
 {
 	/**
@@ -35,9 +36,10 @@ class FabrikViewForm extends JViewLegacy
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
+	 * @throws Exception
+	 *
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
-
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -54,7 +56,7 @@ class FabrikViewForm extends JViewLegacy
 		{
 			if (!$app->isAdmin())
 			{
-				echo FText::_('COM_FABRIK_FORM_NOT_PUBLISHED');
+				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
 
 				return false;
 			}
@@ -64,7 +66,7 @@ class FabrikViewForm extends JViewLegacy
 
 		if ($this->access == 0)
 		{
-			return JError::raiseWarning(500, FText::_('JERROR_ALERTNOAUTHOR'));
+			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		if (is_object($listModel))

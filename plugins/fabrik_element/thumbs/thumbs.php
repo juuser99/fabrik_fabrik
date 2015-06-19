@@ -15,6 +15,11 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper;
+use \stdClass;
+use \JVersion;
+use \JFactory;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render thumbs-up/down widget
@@ -33,7 +38,7 @@ class Thumbs extends Element
 	protected $ignoreSearchAllDefault = true;
 
 	/**
-	 * Formid - override for comments plugin
+	 * Form id - override for comments plugin
 	 *
 	 * @var int
 	 */
@@ -68,7 +73,6 @@ class Thumbs extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$input = $this->app->input;
@@ -97,16 +101,16 @@ class Thumbs extends Element
 
 			$upActiveClass = $myThumb === 'up' ? ' btn-success' : '';
 			$downActiveClass = $myThumb === 'down' ? ' btn-danger' : '';
-			$commentdata = 'data-fabrik-thumb-rowid="' . $rowId . '"';
+			$commentData = 'data-fabrik-thumb-rowid="' . $rowId . '"';
 
 			$str[] = '<div class="btn-group">';
-			$str[] = '<button ' . $commentdata . ' data-fabrik-thumb-formid="' . $formId
+			$str[] = '<button ' . $commentData . ' data-fabrik-thumb-formid="' . $formId
 			 . '" data-fabrik-thumb="up" class="btn btn-small thumb-up' . $upActiveClass . '">';
 			$str[] = '<span class="icon-thumbs-up"></span> <span class="thumb-count">' . $countUp . '</span></button>';
 
 			if ($params->get('show_down', 1))
 			{
-				$str[] = '<button ' . $commentdata . ' data-fabrik-thumb-formid="' . $formId
+				$str[] = '<button ' . $commentData . ' data-fabrik-thumb-formid="' . $formId
 				. '" data-fabrik-thumb="down" class="btn btn-small thumb-down' . $downActiveClass . '">';
 				$str[] = '<span class="icon-thumbs-down"></span> <span class="thumb-count">' . $countDown . '</span></button>';
 			}
@@ -129,12 +133,11 @@ class Thumbs extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	private function _renderListData($data, $thisRow)
 	{
 		$list = $this->getlistModel()->getTable();
-		$listId = isset($this->listid) ? $this->listid : $list->id;
-		$formId = isset($this->formid) ? $this->formid : $list->form_id;
+		$listId = isset($this->listid) ? $this->listid : $list->get('id');
+		$formId = isset($this->formid) ? $this->formid : $list->get('list.form_id');
 		$rowId = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
 
 		return $this->getThumbsCount($data, $listId, $formId, $rowId);
@@ -150,11 +153,10 @@ class Thumbs extends Element
 	 *
 	 * @return count thumbs-up, count thumbs-down
 	 */
-
 	protected function getThumbsCount($data, $listId, $formId, $rowId)
 	{
 		$db = Worker::getDbo();
-		$elementId = $this->getElement()->id;
+		$elementId = $this->getElement()->get('id');
 
 		$sql = isset($this->special) ? " AND special = " . $db->q($this->special) : '';
 
@@ -206,20 +208,6 @@ class Thumbs extends Element
 	}
 
 	/**
-	 * Determines if the element can contain data used in sending receipts,
-	 * e.g. fabrikfield returns true
-	 *
-	 * @deprecated - not used
-	 *
-	 * @return  bool
-	 */
-
-	public function isReceiptElement()
-	{
-		return true;
-	}
-
-	/**
 	 * Draws the html form element
 	 *
 	 * @param   array  $data           To pre-populate element with
@@ -227,7 +215,6 @@ class Thumbs extends Element
 	 *
 	 * @return  string	Elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
@@ -240,7 +227,7 @@ class Thumbs extends Element
 			return '';
 		}
 
-		$listId = $this->getlistModel()->getTable()->id;
+		$listId = $this->getlistModel()->getTable()->get('id');
 		$formModel = $this->getFormModel();
 		$formId = isset($this->formid) ? $this->formid : $formModel->getId();
 		$rowId = $input->getInt('commentId', $formModel->getRowId());
@@ -254,24 +241,24 @@ class Thumbs extends Element
 		$myThumb = $this->getMyThumb($listId, $formId, $rowId);
 
 		// @TODO use Fabrikimage rather than hardwired image path
-		$imagepath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
+		$imagePath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
 
-		$imagefileup = 'thumb_up_out.gif';
-		$imagefiledown = 'thumb_down_out.gif';
+		$imageFileUp = 'thumb_up_out.gif';
+		$imageFileDown = 'thumb_down_out.gif';
 
 		if ($myThumb == 'up')
 		{
-			$imagefileup = 'thumb_up_in.gif';
-			$imagefiledown = 'thumb_down_out.gif';
+			$imageFileUp = 'thumb_up_in.gif';
+			$imageFileDown = 'thumb_down_out.gif';
 		}
 		elseif ($myThumb == 'down')
 		{
-			$imagefileup = 'thumb_up_out.gif';
-			$imagefiledown = 'thumb_down_in.gif';
+			$imageFileUp = 'thumb_up_out.gif';
+			$imageFileDown = 'thumb_down_in.gif';
 		}
 
 
-		$id2 = FabrikString::rtrimword($id, '_ro');
+		$id2 = String::rtrimword($id, '_ro');
 		$count = $this->_renderListData(ArrayHelper::getValue($data, $id2), $thisRow);
 		$count = Worker::JSONtoData($count, true);
 
@@ -287,9 +274,9 @@ class Thumbs extends Element
 		$layoutData->countDown = $count[1];
 		$layoutData->countDiff = $layoutData->countUp - $layoutData->countDown;
 		$layoutData->showDown = $params->get('show_down', 1);
-		$layoutData->imagepath = $imagepath;
-		$layoutData->imagefileup = $imagefileup;
-		$layoutData->imagefiledown = $imagefiledown;
+		$layoutData->imagepath = $imagePath;
+		$layoutData->imagefileup = $imageFileUp;
+		$layoutData->imagefiledown = $imageFileDown;
 
 		return $layout->render($layoutData);
 	}
@@ -329,7 +316,7 @@ class Thumbs extends Element
 	protected function getMyThumb($listId, $formId, $rowId)
 	{
 		$db = Worker::getDbo();
-		$elementId = $this->getElement()->id;
+		$elementId = $this->getElement()->get('id');
 		$user_id = $this->user->get('id');
 		$query = $db->getQuery(true);
 
@@ -387,7 +374,6 @@ class Thumbs extends Element
 	 *
 	 * @return  string
 	 */
-
 	private function getCookieName($listId, $rowId)
 	{
 		$cookieName = 'thumb-table_' . $listId . '_row_' . $rowId . '_ip_' . $_SERVER['REMOTE_ADDR'];
@@ -414,7 +400,6 @@ class Thumbs extends Element
 	 *
 	 * @return  void
 	 */
-
 	private function deleteThumb($listId, $formId, $rowId, $thumb)
 	{
 		$userId = $this->getUserId($listId, $rowId);
@@ -424,7 +409,7 @@ class Thumbs extends Element
 		->where('listid = ' . $listId . ' AND row_id = ' . $rowId . ' AND thumb = ' . $db->q($thumb));
 		$db->setQuery($query);
 		$db->execute();
-		$elementId = $this->getElement()->id;
+		$elementId = $this->getElement()->get('id');
 		$this->updateDB($listId, $formId, $rowId, $elementId);
 	}
 
@@ -474,7 +459,7 @@ class Thumbs extends Element
 		$db = Worker::getDbo();
 		$date = JFactory::getDate()->toSql();
 		$userId = $this->getUserId($listId, $rowId);
-		$elementId = $this->getElement()->id;
+		$elementId = $this->getElement()->get('id');
 		$special = $this->app->input->get('special');
 		$db->setQuery(
 			"INSERT INTO #__fabrik_thumbs
@@ -522,7 +507,7 @@ class Thumbs extends Element
 	private function updateDB($listId, $formId, $rowId, $elementId)
 	{
 		$db = Worker::getDbo();
-		$name = $this->getElement()->name;
+		$name = $this->getElement()->get('name');
 
 		// Name can be blank for comments
 		if ($name != '')
@@ -532,7 +517,7 @@ class Thumbs extends Element
 			$db
 				->setQuery(
 					"UPDATE " . $tableName . "
-	                    SET " . $this->getElement()->name . " = ((SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId
+	                    SET " . $this->getElement()->get('name') . " = ((SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId
 						. " AND formid = " . (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
 						. " AND thumb = 'up') - (SELECT COUNT(thumb) FROM #__fabrik_thumbs WHERE listid = " . (int) $listId . " AND formid = "
 						. (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
@@ -575,8 +560,6 @@ class Thumbs extends Element
 		}
 
 		$id = $this->getHTMLId($repeatCounter);
-		$element = $this->getElement();
-		$data = $this->getFormModel()->data;
 		$listId = $this->getlistModel()->getTable()->id;
 		$formModel = $this->getFormModel();
 		$formId = $formModel->getId();
@@ -584,10 +567,10 @@ class Thumbs extends Element
 		$this->language->load('plg_fabrik_element_thumbs', JPATH_BASE . '/plugns/fabrik_element/thumbs');
 		$opts = new stdClass;
 		$opts->canUse = $this->canUse();
-		$opts->noAccessMsg = trim(FText::_($params->get('thumbs_no_access_msg', FText::_('PLG_ELEMENT_THUMBS_NO_ACCESS_MSG_DEFAULT'))));
+		$opts->noAccessMsg = trim(Text::_($params->get('thumbs_no_access_msg', Text::_('PLG_ELEMENT_THUMBS_NO_ACCESS_MSG_DEFAULT'))));
 		$opts->row_id = $rowId;
 		$opts->myThumb = $this->getMyThumb($listId, $formId, $rowId);
-		$opts->elid = $this->getElement()->id;
+		$opts->elid = $this->getElement()->get('id');
 		$opts->userid = (int) $this->user->get('id');
 		$opts->view = $input->get('view');
 		$opts->listid = $listId;
@@ -616,14 +599,14 @@ class Thumbs extends Element
 
 		foreach ($groupKeys as $gKey)
 		{
-			foreach ($data[$gKey] as $rowkey)
+			foreach ($data[$gKey] as $rowKey)
 			{
 				if (!$idFromCookie && $this->user->get('id') == 0)
 				{
-					$idFromCookie = $this->getCookieName($list->id, $rowkey->__pk_val);
+					$idFromCookie = $this->getCookieName($list->get('id'), $rowKey->__pk_val);
 				}
 
-				$listMyThumbs[$rowkey->__pk_val] = $this->getMyThumb($list->id, $formId, $rowkey->__pk_val);
+				$listMyThumbs[$rowKey->__pk_val] = $this->getMyThumb($list->get('id'), $formId, $rowKey->__pk_val);
 			}
 		}
 
@@ -640,11 +623,11 @@ class Thumbs extends Element
 
 		$opts = new stdClass;
 		$opts->canUse = $this->canUse();
-		$opts->noAccessMsg = FText::_($params->get('thumbs_no_access_msg', FText::_('PLG_ELEMENT_THUMBS_NO_ACCESS_MSG_DEFAULT')));
+		$opts->noAccessMsg = Text::_($params->get('thumbs_no_access_msg', Text::_('PLG_ELEMENT_THUMBS_NO_ACCESS_MSG_DEFAULT')));
 		$opts->listid = $list->id;
 		$opts->formid = $this->getFormModel()->getId();
 		$opts->imagepath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
-		$opts->elid = $this->getElement()->id;
+		$opts->elid = $this->getElement()->get('id');
 		$opts->myThumbs = $listMyThumbs;
 		$opts->userid = $userId;
 		$opts->renderContext = $this->getListModel()->getRenderContext();
@@ -661,12 +644,12 @@ class Thumbs extends Element
 	 * @param   string  $tableName  table name to use - defaults to element's current table
 	 * @param   string  $label      field to use, defaults to element name
 	 * @param   string  $id         field to use, defaults to element name
-	 * @param   bool    $incjoin    include join
+	 * @param   bool    $incJoin    include join
 	 *
 	 * @return  array  text/value objects
 	 */
 
-	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$params = $this->getParams();
@@ -679,11 +662,11 @@ class Thumbs extends Element
 
 		if ($filter_build == 2)
 		{
-			return $this->filterValueList_All($normal, $tableName, $label, $id, $incjoin);
+			return $this->filterValueList_All($normal, $tableName, $label, $id, $incJoin);
 		}
 		else
 		{
-			return $this->filterValueList_Exact($normal, $tableName, $label, $id, $incjoin);
+			return $this->filterValueList_Exact($normal, $tableName, $label, $id, $incJoin);
 		}
 	}
 
@@ -695,12 +678,12 @@ class Thumbs extends Element
 	 * @param   string  $tableName  table name to use - defaults to element's current table
 	 * @param   string  $label      field to use, defaults to element name
 	 * @param   string  $id         field to use, defaults to element name
-	 * @param   bool    $incjoin    include join
+	 * @param   bool    $incJoin    include join
 	 *
 	 * @return  array	filter value and labels
 	 */
 
-	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		for ($i = 0; $i < 6; $i++)
 		{
@@ -755,7 +738,7 @@ class Thumbs extends Element
 
 		if (!array_key_exists('special', $cols))
 		{
-			$db->setQuery('ALTER TABLE #__fabrik_thumbs ADD COLUMN ' . $db->quoteName('special') . ' VARCHAR(30)');
+			$db->setQuery('ALTER TABLE #__fabrik_thumbs ADD COLUMN ' . $db->qn('special') . ' VARCHAR(30)');
 			$db->execute();
 
 			$db->setQuery('ALTER TABLE #__fabrik_thumbs DROP PRIMARY KEY');

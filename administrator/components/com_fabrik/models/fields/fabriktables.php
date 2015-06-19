@@ -13,10 +13,11 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\Text;
 
-// Required for menus
-require_once JPATH_SITE . '/components/com_fabrik/helpers/string.php';
-require_once JPATH_SITE . '/components/com_fabrik/helpers/parent.php';
+// Required for menus ?
+//require_once JPATH_SITE . '/components/com_fabrik/helpers/string.php';
+//require_once JPATH_SITE . '/components/com_fabrik/helpers/parent.php';
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -73,7 +74,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 		}
 		else
 		{
-			$rows = array(JHTML::_('select.option', '', FText::_('COM_FABRIK_SELECT_A_CONNECTION_FIRST'), 'value', 'text'));
+			$rows = array(JHTML::_('select.option', '', Text::_('COM_FABRIK_SELECT_A_CONNECTION_FIRST'), 'value', 'text'));
 		}
 
 		return $rows;
@@ -133,7 +134,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 
 		$html = parent::getInput();
 		$html .= '<img style="margin-left:10px;display:none" id="' . $this->id . '_loader" src="components/com_fabrik/images/ajax-loader.gif" alt="'
-			. FText::_('LOADING') . '" />';
+			. Text::_('LOADING') . '" />';
 		HTML::framework();
 		HTML::iniRequireJS();
 

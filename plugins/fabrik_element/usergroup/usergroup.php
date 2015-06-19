@@ -95,9 +95,9 @@ class Usergroup extends ElementList
 			{
 				$db    = $this->db;
 				$query = $db->getQuery(true);
-				$query->select($db->quoteName('title'));
-				$query->from($db->quoteName('#__usergroups'));
-				$query->where($db->quoteName('id') . ' IN ( ' . implode(' , ', $selected) . ')');
+				$query->select($db->qn('title'));
+				$query->from($db->qn('#__usergroups'));
+				$query->where($db->qn('id') . ' IN ( ' . implode(' , ', $selected) . ')');
 				$db->setQuery($query);
 				$selected = $db->loadColumn();
 			}
@@ -164,12 +164,12 @@ class Usergroup extends ElementList
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array	Filter value and labels
 	 */
 
-	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	protected function filterValueList_Exact($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$listModel = $this->getListModel();
 		$elName2 = $this->getFullName(false, false, false);
@@ -213,7 +213,7 @@ class Usergroup extends ElementList
 			$db = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('id, title');
-			$query->from($db->quoteName('#__usergroups'));
+			$query->from($db->qn('#__usergroups'));
 			$db->setQuery($query);
 			$this->allOpts = $db->loadObjectList('id');
 		}
@@ -299,17 +299,17 @@ class Usergroup extends ElementList
 	 * @param   string  $tableName  Table name to use - defaults to element's current table
 	 * @param   string  $label      Field to use, defaults to element name
 	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool    $incJoin    Include join
 	 *
 	 * @return  array	Filter value and labels
 	 */
 
-	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
+	protected function filterValueList_All($normal, $tableName = '', $label = '', $id = '', $incJoin = true)
 	{
 		$db = $this->db;
 		$query = $db->getQuery(true);
 		$query->select('id, title');
-		$query->from($db->quoteName('#__usergroups'));
+		$query->from($db->qn('#__usergroups'));
 		$db->setQuery($query);
 		$selected = $db->loadObjectList();
 

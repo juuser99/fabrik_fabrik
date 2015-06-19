@@ -17,6 +17,9 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use \Fabrik\Admin\Models\Lizt as LiztModel;
 use Fabrik\Helpers\HTML;
+use \stdClass;
+use \JFilterInput;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render field with PHP calculated value
@@ -34,7 +37,6 @@ class Calc extends Element
 	 *
 	 * @return mixed
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
@@ -56,12 +58,10 @@ class Calc extends Element
 	 *
 	 * @return  string
 	 */
-
 	private function _getV($data, $repeatCounter)
 	{
 		$w = new Worker;
 		$groupModel = $this->getGroup();
-		$joinid = $groupModel->getGroup()->join_id;
 		$name = $this->getFullName(true, false);
 		$params = $this->getParams();
 
@@ -110,16 +110,16 @@ class Calc extends Element
 			$this->setStoreDatabaseFormat($data, $repeatCounter);
 			$default = $w->parseMessageForPlaceHolder($params->get('calc_calculation'), $data, true, true);
 
-			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
+			//  $$$ hugh - standardizing on $data but need need $d here for backward compatibility
 			$d = $data;
 
 			$res = HTML::isDebug() ? eval($default) : @eval($default);
-			Worker::logEval($res, 'Eval exception : ' . $this->getElement()->name . '::_getV() : ' . $default . ' : %s');
+			Worker::logEval($res, 'Eval exception : ' . $this->getElement()->get('name') . '::_getV() : ' . $default . ' : %s');
 
 			return $res;
 		}
 
-		$rawname = $name . '_raw';
+		$rawName = $name . '_raw';
 
 		if ($groupModel->isJoin())
 		{
@@ -148,9 +148,9 @@ class Calc extends Element
 				}
 				else
 				{
-					if (array_key_exists($rawname, $data))
+					if (array_key_exists($rawName, $data))
 					{
-						$default = $data[$rawname];
+						$default = $data[$rawName];
 					}
 				}
 			}
@@ -167,9 +167,9 @@ class Calc extends Element
 				}
 				else
 				{
-					if (array_key_exists($rawname, $data))
+					if (array_key_exists($rawName, $data))
 					{
-						$default = $data[$rawname];
+						$default = $data[$rawName];
 					}
 				}
 			}
@@ -187,7 +187,6 @@ class Calc extends Element
 	 *
 	 * @return  string	value
 	 */
-
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		if (!isset($this->defaults) || is_null($this->defaults))
@@ -198,8 +197,8 @@ class Calc extends Element
 		if (!array_key_exists($repeatCounter, $this->defaults))
 		{
 			$element = $this->getElement();
-			$element->default = $this->_getV($data, $repeatCounter);
-			$formModel = $this->getForm();
+			$element->set('default', $this->_getV($data, $repeatCounter));
+			$formModel = $this->getFormModel();
 
 			// Stops this getting called from form validation code as it messes up repeated/join group validations
 			if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1)
@@ -207,12 +206,12 @@ class Calc extends Element
 				Worker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
 			}
 
-			if (is_array($element->default))
+			if (is_array($element->get('default')))
 			{
-				$element->default = implode(',', $element->default);
+				$element->set('default', implode(',', $element->get('default')));
 			}
 
-			$this->defaults[$repeatCounter] = $element->default;
+			$this->defaults[$repeatCounter] = $element->get('default');
 		}
 
 		return $this->defaults[$repeatCounter];
@@ -226,24 +225,18 @@ class Calc extends Element
 	 *
 	 * @return void
 	 */
-
 	public function preProcess($c)
 	{
-		$params = $this->getParams();
-		$w = new Worker;
-		$form = $this->getForm();
+		$form = $this->getFormModel();
 		$data = unserialize(serialize($form->formData));
-		$calc = $params->get('calc_calculation');
-		$group = $this->getGroup();
 
 		/**
 		 * get the key name in dot format for updateFormData method
-		 * $$$ hugh - added $rawkey stuff, otherwise when we did "$key . '_raw'" in the updateFormData
+		 * $$$ hugh - added $rawKey stuff, otherwise when we did "$key . '_raw'" in the updateFormData
 		 * below on repeat data, it ended up in the wrong format, like join.XX.table___element.0_raw
 		 */
 		$key = $this->getFullName(true, false);
-		$shortkey = $this->getFullName(true, false);
-		$rawkey = $key . '_raw';
+		$rawKey = $key . '_raw';
 		$this->swapValuesForLabels($data);
 		$res = $this->_getV($data, $c);
 
@@ -271,7 +264,7 @@ class Calc extends Element
 		}
 
 		$form->updateFormData($key, $data[$key]);
-		$form->updateFormData($rawkey, $data[$key]);
+		$form->updateFormData($rawKey, $data[$key]);
 	}
 
 	/**
@@ -281,35 +274,34 @@ class Calc extends Element
 	 *
 	 * @return  void
 	 */
-
 	protected function swapValuesForLabels(&$d)
 	{
 		$groups = $this->getFormModel()->getGroupsHierarchy();
 
-		foreach (array_keys($groups) as $gkey)
+		foreach (array_keys($groups) as $gKey)
 		{
-			$group = $groups[$gkey];
+			$group = $groups[$gKey];
 			$elementModels = $group->getPublishedElements();
 
 			for ($j = 0; $j < count($elementModels); $j++)
 			{
 				$elementModel = $elementModels[$j];
-				$elkey = $elementModel->getFullName(true, false);
-				$v = ArrayHelper::getValue($d, $elkey);
+				$elementKey = $elementModel->getFullName(true, false);
+				$v = ArrayHelper::getValue($d, $elementKey);
 
 				if (is_array($v))
 				{
-					$origdata = ArrayHelper::getValue($d, $elkey, array());
+					$origData = ArrayHelper::getValue($d, $elementKey, array());
 
 					foreach (array_keys($v) as $x)
 					{
-						$origval = ArrayHelper::getValue($origdata, $x);
-						$d[$elkey][$x] = $elementModel->getLabelForValue($v[$x], $origval, true, $x);
+						$origValue = ArrayHelper::getValue($origData, $x);
+						$d[$elementKey][$x] = $elementModel->getLabelForValue($v[$x], $origValue, true, $x);
 					}
 				}
 				else
 				{
-					$d[$elkey] = $elementModel->getLabelForValue($v, ArrayHelper::getValue($d, $elkey), true);
+					$d[$elementKey] = $elementModel->getLabelForValue($v, ArrayHelper::getValue($d, $elementKey), true);
 				}
 			}
 		}
@@ -326,7 +318,6 @@ class Calc extends Element
 	 *
 	 * @return  string	Formatted value
 	 */
-
 	public function preFormatFormJoins($data, $row)
 	{
 		$params = $this->getParams();
@@ -353,7 +344,7 @@ class Calc extends Element
 			$data['fabrik'] = $formModel->getId();
 
 			//  $$$ Paul - Because this is run on List rows before repeat-group merges, repeat group placeholders are OK.
-			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
+			//  $$$ hugh - standardizing on $data but need need $d here for backward compatibility
 			$d = $data;
 			$cal = $listModel->parseMessageForRowHolder($cal, $data, true);
 
@@ -366,7 +357,7 @@ class Calc extends Element
 				$res = @eval($cal);
 			}
 
-			Worker::logEval($res, 'Eval exception : ' . $element->name . '::preFormatFormJoins() : ' . $cal . ' : %s');
+			Worker::logEval($res, 'Eval exception : ' . $element->get('name') . '::preFormatFormJoins() : ' . $cal . ' : %s');
 
 			if ($format != '')
 			{
@@ -390,7 +381,6 @@ class Calc extends Element
 	 *
 	 * @return  string	Formatted value
 	 */
-
 	public function renderListData_csv($data, &$thisRow)
 	{
 		$val = $this->renderListData($data, $thisRow);
@@ -440,10 +430,10 @@ class Calc extends Element
 				$layoutData = new stdClass;
 				$layoutData->id = $id;
 				$layoutData->name = $name;
-				$layoutData->height = $element->height;
+				$layoutData->height = $element->get('height');
 				$layoutData->value = $value;
-				$layoutData->cols = $element->width;
-				$layoutData->rows = $element->height;
+				$layoutData->cols = $element->get('width');
+				$layoutData->rows = $element->get('height');
 				$str[] = $layout->render($layoutData);
 			}
 		}
@@ -453,7 +443,7 @@ class Calc extends Element
 			$str[] = '<input type="hidden" class="fabrikinput" name="' . $name . '" id="' . $id . '" value="' . $value . '" />';
 		}
 
-		$opts = array('alt' => FText::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
+		$opts = array('alt' => Text::_('PLG_ELEMENT_CALC_LOADING'), 'style' => 'display:none;padding-left:10px;', 'class' => 'loader');
 		$str[] = HTML::image('ajax-loader.gif', 'form', @$this->tmpl, $opts);
 
 		return implode("\n", $str);
@@ -582,7 +572,7 @@ class Calc extends Element
 	protected function getSumQuery(LiztModel &$listModel, $labels = array())
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
-		$name = $this->getElement()->name;
+		$name = $this->getElement()->get('name');
 		$field = ArrayHelper::getValue($fields, $name, false);
 
 		if ($field !== false && $field->Type == 'time')
@@ -617,7 +607,7 @@ class Calc extends Element
 	protected function getAvgQuery(LiztModel &$listModel, $labels = array())
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
-		$name = $this->getElement()->name;
+		$name = $this->getElement()->get('name');
 		$field = ArrayHelper::getValue($fields, $name, false);
 
 		if ($field !== false && $field->Type == 'time')
@@ -652,7 +642,7 @@ class Calc extends Element
 	protected function getMedianQuery(LiztModel &$listModel, $labels = array())
 	{
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
-		$name = $this->getElement()->name;
+		$name = $this->getElement()->get('name');
 		$field = ArrayHelper::getValue($fields, $name, false);
 
 		if ($field !== false && $field->Type == 'time')
@@ -699,14 +689,13 @@ class Calc extends Element
 
 	public function elementListJavascript()
 	{
-		$params = $this->getParams();
 		$id = $this->getHTMLId();
 		$list = $this->getlistModel()->getTable();
 		$opts = new stdClass;
-		$opts->listid = $list->id;
+		$opts->listid = $list->get('id');
 		$opts->listRef = 'list_' . $this->getlistModel()->getRenderContext();
 		$opts->formid = $this->getFormModel()->getId();
-		$opts->elid = $this->getElement()->id;
+		$opts->elid = $this->getElement()->get('id');
 		$opts = json_encode($opts);
 
 		return "new FbCalcList('$id', $opts);\n";
@@ -721,18 +710,15 @@ class Calc extends Element
 	public function onAjax_listUpdate()
 	{
 		$input = $this->app->input;
-		$ids = $input->get('rows', array(), 'array');
 		$listId = $input->getString('listid');
 		$elId = $input->getInt('element_id');
 		$this->setId($elId);
 		$this->loadMeForAjax();
-		$params = $this->getParams();
 
-		$listModel = new \Fabrik\Admin\Models\Lizt;;
+		$listModel = new LiztModel;
 		$listModel->setId($listId);
 		$data = $listModel->getData();
 		$return = new stdClass;
-		$w = new Worker;
 		/**
 		 * $$$ hugh ... no, we never need to store in this context.  The 'calc_on_save_only' param simply dictates
 		 * whether we re-calc when displaying the element, or just use the stored value.  So if calc_on_save_only is

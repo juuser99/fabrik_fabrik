@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Admin\Models\Visualization;
@@ -205,8 +205,8 @@ class FabrikModelTimeline extends Visualization
 			$elements = $listModel->getElements();
 			$enddate2 = $enddate;
 			$startdate2 = $startdate;
-			$endKey = FabrikString::safeColName($enddate2);
-			$startKey = FabrikString::safeColName($startdate2);
+			$endKey = String::safeColName($enddate2);
+			$startKey = String::safeColName($startdate2);
 
 			if (!array_key_exists($endKey, $elements))
 			{

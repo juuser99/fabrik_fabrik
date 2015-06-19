@@ -13,6 +13,12 @@ namespace Fabrik\Plugins\Element;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+use \JFactory;
+use \stdClass;
+use \DateTimeZone;
+use \JHtml;
+
 /**
  * Plugin element to render a timestamp
  *
@@ -58,7 +64,6 @@ class Timestamp extends Element
 	 *
 	 * @return bool
 	 */
-
 	public function setIsRecordedInDatabase()
 	{
 		$this->recordInDatabase = false;
@@ -72,7 +77,6 @@ class Timestamp extends Element
 	 *
 	 * @return  string	elements html
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$date = JFactory::getDate();
@@ -99,12 +103,11 @@ class Timestamp extends Element
 	 *
 	 * @return  string	formatted value
 	 */
-
 	public function renderListData($data, stdClass &$thisRow)
 	{
 		$params = $this->getParams();
 		$tz_offset = $params->get('gmt_or_local', '0') == '0';
-		$data = JHTML::_('date', $data, FText::_($params->get('timestamp_format', 'DATE_FORMAT_LC2')), $tz_offset);
+		$data = JHtml::_('date', $data, Text::_($params->get('timestamp_format', 'DATE_FORMAT_LC2')), $tz_offset);
 
 		return parent::renderListData($data, $thisRow);
 	}
@@ -114,7 +117,6 @@ class Timestamp extends Element
 	 *
 	 * @return  string  db field type
 	 */
-
 	public function getFieldDescription()
 	{
 		$params = $this->getParams();
@@ -139,7 +141,6 @@ class Timestamp extends Element
 	 *
 	 * @return  bool
 	 */
-
 	public function isHidden()
 	{
 		return true;

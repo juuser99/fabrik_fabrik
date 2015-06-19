@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
 
 jimport('joomla.plugin.plugin');
 jimport('joomla.filesystem.file');
@@ -163,10 +164,10 @@ class PlgSystemFabrik extends JPlugin
 	public function onAfterRender()
 	{
 		// Could be component was uninstalled but not the plugin
-		if (!class_exists('FabrikString'))
+		/*if (!class_exists('FabrikString'))
 		{
 			return;
-		}
+		}*/
 
 		$app = JFactory::getApplication();
 		$script = self::js();
@@ -182,7 +183,7 @@ class PlgSystemFabrik extends JPlugin
 		}
 		else
 		{
-			$content = FabrikString::replaceLast('</body>', $script . '</body>', $content);
+			$content = String::replaceLast('</body>', $script . '</body>', $content);
 		}
 
 		$lessThanThreeFour ? JResponse::setBody($content) : $app->setBody($content);
@@ -314,7 +315,7 @@ class PlgSystemFabrik extends JPlugin
 
 		// Ensure search doesn't go over memory limits
 		$memory = ini_get('memory_limit');
-		$memory = (int) FabrikString::rtrimword($memory, 'M') * 1000000;
+		$memory = (int) String::rtrimword($memory, 'M') * 1000000;
 		$usage = array();
 		$memSafety = 0;
 
@@ -442,7 +443,7 @@ class PlgSystemFabrik extends JPlugin
 						$o->href = $href;
 
 						// Need to make sure it's a valid date in MySQL format, otherwise J!'s code will pitch a fatal error
-						if (isset($oData->$date_element) && FabrikString::isMySQLDate($oData->$date_element))
+						if (isset($oData->$date_element) && String::isMySQLDate($oData->$date_element))
 						{
 							$o->created = $oData->$date_element;
 						}

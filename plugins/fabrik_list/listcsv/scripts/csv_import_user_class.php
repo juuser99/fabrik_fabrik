@@ -9,6 +9,7 @@
  */
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 /**
  *
@@ -187,7 +188,7 @@ class ImportCSVCreateUser
 		{
 			if ($app->isAdmin())
 			{
-				$app->enqueueMessage(FText::_('CANNOT SAVE THE USER INFORMATION'), 'message');
+				$app->enqueueMessage(Text::_('CANNOT SAVE THE USER INFORMATION'), 'message');
 				$app->enqueueMessage($user->getError(), 'error');
 			}
 
@@ -200,7 +201,7 @@ class ImportCSVCreateUser
 		{
 			if ($app->isAdmin())
 			{
-				$app->enqueueMessage(FText::_('CANNOT SAVE THE USER INFORMATION'), 'message');
+				$app->enqueueMessage(Text::_('CANNOT SAVE THE USER INFORMATION'), 'message');
 				$app->enqueueMessage($user->getError(), 'error');
 			}
 

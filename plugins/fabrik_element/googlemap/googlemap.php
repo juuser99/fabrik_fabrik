@@ -16,6 +16,8 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\GoogleMapHelper;
 use Fabrik\Helpers\HTML;
+use Fabrik\Helpers\String;
+use Fabrik\Helpers\Text;
 
 /**
  * Plugin element to render a Google map
@@ -463,7 +465,7 @@ class Googlemap extends Element
 		{
 			$ar = explode(":", $v);
 			$o->zoomlevel = count($ar) == 2 ? array_pop($ar) : $o->zoomlevel;
-			$v = FabrikString::ltrimword($ar[0], "(");
+			$v = String::ltrimword($ar[0], "(");
 			$v = rtrim($v, ")");
 			$o->coords = explode(",", $v);
 		}
@@ -491,7 +493,7 @@ class Googlemap extends Element
 		if (strstr($v, ","))
 		{
 			$ar = explode(":", $v);
-			$v = FabrikString::ltrimword($ar[0], "(");
+			$v = String::ltrimword($ar[0], "(");
 			$v = rtrim($v, ")");
 			$dms->coords = explode(",", $v);
 
@@ -746,7 +748,7 @@ class Googlemap extends Element
 				$layoutData = new stdClass;
 				$layoutData->id = $id;
 
-				$coords = FabrikString::mapStrToCoords($val);
+				$coords = String::mapStrToCoords($val);
 				$layoutData->coords = $coords->coords;
 				$layoutData->geoCodeEvent = $params->get('fb_gm_geocode_event', 'button');
 				$layoutData->geocode = $params->get('fb_gm_geocode');
@@ -765,7 +767,7 @@ class Googlemap extends Element
 			}
 			else
 			{
-				$str .= FText::_('PLG_ELEMENT_GOOGLEMAP_NO_LOCATION_SELECTED');
+				$str .= Text::_('PLG_ELEMENT_GOOGLEMAP_NO_LOCATION_SELECTED');
 			}
 
 			/*
@@ -807,10 +809,10 @@ class Googlemap extends Element
 		else
 		{
 			$aFields[] = $str;
-			$aAsFields[] = $db->quoteName($fullElName);
+			$aAsFields[] = $db->qn($fullElName);
 			$rawName = $fullElName . '_raw';
 			$aFields[] = $dbTable . '.' . $db->qn($this->element->get('name')) . ' AS ' . $db->qn($rawName);
-			$aAsFields[] = $db->quoteName($rawName);
+			$aAsFields[] = $db->qn($rawName);
 		}
 	}
 

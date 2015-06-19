@@ -20,6 +20,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Text;
+
 if (!function_exists('shFetchFormName'))
 {
 	/**
@@ -39,12 +41,12 @@ if (!function_exists('shFetchFormName'))
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 		$query->select('label')
-			->from($query->quoteName('#__fabrik_forms'))
+			->from($query->qn('#__fabrik_forms'))
 			->where('id = ' . $db->q($formid));
 		$db->setQuery($query);
 		$formName = $db->loadResult();
 
-		return isset($formName) ? FText::_($formName) : '';
+		return isset($formName) ? Text::_($formName) : '';
 	}
 }
 
@@ -67,12 +69,12 @@ if (!function_exists('shFetchListName'))
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 		$query->select('label')
-			->from($query->quoteName('#__fabrik_lists'))
+			->from($query->qn('#__fabrik_lists'))
 			->where('form_id = ' . $query->q($formid));
 		$db->setQuery($query);
 		$listName = $db->loadResult();
 
-		return isset($listName) ? FText::_($listName) : '';
+		return isset($listName) ? Text::_($listName) : '';
 	}
 }
 
@@ -120,7 +122,7 @@ if (!function_exists('shFetchTableName'))
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('label')
-			->from($query->quoteName('#__fabrik_lists'))
+			->from($query->qn('#__fabrik_lists'))
 			->where('id = ' . $query->q($listId));
 		$db->setQuery($query);
 		$tableName = $db->loadResult();
@@ -151,7 +153,7 @@ if (!function_exists('shFetchRecordName'))
 
 		// Get database table's name and slug first
 		$query->select('db_table_name, params')
-			->from($query->quoteName('#__fabrik_lists'))
+			->from($query->qn('#__fabrik_lists'))
 			->where('form_id = ' . $query->q($formid));
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -162,8 +164,8 @@ if (!function_exists('shFetchRecordName'))
 
 		// Get record's name
 		$query = $db->getQuery(true);
-		$query->select($query->quoteName($slug))
-			->from($query->quoteName($listName))
+		$query->select($query->qn($slug))
+			->from($query->qn($listName))
 			->where('id = ' . $query->q($rowId));
 		$db->setQuery($query);
 		$recordName = $db->loadResult();
@@ -191,12 +193,12 @@ if (!function_exists('shFetchVizName'))
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('label')
-			->from($query->quoteName('#__fabrik_visualizations'))
+			->from($query->qn('#__fabrik_visualizations'))
 			->where('id = ' . $query->q($id));
 		$db->setQuery($query);
 		$vizName = $db->loadResult();
 
-		return isset($vizName) ? FText::_($vizName) : '';
+		return isset($vizName) ? Text::_($vizName) : '';
 	}
 }
 
@@ -236,12 +238,12 @@ switch ($view)
 		if (isset($formid) && $rowId != '')
 		{
 			$config->get('fabrik_sef_customtxt_edit') == '' ? $edit = 'edit' : $edit = $config->get('fabrik_sef_customtxt_edit');
-			$title[] = shFetchFormName($formid) . '-' . $rowId . '-' . FText::_($edit);
+			$title[] = shFetchFormName($formid) . '-' . $rowId . '-' . Text::_($edit);
 		}
 		else
 		{
 			$config->get('fabrik_sef_customtxt_new') == '' ? $new = 'new' : $new = $config->get('fabrik_sef_customtxt_new');
-			$title[] = shFetchFormName($formid) . '-' . FText::_($new);
+			$title[] = shFetchFormName($formid) . '-' . Text::_($new);
 		}
 		break;
 

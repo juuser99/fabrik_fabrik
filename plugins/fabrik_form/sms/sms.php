@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\String\String;
+use Fabrik\Helpers\String;
 use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -168,14 +169,14 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 							}
 						}
 
-						$val = FabrikString::rtrimword($val, '<br />');
+						$val = String::rtrimword($val, '<br />');
 						$message .= $element->get('label') . ': ' . $val . "\r\n";
 					}
 				}
 			}
 		}
 
-		$message = FText::_('PLG_FORM_SMS_FROM') . $this->config->get('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
+		$message = Text::_('PLG_FORM_SMS_FROM') . $this->config->get('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
 
 		return $message;
 	}
