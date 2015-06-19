@@ -28,7 +28,7 @@
 				label="PLG_ELEMENT_CAPTCHA_METHOD_LABEL">
 				<option value="standard">Standard</option>
 				<option value="recaptcha">Recaptcha</option>
-				<option value="nocaptcha">Nocaptcha</option>
+				<option value="nocaptcha">Recaptcha2.0</option>
 				<option value="playthru">PlayThru</option>
 			</field>
 		</fieldset>
