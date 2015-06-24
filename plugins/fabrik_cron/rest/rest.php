@@ -8,13 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
 /**
  *  Determines if a row is deletable
@@ -24,7 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @since       3.0
  */
 
-class PlgFabrik_CronRest extends PlgFabrik_Cron
+class Rest extends Cron
 {
 	/**
 	 * Do the plugin action

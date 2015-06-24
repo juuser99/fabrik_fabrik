@@ -100,7 +100,6 @@ class FabrikControllerCron extends FabrikController
 	 *
 	 * @return   string  view name
 	 */
-
 	protected function getViewName()
 	{
 		if (!isset($this->viewName))
@@ -129,7 +128,6 @@ class FabrikControllerCron extends FabrikController
 	 *
 	 * @return  object  Reference to the view or an error.
 	 */
-
 	public function getView($name = '', $type = '', $prefix = '', $config = array())
 	{
 		$viewName = str_replace('FabrikControllerCron', '', get_class($this));

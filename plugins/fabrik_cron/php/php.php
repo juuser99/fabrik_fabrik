@@ -8,11 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
 /**
  * A cron task to run PHP code
@@ -22,7 +21,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @since       3.0
  */
 
-class PlgFabrik_Cronphp extends PlgFabrik_Cron
+class Php extends Cron
 {
 	/**
 	 * Check if the user can use the active element

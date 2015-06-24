@@ -8,14 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
 /**
  * A cron task to import gmail emails into a specified list
@@ -24,8 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.gmail
  * @since       3.0.7
  */
-
-class PlgFabrik_Crongmail extends PlgFabrik_Cron
+class Gmail extends Cron
 {
 	/**
 	 * Do the plugin action

@@ -9,14 +9,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\String;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
 /**
  * Fabrik Cron Job:
@@ -24,10 +24,9 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.gcalsync
- * @since       3.0
+ * @since       3.5
  */
-
-class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
+class Gcalsync extends Cron
 {
 	/**
 	 * Check if the user can use the plugin
@@ -37,7 +36,6 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -50,7 +48,6 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 	 *
 	 * @return  string
 	 */
-
 	protected function _getGcalShortId($long_id)
 	{
 		$matches = array();

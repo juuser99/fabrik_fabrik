@@ -8,14 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
-require_once COM_FABRIK_FRONTEND . '/models/importcsv.php';
 
 /**
  * Cron Import CSV class
@@ -25,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/importcsv.php';
  * @since       3.0
  */
 
-class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
+class Iportcsv extends Cron
 {
 	/**
 	 * Check if the user can use the active element

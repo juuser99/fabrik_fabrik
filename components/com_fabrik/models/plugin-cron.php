@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugins;
+namespace Fabrik\Plugins\Cron;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

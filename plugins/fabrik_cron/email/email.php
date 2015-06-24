@@ -8,15 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use JFactory;
 
 /**
  * A cron task to email records to a give set of users
@@ -25,8 +25,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.email
  * @since       3.0
  */
-
-class PlgFabrik_Cronemail extends PlgFabrik_Cron
+class Email extends Cron
 {
 	/**
 	 * Check if the user can use the plugin
@@ -36,7 +35,6 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -49,7 +47,6 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 	 *
 	 * @return  int  number of records updated
 	 */
-
 	public function process(&$data)
 	{
 		jimport('joomla.mail.helper');
