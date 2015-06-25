@@ -1,5 +1,7 @@
 <?php
 
+namespace Fabrik\Helpers;
+
 /**
  *
  * Borrowed from ...
@@ -74,4 +76,3 @@ Class GeoCode
 
 }
 
-?>

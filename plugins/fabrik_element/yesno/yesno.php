@@ -291,7 +291,7 @@ class Yesno extends Radiobutton
 	 */
 	public function getFilter($counter = 0, $normal = true)
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$elName = $this->getFullName(true, false);
 		$htmlId = $this->getHTMLId() . 'value';
 		$elName = String::safeColName($elName);

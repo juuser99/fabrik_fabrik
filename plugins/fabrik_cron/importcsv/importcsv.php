@@ -14,7 +14,9 @@ namespace Fabrik\Plugins\Cron;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
+use Fabrik\Admin\Models\Lizt;
+use JFolder;
+use Fabrik\Admin\Models\CsvImport;
 
 /**
  * Cron Import CSV class
@@ -23,8 +25,7 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik.cron.email
  * @since       3.0
  */
-
-class Iportcsv extends Cron
+class Importcsv extends Cron
 {
 	/**
 	 * Check if the user can use the active element
@@ -34,7 +35,6 @@ class Iportcsv extends Cron
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -45,7 +45,6 @@ class Iportcsv extends Cron
 	 *
 	 * @return  bool
 	 */
-
 	public function requiresTableData()
 	{
 		/* We don't need cron to load $data for us */
@@ -65,6 +64,7 @@ class Iportcsv extends Cron
 
 	protected function getListIdFromFileName($tableName)
 	{
+		// FIXME 3.5
 		// Get site's database
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
@@ -79,11 +79,10 @@ class Iportcsv extends Cron
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
+	 * @param   Lizt    &$listModel  plugin's list model
 	 *
 	 * @return  int  number of records run
 	 */
-
 	public function process(&$data, &$listModel)
 	{
 		$input = $this->app->input;
@@ -143,7 +142,7 @@ class Iportcsv extends Cron
 			}
 
 			Worker::log('plg.cron.cronimportcsv.information', "Starting import: $full_csvfile:  ");
-			$clsImportCSV = new \Fabrik\Admin\Models\CsvImport;
+			$clsImportCSV = new CsvImport;
 
 			if ($useTableName)
 			{

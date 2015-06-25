@@ -13,12 +13,13 @@ namespace Fabrik\Admin\Views\Visualization;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Fabrik\Helpers\HTML as HelperHTML;
-use \JFactory as JFactory;
+use Fabrik\Helpers\HTML as HelperHTML;
+use JFactory;
 use Fabrik\Admin\Helpers\Fabrik;
 use Fabrik\Helpers\Text;
-use \JToolBarHelper as JToolBarHelper;
-use \stdClass as stdClass;
+use JToolBarHelper;
+use stdClass;
+use Joomla\Registry\Registry;
 
 /**
  * View to edit a visualization.
@@ -32,14 +33,14 @@ class Html extends \Fabrik\Admin\Views\Html
 	/**
 	 * Form
 	 *
-	 * @var JForm
+	 * @var \JForm
 	 */
 	protected $form;
 
 	/**
 	 * Visualization item
 	 *
-	 * @var JTable
+	 * @var Registry
 	 */
 	protected $item;
 
@@ -71,11 +72,11 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		$this->addToolbar();
 
-		$srcs = HelperHTML::framework();
-		$srcs[] = 'media/com_fabrik/js/fabrik.js';
-		$srcs[] = 'administrator/components/com_fabrik/views/namespace.js';
-		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
-		$srcs[] = 'administrator/components/com_fabrik/views/visualization/adminvisualization.js';
+		$scripts = HelperHTML::framework();
+		$scripts[] = 'media/com_fabrik/js/fabrik.js';
+		$scripts[] = 'administrator/components/com_fabrik/views/namespace.js';
+		$scripts[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
+		$scripts[] = 'administrator/components/com_fabrik/views/visualization/adminvisualization.js';
 
 		$shim = array();
 		$dep = new stdClass;
@@ -85,14 +86,14 @@ class Html extends \Fabrik\Admin\Views\Html
 		HelperHTML::iniRequireJS($shim);
 
 		$opts = new stdClass;
-		$opts->plugin = $this->item->plugin;
+		$opts->plugin = $this->item->get('plugin');
 
 		$js = "
 	var options = " . json_encode($opts) . ";
 		Fabrik.controller = new AdminVisualization(options);
 ";
 
-		HelperHTML::script($srcs, $js);
+		HelperHTML::script($scripts, $js);
 
 		return parent::render();
 	}
@@ -110,12 +111,12 @@ class Html extends \Fabrik\Admin\Views\Html
 		$app = JFactory::getApplication();
 		$app->input->set('hidemainmenu', true);
 		$user = JFactory::getUser();
-		$isNew = ($this->item->id == 0);
+		$isNew = ($this->item->get('id', '') == '');
 		$userId = $user->get('id');
-		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
+		$checkedOut	= !($this->item->get('checked_out') == 0 || $this->item->get('checked_out') == $user->get('id'));
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_VISUALIZATION_NEW') : Text::_('COM_FABRIK_MANAGER_VISUALIZATION_EDIT');
-		$title .= $isNew ? '' : ' "' . $this->item->label . '"';
+		$title .= $isNew ? '' : ' "' . $this->item->get('label') . '"';
 		JToolBarHelper::title($title, 'visualization.png');
 
 		if ($isNew)
@@ -136,7 +137,7 @@ class Html extends \Fabrik\Admin\Views\Html
 			if (!$checkedOut)
 			{
 				// Since it's an existing record, check the edit permission, or fall back to edit own if the owner.
-				if ($canDo->get('core.edit') || ($canDo->get('core.edit.own') && $this->item->created_by == $userId))
+				if ($canDo->get('core.edit') || ($canDo->get('core.edit.own') && $this->item->get('created_by') == $userId))
 				{
 					JToolBarHelper::apply('visualization.apply', 'JTOOLBAR_APPLY');
 					JToolBarHelper::save('visualization.save', 'JTOOLBAR_SAVE');

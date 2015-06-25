@@ -405,7 +405,7 @@ class FabrikModelCalendar extends Visualization
 		$tz = new DateTimeZone($tzoffset);
 		$w = new Worker;
 		$this->setupEvents();
-		$calendar = $this->getRow();
+		$calendar = $this->getItem();
 		$aLegend = "$this->calName.addLegend([";
 		$jsevents = array();
 		$input = $app->input;
@@ -576,7 +576,7 @@ class FabrikModelCalendar extends Visualization
 		$ref = $this->getJSRenderContext();
 
 		// @TODO: json encode the returned value and move to the view
-		$calendar = $this->getRow();
+		$calendar = $this->getItem();
 		$aLegend = "$ref.addLegend([";
 		$jsevents = array();
 
@@ -613,8 +613,8 @@ class FabrikModelCalendar extends Visualization
 	{
 		if (is_null($this->calName))
 		{
-			$calendar = $this->getRow();
-			$this->calName = 'oCalendar' . $calendar->id;
+			$calendar = $this->getItem();
+			$this->calName = 'oCalendar' . $calendar->get('id');
 		}
 
 		return $this->calName;

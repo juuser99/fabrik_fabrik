@@ -51,7 +51,7 @@ class IsUniqueValue extends Validation
 
 		$params = $this->getParams();
 		$element = $elementModel->getElement();
-		$listModel = $elementModel->getlistModel();
+		$listModel = $elementModel->getListModel();
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 		$lookuptable = $db->qn($table->get('list.db_table_name'));

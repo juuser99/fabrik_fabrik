@@ -15,6 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
+use JRoute;
+use JFactory;
 
 /**
  * A cron task to email records to a give set of users

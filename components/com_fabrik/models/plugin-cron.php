@@ -14,7 +14,8 @@ namespace Fabrik\Plugins\Cron;
 defined('_JEXEC') or die('Restricted access');
 
 use \JTable as JTable;
-use \FabTable;
+use FabTable;
+use Fabrik\Plugins\Plugin;
 
 /**
  * Fabrik Plugin Cron Model

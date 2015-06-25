@@ -17,6 +17,7 @@ use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\HTML;
 use JFactory;
+use Fabrik\Admin\Models\Lizt;
 
 /**
  * A cron task to email records to a give set of users
@@ -124,7 +125,7 @@ class Email extends Cron
 		if (!empty($updates) && trim($field) != '')
 		{
 			// Do any update found
-			$listModel = new \Fabrik\Admin\Models\Lizt;
+			$listModel = new Lizt;
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
 			$field = $params->get('cronemail-updatefield');

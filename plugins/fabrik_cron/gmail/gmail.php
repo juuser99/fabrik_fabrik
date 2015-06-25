@@ -15,6 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\String;
 use Fabrik\Helpers\Text;
+use Fabrik\Admin\Models\Lizt;
+use RuntimeException;
 
 /**
  * A cron task to import gmail emails into a specified list
@@ -29,11 +31,12 @@ class Gmail extends Cron
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       Data
-	 * @param   JModel  &$listModel  List model
+	 * @param   Lizt  &$listModel  List model
+	 *
+	 * @throws RuntimeException
 	 *
 	 * @return  int  number of records updated
 	 */
-
 	public function process(&$data, &$listModel)
 	{
 		$params = $this->getParams();
@@ -50,14 +53,12 @@ class Gmail extends Cron
 		$inboxes = explode(',', $params->get('plugin-options.inboxes', 'INBOX'));
 
 		$deleteMail = false;
-		$p = new stdClass;
 
 		$fromField = $params->get('plugin-options.from');
 		$titleField = $params->get('plugin-options.title');
 		$dateField = $params->get('plugin-options.date');
 		$contentField = $params->get('plugin-options.content');
 
-		$storeData = array();
 		$numProcessed = 0;
 
 		foreach ($inboxes as $inbox)
@@ -68,17 +69,16 @@ class Gmail extends Cron
 			if (!$mbox)
 			{
 				throw new RuntimeException(Text::_("PLG_CRON_GMAIL_ERROR_CONNECT") . imap_last_error());
-				continue;
 			}
 
 			$MC = imap_check($mbox);
 			$mailboxes = imap_list($mbox, $server, '*');
-			$lastid = $params->get('plugin-options.lastid', 0);
+			$lastId = $params->get('plugin-options.lastid', 0);
 
-			if ($lastid == 0)
+			if ($lastId == 0)
 			{
 				$result = imap_fetch_overview($mbox, "1:$MC->Nmsgs");
-				echo $lastid;
+				echo $lastId;
 
 				// Retrieve emails by message number
 				$mode = 0;
@@ -86,7 +86,7 @@ class Gmail extends Cron
 			else
 			{
 				// Retrieve emails by message id;
-				$result = imap_fetch_overview($mbox, "$lastid:*", FT_UID);
+				$result = imap_fetch_overview($mbox, "$lastId:*", FT_UID);
 
 				if (count($result) > 0)
 				{
@@ -94,15 +94,15 @@ class Gmail extends Cron
 				}
 			}
 			// Fetch an overview for all messages in INBOX
-			// $result = imap_fetch_overview($mbox, "1:$lastid", $mode);
+			// $result = imap_fetch_overview($mbox, "1:$lastId", $mode);
 
 			$numProcessed += count($result);
 
 			foreach ($result as $overview)
 			{
-				if ($overview->uid > $lastid)
+				if ($overview->uid > $lastId)
 				{
-					$lastid = $overview->uid;
+					$lastId = $overview->uid;
 				}
 
 				$content = '';
@@ -232,7 +232,7 @@ class Gmail extends Cron
 			}
 		}
 
-		$params->set('plugin-options.lastid', $lastid);
+		$params->set('plugin-options.lastid', $lastId);
 		$this->_row->params = $params->toString();
 		$this->_row->store();
 

@@ -348,7 +348,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	protected function _storeInSession()
 	{
 		$formModel = $this->getModel();
-		$listModel = $formModel->getlistModel();
+		$listModel = $formModel->getListModel();
 		$input = $this->app->input;
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$store = array();

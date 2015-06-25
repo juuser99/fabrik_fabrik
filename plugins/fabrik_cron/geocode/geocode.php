@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\String;
+use Fabrik\Helpers\GeoCode as GeoCodeHelper;
+use Fabrik\Admin\Models\Lizt;
 
 require_once JPATH_SITE . '/plugins/fabrik_cron/geocode/libs/gmaps2.php';
 
@@ -45,7 +47,7 @@ class Geocode extends Cron
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
+	 * @param   Lizt    &$listModel  plugin's list model
 	 *
 	 * @return  int  number of records run
 	 */
@@ -96,7 +98,7 @@ class Geocode extends Cron
 		$geocode_country_element = $geocode_country_element_long ? String::shortColName($geocode_country_element_long) : '';
 		$geocode_when = $params->get('geocode_when', '1');
 
-		$gmap = new GeoCode;
+		$gmap = new GeoCodeHelper;
 
 		// Run through our table data
 		$total_encoded = 0;

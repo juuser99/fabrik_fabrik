@@ -43,7 +43,7 @@ class FabrikViewCoverflow extends JViewLegacy
 		$model = $this->getModel();
 		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)));
 		$model->setId($id);
-		$row = $model->getVisualization();
+		$row = $model->getItem();
 
 		if (!$model->canView())
 		{

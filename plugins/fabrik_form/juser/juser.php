@@ -132,7 +132,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($params->get('synchro_users') == 1)
 		{
-			$listModel = $formModel->getlistModel();
+			$listModel = $formModel->getListModel();
 			$fabrikDb = $listModel->getDb();
 			$tableName = $listModel->getTable()->get('list.db_table_name');
 
@@ -368,7 +368,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		 * but to still store any joined rows
 		 */
 		$prefix = $this->config->get('dbprefix');
-		$ftable = str_replace('#__', $prefix, $formModel->getlistModel()->getTable()->get('list.db_table_name'));
+		$ftable = str_replace('#__', $prefix, $formModel->getListModel()->getTable()->get('list.db_table_name'));
 		$jos_users = $prefix . 'users';
 
 		if ($ftable == $jos_users)

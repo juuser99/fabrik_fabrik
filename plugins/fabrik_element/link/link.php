@@ -67,7 +67,7 @@ class Link extends Element
 	 */
 	public function renderListData($data, stdClass &$thisRow)
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$params = $this->getParams();
 		$target = $params->get('link_target', '');
 		$smart_link = $params->get('link_smart_link', false);
@@ -119,7 +119,7 @@ class Link extends Element
 			$data = Worker::JSONtoData($data, true);
 		}
 
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$params = $this->getParams();
 
 		if (is_array($data))
@@ -410,7 +410,7 @@ class Link extends Element
 
 	public function elementJavascript($repeatCounter)
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$params = $this->getParams();
 		$target = $params->get('link_target', '');
 		$smart_link = $params->get('link_smart_link', false);

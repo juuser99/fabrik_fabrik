@@ -714,7 +714,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$event = $db->q('COMMENT_ADDED');
 		$user_id = (int) $this->user->get('id');
 		$rowId = $input->get('rowid', '', 'string');
-		$ref = $db->q($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowId);
+		$ref = $db->q($formModel->getListModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowId);
 		$date = $db->q(JFactory::getDate()->toSql());
 		$query = $db->getQuery(true);
 		$query->insert('#__fabrik_notification_event')
@@ -753,7 +753,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$user_id = (int) $this->user->get('id');
 		$rowId = $input->get('rowid', '', 'string');
 		$label = $db->q($input->get('label', '', 'string'));
-		$ref = $db->q($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowId);
+		$ref = $db->q($formModel->getListModel()->getTable()->id . '.' . $formModel->get('id') . '.' . $rowId);
 		$query = $db->getQuery(true);
 		$query->insert('#__fabrik_notification')
 		->set(array('reason = ' . $db->q('commentor'), 'user_id = ' . $user_id, 'reference = ' . $ref, 'label = ' . $label));
@@ -886,7 +886,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		}
 
 		// Notify original poster (hack for ideenbus)
-		$listModel = $formModel->getlistModel();
+		$listModel = $formModel->getListModel();
 		$rowdata = $listModel->getRow($row->row_id);
 
 		if (isset($rowdata->ide_idea___email_raw) && !in_array($rowdata->ide_idea___email_raw, $sentto))

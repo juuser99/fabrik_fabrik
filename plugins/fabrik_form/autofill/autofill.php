@@ -116,7 +116,7 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 			$input->set($element, $value, 'get');
 			$model =  new \Fabrik\Admin\Models\Form;
 			$model->setId($formId);
-			$listModel = $model->getlistModel();
+			$listModel = $model->getListModel();
 		}
 		else
 		{

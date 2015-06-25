@@ -93,7 +93,7 @@ class Googleometer extends Element
 	 */
 	private function getRange()
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$db = $listModel->getDb();
 		$element = $this->getDataElement();
 		$name = $db->qn($element->getElement()->get('name'));

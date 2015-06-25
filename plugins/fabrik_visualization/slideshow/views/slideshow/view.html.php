@@ -43,7 +43,7 @@ class FabrikViewSlideshow extends JViewLegacy
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
-		$this->row = $model->getVisualization();
+		$this->row = $model->getItem();
 
 		if (!$model->canView())
 		{

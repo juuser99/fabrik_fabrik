@@ -15,7 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\String;
 use Fabrik\Admin\Helpers\Fabrik;
-use \JFactory as JFactory;
+use JFactory;
+use JFile;
 
 require_once JPATH_SITE . '/components/com_fabrik/autoloader.php';
 
@@ -42,7 +43,7 @@ if (String::strpos($cName, '.') != false)
 
 	$path = JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/controllers/' . $name . '.php';
 
-	if (\JFile::exists($path))
+	if (JFile::exists($path))
 	{
 		require_once $path;
 		$controller = $type . $name;

@@ -300,6 +300,7 @@ class PluginManager extends Base
 	 */
 	public function loadPlugIn($className = '', $group = '')
 	{
+		echo "load plugin $className, $group <br>";
 		$group = String::strtolower($group);
 		/* $$$ rob ONLY import the actual plugin you need otherwise ALL $group plugins are loaded regardless of whether they
 		* are used or not memory changes:

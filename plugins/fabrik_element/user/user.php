@@ -701,7 +701,7 @@ class User extends Databasejoin
 	 */
 	public function getFilter($counter = 0, $normal = true)
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$formModel = $listModel->getFormModel();
 		$elName2 = $this->getFullName(false, false);
 

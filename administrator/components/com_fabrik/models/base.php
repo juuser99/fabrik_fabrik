@@ -10,26 +10,30 @@
  */
 namespace Fabrik\Admin\Models;
 
-use \JForm as JForm;
+use JForm;
 use Joomla\Utilities\ArrayHelper;
-use \JDate as Date;
+use JFolder;
+use JDate;
 use Fabrik\Helpers\Text;
 use Fabrik\Storage\MySql as Storage;
-use \JPluginHelper as JPluginHelper;
-use Fabrik\Helpers\Worker as Worker;
-use \JHTML as JHTML;
-use \stdClass as stdClass;
-use Joomla\Registry\Registry as Registry;
-use \JFactory as JFactory;
-use \Fabrik\Helpers\String;
-use \JEventDispatcher as JEventDispatcher;
-use \Fabrik\Plugins\Element\Element as Element;
-use \JComponentHelper as JComponentHelper;
-use Fabrik\Admin\Helpers\Fabrik as Fabrik;
+use JPluginHelper;
+use Fabrik\Helpers\Worker;
+use JHTML;
+use stdClass;
+use Joomla\Registry\Registry;
+use JFactory;
+use Fabrik\Helpers\String;
+use JEventDispatcher;
+use Fabrik\Plugins\Element\Element;
+use JComponentHelper;
+use Fabrik\Admin\Helpers\Fabrik;
+use Fabrik\Admin\Models\Join;
 use Joomla\String\Inflector;
-use \JFile as JFile;
-use \Fabrik\Helpers\HTML;
-use \RuntimeException;
+use JFile;
+use Fabrik\Helpers\HTML;
+use RuntimeException;
+use JModelBase;
+use JFilterInput;
 
 /**
  * Fabrik Base Admin Model
@@ -38,7 +42,7 @@ use \RuntimeException;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class Base extends \JModelBase
+class Base extends JModelBase
 {
 	/**
 	 * List of items
@@ -178,7 +182,7 @@ class Base extends \JModelBase
 	 */
 	public function getId()
 	{
-		return \JFilterInput::getInstance()->clean($this->get('id'), 'WORD');
+		return JFilterInput::getInstance()->clean($this->get('id'), 'WORD');
 	}
 
 	/**
@@ -191,12 +195,11 @@ class Base extends \JModelBase
 	 */
 	public function getItem($id = null)
 	{
-		if (is_null($id))
+		/*if (is_null($id))
 		{
 			$id = $this->getId();
-		}
-
-		$id = \JFilterInput::getInstance()->clean($this->get('id'), 'WORD');
+		}*/
+		$id = JFilterInput::getInstance()->clean($this->get('id'), 'WORD');
 		// @TODO - save & load from session?
 
 		if ($id === '')
@@ -211,8 +214,6 @@ class Base extends \JModelBase
 		$item = json_decode($json);
 
 		return new Registry($item);
-
-		return $item;
 	}
 
 	/**
@@ -228,7 +229,7 @@ class Base extends \JModelBase
 	protected final function getViews()
 	{
 		$path  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views';
-		$files = \JFolder::files($path, '.json', false, true);
+		$files = JFolder::files($path, '.json', false, true);
 		$items = array();
 
 		foreach ($files as $file)
@@ -398,7 +399,7 @@ class Base extends \JModelBase
 		$this->collation($data);
 
 		$file  = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $data->get('view') . '.json';
-		$isNew = !\JFile::exists($file);
+		$isNew = !JFile::exists($file);
 
 		if (!$isNew)
 		{
@@ -698,16 +699,18 @@ class Base extends \JModelBase
 	/**
 	 * Get the groups list model
 	 *
+	 * @param   string  id - used in visualization model
+	 *
 	 * @return  object    list model
 	 */
-	public function getListModel()
+	public function getListModel($id = null)
 	{
 		if (isset($this->listModel))
 		{
 			return $this->listModel;
 		}
 
-		$this->listModel = $this->getFormModel()->getlistModel();
+		$this->listModel = $this->getFormModel()->getListModel();
 
 		return $this->listModel;
 	}
@@ -984,7 +987,7 @@ class Base extends \JModelBase
 	 */
 	public function checkout()
 	{
-		$now  = new Date;
+		$now  = new JDate;
 		$item = $this->getItem();
 		$view = $item->get('view');
 		$item->set('checked_out', $this->user->get('id'));
@@ -1025,12 +1028,12 @@ class Base extends \JModelBase
 	{
 		// Include the content plugins for the on delete events.
 		JPluginHelper::importPlugin('content');
-		$dispatcher = \JEventDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$count      = 0;
 
 		if (!$this->can('delete'))
 		{
-			$this->app->enqueueMessage(\Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+			$this->app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
 
 			return $count;
 		}
@@ -1040,7 +1043,7 @@ class Base extends \JModelBase
 			$dispatcher->trigger('onContentBeforeDelete', array('com_fabrik.list', $id));
 			$file = JPATH_COMPONENT_ADMINISTRATOR . '/models/views/' . $id . '.json';
 
-			if (\JFile::delete($file))
+			if (JFile::delete($file))
 			{
 				$count++;
 			}
@@ -1061,7 +1064,7 @@ class Base extends \JModelBase
 	public function drop($ids = array())
 	{
 		JPluginHelper::importPlugin('content');
-		$dispatcher = \JEventDispatcher::getInstance();
+		$dispatcher = JEventDispatcher::getInstance();
 		$dbPrefix   = $this->app->get('dbprefix');
 
 		foreach ($ids as $id)
@@ -1475,7 +1478,7 @@ class Base extends \JModelBase
 		$aOldJoins       = $db->loadObjectList();
 		$params          = $data['params'];
 		$aOldJoinsToKeep = array();
-		$joinModel       = new \Fabrik\Admin\Models\Join;
+		$joinModel       = new Join;
 		$joinIds         = ArrayHelper::getValue($params, 'join_id', array());
 		$joinTypes       = ArrayHelper::getValue($params, 'join_type', array());
 		$joinTableFrom   = ArrayHelper::getValue($params, 'join_from_table', array());

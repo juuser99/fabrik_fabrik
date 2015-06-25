@@ -71,7 +71,7 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		$document->addScript($lib . 'src/models/lineChart.js');
 		$document->addScript($lib . 'src/models/multiBar.js');
 		$document->addScript($lib . 'src/models/multiBarChart.js');
-		$this->row = $model->getVisualization();
+		$this->row = $model->getItem();
 
 		$this->requiredFiltersFound = $model->getRequiredFiltersFound();
 		$params = $model->getParams();

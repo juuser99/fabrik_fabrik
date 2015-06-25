@@ -298,7 +298,7 @@ class FabrikModelMedia extends Visualization
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$params = $this->getParams();
-		$viz = $this->getVisualization();
+		$viz = $this->getItem();
 		$opts = new stdClass;
 		$opts->which_player = $params->get('media_which_player', 'jw');
 

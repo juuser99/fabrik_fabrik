@@ -44,7 +44,7 @@ class FabrikViewCalendar extends JViewLegacy
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$id = $input->get('id', $usersConfig->get('visualizationid', $input->get('visualizationid', 0)));
 		$model->setId($id);
-		$this->row = $model->getVisualization();
+		$this->row = $model->getItem();
 
 		if (!$model->canView())
 		{
@@ -216,7 +216,7 @@ class FabrikViewCalendar extends JViewLegacy
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
 		$rows = $model->getEventLists();
 		$o = $model->getAddStandardEventFormInfo();
-		$calendar = $model->getVisualization();
+		$calendar = $model->getItem();
 		$options = array();
 		$options[] = JHTML::_('select.option', '', Text::_('PLG_VISUALIZATION_CALENDAR_PLEASE_SELECT'));
 

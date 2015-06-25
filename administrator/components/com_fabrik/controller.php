@@ -95,6 +95,7 @@ class Controller extends \JControllerBase
 			case 'cancel':
 				$model->storeFormState(array());
 				$this->app->redirect($listUrl);
+				break;
 			case 'unpublish':
 				$model->unpublish($ids);
 				$msg = 'COM_FABRIK_' . strtoupper($viewName) . '_N_ITEMS_UNPUBLISHED';

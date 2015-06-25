@@ -272,7 +272,7 @@ class FabrikModelChart extends Visualization
 		}
 
 		$qs .= '&amp;' . $params->get('chart_custom');
-		$return .= $qs . '" alt="' . $this->getRow()->label . '" />';
+		$return .= $qs . '" alt="' . $this->getItem()->get('label') . '" />';
 		$this->image = $return;
 
 		return $return;

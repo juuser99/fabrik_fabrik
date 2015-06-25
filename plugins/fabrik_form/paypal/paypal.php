@@ -571,7 +571,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		if ($ret_msg)
 		{
 			$w = new Worker;
-			$listModel = $formModel->getlistModel();
+			$listModel = $formModel->getListModel();
 			$row = $listModel->getRow($rowId);
 			$ret_msg = $w->parseMessageForPlaceHolder($ret_msg, $row);
 
@@ -626,7 +626,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		// Pretty sure they are added but double add
 		$formModel = new \Fabrik\Admin\Models\Form;
 		$formModel->setId($formid);
-		$listModel = $formModel->getlistModel();
+		$listModel = $formModel->getListModel();
 		$params = $formModel->getParams();
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();

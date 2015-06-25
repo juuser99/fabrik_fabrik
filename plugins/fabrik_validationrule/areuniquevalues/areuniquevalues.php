@@ -55,7 +55,7 @@ class AreUniqueValues extends Validation
 
 		$params     = $this->getParams();
 		$otherField = $params->get('areuniquevalues-otherfield', '');
-		$listModel  = $elementModel->getlistModel();
+		$listModel  = $elementModel->getListModel();
 		$table      = $listModel->getTable();
 
 		if ((int) $otherField !== 0)

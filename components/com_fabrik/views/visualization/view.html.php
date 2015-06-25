@@ -45,7 +45,7 @@ class FabrikViewVisualization extends JViewLegacy
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model->setId($input->get('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
-		$visualization = $model->getVisualization();
+		$visualization = $model->getItem();
 		$params = $model->getParams();
 		$pluginManager = new PluginManager;
 		$plugin = $pluginManager->getPlugIn($visualization->plugin, 'visualization');

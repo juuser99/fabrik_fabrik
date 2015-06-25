@@ -13,6 +13,8 @@ namespace Fabrik\Plugins\Cron;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Admin\Models\Lizt;
+
 /**
  * A cron task to run PHP code
  *
@@ -31,7 +33,6 @@ class Php extends Cron
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -41,12 +42,11 @@ class Php extends Cron
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
+	 * @param   Lizt    &$listModel  plugin's list model
 	 *
 	 * @return  int  number of records run, you can set this by setting the varaible $processed
 	 * in either your included script in php code.
 	 */
-
 	public function process(&$data, &$listModel)
 	{
 		$params = $this->getParams();

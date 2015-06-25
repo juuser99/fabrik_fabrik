@@ -16,7 +16,13 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\String;
-
+use RuntimeException;
+use Zend_Gdata_App_AuthException;
+use Zend_Gdata_ClientLogin;
+use Zend_Gdata_Calendar;
+use JDate;
+use Fabrik\Admin\Models\Lizt;
+use Zend_Loader;
 
 /**
  * Fabrik Cron Job:
@@ -66,7 +72,9 @@ class Gcalsync extends Cron
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       Selected data
-	 * @param   object  &$listModel  List model
+	 * @param   Lizt    &$listModel  List model
+	 *
+	 * @throws RuntimeException
 	 *
 	 * @return number of records updated
 	 */
@@ -88,7 +96,6 @@ class Gcalsync extends Cron
 			$gcal_user = $matches[1];
 			$gcal_visibility = $matches[2];
 			$gcal_projection = $matches[3];
-			$gcal_email = urldecode($gcal_user);
 
 			// Grab the table model and find table name and PK
 			$table = $listModel->getTable();
@@ -148,7 +155,7 @@ class Gcalsync extends Cron
 			if ($gcal_userid_element_long)
 			{
 				$query = $db->getQuery(true);
-				$query->select('id')->from('#__users')->whre('email = ' . $db->q('$gcal_email'));
+				$query->select('id')->from('#__users')->where('email = ' . $db->q('$gcal_email'));
 				$db->setQuery($query);
 				$our_userid = $db->loadResult();
 
@@ -162,13 +169,10 @@ class Gcalsync extends Cron
 			// Include the Zend stuff
 			$path = JPATH_SITE . '/libraries';
 			set_include_path(get_include_path() . PATH_SEPARATOR . $path);
-			$path = get_include_path();
 
 			if (!file_exists(JPATH_SITE . '/libraries/Zend/Loader.php'))
 			{
 				throw new RuntimeException('Please install the Zend gdata from library http://framework.zend.com/download/gdata', 500);
-
-				return;
 			}
 
 			require_once 'Zend/Loader.php';
@@ -231,9 +235,6 @@ class Gcalsync extends Cron
 			$query->setVisibility($gcal_visibility);
 			$query->setProjection($gcal_projection);
 			$eventFeed = $gdataCal->getCalendarEventFeed($query);
-
-			// Build an array of the events from the feed, indexed by the Google ID
-			$event_ids = array();
 
 			foreach ($eventFeed as $key => $event)
 			{

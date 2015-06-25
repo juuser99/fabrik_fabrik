@@ -19,22 +19,22 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Validator;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
-use \stdClass as stdClass;
-use Joomla\Registry\Registry as Registry;
-use \JTable as JTable;
-use \FabTable as FabTable;
+use stdClass;
+use Joomla\Registry\Registry;
+use JTable;
+use FabTable;
 use Fabrik\Helpers\String;
-use \JPath as JPath;
-use \Fabrik\Helpers\HTML;
-use \JFolder as JFolder;
+use JPath;
+use Fabrik\Helpers\HTML;
 use Fabrik\Helpers\Text;
-use \JFile as JFile;
-use \JFactory as JFactory;
-use \JComponentHelper as JComponentHelper;
-use \Fabrik\Admin\Models\Lizt as LiztModel;
-use \Fabrik\Admin\Models\Group;
-use \RuntimeException;
-use \ErrorException;
+use JFile;
+use JFactory;
+use JComponentHelper as JComponentHelper;
+use Fabrik\Admin\Models\Lizt as LiztModel;
+use Fabrik\Admin\Models\Group;
+use RuntimeException;
+use ErrorException;
+use Fabrik\Plugins\Plugin;
 
 /**
  * Fabrik Element Model
@@ -42,7 +42,7 @@ use \ErrorException;
  * @package  Fabrik
  * @since    3.0
  */
-class Element extends \Fabrik\Plugins\Plugin
+class Element extends Plugin
 {
 	/**
 	 * Element id

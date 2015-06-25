@@ -79,7 +79,7 @@ class FabrikModelGooglemap extends Visualization
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$params = $this->getParams();
-		$viz = $this->getVisualization();
+		$viz = $this->getItem();
 
 		$opts = new stdClass;
 		$opts->lat = (float) $params->get('fb_gm_default_lat', 0);
@@ -166,7 +166,7 @@ class FabrikModelGooglemap extends Visualization
 		$params = $this->getParams();
 		$lines = array();
 		$polyelements = (array) $params->get('fb_gm_polyline_element');
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 		$c = 0;
 
 		foreach ($listModels as $listModel)
@@ -296,7 +296,7 @@ class FabrikModelGooglemap extends Visualization
 
 		foreach ($listIds as $listId)
 		{
-			$listModel = $this->getlistModel($listId);
+			$listModel = $this->getListModel($listId);
 
 			$template = ArrayHelper::getValue($templates, $c, '');
 			/**

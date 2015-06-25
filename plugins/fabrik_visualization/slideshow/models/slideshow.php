@@ -318,7 +318,7 @@ class FabrikModelSlideshow extends Visualization
 	public function getJS()
 	{
 		$params = $this->getParams();
-		$viz = $this->getVisualization();
+		$viz = $this->getItem();
 
 		$use_thumbs = $params->get('slideshow_viz_thumbnails', 0);
 		$use_captions = $params->get('slideshow_viz_caption', '') == '' ? false : true;
@@ -335,7 +335,7 @@ class FabrikModelSlideshow extends Visualization
 		$opts->slideshow_pan = (int) $params->get('slideshow_viz_pan', 20);
 		$opts->slideshow_thumbnails = $use_thumbs ? true : false;
 		$opts->slideshow_captions = $use_captions ? true : false;
-		$opts->container = "slideshow_viz_" . $this->getVisualization()->id;
+		$opts->container = "slideshow_viz_" . $this->getItem()->get('id');
 		$opts->liveSite = COM_FABRIK_LIVESITE;
 		$opts = json_encode($opts);
 		$ref = $this->getJSRenderContext();

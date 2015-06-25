@@ -163,7 +163,7 @@ class Rating extends Element
 		}
 		else
 		{
-			$list = $this->getlistModel()->getTable();
+			$list = $this->getListModel()->getTable();
 			$listId = $list->get('id');
 			$formId = $list->get('list.form_id');
 			$d = $this->getListModel()->getData();
@@ -314,7 +314,7 @@ class Rating extends Element
 
 		HTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'form', false);
 
-		$listId = $this->getlistModel()->getTable()->get('id');
+		$listId = $this->getListModel()->getTable()->get('id');
 		$formId = $input->getString('formid');
 		$rowId = $this->getFormModel()->getRowId();
 
@@ -537,7 +537,7 @@ class Rating extends Element
 
 		$id = $this->getHTMLId($repeatCounter);
 		$data = $this->getFormModel()->data;
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$listId = $listModel->getTable()->get('id');
 		$formId = $listModel->getFormModel()->getId();
 		$row_id = $input->get('rowid', '', 'string');
@@ -575,7 +575,7 @@ class Rating extends Element
 	{
 		$params = $this->getParams();
 		$id = $this->getHTMLId();
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$list = $listModel->getTable();
 		$opts = new stdClass;
 		$opts->listid = $list->get('id');

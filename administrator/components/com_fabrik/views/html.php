@@ -30,7 +30,6 @@ defined('_JEXEC') or die('Restricted access');
  */
 class Html Extends \JViewHtml
 {
-
 	/**
 	 * @var JApplicationCms
 	 */

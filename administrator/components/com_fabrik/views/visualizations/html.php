@@ -13,12 +13,12 @@ namespace Fabrik\Admin\Views\Visualizations;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \JHtml as JHtml;
-use \JToolBarHelper as JToolBarHelper;
-use \JHtmlSidebar as JHtmlSidebar;
+use JHtml;
+use JToolBarHelper;
+use JHtmlSidebar;
 use Fabrik\Helpers\Text;
 use Fabrik\Admin\Helpers\Fabrik;
-use \JFactory as JFactory;
+use JFactory;
 use \Fabrik\Helpers\HTML as HelperHTML;
 
 /**
@@ -40,7 +40,7 @@ class Html extends \Fabrik\Admin\Views\Html
 	/**
 	 * Pagination
 	 *
-	 * @var  JPagination
+	 * @var  \JPagination
 	 */
 	protected $pagination;
 
@@ -51,12 +51,18 @@ class Html extends \Fabrik\Admin\Views\Html
 	 */
 	protected $state;
 
+
+	/**
+	 * Sidebar html
+	 * @var string
+	 */
+	protected $sidebar = '';
+
 	/**
 	 * Render the view
 	 *
-	 * @return  void
+	 * @return  string
 	 */
-
 	public function render()
 	{
 		// Initialise variables.
@@ -80,10 +86,8 @@ class Html extends \Fabrik\Admin\Views\Html
 	 *
 	 * @return  void
 	 */
-
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_VISUALIZATIONS'), 'visualizations.png');
 

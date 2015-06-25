@@ -778,7 +778,7 @@ class Googlemap extends Element
 	{
 		$dbTable = $this->actualTableName();
 		$db = Worker::getDbo();
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$table = $listModel->getTable();
 		$fullElName = ArrayHelper::getValue($opts, 'alias', $dbTable . '___' . $this->element->get('name'));
 		$dbTable = $db->qn($dbTable);

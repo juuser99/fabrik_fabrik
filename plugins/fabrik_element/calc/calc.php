@@ -337,7 +337,7 @@ class Calc extends Element
 		{
 			$element = $this->getElement();
 			$cal = $params->get('calc_calculation', '');
-			$listModel = $this->getlistModel();
+			$listModel = $this->getListModel();
 			$formModel = $this->getFormModel();
 			$data = ArrayHelper::fromObject($row);
 			$data['rowid'] = $data['__pk_val'];
@@ -690,10 +690,10 @@ class Calc extends Element
 	public function elementListJavascript()
 	{
 		$id = $this->getHTMLId();
-		$list = $this->getlistModel()->getTable();
+		$list = $this->getListModel()->getTable();
 		$opts = new stdClass;
 		$opts->listid = $list->get('id');
-		$opts->listRef = 'list_' . $this->getlistModel()->getRenderContext();
+		$opts->listRef = 'list_' . $this->getListModel()->getRenderContext();
 		$opts->formid = $this->getFormModel()->getId();
 		$opts->elid = $this->getElement()->get('id');
 		$opts = json_encode($opts);

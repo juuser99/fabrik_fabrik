@@ -1273,7 +1273,7 @@ class Group extends Base implements ModelGroupInterface
 			$this->form = new Form;
 			$this->form->set('id', $formId);
 			$this->form->getForm();
-			$this->form->getlistModel();
+			$this->form->getListModel();
 		}
 
 		return $this->form;
@@ -1998,6 +1998,6 @@ class Group extends Base implements ModelGroupInterface
 	 */
 	public function getListModel()
 	{
-		return $this->getFormModel()->getlistModel();
+		return $this->getFormModel()->getListModel();
 	}
 }

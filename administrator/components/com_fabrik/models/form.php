@@ -1403,7 +1403,7 @@ class Form extends View implements ModelFormFormInterface
 	 */
 	public function getJoinGroupIds($joins = null)
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 
 		if (is_null($joins))
 		{

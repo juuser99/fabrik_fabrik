@@ -141,7 +141,7 @@ $listDir   = $this->state->get('list.direction');
 							<td><?php echo JHtml::_('grid.id', $i, $item->view); ?></td>
 							<td>
 								<?php if ($item->checked_out) : ?>
-									<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'lists.', $canCheckin); ?>
+									<?php echo JHtml::_('jgrid.checkedout', $i, JFactory::getUser($item->checked_out)->get('name'), $item->checked_out_time, 'lists.', $canCheckin); ?>
 								<?php endif; ?>
 								<?php
 								if ($item->checked_out && ($item->checked_out != $user->get('id'))) : ?>

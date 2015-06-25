@@ -285,7 +285,7 @@ class CsvImport extends Base
 		// Remove leading and trailing \s and \t. TRUE by default.
 		$csv->TrimFields(true);
 
-		$model = $this->getlistModel();
+		$model = $this->getListModel();
 		$tableParams = $model->getParams();
 		$mode = $tableParams->get('csvfullname');
 
@@ -456,7 +456,7 @@ class CsvImport extends Base
 	 *
 	 * @return Lizt  List model
 	 */
-	public function getlistModel()
+	public function getListModel()
 	{
 		if (!isset($this->listModel))
 		{
@@ -474,7 +474,7 @@ class CsvImport extends Base
 	 */
 	public function findExistingElements()
 	{
-		$model = $this->getlistModel();
+		$model = $this->getListModel();
 		$pluginManager = new PluginManager;
 		$pluginManager->getPlugInGroup('list');
 		$tableParams = $model->getParams();
@@ -627,7 +627,7 @@ class CsvImport extends Base
 		$jForm = $this->input->get('jform', array(), 'array');
 		$dropData = (int) ArrayHelper::getValue($jForm, 'drop_data', 0);
 		$overWrite = (int) ArrayHelper::getValue($jForm, 'overwrite', 0);
-		$model = $this->getlistModel();
+		$model = $this->getListModel();
 		$model->importingCSV = true;
 		$formModel = $model->getFormModel();
 
@@ -1080,7 +1080,7 @@ class CsvImport extends Base
 
 	private function getJoinPkRecords($join)
 	{
-		$model = $this->getlistModel();
+		$model = $this->getListModel();
 
 		if (!isset($this->joinpkids))
 		{
@@ -1108,7 +1108,7 @@ class CsvImport extends Base
 	{
 		if (!isset($this->joins))
 		{
-			$model = $this->getlistModel();
+			$model = $this->getListModel();
 
 			// Move the join table data into their own array space
 			$this->joins = $model->getJoins();
@@ -1167,7 +1167,7 @@ class CsvImport extends Base
 			return true;
 		}
 
-		$model = $this->getlistModel();
+		$model = $this->getListModel();
 
 		if (trim($model->getTable()->get('list.db_primary_key')) !== '')
 		{

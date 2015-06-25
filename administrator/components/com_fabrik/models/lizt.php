@@ -5055,7 +5055,7 @@ class Lizt extends View implements ModelFormLiztInterface
 		 *from one group to another $this->getTable gives you the old group's table, where as we want
 		* the new group's table
 		*/
-		$table = $group->getlistModel()->getTable();
+		$table = $group->getListModel()->getTable();
 
 		// $$$ hugh - if this is a table-less form ... not much point going any
 		// further 'cos things will go BANG

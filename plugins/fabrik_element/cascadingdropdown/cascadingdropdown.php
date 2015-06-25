@@ -989,11 +989,11 @@ class Cascadingdropdown extends Databasejoin
 	{
 		$params = $this->getParams();
 		$id = $params->get('cascadingdropdown_connection');
-		$cid = $this->getlistModel()->getConnection()->getConnection()->id;
+		$cid = $this->getListModel()->getConnection()->getConnection()->id;
 
 		if ($cid == $id)
 		{
-			$this->cn = $this->getlistModel()->getConnection();
+			$this->cn = $this->getListModel()->getConnection();
 		}
 		else
 		{

@@ -970,7 +970,7 @@ class ElementList extends Element
 
 	protected function inJDb()
 	{
-		return $this->getlistModel()->inJDb();
+		return $this->getListModel()->inJDb();
 	}
 
 	/**

@@ -16,9 +16,15 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use \JPluginHelper as JPluginHelper;
+use Fabrik\Admin\Models\Lizt;
 use Fabrik\Helpers\Text;
 use \Fabrik\Helpers\HTML;
 use Fabrik\Helpers\String;
+use Joomla\Registry\Registry;
+use JRoute;
+use Fabrik\Helpers\Worker;
+use JSession;
+use JFilterInput;
 
 interface ModelVisualizationInterface
 {
@@ -40,6 +46,11 @@ class Visualization extends Base implements ModelVisualizationInterface
 
 	/** @var object params*/
 	protected $params = null;
+
+	/**
+	 * @var array
+	 */
+	protected $listids = array();
 
 	/**
 	 * Url for filter form
@@ -68,17 +79,14 @@ class Visualization extends Base implements ModelVisualizationInterface
 	/**
 	 * Constructor
 	 *
-	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
+	 * @param   Registry  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
 	 *
 	 * @since   11.1
 	 */
-
-	public function __construct($config = array())
+	public function __construct(Registry $config = null)
 	{
 		$this->pathBase = JPATH_SITE . '/plugins/fabrik_visualization/';
 
-		// 3.0 compat
-		$this->_row =& $this->row;
 		parent::__construct($config);
 	}
 
@@ -87,7 +95,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  void
 	 */
-
 	protected function setListIds()
 	{
 		if (!isset($this->listids))
@@ -103,56 +110,50 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 */
 	public function showFilters()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$params = $this->getParams();
 
 		return (int) $input->get('showfilters', $params->get('show_filters')) === 1 ? true : false;
 	}
 
 	/**
-	 * Deprecated use getParams() instead
-	 *
-	 * @deprecated  since 3.1b
-	 *
-	 * @return  JRegistry
-	 */
-
-	public function getPluginParams()
-	{
-		return $this->getParams();
-	}
-
-	/**
-	 * Alais to getVisualization()
-	 *
-	 * @since	3.0.6
-	 *
-	 * @return  FabTable viz
-	 */
-
-	public function getRow()
-	{
-		return $this->getVisualization();
-	}
-
-	/**
 	 * Get the item
 	 *
-	 * @return  FabrikTableVisualization
+	 * @param   string  $id
+	 *
+	 * @return  Registry
 	 */
-
-	public function getVisualization()
+	public function getItem($id = null)
 	{
+		// FIXME 3.5 - load from json
 		if (!isset($this->row))
 		{
-			$this->row = FabTable::getInstance('Visualization', 'FabrikTable');
-			$this->row->load($this->getState('id'));
+			$id = JFilterInput::getInstance()->clean($this->get('id'), 'WORD');
+			// @TODO - save & load from session?
+
+			if ($id === '')
+			{
+				$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/schemas/visualization.json');
+			}
+			else
+			{
+				$json = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . '/models/views/visualizations/' . $id . '.json');
+			}
+
+			$item = json_decode($json);
+
+			$item = new Registry($item);
+
 			$this->setListIds();
 
 			// Needed to load the language file!
-			$pluginManager = Worker::getPluginManager();
-			$plugin = $pluginManager->getPlugIn($this->_row->plugin, 'visualization');
+			if ($item->get('plugin', '') !== '')
+			{
+				$pluginManager = Worker::getPluginManager();
+				$pluginManager->getPlugIn($item->get('plugin'), 'visualization');
+			}
+
+			$this->row = $item;
 		}
 
 		return $this->row;
@@ -163,7 +164,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  void
 	 */
-
 	public function render()
 	{
 		// Overwrite in plugin
@@ -174,8 +174,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return \Fabrik\Admin\Models\Lizt[] table objects
 	 */
-
-	public function getlistModels()
+	public function getListModels()
 	{
 		if (!isset($this->tables))
 		{
@@ -186,7 +185,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 		{
 			if (!array_key_exists($id, $this->tables))
 			{
-				$listModel = new \Fabrik\Admin\Models\Lizt;
+				$listModel = new Lizt;
 				$listModel->setId($id);
 				$listModel->getTable();
 				$this->tables[$id] = $listModel;
@@ -203,10 +202,9 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  object	fabrik list model
 	 */
-
-	public function getlistModel($id)
+	public function getListModel($id = null)
 	{
-		$lists = $this->getlistModels();
+		$lists = $this->getListModels();
 
 		return $lists[$id];
 	}
@@ -216,7 +214,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return string
 	 */
-
 	public function getContainerId()
 	{
 		return $this->getJSRenderContext();
@@ -227,14 +224,13 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return array table filters
 	 */
-
 	public function getFilters()
 	{
 		$params = $this->getParams();
 		$name = String::strtolower(str_replace('fabrikModel', '', get_class($this)));
 		$filters = array();
 		$showFilters = $params->get($name . '_show_filters', array());
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 		$js = array();
 		$i = 0;
 
@@ -247,7 +243,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 				$ref = $this->getRenderContext();
 				$id = $this->getId();
 				$listModel->getFilterArray();
-				$filters[$listModel->getTable()->label] = $listModel->getFilters($this->getContainerId(), 'visualization', $id, $ref);
+				$filters[$listModel->getTable()->get('list.label')] = $listModel->getFilters($this->getContainerId(), 'visualization', $id, $ref);
 				$js[] = $listModel->filterJs;
 			}
 
@@ -268,7 +264,7 @@ class Visualization extends Base implements ModelVisualizationInterface
 	public function buildQueryWhere()
 	{
 		$filters = array();
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $listModel)
 		{
@@ -286,7 +282,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  string  js code
 	 */
-
 	public function getFilterJs()
 	{
 		if (is_null($this->filterJs))
@@ -304,15 +299,12 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return   string
 	 */
-
 	public function getAdvancedSearchLink()
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$links = array();
-		$listModels = $this->getlistModels();
-		$js = array();
-		$i = 0;
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $listModel)
 		{
@@ -321,13 +313,12 @@ class Visualization extends Base implements ModelVisualizationInterface
 			if ($params->get('advanced-filter', '0'))
 			{
 				$table = $listModel->getTable();
-				$tmpl = $listModel->getTmpl();
 				$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&amp;view=list&amp;layout=_advancedsearch&amp;tmpl=component&amp;listid='
-					. $table->id . '&amp;nextview=' . $app->input->get('view', 'list')
+					. $table->get('id') . '&amp;nextview=' . $app->input->get('view', 'list')
 					. '&scope&amp;=' . $app->scope;
 
 				$url .= '&amp;tkn=' . JSession::getFormToken();
-				$links[$table->label] = $url;
+				$links[$table->get('list.label')] = $url;
 			}
 		}
 
@@ -349,6 +340,8 @@ class Visualization extends Base implements ModelVisualizationInterface
 			}
 
 			$str = '</ul>';
+
+			return $str;
 		}
 	}
 
@@ -359,15 +352,14 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  string  render context
 	 */
-
 	public function getRenderContext()
 	{
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$input = $app->input;
 		$id = $this->getId();
 
 		// Calendar in content plugin - choose event form needs to know its from a content plugin.
-		return $input->get('renderContext', $id . '_' . JFactory::getApplication()->scope . '_' . $id);
+		return $input->get('renderContext', $id . '_' . $this->app->scope . '_' . $id);
 	}
 
 	/**
@@ -377,7 +369,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  string  js viz id
 	 */
-
 	public function getJSRenderContext()
 	{
 		return 'visualization_' . $this->getRenderContext();
@@ -388,7 +379,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  string	action url
 	 */
-
 	public function getFilterFormURL()
 	{
 		if (isset($this->getFilterFormURL))
@@ -396,14 +386,13 @@ class Visualization extends Base implements ModelVisualizationInterface
 			return $this->getFilterFormURL;
 		}
 
-		$app = JFactory::getApplication();
+		$app = $this->app;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 		$option = $input->get('option');
 
 		// Get the router
 		$router = $app->getRouter();
-		$uri = clone (JURI::getInstance());
 		/**
 		 * $$$ rob force these to be 0 once the menu item has been loaded for the first time
 		 * subsequent loads of the link should have this set to 0. When the menu item is re-clicked
@@ -418,17 +407,18 @@ class Visualization extends Base implements ModelVisualizationInterface
 			$router->setVar('clearfilters', 0);
 		}
 
-		$queryvars = $router->getVars();
+		$queryVars = $router->getVars();
 		$page = 'index.php?';
+		$qs = array();
 
-		foreach ($queryvars as $k => $v)
+		foreach ($queryVars as $k => $v)
 		{
 			$qs[] = $k . '=' . $v;
 		}
 
 		$action = $page . implode("&amp;", $qs);
 
-		// Limitstart gets added in the pagination model
+		// LimitStart gets added in the pagination model
 		$action = preg_replace("/limitstart" . $this->getState('id') . "}=(.*)?(&|)/", '', $action);
 		$action = String::rtrimword($action, "&");
 		$this->getFilterFormURL = JRoute::_($action);
@@ -441,11 +431,10 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  void
 	 */
-
 	protected function getRequireFilterMsg()
 	{
-		$app = JFactory::getApplication();
-		$listModels = $this->getlistModels();
+		$app = $this->app;
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $model)
 		{
@@ -464,7 +453,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	public function setPrefilters()
 	{
 		$listModels = $this->getListModels();
-		$filters = array();
 		$params = $this->getParams();
 		$prefilters = (array) $params->get('prefilters');
 		$c = 0;
@@ -502,11 +490,9 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  bool
 	 */
-
 	public function getRequiredFiltersFound()
 	{
 		$listModels = $this->getListModels();
-		$filters = array();
 
 		foreach ($listModels as $listModel)
 		{
@@ -523,21 +509,20 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 * Load in any table plugin classes
 	 * needed for radius search filter
 	 *
-	 * @param   array  &$srcs  existing src file
+	 * @param   array  &$scripts  existing src file
 	 *
 	 * @return  array	js file paths
 	 */
-
-	public function getPluginJsClasses(&$srcs = array())
+	public function getPluginJsClasses(&$scripts = array())
 	{
 		$listModels = $this->getListModels();
 
 		foreach ($listModels as $model)
 		{
-			$paths = $model->getPluginJsClasses($srcs);
+			$model->getPluginJsClasses($scripts);
 		}
 
-		return $srcs;
+		return $scripts;
 	}
 
 	/**
@@ -546,7 +531,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  array
 	 */
-
 	public function getPluginJsObjects()
 	{
 		$str = array();
@@ -563,17 +547,15 @@ class Visualization extends Base implements ModelVisualizationInterface
 	}
 
 	/**
-	 * Get the requirejs shim for the visualization
+	 * Get the require.js shim for the visualization
 	 * Load all the list plugin requirements
 	 *
 	 * @since  3.1rc
 	 *
 	 * @return array
 	 */
-
 	public function getShim()
 	{
-		$str = array();
 		$listModels = $this->getListModels();
 		$shim = array();
 
@@ -592,7 +574,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  void
 	 */
-
 	public function setId($id)
 	{
 		$this->setState('id', $id);
@@ -606,15 +587,14 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  object  params
 	 */
-
 	public function getParams()
 	{
 		if (is_null($this->params))
 		{
-			$v = $this->getVisualization();
-			$app = JFactory::getApplication();
+			$v = $this->getItem();
+			$app = $this->app;
 			$input = $app->input;
-			$this->params = new JRegistry($v->params);
+			$this->params = new Registry($v->get('params'));
 			$this->params->set('show-title', $input->getInt('show-title', $this->params->get('show-title', 1)));
 		}
 
@@ -626,7 +606,6 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 *
 	 * @return  int  id
 	 */
-
 	public function getId()
 	{
 		return $this->getState('id');
@@ -639,16 +618,15 @@ class Visualization extends Base implements ModelVisualizationInterface
 	 */
 	public function canView()
 	{
-		$user = JFactory::getUser();
-		$groups = JFactory::getUser()->getAuthorisedViewLevels();
-		$row = $this->getRow();
+		$groups = $this->user->getAuthorisedViewLevels();
+		$row = $this->getItem();
 
-		if ($row->published == 0)
+		if (! (bool) $row->get('published'))
 		{
 			return false;
 		}
 
-		return in_array($row->access, $groups);
+		return in_array($row->get('access'), $groups);
 	}
 
 	/****
@@ -692,11 +670,10 @@ class Visualization extends Base implements ModelVisualizationInterface
 	/**
 	 * Method to save the form data.
 	 *
-	 * @param   array  $data  The form data.
+	 * @param   Registry  $data  The form data.
 	 *
 	 * @return  boolean  True on success, False on error.
 	 */
-
 	public function save($data)
 	{
 		parent::cleanCache('com_fabrik');

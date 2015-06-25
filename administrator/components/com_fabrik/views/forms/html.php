@@ -15,11 +15,12 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\HTML as HelperHTML;
 use JFactory;
-use \JHtml as JHtml;
-use \JToolBarHelper as JToolBarHelper;
-use \JHtmlSidebar as JHtmlSidebar;
+use JHtml;
+use JToolBarHelper;
+use JHtmlSidebar;
 use Fabrik\Helpers\Text;
 use Fabrik\Admin\Helpers\Fabrik;
+use Fabrik\Admin\Models\Form;
 
 /**
  * View class for a list of forms.
@@ -59,9 +60,16 @@ class Html extends \Fabrik\Admin\Views\Html
 	public $sidebar = '';
 
 	/**
+	 * The model object.
+	 *
+	 * @var    Form
+	 */
+	protected $model;
+
+	/**
 	 * Render the view
 	 *
-	 * @return  void
+	 * @return  string  The rendered view.
 	 */
 	public function render()
 	{
@@ -77,6 +85,7 @@ class Html extends \Fabrik\Admin\Views\Html
 
 		HelperHTML::iniRequireJS();
 		$this->setLayout('bootstrap');
+
 		return parent::render();
 	}
 
@@ -85,7 +94,6 @@ class Html extends \Fabrik\Admin\Views\Html
 	 *
 	 * @return  void
 	 */
-
 	protected function addToolbar()
 	{
 		$canDo = Fabrik::getActions($this->state->get('filter.category_id'));

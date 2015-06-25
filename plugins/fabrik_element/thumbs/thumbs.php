@@ -81,7 +81,7 @@ class Thumbs extends Element
 		$input = $this->app->input;
 		$params = $this->getParams();
 		$data = Worker::JSONtoData($data, true);
-		$listId = $this->getlistModel()->getTable()->get('id');
+		$listId = $this->getListModel()->getTable()->get('id');
 		$formModel = $this->getFormModel();
 		$formId = $formModel->getId();
 
@@ -138,7 +138,7 @@ class Thumbs extends Element
 	 */
 	private function _renderListData($data, $thisRow)
 	{
-		$list = $this->getlistModel()->getTable();
+		$list = $this->getListModel()->getTable();
 		$listId = isset($this->listid) ? $this->listid : $list->get('id');
 		$formId = isset($this->formid) ? $this->formid : $list->get('list.form_id');
 		$rowId = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
@@ -230,7 +230,7 @@ class Thumbs extends Element
 			return '';
 		}
 
-		$listId = $this->getlistModel()->getTable()->get('id');
+		$listId = $this->getListModel()->getTable()->get('id');
 		$formModel = $this->getFormModel();
 		$formId = isset($this->formid) ? $this->formid : $formModel->getId();
 		$rowId = $input->getInt('commentId', $formModel->getRowId());
@@ -507,8 +507,8 @@ class Thumbs extends Element
 		// Name can be blank for comments
 		if ($name != '')
 		{
-			$pk = $db->qn($this->getlistModel()->getTable()->get('list.db_primary_key'));
-			$tableName = $db->qn($this->getlistModel()->getTable()->get('list.db_table_name'));
+			$pk = $db->qn($this->getListModel()->getTable()->get('list.db_primary_key'));
+			$tableName = $db->qn($this->getListModel()->getTable()->get('list.db_table_name'));
 			$db
 				->setQuery(
 					"UPDATE " . $tableName . "
@@ -555,7 +555,7 @@ class Thumbs extends Element
 		}
 
 		$id = $this->getHTMLId($repeatCounter);
-		$listId = $this->getlistModel()->getTable()->get('id');
+		$listId = $this->getListModel()->getTable()->get('id');
 		$formModel = $this->getFormModel();
 		$formId = $formModel->getId();
 		$rowId = $formModel->getRowId();
@@ -585,7 +585,7 @@ class Thumbs extends Element
 	{
 		$params = $this->getParams();
 		$id = $this->getHTMLId();
-		$list = $this->getlistModel()->getTable();
+		$list = $this->getListModel()->getTable();
 		$formId = $list->get('form_id');
 		$listMyThumbs = array();
 		$idFromCookie = null;

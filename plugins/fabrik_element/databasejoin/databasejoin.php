@@ -128,7 +128,7 @@ class Databasejoin extends ElementList
 		$table = $this->actualTableName();
 		$params = $this->getParams();
 		$db = Worker::getDbo();
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$element = $this->getElement();
 		$tableRow = $listModel->getTable();
 		$joins = $listModel->getJoins();
@@ -412,7 +412,7 @@ class Databasejoin extends ElementList
 		}
 		else
 		{
-			$listModel = $this->getlistModel();
+			$listModel = $this->getListModel();
 			$joins = $listModel->getJoins();
 
 			foreach ($joins as $join)
@@ -1204,11 +1204,11 @@ class Databasejoin extends ElementList
 	{
 		$params = $this->getParams();
 		$id = $params->get('join_conn_id');
-		$cid = $this->getlistModel()->getConnection()->getConnection()->id;
+		$cid = $this->getListModel()->getConnection()->getConnection()->id;
 
 		if ($cid == $id)
 		{
-			$this->cn = $this->getlistModel()->getConnection();
+			$this->cn = $this->getListModel()->getConnection();
 		}
 		else
 		{
@@ -2218,7 +2218,7 @@ class Databasejoin extends ElementList
 		 * list of all tables that have been joined to -
 		* if duplicated then we need to join using a table alias
 		*/
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$fabrikDb = $listModel->getDb();
 		$params = $this->getParams();
 		$joinTable = $params->get('join_db_name');
@@ -2624,7 +2624,7 @@ class Databasejoin extends ElementList
 		else
 		{
 			$join_db_name = $params->get('join_db_name');
-			$listModel = $this->getlistModel();
+			$listModel = $this->getListModel();
 			$joins = $listModel->getJoins();
 
 			foreach ($joins as $join)

@@ -88,7 +88,7 @@ class Base extends Html
 
 		$this->isMultiPage = $model->isMultiPage();
 		list($this->plugintop, $this->pluginbottom, $this->pluginend) = $model->getFormPluginHTML();
-		$listModel = $model->getlistModel();
+		$listModel = $model->getListModel();
 
 		if (!$model->canPublish())
 		{

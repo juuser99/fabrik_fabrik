@@ -118,7 +118,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 			);
 		}
 
-		$listModel = $formModel->getlistModel();
+		$listModel = $formModel->getListModel();
 		$list = $listModel->getTable();
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);

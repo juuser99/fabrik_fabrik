@@ -36,7 +36,7 @@ class FabrikControllerVisualizationmedia extends FabrikControllerVisualization
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)), 'get');
 		$model->setId($id);
-		$model->getVisualization();
+		$model->getItem();
 		echo $model->getPlaylist();
 	}
 }

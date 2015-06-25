@@ -132,7 +132,7 @@ class Password extends Element
 		}
 
 		$input    = $this->app->input;
-		$k        = $this->getlistModel()->getTable()->get('list.db_primary_key');
+		$k        = $this->getListModel()->getTable()->get('list.db_primary_key');
 		$k        = String::safeColNameToArrayKey($k);
 		$element  = $this->getElement();
 		$origName = $element->get('name');
