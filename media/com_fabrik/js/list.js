@@ -712,6 +712,7 @@ var FbList = new Class({
 				this.form.getElement('#limitstart' + this.id).value = 0;
 			}
 		} else {
+			Fabrik['filter_listform_' + this.options.listRef].onSubmit();
 			if (task !== '') {
 				this.form.task.value = task;
 			}
