@@ -48,6 +48,8 @@ If you have set to show the page title in the forms layout parameters, then the 
 $form = $this->form;
 $app = JFactory::getApplication();
 
+$pageClass = '';
+
 if (!$app->isAdmin())
 {
 	$appParams = $app->getParams();
