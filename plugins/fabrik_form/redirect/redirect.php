@@ -399,7 +399,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			$searchAll = $input->get($listModel->getTable()->db_table_name . '___fabrik_list_filter_all');
 
 			$app->setUserState('com_' . $package . '.searchform.form' . $formModel->get('id') . '.searchall', $searchAll);
-			$app->setUserState($key, $id);
+			$app->setUserState($key, $formModel->get('id'));
 
 			$app->setUserState('com_' . $package . '.searchform.form' . $formModel->get('id') . '.filters', $store);
 			$app->setUserState('com_' . $package . '.searchform.fromForm', $formModel->get('id'));
