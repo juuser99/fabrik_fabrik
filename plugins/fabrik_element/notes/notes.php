@@ -276,7 +276,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 			if ($user !== '')
 			{
 				$tbl = $db->quoteName($this->getJoin()->table_join_alias);
-				$fields .= ',' . $tbl . '.' . $db->quoteName($user) . 'AS userid, u.name AS username';
+				$fields .= $tbl . '.' . $db->quoteName($user) . 'AS userid, u.name AS username';
 			}
 		}
 		return $fields;
@@ -347,7 +347,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 		$table = $db->quoteName($params->get('join_db_name'));
 		$col = $params->get('join_val_column');
 		$key = $db->quoteName($params->get('join_key_column'));
-		$v = $db->quote($input->get('v'));
+		$v = $db->quote($input->getString('v'));
 		$rowid = $this->getFormModel()->getRowId();
 
 		// Jaanus - avoid inserting data when the form is 'new' not submitted ($rowid == 0)
@@ -383,7 +383,14 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 			{
 				$this->loadRow = $db->quote($db->insertid());
 				$opts = $this->_getOptions();
-				$row = $opts[0];
+				if ($params->get('notes_order_dir', 'ASC') === 'DESC')
+				{
+					$row = $opts[0];
+				}
+				else
+				{
+					$row = end($opts);
+				}
 				$return->msg = 'note added';
 				$return->data = $row;
 				$return->label = $this->getDisplayLabel($row);

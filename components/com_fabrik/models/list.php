@@ -3040,13 +3040,11 @@ class FabrikFEModelList extends JModelForm
 
 	public function _buildQueryWhere($incFilters = true, $query = false)
 	{
-
 		$pluginManager = FabrikWorker::getPluginManager();
 		$pluginManager->runPlugins('onBuildQueryWhere', $this, 'list');
 
 		$sig = !$query ? 'string' : 'query';
 		$sig .= (int) $incFilters;
-		$db = FabrikWorker::getDbo();
 
 		if (isset($this->_whereSQL[$sig]))
 		{
@@ -3054,7 +3052,6 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		$filters = $this->getFilterArray();
-		$params = $this->getParams();
 
 		/* $$$ hugh - added option to 'require filtering', so if no filters specified
 		 * we return an empty table.  Only do this where $inFilters is set, so we're only doing this
@@ -4825,12 +4822,10 @@ class FabrikFEModelList extends JModelForm
 		$filterModel = $this->getFilterModel();
 		$db = FabrikWorker::getDbo();
 		$this->filters = array();
-		$user = JFactory::getUser();
 		$request = $this->getRequestData();
 		$this->storeRequestData($request);
 		FabrikHelperHTML::debug($request, 'filter:request');
 
-		$params = $this->getParams();
 		$elements = $this->getElements('id');
 
 		/* $$$ rob prefilters loaded before anything to avoid issues where you filter on something and
@@ -4870,6 +4865,7 @@ class FabrikFEModelList extends JModelForm
 		if (count($this->filters) == 0)
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
+
 			return $this->filters;
 		}
 
@@ -4882,7 +4878,7 @@ class FabrikFEModelList extends JModelForm
 		foreach ($this->filters['key'] as $i => $keyval)
 		{
 			$value = $this->filters['value'][$i];
-			$condition = JString::strtolower($this->filters['condition'][$i]);
+			$condition = JString::strtoupper($this->filters['condition'][$i]);
 			$key = $this->filters['key'][$i];
 			$filterEval = $this->filters['eval'][$i];
 			$elid = JArrayHelper::getValue($elementids, $i);
@@ -4894,7 +4890,7 @@ class FabrikFEModelList extends JModelForm
 			*/
 			$raw = JArrayHelper::getValue($raws, $i, false);
 
-			if (substr($key, -5, 5) == '_raw`')
+			if (JString::substr($key, -5, 5) == '_raw`')
 			{
 				$key = JString::substr($key, 0, JString::strlen($key) - 5) . '`';
 				$raw = true;
@@ -4914,7 +4910,6 @@ class FabrikFEModelList extends JModelForm
 				$this->filters['origvalue'][$i] = $value;
 				$this->filters['sqlCond'][$i] = $this->filters['sqlCond'][$i];
 				continue;
-
 			}
 
 			$elementModel = JArrayHelper::getValue($elements, $elid);
@@ -4957,22 +4952,7 @@ class FabrikFEModelList extends JModelForm
 				$i = $origi;
 			}
 
-			if ($condition == 'regexp')
-			{
-				$condition = 'REGEXP';
-
-				// $$$ 30/06/2011 rob dont escape the search as it may contain \\\ from preg_escape (e.g. search all on 'c+b)
-
-				// $$$ 14/11/2012 - Lower case search value - as accented characters e.g. Ö are case sensetive in regex. Key already lower cased in filter model
-
-				// $value = 'LOWER(' . $db->quote($value, false) . ')';
-			}
-			elseif ($condition == 'like')
-			{
-				$condition = 'LIKE';
-				$value = $db->quote($value);
-			}
-			elseif ($condition == 'laterthisyear' || $condition == 'earlierthisyear')
+			if ($condition == 'LATERTHISYEAR' || $condition == 'EARLIERTHISYEAR')
 			{
 				$value = $db->quote($value);
 			}
@@ -4986,7 +4966,7 @@ class FabrikFEModelList extends JModelForm
 
 			if ($value == '' && $eval == FABRIKFILTER_QUERY)
 			{
-				JError::raiseError(500, JText::_('COM_FABRIK_QUERY_PREFILTER_WITH_NO_VALUE'));
+				throw new RuntimeException(FText::_('COM_FABRIK_QUERY_PREFILTER_WITH_NO_VALUE'), 500);
 			}
 
 			list($value, $condition) = $elementModel->getFilterValue($value, $condition, $eval);
@@ -5006,7 +4986,7 @@ class FabrikFEModelList extends JModelForm
 				}
 			}
 
-			if ($condition === 'REGEXP')
+			if (strtoupper($condition) === 'REGEXP')
 			{
 				// $$$ 15/11/2012 - moved from before getFilterValue() to after as otherwise date filters in querystrings created wonky query
 				$value = 'LOWER(' . $db->quote($value, false) . ')';
@@ -5014,7 +4994,16 @@ class FabrikFEModelList extends JModelForm
 
 			if (!array_key_exists($i, $sqlCond) || $sqlCond[$i] == '')
 			{
-				$query = $elementModel->getFilterQuery($key, $condition, $value, $originalValue, $this->filters['search_type'][$i]);
+				// Will produce an SQL error - but is equivalant to 'show no records' so set to where 1 = -1
+				if ($condition === 'IN' && $value === '()')
+				{
+					$query = '1 = -1';
+				}
+				else
+				{
+					$query = $elementModel->getFilterQuery($key, $condition, $value, $originalValue, $this->filters['search_type'][$i]);
+				}
+
 				$this->filters['sqlCond'][$i] = $query;
 			}
 
@@ -5052,12 +5041,12 @@ class FabrikFEModelList extends JModelForm
 				// Set it back to null again so that in form view we dont return this value.
 				$elementModel->defaults = null;
 
-				// Filter value assinged in readOnlyValues foreach loop towards end of this function
+				// Filter value assigned in readOnlyValues foreach loop towards end of this function
 				$this->filters['filter'][$i] = '';
 			}
 			else
 			{
-				/*$$$rob not sure $value is the right var to put in here - or if its acutally used
+				/*$$$rob not sure $value is the right var to put in here - or if its actually used
 				 * but without this line you get warnings about missing variable in the filter array
 				*/
 				$this->filters['filter'][$i] = $value;
@@ -5861,6 +5850,7 @@ class FabrikFEModelList extends JModelForm
 	{
 		if (!isset($this->viewfilters))
 		{
+			$app = JFactory::getApplication();
 			$profiler = JProfiler::getInstance('Application');
 			$params = $this->getParams();
 			$this->viewfilters = array();
@@ -5899,7 +5889,6 @@ class FabrikFEModelList extends JModelForm
 	{
 		$aFilters = array();
 		$table = $this->getTable();
-		$formModel = $this->getFormModel();
 		$opts = new stdClass;
 		$opts->container = $container;
 		$opts->type = $type;
@@ -5908,23 +5897,23 @@ class FabrikFEModelList extends JModelForm
 		$opts->advancedSearch = $this->getAdvancedSearchOpts();
 		$opts->advancedSearch->controller = $type;
 		$opts = json_encode($opts);
-		$fscript = "
-		Fabrik.filter_{$container} = new FbListFilter($opts);\n";
-
+		$fscript = "\tFabrik.filter_{$container} = new FbListFilter($opts);\n";
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$filters = $this->getFilterArray();
-
 		$params = $this->getParams();
 
-		if ($params->get('search-mode', 'AND') == 'OR')
+		// Paul Switch to 0/1 for NO/YES from AND/OR so that bootstrap classes work but support legacy values
+		if (($params->get('search-mode', '0') == '1')
+			|| ($params->get('search-mode', '0') == 'OR'))
 		{
 			// One field to search them all (and in the darkness bind them)
 			$requestKey = $this->getFilterModel()->getSearchAllRequestKey();
 			$v = $this->getFilterModel()->getSearchAllValue('html');
 			$o = new stdClass;
+			$searchLabel = $params->get('search-all-label', FText::_('COM_FABRIK_SEARCH'));
 			$class = FabrikWorker::j3() ? 'fabrik_filter search-query input-medium' : 'fabrik_filter';
-			$o->filter = '<input type="search" size="20" placeholder="' . JText::_('COM_FABRIK_SEARCH') . '" value="' . $v
+			$o->filter = '<input type="search" size="20" placeholder="' . $searchLabel . '" value="' . $v
 			. '" class="' . $class . '" name="' . $requestKey . '" />';
 
 			if ($params->get('search-mode-advanced') == 1)
@@ -5940,7 +5929,7 @@ class FabrikFEModelList extends JModelForm
 			}
 
 			$o->name = 'all';
-			$o->label = $params->get('search-all-label', JText::_('COM_FABRIK_ALL'));
+			$o->label = $searchLabel;
 			$aFilters[] = $o;
 		}
 
@@ -5966,7 +5955,7 @@ class FabrikFEModelList extends JModelForm
 				*/
 				if (isset($element->filter_type) && $element->filter_type <> '' && $element->filter_type != 'null')
 				{
-					if ($elementModel->canView() && $elementModel->canUseFilter())
+					if ($elementModel->canView('list') && $elementModel->canUseFilter())
 					{
 						/* $$$ rob in faceted browsing somehow (not sure how!) some elements from the faceted table get inserted into elementModels
 						 * with their form id set - so test if its been set and if its not the same as the current form id
@@ -5983,8 +5972,7 @@ class FabrikFEModelList extends JModelForm
 						$o->filter = $elementModel->getFilter($counter, true);
 						$fscript .= $elementModel->filterJS(true, $container);
 						$o->required = $elementModel->getParams()->get('filter_required');
-						$o->label = $elementModel->getParams()->get('alt_list_heading') == '' ? $element->label
-						: $elementModel->getParams()->get('alt_list_heading');
+						$o->label = $elementModel->getListHeading();
 						$aFilters[] = $o;
 						$counter++;
 					}
@@ -6008,17 +5996,18 @@ class FabrikFEModelList extends JModelForm
 				*$o->filter = $value;
 				*/
 				$elementModel = $this->getFormModel()->getElement(str_replace('`', '', $key));
-				$o->filter = $filters['filter'][$i];
+				$o->filter = JArrayHelper::getValue($filters['filter'], $i);
 
 				if ($elementModel)
 				{
 					$elementModel->getElement()->filter_type = 'hidden';
-					$o->filter .= $elementModel->getFilter(0, true);
+					$o->filter .= $elementModel->getFilter($counter, true);
 				}
 
-				$o->name = $filters['key'][$i];
+				$o->name = FabrikString::safeColNameToArrayKey($filters['key'][$i]);
 				$o->label = $filters['label'][$i];
 				$aFilters[] = $o;
+				$counter++;
 			}
 		}
 
@@ -6037,11 +6026,10 @@ class FabrikFEModelList extends JModelForm
 
 		if ($params->get('advanced-filter', '0'))
 		{
-			$table = $this->getTable();
 			$tmpl = $this->getTmpl();
 			$url = $this->getAdvancedSearchURL();
-			$title = '<span>' . JText::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
-			$opts = array('alt' => JText::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
+			$title = '<span>' . FText::_('COM_FABRIK_ADVANCED_SEARCH') . '</span>';
+			$opts = array('alt' => FText::_('COM_FABRIK_ADVANCED_SEARCH'), 'class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title);
 			$img = FabrikHelperHTML::image('find.png', 'list', $tmpl, $opts);
 
 			return '<a href="' . $url . '" class="advanced-search-link">' . $img . '</a>';
@@ -6064,7 +6052,7 @@ class FabrikFEModelList extends JModelForm
 		$table = $this->getTable();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&amp;view=list&amp;layout=_advancedsearch&amp;tmpl=component&amp;listid='
-			. $table->id . '&amp;nextview=' . $app->input->get('view', 'list');
+				. $table->id . '&amp;nextview=' . $app->input->get('view', 'list');
 
 		// Defines if we are in a module or in the component.
 		$url .= '&amp;scope=' . $app->scope;
@@ -6128,12 +6116,11 @@ class FabrikFEModelList extends JModelForm
 	{
 		$first = false;
 		$firstFilter = false;
-		$fieldNames[] = JHTML::_('select.option', '', JText::_('COM_FABRIK_PLEASE_SELECT'));
+		$fieldNames[] = JHTML::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT'));
 		$elementModels = $this->getElements();
 
 		foreach ($elementModels as $elementModel)
 		{
-
 			if (!$elementModel->canView('list'))
 			{
 				continue;
@@ -6168,14 +6155,14 @@ class FabrikFEModelList extends JModelForm
 	private function getStatementsOpts()
 	{
 		$statements = array();
-		$statements[] = JHTML::_('select.option', '=', JText::_('COM_FABRIK_EQUALS'));
-		$statements[] = JHTML::_('select.option', '<>', JText::_('COM_FABRIK_NOT_EQUALS'));
-		$statements[] = JHTML::_('select.option', 'BEGINS WITH', JText::_('COM_FABRIK_BEGINS_WITH'));
-		$statements[] = JHTML::_('select.option', 'CONTAINS', JText::_('COM_FABRIK_CONTAINS'));
-		$statements[] = JHTML::_('select.option', 'ENDS WITH', JText::_('COM_FABRIK_ENDS_WITH'));
-		$statements[] = JHTML::_('select.option', '>', JText::_('COM_FABRIK_GREATER_THAN'));
-		$statements[] = JHTML::_('select.option', '<', JText::_('COM_FABRIK_LESS_THAN'));
-		$statements[] = JHTML::_('select.option', 'EMPTY', JText::_('COM_FABRIK_IS_EMPTY'));
+		$statements[] = JHTML::_('select.option', '=', FText::_('COM_FABRIK_EQUALS'));
+		$statements[] = JHTML::_('select.option', '<>', FText::_('COM_FABRIK_NOT_EQUALS'));
+		$statements[] = JHTML::_('select.option', 'BEGINS WITH', FText::_('COM_FABRIK_BEGINS_WITH'));
+		$statements[] = JHTML::_('select.option', 'CONTAINS', FText::_('COM_FABRIK_CONTAINS'));
+		$statements[] = JHTML::_('select.option', 'ENDS WITH', FText::_('COM_FABRIK_ENDS_WITH'));
+		$statements[] = JHTML::_('select.option', '>', FText::_('COM_FABRIK_GREATER_THAN'));
+		$statements[] = JHTML::_('select.option', '<', FText::_('COM_FABRIK_LESS_THAN'));
+		$statements[] = JHTML::_('select.option', 'EMPTY', FText::_('COM_FABRIK_IS_EMPTY'));
 
 		return $statements;
 	}
@@ -6216,6 +6203,7 @@ class FabrikFEModelList extends JModelForm
 
 		return $advanced;
 	}
+
 	/**
 	 * Build an array of html data that gets inserted into the advanced search popup view
 	 *
@@ -6230,15 +6218,15 @@ class FabrikFEModelList extends JModelForm
 		}
 
 		$statements = $this->getStatementsOpts();
+		$app = JFactory::getApplication();
+		$input = $app->input;
 		$rows = array();
 		$first = false;
 		$elementModels = $this->getElements();
-		$input = JFactory::getApplication()->input;
 		list($fieldNames, $firstFilter) = $this->getAdvancedSearchElementList();
 		$prefix = 'fabrik___filter[list_' . $this->getRenderContext() . '][';
 		$type = '<input type="hidden" name="' . $prefix . 'search_type][]" value="advanced" />';
 		$grouped = '<input type="hidden" name="' . $prefix . 'grouped_to_previous][]" value="0" />';
-
 		$filters = $this->getAdvancedFilterValues();
 		$counter = 0;
 
@@ -6257,7 +6245,7 @@ class FabrikFEModelList extends JModelForm
 				}
 
 				$join = $filters['join'][$counter];
-				$condition = array_key_exists($counter, $filters['orig_condition']) ? $filters['orig_condition'][$counter] : $filters['condition'][$counter];
+				$condition = $filters['condition'][$counter];
 				$value = $filters['origvalue'][$counter];
 				$v2 = $filters['value'][$counter];
 				$jsSel = '=';
@@ -6313,12 +6301,12 @@ class FabrikFEModelList extends JModelForm
 				}
 
 				$lineElname = FabrikString::safeColName($elementModel->getFullName(false, true, false));
-				$orig = JRequest::getVar($lineElname);
-				JRequest::setVar($lineElname, array('value' => $value));
+				$orig = $input->get($lineElname);
+				$input->set($lineElname, array('value' => $value));
 				$filter = $elementModel->getFilter($counter, false);
-				JRequest::setVar($lineElname, $orig);
-				$key = JHTML::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key" size="1" ', 'value', 'text', $key);
-				$jsSel = JHTML::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox" size="1" ', 'value', 'text', $jsSel);
+				$input->set($lineElname, $orig);
+				$key = JHTML::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key input-small" size="1" ', 'value', 'text', $key);
+				$jsSel = JHTML::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox input-small" size="1" ', 'value', 'text', $jsSel);
 				$rows[] = array('join' => $join, 'element' => $key, 'condition' => $jsSel, 'filter' => $filter, 'type' => $type,
 						'grouped' => $grouped);
 
@@ -6336,7 +6324,7 @@ class FabrikFEModelList extends JModelForm
 
 		if ($counter == 0)
 		{
-			$join = JText::_('COM_FABRIK_WHERE') . '<input type="hidden" name="' . $prefix . 'join][]" value="WHERE" />';
+			$join = FText::_('COM_FABRIK_WHERE') . '<input type="hidden" name="' . $prefix . 'join][]" value="WHERE" />';
 			$key = JHTML::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key" size="1" ', 'value', 'text', '');
 			$jsSel = JHTML::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox" size="1" ', 'value', 'text', '');
 			$rows[] = array('join' => $join, 'element' => $key, 'condition' => $jsSel, 'filter' => $firstFilter, 'type' => $type,
@@ -6356,7 +6344,7 @@ class FabrikFEModelList extends JModelForm
 	 * @return  void
 	 */
 
-	function setHeadingsForCSV($headings)
+	public function setHeadingsForCSV($headings)
 	{
 		$asfields = $this->getAsFields();
 		$newfields = array();
@@ -6400,7 +6388,7 @@ class FabrikFEModelList extends JModelForm
 
 	/**
 	 * returns the table headings, seperated from writetable function as
-	 * when group_by is selected mutliple tables are written
+	 * when group_by is selected multiple tables are written
 	 * 09/07/2011 moved headingClass into arry rather than string
 	 *
 	 * @return  array  (table headings, array columns, $aLinkElements)
@@ -6417,12 +6405,9 @@ class FabrikFEModelList extends JModelForm
 		$headingClass = array();
 		$cellClass = array();
 		$params = $this->getParams();
-
 		$w = new FabrikWorker;
 		$session = JFactory::getSession();
 		$formModel = $this->getFormModel();
-
-		// $linksToForms = $this->getLinksToThisKey();
 		$oldLinksToForms = $this->getLinksToThisKey();
 		$linksToForms = array();
 
@@ -6505,13 +6490,7 @@ class FabrikFEModelList extends JModelForm
 				$compsitKey = !empty($showInList) ? array_search($element->id, $showInList) . ':' . $key : $key;
 				$orderKey = $elementModel->getOrderbyFullName(false, false);
 				$elementParams = $elementModel->getParams();
-				$label = $elementParams->get('alt_list_heading');
-
-				if ($label == '')
-				{
-					$label = $element->label;
-				}
-
+				$label = $elementModel->getListHeading();
 				$label = $w->parseMessageForPlaceHolder($label, array());
 
 				if ($elementParams->get('can_order') == '1' && $this->outputFormat != 'csv')

@@ -242,6 +242,18 @@ class PlgFabrik_Element extends FabrikPlugin
 	protected $elementError = '';
 
 	/**
+	 * Multi-db join option - can we add duplicate options (set to false in tags element)
+	 * @var  bool
+	 */
+	protected $allowDuplicates = true;
+
+	/**
+	 * Wraps 'foo' AS 'bar' as statements with SUM('foo') = 'bar'
+	 * Used in nv3d viz to alter query statements
+	 * @var  string
+	 */
+	public $calcSelectModifier = null;
+	/**
 	 * Constructor
 	 *
 	 * @param   object  &$subject  The object to observe
@@ -550,6 +562,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if ((int) $params->get('icon_folder', 0) === 0)
 		{
 			$this->iconsSet = false;
+
 			return $data;
 		}
 
@@ -558,6 +571,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if (in_array($listModel->getOutPutFormat(), array('csv', 'rss')))
 		{
 			$this->iconsSet = false;
+
 			return $data;
 		}
 
@@ -761,15 +775,18 @@ class PlgFabrik_Element extends FabrikPlugin
 			}
 
 			$k = $db->quoteName($dbtable) . '.' . $db->quoteName($this->element->name);
+
 			if ($this->encryptMe())
 			{
 				$k = 'AES_DECRYPT(' . $k . ', ' . $db->quote($secret) . ')';
 			}
+
 			if ($this->isJoin())
 			{
 				$str = $this->buildQueryElementConcatId();
 				$aFields[] = $str;
 				$aAsFields[] = $fullElName;
+
 				$fullElName = $db->quoteName($jointable . '___params');
 				$str = '(SELECT GROUP_CONCAT(params SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $jointable . ' WHERE parent_id = '
 					. $table->db_primary_key . ') AS ' . $fullElName;
@@ -781,6 +798,7 @@ class PlgFabrik_Element extends FabrikPlugin
 				$fullElName = $db->quoteName($dbtable . '___' . $this->element->name . '_raw');
 				$str = $k . ' AS ' . $fullElName;
 			}
+
 			if (!in_array($str, $aFields))
 			{
 				$aFields[] = $str;
@@ -792,7 +810,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * Get raw column name
 	 *
-	 * @param   bool  $useStep  use step in name
+	 * @param   bool  $useStep  Use step in name
 	 *
 	 * @return string
 	 */
@@ -801,6 +819,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		$n = $this->getFullName(false, $useStep, false);
 		$n .= '_raw`';
+
 		return $n;
 	}
 
@@ -883,8 +902,8 @@ class PlgFabrik_Element extends FabrikPlugin
 					JError::raiseNotice(500, 'Didnt find can view acl element');
 				}
 			}
-
 		}
+
 		return $this->access->$key;
 	}
 
@@ -909,12 +928,12 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			$this->access = new stdClass;
 		}
+
 		if (!is_object($this->access) || !array_key_exists('use', $this->access))
 		{
 			/**
 			 * $$$ hugh - testing new "Option 5" for group show, "Always show read only"
 			 * So if element's group show is type 5, then element is de-facto read only.
-			 * if ($this->getGroup()->getParams()->get('repeat_group_show_first', '1') == '5')
 			 */
 			if ($location !== 'list' && !$this->getGroupModel()->canEdit())
 			{
@@ -992,7 +1011,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	public function getValidationErr()
 	{
-		return JText::_($this->_validationErr);
+		return FText::_($this->validationError);
 	}
 
 	/**
@@ -1130,7 +1149,9 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	public function getTitlePart($data, $repeatCounter = 0, $opts = array())
 	{
-		return $this->getValue($data, $repeatCounter, $opts);
+		$titlePart = $this->getValue($data, $repeatCounter, $opts);
+
+		return is_array($titlePart) ? implode(', ', $titlePart) : $titlePart;
 	}
 
 	/**
@@ -1254,7 +1275,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			FArrayHelper::setValue($_REQUEST, $key, $data);
 		}
 		// $$$rob even though $post is passed by reference - by adding in the value
-		// we arent actually modifiying the $_POST var that post was created from
+		// we aren't actually modifying the $_POST var that post was created from
 		JRequest::setVar($key, $data);
 		$app->input->set($key, $data);
 	}
@@ -1262,8 +1283,8 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * Determines the value for the element in the form view
 	 *
-	 * @param   array  $data           form data
-	 * @param   int    $repeatCounter  when repeating joinded groups we need to know what part of the array to access
+	 * @param   array  $data           Form data
+	 * @param   int    $repeatCounter  When repeating joined groups we need to know what part of the array to access
 	 *
 	 * @return  string	value
 	 */
@@ -1289,7 +1310,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	protected function getDefaultOnACL($data, $opts)
 	{
-		// $$$rob - 31/10/2012 - if readonly and editing an existing record we don't want to show the default label
+		// Rob - 31/10/2012 - if readonly and editing an existing record we don't want to show the default label
 		if (!$this->isEditable() && JArrayHelper::getValue($data, 'rowid') != 0)
 		{
 			$opts['use_default'] = false;
@@ -1333,14 +1354,15 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
-		// @TODO rename $this->defaults to $this->values
+		$app = JFactory::getApplication();
+		$input = $app->input;
+
 		if (!isset($this->defaults))
 		{
 			$this->defaults = array();
 		}
 
 		$key = $repeatCounter . '.' . serialize($opts);
-		$app = JFactory::getApplication();
 
 		if (!array_key_exists($key, $this->defaults))
 		{
@@ -1545,7 +1567,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		$element = $this->getElement();
 		$label = $params->get('alt_list_heading') == '' ? $element->label : $params->get('alt_list_heading');
 
-		return JText::_($label);
+		return FText::_($label);
 	}
 
 	/**
@@ -1560,11 +1582,13 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function getLabel($repeatCounter, $tmpl = '')
 	{
 		$config = JComponentHelper::getParams('com_fabrik');
+		$app = JFactory::getApplication();
 		$bLabel = $this->get('hasLabel');
 		$element = $this->getElement();
 		$elementHTMLId = $this->getHTMLId($repeatCounter);
 		$this->modHTMLId($elementHTMLId);
-		$view = JRequest::getVar('view', 'form');
+		$view = $app->input->get('view', 'form');
+
 		if ($view == 'form' && !($this->canUse() || $this->canView()))
 		{
 			return '';
@@ -1642,7 +1666,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	}
 
 	/**
-	 * set fabrikErrorMessage div with potential error messages
+	 * Set fabrikErrorMessage div with potential error messages
 	 *
 	 * @param   int     $repeatCounter  repeat counter
 	 * @param   string  $tmpl           template
@@ -1782,7 +1806,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 *
 	 * @param   string  $name               Element name
 	 * @param   bool    $includeJoinString  Add join[joinid][] to element name (default true)
-	 * @param   bool    $useStep            Cconcat name with form's step element (true) or with '.' (false) default true
+	 * @param   bool    $useStep            Concat name with form's step element (true) or with '.' (false) default true
 	 * @param   bool    $incRepeatGroup     Include '[]' at the end of the name (used for repeat group elements) default true
 	 *
 	 * @return  void
@@ -1801,9 +1825,9 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * If already run then stored value returned
 	 *
-	 * @param   bool  $includeJoinString  add join[joinid][] to element name (default true)
-	 * @param   bool  $useStep            concat name with form's step element (true) or with '.' (false) default true
-	 * @param   bool  $incRepeatGroup     include '[]' at the end of the name (used for repeat group elements) default true
+	 * @param   bool  $includeJoinString  Add join[joinid][] to element name (default true)
+	 * @param   bool  $useStep            Concat name with form's step element (true) or with '.' (false) default true
+	 * @param   bool  $incRepeatGroup     Include '[]' at the end of the name (used for repeat group elements) default true
 	 *
 	 * @return  string  element full name
 	 */
@@ -1952,7 +1976,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			{
 				if ($groupListModel->fieldExists($rule->name))
 				{
-					return JError::raiseWarning(500, JText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
+					return JError::raiseWarning(500, FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
 				}
 			}
 
@@ -2184,6 +2208,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			 * easier for custom styling when the element ID isn't constant.
 			 */
 			$groupModel = $this->getGroupModel();
+
 			if ($groupModel->canRepeat())
 			{
 				/**
@@ -2229,7 +2254,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		if ($elHTMLName)
 		{
-			// $$$ rob was key'd on int but thats not very useful for templating
+			// $$$ rob was keyed on int but that's not very useful for templating
 			$aSubGroupElements[$this->getElement()->name] = $element;
 		}
 	}
@@ -3789,31 +3814,43 @@ class PlgFabrik_Element extends FabrikPlugin
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$class = $this->filterClass();
+		$filters = $this->getListModel()->getFilterArray();
 
 		// $$$ needs to apply to CDD's as well, so just making this an override-able method.
 		if ($this->quoteLabel())
 		{
 			$elName = FabrikString::safeColName($elName);
 		}
-		$hidden = $hidden ? 1 : 0;
 
+		// If querying via the querystring - then the condition and eval should be looked up against that key
+		$elementids = JArrayHelper::getValue($filters, 'elementid', array());
+
+		// Check that there is an element filter for this element in the element ids.
+		$filterIndex = array_search($this->getId(), $elementids);
+
+		$hidden = $hidden ? 1 : 0;
 		$table = $this->getListModel()->getTable();
 		$match = $this->isExactMatch(array('match' => $element->filter_exact_match));
 		$return = array();
-		$filters = $this->getListModel()->getFilterArray();
 		$eval = JArrayHelper::getValue($filters, 'eval', array());
 		$eval = JArrayHelper::getValue($eval, $counter, FABRIKFILTER_TEXT);
 
-		/**
-		 * $$$ hugh - these two lines are preventing the "exact match" setting on an element filter working,
-		 * as we always end up with an = condition, so exact match No nev er works.  I've "fixed" it by just using
-		 * the element's getFilterCondition(), but I don't know what side effects this might have.
-		 * So BOLO for filtering oddities!
-		 *
-		 * $condition = JArrayHelper::getValue($filters, 'condition', array());
-		 * $condition = JArrayHelper::getValue($condition, $counter, $this->getFilterCondition());
+		$condition = JArrayHelper::getValue($filters, 'condition', array());
+
+		/*
+		 * Element filter not found (could be a prefilter instead) so use element default options
+		 * see http://fabrikar.com/forums/index.php?threads/major-filter-issues.37360/
 		 */
-		$condition = $this->getFilterCondition();
+		if ($filterIndex === false)
+		{
+			$condition = $this->getFilterCondition();
+			$eval = FABRIKFILTER_TEXT;
+		}
+		else
+		{
+			$condition = JArrayHelper::getValue($condition, $filterIndex, $this->getFilterCondition());
+			$eval = JArrayHelper::getValue($eval, $filterIndex, FABRIKFILTER_TEXT);
+		}
 
 		// Need to include class other wise csv export produces incorrect results when exporting
 		$prefix = '<input type="hidden" class="' . $class . '" name="fabrik___filter[list_' . $this->getListModel()->getRenderContext() . ']';
@@ -3910,17 +3947,18 @@ class PlgFabrik_Element extends FabrikPlugin
 	 * This builds an array containing the filters value and condition
 	 * when using a ranged search
 	 *
-	 * @param   array  $value  Initial values
+	 * @param   array   $value      Initial values
+	 * @param   string  $condition  Filter condition e.g. BETWEEN
 	 *
 	 * @return  array  (value condition)
 	 */
 
-	protected function getRangedFilterValue($value)
+	protected function getRangedFilterValue($value, $condition = '')
 	{
 		$db = FabrikWorker::getDbo();
 		$element = $this->getElement();
 
-		if ($element->filter_type === 'range')
+		if ($element->filter_type === 'range' || strtoupper($condition) === 'BETWEEN')
 		{
 			if (is_numeric($value[0]) && is_numeric($value[1]))
 			{
@@ -4029,13 +4067,14 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	public function getFilterValue($value, $condition, $eval)
 	{
+		$condition = JString::strtolower($condition);
 		$this->escapeQueryValue($condition, $value);
 		$db = FabrikWorker::getDbo();
 
 		if (is_array($value))
 		{
 			// Ranged search
-			list($value, $condition) = $this->getRangedFilterValue($value);
+			list($value, $condition) = $this->getRangedFilterValue($value, $condition);
 		}
 		else
 		{
@@ -4144,7 +4183,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 * Can be overwritten in plugin - e.g. see checkbox element which checks for partial matches
 	 *
 	 * @param   string  $key            element name in format `tablename`.`elementname`
-	 * @param   string  $condition      =/like etc
+	 * @param   string  $condition      =/like etc.
 	 * @param   string  $value          search string - already quoted if specified in filter array options
 	 * @param   string  $originalValue  original filter value without quotes or %'s applied
 	 * @param   string  $type           filter type advanced/normal/prefilter/search/querystring/searchall
@@ -4175,20 +4214,20 @@ class PlgFabrik_Element extends FabrikPlugin
 				break;
 			case 'thismonth':
 				$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(DATE_SUB(now(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)  AND ' . $key
-					. ' <= LAST_DAY(NOW()) ) ';
+				. ' <= LAST_DAY(NOW()) ) ';
 				break;
 			case 'lastmonth':
 				$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(DATE_SUB(now(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)  AND ' . $key
-					. ' <= LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH)) ) ';
+				. ' <= LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH)) ) ';
 				break;
 			case 'nextmonth':
 				$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(now()), INTERVAL 1 DAY)  AND ' . $key
-					. ' <= DATE_ADD(LAST_DAY(NOW()), INTERVAL 1 MONTH) ) ';
+				. ' <= DATE_ADD(LAST_DAY(NOW()), INTERVAL 1 MONTH) ) ';
 				break;
 			default:
 				if ($this->isJoin())
 				{
-					// Query the joined table concatanating into one field
+					// Query the joined table concatenating into one field
 					$jointable = $this->getJoinModel()->getJoin()->table_join;
 					$pk = $this->getListModel()->getTable()->db_primary_key;
 					$key = "(SELECT GROUP_CONCAT(id SEPARATOR '" . GROUPSPLITTER . "') FROM $jointable WHERE parent_id = $pk)";
@@ -4230,7 +4269,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 * If no filter condition supplied (either via querystring or in posted filter data
 	 * return the most appropriate filter option for the element.
 	 *
-	 * @return  string	default filter condition ('=', 'REGEXP' etc)
+	 * @return  string	default filter condition ('=', 'REGEXP' etc.)
 	 */
 
 	public function getDefaultFilterCondition()
@@ -4349,11 +4388,13 @@ class PlgFabrik_Element extends FabrikPlugin
 		$query->delete()->from('#__{package}_jsactions')->where('element_id =' . $id);
 		$db->setQuery($query);
 
-		if (!$db->execute())
+		try
 		{
-			JError::raiseNotice(500, 'didnt delete js actions for element ' . $id);
-
-			return false;
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			throw new RuntimeException('Didn\'t delete js actions for element ' . $id);
 		}
 
 		return true;
@@ -4361,7 +4402,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	/**
 	 * States if the element contains data which is recorded in the database
-	 * some elements (eg buttons) dont
+	 * some elements (e.g. buttons) don't
 	 *
 	 * @param   array  $data  posted data
 	 *
@@ -4374,7 +4415,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	}
 
 	/**
-	 * Used by elements with suboptions, given a value, return its label
+	 * Used by elements with sub-options, given a value, return its label
 	 *
 	 * @param   string  $v             Value
 	 * @param   string  $defaultLabel  Default label
@@ -4399,7 +4440,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		/**
 		 * $$$ rob if we allow adding to the dropdown but not recording
 		 * then there will be no $key set to revert to the $val instead
-		 */
+		*/
 		if ($v === $params->get('sub_default_value'))
 		{
 			$v = $params->get('sub_default_label');
@@ -4431,7 +4472,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
 			return "SELECT ROUND(AVG($name), $roundTo) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
-				. " $joinSQL $whereSQL";
+			. " $joinSQL $whereSQL";
 		}
 		else
 		{
@@ -4442,8 +4483,8 @@ class PlgFabrik_Element extends FabrikPlugin
 			$distinct = $this->getListModel()->isView() && trim($joinSQL) == '' ? '': 'DISTINCT';
 
 			return "SELECT ROUND(AVG(value), $roundTo) AS value, label
-FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
-				. " $joinSQL $whereSQL) AS t";
+			FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			. " $joinSQL $whereSQL) AS t";
 		}
 	}
 
@@ -4468,7 +4509,7 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 		if ($groupModel->isJoin())
 		{
 			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-			$sql = "SELECT SUM($name) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT SUM($name) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL";
 		}
 		else
 		{
@@ -4478,12 +4519,10 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 			 */
 			$distinct = $this->getListModel()->isView() && trim($joinSQL) == '' ? '': 'DISTINCT';
 
-			$sql = "SELECT SUM(value) AS value, label
-			FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			return "SELECT SUM(value) AS value, label
+			FROM (SELECT " . $distinct. " $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
 			. " $joinSQL $whereSQL) AS t";
 		}
-
-		return $sql;
 	}
 
 	/**
@@ -4519,8 +4558,9 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 			// $custom_query = sprintf($custom_query, 'value');
 			$custom_query = str_replace('%s', 'value', $custom_query);
 
-			return "SELECT $custom_query AS value, label FROM (SELECT DISTINCT " . FabrikString::safeColName($item->db_table_name)
-				. ".*, $name AS value, $label AS label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL) AS t";
+			return 'SELECT ' . $custom_query . ' AS value, label FROM (SELECT DISTINCT ' . FabrikString::safeColName($item->db_table_name)
+			. '.*, ' . $name . ' AS value, ' . $label . ' AS label FROM ' . FabrikString::safeColName($item->db_table_name)
+			. ' ' . $joinSQL . ' ' . $whereSQL . ') AS t';
 		}
 	}
 
@@ -4540,8 +4580,8 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 		$joinSQL = $listModel->_buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 
-		return "SELECT {$this->getFullName(false, false, false)} AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
-			. " $joinSQL $whereSQL ";
+		return 'SELECT ' . $this->getFullName(false, false, false) . ' AS value, ' . $label . ' FROM ' . FabrikString::safeColName($item->db_table_name)
+		. ' ' . $joinSQL . ' ' . $whereSQL;
 	}
 
 	/**
@@ -4587,21 +4627,17 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 		}
 		else
 		{
-			/*
-			 * Need to do first query to get distinct records as if we are doing left joins the sum is too large
-			 * However, views may not have a primary key which is unique so set to '' if no join
-			 */
-			$distinct = $this->getListModel()->isView() && trim($joinSQL) == '' ? '': 'DISTINCT';
+			// Need to do first query to get distinct records as if we are doing left joins the sum is too large
 			$query = "SELECT COUNT(value) AS value, label
-	FROM (SELECT " . $distinct. " $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
-				. " $joinSQL $whereSQL) AS t";
+			FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			. " $joinSQL $whereSQL) AS t";
 		}
 
 		return $query;
 	}
 
 	/**
-	 * Work out the calculation group by's to apply:
+	 * Work out the calculation group-bys to apply:
 	 *
 	 * - If group_by is assigned in the app input
 	 * - If no group_by request then check the list models group by and add that
@@ -4611,7 +4647,7 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 	 *
 	 * @since   3.0.8
 	 *
-	 * @return  array  Group by element names
+	 * @return  array  (Group by element names, group by element labels)
 	 */
 	protected function calcGroupBys($splitParam, $listModel)
 	{
@@ -4874,7 +4910,7 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 			}
 
 			$o->value = $res;
-			$label = $params->get('alt_list_heading') == '' ? $element->label : $params->get('alt_list_heading');
+			$label = $this->getListHeading();
 			$o->elLabel = $label;
 			$o->calLabel = $calcLabel;
 			$o->label = 'calc';
@@ -5145,21 +5181,26 @@ FROM (SELECT " . $distinct . " $item->db_primary_key, $name AS value, $label FRO
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$format = $this->getFormatString();
-		$label = $params->get('alt_list_heading') == '' ? $element->label : $params->get('alt_list_heading');
+		$label = $this->getListHeading();
+
 		foreach ($results as $key => $o)
 		{
 			$o->label = ($o->label == 'calc') ? '' : $o->label;
 			$o->elLabel = $label . ' ' . $o->label;
+
 			if ($numberFormat)
 			{
 				$o->value = $this->numberFormat($o->value);
 			}
+
 			if ($format != '' && $sprintFFormat)
 			{
 				$o->value = sprintf($format, $o->value);
 			}
+
 			$o->calLabel = $calcLabel;
 			$class = isset($o->class) ? ' class="' . $o->class . '"' : '';
+
 			if ($split)
 			{
 				$res[] = '<dd' . $class . '><span class="calclabel">' . $o->label . ':</span> ' . $o->value . '</dd>';
