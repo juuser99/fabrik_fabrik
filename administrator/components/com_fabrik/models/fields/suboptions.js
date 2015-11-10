@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var Suboptions = new Class({
-
-	Implements: [Options],
+var Suboptions = my.Class({
 
 	options: {
 		sub_initial_selection: [],
@@ -15,8 +13,8 @@ var Suboptions = new Class({
 		defaultMax: 0
 	},
 
-	initialize: function (name, options) {
-		this.setOptions(options);
+	constructor: function (name, options) {
+		this.options = $.append(this.options, options);
 		this.element = document.id(this.options.id);
 
 		if (typeOf(this.element) === 'null') {
@@ -52,7 +50,7 @@ var Suboptions = new Class({
 	watchDefaultCheckboxes: function () {
 		this.element.addEvent('click:relay(input.sub_initial_selection)', function (e) {
 			if (this.options.defaultMax === 1) {
-				this.element.getElements('input.sub_initial_selection').each( function (el) {
+				jQuery.each(this.element.getElements('input.sub_initial_selection'), function (key, el) {
 					if (el !== e.target) {
 						el.checked = false;
 					}
@@ -72,7 +70,7 @@ var Suboptions = new Class({
 				e.preventDefault();
 				var trs = this.element.getElements('tbody tr');
 				if (trs.length > 1) {
-					target.getParent('tr').dispose();
+					target.closest('tr').dispose();
 				}
 			}.bind(this));
 			var x = this.element.getElements('a[data-button="addSuboption"]');
@@ -206,15 +204,15 @@ var Suboptions = new Class({
 			evalAdded = true;
 		}
 		if (!evalAdded) {
-			$$('.sub_values').each(function (dd) {
+			jQuery.each($('.sub_values'), function (key, dd) {
 				if (dd.value === '') {
-					alert(Joomla.JText._('COM_FABRIK_SUBOPTS_VALUES_ERROR'));
+					window.alert(Joomla.JText._('COM_FABRIK_SUBOPTS_VALUES_ERROR'));
 					ret = false;
 				}
 				values.push(dd.value);
 			});
 		}
-		$$('.sub_initial_selection').each(function (dd, c) {
+		jQuery.each($$('.sub_initial_selection'), function (c, dd) {
 			dd.value = values[c];
 		});
 		return ret;

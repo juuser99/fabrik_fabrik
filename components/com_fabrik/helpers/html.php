@@ -271,7 +271,7 @@ class FabrikHelperHTML
 			return;
 		}
 
-		$script .= "window.addEvent('fabrik.loaded', function() {";
+		$script .= "jQuery(window).on('fabrik.loaded', function() {";
 
 		if ($selector == '')
 		{
@@ -304,13 +304,14 @@ class FabrikHelperHTML
 
 		$script .= <<<EOD
 
-  $$('$selector').each(function(el, i) {
-    el.addEvent('click', function(e) {
+  $('$selector').each(function(el, i) {
+  var el = $(this);
+    el.on('click', function(e) {
     	var opts = $opts;
     	e.stop();
-      opts2 = JSON.decode(el.get('rel'));
-      opts = Object.merge(opts, opts2 || {});
-      opts.contentURL = el.href;
+      opts2 = JSON.decode($(this).prop('rel'));
+      opts = $.merge(opts, opts2 || {});
+      opts.contentURL = el.prop('href');
       if (opts.id === 'fabwin') {
       	opts.id += i;
       }
@@ -837,7 +838,7 @@ EOD;
 
 			$ext = self::isDebug() ? '.js' : '-min.js';
 			$src = array();
-			JHtml::_('behavior.framework', true);
+			//JHtml::_('behavior.framework', true);
 
 			// Ensure bootstrap js is loaded - as J template may not load it.
 			if ($version->RELEASE > 2.5)
@@ -857,8 +858,6 @@ EOD;
 
 			if (self::inAjaxLoadedPage() && !$bootstrapped)
 			{
-				// $$$ rob 06/02/2012 recall ant so that Color.detach is available (needed for opening a window from within a window)
-				JHtml::_('script', 'media/com_fabrik/js/lib/art.js');
 				JHtml::_('script', 'media/com_fabrik/js/lib/Event.mock.js');
 			}
 
@@ -866,6 +865,9 @@ EOD;
 			{
 				// Require.js now added in fabrik system plugin onAfterRender()
 				JText::script('COM_FABRIK_LOADING');
+
+				// Mootools class replacement
+				$src[] = 'media/com_fabrik/js/lib/my.class' . $ext;
 				$src[] = 'media/com_fabrik/js/fabrik' . $ext;
 				$src[] = 'media/com_fabrik/js/window' . $ext;
 
@@ -1000,20 +1002,20 @@ EOD;
 	 */
 	public static function iniRequireJs($shim = array())
 	{
-		$session      = JFactory::getSession();
-		$requirePaths = self::requirePaths();
-		$pathBits     = array();
-		$framework    = array();
-		$deps         = new stdClass;
-		$deps->deps   = array();
-		$j3           = FabrikWorker::j3();
-		$ext          = self::isDebug() ? '' : '-min';
-
+		$session          = JFactory::getSession();
+		$requirePaths     = self::requirePaths();
+		$pathBits         = array();
+		$framework        = array();
+		$deps             = new stdClass;
+		$deps->deps       = array();
+		$ext              = self::isDebug() ? '' : '-min';
 		$requirejsBaseURI = self::getJSAssetBaseURI();
 
 		// Load any previously created shim (e.g form which then renders list in outro text)
 		$newShim = $session->get('fabrik.js.shim', array());
-
+		echo "<pre>";
+		print_r($shim);
+		echo "</pre>";
 		foreach ($shim as $k => &$s)
 		{
 			$k .= $ext;
@@ -1038,35 +1040,28 @@ EOD;
 			$newShim[$k] = $s;
 		}
 
-		$navigator = JBrowser::getInstance();
+		$deps->deps[] = 'jquery';
+		$deps->deps[] = 'fab/lib/my.class' . $ext;
 
 		if ($navigator->getBrowser() == 'msie' && !$j3)
 		{
 			$deps->deps[] = 'fab/lib/flexiejs/flexie' . $ext;
 		}
 
-		$deps->deps[] = 'jquery';
-
 		$deps->deps[] = 'fab/mootools-ext' . $ext;
 		$deps->deps[] = 'fab/lib/Event.mock';
+		$deps->deps[] = 'fab/tipsBootStrapMock' . $ext;
 
-		if ($j3)
-		{
-			$deps->deps[] = 'fab/tipsBootStrapMock' . $ext;
-		}
-		else
-		{
-			$deps->deps[] = 'fab/lib/art';
-			$deps->deps[] = 'fab/tips' . $ext;
-			$deps->deps[] = 'fab/icons' . $ext;
-			$deps->deps[] = 'fab/icongen' . $ext;
-		}
 
 		$deps->deps[]                   = 'fab/encoder' . $ext;
 		$framework['fab/fabrik' . $ext] = $deps;
 		$deps                           = new stdClass;
 		$deps->deps                     = array('fab/fabrik' . $ext);
 		$framework['fab/window' . $ext] = $deps;
+
+		$deps = new stdClass;
+		$deps->deps = array('fab/lib/my.class');
+		$framework['fab/tipsBootStrapMock' . $ext] = $deps;
 
 		$deps                                = new stdClass;
 		$deps->deps                          = array('fab/fabrik' . $ext, 'fab/element' . $ext);
@@ -1084,18 +1079,18 @@ EOD;
 
 		$pathString = '{' . implode(',', $pathBits) . '}';
 		$config     = array();
-
 		$config[] = "define('jquery', [], function() {
 		console.log('require js define jquery as ', jQuery);
 			return jQuery;
 		});";
-
+		$config[]   = "(function ($) {";
 		$config[]   = "requirejs.config({";
 		$config[]   = "\tbaseUrl: '" . $requirejsBaseURI . "',";
 		$config[]   = "\tpaths: " . $pathString . ",";
 		$config[]   = "\tshim: " . $shim . ',';
 		$config[]   = "\twaitSeconds: 30,";
 		$config[]   = "});";
+		$config[]   = "})(jQuery);";
 		$config[]   = "\n";
 
 		// Store in session - included in fabrik system plugin
@@ -1374,26 +1369,10 @@ EOD;
 			}
 		}
 
-		// Need to load element for ajax popup forms in IE.
-		$needed = array();
-
-		if (!FabrikWorker::j3())
-		{
-			$needed[] = self::isDebug() ? 'fab/icongen' : 'fab/icongen-min';
-			$needed[] = self::isDebug() ? 'fab/icons' : 'fab/icons-min';
-		}
-
-		foreach ($needed as $need)
-		{
-			if (!in_array($need, $files))
-			{
-				array_unshift($files, $need);
-			}
-		}
-
+		array_unshift($files, 'jquery');
 		$files     = array_unique($files);
 		$files     = "['" . implode("', '", $files) . "']";
-		$require[] = 'requirejs(' . ($files) . ', function () {';
+		$require[] = 'requirejs(' . ($files) . ', function ($) {';
 		$require[] = $onLoad;
 		$require[] = '});';
 		$require[] = "\n";
@@ -1698,11 +1677,13 @@ EOD;
 		$class    = $plugin === 'cascadingdropdown' ? 'FabCddAutocomplete' : 'FbAutocomplete';
 		$jsFile   = FabrikWorker::j3() ? 'autocomplete-bootstrap' : 'autocomplete';
 		$needed   = array();
+		$needed[] = self::isDebug() ? 'fab/lib/my.class' : 'fab/lib/my.class-min';
 		$needed[] = self::isDebug() ? 'fab/fabrik' : 'fab/fabrik-min';
 		$needed[] = self::isDebug() ? 'fab/' . $jsFile : 'fab/' . $jsFile . '-min';
 		$needed[] = self::isDebug() ? 'fab/encoder' : 'fab/encoder-min';
 		$needed[] = 'fab/lib/Event.mock';
-		$needed   = implode("', '", $needed);
+
+		$needed = implode("', '", $needed);
 		self::addScriptDeclaration(
 			"requirejs(['$needed'], function () {
 	new $class('$htmlId', $str);
@@ -1797,7 +1778,7 @@ EOD;
 				 limit: 5,
             });";
 			self::$atWho[$key] = true;
-			$css = self::isDebug() ? 'jquery.atwho.css' : 'jquery.atwho.min.css';
+			$css               = self::isDebug() ? 'jquery.atwho.css' : 'jquery.atwho.min.css';
 			FabrikHelperHTML::stylesheet('media/com_fabrik/js/lib/at/' . $css);
 
 			$needed[] = self::isDebug() ? '\'fab/lib/caret/caret\'' : '\'fab/lib/caret/caret-min\'';
@@ -2190,14 +2171,15 @@ $inputDataAttributes = array())
 	 */
 	public static function bootstrapGrid($items, $columns, $spanClass = '', $explode = false)
 	{
-		$layout      = self::getLayout('fabrik-bootstrap-grid');
-		$displayData = new stdClass;
-		$displayData->items = $items;
-		$displayData->columns = $columns;
+		$layout                 = self::getLayout('fabrik-bootstrap-grid');
+		$displayData            = new stdClass;
+		$displayData->items     = $items;
+		$displayData->columns   = $columns;
 		$displayData->spanClass = $spanClass;
-		$displayData->explode = $explode;
+		$displayData->explode   = $explode;
 
 		$grid = $layout->render($displayData);
+
 		return $explode ? $grid : explode("\n", $grid);
 	}
 

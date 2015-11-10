@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListToggle = new Class({
+var FbListToggle = my.Class({
 
-	initialize: function (form) {
+	constructor: function (form) {
 
 		// Stop dropdown closing on click
 		jQuery('#' + form.id + ' .togglecols .dropdown-menu a, #' + form.id + ' .togglecols .dropdown-menu li').click(function (e) {

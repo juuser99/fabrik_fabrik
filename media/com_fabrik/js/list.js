@@ -11,9 +11,7 @@
  * $H:true,unescape:true,head:true,FbListActions:true,FbGroupedToggler:true,FbListKeys:true
  */
 
-var FbList = new Class({
-
-	Implements: [Options, Events],
+var FbList = my.Class({
 
 	options: {
 		'admin': false,
@@ -51,9 +49,9 @@ var FbList = new Class({
 		'toggleCols': false
 	},
 
-	initialize: function (id, options) {
+	constructor: function (id, options) {
 		this.id = id;
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.getForm();
 		this.result = true; //used with plugins to determine if list actions should be performed
 		this.plugins = [];
@@ -133,7 +131,7 @@ var FbList = new Class({
 					'rowid': d.getLast(),
 					listid: this.id
 				};
-			Fabrik.fireEvent('fabrik.list.row.selected', json);
+			Fabrik.trigger('fabrik.list.row.selected', json);
 		}.bind(this));
 	},
 
@@ -266,7 +264,7 @@ var FbList = new Class({
 		new Element('h4').set('text', Joomla.JText._('COM_FABRIK_SELECT_COLUMNS_TO_EXPORT')).inject(c);
 		var g = '';
 		var i = 0;
-		$H(this.options.labels).each(function (label, k) {
+		jQuery.each(this.options.labels, function (k, label) {
 			if (k.substr(0, 7) !== 'fabrik_' && k !== '____form_heading') {
 				var newg = k.split('___')[0];
 				if (newg !== g) {
@@ -514,7 +512,7 @@ var FbList = new Class({
 		var args = Array.prototype.slice.call(arguments);
 		args = args.slice(1, args.length);
 		this.plugins.each(function (plugin) {
-			Fabrik.fireEvent(method, [this, args]);
+			Fabrik.trigger(method, [this, args]);
 		}.bind(this));
 		return this.result === false ? false : true;
 	},
@@ -543,10 +541,10 @@ var FbList = new Class({
 				bsClassAdd = '',
 				bsClassRemove = '';
 				// $$$ rob in pageadaycalendar.com h was null so reset to e.target
-				h = document.id(e.target);
-				var td = h.getParent('.fabrik_ordercell');
-				if (h.tagName !== 'a') {
-					h = td.getElement('a');
+				h = $(e.target);
+				var td = $(this).closest('.fabrik_ordercell');
+				if (($this).prop('tagName') !== 'A') {
+					h = td.closest('a');
 				}
 
 				/**
@@ -687,7 +685,7 @@ var FbList = new Class({
 	},
 
 	doFilter: function () {
-		var res = Fabrik.fireEvent('list.filter', [this]).eventResults;
+		var res = Fabrik.trigger('list.filter', [this]).eventResults;
 		if (typeOf(res) === 'null') {
 			this.submit('list.filter');
 		}
@@ -705,7 +703,7 @@ var FbList = new Class({
 	},
 
 	getActiveRow: function (e) {
-		var row = e.target.getParent('.fabrik_row');
+		var row = $(e.target).closest('.fabrik_row');
 		if (!row) {
 			row = Fabrik.activeRow;
 		}
@@ -811,7 +809,7 @@ var FbList = new Class({
 						this._updateRows(json);
 						Fabrik.loader.stop('listform_' + this.options.listRef);
 						Fabrik['filter_listform_' + this.options.listRef].onUpdateData();
-						Fabrik.fireEvent('fabrik.list.submit.ajax.complete', [this, json]);
+						Fabrik.trigger('fabrik.list.submit.ajax.complete', [this, json]);
 						if (json.msg) {
 							alert(json.msg);
 						}
@@ -825,7 +823,7 @@ var FbList = new Class({
 			if (window.history && window.history.pushState) {
 				history.pushState(data, 'fabrik.list.submit');
 			}
-			Fabrik.fireEvent('fabrik.list.submit', [task, this.form.toQueryString().toObject()]);
+			Fabrik.trigger('fabrik.list.submit', [task, this.form.toQueryString().toObject()]);
 		} else {
 			this.form.submit();
 		}
@@ -837,7 +835,7 @@ var FbList = new Class({
 		this.options.limitStart = limitStart;
 		this.form.getElement('#limitstart' + this.id).value = limitStart;
 		// cant do filter as that resets limitstart to 0
-		Fabrik.fireEvent('fabrik.list.navigate', [this, limitStart]);
+		Fabrik.trigger('fabrik.list.navigate', [this, limitStart]);
 		if (!this.result) {
 			this.result = true;
 			return false;
@@ -855,8 +853,7 @@ var FbList = new Class({
 	 */
 	getRowIds: function () {
 		var keys = [];
-		var d = this.options.isGrouped ? $H(this.options.data) : this.options.data;
-		d.each(function (group) {
+		jQuery.each(this.options.data, function (k, group) {
 			group.each(function (row) {
 				keys.push(row.data.__pk_val);
 			});
@@ -875,7 +872,7 @@ var FbList = new Class({
 	 */
 	getRow: function (id) {
 		var found = {};
-		Object.each(this.options.data, function (group) {
+		jQuery.each(this.options.data, function (key, group) {
 			for (var i = 0; i < group.length; i ++) {
 				var row = group[i];
 				if (row && row.data.__pk_val === id) {
@@ -889,7 +886,7 @@ var FbList = new Class({
 	fabrikNavOrder: function (orderby, orderdir) {
 		this.form.orderby.value = orderby;
 		this.form.orderdir.value = orderdir;
-		Fabrik.fireEvent('fabrik.list.order', [this, orderby, orderdir]);
+		Fabrik.trigger('fabrik.list.order', [this, orderby, orderdir]);
 		if (!this.result) {
 			this.result = true;
 			return false;
@@ -951,7 +948,7 @@ var FbList = new Class({
 				json = json.stripScripts();
 				json = JSON.decode(json);
 				this._updateRows(json);
-				// Fabrik.fireEvent('fabrik.list.update', [this, json]);
+				// Fabrik.trigger('fabrik.list.update', [this, json]);
 			}.bind(this),
 			onError: function (text, error) {
 				fconsole(text, error);
@@ -989,7 +986,7 @@ var FbList = new Class({
 			var counter = 0;
 			var rowcounter = 0;
 			trs = [];
-			this.options.data = this.options.isGrouped ? $H(data.data) : data.data;
+			this.options.data = data.data;
 
 			if (data.calculations) {
 				this.updateCals(data.calculations);
@@ -1000,9 +997,9 @@ var FbList = new Class({
 			// $$$ rob was $H(data.data) but that wasnt working ????
 			// testing with $H back in again for grouped by data? Yeah works for
 			// grouped data!!
-			var gdata = this.options.isGrouped || this.options.groupedBy !== '' ? $H(data.data) : data.data;
+			var gdata = data.data;
 			var gcounter = 0;
-			gdata.each(function (groupData, groupKey) {
+			jQuery.each(gdata, function (groupKey, groupData) {
 				var container, thisrowtemplate;
 				tbody = this.options.isGrouped ? this.list.getElements('.fabrik_groupdata')[gcounter] : this.tbody;
 
@@ -1025,8 +1022,8 @@ var FbList = new Class({
 							// ie tmp fix for mt 1.2 setHTML on table issue
 							thisrowtemplate.adopt(this.options.rowtemplate.clone());
 						}
-						var row = $H(groupData[i]);
-						$H(row.data).each(function (val, key) {
+						var row = groupData[i];
+						jQuery.each(row.data, function (key, val) {
 							var rowk = '.' + key;
 							var cell = thisrowtemplate.getElement(rowk);
 							if (typeOf(cell) !== 'null' && cell.get('tag') !== 'a') {
@@ -1070,8 +1067,8 @@ var FbList = new Class({
 				}
 			});
 
-			var fabrikDataContainer = this.list.getParent('.fabrikDataContainer');
-			var emptyDataMessage = this.list.getParent('.fabrikForm').getElement('.emptyDataMessage');
+			var fabrikDataContainer = this.list.closest('.fabrikDataContainer');
+			var emptyDataMessage = this.list.closest('.fabrikForm').find('.emptyDataMessage');
 			if (rowcounter === 0) {
 				/*
 				 * if (typeOf(fabrikDataContainer) !== 'null') {
@@ -1085,8 +1082,8 @@ var FbList = new Class({
 					 * class which is also hidden.  Should probably move all this logic into a function
 					 * but for now just doing it here.
 					 */
-					if (emptyDataMessage.getParent().getStyle('display') === 'none') {
-						emptyDataMessage.getParent().setStyle('display', '');
+					if (emptyDataMessage.parent().getStyle('display') === 'none') {
+						emptyDataMessage.parent().setStyle('display', '');
 					}
 					if (emptyDataMessage.getElement('.emptyDataMessage')) {
 						emptyDataMessage.getElement('.emptyDataMessage').setStyle('display', '');
@@ -1104,8 +1101,8 @@ var FbList = new Class({
 				this.form.getElement('.fabrikNav').set('html', data.htmlnav);
 			}
 			this.watchAll(true);
-			Fabrik.fireEvent('fabrik.list.updaterows');
-			Fabrik.fireEvent('fabrik.list.update', [this, data]);
+			Fabrik.trigger('fabrik.list.updaterows');
+			Fabrik.trigger('fabrik.list.update', [this, data]);
 		}
 		this.stripe();
 		this.mediaScan();
@@ -1173,8 +1170,8 @@ var FbList = new Class({
 		if (typeOf(checkAll) !== 'null') {
 			// IE wont fire an event on change until the checkbxo is blurred!
 			checkAll.addEvent('click', function (e) {
-				var p = this.list.getParent('.fabrikList') ? this.list.getParent('.fabrikList') : this.list;
-				var chkBoxes = p.getElements('input[name^=ids]');
+				var p = this.list.closest('.fabrikList').length > 0 ? this.list.closest('.fabrikList') : this.list;
+				var chkBoxes = p.find('input[name^=ids]');
 				c = !e.target.checked ? '' : 'checked';
 				for (var i = 0; i < chkBoxes.length; i++) {
 					chkBoxes[i].checked = c;
@@ -1192,8 +1189,8 @@ var FbList = new Class({
 	},
 
 	toggleJoinKeysChx: function (i) {
-		i.getParent().getElements('input[class=fabrik_joinedkey]').each(function (c) {
-			c.checked = i.checked;
+		i.parent().find('input[class=fabrik_joinedkey]').each(function () {
+			this.checked = i.checked;
 		});
 	},
 
@@ -1207,7 +1204,7 @@ var FbList = new Class({
 		}
 		if (limitBox) {
 			limitBox.addEvent('change', function (e) {
-				var res = Fabrik.fireEvent('fabrik.list.limit', [this]);
+				var res = Fabrik.trigger('fabrik.list.limit', [this]);
 				if (this.result === false) {
 					this.result = true;
 					return false;
@@ -1223,7 +1220,7 @@ var FbList = new Class({
 			url += 'tmpl=component&ajax=1';
 			addRecord.addEvent('click', function (e) {
 				e.stop();
-				// top.Fabrik.fireEvent('fabrik.list.add', this);//for packages?
+				// top.Fabrik.trigger('fabrik.list.add', this);//for packages?
 				var winOpts = {
 					'id': 'add.' + this.id,
 					'title': this.options.popup_add_label,
@@ -1290,7 +1287,7 @@ var FbList = new Class({
 		var types = ['sums', 'avgs', 'count', 'medians'];
 		this.form.getElements('.fabrik_calculations').each(function (c) {
 			types.each(function (type) {
-				$H(json[type]).each(function (val, key) {
+				jQuery.each(json[type], function (key, val) {
 					var target = c.getElement('.' + key);
 					if (typeOf(target) !== 'null') {
 						target.set('html', val);
@@ -1305,18 +1302,18 @@ var FbList = new Class({
  * observe keyboard short cuts
  */
 
-var FbListKeys = new Class({
-	initialize: function (list) {
+var FbListKeys = my.Class({
+	constructor: function (list) {
 		window.addEvent('keyup', function (e) {
 			if (e.alt) {
 				switch (e.key) {
 				case Joomla.JText._('COM_FABRIK_LIST_SHORTCUTS_ADD'):
-					var a = list.form.getElement('.addRecord');
+					var a = list.form.find('.addRecord');
 					if (list.options.ajax) {
-						a.fireEvent('click');
+						a.trigger('click');
 					}
-					if (a.getElement('a')) {
-						list.options.ajax ? a.getElement('a').fireEvent('click') : document.location = a.getElement('a').get('href');
+					if (a.find('a').length > 0) {
+						list.options.ajax ? a.find('a').trigger('click') : document.location = a.find('a').prop('href');
 					} else {
 						if (!list.options.ajax) {
 							document.location = a.get('href');
@@ -1343,8 +1340,7 @@ var FbListKeys = new Class({
  * Toggle grouped data by click on the grouped headings icon
  */
 
-var FbGroupedToggler = new Class({
-	Implements: Options,
+var FbGroupedToggler = my.Class({
 
 	options: {
 		collapseOthers: false,
@@ -1352,12 +1348,12 @@ var FbGroupedToggler = new Class({
 		bootstrap: false
 	},
 
-	initialize: function (container, options) {
+	constructor: function (container, options) {
 		var rows, h, img, state;
 		if (typeOf(container) === 'null') {
 			return;
 		}
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.container = container;
 		this.toggleState = 'shown';
 		if (this.options.startCollapsed && this.options.isGrouped) {
@@ -1373,15 +1369,15 @@ var FbGroupedToggler = new Class({
 			if (this.options.collapseOthers) {
 				this.collapse();
 			}
-			h = e.target.getParent('.fabrik_groupheading');
-			img = this.options.bootstrap ? h.getElement('*[data-role="toggle"]') : h.getElement('img');
+			h = $(e.target).closest('.fabrik_groupheading');
+			img = this.options.bootstrap ? h.find('*[data-role="toggle"]') : h.find('img');
 			state = img.retrieve('showgroup', true);
 
 			if (h.getNext() && h.getNext().hasClass('fabrik_groupdata')) {
 				// For div tmpl
 				rows = h.getNext();
 			} else {
-				rows = h.getParent().getNext();
+				rows = h.parent().getNext();
 			}
 			state ? rows.hide() : rows.show();
 			this.setIcon(img, state);
@@ -1446,17 +1442,16 @@ var FbGroupedToggler = new Class({
  * set up and show/hide list actions for each row
  * Deprecated in 3.1
  */
-var FbListActions = new Class({
+var FbListActions = my.Class({
 
-	Implements: [Options],
 	options: {
 		'selector': 'ul.fabrik_action, .btn-group.fabrik_action',
 		'method': 'floating',
 		'floatPos': 'bottom'
 	},
 
-	initialize: function (list, options) {
-		this.setOptions(options);
+	constructor: function (list, options) {
+		this.options = $.append(this.options, options);
 		this.list = list; // main list js object
 		this.actions = [];
 		this.setUpSubMenus();
@@ -1504,11 +1499,11 @@ var FbListActions = new Class({
 	setUpDefault: function () {
 		this.actions = this.list.form.getElements(this.options.selector);
 		this.actions.each(function (ul) {
-			if (ul.getParent().hasClass('fabrik_buttons')) {
+			if (ul.parent().hasClass('fabrik_buttons')) {
 				return;
 			}
 			ul.fade(0.6);
-			var r = ul.getParent('.fabrik_row') ? ul.getParent('.fabrik_row') : ul.getParent('.fabrik___heading');
+			var r = ul.closest('.fabrik_row').length > 0 ? ul.closest('.fabrik_row') : ul.closest('.fabrik___heading');
 			if (r) {
 				// $$$ hugh - for some strange reason, if we use 1 the object disappears
 				// in Chrome and Safari!
@@ -1527,8 +1522,8 @@ var FbListActions = new Class({
 	setUpFloating: function () {
 		var chxFound = false;
 		this.list.form.getElements(this.options.selector).each(function (ul) {
-			if (ul.getParent('.fabrik_row')) {
-				if (i = ul.getParent('.fabrik_row').getElement('input[type=checkbox]')) {
+			if (ul.closest('.fabrik_row')) {
+				if (i = ul.closest('.fabrik_row').find('input[type=checkbox]')) {
 					chxFound = true;
 					var hideFn = function (e, elem, leaving) {
 						if (!e.target.checked) {
@@ -1541,8 +1536,8 @@ var FbListActions = new Class({
 					};
 
 					var c = function (el, o) {
-						var r = ul.getParent();
-						r.store('activeRow', ul.getParent('.fabrik_row'));
+						var r = ul.parent();
+						r.store('activeRow', ul.closest('.fabrik_row'));
 						return r;
 					}.bind(this.list);
 
@@ -1556,7 +1551,7 @@ var FbListActions = new Class({
 								return !e.target.checked;
 							},
 							showFn: function (e, trigger) {
-								Fabrik.activeRow = ul.getParent().retrieve('activeRow');
+								Fabrik.activeRow = ul.parent().retrieve('activeRow');
 								trigger.store('list', this.list);
 								return e.target.checked;
 							}.bind(this.list)
@@ -1569,7 +1564,7 @@ var FbListActions = new Class({
 		}.bind(this));
 
 		this.list.form.getElements('.fabrik_select input[type=checkbox]').addEvent('click', function (e) {
-			Fabrik.activeRow = e.target.getParent('.fabrik_row');
+			Fabrik.activeRow = e.target.closest('.fabrik_row');
 		});
 		// watch the top/master chxbox
 		var chxall = this.list.form.getElement('input[name=checkAll]');
@@ -1578,7 +1573,7 @@ var FbListActions = new Class({
 		}
 
 		var c = function (el) {
-			var p = el.getParent('.fabrik___heading');
+			var p = el.closest('.fabrik___heading');
 			return typeOf(p) !== 'null' ? p.getElement(this.options.selector) : '';
 		}.bind(this);
 

@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbRecommendations = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbRecommendations = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'fbRecommendations';
 		this.parent(element, options);
 	}

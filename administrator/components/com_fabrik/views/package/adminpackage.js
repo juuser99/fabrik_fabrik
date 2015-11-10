@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-AdminPackage = new Class({
+AdminPackage = my.Class({
 
-	initialize: function (opts) {
+	constructor: function (opts) {
 		this.simpleUI();
 	},
 
@@ -48,18 +48,18 @@ AdminPackage = new Class({
 			o.destroy();
 		});
 	},
-	
+
 	prepareSave: function () {
-		
+
 		// Ensure all added options are selected
-		document.getElements('#blockslist option').each(function (opt) {
+		jQuery.each(document.getElements('#blockslist option'), function (key, opt) {
 			opt.selected = true;
 		});
-		
-		document.getElements('#blocksform option').each(function (opt) {
+
+		jQuery.each(document.getElements('#blocksform option'), function (key, opt) {
 			opt.selected = true;
 		});
-		
+
 		return true;
 	}
 });

@@ -5,10 +5,10 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var fabrikTableModule = new Class({
+var fabrikTableModule = my.Class({
 
-	initialize: function (id) {
-		this.options = Object.extend({
+	constructor: function (id) {
+		this.options = $.extend({
 			'mooversion': 1.1
 		}, arguments[1] || {});
 

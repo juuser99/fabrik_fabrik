@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var DateFilter = new Class({
-
-	Implements: [Options],
+var DateFilter = my.Class({
 
 	options: {
 		'calendarSetup': {
@@ -27,8 +25,8 @@ var DateFilter = new Class({
 	},
 
 	initialize: function (opts) {
-		this.setOptions(opts);
-		this.cals = $H({});
+		this.options = $.append(this.options, opts);
+		this.cals = {};
 		for (var i = 0; i < this.options.ids.length; i ++) {
 			this.makeCalendar(this.options.ids[i], this.options.buttons[i]);
 		}
@@ -147,7 +145,7 @@ var DateFilter = new Class({
 	},
 
 	onSubmit: function () {
-		this.cals.each(function (c) {
+		jQuery.each(this.cals, function (key, c) {
 			if (c.params.inputField.value !== '') {
 				c.params.inputField.value = c.date.format('db');
 			}
@@ -155,7 +153,7 @@ var DateFilter = new Class({
 	},
 
 	onUpdateData: function () {
-		this.cals.each(function (c) {
+		jQuery.each(this.cals, function (key, c) {
 			if (c.params.inputField.value !== '') {
 				this.update(c, c.date);
 			}

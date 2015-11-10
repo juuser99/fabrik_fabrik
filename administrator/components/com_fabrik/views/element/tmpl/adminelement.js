@@ -8,11 +8,7 @@
 /* jshint mootools: true */
 /* global fconsole:true, FabrikAdmin:true, Fabrik:true, PluginManager:true, Joomla:true */
 
-var fabrikAdminElement = new Class({
-
-	Extends: PluginManager,
-
-	Implements: [Options, Events],
+var fabrikAdminElement = my.Class(PluginManager, {
 
 	options: {
 		id: 0,
@@ -25,12 +21,12 @@ var fabrikAdminElement = new Class({
 	jsCounter: -1,
 	jsAjaxed: 0,
 
-	initialize: function (plugins, options, id) {
+	constructor: function (plugins, options, id) {
 		if (Fabrik.debug) {
 			fconsole('Fabrik adminelement.js: Initialising', plugins, options, id);
 		}
 		this.parent(plugins, id, 'validationrule');
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.setParentViz();
 
 		this.jsAccordion = new Fx.Accordion([], [], {
@@ -55,7 +51,9 @@ var fabrikAdminElement = new Class({
 				this.addJavascript(opt);
 			}.bind(this));
 
-			this.jsPeriodical = this.iniJsAccordion.periodical(250, this);
+			this.jsPeriodical = setInterval(function () {
+				this.iniJsAccordion.call(this, true);
+			}, 500);
 
 			document.id('jform_plugin').addEvent('change', function (e) {
 				this.changePlugin(e.target.get('value'));
@@ -71,13 +69,13 @@ var fabrikAdminElement = new Class({
 			}.bind(this));
 
 			document.id('javascriptActions').addEvent('change:relay(select[id^="jform_action-"],select[id^="jform_js_e_event-"],select[id^="jform_js_e_trigger-"],select[id^="jform_js_e_condition-"],input[id^="jform_js_e_value-"])', function (e, target) {
-				this.setAccordionHeader(target.getParent('.actionContainer'));
+				this.setAccordionHeader(target.closest('.actionContainer'));
 			}.bind(this));
 
 			var pluginArea = document.id('plugins');
 			if (typeOf(pluginArea) !== 'null') {
 				pluginArea.addEvent('click:relay(h3.title)', function (e, target) {
-					document.id('plugins').getElements('h3.title').each(function (h) {
+					jQuery.each(document.id('plugins').getElements('h3.title'), function (key, h) {
 						if (h !== target) {
 							h.removeClass('pane-toggler-down');
 						}
@@ -169,7 +167,7 @@ var fabrikAdminElement = new Class({
 	},
 
 	deleteJS: function (target) {
-		var c = target.getParent('div.actionContainer');
+		var c = target.closest('div.actionContainer');
 		if (Fabrik.debug) {
 			fconsole('Fabrik adminelement.js: Deleting JS entry: ', c.id);
 		}
@@ -215,8 +213,8 @@ var fabrikAdminElement = new Class({
 				}
 			},
 			onComplete: function (res) {
-				body.getElement('textarea[id^="jform_code-"]').addEvent('change', function (e, target) {
-					this.setAccordionHeader(e.target.getParent('.actionContainer'));
+				body.getElement('textarea[id^="jform_code-"]').addEvent('change', function () {
+					this.setAccordionHeader($(this).target.closest('.actionContainer'));
 				}.bind(this));
 				this.setAccordionHeader(div);
 				this.jsAjaxed++;
@@ -287,7 +285,7 @@ var fabrikAdminElement = new Class({
 			} else {
 				t += condition.getSelected()[0].text + ' "' + value.value.trim() + '", ';
 			}
-			var trigtype = trigger.getSelected().getParent('optgroup').get('label')[0].toLowerCase();
+			var trigtype = trigger.getSelected().closest('optgroup').get('label')[0].toLowerCase();
 			t += event.getSelected()[0].text + ' ' + trigtype.substring(0, trigtype.length - 1);
 			t += ' "' + trigger.getSelected()[0].text + '"';
 		} else {

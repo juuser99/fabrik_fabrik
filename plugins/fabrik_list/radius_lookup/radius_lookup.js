@@ -6,14 +6,13 @@
  */
 
 
-var FbListRadiusLookup = new Class({
-	Extends : FbListPlugin,
+var FbListRadiusLookup = my.Class(FbListPlugin, {
 
 	options: {
-		
+
 	},
 
-	initialize : function (options) {
+	constructor : function (options) {
 		this.parent(options);
 
 		if (typeOf(this.options.value) === 'null') {

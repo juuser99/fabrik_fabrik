@@ -5,7 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbRatingList = new Class({
+var FbRatingList = my.Class({
 
 	options: {
 		'userid': 0,
@@ -13,25 +13,24 @@ var FbRatingList = new Class({
 		'formid': 0
 	},
 
-	Implements: [Events, Options],
-
-	initialize: function (id, options) {
+	constructor: function (id, options) {
 		options.element = id;
 		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		if (this.options.canRate === false) {
 			return;
 		}
 		if (this.options.mode === 'creator-rating') {
 			return;
 		}
-		this.col = $$('.' + id);
+		this.col = $('.' + id);
 		this.origRating = {};
 		this.col.each(function (tr) {
 			var stars = tr.getElements('.starRating');
 
 			stars.each(function (star) {
 				star.addEvent('mouseover', function (e) {
-					this.origRating[tr.id] = star.getParent('.fabrik_element').getElement('.ratingMessage').innerHTML.toInt();
+					this.origRating[tr.id] = star.closest('.fabrik_element').find('.ratingMessage').innerHTML.toInt();
 					stars.each(function (ii) {
 						if (this._getRating(star) >= this._getRating(ii)) {
 							if (Fabrik.bootstrapped) {
@@ -47,7 +46,7 @@ var FbRatingList = new Class({
 							}
 						}
 					}.bind(this));
-					star.getParent('.fabrik_element').getElement('.ratingMessage').innerHTML = star.get('data-fabrik-rating');
+					star.closest('.fabrik_element').find('.ratingMessage').innerHTML = star.get('data-fabrik-rating');
 				}.bind(this));
 
 				star.addEvent('mouseout', function (e) {
@@ -66,7 +65,7 @@ var FbRatingList = new Class({
 							}
 						}
 					}.bind(this));
-					star.getParent('.fabrik_element').getElement('.ratingMessage').innerHTML = this.origRating[tr.id];
+					star.closest('.fabrik_element').find('.ratingMessage').innerHTML = this.origRating[tr.id];
 				}.bind(this));
 			}.bind(this));
 
@@ -88,14 +87,14 @@ var FbRatingList = new Class({
 	doAjax : function (e, star) {
 		e.stop();
 		this.rating = this._getRating(star);
-		var ratingmsg = star.getParent('.fabrik_element').getElement('.ratingMessage');
+		var ratingmsg = star.closest('.fabrik_element').find('.ratingMessage');
 		Fabrik.loader.start(ratingmsg);
 
 		var starRatingCover = new Element('div', {id: 'starRatingCover', styles: {bottom: 0, top: 0, right: 0, left: 0, position: 'absolute', cursor: 'progress'} });
-		var starRatingContainer = star.getParent('.fabrik_element').getElement('div');
+		var starRatingContainer = star.closest('.fabrik_element').find('div');
 		starRatingContainer.grab(starRatingCover, 'top');
 
-		var row = document.id(star).getParent('.fabrik_row');
+		var row = document.id(star).closest('.fabrik_row');
 		var rowid = row.id.replace('list_' + this.options.listRef + '_row_', '');
 		var data = {
 			'option': 'com_fabrik',
@@ -120,18 +119,18 @@ var FbRatingList = new Class({
 				ratingmsg.set('html', this.rating);
 				Fabrik.loader.stop(ratingmsg);
 				var tag = Fabrik.bootstrapped ? 'i' : 'img';
-				star.getParent('.fabrik_element').getElements(tag).each(function (i, x) {
+				star.closest('.fabrik_element').find(tag).each(function (i, x) {
 					if (x < r) {
 						if (Fabrik.bootstrapped) {
-							i.removeClass('icon-star-empty').addClass('icon-star');
+							$(this).removeClass('icon-star-empty').addClass('icon-star');
 						} else {
-							i.src = this.options.insrc;
+							this.src = this.options.insrc;
 						}
 					} else {
 						if (Fabrik.bootstrapped) {
-							i.addClass('icon-star-empty').removeClass('icon-star');
+							$(this).addClass('icon-star-empty').removeClass('icon-star');
 						} else {
-							i.src = this.options.insrc;
+							this.src = this.options.insrc;
 						}
 					}
 				}.bind(this));

@@ -10,15 +10,14 @@
  this elements values
  */
 
-var FbNotes = new Class({
+var FbNotes = my.Class(FbElement, {
 
 	options: {
 		'rowid': 0,
 		'id': 0
 	},
 
-	Extends: FbElement,
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'notes';
 		this.parent(element, options);
 		this.setUp();
@@ -64,7 +63,7 @@ var FbNotes = new Class({
 						var rows = this.element.getElement('div');
 						var row = new Element('div', {'class': 'row-fluid'});
 						var inner_row = new Element('div', {'class': 'span12'}).set('html', json.label).inject(row);
-						inner_row.inject(rows);						
+						inner_row.inject(rows);
 					}
 					else {
 						var ul = this.element.getElement('ul');
@@ -90,7 +89,7 @@ var FbNotes = new Class({
 	},
 
 	cloned: function (c) {
-		Fabrik.fireEvent('fabrik.notes.update', this);
+		Fabrik.trigger('fabrik.notes.update', this);
 		this.parent(c);
 	}
 });

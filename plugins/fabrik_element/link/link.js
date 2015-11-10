@@ -5,10 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbLink = new Class({
+FbLink = my.Class(FbElementList, {
 
-	Extends: FbElementList,
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikLink';
 		this.parent(element, options);
 		this.subElements = this._getSubElements();

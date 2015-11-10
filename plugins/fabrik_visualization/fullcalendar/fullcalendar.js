@@ -5,17 +5,17 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var fabrikFullcalendar = new Class({
-	Implements: [Options],
+var fabrikFullcalendar = my.Class({
 	options: {
 	},
 
-	initialize: function (ref, options) {
+	constructor: function (ref, options) {
 		this.el  = document.id(ref);
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
+
 		this.date = new Date();
 		this.clickdate = null;
-		
+
 		this.windowopts = {
 				'id': 'addeventwin',
 				title: 'add/edit event',
@@ -28,7 +28,7 @@ var fabrikFullcalendar = new Class({
 					win.fitToContent();
 				}.bind(this)
 			};
-		
+
 		if (typeOf(this.el.getElement('.addEventButton')) !== 'null') {
 			this.el.getElement('.addEventButton').addEvent('click', function (e) {
 				this.openAddEvent(e);
@@ -42,10 +42,10 @@ var fabrikFullcalendar = new Class({
 			jQuery('#calendar').fullCalendar( 'refetchEvents' );
 			Fabrik.Windows.addeventwin.close();
 		}.bind(this));
-		
+
 		var eventSources = [];
 		var urls = this.options.url;
-		
+
 		this.options.eventLists.each(function (eventList, eventListKey) {
 			eventSources.push({
 				events: new Function ("start", "end", "tz", "callback",
@@ -63,7 +63,7 @@ var fabrikFullcalendar = new Class({
 					color: eventList.colour
 			});
 		}.bind(this));
-		
+
 		var self = this;
 		var rightbuttons = "";
 		if (this.options.show_week !== false) {
@@ -83,21 +83,21 @@ var fabrikFullcalendar = new Class({
 			case 'monthView':
 				break;
 			case 'weekView':
-				if (this.options.show_week !== false) {	
-					dView = 'agendaWeek'; 
+				if (this.options.show_week !== false) {
+					dView = 'agendaWeek';
 				}
 				break;
 			case 'dayView':
-				if (this.options.show_day !== false) { 
-					dView = 'agendaDay'; 
+				if (this.options.show_day !== false) {
+					dView = 'agendaDay';
 				}
 				break;
 			default:
 				break;
 		}
-			
+
 		var slotMoment = null, slotView = null;
-    
+
 		function dayClickCallback(date, e, view){
 			slotMoment = date;
 			slotView = view.name;
@@ -115,8 +115,8 @@ var fabrikFullcalendar = new Class({
 			}
 		});
 
-		/* below are the standard options we support, any extras or overrides should be in 
-		 * the calendar override option of the visualization 
+		/* below are the standard options we support, any extras or overrides should be in
+		 * the calendar override option of the visualization
 		 */
 		var calOptions = {
 			header: {
@@ -150,13 +150,13 @@ var fabrikFullcalendar = new Class({
 		/* Now merge any calendar overrides/additions from the visualixation */
 		jQuery.extend(true, calOptions, JSON.parse(self.options.calOptions));
 	    jQuery('#calendar').fullCalendar(calOptions);
-		
+
 	},
-	
+
 	processEvents: function (json, callback) {
-		json = $H(JSON.decode(json));
+		json = JSON.decode(json);
 		var events = [];
-		json.each(function (e) {
+		jQuery.each(json, function (key, e) {
 			events.push(
 				{
 					title: e.label,
@@ -167,14 +167,14 @@ var fabrikFullcalendar = new Class({
 					rowid: e.__pk_val,
 					formid: e._formid
 				}
-			)
+			);
 		}.bind(events));
 		callback(events);
 	},
-	
+
 	/**
 	 * Create window for add event form
-	 * 
+	 *
 	 * @param  object  o
 	 */
 	addEvForm: function (o)
@@ -182,16 +182,16 @@ var fabrikFullcalendar = new Class({
 		if (typeof(jQuery) !== 'undefined') {
 			jQuery(this.popOver).popover('hide');
 		}
-		
+
 		this.windowopts.id = 'addeventwin';
 		var url = 'index.php?option=com_fabrik&controller=visualization.fullcalendar&view=visualization&task=addEvForm&format=raw&listid=' + o.listid + '&rowid=' + o.rowid;
 		url += '&jos_fabrik_calendar_events___visualization_id=' + this.options.calendarId;
 		url += '&visualizationid=' + this.options.calendarId;
-		
+
 		if (o.nextView) {
 			url += '&nextview=' + o.nextView;
 		}
-		
+
 		url += '&fabrik_window_id=' + this.windowopts.id;
 		if (this.clickdate !== null) {
 			/* First add the default minimum duration to the end date */
@@ -199,10 +199,11 @@ var fabrikFullcalendar = new Class({
 			var endDate = moment(this.clickdate).add({h:minDur[0], m:minDur[1], s:minDur[2]}).format('YYYY-MM-DD HH:mm:ss');
 			url += '&start_date=' + this.clickdate + '&end_date=' + endDate;
 		}
+
 		this.windowopts.type = 'window';
 		this.windowopts.contentURL = url;
 		var f = this.options.filters;
-	
+
 		this.windowopts.onContentLoaded = function (win)
 		{
 			f.each(function (o) {
@@ -221,10 +222,10 @@ var fabrikFullcalendar = new Class({
 			});
 			win.fitToContent(false);
 		}.bind(this);
-		
+
 		Fabrik.getWindow(this.windowopts);
 	},
-	
+
 	viewEntry: function (calEvent) {
 		this.clickdate = null;
 		var o = {};
@@ -234,10 +235,10 @@ var fabrikFullcalendar = new Class({
 		o.nextView = 'details';
 		this.addEvForm(o);
 	},
-	
+
 	/**
 	 * Open the add event form.
-	 * 
+	 *
 	 * @param e    Event
 	 * @param view The view which triggered the opening
 	 */
@@ -248,7 +249,7 @@ var fabrikFullcalendar = new Class({
 		if (this.options.canAdd === false) {
 			return;
 		}
-		
+
 		if (view == 'month' && this.options.readonlyMonth === true) {
 			return;
 		}
@@ -294,10 +295,10 @@ var fabrikFullcalendar = new Class({
 			this.addEvForm(o);
 		}
 	},
-	
+
 	dateInLimits: function (date) {
 		var d = new moment(date);
-		
+
 		if (this.options.dateLimits.min !== '') {
 			var min = new moment(this.options.dateLimits.min);
 			if (d.isBefore(min)) {
@@ -305,7 +306,7 @@ var fabrikFullcalendar = new Class({
 				return false;
 			}
 		}
-		
+
 		if (this.options.dateLimits.max !== '') {
 			var max = new moment(this.options.dateLimits.max);
 			if (d.isAfter(max)) {
@@ -313,10 +314,10 @@ var fabrikFullcalendar = new Class({
 				return false;
 			}
 		}
-		
+
 		return true;
 	},
-	
+
 	openChooseEventTypeForm: function (d, rawd)
 	{
 		// Rowid is the record to load if editing

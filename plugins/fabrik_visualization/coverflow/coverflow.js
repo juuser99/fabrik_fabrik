@@ -5,10 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbVisCoverflow = new Class({
-	Implements: [Options],
+var FbVisCoverflow = my.Class({
 	options: {},
-	initialize: function (json, options) {
+	constructor: function (json, options) {
 		json = eval(json);
 		this.setOptions(options);
 

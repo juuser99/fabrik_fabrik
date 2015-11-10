@@ -5,18 +5,17 @@ Url:http://justinmaier.com
 Date:2008-06-06
 Ver:1*/
 
-var InlineEdit = new Class({
-	Implements: [Options, Events],
+var InlineEdit = my.Class({
 	options: {
-		onComplete: function () {}, 
-		onLoad: function () {}, 
-		onKeyup: function () {}, 
+		onComplete: function () {},
+		onLoad: function () {},
+		onKeyup: function () {},
 		inputClass: 'input',
 		stripHtml: true
 	},
-	
-	initialize: function (element, options) {
-		this.setOptions(options);
+
+	constructor: function (element, options) {
+		this.options = $.append(this.options, options);
 		this.element = element;
 		this.originalText = element.get('html').replace(/<br>/gi, "\n");
 		this.input = new Element('textarea', {
@@ -33,14 +32,14 @@ var InlineEdit = new Class({
 		this.element.setStyles({'visibility': 'hidden', 'position': 'absolute', 'width': this.element.offsetWidth});
 		this.input.inject(this.element, 'after');
 		this.input.focus();
-		this.fireEvent('onLoad', [this.element, this.input]);
+		this.trigger('onLoad', [this.element, this.input]);
 	},
-	
+
 	keyup: function (e) {
 		if (!e) {
 			return;
 		}
-		this.fireEvent('onKeyup', [this.element, this.input, e]);
+		this.trigger('onKeyup', [this.element, this.input, e]);
 		this.element.set('html', (e.key === 'enter') ? this.getContent() + "&nbsp;" : this.getContent());
 		if (e.key === 'enter') {
 			this.input.addEvent('keydown', this.newLine.bind(this));
@@ -51,7 +50,7 @@ var InlineEdit = new Class({
 			this.end();
 		}
 	},
-	
+
 	getContent: function () {
 		var content = this.input.value;
 		if (this.options.stripHtml) {
@@ -59,18 +58,18 @@ var InlineEdit = new Class({
 		}
 		return (content.replace(/\n/gi, "<br>"));
 	},
-	
+
 	newLine: function () {
 		this.element.innerHTML = this.element.innerHTML.replace("&nbsp;", "");
 		this.input.removeEvents('keydown');
 	},
-	
+
 	complete: function () {
 		this.element.set('html', this.getContent());
-		this.fireEvent('onComplete', this.element);
+		this.trigger('onComplete', this.element);
 		this.end();
 	},
-	
+
 	end: function () {
 		this.input.destroy();
 		this.element.setStyles({'visibility': 'visible', 'position': 'relative', 'width': this.originalWidth});

@@ -11,26 +11,24 @@
  * enter to save
  *
  */
-var inline = new Class({
-
-	Implements: Options,
+var inline = my.Class({
 
 	options: {
-
 	},
 
-	initialize: function (selector, options)
+	constructor: function (selector, options)
 	{
-		this.setOptions(options);
-		document.addEvent('dblclick:relay(' + selector + ')', function (e, target) {
+		var self = this;
+		this.options = $.append(this.options, options);
+		$(document).on('dblclick', selector, function (e, target) {
 			var editor;
 			target.hide();
 			target.store('origValue', target.get('text'));
 			if (!target.retrieve('inline')) {
 				editor = new Element('input');
-				editor.addEvent('keydown', function (e) {
-					this.checkKey(e, target);
-				}.bind(this));
+				editor.on('keydown', function (e) {
+					self.checkKey(e, target);
+				});
 				editor.inject(target, 'after').focus();
 				editor.hide();
 				target.store('inline', editor);
@@ -39,7 +37,7 @@ var inline = new Class({
 			}
 			editor.set('value', target.get('text')).toggle().focus();
 			editor.select();
-		}.bind(this));
+		});
 	},
 
 	checkKey: function (e, target) {
@@ -49,7 +47,7 @@ var inline = new Class({
 		}
 		if (e.key === 'enter' || e.key === 'tab') {
 			target.set('text', e.target.get('value'));
-			Fabrik.fireEvent('fabrik.inline.save', [target, e]);
+			Fabrik.trigger('fabrik.inline.save', [target, e]);
 		}
 	}
 });

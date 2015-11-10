@@ -1,2 +1,2 @@
 /*! Fabrik */
-FbUser=new Class({Extends:FbDatabasejoin});
+FbUser=my.Class(FbDatabasejoin,{});

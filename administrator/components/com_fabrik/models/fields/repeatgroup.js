@@ -5,17 +5,15 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbRepeatGroup = new Class({
-
-	Implements: [Options, Events],
+var FbRepeatGroup = my.Class({
 
 	options: {
 		repeatmin: 1
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.element = document.id(element);
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.counter = this.getCounter();
 		this.watchAdd();
 		this.watchDelete();
@@ -30,7 +28,7 @@ var FbRepeatGroup = new Class({
 		this.element.getElement('a[data-button=addButton]').addEvent('click', function (e) {
 			e.stop();
 			var div = this.repeatContainers().getLast();
-			newc = this.counter + 1;
+			var newc = this.counter + 1;
 			var id = div.id.replace('-' + this.counter, '-' + newc);
 			var c = new Element('div', {'class': 'repeatGroup', 'id': id}).set('html', div.innerHTML);
 			c.inject(div, 'after');
@@ -38,7 +36,7 @@ var FbRepeatGroup = new Class({
 
 			// Update params ids
 			if (this.counter !== 0) {
-				c.getElements('input, select').each(function (i) {
+				jQuery.each(c.getElements('input, select'), function (key, i) {
 					var newPlugin = false;
 					var newid = '';
 					var oldid = i.id;
@@ -50,7 +48,7 @@ var FbRepeatGroup = new Class({
 					}
 
 					this.increaseName(i);
-					$H(FabrikAdmin.model.fields).each(function (plugins, type) {
+					jQuery.each(FabrikAdmin.model.fields, function (type, plugins) {
 						var newPlugin = false;
 						if (typeOf(FabrikAdmin.model.fields[type][oldid]) !== 'null') {
 							var plugin = FabrikAdmin.model.fields[type][oldid];
@@ -69,7 +67,7 @@ var FbRepeatGroup = new Class({
 
 				}.bind(this));
 
-				c.getElements('img[src=components/com_fabrik/images/ajax-loader.gif]').each(function (i) {
+				jQuery.each(c.getElements('img[src=components/com_fabrik/images/ajax-loader.gif]'), function (key, i) {
 
 					var a = i.id.split('-');
 					a.pop();
@@ -85,8 +83,9 @@ var FbRepeatGroup = new Class({
 	},
 
 	watchDelete : function () {
-		this.element.getElements('a[data-button=deleteButton]').removeEvents();
-		this.element.getElements('a[data-button=deleteButton]').each(function (r, x) {
+		var btns = this.element.getElements('a[data-button=deleteButton]')
+		btns.removeEvents();
+		jQuery.each(btns, function (x, r) {
 			r.addEvent('click', function (e) {
 				e.stop();
 				var count = this.getCounter();
@@ -107,7 +106,7 @@ var FbRepeatGroup = new Class({
 	},
 
 	rename : function (x) {
-		this.element.getElements('input, select').each(function (i) {
+		jQuery.each(this.element.getElements('input, select'), function (key, i) {
 			i.name = this._decreaseName(i.name, x);
 		}.bind(this));
 	},

@@ -5,14 +5,13 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbThumbs =  new Class({
-	Extends : FbElement,
-	initialize: function (element, options, thumb) {
+var FbThumbs =  my.Class(FbElement, {
+	constructor: function (element, options, thumb) {
 		this.field = document.id(element);
 		this.parent(element, options);
 		this.thumb = thumb;
 		this.spinner = new Spinner(this.getContainer());
-		
+
 		if (Fabrik.bootstrapped) {
 			this.setupj3();
 		} else {
@@ -20,17 +19,17 @@ var FbThumbs =  new Class({
 			this.thumbdown = document.id('thumbdown');
 			if (this.options.canUse) {
 				this.imagepath = Fabrik.liveSite + 'plugins/fabrik_element/thumbs/images/';
-				
+
 				this.thumbup.addEvent('mouseover', function (e) {
 					this.thumbup.setStyle('cursor', 'pointer');
 					this.thumbup.src = this.imagepath + "thumb_up_in.gif";
 				}.bind(this));
-				
+
 				this.thumbdown.addEvent('mouseover', function (e) {
 					this.thumbdown.setStyle('cursor', 'pointer');
 					this.thumbdown.src = this.imagepath + "thumb_down_in.gif";
 				}.bind(this));
-		
+
 				this.thumbup.addEvent('mouseout', function (e) {
 					this.thumbup.setStyle('cursor', '');
 					if (this.options.myThumb === 'up') {
@@ -47,7 +46,7 @@ var FbThumbs =  new Class({
 						this.thumbdown.src = this.imagepath + "thumb_down_out.gif";
 					}
 				}.bind(this));
-		
+
 				this.thumbup.addEvent('click', function (e) {
 					this.doAjax('up');
 				}.bind(this));
@@ -63,16 +62,16 @@ var FbThumbs =  new Class({
 				this.thumbdown.addEvent('click', function (e) {
 					e.stop();
 					this.doNoAccess();
-				}.bind(this));				
+				}.bind(this));
 			}
 		}
 	},
-	
+
 	setupj3: function () {
 		var c = this.getContainer();
 		var up = c.getElement('button.thumb-up');
 		var down = c.getElement('button.thumb-down');
-		
+
 		up.addEvent('click', function (e) {
 			e.stop();
 			if (this.options.canUse) {
@@ -91,7 +90,7 @@ var FbThumbs =  new Class({
 				this.doNoAccess();
 			}
 		}.bind(this));
-		
+
 		if (typeOf(down) !== 'null') {
 			down.addEvent('click', function (e) {
 				e.stop();
@@ -171,11 +170,11 @@ var FbThumbs =  new Class({
 			}).send();
 		}
 	},
-	
+
 	doNoAccess: function () {
 		if (this.options.noAccessMsg !== '') {
 			alert(this.options.noAccessMsg);
 		}
 	}
-	
+
 });

@@ -5,8 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbRadio = new Class({
-	Extends: FbElementList,
+FbRadio = my.Class(FbElementList, {
 
 	options: {
 		btnGroup: true
@@ -14,7 +13,7 @@ FbRadio = new Class({
 
 	type: 'radio', // sub element type
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikradiobutton';
 		this.parent(element, options);
 		this.btnGroup();
@@ -36,7 +35,7 @@ FbRadio = new Class({
 
 
 		c.getElements(".btn-group input[checked=checked]").each(function (input) {
-			var label = input.getParent('label');
+			var label = input.closest('label');
 			if (typeOf(label) === 'null') {
 				// J3.2 button group markup - label is after input (no longer the case)
 				label = input.getNext();
@@ -76,15 +75,15 @@ FbRadio = new Class({
 			label = document.getElement('label[for=' + input.id + ']');
 		}
 		if (typeOf(label) === 'null') {
-			label = input.getParent('label.btn');
+			label = input.closest('label.btn');
 		}
 		var v = input.get('value');
 		var fabchecked = parseInt(input.get('fabchecked'), 10);
-		
+
 		// Protostar in J3.2 adds its own btn-group js code - need to thus apply this section even after input has been unchecked
 		if (!input.get('checked') || fabchecked === 1) {
 			if (label) {
-				label.getParent('.btn-group').getElements('label').removeClass('active').removeClass('btn-success').removeClass('btn-danger').removeClass('btn-primary');
+				label.closest('.btn-group').find('label').removeClass('active').removeClass('btn-success').removeClass('btn-danger').removeClass('btn-primary');
 				if (v === '') {
 					label.addClass('active btn-primary');
 				} else if (v.toInt() === 0) {
@@ -94,7 +93,7 @@ FbRadio = new Class({
 				}
 			}
 			input.set('checked', true);
-			
+
 			if (typeOf(fabchecked) === 'null') {
 				input.set('fabchecked', 1);
 			}
@@ -109,7 +108,7 @@ FbRadio = new Class({
 			// Copied in repeating group so need to remove old slider html first
 			var clone = d.clone();
 			var fe = c.getElement('.fabrikElement');
-			d.getParent().destroy();
+			d.parent().destroy();
 			fe.adopt(clone);
 			d = c.getElement('div.addoption');
 			d.setStyle('margin', 0);
@@ -156,7 +155,7 @@ FbRadio = new Class({
 				this.element.innerHTML = '';
 				return;
 			}
-			this.element.innerHTML = $H(this.options.data).get(val);
+			this.element.innerHTML = this.options.data[val];
 			return;
 		} else {
 			var els = this._getSubElements();
@@ -184,9 +183,9 @@ FbRadio = new Class({
 		this.parent(c);
 		this.btnGroup();
 	},
-	
+
 	getChangeEvent: function () {
 		return this.options.changeEvent;
 	}
-	
+
 });

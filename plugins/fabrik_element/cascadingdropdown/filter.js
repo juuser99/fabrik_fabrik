@@ -5,8 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var CascadeFilter = new Class({
-	initialize: function (observerid, opts) {
+var CascadeFilter = my.Class({
+	constructor: function (observerid, opts) {
 		this.options = opts;
 		this.observer = document.id(observerid);
 		// autocompletes don't have an id on the hidden value field, but have it as class
@@ -51,9 +51,6 @@ var CascadeFilter = new Class({
 				this.update();
 			}.bind(this));
 
-			//v = this.observer.get('value');
-			//this.periodical = this.update.periodical(500, this);
-			//this.periodcount = 0;
 			this.update();
 		} else {
 			fconsole('observer not found ', observerid);

@@ -8,10 +8,8 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,ART:true */
 
-var IconGenerator = new Class({
-	
-	Implements: [Options],
-	
+var IconGenerator = my.Class({
+
 	options: {
 		size: {width: 32, height: 32},
 		rotate: 0,
@@ -21,20 +19,20 @@ var IconGenerator = new Class({
 		},
 		translate: {x: 0, y: 0}
 	},
-	
+
 	/*
 	 * can add:
-	 * 
+	 *
 		shadow: {
 			color: '#fff',
 			translate: {x: 0, y: 1}
 		},
 	 */
 
-	initialize: function (options) {
-		this.setOptions(options);
+	constructor: function (options) {
+		this.options = $.append(this.options, options);
 	},
-	
+
 	create: function (icon, options) {
 		var iconShadow;
 		if (typeOf(options) !== 'object') {
@@ -58,11 +56,11 @@ var IconGenerator = new Class({
 		}
 		// Create an icon with the gradient
 		icon = new ART.Shape(iconPath);
-		
+
 		icon.scale(opts.scale, opts.scale);
-	 
+
 		icon.fill(opts.fill.color[0], opts.fill.color[1]);
-		
+
 		// Test stroke (border)
 		if (options.stroke) {
 			icon.stroke(options.stroke.color, options.stroke.width);
@@ -73,9 +71,9 @@ var IconGenerator = new Class({
 		} else {
 			group.grab(icon);
 		}
-		
+
 		group.rotate(opts.rotate, 16 * opts.scale, 16 * opts.scale);
-		
+
 		group.inject(art);
 		return art;
 	}

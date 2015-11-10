@@ -5,11 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbAccess = new Class({
+var FbAccess = my.Class(FbElement, {
 
-	Extends: FbElement,
-
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikaccess';
 		this.parent(element, options);
 	}

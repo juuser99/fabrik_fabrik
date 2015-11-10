@@ -5,8 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbDatabasejoin = new Class({
-	Extends: FbElement,
+var FbDatabasejoin = my.Class(FbElement, {
 
 	options: {
 		'id': 0,
@@ -28,7 +27,7 @@ var FbDatabasejoin = new Class({
 		'observe': null
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.activePopUp = false;
 		this.activeSelect = false;
 		this.plugin = 'databasejoin';
@@ -41,7 +40,7 @@ var FbDatabasejoin = new Class({
 			var b = c.getElement('.toggle-addoption');
 
 			// If duplicated remove old events
-						
+
 			b.removeEvent('click', this.watchAddEvent);
 
 			this.watchAddEvent = this.start.bind(this);
@@ -127,10 +126,10 @@ var FbDatabasejoin = new Class({
 		}
 		return this.parent();
 	},
-	
+
 	/**
 	 * Removes an option from the db join element
-	 * 
+	 *
 	 * @param {string} v Option value
 	 * @return  void
 	 */
@@ -194,7 +193,7 @@ var FbDatabasejoin = new Class({
 			break;
 		case 'auto-complete':
 			if (autoCompleteUpdate) {
-				labelField = this.element.getParent('.fabrikElement').getElement('input[name*=-auto-complete]');
+				labelField = this.element.closest('.fabrikElement').find('input[name*=-auto-complete]');
 				this.element.value = v;
 				labelField.value = l;
 			}
@@ -302,7 +301,7 @@ var FbDatabasejoin = new Class({
 			// Joined elements strElement isnt right so use fullName as well
 			data[this.options.fullName + '_raw'] = v;
 		}
-		
+
 		Fabrik.loader.start(this.element.getParent(), Joomla.JText._('COM_FABRIK_LOADING'));
 
 		new Request.JSON({url: '',
@@ -316,7 +315,7 @@ var FbDatabasejoin = new Class({
 				if (this.options.displayType === 'auto-complete' && v === '' && existingValues.length === 0) {
 					return;
 				}
-				
+
 				jsonValues = [];
 				json.each(function (o) {
 					jsonValues.push(o.value);
@@ -326,7 +325,7 @@ var FbDatabasejoin = new Class({
 						changed = true;
 					}
 				}.bind(this));
-				
+
 				existingValues.each(function (ev) {
 					if (!jsonValues.contains(ev)) {
 						sel = this.options.value === ev;
@@ -334,12 +333,12 @@ var FbDatabasejoin = new Class({
 						changed = true;
 					}
 				}.bind(this));
-				
+
 				if (changed) {
-					this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
-					this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'));
+					this.element.trigger('change', new Event.Mock(this.element, 'change'));
+					this.element.trigger('blur', new Event.Mock(this.element, 'blur'));
 				}
-				
+
 				this.activePopUp = false;
 			}.bind(this)
 		}).post();
@@ -426,8 +425,8 @@ var FbDatabasejoin = new Class({
 					return;
 				}
 				// $$$ hugh - fire change blur event, so things like auto-fill will pick up change
-				this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
-				this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'));
+				this.element.trigger('change', new Event.Mock(this.element, 'change'));
+				this.element.trigger('blur', new Event.Mock(this.element, 'blur'));
 			}.bind(this)
 		}).send();
 	},
@@ -489,7 +488,7 @@ var FbDatabasejoin = new Class({
 	},
 
 	selectRecord: function (e) {
-		window.fireEvent('fabrik.dbjoin.unactivate');
+		$(window).trigger('fabrik.dbjoin.unactivate');
 		this.activeSelect = true;
 		e.stop();
 		var id = this.selectRecordWindowId();
@@ -548,17 +547,15 @@ var FbDatabasejoin = new Class({
 				val = JSON.decode(val);
 			}
 			var h = this.form.getFormData();
-			if (typeOf(h) === 'object') {
-				h = $H(h);
-			}
+
 			val.each(function (v) {
-				if (typeOf(h.get(v)) !== 'null') {
-					this.element.innerHTML += h.get(v) + "<br />";
+				if (typeOf(h[v]) !== 'null') {
+					this.element.innerHTML += h[v] + '<br />';
 				} else {
 					//for detailed view prev/next pagination v is set via elements
 					//getROValue() method and is thus in the correct format - not sure that
 					// h.get(v) is right at all but leaving in incase i've missed another scenario
-					this.element.innerHTML += v + "<br />";
+					this.element.innerHTML += v + '<br />';
 				}
 			}.bind(this));
 			return;
@@ -767,7 +764,7 @@ var FbDatabasejoin = new Class({
 		document.id(f.id).value = '';
 		new FbAutocomplete(this.element.id, this.options.autoCompleteOpts);
 	},
-	
+
 	watchObserve: function () {
 		this.options.observe.each(function (o) {
 			if (o === '') {
@@ -805,7 +802,7 @@ var FbDatabasejoin = new Class({
 			}
 		}.bind(this));
 	},
-	
+
 	attachedToForm : function () {
 		if (this.options.editable) {
 			this.watchObserve();
@@ -820,7 +817,7 @@ var FbDatabasejoin = new Class({
 		if (this.options.editable) {
 			this.getCheckboxTmplNode();
 		}
-		
+
 		// If users can add records to the database join drop down
 		if (this.options.allowadd === true && this.options.editable !== false) {
 			this.watchAddEvent = this.start.bind(this);
@@ -867,10 +864,10 @@ var FbDatabasejoin = new Class({
 	},
 
 	getAutoCompleteLabelField: function () {
-		var p = this.element.getParent('.fabrikElement');
-		var f = p.getElement('input[name*=-auto-complete]');
-		if (typeOf(f) === 'null') {
-			f = p.getElement('input[id*=-auto-complete]');
+		var p = this.element.closest('.fabrikElement');
+		var f = p.find('input[name*=-auto-complete]');
+		if (f.length === 0) {
+			f = p.find('input[id*=-auto-complete]');
 		}
 		return f;
 	},

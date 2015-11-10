@@ -5,14 +5,12 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbSlideshowViz = new Class({
+var FbSlideshowViz = my.Class({
 
-	Implements: [Options],
-	
 	options: {},
-	
-	initialize: function (element, options) {
-		this.setOptions(options);
+
+	constructor: function (element, options) {
+		this.options = $.append(this.options, options);
 		var opts = {
 			controller: true,
 			delay: parseInt(this.options.slideshow_delay, 10),
@@ -26,11 +24,11 @@ var FbSlideshowViz = new Class({
 		};
 		switch (this.options.slideshow_type) {
 		case 1:
-			opts = Object.append(opts, {fast: true});
+			opts = $.append(opts, {fast: true});
 			this.slideshow = new Slideshow(this.options.html_id, this.options.slideshow_data, opts);
 			break;
 		case 2:
-			opts = Object.append(opts, {
+			opts = $.append(opts, {
 				zoom : parseInt(this.options.slideshow_zoom, 10),
 				pan : parseInt(this.options.slideshow_pan, 10)
 			});

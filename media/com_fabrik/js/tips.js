@@ -5,8 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FloatingTips = new Class({
-	Implements: [Options, Events],
+var FloatingTips = my.Class({
 
 	options: {
 		fxProperties: {transition: Fx.Transitions.linear, duration: 500},
@@ -28,8 +27,8 @@ var FloatingTips = new Class({
 		}
 	},
 
-	initialize: function (elements, options) {
-		this.setOptions(options);
+	constructor: function (elements, options) {
+		this.options = $.append(this.options, options);
 		this.options.fxProperties = {transition: eval(this.options.tipfx), duration: this.options.duration};
 		//any tip (not necessarily in this instance has asked for all other tips to be hidden.
 		window.addEvent('tips.hideall', function (e, trigger) {
@@ -44,7 +43,7 @@ var FloatingTips = new Class({
 	},
 
 	attach: function (elements) {
-		this.elements = $$(elements);
+		this.elements = $(elements);
 		this.elements.each(function (trigger) {
 			var tmpOpts = {};
 			// Tip text in gmap viz bubble not decodable so test if json is valid first
@@ -121,7 +120,7 @@ var FloatingTips = new Class({
 				}
 			}
 			if (opts.showFn(e, trigger)) {
-				window.fireEvent('tips.hideall', [trigger]);
+				$(window).trigger('tips.hideall', [trigger]);
 				this.show(trigger, evnt);
 			}
 		}.bind(this));
@@ -164,7 +163,7 @@ var FloatingTips = new Class({
 		var opts = trigger.retrieve('opts');
 		opts = opts[evnt];
 		var tip = tips[opts.showOn];
-		if (tip.getStyle('opacity') === 1 && tip.getStyle('display') !== 'none' && typeOf(tip.getParent()) !== 'null') {
+		if (tip.getStyle('opacity') === 1 && tip.getStyle('display') !== 'none' && tip.parent().length !== 0) {
 			//already shown don't reanimate
 			return;
 		}
@@ -260,7 +259,7 @@ var FloatingTips = new Class({
 			this.elements.each(function (element) {
 				if (element !== except) {
 					var tips = element.retrieve('tip');
-					$H(tips).each(function (tip) {
+					jQuery.each(tips, function (key, tip) {
 						tip.hide();
 					});
 				}
@@ -271,7 +270,7 @@ var FloatingTips = new Class({
 	hideAll: function () {
 		this.elements.each(function (element) {
 			var tips = element.retrieve('tip');
-			$H(tips).each(function (tip) {
+			jQuery.each(tips, function (key, tip) {
 				tip.hide();
 			});
 		});

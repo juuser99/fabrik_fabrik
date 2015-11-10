@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var fabriktablesElement = new Class({
-
-	Implements: [Options, Events],
+var fabriktablesElement = my.Class({
 
 	options: {
 		conn: null,
@@ -15,15 +13,17 @@ var fabriktablesElement = new Class({
 		container: ''
 	},
 
-	initialize : function (el, options) {
+	constructor : function (el, options) {
 		this.el = el;
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.elements = [];
-		this.elementLists = $H({}); // keyed on specific element options
-		this.waitingElements = $H({}); // keyed on specific element options
+		this.elementLists = {}; // keyed on specific element options
+		this.waitingElements = {}; // keyed on specific element options
 		// if loading in a form plugin then the connect is not yet available in the dom
 		if (typeOf(document.id(this.options.conn)) === 'null') {
-			this.periodical = this.getCnn.periodical(500, this);
+			this.periodical = setInterval(function () {
+				this.getCnn.call(this, true);
+			}, 500);
 		} else {
 			this.setUp();
 		}
@@ -51,11 +51,11 @@ var fabriktablesElement = new Class({
 		this.loader = document.id(this.el.id + '_loader');
 
 		var self = this;
-		
+
 		if (this.cnn.hasClass('chzn-done')) {
 			jQuery('#' + this.cnn.id).on('change', function (event) {
-				document.id(self.cnn).fireEvent('change', new Event.Mock(document.id(self.cnn), 'change'));				
-			});	
+				document.id(self.cnn).fireEvent('change', new Event.Mock(document.id(self.cnn), 'change'));
+			});
 		}
 
 		this.cnn.addEvent('change', function (e) {
@@ -64,10 +64,10 @@ var fabriktablesElement = new Class({
 
 		if (this.el.hasClass('chzn-done')) {
 			jQuery('#' + this.el.id).on('change', function (event) {
-				document.id(self.el.id).fireEvent('change', new Event.Mock(document.id(self.el.id), 'change'));				
-			});	
+				document.id(self.el.id).fireEvent('change', new Event.Mock(document.id(self.el.id), 'change'));
+			});
 		}
-		
+
 		this.el.addEvent('change', function (e) {
 			this.updateElements(e);
 		}.bind(this));
@@ -159,8 +159,8 @@ var fabriktablesElement = new Class({
 				this.loader.show();
 			}
 			var key = opts.getValues().toString() + ',' + table;
-			if (!this.waitingElements.has(key)) {
-				this.waitingElements[key] = $H({});
+			if (!this.waitingElements.hasOwnProperty(key)) {
+				this.waitingElements[key] = {};
 			}
 			if (this.elementLists[key] !== undefined) {
 				if (this.elementLists[key] === '') {
@@ -173,7 +173,7 @@ var fabriktablesElement = new Class({
 			} else {
 
 				var cid = this.cnn.get('value');
-				this.elementLists.set(key, '');
+				this.elementLists[key] = '';
 				//var url = this.options.livesite + 'index.php?option=com_fabrik&format=raw&view=plugin&task=pluginAjax&g=visualization&plugin=chart&method=ajax_fields&k=2&t=' + table + '&cid=' + cid;
 
 				var ajaxopts = {
@@ -195,18 +195,18 @@ var fabriktablesElement = new Class({
 					'url' : 'index.php',
 					'data' : ajaxopts,
 					onComplete : function (r) {
-						this.elementLists.set(key, r);
+						this.elementLists[key] = r;
 						this.updateElementOptions(r, element);
-						this.waitingElements.get(key).each(function (el, i) {
+						jQuery.each(this.waitingElements[key], function (i, el) {
 							this.updateElementOptions(r, el);
-							this.waitingElements[key].erase(i);
+							delete this.waitingElements[key][i];
 						}.bind(this));
 					}.bind(this),
 
 					onFailure: function (r) {
-						this.waitingElements.get(key).each(function (el, i) {
+						jQuery.each(this.waitingElements[key], function (i, el) {
 							this.updateElementOptions('[]', el);
-							this.waitingElements[key].erase(i);
+							delete this.waitingElements[key][i];
 						}.bind(this));
 						if (this.loader) {
 							this.loader.hide();
@@ -229,7 +229,7 @@ var fabriktablesElement = new Class({
 		var opts = eval(r);
 
 		if (element.el.get('tag') === 'textarea') {
-			target = element.el.getParent().getElement('select');
+			target = element.el.parent().find('select');
 		} else {
 			target = element.el;
 		}
@@ -269,8 +269,8 @@ var fabriktablesElement = new Class({
 		}
 		this.el = newid;
 		this.elements = [];
-		this.elementLists = $H({});
-		this.waitingElements = $H({});
+		this.elementLists = {};
+		this.waitingElements = {};
 		this.setUp();
 		FabrikAdmin.model.fields.fabriktable[this.el.id] = this;
 	}

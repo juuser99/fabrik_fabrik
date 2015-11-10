@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListDownload = new Class({
-	Extends : FbListPlugin,
-	initialize : function (options) {
+var FbListDownload = my.Class(FbListPlugin, {
+	constructor : function (options) {
 		this.parent(options);
 	}
 });

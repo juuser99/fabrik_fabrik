@@ -5,8 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbGoogleMapViz = new Class({
-	Implements: Options,
+var FbGoogleMapViz = my.Class({
 	options: {
 		'lat': 0,
 		'lon': 0,
@@ -38,7 +37,7 @@ var FbGoogleMapViz = new Class({
 		'styles': []
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.element_map = element;
 		this.element = document.id(element);
 
@@ -47,7 +46,7 @@ var FbGoogleMapViz = new Class({
 		this.markers = [];
 		this.distanceWidgets = [];
 		this.icons = [];
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 
 		if (this.options.ajax_refresh) {
 			this.updater = new Request.JSON({url: '',
@@ -68,10 +67,12 @@ var FbGoogleMapViz = new Class({
 					if (this.options.ajax_refresh_center) {
 						this.center();
 					}
-					Fabrik.fireEvent('fabrik.viz.googlemap.ajax.refresh', [this]);
+					Fabrik.trigger('fabrik.viz.googlemap.ajax.refresh', [this]);
 				}.bind(this)
 			});
-			this.timer = this.update.periodical(this.options.refresh_rate, this);
+			this.timer = setInterval(function () {
+				this.update.call(this);
+			}, this.options.refresh_rate);
 		}
 
 		if (typeof(Slimbox) !== 'undefined') {
@@ -99,7 +100,7 @@ var FbGoogleMapViz = new Class({
 			var submit = this.container.getElements('input.fabrik_filter_submit');
 			if (typeOf(submit) !== 'null') {
 				submit.addEvent('click', function (e) {
-					var res = Fabrik.fireEvent('list.filter', [this]).eventResults;
+					var res = Fabrik.trigger('list.filter', [this]).eventResults;
 					if (typeOf(res) === 'null' || res.length === 0 || !res.contains(false)) {
 						form.submit();
 					} else {
@@ -151,10 +152,10 @@ var FbGoogleMapViz = new Class({
 		};
 		this.map = new google.maps.Map(document.id(this.element_map), mapOpts);
 		this.map.setOptions({'styles': this.options.styles});
-		
+
 		if (this.options.traffic) {
 			  var trafficLayer = new google.maps.TrafficLayer();
-			  trafficLayer.setMap(this.map);	
+			  trafficLayer.setMap(this.map);
 		}
 
 		this.infoWindow = new google.maps.InfoWindow({
@@ -180,7 +181,7 @@ var FbGoogleMapViz = new Class({
 		this.infoWindow = new google.maps.InfoWindow({
 			content: ''
 		});
-		
+
 		if (this.options.use_cookies) {
 			// $$$ jazzbass - get previous stored location
 			var mymapzoom = Cookie.read("mymapzoom_" + this.options.id);
@@ -254,7 +255,7 @@ var FbGoogleMapViz = new Class({
 	noData: function () {
 		return this.options.icons.length === 0;
 	},
-	
+
 	addIcons: function () {
 		this.markers = [];
 		this.clusterMarkers = [];
@@ -384,7 +385,9 @@ var FbGoogleMapViz = new Class({
 
 			this.infoWindow.open(this.map, marker);
 			this.periodCounter = 0;
-			this.timer = this.slimboxFunc.periodical(1000, this); //adds the number of seconds at the Site.
+			this.timer = setInterval(function () {
+				this.slimboxFunc.call(this);
+			}, 1000);
 
 			// Create tips in bubble text
 			Fabrik.tips.attach('.fabrikTip');
@@ -413,18 +416,18 @@ var FbGoogleMapViz = new Class({
 
 	slimboxFunc:  function () {
 		// periodical function to observe the infowindow html to apply lightbox fx to images
-		var links = $$("a").filter(function (el) {
+		var links = $('a').filter(function (el) {
 			return el.rel && el.rel.test(/^lightbox/i);
 		});
 		if (links.length > 0 || this.periodCounter > 15) {
 			clearInterval(this.timer);
 			if (typeof(Slimbox) !== 'undefined') {
-				$$(links).slimbox({/* Put custom options here */}, null, function (el) {
+				$(links).slimbox({/* Put custom options here */}, null, function (el) {
 					return (this === el) || ((this.rel.length > 8) && (this.rel === el.rel));
 				});
 			}
 			else if (typeof(Mediabox) !== 'undefined') {
-				$$(links).mediabox({/* Put custom options here */}, null, function (el) {
+				$(links).mediabox({/* Put custom options here */}, null, function (el) {
 					return (this === el) || ((this.rel.length > 8) && (this.rel === el.rel));
 				});
 			}
@@ -460,7 +463,7 @@ var FbGoogleMapViz = new Class({
 
 	watchSidebar: function () {
 		if (this.options.use_overlays) {
-			$$('.fabrik_calendar_overlay_chbox').each(function (el) {
+			$('.fabrik_calendar_overlay_chbox').each(function (el) {
 			}.bind(this));
 		}
 	},
@@ -565,7 +568,7 @@ var FbGoogleMapViz = new Class({
 			fn.delay(1500);
 		}.bind(this));
 	},
-	
+
 	/**
 	 * Required for use with plugin's clear filters plugin code.
 	 */

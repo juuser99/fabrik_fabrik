@@ -11,14 +11,14 @@
  * fabrikAdminPlugin:true
  */
 
-var PluginManager = new Class({
+var PluginManager = my.Class({
 
 	pluginTotal: 0,
 
 	topTotal: -1,
 
-	initialize: function (plugins, id, type) {
-		if (typeOf(plugins) === 'string') {
+	constructor: function (plugins, id, type) {
+		if (typeof(plugins) === 'string') {
 			plugins = [plugins];
 		}
 		this.id = id;
@@ -34,7 +34,9 @@ var PluginManager = new Class({
 			for (i = 0; i < plugins.length; i++) {
 				this.addTop(plugins[i]);
 			}
-			this.periodical = this.iniAccordion.periodical(250, this);
+			this.periodical = setInterval(function () {
+				this.iniAccordion.call(this, true);
+			}, 500);
 
 			this.watchPluginSelect();
 			this.watchDelete();
@@ -43,7 +45,7 @@ var PluginManager = new Class({
 			var pluginArea = document.id('plugins');
 			if (typeOf(pluginArea) !== 'null') {
 				pluginArea.addEvent('click:relay(h3.title)', function (e, target) {
-					document.id('plugins').getElements('h3.title').each(function (h) {
+					jQuery.each(document.id('plugins').getElements('h3.title'), function (key, h) {
 						if (h !== target) {
 							h.removeClass('pane-toggler-down');
 						}
@@ -59,9 +61,9 @@ var PluginManager = new Class({
 
 	watchDescriptions: function (pluginArea) {
 		pluginArea.addEvent('keyup:relay(input[name*=plugin_description])', function (e, target) {
-			var container = target.getParent('.actionContainer'),
-				title = container.getElement('.pluginTitle'),
-				plugin = container.getElement('select[name*=plugin]').getValue(),
+			var container = target.closest('.actionContainer'),
+				title = container.find('.pluginTitle'),
+				plugin = container.find('select[name*=plugin]').getValue(),
 				desc = target.getValue();
 			title.set('text', plugin + ': ' + desc);
 		});
@@ -143,7 +145,7 @@ var PluginManager = new Class({
 
 		// Ajax request to load the first part of the plugin form (do[plugin]
 		// in, on)
-		
+
 		var d = {
 				'option': 'com_fabrik',
 				'view': 'plugin',
@@ -195,13 +197,13 @@ var PluginManager = new Class({
 	updateBootStrap: function () {
 		document.getElements('.radio.btn-group label').addClass('btn');
 
-		document.getElements(".btn-group input[checked=checked]").each(function (el) {
+		jQuery.each(document.getElements(".btn-group input[checked=checked]"), function (key, el) {
 			if (el.get('value') === '') {
-				document.getElement("label[for=" + el.get('id') + "]").addClass('active btn-primary');
+				document.getElement('label[for=' + el.get('id') + ']').addClass('active btn-primary');
 			} else if (el.get('value') === '0') {
-				document.getElement("label[for=" + el.get('id') + "]").addClass('active btn-danger');
+				document.getElement('label[for=' + el.get('id') + ']').addClass('active btn-danger');
 			} else {
-				document.getElement("label[for=" + el.get('id') + "]").addClass('active btn-success');
+				document.getElement('label[for=' + el.get('id') + ']').addClass('active btn-success');
 			}
 			if (typeof (jQuery) !== 'undefined') {
 				jQuery('*[rel=tooltip]').tooltip();
@@ -209,7 +211,7 @@ var PluginManager = new Class({
 
 		});
 
-		document.getElements('.hasTip').each(function (el) {
+		jQuery.each(document.getElements('.hasTip'), function (key, el) {
 			var title = el.get('title');
 			if (title) {
 				var parts = title.split('::', 2);
@@ -217,7 +219,7 @@ var PluginManager = new Class({
 				el.store('tip:text', parts[1]);
 			}
 		});
-		var JTooltips = new Tips($$('.hasTip'), {
+		var JTooltips = new Tips($('.hasTip'), {
 			maxTitleChars: 50,
 			fixed: false
 		});
@@ -231,9 +233,9 @@ var PluginManager = new Class({
 		document.id('adminForm').addEvent('change:relay(select.elementtype)', function (event, target) {
 			event.preventDefault();
 			var plugin = target.get('value');
-			var container = target.getParent('.pluginContainer');
+			var container = target.closest('.pluginContainer');
 			var pluginName = plugin !== '' ? plugin + ' ' + Joomla.JText._('COM_FABRIK_LOADING').toLowerCase() : Joomla.JText._('COM_FABRIK_PLEASE_SELECT');
-			target.getParent('.actionContainer').getElement('span.pluginTitle').set('text', pluginName);
+			target.closest('.actionContainer').find('span.pluginTitle').set('text', pluginName);
 			var c = container.id.replace('formAction_', '').toInt();
 			this.addPlugin(plugin, c);
 		}.bind(this));
@@ -288,8 +290,8 @@ var PluginManager = new Class({
 	},
 
 	deletePlugin: function (e) {
-		var c = e.target.getParent('fieldset.pluginContainer');
-		if (typeOf(c) === 'null') {
+		var c = e.target.closest('fieldset.pluginContainer');
+		if (c.length === 0) {
 			return;
 		}
 		if (Fabrik.debug) {
@@ -309,7 +311,7 @@ var PluginManager = new Class({
 		 */
 		if (c.id.match(/_\d+$/)) {
 			var x = c.id.match(/_(\d+)$/)[1].toInt();
-			document.id('plugins').getElements('input, select, textarea, label, fieldset').each(function (i) {
+			jQuery.each(document.id('plugins').getElements('input, select, textarea, label, fieldset'), function (key, i) {
 				// Get index from name or id
 				var s = i.name ? i.name.match(/\[(\d+)\]/) : null;
 				if (!s && i.id) {
@@ -341,7 +343,7 @@ var PluginManager = new Class({
 					}
 				}
 			});
-			document.id('plugins').getElements('fieldset.pluginContainer').each(function (i) {
+			jQuery.each(document.id('plugins').getElements('fieldset.pluginContainer'), function (key, i) {
 				if (i.id.match(/formAction_\d+$/)) {
 					var c = i.id.match(/formAction_(\d+)$/)[1].toInt();
 					if (c > x) {
@@ -352,19 +354,18 @@ var PluginManager = new Class({
 			});
 		}
 		e.stop();
-		e.target.getParent('.actionContainer').dispose();
+		e.target.closest('.actionContainer').dispose();
 	}
 
 });
 
-fabrikAdminPlugin = new Class({
+fabrikAdminPlugin = my.Class({
 
-	Implements: [Options],
 	options: {},
-	initialize: function (name, label, options) {
+	constructor: function (name, label, options) {
 		this.name = name;
 		this.label = label;
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 	},
 
 	cloned: function () {

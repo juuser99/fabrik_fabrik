@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbCount = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbCount = my.Class(FbElement, {
+
+	constructor: function (element, options) {
 		this.plugin = 'fabrikcount';
 		this.parent(element, options);
 	}

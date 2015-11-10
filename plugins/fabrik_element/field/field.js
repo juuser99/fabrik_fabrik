@@ -7,15 +7,15 @@
 
 function geolocateLoad () {
 	if (document.body) {
-		window.fireEvent('google.geolocate.loaded');
+		$(window).trigger('google.geolocate.loaded');
 	} else {
 		console.log('no body');
 	}
 }
 
-var FbField = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbField = my.Class(FbElement, {
+
+	constructor: function (element, options) {
 		this.plugin = 'fabrikfield';
 		this.parent(element, options);
 		/*
@@ -57,7 +57,7 @@ var FbField = new Class({
 			this.getElement().focus();
 		}
 	},
-	
+
 	cloned: function (c) {
 		if (this.options.use_input_mask) {
 			var element = this.getElement();
@@ -79,5 +79,5 @@ var FbField = new Class({
 		}
 		this.parent(c);
 	}
-	
+
 });

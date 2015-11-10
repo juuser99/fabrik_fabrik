@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListFilter = new Class({
-
-    Implements: [Options, Events],
+var FbListFilter = my.Class({
 
     options: {
         'container'     : '',
@@ -19,21 +17,21 @@ var FbListFilter = new Class({
         }
     },
 
-    initialize: function (options) {
-        this.filters = $H({});
-        this.setOptions(options);
-        this.advancedSearch = false;
-        this.container = document.id(this.options.container);
-        this.filterContainer = this.container.getElements('.fabrikFilterContainer');
-        this.filtersInHeadings = this.container.getElements('.listfilter');
-        var b = this.container.getElement('.toggleFilters'),
+	constructor: function (options) {
+		this.filters = {};
+		this.options = $.append(this.options, options);
+		this.advancedSearch = false;
+		this.container = document.id(this.options.container);
+		this.filterContainer = this.container.getElements('.fabrikFilterContainer');
+		this.filtersInHeadings = this.container.getElements('.listfilter');
+		var b = this.container.getElement('.toggleFilters'),
             advancedSearchButton;
-        if (typeOf(b) !== 'null') {
-            b.addEvent('click', function (e) {
-                e.stop();
-                this.filterContainer.toggle();
-                this.filtersInHeadings.toggle();
-            }.bind(this));
+		if (typeOf(b) !== 'null') {
+			b.addEvent('click', function (e) {
+				e.stop();
+				this.filterContainer.toggle();
+				this.filtersInHeadings.toggle();
+			}.bind(this));
 
             if (typeOf(this.filterContainer) !== 'null') {
                 this.filterContainer.hide();
@@ -110,28 +108,28 @@ var FbListFilter = new Class({
         return this.list;
     },
 
-    addFilter: function (plugin, f) {
-        if (this.filters.has(plugin) === false) {
-            this.filters.set(plugin, []);
-        }
-        this.filters.get(plugin).push(f);
-    },
+	addFilter: function (plugin, f) {
+		if (this.filters.hasOwnProperty(plugin) === false) {
+			this.filters[plugin] = [];
+		}
+		this.filters[plugin].push(f);
+	},
 
-    onSubmit: function () {
-        if (this.filters.date) {
-            this.filters.date.each(function (f) {
-                f.onSubmit();
-            });
-        }
-    },
+	onSubmit: function () {
+		if (this.filters.date) {
+			jQuery.each(this.filters.date, function (key, f) {
+				f.onSubmit();
+			});
+		}
+	},
 
-    onUpdateData: function () {
-        if (this.filters.date) {
-            this.filters.date.each(function (f) {
-                f.onUpdateData();
-            });
-        }
-    },
+	onUpdateData: function () {
+		if (this.filters.date) {
+			jQuery.each(this.filters.date, function (key, f) {
+				f.onUpdateData();
+			});
+		}
+	},
 
     // $$$ hugh - added this primarily for CDD element, so it can get an array to
     // emulate submitted form data
@@ -159,7 +157,7 @@ var FbListFilter = new Class({
      * Ask all filters to update themselves
      */
     update: function () {
-        this.filters.each(function (fs, plugin) {
+        jQuery.each(this.filters, function (plugin, fs) {
             fs.each(function (f) {
                 f.update();
             }.bind(this));

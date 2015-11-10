@@ -1,2 +1,2 @@
 /*! Fabrik */
-var FbListCopy=new Class({Extends:FbListPlugin,initialize:function(a){this.parent(a)}});
+var FbListCopy=my.Class(FbListPlugin,{constructor:function(a){this.parent(a)}});

@@ -10,10 +10,9 @@
  this elements values
  */
 
-var FbCascadingdropdown = new Class({
+var FbCascadingdropdown = my.Class(FbDatabasejoin, {
 
-	Extends: FbDatabasejoin,
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.ignoreAjax = false;
 		this.parent(element, options);
 		this.plugin = 'cascadingdropdown';
@@ -31,7 +30,7 @@ var FbCascadingdropdown = new Class({
 			}.bind(this));
 		}
 		if (typeOf(this.element) !== 'null') {
-			this.spinner = new Spinner(this.element.getParent('.fabrikElementContainer'));
+			this.spinner = new Spinner(this.element.parent('.fabrikElementContainer'));
 		}
 	},
 
@@ -186,7 +185,7 @@ var FbCascadingdropdown = new Class({
 			// above.
 			if (!this.ignoreAjax) {
 				this.ingoreShowDesc = true;
-				this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
+				this.element.trigger('change', new Event.Mock(this.element, 'change'));
 				this.ingoreShowDesc = false;
 			}
 			this.ignoreAjax = false;
@@ -194,7 +193,7 @@ var FbCascadingdropdown = new Class({
 			var newV = [this.getValue()];
 			this.setValue(newV);
 
-			Fabrik.fireEvent('fabrik.cdd.update', this);
+			Fabrik.trigger('fabrik.cdd.update', this);
 		}.bind(this),
 		'onFailure': function (xhr) {
 			console.log(this.myAjax.getHeader('Status'));
@@ -222,7 +221,7 @@ var FbCascadingdropdown = new Class({
 		// c is the repeat group count
 		this.myAjax = null;
 		this.parent(c);
-		this.spinner = new Spinner(this.element.getParent('.fabrikElementContainer'));
+		this.spinner = new Spinner(this.element.closest('.fabrikElementContainer'));
 		// Cloned seems to be called correctly
 		if (document.id(this.options.watch)) {
 			if (this.options.watchInSameGroup === true) {
@@ -271,7 +270,7 @@ var FbCascadingdropdown = new Class({
 				this.showDesc();
 			}.bind(this));
 		}
-		Fabrik.fireEvent('fabrik.cdd.update', this);
+		Fabrik.trigger('fabrik.cdd.update', this);
 	},
 
 	/**

@@ -5,32 +5,28 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var ListPluginManager = new Class({
-
-    Extends: PluginManager,
+var ListPluginManager = my.Class(PluginManager, {
 
     type: 'list',
 
-    initialize: function (plugins, id) {
+    constructor: function (plugins, id) {
         this.parent(plugins, id);
     }
 
 });
 
-var ListForm = new Class({
+var ListForm = my.Class({
 
         autoChangeDbName: true,
-
-        Implements: [Options],
 
         options: {
             j3: true
         },
 
-        initialize: function (options) {
+        constructor: function (options) {
             var rows;
             window.addEvent('domready', function () {
-                this.setOptions(options);
+                this.options = $.append(this.options, options);
                 this.watchTableDd();
                 this.watchLabel();
                 if (document.id('addAJoin')) {
@@ -122,28 +118,25 @@ var ListForm = new Class({
                 e.stop();
                 this.deleteOrderBy(e);
             }.bind(this));
-        }
-        ,
+        },
 
         addOrderBy: function (e) {
             var t;
             if (e) {
-                t = e.target.getParent('.orderby_container');
+                t = e.target.closest('.orderby_container');
             } else {
-                t = document.getElement('.orderby_container');
+                t = document.find('.orderby_container');
             }
             t.clone().inject(t, 'after');
             this.watchOrderButtons();
-        }
-        ,
+        },
 
         deleteOrderBy: function (e) {
             if (document.getElements('.orderby_container').length > 1) {
-                e.target.getParent('.orderby_container').dispose();
+                e.target.closest('.orderby_container').dispose();
                 this.watchOrderButtons();
             }
-        }
-        ,
+        },
 
         watchDbName: function () {
             if (document.id('database_name')) {
@@ -155,8 +148,7 @@ var ListForm = new Class({
                     }
                 });
             }
-        }
-        ,
+        },
 
         _buildOptions: function (data, sel) {
             var opts = [];
@@ -180,8 +172,7 @@ var ListForm = new Class({
                 }
             }
             return opts;
-        }
-        ,
+        },
 
         watchTableDd: function () {
             if (document.id('tablename')) {
@@ -198,16 +189,14 @@ var ListForm = new Class({
                     }).send();
                 });
             }
-        }
-        ,
+        },
 
         watchFieldList: function (name) {
             document.getElement('div[id^=table-sliders-data]').addEvent('change:relay(select[name*=' + name + '])', function (e, target) {
                 var rowContainer = this.options.j3 ? 'tr' : 'table';
-                this.updateJoinStatement(target.getParent(rowContainer).id.replace('join', ''));
+                this.updateJoinStatement(target.closest(rowContainer).id.replace('join', ''));
             }.bind(this));
-        }
-        ,
+        },
 
         _findActiveTables: function () {
             var t = document.getElements('.join_from').combine(document.getElements('.join_to'));
@@ -218,8 +207,7 @@ var ListForm = new Class({
                 }
             }.bind(this));
             this.options.activetableOpts.sort();
-        }
-        ,
+        },
 
         addJoin: function (groupId, joinId, joinType, joinToTable, thisKey, joinKey, joinFromTable, joinFromFields, joinToFields, repeat) {
             var repeaton, repeatoff, headings, row;
@@ -327,7 +315,7 @@ var ListForm = new Class({
                         events  : {
                             'click': function (e) {
                                 e.stop();
-                                var tbody = e.target.getParent('.adminform').getElement('tbody');
+                                var tbody = e.target.closest('.adminform').find('tbody');
                                 var myFx = new Fx.Slide(tbody, {duration: 500});
                                 Browser.ie ? tbody.toggle() : myFx.toggle();
                             }
@@ -419,15 +407,14 @@ var ListForm = new Class({
 
 
             this.joinCounter++;
-        }
-        ,
+        },
 
         deleteJoin: function (e) {
             var tbl, t;
             e.stop();
             if (this.options.j3) {
-                t = e.target.getParent('tr');
-                tbl = e.target.getParent('table');
+                t = e.target.closest('tr');
+                tbl = e.target.closest('table');
             } else {
                 t = document.id(e.target.up(4)); //was 3 but that was the tbody
             }
@@ -437,13 +424,12 @@ var ListForm = new Class({
                     tbl.dispose();
                 }
             }
-        }
-        ,
+        },
 
         watchJoins: function () {
             var rowContainer = this.options.j3 ? 'tr' : 'table';
             document.getElement('div[id^=table-sliders-data]').addEvent('change:relay(.join_from)', function (e, target) {
-                var row = target.getParent(rowContainer);
+                var row = target.closest(rowContainer);
                 var activeJoinCounter = row.id.replace('join', '');
                 this.updateJoinStatement(activeJoinCounter);
                 var table = target.get('value');
@@ -459,7 +445,7 @@ var ListForm = new Class({
             }.bind(this));
 
             document.getElement('div[id^=table-sliders-data]').addEvent('change:relay(.join_to)', function (e, target) {
-                var row = target.getParent(rowContainer);
+                var row = target.closest(rowContainer);
                 var activeJoinCounter = row.id.replace('join', '');
                 this.updateJoinStatement(activeJoinCounter);
                 var table = target.get('value');
@@ -476,8 +462,7 @@ var ListForm = new Class({
             this.watchFieldList('join_type');
             this.watchFieldList('table_join_key');
             this.watchFieldList('table_key');
-        }
-        ,
+        },
 
         updateJoinStatement: function (activeJoinCounter) {
             var fields = document.getElements('#join' + activeJoinCounter + ' .inputbox');
@@ -500,18 +485,16 @@ var ListForm = new Class({
 
 ////////////////////////////////////////////
 
-var adminFilters = new Class({
-
-    Implements: [Options],
+var adminFilters = my.Class({
 
     options: {
         j3: false
     },
 
-    initialize: function (el, fields, options) {
+    constructor: function (el, fields, options) {
         this.el = document.id(el);
         this.fields = fields;
-        this.setOptions(options);
+        this.options = $.append(this.options, options);
         this.filters = [];
         this.counter = 0;
     },
@@ -537,12 +520,12 @@ var adminFilters = new Class({
         if (this.options.j3) {
             var row = e.target.id.replace('filterContainer-del-', '').toInt();
 
-            t = e.target.getParent('tr');
-            tbl = e.target.getParent('table');
+            t = e.target.closest('tr');
+            tbl = e.target.closest('table');
         } else {
             //t = document.id(element.parentNode.parentNode); //was 3 but that was the tbody
-            t = e.target.getParent('tr');
-            tbl = e.target.getParent('table');
+            t = e.target.closest('tr');
+            tbl = e.target.closest('table');
         }
 
         if (this.counter === 0) {
@@ -577,7 +560,7 @@ var adminFilters = new Class({
     addFilterOption: function (selJoin, selFilter, selCondition, selValue, selAccess, evaluate, grouped) {
         var and, or, joinDd, groupedNo, groupedYes, i, sels;
         if (this.counter <= 0) {
-            if (this.el.getParent('table').getElement('thead')) {
+            if (this.el.closest('table').find('thead')) {
                 // We've already added the thead - in 3.1 we have to hide the rows rather than destroy otherwise the form doesn't submit!!!
             } else {
                 this.addHeadings();
@@ -697,12 +680,12 @@ var adminFilters = new Class({
 
         this.el.appendChild(tr);
 
-        this.el.getParent('table').show();
+        this.el.closest('table').show();
         document.id(delId).addEvent('click', function (e) {
             this.deleteFilterOption(e);
         }.bind(this));
 
-        document.id(this.el.id + "-del-" + this.counter).click = function (e) {
+        document.id(this.el.id + '-del-' + this.counter).click = function (e) {
             this.deleteFilterOption(e);
         }.bind(this);
 

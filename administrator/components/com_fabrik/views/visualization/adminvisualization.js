@@ -5,16 +5,12 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var AdminVisualization = new Class({
-
-	Extends: PluginManager,
-
-	Implements: [Options, Events],
+var AdminVisualization = my.Class(PluginManager, {
 
 	options: {},
 
 	initialize: function (options, lang) {
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.watchSelector();
 	},
 

@@ -55,14 +55,14 @@ function geoCode() {
 		Fabrik.radiusSearch = typeOf(Fabrik.radiusSearch) === 'null' ? {} : Fabrik.radiusSearch;
 		var radiusSearchMaps = document.getElements('.radius_search_geocode_map');
 		radiusSearchMaps.each(function (map) {
-			var c = map.getParent('.radius_search_geocode');
+			var c = map.closest('.radius_search_geocode');
 			var btn = c.getElement('button');
 			var trigger = btn ? btn : c.getElement('.radius_search_geocode_field');
 			if (trigger.retrieve('events-added', 0).toInt() !== 1) {
 				Fabrik.radiusSearch[map.id] = typeOf(Fabrik.radiusSearch[map.id]) === 'null' ? {} : Fabrik.radiusSearch[map.id];
 				Fabrik.radiusSearch[map.id].map = new google.maps.Map(map, mapOptions);
 
-				var uberC = c.getParent('.radius_search');
+				var uberC = c.closest('.radius_search');
 
 				trigger.store('events-added', 1);
 				trigger.store('uberC', uberC);
@@ -100,15 +100,14 @@ function geoCode() {
 				var zoom = uberC.getElement('input[name=geo_code_def_zoom]').get('value').toInt();
 				var lat = uberC.getElement('input[name=geo_code_def_lat]').get('value').toFloat();
 				var lon = uberC.getElement('input[name=geo_code_def_lon]').get('value').toFloat();
-				Fabrik.fireEvent('google.radiusmap.loaded', [map.id, zoom, lat, lon]);
+				Fabrik.trigger('google.radiusmap.loaded', [map.id, zoom, lat, lon]);
 			}
 		});
 	});
 }
 
 
-var FbListRadiusSearch = new Class({
-	Extends : FbListPlugin,
+var FbListRadiusSearch = my.Class(FbListPlugin, {
 
 	options: {
 		geocode_default_lat: '0',
@@ -123,8 +122,7 @@ var FbListRadiusSearch = new Class({
 	geocoder: null,
 	map: null,
 
-
-	initialize : function (options) {
+	constructor : function (options) {
 		this.parent(options);
 		Fabrik.radiusSearch = Fabrik.radiusSearch ? Fabrik.radiusSearch  : {};
 
@@ -152,7 +150,7 @@ var FbListRadiusSearch = new Class({
 
 				google.maps.event.addListener(Fabrik.radiusSearch[mapid].marker, "dragend", function () {
 					var loc = Fabrik.radiusSearch[mapid].marker.getPosition();
-					var uberC = document.id(mapid).getParent('.radius_search');
+					var uberC = document.id(mapid).closest('.radius_search');
 					var geocodeLat = uberC.getElement('input[name^=radius_search_geocode_lat]');
 					if (typeOf(geocodeLat) !== 'null') {
 						geocodeLat.value = loc.lat();
@@ -180,17 +178,17 @@ var FbListRadiusSearch = new Class({
 				select.addEvent('change', function (e) {
 					this.toggleFields(e);
 				}.bind(this));
-				
+
 				this.listform.getElements('input.cancel').addEvent('click', function () {
 					this.win.close();
 				}.bind(this));
-				
+
 				this.active = false;
 				this.listform.getElement('.fabrik_filter_submit').addEvent('mousedown', function (e) {
 					this.active = true;
 					this.listform.getElement('input[name^=radius_search_active]').value = 1;
 				}.bind(this));
-				
+
 			}
 
 			this.options.value = this.options.value.toInt();
@@ -238,9 +236,9 @@ var FbListRadiusSearch = new Class({
 	 * Moves the interface into a window and injects a search button to open it.
 	 */
 	makeWin: function (mapid) {
-		var c = document.id(mapid).getParent('.radius_search');
+		var c = document.id(mapid).closest('.radius_search');
 		var b = new Element('button.btn.button').set('html', '<i class="icon-location"></i> ' + Joomla.JText._('COM_FABRIK_SEARCH'));
-		c.getParent().adopt(b);
+		c.parent().adopt(b);
 		var offset_y = this.options.offset_y > 0 ? this.options.offset_y : null;
 		var winOpts = {
 				'id': 'win_' + mapid,
@@ -258,7 +256,7 @@ var FbListRadiusSearch = new Class({
 				'onClose': function (e, x) {
 					var active;
 					if (!this.active && confirm(Joomla.JText._('PLG_LIST_RADIUS_SEARCH_CLEAR_CONFIRM'))) {
-						active = 0;	
+						active = 0;
 					} else {
 						active = 1;
 					}
@@ -295,7 +293,7 @@ var FbListRadiusSearch = new Class({
 		var win = this.button.retrieve('win');
 		var c = win.contentEl.clone();
 		c.hide();
-		this.button.getParent().adopt(c);
+		this.button.parent().adopt(c);
 		return true;
 	},
 
@@ -316,7 +314,7 @@ var FbListRadiusSearch = new Class({
 			this.listform.getElements('input[value=mylocation]').checked = true;
 			if (!this.list) {
 				// In a viz
-				this.listform.getParent('form').submit();
+				this.listform.closest('form').submit();
 			} else {
 				this.getList().submit('filter');
 			}
@@ -341,7 +339,7 @@ var FbListRadiusSearch = new Class({
 	},
 
 	toggleFields: function (e) {
-		var c = e.target.getParent('.radius_search');
+		var c = e.target.closest('.radius_search');
 
 		switch (e.target.get('value')) {
 		case 'latlon':

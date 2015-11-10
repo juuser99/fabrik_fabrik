@@ -1,2 +1,2 @@
 /*! Fabrik */
-var FbGoogleometer=new Class({Extends:FbElement,initialize:function(a,b){this.parent(a,b)}});
+var FbGoogleometer=my.Class(FbElement,{constructor:function(a,b){this.parent(a,b)}});

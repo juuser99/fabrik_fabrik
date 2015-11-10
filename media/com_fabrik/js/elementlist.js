@@ -7,13 +7,11 @@
 
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
-FbElementList = new Class({
-
-	Extends: FbElement,
+FbElementList = my.Class(FbElement, {
 
 	type: 'text', // Sub element type
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.parent(element, options);
 		this.addSubClickEvents();
 		this._getSubElements();
@@ -37,14 +35,14 @@ FbElementList = new Class({
 
 	addSubClickEvents: function () {
 		this._getSubElements().each(function (el) {
-			el.addEvent('click', function (e) {
-				Fabrik.fireEvent('fabrik.element.click', [this, e]);
+			$(this).on('click', function (e) {
+				Fabrik.trigger('fabrik.element.click', [this, e]);
 			});
 		});
 	},
 
 	addNewEvent: function (action, js) {
-		var r, delegate, uid;
+		var r, delegate, uid, c;
 		if (action === 'load') {
 			this.loadEvents.push(js);
 			this.runLoadEvent(js);
@@ -66,15 +64,15 @@ FbElementList = new Class({
 			}
 			if (typeOf(this.form.events[action][uid]) === 'null') {
 				this.form.events[action][uid] = true;
-				
+
 				c.addEvent(delegate, function (event, target) {
 					// As we are delegating the event, and reference to 'this' in the js will refer to the first element
 					// When in a repeat group we want to replace that with a reference to the current element.
-					var elid = target.getParent('.fabrikSubElementContainer').id;
+					var elid = target.closest('.fabrikSubElementContainer').id;
 					var that = this.form.formElements[elid];
 					var subEls = that._getSubElements();
 					if (subEls.contains(target)) {
-						
+
 						// Replace this with that so that the js code runs on the correct element
 						if (typeof(js) !== 'function') {
 							js = js.replace(/this/g, 'that');
@@ -96,7 +94,7 @@ FbElementList = new Class({
 	},
 
 	startAddNewOption: function () {
-		var c = this.getContainer();
+		var c = this.getContainer(), val;
 		var l = c.getElement('input[name=addPicklistLabel]');
 		var v = c.getElement('input[name=addPicklistValue]');
 		var label = l.value;
@@ -126,8 +124,8 @@ FbElementList = new Class({
 			if (this.type === 'radio') {
 				index = this.subElements.length;
 			}
-			var is = $$('input[name=' + i.name + ']');
-			document.id(this.form.form).fireEvent("change", {target: is[index]});
+			var is = $('input[name=' + i.name + ']');
+			document.id(this.form.form).trigger('change', {target: is[index]});
 
 			this._getSubElements();
 			if (v) {
@@ -142,7 +140,7 @@ FbElementList = new Class({
 	},
 
 	watchAdd: function () {
-		var val;
+		var self = this;
 		if (this.options.allowadd === true && this.options.editable !== false) {
 			var c = this.getContainer();
 			c.getElements('input[name=addPicklistLabel], input[name=addPicklistValue]').addEvent('keypress', function (e) {
@@ -152,12 +150,12 @@ FbElementList = new Class({
 				e.stop();
 				this.startAddNewOption();
 			}.bind(this));
-			document.addEvent('keypress', function (e) {
-				if (e.key === 'esc' && this.mySlider) {
-					this.mySlider.slideOut();
+			$(document).on('keypress', function (e) {
+				if (e.key === 'esc' && self.mySlider) {
+					self.mySlider.slideOut();
 				}
-			}.bind(this));
+			});
 		}
 	}
-	
+
 });

@@ -1,2 +1,2 @@
 /*! Fabrik */
-var FbListDownload=new Class({Extends:FbListPlugin,initialize:function(a){this.parent(a)}});
+var FbListDownload=my.Class(FbListPlugin,{constructor:function(a){this.parent(a)}});

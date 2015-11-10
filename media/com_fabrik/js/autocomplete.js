@@ -8,9 +8,7 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true */
 
-var FbAutocomplete = new Class({
-
-	Implements: [Options, Events],
+var FbAutocomplete = my.Class({
 
 	options: {
 		menuclass: 'auto-complete-container',
@@ -27,16 +25,17 @@ var FbAutocomplete = new Class({
 	},
 
 	initialize: function (element, options) {
+		var self = this;
 		this.matchedResult = false;
 		this.setOptions(options);
 		element = element.replace('-auto-complete', '');
-		this.options.labelelement = typeOf(document.id(element + '-auto-complete')) === "null" ? document.getElement(element + '-auto-complete') : document.id(element + '-auto-complete');
+		this.options.labelelement = typeOf(document.id(element + '-auto-complete')) === 'null' ? document.getElement(element + '-auto-complete') : document.id(element + '-auto-complete');
 		this.cache = {};
 		this.selected = -1;
 		this.mouseinsde = false;
-		document.addEvent('keydown', function (e) {
-			this.doWatchKeys(e);
-		}.bind(this));
+		$(document).on('keydown', function (e) {
+			self.doWatchKeys(e);
+		});
 		this.element = typeOf(document.id(element)) === "null" ? document.getElement(element) : document.id(element);
 		this.buildMenu();
 		if (!this.getInputElement()) {
@@ -58,7 +57,7 @@ var FbAutocomplete = new Class({
 			}
 		}.bind(this));
 	},
-	
+
 	/**
 	 * Should the auto-complete start its ajax search
 	 * @param   e  Event
@@ -75,10 +74,10 @@ var FbAutocomplete = new Class({
 		}
 		return true;
 	},
-	
+
 	/**
 	 * Get the input text element's value and if empty set this.element.value to empty
-	 * 
+	 *
 	 * @return  string  input element text
 	 */
 	defineSearchValue: function () {
@@ -111,14 +110,14 @@ var FbAutocomplete = new Class({
 					this.closeMenu();
 					this.ajax.cancel();
 				}
-				
+
 				var data = {value: v};
 				this.ajax = this.makeAjax(this.options.url, data);
 			}
 		}
 		this.searchText = v;
 	},
-	
+
 	/**
 	 * Build the ajax Request object and send it.
 	 */
@@ -191,7 +190,7 @@ var FbAutocomplete = new Class({
 		if (data.length === 1 && this.options.autoLoadSingleResult) {
 			this.matchedResult = true;
 			this.element.value = data[0].value;
-			this.fireEvent('selection', [this, this.element.value]);
+			this.trigger('selection', [this, this.element.value]);
 		}
 		for (var i = 0; i < max; i ++) {
 			var pair = data[i];
@@ -215,15 +214,15 @@ var FbAutocomplete = new Class({
 
 			this.matchedResult = true;
 			this.closeMenu();
-			this.fireEvent('selection', [this, this.element.value]);
+			this.trigger('selection', [this, this.element.value]);
 			// $$$ hugh - need to fire change event, in case it's something like a join element
 			// with a CDD that watches it.
-			this.element.fireEvent('change', new Event.Mock(this.element, 'change'), 700);
+			this.element.trigger('change', new Event.Mock(this.element, 'change'), 700);
 			// $$$ hugh - fire a Fabrik event, just for good luck.  :)
-			Fabrik.fireEvent('fabrik.autocomplete.selected', [this, this.element.value]);
+			Fabrik.trigger('fabrik.autocomplete.selected', [this, this.element.value]);
 		} else {
 			//  $$$ tom - fire a notselected event to let developer take appropriate actions.
-            Fabrik.fireEvent('fabrik.autocomplete.notselected', [this, this.element.value]);
+            Fabrik.trigger('fabrik.autocomplete.notselected', [this, this.element.value]);
 		}
 	},
 
@@ -239,13 +238,14 @@ var FbAutocomplete = new Class({
 	},
 
 	openMenu: function () {
+		var self = this;
 		if (!this.shown) {
 			if (this.isMinTriggerlength()) {
 				this.shown = true;
 				this.menu.setStyle('visibility', 'visible').fade('in');
-				document.addEvent('click', function (e) {
-					this.doTestMenuClose(e);
-				}.bind(this));
+				$(document).on('click', function (e) {
+					self.doTestMenuClose(e);
+				});
 				this.selected = 0;
 				this.highlight();
 			}
@@ -262,7 +262,7 @@ var FbAutocomplete = new Class({
 		var v = this.getInputElement().get('value');
 		return v.length >= this.options.minTriggerChars;
 	},
-	
+
 	getListMax: function () {
 		if (typeOf(this.data) === 'null') {
 			return 0;
@@ -293,7 +293,7 @@ var FbAutocomplete = new Class({
 			}
 			else {
 				if (e.key === 'enter' || e.key === 'tab') {
-					window.fireEvent('blur');
+					$(window).trigger('blur');
 				}
 				switch (e.code) {
 				case 40://down
@@ -338,18 +338,19 @@ var FbAutocomplete = new Class({
 
 	highlight: function () {
 		this.matchedResult = true;
-		this.menu.getElements('li').each(function (li, i) {
-			if (i === this.selected) {
-				li.addClass('selected');
+		var self = this;
+		this.menu.find('li').each(function (i) {
+			if (i === self.selected) {
+				$(this).addClass('selected');
 			} else {
-				li.removeClass('selected');
+				$(this).removeClass('selected');
 			}
 		}.bind(this));
 	}
 
 });
 
-var FabCddAutocomplete = new Class({
+var FabCddAutocomplete = my.Class(FbAutocomplete, {
 
 	Extends: FbAutocomplete,
 

@@ -5,17 +5,17 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var SliderField = new Class({
-	initialize : function (field, slider) {
+var SliderField = my.Class({
+	constructor : function (field, slider) {
 		this.field = document.id(field);
 		this.slider = slider;
-		this.field.addEvent("change", function (e) {
+		this.field.addEvent('change', function (e) {
 			this.update(e);
 		}.bind(this));
 	},
 
 	destroy : function () {
-		this.field.removeEvent("change", function (e) {
+		this.field.removeEvent('change', function (e) {
 			this.update(e);
 		}.bind(this));
 	},
@@ -29,9 +29,7 @@ var SliderField = new Class({
 	}
 });
 
-var ColourPicker = new Class({
-
-	Extends: FbElement,
+var ColourPicker = my.Class(FbElement, {
 
 	options: {
 		red: 0,
@@ -44,7 +42,7 @@ var ColourPicker = new Class({
 		swatchWidth: '160px'
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'colourpicker';
 		if (typeOf(options.value) === 'null' || options.value[0] === 'undefined') {
 			options.value = [0, 0, 0, 1];
@@ -55,7 +53,7 @@ var ColourPicker = new Class({
 		this.element = document.id(element);
 		this.ini();
 	},
-	
+
 	ini: function () {
 		this.options.callback = function (v, caller) {
 			v = this.update(v);
@@ -63,9 +61,9 @@ var ColourPicker = new Class({
 				this.grad.update(v);
 			}
 		}.bind(this);
-		this.widget = this.element.getParent('.fabrikSubElementContainer').getElement('.colourpicker-widget');
+		this.widget = this.element.closest('.fabrikSubElementContainer').find('.colourpicker-widget');
 		this.setOutputs();
-		var d = new Drag.Move(this.widget, {'handle': this.widget.getElement('.draggable')});
+		var d = new Drag.Move(this.widget, {'handle': this.widget.find('.draggable')});
 
 		if (this.options.showPicker) {
 			this.createSliders(this.strElement);
@@ -91,9 +89,9 @@ var ColourPicker = new Class({
 
 	cloned: function (c) {
 		this.parent(c);
-		
+
 		// Recreate the tabs
-		var widget = this.element.getParent('.fabrikSubElementContainer').getElement('.colourpicker-widget'),
+		var widget = this.element.closest('.fabrikSubElementContainer').find('.colourpicker-widget'),
 		panes = widget.getElements('.tab-pane'),
 		tabs = widget.getElements('a[data-toggle=tab]');
 		tabs.each(function (tab) {
@@ -104,7 +102,7 @@ var ColourPicker = new Class({
 			name += '-' + href[1];
 			tab.href = name;
 		});
-		
+
 		panes.each(function (tab) {
 			var href = tab.get('id').split('-');
 			var name = href[0].split('_');
@@ -119,7 +117,7 @@ var ColourPicker = new Class({
 				jQuery(tab).tab('show');
 			});
 		});
-		
+
 		// Initialize the widget
 		this.ini();
 	},
@@ -202,13 +200,13 @@ var ColourPicker = new Class({
 		red = red ? red.toInt() : 0;
 		green = green ? green.toInt() : 0;
 		blue = blue ? blue.toInt() : 0;
-		
+
 		if (this.options.showPicker) {
 			this.redField.value = red;
 			this.greenField.value = green;
 			this.blueField.value = blue;
 		}
-		
+
 		this.options.colour.red = red;
 		this.options.colour.green = green;
 		this.options.colour.blue = blue;
@@ -266,17 +264,13 @@ var ColourPicker = new Class({
 	}
 });
 
-var ColourPickerSwatch = new Class({
-
-	Extends: Options,
+var ColourPickerSwatch = my.Class({
 
 	options: {},
 
 	initialize : function (element, options) {
-
-
 		this.element = document.id(element);
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.callback = this.options.callback;
 		this.outputs = this.options.outputs;
 		this.redField = null;
@@ -304,7 +298,7 @@ var ColourPickerSwatch = new Class({
 			});
 			var line = this.options.swatch[i];
 			j = 0;
-			$H(line).each(function (colname, colour) {
+			jQuery.each(line, function (colour, colname) {
 				var swatchId = element + 'swatch-' + i + '-' + j;
 				swatchLine.adopt(new Element('div', {
 					'id': swatchId,
@@ -357,18 +351,17 @@ var ColourPickerSwatch = new Class({
 
 });
 
-var ColourPickerGradient = new Class({
-
-	Extends: Options,
+var ColourPickerGradient = my.Class({
 
 	options: {
 		size: 125
 	},
 
-	initialize: function (id, opts) {
+	constructor: function (id, opts) {
+		var self = this;
 		this.brightness = 0;
 		this.saturation = 0;
-		this.setOptions(opts);
+		this.options = $.append(this.options, opts);
 		this.callback = this.options.callback;
 		this.container = document.id(id);
 		if (typeOf(this.container) === 'null') {
@@ -403,11 +396,11 @@ var ColourPickerGradient = new Class({
 	/*	this.square.addEvent('mouseleave', function (e) {
 			this.down = false;
 		}.bind(this));*/
-		document.addEvent('mousemove', function (e) {
-			if (this.down) {
-				this.doIt(e);
+		$(document).on('mousemove', function (e) {
+			if (self.down) {
+				self.doIt(e);
 			}
-		}.bind(this));
+		});
 
 		this.drawCircle();
 		this.drawHue();

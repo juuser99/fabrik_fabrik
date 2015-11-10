@@ -5,19 +5,19 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var Tabs = new Class({
-	initialize : function (el, tabs, editable) {
+var Tabs = my.Class({
+	constructor : function (el, tabs, editable) {
 		this.editable = editable;
 		this.iconGen = new IconGenerator({scale: 0.5});
 		this.el = document.id(el);
-		this.tabs = $H({});
+		this.tabs = {};
 		this.build(tabs);
 	},
-	
+
 	build: function (tabs) {
-		Fabrik.fireEvent('fabrik.history.off', this);
+		Fabrik.trigger('fabrik.history.off', this);
 		if (this.editable) {
-			
+
 			var a = new Element('a', {
 				'href': '#',
 				'events': {
@@ -26,10 +26,10 @@ var Tabs = new Class({
 					}.bind(this)
 				}
 			});
-			
+
 			art = this.iconGen.create(icon.plus, {fill: {color: ['#40B53E', '#378F36']}});
 			art.inject(a);
-			
+
 			this.el.adopt(new Element('li', {
 				'class': 'add',
 				'events': {
@@ -44,7 +44,7 @@ var Tabs = new Class({
 		}.bind(this));
 		this.setActive(tabs[0]);
 		var fn = function () {
-			Fabrik.fireEvent('fabrik.history.on', this);
+			Fabrik.trigger('fabrik.history.on', this);
 		};
 		fn.delay(500);
 	},
@@ -52,21 +52,21 @@ var Tabs = new Class({
 	remove: function (e) {
 		var n;
 		if (typeOf(e) === 'event') {
-			n = e.target.getParent('li').getElement('span').get('text').trim();
+			n = e.target.closest('li').find('span').get('text').trim();
 			e.stop();
 		} else {
 			n = e;
 		}
-		if (confirm('Delete tab?')) {
-			if (this.tabs.getLength() <= 1) {
-				alert('you can not remove all tabs');
+		if (window.confirm('Delete tab?')) {
+			if (Object.keys(this.tabs).length <= 1) {
+				window.alert('you can not remove all tabs');
 				return;
 			}
 			var t = this.tabs[n];
-			Fabrik.fireEvent('fabrik.tab.remove', [ this, t ]);
-			this.tabs.erase(n);
+			Fabrik.trigger('fabrik.tab.remove', [ this, t ]);
+			delete this.tabs[n];
 			t.destroy();
-			var newkey = this.tabs.getKeys()[0];
+			var newkey = Object.keys(this.tabs)[0];
 			this.setActive(this.tabs[newkey]);
 		}
 	},
@@ -87,9 +87,9 @@ var Tabs = new Class({
 			'type' : 'button',
 			'events' : {
 				'click' : function (e) {
-					var name = e.target.getParent().getElement('input[name=label]').get('value');
+					var name = e.target.parent().getElement('input[name=label]').get('value');
 					if (name === '') {
-						alert('please supply a tab label');
+						window.alert('please supply a tab label');
 						return false;
 					}
 					this.add(name);
@@ -113,19 +113,19 @@ var Tabs = new Class({
 
 	add: function (t) {
 		var li = new Element('li', {
-			
+
 			'events': {
 				'click': function (e) {
 					this.setActive(li);
 				}.bind(this),
-				
+
 				'mouseover': function (e) {
-					Fabrik.fireEvent('fabrik.tab.hover', [ t ]);
+					Fabrik.trigger('fabrik.tab.hover', [ t ]);
 				}
 			}
 		});
 		li.adopt(new Element('span').set('text', t + ' '));
-		
+
 		var a = new Element('a', {
 			'href': '#',
 			'events': {
@@ -134,7 +134,7 @@ var Tabs = new Class({
 				}.bind(this)
 			}
 		});
-		
+
 		if (this.editable) {
 			art = this.iconGen.create(icon.cross);
 			art.inject(a);
@@ -149,15 +149,15 @@ var Tabs = new Class({
 		}
 		this.setActive(li);
 		this.tabs[t] = li;
-		Fabrik.fireEvent('fabrik.history.add', [this, this.remove, t, this.add, t]);
-		Fabrik.fireEvent('fabrik.tab.add', [this, t]);
+		Fabrik.trigger('fabrik.history.add', [this, this.remove, t, this.add, t]);
+		Fabrik.trigger('fabrik.tab.add', [this, t]);
 	},
 
 	setActive: function (a) {
 		var tname = typeOf(a) === 'string' ? a : a.retrieve('ref');
 		var active = a;
-		Fabrik.fireEvent('fabrik.tab.click', tname);
-		this.tabs.each(function (t) {
+		Fabrik.trigger('fabrik.tab.click', tname);
+		jQuery.each(this.tabs, function (key, t) {
 			t.removeClass('active');
 			t.addClass('inactive');
 			if (t.retrieve('ref') === tname) {

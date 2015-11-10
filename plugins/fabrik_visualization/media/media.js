@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbMediaViz = new Class({
-
-	Implements: [Options],
+var FbMediaViz = my.Class({
 
 	options: {
 		which_player: 'jw',
@@ -15,9 +13,9 @@ var FbMediaViz = new Class({
 		height: 450
 	},
 
-	initialize: function (el, options) {
+	constructor: function (el, options) {
 		this.el = el;
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.render();
 	},
 

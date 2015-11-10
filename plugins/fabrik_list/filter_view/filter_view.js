@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListFilterView = new Class({
-	Extends : FbListPlugin,
-	initialize : function (options) {
+var FbListFilterView = my.Class(FbListPlugin, {
+	constructor : function (options) {
 		this.parent(options);
 		this.groupbyMenus = {};
 		document.getElement('.filter_view').getElements('ul.floating-tip').each(function (ul) {

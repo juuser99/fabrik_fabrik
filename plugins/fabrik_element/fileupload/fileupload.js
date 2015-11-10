@@ -5,9 +5,8 @@
  * @license: GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbFileUpload = new Class({
-	Extends: FbFileElement,
-	initialize: function (element, options) {
+var FbFileUpload = my.Class(FbFileElement, {
+	constructor: function (element, options) {
 		this.plugin = 'fileupload';
 		this.parent(element, options);
 		this.toppath = this.options.dir;
@@ -21,11 +20,11 @@ var FbFileUpload = new Class({
 		if (this.options.ajax_upload && this.options.editable !== false) {
 			Fabrik.fireEvent('fabrik.fileupload.plupload.build.start', this);
 			this.watchAjax();
-			this.options.files = $H(this.options.files);
-			if (this.options.files.getLength() !== 0) {
+
+			if (Object.keys(this.options.files).length !== 0) {
 				this.uploader.trigger('FilesAdded', this.options.files);
 				this.startbutton.addClass('plupload_disabled');
-				this.options.files.each(function (file) {
+				jQuery.each(this.options.files, function (key, file) {
 					var response = {
 						'filepath': file.path,
 						uri: file.url
@@ -57,15 +56,15 @@ var FbFileUpload = new Class({
 			var c = document.id(this.options.element + '_container');
 			var diff = browseButton.getPosition().y - c.getPosition().y;
 			// $$$ hugh - working on some IE issues
-			var file_element = c.getParent('.fabrikElement').getElement('input[type=file]');
-			if (file_element) {
-				var fileContainer = file_element.getParent();
+			var file_element = c.closest('.fabrikElement').find('input[type=file]');
+			if (file_element.length > 0) {
+				var fileContainer = file_element.parent();
 				var size = browseButton.getSize();
-				fileContainer.setStyles({
+				fileContainer.css({
 					'width': size.x,
 					'height': size.y
 				});
-				fileContainer.setStyle('top', diff);
+				fileContainer.css('top', diff);
 			}
 		}
 	},
@@ -138,12 +137,12 @@ var FbFileUpload = new Class({
 			}
 		}
 	},
-	
+
 	watchBrowseButton: function () {
 		if (this.options.useWIP && !this.options.ajax_upload && this.options.editable !== false) {
 			document.id(this.element.id).removeEvent('change', this.doBrowseEvent);
 			this.doBrowseEvent = this.doBrowse.bind(this);
-			document.id(this.element.id).addEvent('change', this.doBrowseEvent);			
+			document.id(this.element.id).addEvent('change', this.doBrowseEvent);
 		}
 	},
 
@@ -173,19 +172,19 @@ var FbFileUpload = new Class({
 					'joinPkVal': joinPkVal
 				},
 				onComplete: function () {
-					Fabrik.fireEvent('fabrik.fileupload.clearfileref.complete', this);
+					Fabrik.trigger('fabrik.fileupload.clearfileref.complete', this);
 				}.bind(this)
 			}).send();
 
 			if (window.confirm(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE'))) {
 				this.makeDeletedImageField(this.groupid, b.get('data-file')).inject(this.getContainer(), 'inside');
-				Fabrik.fireEvent('fabrik.fileupload.delete.complete', this);
+				Fabrik.trigger('fabrik.fileupload.delete.complete', this);
 			}
 
 			b.destroy();
-		}		
+		}
 	},
-	
+
 	/**
 	 * Single file uploads can allow the user to delee the reference and/or file
 	 */
@@ -229,10 +228,10 @@ var FbFileUpload = new Class({
 
 	cloned: function (c) {
 		// replaced cloned image with default image
-		if (typeOf(this.element.getParent('.fabrikElement')) === 'null') {
+		if (this.element.closest('.fabrikElement').length === 0) {
 			return;
 		}
-		var i = this.element.getParent('.fabrikElement').getElement('img');
+		var i = this.element.closest('.fabrikElement').find('img');
 		if (i) {
 			i.src = this.options.defaultImage !== '' ? Fabrik.liveSite + this.options.defaultImage : '';
 		}
@@ -282,14 +281,14 @@ var FbFileUpload = new Class({
 			if (val === '') {
 				if (this.options.ajax_upload) {
 					this.uploader.files = [];
-					this.element.getParent().getElements('[id$=_dropList] tr').destroy();
+					this.element.parent().find('[id$=_dropList] tr').destroy();
 				} else {
 					this.element.set('value', '');
 				}
 			} else {
-				var i = this.element.getElement('img');
-				if (typeOf(i) !== 'null') {
-					i.src = val;
+				var i = this.element.find('img');
+				if (i.length !== 0) {
+					i.prop('src', val);
 				}
 			}
 		}
@@ -326,7 +325,7 @@ var FbFileUpload = new Class({
 		if (typeOf(el) === 'null') {
 			return;
 		}
-		var c = el.getParent('.fabrikSubElementContainer');
+		var c = el.closest('.fabrikSubElementContainer');
 		this.container = c;
 		var canvas = c.getElement('canvas');
 		if (typeOf(canvas) === 'null') {
@@ -654,9 +653,9 @@ var FbFileUpload = new Class({
 			return;
 		}
 
-		var id = e.target.getParent('tr').id.split('_').getLast();// alreadyuploaded_8_13
+		var id = $(e.target).closest('tr').prop('id').split('_').getLast();// alreadyuploaded_8_13
 		// $$$ hugh - removed ' span' from the getElement(), as this blows up on some templates
-		var f = e.target.getParent('tr').getElement('.plupload_file_name').get('text');
+		var f = $(e.target).closest('tr').find('.plupload_file_name').get('text');
 
 		// Get a list of all of the uploaders files except the one to be deleted
 		var newFiles = [];
@@ -684,7 +683,7 @@ var FbFileUpload = new Class({
 				'repeatCounter': this.options.repeatCounter
 			}
 		}).send();
-		var li = e.target.getParent('.plupload_delete');
+		var li = e.target.closest('.plupload_delete');
 		li.destroy();
 
 		// Remove hidden fields as well
@@ -702,7 +701,7 @@ var FbFileUpload = new Class({
 
 	pluploadResize: function (e) {
 		e.stop();
-		var a = e.target.getParent();
+		var a = e.target.closest();
 		if (this.widget) {
 			this.widget.setImage(a.href, a.retrieve('filepath'));
 		}
@@ -774,9 +773,9 @@ var FbFileUpload = new Class({
 	}
 });
 
-var ImageWidget = new Class({
+var ImageWidget = my.Class({
 
-	initialize: function (canvas, opts) {
+	constructor: function (canvas, opts) {
 		// When element is in modal window it renders fine the first time. But the second time
 		// the original window is still there - so we end up with 2 dom structures and one window object.
 		// To get round this set the first window to be destroyed and close it.
@@ -804,12 +803,12 @@ var ImageWidget = new Class({
 			}
 		};
 
-		Object.append(this.imageDefault, opts);
+		$.append(this.imageDefault, opts);
 
 		this.windowopts = {
 			'id': this.canvas.id + '-mocha',
 			'type': 'modal',
-			content: this.canvas.getParent(),
+			content: this.canvas.parent(),
 			loadMethod: 'html',
 			width: this.imageDefault.imagedim.w.toInt() + 40,
 			height: this.imageDefault.imagedim.h.toInt() + 150,
@@ -831,7 +830,7 @@ var ImageWidget = new Class({
 		this.windowopts.title = opts.crop ? Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_CROP_AND_SCALE') : Joomla.JText
 				._('PLG_ELEMENT_FILEUPLOAD_PREVIEW');
 		this.showWin();
-		this.images = $H({});
+		this.images = {};
 		var parent = this;
 		this.CANVAS = new FbCanvas({
 			canvasElement: document.id(this.canvas.id),
@@ -927,7 +926,7 @@ var ImageWidget = new Class({
 
 	setImage: function (uri, filepath, params) {
 		this.activeFilePath = filepath;
-		if (!this.images.has(filepath)) {
+		if (!this.images.hasOwnProperty(filepath)) {
 
 			// Needed to ensure they are available in onLoad
 			var tmpParams = params;
@@ -947,7 +946,7 @@ var ImageWidget = new Class({
 		} else {
 
 			// Previously set up image
-			params = this.images.get(filepath);
+			params = this.images[filepath];
 			this.img = params.img;
 			this.setInterfaceDimensions(params);
 			this.showWin();
@@ -1001,7 +1000,7 @@ var ImageWidget = new Class({
 		params.mainimagedim.w = s.width;
 		params.mainimagedim.h = s.height;
 		params.img = img;
-		this.images.set(filepath, params);
+		this.images[filepath] = params;
 		return params;
 	},
 
@@ -1263,7 +1262,7 @@ var ImageWidget = new Class({
 				this.imgCanvas.scale = pos / 100;
 				if (typeOf(this.img) !== 'null') {
 					try {
-						this.images.get(this.activeFilePath).scale = pos;
+						this.images[this.activeFilePath].scale = pos;
 					} catch (err) {
 						fconsole('didnt get active file path:' + this.activeFilePath);
 					}
@@ -1293,7 +1292,7 @@ var ImageWidget = new Class({
 				this.imgCanvas.rotation = pos;
 				if (typeOf(this.img) !== 'null') {
 					try {
-						this.images.get(this.activeFilePath).rotation = pos;
+						this.images[this.activeFilePath].rotation = pos;
 					} catch (err) {
 						fconsole('rorate err' + this.activeFilePath);
 					}

@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbBirthday = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbBirthday = my.Class(FbElement, {
+
+	constructor: function (element, options) {
 		this.plugin = 'birthday';
 		this.default_sepchar = '-';
 		this.parent(element, options);

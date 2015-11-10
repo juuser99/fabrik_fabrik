@@ -1,2 +1,2 @@
 /*! Fabrik */
-var FbSpotify=new Class({Extends:FbElement,initialize:function(a,b){this.plugin="spotify",this.parent(a,b)}});
+var FbSpotify=my.Class(FbElement,{constructor:function(a,b){this.plugin="spotify",this.parent(a,b)}});

@@ -5,10 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListCanEditRow = new Class({
-	Extends: FbListPlugin,
+var FbListCanEditRow = my.Class(FbListPlugin, {
 
-	initialize: function (options) {
+	constructor: function (options) {
 		this.parent(options);
 		Fabrik.addEvent('onCanEditRow', function (list, args) {
 			this.onCanEditRow(list, args);

@@ -5,14 +5,14 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FabRecordSet = new Class({
+FabRecordSet = my.Class({
 
-	initialize: function (form, options) {
+	constructor: function (form, options) {
 		this.form = form;
 		this.options = {
 			liveSite: ''
 		};
-		Object.append(this.options, options);
+		$.append(this.options, options);
 		var f = this.form.getForm(),
 			formId = this.form.id;
 		this.pkfield = f.getElement('input[name=rowid]');
@@ -50,7 +50,7 @@ FabRecordSet = new Class({
 
 		this.form.options.rowid = o.data[this.options.pkey];
 		this.reScan();
-		window.fireEvent('fabrik.form.refresh', [o.post.rowid]);
+		$(window).trigger('fabrik.form.refresh', [o.post.rowid]);
 		Fabrik.loader.stop(this.form.getBlock());
 	},
 

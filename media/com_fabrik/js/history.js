@@ -8,8 +8,8 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true */
 
-var History = new Class({
-	initialize: function (undobutton, redobutton) {
+var History = my.Class({
+	constructor: function (undobutton, redobutton) {
 		this.recording = true;
 		this.pointer = -1;
 		if (document.id(undobutton)) {

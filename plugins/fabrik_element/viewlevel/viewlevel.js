@@ -5,11 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbViewlevel = new Class({
+var FbViewlevel = my.Class(FbElement, {
 
-	Extends: FbElement,
-
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikviewlevel';
 		this.parent(element, options);
 	}

@@ -1,20 +1,19 @@
 /**
  * Button Element
- * 
+ *
  * @copyright: Copyright (C) 2005-2015, fabrikar.com - All rights reserved.
  * @license: GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbButton = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbButton = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikButton';
 		this.parent(element, options);
 	},
 
 	addNewEventAux: function (action, js) {
 		this.element.addEvent(action, function (e) {
-			
+
 			// Unlike element addNewEventAux we need to stop the event otherwise the form is submitted
 			if (e) {
 				e.stop();

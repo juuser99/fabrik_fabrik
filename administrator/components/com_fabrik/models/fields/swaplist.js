@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var SwapList = new Class({
+var SwapList = my.Class({
 
-	initialize: function (from, to, addbutton, removebutton, upbutton, downbutton) {
+	constructor: function (from, to, addbutton, removebutton, upbutton, downbutton) {
 		this.from = document.id(from);
 		this.to = document.id(to);
 		if (typeOf(document.id(addbutton)) !== 'null') {
@@ -35,7 +35,7 @@ var SwapList = new Class({
 			}.bind(this));
 
 			document.id('adminForm').onsubmit = function (e) {
-				this.to.getElements('option').each(function (opt) {
+				jQuery.each(this.to.getElements('option'), function (key, opt) {
 					opt.selected = true;
 				});
 				return true;
@@ -57,7 +57,7 @@ var SwapList = new Class({
 		// Pull selected resources and add them to list
 		for (i = 0; i < srcLen; i++) {
 			if (from.options[i].selected && tgt.indexOf("," + from.options[i].value + ",") === -1) {
-				opt = new Option(from.options[i].text, from.options[i].value);
+				var opt = new Option(from.options[i].text, from.options[i].value);
 				to.options[to.length] = opt;
 			}
 		}
