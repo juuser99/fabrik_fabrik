@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbCalc = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbCalc = my.Class(FbElement, {
+
+	constructor: function (element, options) {
 		this.plugin = 'calc';
 		this.oldAjaxCalc = null;
 		this.parent(element, options);
@@ -31,7 +31,7 @@ var FbCalc = new Class({
 					}.bind(this));
 				}
 				else {
-					// $$$ hugh - check to see if an observed element is actually part of a repeat group,
+					// Check to see if an observed element is actually part of a repeat group,
 					// and if so, modify the placeholder name they used to match this instance of it
 					// @TODO - add and test code for non-joined repeats!
 
@@ -50,7 +50,7 @@ var FbCalc = new Class({
 							for (v2 = 0; v2 < v; v2++) {
 								o2 = 'join___' + this.form.options.group_join_ids[k] + '___' + o + '_' + v2;
 								if (this.form.formElements[o2]) {
-									// $$$ hugh - think we can add this one as sticky ...
+									// Think we can add this one as sticky ...
 									this.form.formElements[o2].addNewEvent(this.form.formElements[o2].getChangeEvent(), function (e) {
 										this.calc(e);
 									}.bind(this));
@@ -60,7 +60,7 @@ var FbCalc = new Class({
 					}
 				}
 			}.bind(this));
-			
+
 			if (this.options.calcOnLoad) {
 				this.calc();
 			}
@@ -69,15 +69,15 @@ var FbCalc = new Class({
 
 	calc: function () {
 		var formdata = this.form.getFormElementData();
-		var testdata = $H(this.form.getFormData(false));
+		var testdata = this.form.getFormData(false);
 
-		testdata.each(function (v, k) {
+		jQuery.each(testdata, function (k, v) {
 			if (k.test(/^join\[\d+\]/) || k.test(/^fabrik_vars/)) {
 				formdata[k] = v;
 			}
 		}.bind(this));
 
-		$H(formdata).each(function (v, k) {
+		jQuery.each(formdata, function (k, v) {
 			var el = this.form.formElements.get(k);
 			if (el && el.options.inRepeatGroup && el.options.joinid === this.options.joinid && el.options.repeatCounter === this.options.repeatCounter)
 			{
@@ -98,10 +98,10 @@ var FbCalc = new Class({
 				'formid': this.form.id
 			};
 		data = Object.append(formdata, data);
-		Fabrik.loader.start(this.element.getParent(), Joomla.JText._('COM_FABRIK_VALIDATING'));
+		Fabrik.loader.start(this.element.parent(), Joomla.JText._('COM_FABRIK_VALIDATING'));
 		var myAjax = new Request({'url': '', method: 'post', 'data': data,
 		onComplete: function (r) {
-			Fabrik.loader.stop(this.element.getParent());
+			Fabrik.loader.stop(this.element.parent());
 			this.update(r);
 			if (this.options.validations) {
 
@@ -109,8 +109,8 @@ var FbCalc = new Class({
 				this.form.doElementValidation(this.options.element);
 			}
 			// Fire an onChange event so that js actions can be attached and fired when the value updates
-			this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
-			Fabrik.fireEvent('fabrik.calc.update', [this, r]);
+			this.element.trigger('change', new Event.Mock(this.element, 'change'));
+			Fabrik.trigger('fabrik.calc.update', [this, r]);
 		}.bind(this)}).send();
 	},
 

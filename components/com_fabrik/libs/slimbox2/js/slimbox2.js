@@ -17,9 +17,11 @@ jQuery.slimbox.scanPage = function() {
 	}
 };
 
-window.addEvent("domready", jQuery.slimbox.scanPage);
+jQuery(document).ready(function ($) {
+	$.slimbox.scanPage;
+});
 
-window.addEvent('fabrik.loaded', function() {
-	Fabrik.addEvent('fabrik.list.update', jQuery.slimbox.scanPage);
-	Fabrik.addEvent('fabrik.cdd.update', jQuery.slimbox.scanPage);
+jQuery(window).on('fabrik.loaded', function($) {
+	Fabrik.addEvent('fabrik.list.update', $.slimbox.scanPage);
+	Fabrik.addEvent('fabrik.cdd.update', $.slimbox.scanPage);
 });

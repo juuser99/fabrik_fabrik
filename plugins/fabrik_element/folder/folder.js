@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbFolder = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbFolder = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikfolder';
 		this.parent(element, options);
 	}

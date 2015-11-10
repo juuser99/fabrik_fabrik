@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var Autofill = new Class({
-
-	Implements: [Events, Options],
+var Autofill = my.Class({
 
 	options: {
 		'observe': '',
@@ -21,8 +19,8 @@ var Autofill = new Class({
 		autofill_lookup_field: 0
 	},
 
-	initialize: function (options) {
-		this.setOptions(options);
+	constructor: function (options) {
+		this.options = $.append(this.options, options);
 		this.attached = [];
 		/*if (Browser.ie) {
 			this.setUp(Fabrik.blocks['form_' + this.options.formid]);
@@ -178,7 +176,7 @@ var Autofill = new Class({
 
 			onFailure: function (xhr) {
 				Fabrik.loader.stop('form_' + this.options.formid);
-				alert(this.getHeader('Status'));
+				window.alert(this.getHeader('Status'));
 			},
 			onError: function (text, error) {
 				Fabrik.loader.stop('form_' + this.options.formid);
@@ -194,12 +192,12 @@ var Autofill = new Class({
 	// Update the form from the ajax request returned data
 	updateForm: function (json) {
 		var repeatNum = this.element.getRepeatNum();
-		json = $H(json);
-		if (json.length === 0) {
-			alert(Joomla.JText._('PLG_FORM_AUTOFILL_NORECORDS_FOUND'));
+
+		if (Object.keys(json).length === 0) {
+			window.alert(Joomla.JText._('PLG_FORM_AUTOFILL_NORECORDS_FOUND'));
 		}
 
-		json.each(function (val, key) {
+		jQuery.each(json, function (key, val) {
 			var k2 = key.substr(key.length - 4, 4);
 			if (k2 === '_raw') {
 				key = key.replace('_raw', '');
@@ -229,7 +227,7 @@ var Autofill = new Class({
 							// See if the user has used simply the full element name rather than the full element name with
 							// the join string
 							key = 'join___' + this.element.options.joinid + '___' + key;
-	
+
 							// Perhaps element is in main group and update element in repeat group :S
 							if (!this.tryUpdate(origKey, val, true)) {
 							}
@@ -241,7 +239,7 @@ var Autofill = new Class({
 		if (this.options.editOrig === true) {
 			this.form.getForm().getElement('input[name=rowid]').value = json.__pk_val;
 		}
-		Fabrik.fireEvent('fabrik.form.autofill.update.end', [this, json]);
+		Fabrik.trigger('fabrik.form.autofill.update.end', [this, json]);
 	},
 
 	/**
@@ -264,9 +262,9 @@ var Autofill = new Class({
 					el.activePopUp = true;
 				}
 				el.update(val);
-				
+
 				// Trigger change events to automatcially fire any other chained auto-fill form plugins
-				el.element.fireEvent(el.getBlurEvent(), new Event.Mock(el.element, el.getBlurEvent()));
+				el.element.trigger(el.getBlurEvent(), new Event.Mock(el.element, el.getBlurEvent()));
 				return true;
 			}
 		} else {
@@ -277,9 +275,9 @@ var Autofill = new Class({
 				m.each(function (key) {
 					var el = this.form.formElements.get(key);
 					el.update(val);
-					
+
 					// Trigger change events to automatcially fire any other chained auto-fill form plugins
-					el.element.fireEvent(el.getBlurEvent(), new Event.Mock(el.element, el.getBlurEvent()));
+					el.element.trigger(el.getBlurEvent(), new Event.Mock(el.element, el.getBlurEvent()));
 				}.bind(this));
 				return true;
 			}

@@ -5,24 +5,23 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListOrder = new Class({
-	Extends: FbListPlugin,
+var FbListOrder = my.Class(FbListPlugin, {
 
-	initialize: function (options) {
+	constructor: function (options) {
 		this.parent(options);
 
 		//for iE?
 		document.ondragstart = function () {
 			return false;
 		};
-		
+
 		this.sortables = {};
 		this.origorder = {};
 		this.neworder = {};
-		
+
 		var isGrouped = Fabrik.blocks['list_' + this.options.ref].options.isGrouped;
 		var container = this.getList().list;
-		
+
 		if (!isGrouped) {
 			container.setStyle('position', 'relative');
 			if (typeOf(container.getElement('tbody')) !== 'null') {
@@ -36,7 +35,7 @@ var FbListOrder = new Class({
 				console.log(container, x);
 				this.makeSortable(container);
 			}.bind(this));
-			
+
 		}
 
 		if (this.options.handle !== false && container.getElements(this.options.handle).length === 0) {
@@ -55,7 +54,7 @@ var FbListOrder = new Class({
 			}
 		}
 	},
-	
+
 	makeSortable: function (container) {
 		var sortable = new Sortables(container, {
 			clone: true,
@@ -68,8 +67,8 @@ var FbListOrder = new Class({
 			onComplete : function (element, clone) {
 				clone ? clone.removeClass('fabrikDragSelected') : element.removeClass('fabrikDragSelected');
 				//element.removeClass('fabrikDragSelected');
-				
-				var c = element.getParent('tbody');
+
+				var c = element.closest('tbody');
 				var sort = this.sortables[c.getProperty('data-order')];
 				this.neworder[c] = this.getOrder(sort);
 
@@ -99,13 +98,13 @@ var FbListOrder = new Class({
 
 			}.bind(this),
 			onStart: function (element, clone) {
-				var c = element.getParent('tbody');
+				var c = element.closest('tbody');
 				var sort = this.sortables[c.getProperty('data-order')];
 				this.origorder[c] = this.getOrder(sort);
 				clone ? clone.addClass('fabrikDragSelected') : element.addClass('fabrikDragSelected');
 			}.bind(this)
 		});
-		
+
 		this.sortables[container.getProperty('data-order')] = sortable;
 	},
 

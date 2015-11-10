@@ -9,9 +9,9 @@
  * Simple store for element js objects
  * Need to be able to trigger onSave on things like date elements to get correct format
  */
-UpdateColSelect = new Class({
+UpdateColSelect = my.Class({
 
-	initialize: function () {
+	constructor: function () {
 		this.updates = {};
 	},
 
@@ -38,9 +38,8 @@ UpdateColSelect = new Class({
 	}
 });
 
-var FbListUpdateCol = new Class({
-	Extends : FbListPlugin,
-	initialize: function (options) {
+var FbListUpdateCol = my.Class(FbListPlugin, {
+	constructor: function (options) {
 		this.parent(options);
 		if (this.options.userSelect) {
 			Fabrik['filter_update_col' + this.options.ref + '_' + this.options.renderOrder] = new UpdateColSelect();
@@ -75,11 +74,11 @@ var FbListUpdateCol = new Class({
 				form.addEvent('click:relay(a.add)', function (e, target) {
 					e.preventDefault();
 					var tr;
-					var thead = target.getParent('thead');
+					var thead = target.closest('thead');
 					if (thead) {
 						tr = form.getElements('tbody tr').getLast();
 					} else {
-						tr = target.getParent('tr');
+						tr = target.closest('tr');
 					}
 					if (tr.getStyle('display') === 'none') {
 						tds = tr.getElements('td');
@@ -103,13 +102,13 @@ var FbListUpdateCol = new Class({
 					if (trs.length === 1) {
 						trs.getLast().hide();
 					} else {
-						target.getParent('tr').destroy();
+						target.closest('tr').destroy();
 					}
 				});
 
 				// Select an element plugin and load it
 				form.addEvent('change:relay(select.key)', function (e, target) {
-					var els = target.getParent('tbody').getElements('.update_col_elements');
+					var els = target.closest('tbody').getElements('.update_col_elements');
 					for (i = 0; i < els.length; i++) {
 						if (els[i] === target) {
 							continue;
@@ -121,7 +120,7 @@ var FbListUpdateCol = new Class({
 						}
 					}
 					var opt = target.options[target.selectedIndex];
-					var row = target.getParent('tr');
+					var row = target.closest('tr');
 					Fabrik.loader.start(row);
 					var update = row.getElement('td.update_col_value');
 					var v = target.get('value');

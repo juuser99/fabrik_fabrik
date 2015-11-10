@@ -5,14 +5,13 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbSlider = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbSlider = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.parent(element, options);
 		this.plugin = 'slider';
 		this.makeSlider();
 	},
-	
+
 	makeSlider: function () {
 		var isNull = false;
 		if (typeOf(this.options.value) === 'null' || this.options.value === '') {
@@ -28,10 +27,10 @@ var FbSlider = new Class({
 			}
 			this.output = this.element.getElement('.fabrikinput');
 			this.output2 = this.element.getElement('.slider_output');
-	
+
 			this.output.value = this.options.value;
 			this.output2.set('text', this.options.value);
-	
+
 			this.mySlide = new Slider(
 				this.element.getElement('.fabrikslider-line'),
 				this.element.getElement('.knob'),
@@ -40,18 +39,18 @@ var FbSlider = new Class({
 						this.output.value = pos;
 						this.options.value = pos;
 						this.output2.set('text', pos);
-						this.output.fireEvent('blur', new Event.Mock(this.output, 'blur'));
+						this.output.trigger('blur', new Event.Mock(this.output, 'blur'));
 						this.callChange();
 					}.bind(this),
 					onComplete: function (pos) {
 						// Fire for validations
-						this.output.fireEvent('blur', new Event.Mock(this.output, 'change'));
-						this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
+						this.output.trigger('blur', new Event.Mock(this.output, 'change'));
+						this.element.trigger('change', new Event.Mock(this.element, 'change'));
 					}.bind(this),
 					steps : this.options.steps
 				}
 			).set(v);
-	
+
 			if (isNull) {
 				this.output.value = '';
 				this.output2.set('text', '');
@@ -60,13 +59,13 @@ var FbSlider = new Class({
 			this.watchClear();
 		}
 	},
-	
+
 	watchClear: function () {
 		this.element.addEvent('click:relay(.clearslider)', function (e, target) {
 			e.preventDefault();
 			this.mySlide.set(0);
 			this.output.value = '';
-			this.output.fireEvent('blur', new Event.Mock(this.output, 'change'));
+			this.output.trigger('blur', new Event.Mock(this.output, 'change'));
 			this.output2.set('text', '');
 		}.bind(this));
 	},
@@ -89,7 +88,7 @@ var FbSlider = new Class({
 			this.changejs = js;
 		}
 	},
-	
+
 	cloned: function (c) {
 		delete this.mySlide;
 		this.makeSlider();

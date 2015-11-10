@@ -5,6 +5,5 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbUser = new Class({
-	Extends: FbDatabasejoin
+FbUser = my.Class(FbDatabasejoin, {
 });

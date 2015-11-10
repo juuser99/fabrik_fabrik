@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbCaptcha = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbCaptcha = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.parent(element, options);
 	}
 });

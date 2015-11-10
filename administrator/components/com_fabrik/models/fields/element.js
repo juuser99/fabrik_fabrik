@@ -5,23 +5,25 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var elementElement = new Class({
+var elementElement = my.Class({
 
-	Implements: [Options, Events],
-	
 	options: {
 		'plugin': 'chart',
 		'excludejoined': 0,
 		'value': '',
 		'highlightpk': 0
 	},
-	
-	initialize: function (el, options) {
+
+	constructor: function (el, options) {
+		this.options = $.append(this.options, options);
 		this.el = el;
 		this.setOptions(options);
 		// if loading in a form plugin then the connect is not yet available in the dom
 		if (!this.ready()) {
-			this.cnnperiodical = this.getCnn.periodical(500, this);
+			this.cnnperiodical = setInterval(function () {
+				this.getCnn.call(this, true);
+			}, 500);
+
 		} else {
 			this.setUp();
 		}
@@ -57,7 +59,7 @@ var elementElement = new Class({
 		if (typeOf(this.el) === 'null') {
 			fconsole('element didnt find me, ', s);
 		}
-		var add = this.el.getParent().getElement('button');
+		var add = this.el.parent().find('button');
 		if (typeOf(add) !== 'null') {
 			add.addEvent('mousedown', function (e) {
 				e.stop();
@@ -71,22 +73,22 @@ var elementElement = new Class({
 	},
 
 	/**
-	 * If rendering with mode=gui then add button should insert selected element placeholder into 
+	 * If rendering with mode=gui then add button should insert selected element placeholder into
 	 * text area
 	 */
 	addPlaceHolder: function () {
-		var list = this.el.getParent().getElement('select');
+		var list = this.el.parent().find('select');
 		this.insertTextAtCaret(this.el, '{' + list.get('value') + '}');
 	},
-	
+
 	getOpts: function () {
-		return $H({
+		return {
 			'calcs': this.options.include_calculations,
 			'showintable': this.options.showintable,
 			'published': this.options.published,
 			'excludejoined': this.options.excludejoined,
 			'highlightpk': this.options.highlightpk
-		});
+		};
 	},
 
 	// only called from repeat viz admin interface i think
@@ -97,9 +99,9 @@ var elementElement = new Class({
 		this.options.table = t.join('-') + '-' + counter;
 		this.setUp();
 	},
-	
+
 	/**
-	 * Start of text insertion code - taken from 
+	 * Start of text insertion code - taken from
 	 * http://stackoverflow.com/questions/3510351/how-do-i-add-text-to-a-textarea-at-the-cursor-location-using-javascript
 	 */
 	getSelectionBoundary: function (el, start) {
@@ -173,5 +175,5 @@ var elementElement = new Class({
 		el.value = val.slice(0, pos) + text + val.slice(pos);
 		this.setSelection(el, newPos, newPos);
 	}
-	
+
 });

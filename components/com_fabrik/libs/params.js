@@ -14,9 +14,9 @@
  * to deal with cloning
  */
 
-var RepeatParams = new Class({
+var RepeatParams = my.Class({
 
-	initialize:function(el, opts){
+	constructor:function(el, opts){
 		this.opts = opts;
 		this.el = $(el);
 		this.counter = this.el.getElements('.repeatGroup').length - 1;
@@ -32,7 +32,7 @@ var RepeatParams = new Class({
 			this.counter = newc;
 			//update params ids
 			if (this.counter != 0){
-				c.getElements('input[name^=params], select[name^=params]').each(function(i){
+				jQuery.each(c.getElements('input[name^=params], select[name^=params]'), function(key, i){
 					var newPlugin = false;
 					var newid = '';
 					var oldid = i.id;
@@ -57,7 +57,7 @@ var RepeatParams = new Class({
 					}
 				}.bind(this));
 
-				c.getElements('img[src=components/com_fabrik/images/ajax-loader.gif]').each(function(i){
+				jQuery.each(c.getElements('img[src=components/com_fabrik/images/ajax-loader.gif]'), function(key, i){
 					i.id = i.id.replace('-0_loader', '-'+this.counter+'_loader');
 				}.bind(this));
 			}
@@ -69,16 +69,16 @@ var RepeatParams = new Class({
 	},
 
 	watchDeleteParamsGroup:function(){
-		var dels = this.el.getParent().getElements('.delete');
+		var dels = this.el.parent().find('.delete');
 		if (typeOf(dels) !== 'null'){
 				dels.each(function(del){
 				del.removeEvents();
 				del.addEvent('click', function(e){
 					e = new Event(e);
 					//var divs = this.el.getElements('.repeatGroup');
-					var divs = this.el.getParent().getElements('.repeatGroup');
+					var divs = this.el.parent().find('.repeatGroup');
 					if (divs.length -1 > this.opts.repeatMin){
-						$(e.target).getParent('.repeatGroup').remove();
+						$(e.target).closest('.repeatGroup').remove();
 					}
 					e.stop();
 					this.watchDeleteParamsGroup();

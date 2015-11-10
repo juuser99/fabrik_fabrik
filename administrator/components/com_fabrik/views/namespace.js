@@ -16,7 +16,7 @@
 
 	// Function to apply tips to page, after ajax call has loaded a plugin's form
 	FabrikAdmin.reTip = function () {
-		$$('.hasTip').each(function (el) {
+		jQuery.each($('.hasTip'), function (key, el) {
 			var title = el.get('title');
 			if (title) {
 				var parts = title.split('::', 2);
@@ -24,15 +24,15 @@
 				el.store('tip:text', parts[1]);
 			}
 		});
-		var JTooltips = new Tips($$('.hasTip'), { maxTitleChars: 50, fixed: false});
-		
+		var JTooltips = new Tips($('.hasTip'), { maxTitleChars: 50, fixed: false});
+
 		// Joomla3.2
 		if (typeof(jQuery) !== 'undefined') {
 			jQuery('.hasTooltip').tooltip({'html': true, 'container': 'body'});
 		}
 	};
 
-	window.fireEvent('fabrik.admin.namespace');
+	$(window).trigger('fabrik.admin.namespace');
 }());
 
 if (typeof(jQuery) !== 'undefined') {

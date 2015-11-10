@@ -5,14 +5,13 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbJSPeriodical = new Class({
-	Extends: FbElement,
+FbJSPeriodical = my.Class({
 	options: {
 		code : '',
 		period : 1000
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikPeriodical';
 		this.parent(element, options);
 		var periodical;
@@ -21,6 +20,6 @@ FbJSPeriodical = new Class({
 			eval(this.options.code);
 		}.bind(this);
 		this.fx();
-		periodical = this.fx.periodical(this.options.period, this);
+		var periodical = this.fx.periodical(this.options.period, this);
 	}
 });

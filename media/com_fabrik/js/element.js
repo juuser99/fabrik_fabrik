@@ -8,9 +8,7 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
 
-var FbElement =  new Class({
-
-	Implements: [Events, Options],
+var FbElement =  my.Class({
 
 	options : {
 		element: null,
@@ -28,18 +26,18 @@ var FbElement =  new Class({
 	 * @return  bool  false if document.id(this.options.element) not found
 	 */
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = '';
 		options.element = element;
 		this.strElement = element;
 		this.loadEvents = []; // need to store these for use if the form is reset
-		this.events = $H({}); // was changeEvents
-		this.setOptions(options);
+		this.events = {}; // was changeEvents
+		this.options = $.append(this.options, options);
 		// If this element is a 'chosen' select, we need to relay the jQuery change event to Moo
 		if (document.id(this.options.element + '_chzn')) {
 			var changeEvent = this.getChangeEvent();
 			jQuery('#' + this.options.element).on('change', {changeEvent: changeEvent}, function (event) {
-				document.id(this.id).fireEvent(event.data.changeEvent, new Event.Mock(event.data.changeEvent, document.id(this.id)));
+				document.id(this.id).trigger(event.data.changeEvent, new Event.Mock(event.data.changeEvent, document.id(this.id)));
 			});
 		}
 		return this.setElement();
@@ -108,13 +106,13 @@ var FbElement =  new Class({
 		if (this.hasSubElements()) {
 			this._getSubElements().each(function (el) {
 				Array.from(evnts).each(function (e) {
-					el.fireEvent(e);
+					el.trigger(e);
 				}.bind(this));
 			}.bind(this));
 		} else {
 			Array.from(evnts).each(function (e) {
 				if (this.element) {
-					this.element.fireEvent(e);
+					this.element.trigger(e);
 				}
 			}.bind(this));
 		}
@@ -136,7 +134,7 @@ var FbElement =  new Class({
 		if (typeOf(element) === 'null') {
 			return false;
 		}
-		this.subElements = element.getElements('.fabrikinput');
+		this.subElements = element.find('.fabrikinput');
 		return this.subElements;
 	},
 
@@ -196,7 +194,7 @@ var FbElement =  new Class({
 	 * @since 3.0.7
 	 */
 	renewEvents: function () {
-		this.events.each(function (fns, type) {
+		jQuery.each(this.events, function (type, fns) {
 			this.element.removeEvents(type);
 			fns.each(function (js) {
 				this.addNewEventAux(type, js);
@@ -363,11 +361,11 @@ var FbElement =  new Class({
 		if (this.element.hasClass('chzn-done')) {
 			this.element.removeClass('chzn-done');
 			this.element.addClass('chzn-select');
-			this.element.getParent().getElement('.chzn-container').destroy();
+			this.element.parent().find('.chzn-container').destroy();
 			jQuery('#' + this.element.id).chosen();
 			var changeEvent = this.getChangeEvent();
 			jQuery('#' + this.options.element).on('change', {changeEvent: changeEvent}, function (event) {
-				document.id(this.id).fireEvent(event.data.changeEvent, new Event.Mock(event.data.changeEvent, document.id(this.id)));
+				document.id(this.id).trigger(event.data.changeEvent, new Event.Mock(event.data.changeEvent, document.id(this.id)));
 			});
 		}
 	},
@@ -383,7 +381,7 @@ var FbElement =  new Class({
 	 */
 	getContainer: function ()
 	{
-		return typeOf(this.element) === 'null' ? false : this.element.getParent('.fabrikElementContainer');
+		return typeOf(this.element) === 'null' ? false : this.element.closest('.fabrikElementContainer');
 	},
 
 	/**
@@ -419,7 +417,7 @@ var FbElement =  new Class({
 	 */
 	tips: function () {
 		return Fabrik.tips.elements.filter(function (t) {
-			if (t === this.getContainer() || t.getParent() === this.getContainer()) {
+			if (t === this.getContainer() || t.parent() === this.getContainer()) {
 				return true;
 			}
 		}.bind(this));
@@ -591,15 +589,16 @@ var FbElement =  new Class({
 	},
 
 	decreaseName: function (delIndex) {
-		var element = this.getElement();
+		var element = this.getElement(),
+			self = this;
 		if (typeOf(element) === 'null') {
 			return false;
 		}
 		if (this.hasSubElements()) {
 			this._getSubElements().each(function (e) {
-				e.name = this._decreaseName(e.name, delIndex);
-				e.id = this._decreaseId(e.id, delIndex);
-			}.bind(this));
+				this.name = self._decreaseName(e.name, delIndex);
+				this.id = self._decreaseId(e.id, delIndex);
+			});
 		} else {
 			if (typeOf(this.element.name) !== 'null') {
 				this.element.name = this._decreaseName(this.element.name, delIndex);
@@ -752,18 +751,18 @@ var FbElement =  new Class({
 	watchTab: function () {
 		var c = Fabrik.bootstrapped ? '.tab-pane' : '.current',
 		a, tab_dl;
-		var tab_div = this.element.getParent(c);
+		var tab_div = this.element.closest(c);
 		if (tab_div) {
 			if (Fabrik.bootstrapped) {
 				a = document.getElement('a[href$=#' + tab_div.id + ']');
-				tab_dl = a.getParent('ul.nav');
+				tab_dl = a.closest('ul.nav');
 				tab_dl.addEvent('click:relay(a)', function (event, target) {
 					this.doTab(event);
 				}.bind(this));
 			} else {
 				tab_dl = tab_div.getPrevious('.tabs');
 				if (tab_dl) {
-					this.options.tab_dd = this.element.getParent('.fabrikGroup');
+					this.options.tab_dd = this.element.closest('.fabrikGroup');
 					if (this.options.tab_dd.style.getPropertyValue('display') === 'none') {
 						this.options.tab_dt = tab_dl.getElementById('group' + this.groupid + '_tab');
 						if (this.options.tab_dt) {
@@ -793,18 +792,17 @@ var FbElement =  new Class({
  */
 
 
-var FbFileElement = new Class({
+var FbFileElement = my.Class(FbElement, {
 
-	Extends: FbElement,
 	ajaxFolder: function ()
 	{
 		this.folderlist = [];
 		if (typeOf(this.element) === 'null') {
 			return;
 		}
-		var el = this.element.getParent('.fabrikElement');
-		this.breadcrumbs = el.getElement('.breadcrumbs');
-		this.folderdiv = el.getElement('.folderselect');
+		var el = this.element.closest('.fabrikElement');
+		this.breadcrumbs = el.find('.breadcrumbs');
+		this.folderdiv = el.find('.folderselect');
 		this.slider = new Fx.Slide(this.folderdiv, {duration: 500});
 		this.slider.hide();
 		this.hiddenField = el.getElement('.folderpath');
@@ -887,7 +885,7 @@ var FbFileElement = new Class({
 				}
 				this.watchAjaxFolderLinks();
 				this.hiddenField.value =  '/' + this.folderlist.join('/') + '/';
-				this.fireEvent('onBrowse');
+				this.trigger('onBrowse');
 			}.bind(this)
 		}).send();
 	},

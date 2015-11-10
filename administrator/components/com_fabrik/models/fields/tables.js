@@ -5,20 +5,20 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var tablesElement = new Class({
-
-	Implements: [Options, Events],
+var tablesElement = my.Class({
 
 	options: {
 		conn: null
 	},
 
-	initialize: function (el, options) {
+	constructor: function (el, options) {
 		this.el = el;
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		// If loading in a form plugin then the connect is not yet available in the dom
 		if (typeOf(document.id(this.options.conn)) === 'null') {
-			this.periodical = this.getCnn.periodical(500, this);
+			this.periodical = setInterval(function () {
+				this.getCnn.call(this, true);
+			}, 500);
 		} else {
 			this.setUp();
 		}

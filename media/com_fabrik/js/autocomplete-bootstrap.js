@@ -8,9 +8,7 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, Encoder:true */
 
-var FbAutocomplete = new Class({
-
-	Implements: [Options, Events],
+var FbAutocomplete = my.Class({
 
 	options: {
 		menuclass: 'auto-complete-container dropdown',
@@ -27,6 +25,7 @@ var FbAutocomplete = new Class({
 	},
 
 	initialize: function (element, options) {
+		var self = this;
 		window.addEvent('domready', function () {
 			this.matchedResult = false;
 			this.setOptions(options);
@@ -35,9 +34,9 @@ var FbAutocomplete = new Class({
 			this.cache = {};
 			this.selected = -1;
 			this.mouseinsde = false;
-			document.addEvent('keydown', function (e) {
-				this.doWatchKeys(e);
-			}.bind(this));
+			$(document).on('keydown', function (e) {
+				self.doWatchKeys(e);
+			});
 			this.element = typeOf(document.id(element)) === "null" ? document.getElement(element) : document.id(element);
 			this.buildMenu();
 			if (!this.getInputElement()) {
@@ -71,7 +70,7 @@ var FbAutocomplete = new Class({
 			if (this.ajax) {
 				this.ajax.cancel();
 			}
-			this.element.fireEvent('change', new Event.Mock(this.element, 'change'), 500);
+			this.element.trigger('change', new Event.Mock(this.element, 'change'), 500);
 			return;
 		}
 		this.matchedResult = false;
@@ -178,18 +177,18 @@ var FbAutocomplete = new Class({
 			this.getInputElement().value = data[0].text;
 			// $$$ Paul - The selection event is for text being selected in an input field not for a link being selected
 			this.closeMenu();
-			this.fireEvent('selection', [this, this.element.value]);
+			this.trigger('selection', [this, this.element.value]);
 			// $$$ hugh - need to fire change event, in case it's something like a join element
 			// with a CDD that watches it.
 			form = Fabrik.getBlock(this.options.formRef);
 			if (form !== false) {
 				elModel = form.formElements.get(this.element.id);
 				blurEvent = elModel.getBlurEvent();
-				this.element.fireEvent(blurEvent, new Event.Mock(this.element, blurEvent), 700);
+				this.element.trigger(blurEvent, new Event.Mock(this.element, blurEvent), 700);
 			}
 
 			// $$$ hugh - fire a Fabrik event, just for good luck.  :)
-			Fabrik.fireEvent('fabrik.autocomplete.selected', [this, this.element.value]);
+			Fabrik.trigger('fabrik.autocomplete.selected', [this, this.element.value]);
 			return false;
 		}
 		if (data.length === 0) {
@@ -215,20 +214,20 @@ var FbAutocomplete = new Class({
 			this.getInputElement().value = li.get('text');
 			this.element.value = li.getProperty('data-value');
 			this.closeMenu();
-			this.fireEvent('selection', [this, this.element.value]);
+			this.trigger('selection', [this, this.element.value]);
 			// $$$ hugh - need to fire change event, in case it's something like a join element
 			// with a CDD that watches it.
-			this.element.fireEvent('change', new Event.Mock(this.element, 'change'), 700);
-			this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'), 700);
+			this.element.trigger('change', new Event.Mock(this.element, 'change'), 700);
+			this.element.trigger('blur', new Event.Mock(this.element, 'blur'), 700);
 			// $$$ hugh - fire a Fabrik event, just for good luck.  :)
-			Fabrik.fireEvent('fabrik.autocomplete.selected', [this, this.element.value]);
+			Fabrik.trigger('fabrik.autocomplete.selected', [this, this.element.value]);
 		} else {
 			/**
 			 * $$$ Paul - The Fabrik event below makes NO sense.
 			 * This is a code error condition not an event because typeOf(li) should never be null
 			 **/
 			//  $$$ tom - fire a notselected event to let developer take appropriate actions.
-			Fabrik.fireEvent('fabrik.autocomplete.notselected', [this, this.element.value]);
+			Fabrik.trigger('fabrik.autocomplete.notselected', [this, this.element.value]);
 		}
 	},
 
@@ -244,13 +243,14 @@ var FbAutocomplete = new Class({
 	},
 
 	openMenu: function () {
+		var self = this;
 		if (!this.shown) {
 			if (this.isMinTriggerlength()) {
 				this.menu.show();
 				this.shown = true;
-				document.addEvent('click', function (e) {
-					this.doTestMenuClose(e);
-				}.bind(this));
+				$(document).on('click', function (e) {
+					self.doTestMenuClose(e);
+				});
 				this.selected = 0;
 				this.highlight();
 			}
@@ -295,7 +295,7 @@ var FbAutocomplete = new Class({
 			}
 			else {
 				if (e.key === 'enter' || e.key === 'tab') {
-					window.fireEvent('blur');
+					$(window).trigger('blur');
 				}
 				switch (e.code) {
 				case 40://down
@@ -356,21 +356,20 @@ var FbAutocomplete = new Class({
 	},
 
 	highlight: function () {
-		this.matchedResult = true;
-		this.menu.getElements('li').each(function (li, i) {
-			if (i === this.selected) {
-				li.addClass('selected').addClass('active');
+		this.matchedResult = true,
+		self = this;
+		this.menu.find('li').each(function (i) {
+			if (i === self.selected) {
+				$(this).addClass('selected').addClass('active');
 			} else {
-				li.removeClass('selected').removeClass('active');
+				$(this).removeClass('selected').removeClass('active');
 			}
-		}.bind(this));
+		});
 	}
 
 });
 
-var FabCddAutocomplete = new Class({
-
-	Extends: FbAutocomplete,
+var FabCddAutocomplete = my.Class(FbAutocomplete, {
 
 	search: function (e) {
 		var key;

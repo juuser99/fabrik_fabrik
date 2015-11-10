@@ -1,3 +1,2 @@
-var FbListArticle = new Class({
-	Extends : FbListPlugin
+var FbListArticle = my.Class(FbListPlugin, {
 });

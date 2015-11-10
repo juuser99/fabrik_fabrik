@@ -5,15 +5,14 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbYesno = new Class({
-	Extends: FbRadio,
-	initialize: function (element, options) {
+FbYesno = my.Class(FbRadio, {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikyesno';
 		this.parent(element, options);
 	},
-	
+
 	getChangeEvent: function () {
 		return this.options.changeEvent;
 	}
-	
+
 });

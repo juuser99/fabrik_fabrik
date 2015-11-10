@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbSpotify = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbSpotify = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'spotify';
 		this.parent(element, options);
 	}

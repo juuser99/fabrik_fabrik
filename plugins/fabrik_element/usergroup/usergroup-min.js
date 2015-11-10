@@ -1,2 +1,2 @@
 /*! Fabrik */
-var FbUsergroup=new Class({Extends:FbElement,initialize:function(a,b){this.plugin="fabrikusergroup",this.parent(a,b)}});
+var FbUsergroup=my.Class(FbElement,{constructor:function(a,b){this.plugin="fabrikusergroup",this.parent(a,b)}});

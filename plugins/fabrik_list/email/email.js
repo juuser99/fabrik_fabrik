@@ -5,11 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListEmail = new Class({
+var FbListEmail = my.Class(FbListPlugin, {
 
-	Extends : FbListPlugin,
-
-	initialize: function (options) {
+	constructor: function (options) {
 		this.parent(options);
 	},
 

@@ -370,7 +370,7 @@ class FabrikParams extends JForm
 
 			// Watch add and remove buttons
 			$document = JFactory::getDocument();
-			$script = "window.addEvent('fabrik.loaded', function() {
+			$script = "jQuery(window).on('fabrik.loaded', function() {
 			 new RepeatParams('container{$this->_identifier}', {repeatMin:$repeatMin});
 	});";
 			FabrikHelperHTML::addScriptDeclaration($script);

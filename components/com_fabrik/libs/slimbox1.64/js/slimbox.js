@@ -14,9 +14,9 @@ Slimbox.scanPage = function() {
 		return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel));
 	});
 };
-window.addEvent("domready", Slimbox.scanPage);
+window.addEvent('domready', Slimbox.scanPage);
 
-window.addEvent('fabrik.loaded', function() {
+jQuery(window).on('fabrik.loaded', function() {
 	Fabrik.addEvent('fabrik.list.update', Slimbox.scanPage);
 })
 

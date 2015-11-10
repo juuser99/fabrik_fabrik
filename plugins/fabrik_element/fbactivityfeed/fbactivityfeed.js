@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbActivityfeed = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbActivityfeed = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'fbActivityfeed';
 		this.parent(element, options);
 	}

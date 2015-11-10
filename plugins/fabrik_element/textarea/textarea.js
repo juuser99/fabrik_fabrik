@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbTextarea = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbTextarea = my.Class(FbElement, {
+	constructor: function (element, options) {
 
 		this.plugin = 'fabriktextarea';
 		this.parent(element, options);
@@ -30,7 +29,9 @@ var FbTextarea = new Class({
 			}
 		};
 
-		var p = this.periodFn.periodical(200, this);
+		var p = setInterval(function () {
+			this.periodFn.call(this);
+		}, 200);
 
 		Fabrik.addEvent('fabrik.form.page.change.end', function (form) {
 			this.refreshEditor();
@@ -105,15 +106,15 @@ var FbTextarea = new Class({
 						}.bind(this));
 
 						inst.on('focus', function (e) {
-							var c = this.element.getParent('.fabrikElementContainer');
-							c.getElement('span.badge').addClass('badge-info');
-							c.getElement('.fabrik_characters_left').removeClass('muted');
+							var c = this.element.closest('.fabrikElementContainer');
+							c.find('span.badge').addClass('badge-info');
+							c.find('.fabrik_characters_left').removeClass('muted');
 						}.bind(this));
 
 						inst.on('blur', function (e) {
-							var c = this.element.getParent('.fabrikElementContainer');
-							c.getElement('span.badge').removeClass('badge-info');
-							c.getElement('.fabrik_characters_left').addClass('muted');
+							var c = this.element.closest('.fabrikElementContainer');
+							c.find('span.badge').removeClass('badge-info');
+							c.find('.fabrik_characters_left').addClass('muted');
 						}.bind(this));
 
 						inst.on('blur', function (e) {
@@ -156,19 +157,19 @@ var FbTextarea = new Class({
 		var textarea = tinyMCE.activeEditor.getElement(),
 		c = this.getContent();
 		textarea.set('value', c);
-		textarea.fireEvent('blur', new Event.Mock(textarea, event));
+		textarea.trigger('blur', new Event.Mock(textarea, event));
 	},
 
 	focusCharsLeft: function () {
-		var c = this.element.getParent('.fabrikElementContainer');
-		c.getElement('span.badge').addClass('badge-info');
-		c.getElement('.fabrik_characters_left').removeClass('muted');
+		var c = this.element.closest('.fabrikElementContainer');
+		c.find('span.badge').addClass('badge-info');
+		c.find('.fabrik_characters_left').removeClass('muted');
 	},
 
 	blurCharsLeft: function () {
-		var c = this.element.getParent('.fabrikElementContainer');
-		c.getElement('span.badge').removeClass('badge-info');
-		c.getElement('.fabrik_characters_left').addClass('muted');
+		var c = this.element.closest('.fabrikElementContainer');
+		c.find('span.badge').removeClass('badge-info');
+		c.find('.fabrik_characters_left').addClass('muted');
 	},
 
 	/**
@@ -189,12 +190,12 @@ var FbTextarea = new Class({
 
 	cloned: function (c) {
 		if (this.options.wysiwyg) {
-			var p = this.element.getParent('.fabrikElement');
-			var txt = p.getElement('textarea').clone(true, true);
-			var charLeft = p.getElement('.fabrik_characters_left');
+			var p = this.element.closest('.fabrikElement');
+			var txt = p.find('textarea').clone(true, true);
+			var charLeft = p.find('.fabrik_characters_left');
 			p.empty();
 			p.adopt(txt);
-			if (typeOf(charLeft) !== 'null') {
+			if (charLeft.length > 0) {
 				p.adopt(charLeft.clone());
 			}
 			txt.removeClass('mce_editable');
@@ -267,7 +268,7 @@ var FbTextarea = new Class({
 	_getTinyInstance: function () {
 		return tinyMCE.majorVersion.toInt() >= 4 ? tinyMCE.get(this.element.id) : tinyMCE.getInstanceById(this.element.id);
 	},
-	
+
 	_addTinyEditor: function(id) {
 		if (tinyMCE.majorVersion.toInt() >= 4) {
 			tinyMCE.execCommand('mceAddEditor', false, id);
@@ -277,7 +278,7 @@ var FbTextarea = new Class({
 			tinyMCE.execCommand('mceAddControl', false, id);
 		}
 	},
-	
+
 	_removeTinyEditor: function(id) {
 		if (tinyMCE.majorVersion.toInt() >= 4) {
 			tinyMCE.execCommand('mceRemoveEditor', false, id);

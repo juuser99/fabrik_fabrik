@@ -8,10 +8,9 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Canvas:true */
 
-var FrontPackage = new Class({
-	Extends: Canvas,
-	
-	initialize: function (opts) {
+var FrontPackage = my.Class(Canvas, {
+
+	constructor: function (opts) {
 		opts.editabe = false;
 		this.parent(opts);
 		this.setup();
@@ -19,7 +18,7 @@ var FrontPackage = new Class({
 			this.loadForm(e);
 		}.bind(this));
 	},
-	
+
 	loadForm: function (list, e) {
 		Fabrik.loader.start();
 		var pages = this.pages;
@@ -28,7 +27,7 @@ var FrontPackage = new Class({
 		//onSuccess = Fabrik.loader.stop();
 		this.insertPage(page, 'forms_' + list.options.formid, '', 'forms', style);
 	},
-	
+
 	insertPage : function (page, id, label, type, style, onSuccess) {
 		var key;
 		onSuccess = typeOf(onSuccess) !== 'function' ? Function.from() : onSuccess;
@@ -68,15 +67,15 @@ var FrontPackage = new Class({
 		var url = 'index.php';
 		var myAjax = new Request.HTML({url: url,
 			'data': data,
-			method: 'post', 
+			method: 'post',
 			update: c,
 			onSuccess: onSuccess
 		}).send();
 		//iframe loader
 		//var url = 'index.php?option=com_fabrik&view=' + type + '&' + key + '=' + id + '&tmpl=component&package=' + this.options['package'];
-		
+
 		/*var url = 'index.php?option=com_fabrik&task=' + type + '.view&' + key + '=' + id + '&tmpl=component&iframe=1&package=' + this.options['package'];
-		
+
 		var c = new Element('iframe', {'id': id, src: url, 'class': 'itemPlaceHolderIFrame'}).setStyles(style);
 		c.inject(page.page);*/
 	}

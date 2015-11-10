@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbRating = new Class({
-	Extends : FbElement,
-	initialize : function (element, options) {
+var FbRating = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.field = document.id(element);
 		this.parent(element, options);
 		if (this.options.canRate === false) {

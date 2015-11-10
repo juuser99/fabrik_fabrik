@@ -5,8 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbTimestamp = new Class({
-	Extends: FbElement,
+FbTimestamp = my.Class(FbElement, {
 	initialize: function (element, options) {
 		this.plugin = 'fabriktimestamp';
 		this.parent(element, options);

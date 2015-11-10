@@ -5,37 +5,36 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var fbVisApprovals = new Class({
-	Implements: [Options],
+var fbVisApprovals = my.Class({
 	options: {},
-	initialize: function (el, options) {
+	constructor: function (el, options) {
 		this.setOptions(options);
 		this.el = document.id(el);
-		document.addEvent('click:relay(a.approve)', function (e) {
-			var el = e.target;
+		$(document).on('click', 'a.approve', function (e) {
+			var el = $(this);
 			e.stop();
-			if (el.get('tag') !== 'a') {
-				el = el.findUp('a');
+			if ($(this).prop('tagName') !== 'A') {
+				el = $(this).closest('a');
 			}
-			new Request.HTML({'url': el.href, 
+			new Request.HTML({'url': el.prop('href'),
 				'onSuccess': function () {
-					el.getParent('tr').dispose();
+					el.closest('tr').remove();
 				}
 			}).send();
 
 		});
-		document.addEvent('click:relay(a.disapprove)', function (e) {
-			var el = e.target;
+		$(document).on('click', 'a.disapprove', function (e) {
+			var el = $(this);
 			e.stop();
-			if (el.get('tag') !== 'a') {
-				el = el.findUp('a');
+			if (el.prop('tagName') !== 'A') {
+				el = el.closest('a');
 			}
-			new Request.HTML({'url': el.href, 
+			new Request.HTML({'url': el.prop('href'),
 				'onSuccess': function () {
-					el.getParent('tr').dispose();
+					el.closest('tr').remove();
 				}
 			}).send();
-			
+
 		});
 
 		new FloatingTips('.approvalTip', {

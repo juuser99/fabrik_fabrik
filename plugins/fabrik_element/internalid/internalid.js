@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbInternalId = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbInternalId = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'fbInternalId';
 		this.parent(element, options);
 	}

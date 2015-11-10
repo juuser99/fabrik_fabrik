@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var ListFieldsElement = new Class({
-
-	Implements: [Options, Events],
+var ListFieldsElement = my.Class({
 
 	addWatched: false,
 
@@ -20,16 +18,16 @@ var ListFieldsElement = new Class({
 		addBrackets: false
 	},
 
-	initialize: function (el, options) {
+	constructor: function (el, options) {
 		this.strEl = el;
 		var label, els;
 		this.el = el;
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 
 		if (this.options.defaultOpts.length > 0) {
 			this.el = document.id(this.el);
 			if (this.options.mode === 'gui') {
-				this.select = this.el.getParent().getElement('select.elements');
+				this.select = this.el.parent().find('select.elements');
 				els = [this.select];
 				if (typeOf(document.id(this.options.conn)) === 'null') {
 					this.watchAdd();
@@ -57,7 +55,9 @@ var ListFieldsElement = new Class({
 			}.bind(this));
 		} else {
 			if (typeOf(document.id(this.options.conn)) === 'null') {
-				this.cnnperiodical = this.getCnn.periodical(500, this);
+				this.cnnperiodical = setInterval(function () {
+					this.getCnn.call(this, true);
+				}, 500);
 			} else {
 				this.setUp();
 			}
@@ -98,7 +98,7 @@ var ListFieldsElement = new Class({
 	setUp: function () {
 		this.el = document.id(this.el);
 		if (this.options.mode === 'gui') {
-			this.select = this.el.getParent().getElement('select.elements');
+			this.select = this.el.parent().find('select.elements');
 		}
 
 		document.id(this.options.conn).addEvent('change', function () {
@@ -111,7 +111,9 @@ var ListFieldsElement = new Class({
 		// See if there is a connection selected
 		var v = document.id(this.options.conn).get('value');
 		if (v !== '' && v !== -1) {
-			this.periodical = this.updateMe.periodical(500, this);
+			this.periodical = setInterval(function () {
+				this.updateMe.call(this, true);
+			}, 500);
 		}
 		this.watchAdd();
 	},
@@ -122,7 +124,7 @@ var ListFieldsElement = new Class({
 		}
 		console.log('watch add', this);
 		this.addWatched = true;
-		var add = this.el.getParent().getElement('button');
+		var add = this.el.parent().find('button');
 
 		if (typeOf(add) !== 'null') {
 			add.addEvent('mousedown', function (e) {
@@ -198,7 +200,7 @@ var ListFieldsElement = new Class({
 	 * text area
 	 */
 	addPlaceHolder: function () {
-		var list = this.el.getParent().getElement('select');
+		var list = this.el.parent().find('select');
 		var v = list.get('value');
 		if (this.options.addBrackets) {
 			v = v.replace(/\./, '___');

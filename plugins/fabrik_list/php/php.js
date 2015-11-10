@@ -5,16 +5,16 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbListPHP = new Class({
-	Extends: FbListPlugin,
-	initialize: function (options) {
+FbListPHP = my.Class(FbListPlugin, {
+	constructor: function (options) {
 		this.parent(options);
 	},
 
 	buttonAction: function (event) {
-		var additional_data = this.options.additional_data;
-		var hdata = $H({});
-		var rowIndexes = [];
+		var additional_data = this.options.additional_data,
+			hdata = {},
+			rowIndexes = [],
+			ok, elname, i, cell_data;
 		this.list.getForm().getElements('input[name^=ids]').each(function (c) {
 			if (c.checked) {
 				ok = true;
@@ -23,14 +23,17 @@ FbListPHP = new Class({
 
 				// Funky custom stuff from Hugh - leave as it might be used somewhere in the galaxy
 				if (additional_data) {
-					if (!hdata.has(row_index)) {
-						hdata.set(row_index, $H({}));
+					if (!hdata.hasOwnProperty(row_index)) {
+						hdata[row_index] = {};
 					}
 					hdata[row_index].rowid = c.value;
-					additional_data.split(',').each(function (elname) {
-						var cell_data = c.getParent('.fabrik_row').getElements('td.fabrik_row___' + elname)[0].innerHTML;
+					var additional = additional_data.split(',');
+					for (i = 0; i < additional.length; i ++) {
+						elname = additional[i];
+						cell_data = c.closest('.fabrik_row').getElements('td.fabrik_row___' + elname)[0].innerHTML;
 						hdata[row_index][elname] = cell_data;
-					});
+					}
+
 				}
 			}
 		});

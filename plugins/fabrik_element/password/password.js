@@ -5,21 +5,20 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbPassword = new Class({
-	Extends: FbElement,
+var FbPassword = my.Class(FbElement, {
 
 	options: {
 		progressbar: false
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.parent(element, options);
 		if (!this.options.editable) {
 			return;
 		}
 		this.ini();
 	},
-	
+
 	ini: function () {
 		if (this.element) {
 			this.element.addEvent('keyup', function (e) {
@@ -40,7 +39,7 @@ var FbPassword = new Class({
 	callvalidation: function (e) {
 		this.form.doElementValidation(e, false, '_check');
 	},
-	
+
 	cloned: function (c) {
 		console.log('cloned');
 		this.parent(c);

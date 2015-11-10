@@ -5,25 +5,25 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-window.addEvent('fabrik.loaded', function() {
-	Array.from($$('.fabrikList tr')).each(function(r){
-		document.id(r).addEvent('mouseover', function(e){
-			if (r.hasClass('oddRow0') || r.hasClass('oddRow1')){
-				r.addClass('fabrikHover');
+jQuery(window).on('fabrik.loaded', function() {
+	$('.fabrikList tr').each(function () {
+		$(this).on('mouseover', function(e){
+			if ($(this).hasClass('oddRow0') || $(this).hasClass('oddRow1')){
+				$(this).addClass('fabrikHover');
 			}
-		}, r);
+		});
 
-		document.id(r).addEvent('mouseout', function(e){
-			r.removeClass('fabrikHover');
-		}, r);
+		$(this).on('mouseout', function(e){
+			$(this).removeClass('fabrikHover');
+		});
 
-		document.id(r).addEvent('click', function(e){
-			if (r.hasClass('oddRow0') || r.hasClass('oddRow1')){
-				$$('.fabrikList tr').each(function(rx){
-					rx.removeClass('fabrikRowClick');
+		$(this).on('click', function(e) {
+			if ($(this).hasClass('oddRow0') || $(this).hasClass('oddRow1')){
+				$('.fabrikList tr').each(function(){
+					$(this).removeClass('fabrikRowClick');
 				});
-				r.addClass('fabrikRowClick');
+				$(this).addClass('fabrikRowClick');
 			}
-		}, r);
+		});
 	});
-})
+});

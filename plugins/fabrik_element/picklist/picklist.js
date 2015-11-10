@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbPicklist = new Class({
-	Extends : FbElement,
-	initialize : function (element, options) {
+var FbPicklist = my.Class(FbElement, {
+	constructor : function (element, options) {
 		this.plugin = 'fabrikpicklist';
 		this.parent(element, options);
 		if (this.options.allowadd === true) {
@@ -16,7 +15,7 @@ var FbPicklist = new Class({
 		}
 		this.makeSortable();
 	},
-	
+
 	/**
 	 * Ini the sortable object
 	 */
@@ -40,10 +39,10 @@ var FbPicklist = new Class({
 				}.bind(this),
 				onSort: function (element, clone) {
 					this.showNotices(element, clone);
-	
+
 				}.bind(this),
-	
-	
+
+
 				onStart : function (element, clone) {
 					this.drag.addEvent('onEnter', function (element, droppable) {
 						if (this.lists.contains(droppable)) {
@@ -74,14 +73,14 @@ var FbPicklist = new Class({
 
 	/**
 	 * Show empty notices
-	 * 
+	 *
 	 * @param  DOMNode  element  Li being dragged
-	 * 
+	 *
 	 */
 	showNotices: function (element, clone) {
 		if (element) {
 			// Get list
-			element = element.getParent('ul');
+			element = element.closest('ul');
 		}
 		var c = this.getContainer(),
 		limit, to, i;
@@ -112,7 +111,7 @@ var FbPicklist = new Class({
 		c = this.getContainer(),
 		to = c.getElement('.toList'),
 		btn = c.getElement('input[type=button]');
-		
+
 		if (typeOf(btn) === 'null') {
 			return;
 		}
@@ -151,12 +150,12 @@ var FbPicklist = new Class({
 					}
 				}.bind(this));
 	},
-	
+
 	unclonableProperties: function ()
 	{
 		return ['form', 'sortable'];
 	},
-	
+
 	watchAddToggle: function () {
 		var c = this.getContainer();
 		var d = c.getElement('div.addoption');
@@ -165,7 +164,7 @@ var FbPicklist = new Class({
 			// Copied in repeating group so need to remove old slider html first
 			var clone = d.clone();
 			var fe = c.getElement('.fabrikElement');
-			d.getParent().destroy();
+			d.parent().destroy();
 			fe.adopt(clone);
 			d = c.getElement('div.addoption');
 			d.setStyle('margin', 0);
@@ -179,7 +178,7 @@ var FbPicklist = new Class({
 			this.mySlider.toggle();
 		}.bind(this));
 	},
-	
+
 	cloned: function (c) {
 		delete this.sortable;
 		if (this.options.allowadd === true) {

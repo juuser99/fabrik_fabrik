@@ -5,8 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var fabrikFusiongraph = new Class({
-	Implements: [Options],
+var fabrikFusiongraph = my.Class({
 	options: {
 		legend:       false,
 		label: '',
@@ -17,10 +16,10 @@ var fabrikFusiongraph = new Class({
 		xticks: []
 	},
 
-	initialize: function (el, d, options) {
+	constructor: function (el, d, options) {
 		//todo doesnt seem to work with 1 record of data
 		this.el = el;
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.json = d;
 		this.render();
 	},

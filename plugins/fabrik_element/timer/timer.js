@@ -5,7 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbTimer = new Class({
+var FbTimer = my.Class(FbElement, {
 
 	options: {
 		defaultVal: '',
@@ -19,9 +19,7 @@ var FbTimer = new Class({
 		onEveryHour: function () {}
 	},
 
-	Extends: FbElement,
-
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabriktimer';
 		this.parent(element, options);
 		var b = document.id(this.options.element + '_button');
@@ -71,7 +69,9 @@ var FbTimer = new Class({
 
 	start: function () {
 		if (this.state !== 'started') {
-			this.timer = this.count.periodical(1000, this);
+			this.timer = setInterval(function () {
+				this.count.call(this);
+			}, 1000);
 			this.state = 'started';
 		}
 	},
@@ -88,16 +88,14 @@ var FbTimer = new Class({
 		if ((this.seg === -1) || (this.seg === 60)) {
 			this.seg = (this.incremental > 0) ? 0 : 59;
 			this.min += this.incremental;
-			//this.fireEvent('onEveryMinute', '');
 			if (this.min === -1 || this.min === 60) {
 				this.min = (this.incremental > 0) ? 0 : 59;
 				this.hour += this.incremental;
-				//this.fireEvent('onEveryHour', '');
 			}
 		}
 		this.element.value = this.time();
 		if ((this.min === this.endMin) && (this.seg === this.endSeg)) {
-			this.fireEvent('onComplete', '');
+			this.trigger('onComplete', '');
 			if (this.options.stopOnComplete) {
 				this.pause();
 			}

@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbLike = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbLike = my.Class(FbElement, {
+
+	constructor: function (element, options) {
 		this.plugin = 'fblike';
 		this.parent(element, options);
 

@@ -5,16 +5,16 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var Notify = new Class({
+var Notify = my.Class({
 
-	initialize: function (el, options) {
+	constructor: function (el, options) {
 		this.options = options;
 		var target = document.id(el),
 		notify;
 		if (target.getStyle('display') === 'none') {
-			target = target.getParent();
+			target = target.parent();
 		}
-	
+
 		target.addEvent('change', function (e) {
 			notify = document.id(el).checked ? 1 : 0;
 			Fabrik.loader.start(target, Joomla.JText._('COM_FABRIK_LOADING'));
@@ -29,7 +29,7 @@ var Notify = new Class({
 					rowid: this.options.rowid,
 					notify: notify
 				},
-				
+
 				onComplete: function (r) {
 					alert(r);
 					Fabrik.loader.stop(target);

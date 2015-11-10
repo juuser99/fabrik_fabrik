@@ -5,17 +5,15 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbCalcList = new Class({
+var FbCalcList = my.Class({
 
 	options: {
 	},
 
-	Implements: [Events, Options],
-
-	initialize: function (id, options) {
+	constructor: function (id, options) {
 		options.element = id;
-		this.setOptions(options);
-		this.col = $$('.' + id);
+		this.options = $.append(this.options, options);
+		this.col = $('.' + id);
 		this.list = Fabrik.blocks[this.options.listRef];
 		if (this.options.doListUpdate) {
 			Fabrik.addEvent('fabrik.list.updaterows', function () {
@@ -55,7 +53,7 @@ var FbCalcList = new Class({
 							json[key] = Encoder.htmlDecode(json[key]);
 					}
 				}
-				$H(json).each(function (html, id) {
+				jQuery.each(json, function (id, html) {
 					var cell = this.list.list.getElement('#' + id + ' .' + this.options.element);
 					if (typeOf(cell) !== 'null' && html !== false) {
 						cell.set('html', html);

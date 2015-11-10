@@ -8,6 +8,7 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, $H:true, FbForm:true */
 
+var $ = jQuery;
 /**
  * Console.log wrapper
  */
@@ -32,12 +33,15 @@ function fconsole() {
  *
  */
 
-var RequestQueue = new Class({
+var RequestQueue = my.Class({
 
 	queue: {}, // object of xhr objects
 
-	initialize: function () {
-		this.periodical = this.processQueue.periodical(500, this);
+	constructor: function () {
+		var self = this;
+		this.periodical = setInterval(function () {
+			self.processQueue.call(self, true);
+		}, 500);
 	},
 
 	add: function (xhr) {
@@ -54,7 +58,7 @@ var RequestQueue = new Class({
 		var running = false;
 
 		// Remove successfully completed xhr
-		$H(this.queue).each(function (xhr, k) {
+		jQuery.each(this.queue, function (k, xhr) {
 			if (xhr.isSuccess()) {
 				delete (this.queue[k]);
 				running = false;
@@ -62,7 +66,7 @@ var RequestQueue = new Class({
 		}.bind(this));
 
 		// Find first xhr not run and completed to run
-		$H(this.queue).each(function (xhr, k) {
+		jQuery.each(this.queue, function (k, xhr) {
 			if (!xhr.isRunning() && !xhr.isSuccess() && !running) {
 				xhr.send();
 				running = true;
@@ -75,9 +79,7 @@ var RequestQueue = new Class({
 	}
 });
 
-Request.HTML = new Class({
-
-	Extends: Request,
+Request.HTML = my.Class(Request, {
 
 	options: {
 		update: false,
@@ -136,7 +138,7 @@ Request.HTML = new Class({
  * Keeps the element position in the centre even when scroll/resizing
  */
 
-Element.implement({
+/*Element.implement({
 	keepCenter: function () {
 		this.makeCenter();
 		window.addEvent('scroll', function () {
@@ -154,7 +156,7 @@ Element.implement({
 			top: t
 		});
 	}
-});
+});*/
 
 /**
  * Extend the Array object
@@ -178,9 +180,9 @@ Array.prototype.searchFor = function (candid) {
  * Paul 20130809 Adding functionality to handle multiple simultaneous spinners
  * on same field.
  */
-var Loader = new Class({
+var Loader = my.Class({
 
-	initialize: function (options) {
+	constructor: function (options) {
 		this.spinners = {};
 		this.spinnerCount = {};
 	},
@@ -248,13 +250,13 @@ var Loader = new Class({
 if (typeof (Fabrik) === 'undefined') {
 
 	if (typeof (jQuery) !== 'undefined') {
-		document.addEvent('click:relay(.popover button.close)', function (event, target) {
-			var popover = '#' + target.get('data-popover');
-			var pEl = document.getElement(popover);
+		jQuery(document).on('click', '.popover button.close', function (event, target) {
+			var popover = '#' + $(this).data('popover');
+			var pEl = $(popover);
 			jQuery(popover).popover('hide');
 
-			if (typeOf(pEl) !== 'null' && pEl.get('tag') === 'input') {
-				pEl.checked = false;
+			if (typeOf(pEl) !== 'null' && pEl.prop('tagName') === 'INPUT') {
+				pEl.prop('checked', false);
 			}
 		});
 	}
@@ -286,7 +288,7 @@ if (typeof (Fabrik) === 'undefined') {
 	Fabrik.periodicals = {};
 	Fabrik.addBlock = function (blockid, block) {
 		Fabrik.blocks[blockid] = block;
-		Fabrik.fireEvent('fabrik.block.added', [block, blockid]);
+		Fabrik.trigger('fabrik.block.added', [block, blockid]);
 	};
 
 	/**
@@ -307,7 +309,9 @@ if (typeof (Fabrik) === 'undefined') {
 	Fabrik.getBlock = function (blockid, exact, cb) {
 		cb = cb ? cb : false;
 		if (cb) {
-			Fabrik.periodicals[blockid] = Fabrik._getBlock.periodical(500, this, [blockid, exact, cb]);
+			Fabrik.periodicals[blockid] = setInterval(function () {
+				Fabrik._getBlock(this, [blockid, exact, cb]);
+			}, 500);
 		}
 		return Fabrik._getBlock(blockid, exact, cb);
 	};
@@ -353,19 +357,19 @@ if (typeof (Fabrik) === 'undefined') {
 		return Fabrik.blocks[foundBlockId];
 	};
 
-	document.addEvent('click:relay(.fabrik_delete a, .fabrik_action a.delete, .btn.delete)', function (e, target) {
+	jQuery(document).on('click', '.fabrik_delete a, .fabrik_action a.delete, .btn.delete', function (e, target) {
 		if (e.rightClick) {
 			return;
 		}
 		Fabrik.watchDelete(e, target);
 	});
-	document.addEvent('click:relay(.fabrik_edit a, a.fabrik_edit)', function (e, target) {
+	jQuery(document).on('click', '.fabrik_edit a, a.fabrik_edit', function (e, target) {
 		if (e.rightClick) {
 			return;
 		}
 		Fabrik.watchEdit(e, target);
 	});
-	document.addEvent('click:relay(.fabrik_view a, a.fabrik_view)', function (e, target) {
+	jQuery(document).on('click', '.fabrik_view a, a.fabrik_view', function (e, target) {
 		if (e.rightClick) {
 			return;
 		}
@@ -373,7 +377,7 @@ if (typeof (Fabrik) === 'undefined') {
 	});
 
 	// Related data links
-	document.addEvent('click:relay(*[data-fabrik-view])', function (e, target) {
+	jQuery(document).on('click', '*[data-fabrik-view]', function (e) {
 		if (e.rightClick) {
 			return;
 		}
@@ -382,14 +386,14 @@ if (typeof (Fabrik) === 'undefined') {
 		if (e.target.get('tag') === 'a') {
 			a = e.target;
 		} else {
-			a = typeOf(e.target.getElement('a')) !== 'null' ? e.target.getElement('a') : e.target.getParent('a');
+			a = $(this).getElement('a').length > 0 ? $(this).getElement('a') : $(this).closest('a');
 		}
 
 		url = a.get('href');
 		url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
 
 		// Only one edit window open at the same time.
-		$H(Fabrik.Windows).each(function (win, key) {
+		jQuery.each(Fabrik.Windows, function (key, win) {
 			win.close();
 		});
 		title = a.get('title');
@@ -423,7 +427,7 @@ if (typeof (Fabrik) === 'undefined') {
 		if (!Fabrik.events[type]) {
 			Fabrik.events[type] = [];
 		}
-		if (!Fabrik.events[type].contains(fn)) {
+		if (Fabrik.events[type].indexOf(fn) === -1) {
 			Fabrik.events[type].push(fn);
 		}
 	};
@@ -431,12 +435,14 @@ if (typeof (Fabrik) === 'undefined') {
 	Fabrik.addEvents = function (events) {
 		var event;
 		for (event in events) {
-			Fabrik.addEvent(event, events[event]);
+			if (events.hasOwnProperty(event)) {
+				Fabrik.addEvent(event, events[event]);
+			}
 		}
 		return this;
 	};
 
-	Fabrik.fireEvent = function (type, args, delay) {
+	Fabrik.trigger = function (type, args, delay) {
 		var events = Fabrik.events;
 
 		// An array of returned values from all events.
@@ -539,13 +545,13 @@ if (typeof (Fabrik) === 'undefined') {
 
 	Fabrik.watchDelete = function (e, target) {
 		var l, ref, r;
-		r = e.target.getParent('.fabrik_row');
+		r = $(e.target).closest('.fabrik_row');
 		if (!r) {
 			r = Fabrik.activeRow;
 		}
 		if (r) {
-			var chx = r.getElement('input[type=checkbox][name*=id]');
-			if (typeOf(chx) !== 'null') {
+			var chx = r.find('input[type=checkbox][name*=id]');
+			if (chx.length > 0) {
 				chx.checked = true;
 			}
 			ref = r.id.split('_');
@@ -553,15 +559,15 @@ if (typeof (Fabrik) === 'undefined') {
 			l = Fabrik.blocks[ref];
 		} else {
 			// CheckAll
-			ref = e.target.getParent('.fabrikList');
-			if (typeOf(ref) !== 'null') {
+			ref = $(e.target).closest('.fabrikList');
+			if (ref.length > 0) {
 				// Embedded in list
 				ref = ref.id;
 				l = Fabrik.blocks[ref];
 			} else {
 				// Floating
-				var wrapper = target.getParent('.floating-tip-wrapper');
-				if (wrapper) {
+				var wrapper = target.closest('.floating-tip-wrapper');
+				if (wrapper.length > 0) {
 					var refList = wrapper.retrieve('list');
 					ref = refList.id;
 				} else {
@@ -635,20 +641,20 @@ if (typeof (Fabrik) === 'undefined') {
 		list.setActive(row);
 		var rowid = row.id.split('_').getLast();
 
-		if (e.target.get('tag') === 'a') {
-			a = e.target;
+		if ($(e.target).prop('tagName') === 'A') {
+			a = $(e.target);
 		} else {
-			a = typeOf(e.target.getElement('a')) !== 'null' ? e.target.getElement('a') : e.target.getParent('a');
+			a = $(e.target).find('a').length > 0 ? $(e.target).find('a') : $(e.target).closest('a');
 		}
-		url = a.get('href');
+		url = a.prop('href');
 		url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
-		loadMethod = a.get('data-loadmethod');
+		loadMethod = a.data('data-loadmethod');
 		if (typeOf(loadMethod) === 'null') {
 			loadMethod = 'xhr';
 		}
 
 		// Only one edit window open at the same time.
-		$H(Fabrik.Windows).each(function (win, key) {
+		jQuery(Fabrik.Windows, function (key, win) {
 			win.close();
 		});
 
@@ -667,7 +673,7 @@ if (typeof (Fabrik) === 'undefined') {
 					Fabrik.blocks[k] = null;
 					delete (Fabrik.blocks[k]);
 					var evnt = (view === 'details') ? 'fabrik.list.row.view.close' : 'fabrik.list.row.edit.close';
-					Fabrik.fireEvent(evnt, [listRef, rowid, k]);
+					Fabrik.trigger(evnt, [listRef, rowid, k]);
 				} catch (e) {
 					console.log(e);
 				}
@@ -689,5 +695,52 @@ if (typeof (Fabrik) === 'undefined') {
 		return form;
 	};
 
-	window.fireEvent('fabrik.loaded');
+	$(window).trigger('fabrik.loaded');
+}
+
+/**
+ * Polyfills
+ */
+
+if (!Object.keys) Object.keys = function(o) {
+	if (o !== Object(o))
+		throw new TypeError('Object.keys called on a non-object');
+	var k=[],p;
+	for (p in o) if (Object.prototype.hasOwnProperty.call(o,p)) k.push(p);
+	return k;
+};
+
+if (!Array.prototype.filter) {
+	Array.prototype.filter = function(fun/*, thisArg*/) {
+		'use strict';
+
+		if (this === void 0 || this === null) {
+			throw new TypeError();
+		}
+
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if (typeof fun !== 'function') {
+			throw new TypeError();
+		}
+
+		var res = [];
+		var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+		for (var i = 0; i < len; i++) {
+			if (i in t) {
+				var val = t[i];
+
+				// NOTE: Technically this should Object.defineProperty at
+				//       the next index, as push can be affected by
+				//       properties on Object.prototype and Array.prototype.
+				//       But that method's new, and collisions should be
+				//       rare, so use the more-compatible alternative.
+				if (fun.call(thisArg, val, i, t)) {
+					res.push(val);
+				}
+			}
+		}
+
+		return res;
+	};
 }

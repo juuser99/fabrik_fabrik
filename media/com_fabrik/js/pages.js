@@ -5,16 +5,17 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var Pages = new Class({
-	initialize: function (container, editable) {
+var Pages = my.Class({
+	constructor: function (container, editable) {
 		this.editable = editable;
-		document.addEvent('mousedown', function (e) {
-			this.clearActive(e);
-		}.bind(this));
+		var self = this;
+		$(document).on('mousedown', function (e) {
+			self.clearActive(e);
+		});
 		Fabrik.addEvent('fabrik.page.add', function (e) {
-			this.makeActive(e);
-		}.bind(this));
-		this.pages = $H({});
+			self.makeActive(e);
+		});
+		this.pages = {};
 		this.activePage = null;
 		this.container = document.id(container);
 		Fabrik.addEvent('fabrik.tab.add', function (e) {
@@ -33,7 +34,7 @@ var Pages = new Class({
 			this.updateTabKey(e);
 		}.bind(this));
 	},
-	
+
 	/* todo perhaps makeActive and clearActive should be a mixin? */
 	makeActive: function (c) {
 		this.clearActive();
@@ -42,16 +43,16 @@ var Pages = new Class({
 		var zindexes = document.getElements('.itemPlaceHolder').getStyle('z-index').sort();
 		var max = zindexes.getLast().toInt() + 1;
 		document.getElements('.itemPlaceHolder').each(function (i) {
-			i.setStyle('zindex', i.getStyle('z-index').toInt() - 1); 
+			i.setStyle('zindex', i.getStyle('z-index').toInt() - 1);
 		});
 		c.setStyle('z-index', max);
 	},
-	
+
 	clearActive: function () {
 		delete this.active;
 		document.getElements('.itemPlaceHolder').removeClass('active');
 	},
-	
+
 	moveItem: function (k, shift) {
 		if (this.active && this.editable) {
 			shift = shift ? 10 : 0;
@@ -72,7 +73,7 @@ var Pages = new Class({
 			}
 		}
 	},
-	
+
 	add: function (tabs, t) {
 		var page = new Page(t, this.editable);
 		this.container.adopt(page.page);
@@ -80,23 +81,22 @@ var Pages = new Class({
 		this.pages[t] = page;
 		this.show();
 	},
-	
+
 	remove: function (tabs, t) {
 		t = t.retrieve('ref');
 		//this.pages[t].remove();
-		delete this.pages.t;
-		this.pages.erase(t);
+		delete this.pages[t];
 	},
-	
+
 	show: function (tab) {
-		this.pages.each(function (page) {
+		jQuery.each(this.pages, function (key, page) {
 			page.hide();
 		});
 		try {
 			this.pages[tab].show();
 			this.activePage = tab;
 		} catch (err) {
-			var k = this.pages.getKeys();
+			var k = Object.keys(this.pages);
 			if (k.length > 0) {
 				tab = k[0];
 				this.pages[tab].show();
@@ -104,37 +104,37 @@ var Pages = new Class({
 			}
 		}
 	},
-	
+
 	getHTMLPages: function () {
 		var r = [];
-		this.pages.each(function (p) {
+		jQuery.each(this.pages, function (key, p) {
 			r.push(p.page);
 		});
 		return r;
 	},
-	
+
 	getActivePage: function () {
 		if (!this.activePage) {
 			this.activePage = 0;
 		}
 		return this.pages[this.activePage];
 	},
-	
+
 	fromJSON: function (layout) {
-		$H(layout).each(function (items, page) {
+		jQuery.each(layout, function (page, items) {
 			if (this.pages[page]) {
-				$H(items).each(function (item, id) {
+				jQuery.each(items, function (id, item) {
 					this.pages[page].insert(item.id, item.label, item.type, item.dimensions);
 				}.bind(this));
 			}
 		}.bind(this));
 	},
-	
+
 	toJSON: function () {
 		var r = {};
-		this.pages.each(function (p, k) {
+		jQuery.each(this.pages, function (k, p) {
 			var o = {};
-			p.page.getElements('.itemPlaceHolder').each(function (e) {
+			jQuery.each(p.page.getElements('.itemPlaceHolder'), function (key, e) {
 				p.page.show(); //needed to get coords
 				var type = e.id.split('_')[0];
 				var label = e.getElement('.handlelabel').get('text');
@@ -144,7 +144,7 @@ var Pages = new Class({
 		});
 		return r;
 	},
-	
+
 	/**
 	 * called when tab label is changed
 	 */
@@ -153,12 +153,11 @@ var Pages = new Class({
 		var orig = this.pages[origKey];
 		this.pages[editor.get('text').trim()] = orig;
 		delete this.pages[origKey];
-		this.pages.erase(origKey);
 	}
 });
 
-Page = new Class({
-	initialize: function (t, editable) {
+Page = my.Class({
+	constructor: function (t, editable) {
 		this.editable = editable;
 		this.page = new Element('div', {'class': 'page', 'styles': {'display': 'none'}});
 		if (this.editable) {
@@ -170,31 +169,31 @@ Page = new Class({
 			}.bind(this));
 		}
 	},
-	
+
 	show: function () {
 		this.page.show();
 	},
-	
+
 	hide: function () {
 		this.page.hide();
 	},
-	
+
 	remove: function () {
 		this.page.destroy();
 	},
-	
+
 	removeItem: function (e, id) {
 		e.stop();
 		if (confirm('Do you really want to delete')) {
 			document.id(id).destroy();
-			Fabrik.fireEvent('fabrik.page.block.delete', [id]);
+			Fabrik.trigger('fabrik.page.block.delete', [id]);
 		}
 	},
-	
+
 	insert: function (id, label, type, dimensions) {
-		Fabrik.fireEvent('fabrik.page.insert', [this, id, label, type, dimensions]);
+		Fabrik.trigger('fabrik.page.insert', [this, id, label, type, dimensions]);
 	},
-	
+
 	saveCoords: function (e) {
 	}
 

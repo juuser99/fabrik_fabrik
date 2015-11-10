@@ -8,9 +8,7 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true */
 
-AdvancedSearch = new Class({
-
-	Implements: [Options, Events],
+AdvancedSearch = my.Class({
 
 	options: {
 		'ajax': false,
@@ -19,8 +17,8 @@ AdvancedSearch = new Class({
 		'defaultStatement': '='
 	},
 
-	initialize: function (options) {
-		this.setOptions(options);
+	constructor: function (options) {
+		this.options = $.append(this.options, options);
 		this.form = document.id('advanced-search-win' + this.options.listref).getElement('form');
 		this.trs = Array.from([]);
 		if (this.form.getElement('.advanced-search-add')) {
@@ -44,13 +42,13 @@ AdvancedSearch = new Class({
 		this.watchDelete();
 		this.watchApply();
 		this.watchElementList();
-		Fabrik.fireEvent('fabrik.advancedSearch.ready', this);
+		Fabrik.trigger('fabrik.advancedSearch.ready', this);
 	},
 
 	watchApply: function () {
 
 		this.form.getElement('.advanced-search-apply').addEvent('click', function (e) {
-			Fabrik.fireEvent('fabrik.advancedSearch.submit', this);
+			Fabrik.trigger('fabrik.advancedSearch.submit', this);
 			var filterManager = Fabrik['filter_' + this.options.parentView];
 
 			// Format date advanced search fields to db format before posting
@@ -109,10 +107,10 @@ AdvancedSearch = new Class({
 	 */
 
 	updateValueInput: function (e) {
-		var row = e.target.getParent('tr');
+		var row = $(e.target).closest('tr');
 		Fabrik.loader.start(row);
 		var v = e.target.get('value');
-		var update = e.target.getParent().getParent().getElements('td')[3];
+		var update = $(e.target).parent().parent().getElements('td')[3];
 		if (v === '') {
 			update.set('html', '');
 			return;
@@ -147,7 +145,7 @@ AdvancedSearch = new Class({
 		tds[3].empty();
 		this.watchDelete();
 		this.watchElementList();
-		Fabrik.fireEvent('fabrik.advancedSearch.row.added', this);
+		Fabrik.trigger('fabrik.advancedSearch.row.added', this);
 	},
 
 	removeRow: function (e) {
@@ -167,40 +165,41 @@ AdvancedSearch = new Class({
 				'opacity': 0
 			});
 		}
-		Fabrik.fireEvent('fabrik.advancedSearch.row.removed', this);
+		Fabrik.trigger('fabrik.advancedSearch.row.removed', this);
 	},
 
 	/**
 	 * removes all rows except for the first one, whose values are reset to empty
 	 */
 	resetForm: function () {
-		var table = this.form.getElement('.advanced-search-list');
+		var table = this.form.find('.advanced-search-list'),
+			self = this;
 		if (!table) {
 			return;
 		}
-		table.getElements('tbody tr').each(function (tr, i) {
+		table.find('tbody tr').each(function (i) {
 			if (i >= 1) {
-				tr.dispose();
+				$(this).dispose();
 			}
 			if (i === 0) {
-				tr.getElements('.inputbox').each(function (dd) {
-					if (dd.id.test(/condition$/))
+				$(this).find('.inputbox').each(function () {
+					if ($(this).id.test(/condition$/))
 					{
-						dd.value = this.options.defaultStatement;
+						$(this).value = self.options.defaultStatement;
 					}
 					else
 					{
-						dd.selectedIndex = 0;
+						$(this).selectedIndex = 0;
 					}
-				}.bind(this));
-				tr.getElements('input').each(function (i) {
-					i.value = '';
+				});
+				$(this).find('input').each(function () {
+					$(this).value = '';
 				});
 			}
-		}.bind(this));
+		});
 		this.watchDelete();
 		this.watchElementList();
-		Fabrik.fireEvent('fabrik.advancedSearch.reset', this);
+		Fabrik.trigger('fabrik.advancedSearch.reset', this);
 	},
 
 	deleteFilterOption: function (e) {

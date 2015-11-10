@@ -8,30 +8,29 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,head:true */
 
-var Labels = new Class({
+var Labels = my.Class({
 
-	Implements: [Events],
-
-	initialize: function () {
-		$$('.fabrikElementContainer').each(function (c) {
-			var label = c.getElement('label');
-			if (typeOf(label) !== 'null') {
+	constructor: function () {
+		var self = this;
+		$('.fabrikElementContainer').each(function (c) {
+			var label = ($this).find('label');
+			if (label.length !== 0) {
 				var input = c.getElement('input');
 				if (typeOf(input) === 'null') {
 					input = c.getElement('textarea');
 				}
 				if (typeOf(input) !== 'null') {
-					input.value = label.innerHTML;
+					input.value = label[0].innerHTML;
 
 					input.addEvent('click', function (e) {
-						this.toogleLabel(e, input, label.innerHTML);
-					}.bind(this));
+						self.toogleLabel(e, input, label[0].innerHTML);
+					});
 
 					input.addEvent('blur', function (e) {
-						this.toogleLabel(e, input, label.innerHTML);
-					}.bind(this));
-					label.set('html', '');
-					c.getElement('.fabrikLabel').dispose();
+						self.toogleLabel(e, input, label[0].innerHTML);
+					});
+					label.html('');
+					c.find('.fabrikLabel').remove();
 				}
 			}
 		}.bind(this));

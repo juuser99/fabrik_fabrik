@@ -8,11 +8,10 @@
 /**
  * Enable us to use the same class interface for tips.js but use Bootstrap popovers (Joomla 3)
  */
-var FloatingTips = new Class({
-	Implements: [Options, Events],
+var FloatingTips = my.Class({
 
 	options: {
-		fxProperties: {transition: Fx.Transitions.linear, duration: 500},
+		fxProperties: {duration: 500},
 		'position': 'top',
 		'trigger': 'hover',
 		'content': 'title',
@@ -34,7 +33,7 @@ var FloatingTips = new Class({
 		placement: function (tip, ele) {
 			// Custom functions should return top, left, right, bottom to set the tip location
 			// Return false to use the default location
-			Fabrik.fireEvent('bootstrap.tips.place', [tip, ele]);
+			Fabrik.trigger('bootstrap.tips.place', [tip, ele]);
 			var pos = Fabrik.eventResults.length === 0 ? false : Fabrik.eventResults[0];
 			if (pos === false) {
 				var opts = JSON.decode(ele.get('opts', '{}').opts);
@@ -45,12 +44,12 @@ var FloatingTips = new Class({
 		}
 	},
 
-	initialize: function (elements, options) {
+	constructor: function (elements, options) {
 		if (Fabrik.bootstrapVersion('modal') === '3.x') {
 			// We should override any Fabrik3 custom tip settings with bootstrap3 data-foo attributes in JLayouts
 			return;
 		}
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.options.fxProperties = {transition: eval(this.options.tipfx), duration: this.options.duration};
 
 		// Any tip (not necessarily in this instance has asked for all other tips to be hidden.

@@ -5,14 +5,13 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbTags = new Class({
+var FbTags = my.Class(FbElement, {
 
 	options: {
 		'rowid': '',
 		'id': 0
 	},
 
-	Extends: FbElement,
 	initialize: function (element, options) {
 		this.parent(element, options);
 		if (this.options.editable) {
@@ -21,12 +20,12 @@ var FbTags = new Class({
 	},
 
 	setUp: function () {
-		
+
 		jQuery('#' + this.options.element).chosen({
 			disable_search_threshold : 10,
 			allow_single_deselect : true
 		});
-		
+
 		this.sel = jQuery('#' + this.options.element).ajaxChosen({
 			type: 'GET',
 			url: Fabrik.liveSite + 'index.php?option=com_tags&task=tags.searchAjax',
@@ -35,7 +34,7 @@ var FbTags = new Class({
 			afterTypeDelay: '500',
 			minTermLength: '3'
 		}, function (data) {
-			
+
 			var results = [];
 
 			jQuery.each(data, function (i, val) {
@@ -43,7 +42,7 @@ var FbTags = new Class({
 			});
 			return results;
 		});
-		
+
 		var sel = this.sel;
 		this.sel.on('change', function (e) {
 			var opts = jQuery(sel).find('option');
@@ -51,10 +50,10 @@ var FbTags = new Class({
 				jQuery(opts[this.options_index]).attr('selected', this.selected);
 			});
 		});
-		
+
 		this.watchNew();
 	},
-	
+
 	watchNew: function () {
 		// Method to add tags pressing enter
 		var customTagPrefix = '#fabrik#',
@@ -62,7 +61,7 @@ var FbTags = new Class({
 		el = this.options.element,
 		tagOption,
 		field = container.find('.search-field input');
-		
+
 		field.keydown(function (event) {
 
 			// Tag is greater than 3 chars and enter pressed
@@ -93,7 +92,7 @@ var FbTags = new Class({
 
 					// Extra check. Search if the custom tag already exists (typed faster than AJAX ready)
 					tagOption = container.find('option').filter(function () {
-						return jQuery(this).html() === customTag; 
+						return jQuery(this).html() === customTag;
 					});
 					if (tagOption.text() !== '')
 					{
@@ -118,7 +117,7 @@ var FbTags = new Class({
 	},
 
 	cloned: function (c) {
-		Fabrik.fireEvent('fabrik.tags.update', this);
+		Fabrik.trigger('fabrik.tags.update', this);
 		this.parent(c);
 		this.setUp();
 	}

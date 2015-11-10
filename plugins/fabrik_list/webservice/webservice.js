@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListWebservice = new Class({
-	Extends: FbListPlugin,
-	initialize: function (options) {
+var FbListWebservice = my.Class(FbListPlugin, {
+	constructor: function (options) {
 		this.parent(options);
 	},
 

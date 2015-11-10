@@ -5,27 +5,23 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FabrikComment = new Class({
+var FabrikComment = my.Class({
 
-	Implements: [Options, Events],
-
-	getOptions: function () {
-		return {
+	options: {
 			'formid': 0,
 			'rowid': 0,
 			'label': ''
-		};
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.element = document.id(element);
 		if (typeOf(this.element) === 'null') {
 			return;
 		}
 
-		this.setOptions(this.getOptions(), options);
+		this.options = $.append(this.options, options);
 		this.fx = {};
-		this.fx.toggleForms = $H();
+		this.fx.toggleForms = {};
 		this.spinner = new Spinner('fabrik-comments', {'message': 'loading'});
 		this.ajax = {};
 		this.ajax.deleteComment = new Request({
@@ -124,7 +120,7 @@ var FabrikComment = new Class({
 			}.bind(this)
 		});
 
-		this.element.getElements('.replyform').each(function (f) {
+		this.element.getElements('.replyForm').each(function (f) {
 			var input = f.getElement('textarea');
 			if (!input) {
 				return;
@@ -153,11 +149,14 @@ var FabrikComment = new Class({
 		}
 	},
 
-	// check details and then submit the form
+	/**
+	 * Check details and then submit the form
+	 * @param {event} e
+	 */
 	doInput : function (e) {
 		this.spinner.show();
-		var replyform = e.target.getParent('.replyform');
-		if (replyform.id === 'master-comment-form') {
+		var replyForm = $(e).target.closest('.replyForm');
+		if (replyForm.id === 'master-comment-form') {
 			var lis = this.element.getElement('ul').getElements('li');
 			if (lis.length > 0) {
 				this.currentLi = lis.pop();
@@ -165,7 +164,7 @@ var FabrikComment = new Class({
 				this.currentLi = this.element.getElement('ul');
 			}
 		} else {
-			this.currentLi = replyform.getParent('li');
+			this.currentLi = replyForm.closest('li');
 		}
 
 		if (e.type === 'keydown') {
@@ -174,53 +173,53 @@ var FabrikComment = new Class({
 				return;
 			}
 		}
-		var v = replyform.getElement('textarea').get('value');
+		var v = replyForm.getElement('textarea').get('value');
 		e.stop();
 		if (v === '') {
 			this.spinner.hide();
-			alert(Joomla.JText._('PLG_FORM_COMMENT_PLEASE_ENTER_A_COMMENT_BEFORE_POSTING'));
+			window.alert(Joomla.JText._('PLG_FORM_COMMENT_PLEASE_ENTER_A_COMMENT_BEFORE_POSTING'));
 			return;
 		}
 
-		var name = replyform.getElement('input[name=name]');
+		var name = replyForm.getElement('input[name=name]');
 		if (name) {
 			var namestr = name.get('value');
 			if (namestr === '') {
 				this.spinner.hide();
-				alert(Joomla.JText._('PLG_FORM_COMMENT_PLEASE_ENTER_A_NAME_BEFORE_POSTING'));
+				window.alert(Joomla.JText._('PLG_FORM_COMMENT_PLEASE_ENTER_A_NAME_BEFORE_POSTING'));
 				return;
 			}
 			this.ajax.addComment.options.data.name = namestr;
 		}
 
-		var notify = replyform.getElements('input[name^=notify]').filter(function (i) {
+		var notify = replyForm.getElements('input[name^=notify]').filter(function (i) {
 			return i.checked;
 		});
 
 		this.ajax.addComment.options.data.notify = notify.length > 0 ? notify[0].get('value') : '0';
 
-		var email = replyform.getElement('input[name=email]');
+		var email = replyForm.getElement('input[name=email]');
 		if (email) {
 			var emailstr = email.get('value');
 			if (emailstr === '') {
 				this.spinner.hide();
-				alert(Joomla.JText._('PLG_FORM_COMMENT_ENTER_EMAIL_BEFORE_POSTNG'));
+				window.alert(Joomla.JText._('PLG_FORM_COMMENT_ENTER_EMAIL_BEFORE_POSTNG'));
 				return;
 			}
 		}
-		var replyto = replyform.getElement('input[name=reply_to]').get('value');
+		var replyto = replyForm.getElement('input[name=reply_to]').get('value');
 		if (replyto === '') {
 			replyto = 0;
 		}
-		if (replyform.getElement('input[name=email]')) {
-			this.ajax.addComment.options.data.email = replyform.getElement('input[name=email]').get('value');
+		if (replyForm.getElement('input[name=email]')) {
+			this.ajax.addComment.options.data.email = replyForm.getElement('input[name=email]').get('value');
 		}
-		this.ajax.addComment.options.data.renderOrder = replyform.getElement('input[name=renderOrder]').get('value');
-		if (replyform.getElement('select[name=rating]')) {
-			this.ajax.addComment.options.data.rating = replyform.getElement('select[name=rating]').get('value');
+		this.ajax.addComment.options.data.renderOrder = replyForm.getElement('input[name=renderOrder]').get('value');
+		if (replyForm.getElement('select[name=rating]')) {
+			this.ajax.addComment.options.data.rating = replyForm.getElement('select[name=rating]').get('value');
 		}
-		if (replyform.getElement('input[name^=anonymous]')) {
-			var sel = replyform.getElements('input[name^=anonymous]').filter(function (i) {
+		if (replyForm.getElement('input[name^=anonymous]')) {
+			var sel = replyForm.getElements('input[name^=anonymous]').filter(function (i) {
 				return i.checked === true;
 			});
 			this.ajax.addComment.options.data.anonymous = sel[0].get('value');
@@ -229,11 +228,11 @@ var FabrikComment = new Class({
 		this.ajax.addComment.options.data.reply_to = replyto;
 		this.ajax.addComment.options.data.comment = v;
 		this.ajax.addComment.send();
-		replyform.getElement('textarea').value = '';
+		replyForm.getElement('textarea').value = '';
 	},
 
 	saveComment : function (div) {
-		var id = div.getParent('.comment').id.replace('comment-', '');
+		var id = div.closest('.comment').id.replace('comment-', '');
 
 		this.ajax.updateComment.options.data.comment_id = id;
 		// @TODO causing an error when saving inline edit
@@ -247,29 +246,29 @@ var FabrikComment = new Class({
 	// toggle fx the reply forms - recalled each time a comment is added via ajax
 	watchReply : function () {
 		this.spinner.resize();
-		this.element.getElements('.replybutton').each(function (a) {
+		this.element.closest('.replybutton').each(function (a) {
 			var fx;
-			a.removeEvents();
-			var commentform = a.getParent().getParent().getNext();
-			if (typeOf(commentform) === 'null') {
+			$(this).removeEvents();
+			var commentform = $(this).parent().parent().getNext();
+			if (commentform.length === 0) {
 				// wierd ie7 ness?
-				commentform = a.getParent('.comment').getElement('.replyform');
+				commentform = a.closest('.comment').find('.replyForm');
 			}
-			if (typeOf(commentform) !== 'null') {
-				var li = a.getParent('.comment').getParent('li');
+			if (commentform.length > 0) {
+				var li = a.closest('.comment').closest('li');
 				if (window.ie) {
 					fx = new Fx.Slide(commentform, 'opacity', {
 						duration : 5000
 					});
 
 				} else {
-					if (this.fx.toggleForms.has(li.id)) {
-						fx = this.fx.toggleForms.get(li.id);
+					if (this.fx.toggleForms.hasOwnProperty(li.id)) {
+						fx = this.fx.toggleForms[li.id];
 					} else {
 						fx = new Fx.Slide(commentform, 'opacity', {
 							duration : 5000
 						});
-						this.fx.toggleForms.set(li.id, fx);
+						this.fx.toggleForms[li.id] = fx;
 					}
 				}
 
@@ -284,7 +283,7 @@ var FabrikComment = new Class({
 		this.element.getElements('.del-comment').each(function (a) {
 			a.removeEvents();
 			a.addEvent('click', function (e) {
-				this.ajax.deleteComment.options.data.comment_id = e.target.getParent('.comment').id.replace('comment-', '');
+				this.ajax.deleteComment.options.data.comment_id = $(e.target).closest('.comment')[0].id.replace('comment-', '');
 				this.ajax.deleteComment.send();
 				this.updateThumbs();
 				e.stop();
@@ -303,7 +302,7 @@ var FabrikComment = new Class({
 								this.saveComment(editing);
 							}.bind(this)
 					});
-					var c = e.target.getParent();
+					var c = $(e).target.parent();
 					var commentid = c.id.replace('comment-', '');
 					new Request({
 						'url': '',

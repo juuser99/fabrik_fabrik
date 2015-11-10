@@ -9,12 +9,12 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true */
 
-var FbFormSubmit = new Class({
+var FbFormSubmit = my.Class({
 
 	/**
 	 * Hash of elements js objects
 	 */
-	elements: $H({}),
+	elements: {},
 
 	running: false,
 
@@ -57,13 +57,15 @@ var FbFormSubmit = new Class({
 	 */
 	submit: function (cb) {
 		this.running = true;
-		this.elements.each(function (element, key) {
+		jQuery.each(this.elements, function (key, element) {
 			this.results[key] = null;
 			element.onsubmit(function (res) {
 				this.results[key] = res;
 			}.bind(this));
 		}.bind(this));
-		this.checker = this.check.periodical(500, this, [cb]);
+		this.checker = setInterval(function () {
+			this.check.call(this, [cb]);
+		}, 500);
 	},
 
 	/**

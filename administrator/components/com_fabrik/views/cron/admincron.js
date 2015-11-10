@@ -5,20 +5,16 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var CronAdmin = new Class({
-
-	Extends: PluginManager,
-
-	Implements: [Options, Events],
+var CronAdmin = my.Class(PluginManager, {
 
 	options: {
 		plugin: ''
 	},
 
-	initialize: function (options) {
-		plugins = [];
+	constructor: function (options) {
+		var plugins = [];
 		this.parent(plugins);
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 		this.watchSelector();
 	},
 

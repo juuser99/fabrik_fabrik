@@ -5,10 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListInlineEdit = new Class({
-	Extends: FbListPlugin,
+var FbListInlineEdit = my.Class(FbListPlugin, {
 
-	initialize: function (options) {
+	constructor: function (options) {
 		this.parent(options);
 		this.defaults = {};
 		this.editors = {};
@@ -68,7 +67,7 @@ var FbListInlineEdit = new Class({
 			if (typeOf(this.editOpts) === 'null') {
 				return;
 			}
-			$H(this.editOpts.plugins).each(function (fieldid) {
+			jQuery.each(this.editOpts.plugins, function (key, fieldid) {
 				var e = Fabrik['inlineedit_' + this.editOpts.elid].elements[fieldid];
 				delete e.element;
 				e.update(this.editData[fieldid]);
@@ -77,7 +76,7 @@ var FbListInlineEdit = new Class({
 			this.watchControls(this.editCell);
 			this.setFocus(this.editCell);
 		}.bind(this));
-		
+
 		// Click outside list clears down selection
 		window.addEvent('click', function (e) {
 			if (!e.target.hasClass('fabrik_element') && this.td) {
@@ -88,6 +87,7 @@ var FbListInlineEdit = new Class({
 	},
 
 	setUp: function () {
+		var self = this;
 		if (typeOf(this.getList().getForm()) === 'null') {
 			return;
 		}
@@ -95,15 +95,15 @@ var FbListInlineEdit = new Class({
 			'wait': false
 		});
 		this.watchCells();
-		document.addEvent('keydown', function (e) {
-			this.checkKey(e);
-		}.bind(this));
+		$(document).on('keydown', function (e) {
+			self.checkKey(e);
+		});
 	},
 
 	watchCells: function () {
 		var firstLoaded = false;
 		this.getList().getForm().getElements('.fabrik_element').each(function (td, x) {
-			
+
 			if (this.canEdit(td)) {
 				if (!firstLoaded && this.options.loadFirst) {
 					firstLoaded = this.edit(null, td);
@@ -178,11 +178,11 @@ var FbListInlineEdit = new Class({
 			if (this.inedit) {
 				return;
 			}
-			row = this.td.getParent();
-			if (typeOf(row) === 'null') {
+			row = this.td.parent();
+			if (row.length === 0) {
 				return;
 			}
-			index = row.getElements('td').indexOf(this.td);
+			index = row.find('td').indexOf(this.td);
 			if (typeOf(row.getNext()) === 'element') {
 				e.stop();
 				nexttds = row.getNext().getElements('td');
@@ -194,8 +194,8 @@ var FbListInlineEdit = new Class({
 			if (this.inedit) {
 				return;
 			}
-			row = this.td.getParent();
-			if (typeOf(row) === 'null') {
+			row = this.td.parent();
+			if (row.length === 0) {
 				return;
 			}
 			index = row.getElements('td').indexOf(this.td);
@@ -219,7 +219,7 @@ var FbListInlineEdit = new Class({
 			break;
 		case 13:
 			//enter
-			
+
 			// Already editing or no cell selected
 			if (this.inedit || typeOf(this.td) !== 'element') {
 				return;
@@ -268,9 +268,9 @@ var FbListInlineEdit = new Class({
 
 	/**
 	 * Parse the td class name to grab the element name
-	 * 
+	 *
 	 * @param   DOM node  td  Cell to parse.
-	 * 
+	 *
 	 * @return  string  Element name
 	 */
 	getElementName: function (td) {
@@ -303,8 +303,8 @@ var FbListInlineEdit = new Class({
 		if (cell.hasClass('fabrik_uneditable') || cell.hasClass('fabrik_ordercell') || cell.hasClass('fabrik_select') || cell.hasClass('fabrik_actions')) {
 			return false;
 		}
-		var rowid = this.getRowId(cell.getParent('.fabrik_row'));
-		res = this.getList().firePlugin('onCanEditRow', rowid);
+		var rowid = this.getRowId(cell.closest('.fabrik_row')),
+			res = this.getList().firePlugin('onCanEditRow', rowid);
 		return res;
 	},
 
@@ -357,7 +357,7 @@ var FbListInlineEdit = new Class({
 		if (this.saving) {
 			return;
 		}
-		Fabrik.fireEvent('fabrik.plugin.inlineedit.editing');
+		Fabrik.trigger('fabrik.plugin.inlineedit.editing');
 
 		// Only one field can be edited at a time
 		if (this.inedit) {
@@ -393,7 +393,7 @@ var FbListInlineEdit = new Class({
 
 		if (typeOf(this.editors[opts.elid]) === 'null' || typeOf(Fabrik['inlineedit_' + opts.elid]) === 'null') {
 			// Need to load on parent otherwise in table td size gets monged
-			Fabrik.loader.start(td.getParent());
+			Fabrik.loader.start(td.parent());
 			var inline = this.options.showSave ? 1 : 0;
 
 			var editRequest = new Request({
@@ -419,7 +419,7 @@ var FbListInlineEdit = new Class({
 
 				'onSuccess': function (r) {
 					// Need to load on parent otherwise in table td size gets monged
-					Fabrik.loader.stop(td.getParent());
+					Fabrik.loader.stop(td.parent());
 
 					//don't use evalScripts = true as we reuse the js when tabbing to the next element.
 					// so instead set evalScripts to a function to store the js in this.javascript.
@@ -429,7 +429,6 @@ var FbListInlineEdit = new Class({
 					//delay the script to allow time for the dom to be updated
 					(function () {
 						Browser.exec(this.javascript);
-
 						Fabrik.tips.attach('.fabrikTip');
 					}.bind(this)).delay(100);
 					td.empty().set('html', r);
@@ -445,15 +444,15 @@ var FbListInlineEdit = new Class({
 				'onFailure': function (xhr) {
 					this.saving = false;
 					this.inedit = false;
-					Fabrik.loader.stop(td.getParent());
-					alert(editRequest.getHeader('Status'));
+					Fabrik.loader.stop(td.parent());
+					window.alert(editRequest.getHeader('Status'));
 				}.bind(this),
 
 				'onException': function (headerName, value) {
 					this.saving = false;
 					this.inedit = false;
-					Fabrik.loader.stop(td.getParent());
-					alert('ajax inline edit exception ' + headerName + ':' + value);
+					Fabrik.loader.stop(td.parent());
+					window.alert('ajax inline edit exception ' + headerName + ':' + value);
 				}.bind(this)
 
 			}).send();
@@ -489,15 +488,11 @@ var FbListInlineEdit = new Class({
 	getDataFromTable: function (td) {
 		var groupedData = this.getList().options.data;
 		var element = this.getElementName(td);
-		var ref = td.getParent('.fabrik_row').id;
+		var ref = td.closest('.fabrik_row').id;
 		var v = {};
 		this.vv = [];
-		// $$$rob $H needed when group by applied
-		if (typeOf(groupedData) === 'object') {
-			groupedData = $H(groupedData);
-		}
-		//$H(groupedData).each(function (data) {
-		groupedData.each(function (data) {
+
+		jQuery.each(groupedData, function (key, data) {
 			if (typeOf(data) === 'array') {//groued by data in forecasting slotenweb app. Where groupby table plugin applied to data.
 				for (var i = 0; i < data.length; i++) {
 					if (data[i].id === ref) {
@@ -505,14 +500,14 @@ var FbListInlineEdit = new Class({
 					}
 				}
 			} else {
-				var vv = data.filter(function (row) {
+				var vv = Array.filter(data, function (row) {
 					return row.id === ref;
 				});
 			}
 		}.bind(this));
 		var opts = this.options.elements[element];
 		if (this.vv.length > 0) {
-			$H(opts.plugins).each(function (elid, elementName) {
+			jQuery.each(opts.plugins, function (elementName, elid) {
 				v[elid] = this.vv[0].data[elementName + '_raw'];
 			}.bind(this));
 		}
@@ -520,14 +515,11 @@ var FbListInlineEdit = new Class({
 	},
 
 	setTableData: function (row, element, val) {
-		ref = row.id;
+		var ref = row.id;
 		var groupedData = this.getList().options.data;
-		// $$$rob $H needed when group by applied
-		if (typeOf(groupedData) === 'object') {
-			groupedData = $H(groupedData);
-		}
-		groupedData.each(function (data, gkey) {
-			data.each(function (tmpRow, dkey) {
+
+		jQuery.each(groupedData, function (gkey, data) {
+			jQuery.each(data, function (dkey, tmpRow) {
 				if (tmpRow.id === ref) {
 					tmpRow.data[element + '_raw'] = val;
 					this.currentRow = tmpRow;
@@ -570,7 +562,7 @@ var FbListInlineEdit = new Class({
 		var saveRequest,
 		element = this.getElementName(td),
 		opts = this.options.elements[element],
-		row = this.editing.getParent('.fabrik_row'),
+		row = this.editing.closest('.fabrik_row'),
 		rowid = this.getRowId(row),
 		currentRow = {},
 		eObj = {},
@@ -593,7 +585,7 @@ var FbListInlineEdit = new Class({
 		}
 
 		// Need to load on parent otherwise in table td size gets monged
-		Fabrik.loader.start(td.getParent());
+		Fabrik.loader.start(td.parent());
 
 		// Set package id to return js string
 		data = {
@@ -613,7 +605,7 @@ var FbListInlineEdit = new Class({
 		};
 		data.fabrik_ignorevalidation = 0;
 		data.join = {};
-		$H(eObj.elements).each(function (el) {
+		jQuery.each(eObj.elements, function (key, el) {
 
 			el.getElement();
 			var v = el.getValue();
@@ -629,7 +621,7 @@ var FbListInlineEdit = new Class({
 			}
 
 		}.bind(this));
-		$H(this.currentRow.data).each(function (v, k) {
+		jQuery.each(this.currentRow.data, function (k, v) {
 			if (k.substr(k.length - 4, 4) === '_raw') {
 				currentRow[k.substr(0, k.length - 4)] = v;
 			}
@@ -648,8 +640,8 @@ var FbListInlineEdit = new Class({
 				td.empty().set('html', r);
 
 				// Need to load on parent otherwise in table td size gets monged
-				Fabrik.loader.stop(td.getParent());
-				Fabrik.fireEvent('fabrik.list.updaterows');
+				Fabrik.loader.stop(td.parent());
+				Fabrik.trigger('fabrik.list.updaterows');
 				this.stopEditing();
 				this.saving = false;
 			}.bind(this),
@@ -662,7 +654,7 @@ var FbListInlineEdit = new Class({
 					err.inject(td.getElement('form'), 'top');
 				}
 				this.saving = false;
-				Fabrik.loader.stop(td.getParent());
+				Fabrik.loader.stop(td.parent());
 				var headerStatus = xhr.statusText;
 				if (typeOf(headerStatus) === 'null') {
 					headerStatus = 'uncaught error';
@@ -672,7 +664,7 @@ var FbListInlineEdit = new Class({
 			}.bind(this),
 
 			'onException': function (headerName, value) {
-				Fabrik.loader.stop(td.getParent());
+				Fabrik.loader.stop(td.parent());
 				this.saving = false;
 				alert('ajax inline edit exception ' + headerName + ':' + value);
 			}.bind(this)
@@ -696,7 +688,7 @@ var FbListInlineEdit = new Class({
 		if (typeOf(this.editing) !== 'element') {
 			return;
 		}
-		var row = this.editing.getParent('.fabrik_row');
+		var row = this.editing.closest('.fabrik_row');
 		if (row === false) {
 			return;
 		}

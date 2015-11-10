@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbImage = new Class({
-	Extends : FbFileElement,
-	initialize : function (element, options) {
+var FbImage = my.Class(FbFileElement, {
+	constructor : function (element, options) {
 		this.plugin = 'image';
 		this.folderlist = [];
 		this.parent(element, options);
@@ -58,7 +57,7 @@ var FbImage = new Class({
 	getFolderPath : function () {
 		return this.options.rootPath + this.folderlist.join('/');
 	},
-	
+
 	doAjaxBrowse: function (dir) {
 		this.parent(dir);
 		this.changeFolder(dir);
@@ -110,11 +109,11 @@ var FbImage = new Class({
 	getValue : function () {
 		return this.folderlist.join('/') + '/' + this.selectedImage;// this.hiddenField.value;
 	},
-	
+
 	update : function (val) {
 		if (!this.hiddenField) {
-			var el = this.element.getParent('.fabrikElement');
-			this.hiddenField = el.getElement('.folderpath');
+			var el = this.element.closest('.fabrikElement');
+			this.hiddenField = el.closest('.folderpath');
 		}
 		if (this.hiddenField) {
 			this.hiddenField.value = val;
@@ -128,5 +127,5 @@ var FbImage = new Class({
 			this.image.alt = '';
 		}
 	}
-	
+
 });

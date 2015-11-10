@@ -39,9 +39,7 @@ Fabrik.getWindow = function (opts) {
 };
 
 
-Fabrik.Window = new Class({
-
-	Implements: [Events, Options],
+Fabrik.Window = my.Class({
 
 	options: {
 		id: 'FabrikWindow',
@@ -71,9 +69,9 @@ Fabrik.Window = new Class({
 
 	expanded: false,
 
-	initialize: function (opts)
+	constructor: function (options)
 	{
-		this.setOptions(opts);
+		this.options = $.append(this.options, options);
 		this.makeWindow();
 	},
 
@@ -246,13 +244,13 @@ Fabrik.Window = new Class({
 			this.window.adopt([this.handle, this.contentWrapperEl, draggerC]);
 			this.window.makeResizable({'handle': dragger,
 				onDrag: function () {
-					Fabrik.fireEvent('fabrik.window.resized', this.window);
+					Fabrik.trigger('fabrik.window.resized', this.window);
 					this.drawWindow();
 				}.bind(this)
 			});
 			var dragOpts = {'handle': this.handle};
 			dragOpts.onComplete = function () {
-					Fabrik.fireEvent('fabrik.window.moved', this.window);
+					Fabrik.trigger('fabrik.window.moved', this.window);
 					this.drawWindow();
 				}.bind(this);
 			dragOpts.container = this.options.container ? document.id(this.options.container) : null;
@@ -299,7 +297,7 @@ Fabrik.Window = new Class({
 
 	loadContent: function () {
 		var u;
-		window.fireEvent('tips.hideall');
+		$(window).trigger('tips.hideall');
 		switch (this.options.loadMethod) {
 
 		case 'html':
@@ -313,7 +311,7 @@ Fabrik.Window = new Class({
 			} else {
 				this.contentEl.set('html', this.options.content);
 			}
-			this.fireEvent('onContentLoaded', [this]);
+			this.trigger('onContentLoaded', [this]);
 			this.watchTabs();
 			break;
 		case 'xhr':
@@ -326,13 +324,13 @@ Fabrik.Window = new Class({
 				'update': u,
 				onSuccess: function () {
 					Fabrik.loader.stop(u);
-					this.fireEvent('onContentLoaded', [this]);
+					this.trigger('onContentLoaded', [this]);
 					this.watchTabs();
 
 					// Needed for IE11
 					this.center();
 					// Ini any Fabrik JS code that was loaded with the ajax request
-					// window.fireEvent('fabrik.loaded');
+					// window.trigger('fabrik.loaded');
 				}.bind(this)
 			}).post();
 			break;
@@ -363,7 +361,7 @@ Fabrik.Window = new Class({
 			this.iframeEl.addEvent('load', function (e) {
 				Fabrik.loader.stop(this.window.getElement('.itemContent'));
 				this.iframeEl.show();
-				this.fireEvent('onContentLoaded', [this]);
+				this.trigger('onContentLoaded', [this]);
 				this.watchTabs();
 			}.bind(this));
 			break;
@@ -444,7 +442,7 @@ Fabrik.Window = new Class({
 		} else {
 			this.window.fade('hide');
 		}
-		this.fireEvent('onClose', [this]);
+		this.trigger('onClose', [this]);
 	},
 
 	open: function (e) {
@@ -456,13 +454,12 @@ Fabrik.Window = new Class({
 			e.stop();
 		}
 		this.window.fade('show');
-		this.fireEvent('onOpen', [this]);
+		this.trigger('onOpen', [this]);
 	}
 
 });
 
-Fabrik.Modal = new Class({
-	Extends: Fabrik.Window,
+Fabrik.Modal = my.Class(Fabrik.Window, {
 
 	modal: true,
 
@@ -474,9 +471,8 @@ Fabrik.Modal = new Class({
 	}
 });
 
-Fabrik.RedirectWindow = new Class({
-	Extends: Fabrik.Window,
-	initialize: function (opts) {
+Fabrik.RedirectWindow = my.Class(Fabrik.Window, {
+	constructor: function (opts) {
 		var opts2 = {
 			'id': 'redirect',
 			'title': opts.title ? opts.title : '',
@@ -488,7 +484,7 @@ Fabrik.RedirectWindow = new Class({
 
 		};
 		opts2.id = 'redirect';
-		opts = Object.merge(opts2, opts);
+		opts = $.merge(opts2, opts);
 		var loadMethod;
 		//if its a site page load via xhr otherwise load as iframe
 		opts.loadMethod = 'xhr';
@@ -499,7 +495,7 @@ Fabrik.RedirectWindow = new Class({
 				opts.contentURL += opts.contentURL.contains('?') ? '&tmpl=component' : '?tmpl=component';
 			}
 		}
-		this.setOptions(opts);
+		this.options = $.append(this.options, opts);
 		this.makeWindow();
 	}
 });

@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbVisTimeline = new Class({
-
-	Implements: [Options],
+var FbVisTimeline = my.Class({
 
 	options: {
 		dateFormat: '%c',
@@ -15,9 +13,9 @@ var FbVisTimeline = new Class({
 		urlfilters: []
 	},
 
-	initialize : function (json, options) {
+	constructor : function (json, options) {
 		this.json = eval(json);
-		this.setOptions(options);
+		this.options = $.append(this.options, options);
 
 		this.resizeTimerID = null;
 		this.tl = null;
@@ -91,7 +89,7 @@ var FbVisTimeline = new Class({
 		};
 		// Add the filters the the data array.
 		data = Object.merge(data, this.options.urlfilters);
-		
+
 		if (this.options.admin) {
 			data.task = 'visualization.ajax_getEvents';
 		} else {

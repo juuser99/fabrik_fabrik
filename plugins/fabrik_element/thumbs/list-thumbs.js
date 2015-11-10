@@ -5,7 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbThumbsList = new Class({
+var FbThumbsList = my.Class({
 
 	options: {
 		'imageover': '',
@@ -16,10 +16,8 @@ var FbThumbsList = new Class({
 		'canUse': true
 	},
 
-	Implements: [Events, Options],
-	
-	initialize: function (id, options) {
-		this.setOptions(options);
+	constructor: function (id, options) {
+		this.options = $.append(this.options, options);
 		//if (this.options.canUse) {
 		if (true) {
 			this.col = document.getElements('.' + id);
@@ -33,7 +31,7 @@ var FbThumbsList = new Class({
 				}
 			} else {
 				this.col.each(function (tr) {
-					var row = tr.getParent('.fabrik_row');
+					var row = tr.closest('.fabrik_row');
 					if (row) {
 						var rowid = row.id.replace('list_' + this.options.renderContext + '_row_', '');
 						var thumbup = tr.getElements('.thumbup');
@@ -63,14 +61,14 @@ var FbThumbsList = new Class({
 								}.bind(this));
 							}
 						}.bind(this));
-		
+
 						thumbdown.each(function (thumbdown) {
 							if (this.options.canUse) {
 								thumbdown.addEvent('mouseover', function (e) {
 									thumbdown.setStyle('cursor', 'pointer');
 									thumbdown.src = this.options.imagepath + "thumb_down_in.gif";
 								}.bind(this));
-			
+
 								thumbdown.addEvent('mouseout', function (e) {
 									thumbdown.setStyle('cursor', '');
 									if (this.options.myThumbs[rowid] === 'down') {
@@ -95,62 +93,63 @@ var FbThumbsList = new Class({
 			}
 		}
 	},
-	
+
 	setUpBootstrappedComments: function () {
-		document.addEvent('click:relay(*[data-fabrik-thumb])', function (e, target) {
-			if (this.options.canUse) {
-				var add = target.hasClass('btn-success') ? false : true;
-				var dir = target.get('data-fabrik-thumb');
-				var formid = target.get('data-fabrik-thumb-formid');
-				var rowid = target.get('data-fabrik-thumb-rowid');
-				
-				this.doAjax(target, dir, add);
+		var self = this;
+		$(document).on('click', '*[data-fabrik-thumb]', function (e) {
+			if (self.options.canUse) {
+				var add = $(this).hasClass('btn-success') ? false : true;
+				var dir = $(this).data('fabrik-thumb');
+				var formid = $(this).data('fabrik-thumb-formid');
+				var rowid = $(this).data('fabrik-thumb-rowid');
+
+				self.doAjax(this, dir, add);
 				if (dir === 'up') {
 					if (!add) {
-						target.removeClass('btn-success');
+						$(this).removeClass('btn-success');
 					} else {
-						target.addClass('btn-success');
-						var down = document.getElements('button[data-fabrik-thumb-formid=' + formid + '][data-fabrik-thumb-rowid=' + rowid + '][data-fabrik-thumb=down]');
+						$(this).addClass('btn-success');
+						var down = $('button[data-fabrik-thumb-formid=' + formid + '][data-fabrik-thumb-rowid=' + rowid + '][data-fabrik-thumb=down]');
 						down.removeClass('btn-danger');
 					}
 				} else {
-					var up = document.getElements('button[data-fabrik-thumb-formid=' + formid + '][data-fabrik-thumb-rowid=' + rowid + '][data-fabrik-thumb=up]');
+					var up = $('button[data-fabrik-thumb-formid=' + formid + '][data-fabrik-thumb-rowid=' + rowid + '][data-fabrik-thumb=up]');
 					if (!add) {
-						target.removeClass('btn-danger');
+						$(this).removeClass('btn-danger');
 					} else {
-						target.addClass('btn-danger');
+						$(this).addClass('btn-danger');
 						up.removeClass('btn-success');
 					}
 				}
 			}
 			else {
 				e.stop();
-				this.doNoAccess();
+				self.doNoAccess();
 			}
-		}.bind(this));
-		
+		});
+
 	},
-	
+
 	setUpBootstrapped: function () {
 		this.col.each(function (td) {
-			var row = td.getParent('.fabrik_row');
-			
-			if (row) {
+			var row = td.closest('.fabrik_row');
+
+			if (row.length > 0) {
 				var rowid = row.id.replace('list_' + this.options.renderContext + '_row_', '');
 				var up = td.getElement('button.thumb-up'),
 				down = td.getElement('button.thumb-down');
-				
+
 				up.addEvent('click', function (e) {
 					e.stop();
 					if (this.options.canUse) {
 						var add = up.hasClass('btn-success') ? false : true;
 						this.doAjax(up, 'up', add);
-						
+
 						if (!add) {
 							up.removeClass('btn-success');
 						} else {
 							up.addClass('btn-success');
-							
+
 							if (typeOf(down) !== 'null') {
 								down.removeClass('btn-danger');
 							}
@@ -159,16 +158,16 @@ var FbThumbsList = new Class({
 					else {
 						this.doNoAccess();
 					}
-					
+
 				}.bind(this));
-				
+
 				if (typeOf(down) !== 'null') {
 					down.addEvent('click', function (e) {
 						e.stop();
 						if (this.options.canUse) {
 							var add = down.hasClass('btn-danger') ? false : true;
 							this.doAjax(down, 'down', add);
-							
+
 							if (!add) {
 								down.removeClass('btn-danger');
 							} else {
@@ -193,12 +192,12 @@ var FbThumbsList = new Class({
 		else
 		{
 			add = add ? true : false;
-			var row = e.getParent();
+			var row = e.parent();
 			var rowid = e.get('data-fabrik-thumb-rowid');
 			var count_thumb = document.id('count_thumb' + thumb + rowid);
 			Fabrik.loader.start(row);
 			this.thumb = thumb;
-	
+
 			var data = {
 				'option': 'com_fabrik',
 				'format': 'raw',
@@ -215,12 +214,12 @@ var FbThumbsList = new Class({
 				'formid': this.options.formid,
 				'add': add
 			};
-			
+
 			if (this.options.voteType === 'comment') {
 				data.special = 'comments_' + this.options.formid;
 			}
-			
-			new Request({url: '', 
+
+			new Request({url: '',
 				'data': data,
 				onComplete: function (r) {
 					var count_thumbup = document.id('count_thumbup' + rowid);
@@ -229,13 +228,13 @@ var FbThumbsList = new Class({
 					var thumbdown = row.getElements('.thumbdown');
 					Fabrik.loader.stop(row);
 					r = JSON.decode(r);
-					
+
 					if (r.error) {
 						console.log(r.error);
 					} else {
 						if (Fabrik.bootstrapped) {
 							row.getElement('button.thumb-up .thumb-count').set('text', r[0]);
-							
+
 							if (typeOf(row.getElement('button.thumb-down')) !== 'null') {
 								row.getElement('button.thumb-down .thumb-count').set('text', r[1]);
 							}
@@ -248,7 +247,7 @@ var FbThumbsList = new Class({
 			}).send();
 		}
 	},
-	
+
 	doNoAccess: function () {
 		if (this.options.noAccessMsg !== '') {
 			alert(this.options.noAccessMsg);

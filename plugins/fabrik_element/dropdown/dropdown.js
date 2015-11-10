@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbDropdown = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbDropdown = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikdropdown';
 		this.parent(element, options);
 		if (this.options.allowadd === true && this.options.editable !== false) {
@@ -25,7 +24,7 @@ var FbDropdown = new Class({
 			//copied in repeating group so need to remove old slider html first
 			var clone = d.clone();
 			var fe = c.getElement('.fabrikElement');
-			d.getParent().destroy();
+			d.parent().destroy();
 			fe.adopt(clone);
 			d = c.getElement('div.addoption');
 			d.setStyle('margin', 0);
@@ -68,7 +67,7 @@ var FbDropdown = new Class({
 			}
 			l.value = '';
 			this.addNewOption(val, label);
-			document.id(this.element.id).fireEvent('change', {stop: function () {}});
+			document.id(this.element.id).trigger('change', {stop: function () {}});
 			if (this.mySlider) {
 				this.mySlider.toggle();
 			}
@@ -78,7 +77,7 @@ var FbDropdown = new Class({
 			}
 		}
 	},
-	
+
 	watchAdd: function () {
 		var val;
 		if (this.options.allowadd === true && this.options.editable !== false) {
@@ -133,9 +132,8 @@ var FbDropdown = new Class({
 		this.options.element = this.element.id;
 		if (!this.options.editable) {
 			this.element.set('html', '');
-			var h = $H(this.options.data);
-			val.each(function (v) {
-				this.element.innerHTML += h.get(v) + "<br />";
+			jQuery.each(val, function (key, v) {
+				this.element.innerHTML += this.options.data[v] + '<br />';
 			}.bind(this));
 			return;
 		}

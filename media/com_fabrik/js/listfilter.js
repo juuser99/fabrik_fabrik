@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbListFilter = new Class({
-
-	Implements: [Options, Events],
+var FbListFilter = my.Class({
 
 	options: {
 		'container': '',
@@ -18,9 +16,9 @@ var FbListFilter = new Class({
 		}
 	},
 
-	initialize: function (options) {
-		this.filters = $H({});
-		this.setOptions(options);
+	constructor: function (options) {
+		this.filters = {};
+		this.options = $.append(this.options, options);
 		this.advancedSearch = false;
 		this.container = document.id(this.options.container);
 		this.filterContainer = this.container.getElements('.fabrikFilterContainer');
@@ -55,7 +53,7 @@ var FbListFilter = new Class({
 
 				// Reset the filter fields that contain previously selected values
 				this.container.getElements('.fabrik_filter').each(function (f) {
-					if (f.name.contains('[value]') || f.name.contains('fabrik_list_filter_all') || f.hasClass('autocomplete-trigger')) { 
+					if (f.name.contains('[value]') || f.name.contains('fabrik_list_filter_all') || f.hasClass('autocomplete-trigger')) {
 						if (f.get('tag') === 'select') {
 							f.selectedIndex = f.get('multiple') ? -1 : 0;
 						} else {
@@ -91,7 +89,7 @@ var FbListFilter = new Class({
 				e.stop();
 				var a = e.target;
 				if (a.get('tag') !== 'a') {
-					a = a.getParent('a');
+					a = a.closest('a');
 				}
 				var url = a.href;
 				url += '&listref=' + this.options.ref;
@@ -128,23 +126,23 @@ var FbListFilter = new Class({
 	},
 
 	addFilter: function (plugin, f) {
-		if (this.filters.has(plugin) === false) {
-			this.filters.set(plugin, []);
+		if (this.filters.hasOwnProperty(plugin) === false) {
+			this.filters[plugin] = [];
 		}
-		this.filters.get(plugin).push(f);
+		this.filters[plugin].push(f);
 	},
-	
+
 	onSubmit: function () {
 		if (this.filters.date) {
-			this.filters.date.each(function (f) {
+			jQuery.each(this.filters.date, function (key, f) {
 				f.onSubmit();
 			});
 		}
 	},
-	
+
 	onUpdateData: function () {
 		if (this.filters.date) {
-			this.filters.date.each(function (f) {
+			jQuery.each(this.filters.date, function (key, f) {
 				f.onUpdateData();
 			});
 		}
@@ -173,7 +171,7 @@ var FbListFilter = new Class({
 	},
 
 	update: function () {
-		this.filters.each(function (fs, plugin) {
+		jQuery.each(this.filters, function (plugin, fs) {
 			fs.each(function (f) {
 				f.update();
 			}.bind(this));

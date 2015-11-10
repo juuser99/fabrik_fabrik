@@ -11,15 +11,14 @@
  * $H:true,unescape:true,head:true,FbListActions:true,FbGroupedToggler:true,f:true
  */
 
-var FbListPlugin = new Class({
-	Implements: [Events, Options],
+var FbListPlugin = my.Class({
 	options: {
 		requireChecked: true,
 		canAJAX: true
 	},
 
-	initialize: function (options) {
-		this.setOptions(options);
+	constructor: function (options) {
+		this.options = $.append(this.options, options);
 		this.result = true; // set this to false in window.fireEvents to stop
 												// current action (e.g. stop ordering when
 												// fabrik.list.order run)
@@ -62,7 +61,7 @@ var FbListPlugin = new Class({
 
 	getRowId: function (node) {
 		if (!node.hasClass('fabrik_row')) {
-			node = node.getParent('.fabrik_row');
+			node = node.closest('.fabrik_row');
 		}
 		return node.id.split('_').getLast();
 	},
@@ -75,21 +74,21 @@ var FbListPlugin = new Class({
 			return;
 		}
 		// Might need to be this.listform and not document
-		document.addEvent('click:relay(.' + this.options.name + ')', function (e, element) {
+		document.on('click', '.' + this.options.name, function (e, element) {
 			if (e.rightClick) {
 				return;
 			}
 			e.stop();
 
 			// Check that the button clicked belongs to this this.list
-			if (element.get('data-list') !== this.list.options.listRef) {
+			if ($(this).data('list') !== this.list.options.listRef) {
 				return;
 			}
 			e.preventDefault();
 			var row, chx;
 			// if the row button is clicked check its associated checkbox
-			if (e.target.getParent('.fabrik_row')) {
-				row = e.target.getParent('.fabrik_row');
+			if ($(this).closest('.fabrik_row')) {
+				row = $(this).closest('.fabrik_row');
 				if (row.getElement('input[name^=ids]')) {
 					chx = row.getElement('input[name^=ids]');
 					this.listform.getElements('input[name^=ids]').set('checked', false);
@@ -99,18 +98,18 @@ var FbListPlugin = new Class({
 
 			// check that at least one checkbox is checked
 			var ok = false;
-			this.listform.getElements('input[name^=ids]').each(function (c) {
-				if (c.checked) {
+			this.listform.find('input[name^=ids]').each(function () {
+				if (this.checked) {
 					ok = true;
 				}
 			});
 			if (!ok && this.options.requireChecked) {
-				alert(Joomla.JText._('COM_FABRIK_PLEASE_SELECT_A_ROW'));
+				window.alert(Joomla.JText._('COM_FABRIK_PLEASE_SELECT_A_ROW'));
 				return;
 			}
 			var n = this.options.name.split('-');
-			this.listform.getElement('input[name=fabrik_listplugin_name]').value = n[0];
-			this.listform.getElement('input[name=fabrik_listplugin_renderOrder]').value = n.getLast();
+			this.listform.find('input[name=fabrik_listplugin_name]').value = n[0];
+			this.listform.find('input[name=fabrik_listplugin_renderOrder]').value = n.getLast();
 			this.buttonAction();
 		}.bind(this));
 	},

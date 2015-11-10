@@ -5,12 +5,11 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbCheckBox = new Class({
-	Extends: FbElementList,
+FbCheckBox = my.Class(FbElementList, {
 
 	type: 'checkbox', // Sub element type
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikcheckbox';
 		this.parent(element, options);
 		this._getSubElements();
@@ -24,7 +23,7 @@ FbCheckBox = new Class({
 			// Copied in repeating group so need to remove old slider html first
 			var clone = d.clone();
 			var fe = c.getElement('.fabrikElement');
-			d.getParent().destroy();
+			d.parent().destroy();
 			fe.adopt(clone);
 			d = c.getElement('div.addoption');
 			d.setStyle('margin', 0);
@@ -71,16 +70,15 @@ FbCheckBox = new Class({
 			if (val === '') {
 				return;
 			}
-			var h = $H(this.options.data);
-			val.each(function (v) {
-				this.element.innerHTML += h.get(v) + "<br />";
+			jQuery.each(val, function (key, v) {
+				this.element.innerHTML += this.options.data[v] + '<br />';
 			}.bind(this));
 			return;
 		}
 		this._getSubElements();
-		this.subElements.each(function (el) {
+		jQuery.each(this.subElements, function (key, el) {
 			var chx = false;
-			val.each(function (v) {
+			jQuery.each(val, function (key, v) {
 				if (v === el.value) {
 					chx = true;
 				}

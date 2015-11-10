@@ -26,7 +26,7 @@ function googlemapload() {
 		Fabrik.googleMapRadius = true;
 	}
 	if (document.body) {
-		window.fireEvent('google.map.loaded');
+		$(window).trigger('google.map.loaded');
 	} else {
 		console.log('no body');
 	}
@@ -34,14 +34,13 @@ function googlemapload() {
 
 function googleradiusloaded() {
 	if (document.body) {
-		window.fireEvent('google.radius.loaded');
+		$(window).trigger('google.radius.loaded');
 	} else {
 		console.log('no body');
 	}
 }
 
-var FbGoogleMap = new Class({
-	Extends : FbElement,
+var FbGoogleMap = my.Class(FbElement, {
 
 	options : {
 		'lat': 0,
@@ -77,7 +76,7 @@ var FbGoogleMap = new Class({
 		Fabrik.loadGoogleMap(s, 'googlemapload');
 	},
 
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.mapMade = false;
 		this.parent(element, options);
 
@@ -188,12 +187,12 @@ var FbGoogleMap = new Class({
 				};
 			this.map = new google.maps.Map(document.id(this.element).getElement('.map'), mapOpts);
 			this.map.setOptions({'styles': this.options.styles});
-			
+
 			if (this.options.traffic) {
 				  var trafficLayer = new google.maps.TrafficLayer();
-				  trafficLayer.setMap(this.map);	
+				  trafficLayer.setMap(this.map);
 			}
-			
+
 			var point = new google.maps.LatLng(this.options.lat, this.options.lon);
 			var opts = {
 				map: this.map,
@@ -283,7 +282,6 @@ var FbGoogleMap = new Class({
 				distance = distance / 1.609344;
 			}
 			$(this.options.radius_write_element).value = parseFloat(distance).toFixed(2);
-			//$(this.options.radius_write_element).fireEvent('change', new Event.Mock($(this.options.radius_write_element), 'change'));
 
 		}
 	},
@@ -294,7 +292,7 @@ var FbGoogleMap = new Class({
 		// as it'll keep firing as they drag.  We don't want to fire 'change' until the changing is finished
 		if (this.options.radius_write_element) {
 			if (!this.distanceWidget.get('active')) {
-				document.id(this.options.radius_write_element).fireEvent('change', new Event.Mock(document.id(this.options.radius_write_element), 'change'));
+				document.id(this.options.radius_write_element).trigger('change', new Event.Mock(document.id(this.options.radius_write_element), 'change'));
 			}
 		}
 	},
@@ -611,7 +609,7 @@ var FbGoogleMap = new Class({
 		this.map.setCenter(center);
 		this.map.setZoom(this.map.getZoom());
 	},
-	
+
 	reverseGeocode: function () {
 		this.geocoder.geocode({'latLng': this.marker.getPosition()}, function (results, status) {
 			if (status === google.maps.GeocoderStatus.OK) {
@@ -686,7 +684,7 @@ var FbGoogleMap = new Class({
 			}
 		}.bind(this));
 	},
-	
+
 	doSetCenter: function (pnt, zoom, doReverseGeocode) {
 		this.map.setCenter(pnt, zoom);
 		this.field.value = this.marker.getPosition() + ":" + this.map.getZoom();

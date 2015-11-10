@@ -1,6 +1,5 @@
-var FbGoogleometer = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
-		this.parent(element, options);
-	}
+var FbGoogleometer = my.Class(FbElement, {
+    constructor: function (element, options) {
+        this.parent(element, options);
+    }
 });

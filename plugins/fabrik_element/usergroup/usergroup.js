@@ -5,11 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbUsergroup = new Class({
+var FbUsergroup = my.Class(FbElement, {
 
-	Extends: FbElement,
-
-	initialize: function (element, options) {
+	constructor: function (element, options) {
 		this.plugin = 'fabrikusergroup';
 		this.parent(element, options);
 	}

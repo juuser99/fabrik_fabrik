@@ -5,8 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var fabrikGraph = new Class({
-	Implements: [Options],
+var fabrikGraph = my.Class({
+
 	options: {
 		legend: false,
 		label: '',
@@ -17,8 +17,8 @@ var fabrikGraph = new Class({
 		xticks: []
 	},
 
-	initialize: function (el, d, options) {
-		this.setOptions(options);
+	constructor: function (el, d, options) {
+		this.options = $.append(this.options, options);
 		//todo doesnt seem to work with 1 record of data
 		this.el = el;
 		this.json = d;

@@ -5,9 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var Canvas = new Class({
-
-	Implements : [ Options ],
+var Canvas = my.Class({
 
 	options : {
 		tabs : [ 'page1' ],
@@ -16,8 +14,8 @@ var Canvas = new Class({
 		editable: false
 	},
 
-	initialize: function (opts) {
-		this.setOptions(opts);
+	constructor: function (opts) {
+		this.options = $.append(this.options, opts);
 		Fabrik.addEvent('fabrik.page.insert', function (e) {
 			this.insertPage(e);
 		}.bind(this));
@@ -25,19 +23,20 @@ var Canvas = new Class({
 		this.pages = new Pages(this.options.pagecontainer, this.options.editable);
 		this.tabs = new Tabs(this.options.tabelement, this.options.tabs, this.options.editable);
 	},
-	
+
 	setup: function () {
 		this.pages.fromJSON(this.options.layout);
 	},
-	
+
 	setDrags: function () {
-		document.id('typeList').getElements('li').each(function (li) {
-			li.addEvent('mousedown', function (e) {
-				var clone = li.clone().setStyles(li.getCoordinates()) // this returns an
+		$('#typeList').find('li').each(function () {
+			var li = $(this);
+			li.on('mousedown', function (e) {
+				var clone = $(this).clone().css(li.getCoordinates()) // this returns an
 				// object with
 				// left/top/bottom/right, so its perfect
 
-				.store('type', li.retrieve('type')).setStyles({
+				.store('type', li.retrieve('type')).css({
 					'opacity' : 0.7,
 					'position' : 'absolute'
 				}).addEvent('emptydrop', function () {
@@ -59,7 +58,7 @@ var Canvas = new Class({
 					onDrop : function (el, over) {
 
 						if (over) {
-							
+
 							// do something ...
 							this.insertLocation = el.getCoordinates(over);
 							this.openListWindow(el.retrieve('type'));
@@ -74,9 +73,9 @@ var Canvas = new Class({
 			}.bind(this));
 		}.bind(this));
 	},
-	
+
 	setDrops: function (e) {
-		this.options.tabs = this.tabs.tabs.getKeys();
+		this.options.tabs = Object.keys(this.tabs.tabs);
 		this.drops = this.pages.getHTMLPages();
 	}
 });

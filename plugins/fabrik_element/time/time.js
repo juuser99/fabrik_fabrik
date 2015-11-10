@@ -5,9 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbTime = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbTime = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.plugin = 'time';
 		this.parent(element, options);
 	},

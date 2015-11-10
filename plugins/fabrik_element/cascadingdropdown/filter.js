@@ -5,8 +5,8 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var CascadeFilter = new Class({
-	initialize: function (observerid, opts) {
+var CascadeFilter = my.Class({
+	constructor: function (observerid, opts) {
 		this.options = opts;
 		this.observer = document.id(observerid);
 		if (this.observer) {
@@ -42,7 +42,9 @@ var CascadeFilter = new Class({
 			}.bind(this));
 
 			v = this.observer.get('value');
-			this.periodical = this.update.periodical(500, this);
+			this.periodical = setInterval(function () {
+				this.update.call(this, [cb]);
+			}, 500);
 			this.periodcount = 0;
 		} else {
 			fconsole('observer not found ', observerid);

@@ -5,14 +5,11 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-var FbDigsig = new Class({
-	Extends: FbElement,
-	initialize: function (element, options) {
+var FbDigsig = my.Class(FbElement, {
+	constructor: function (element, options) {
 		this.parent(element, options);
 		this.plugin = 'digsig';
-		if (typeof jQuery !== 'undefined') {
-			jQuery.noConflict();
-		}
+
 		if (this.options.editable === true) {
 			if (typeOf(this.element) === 'null') {
 				fconsole('no element found for digsig');
@@ -25,10 +22,10 @@ var FbDigsig = new Class({
 				canvas: '#' + this.element.id + '_oc_pad',
 				drawOnly: true
 			};
-			jQuery('#' + this.element.id).signaturePad(oc_options).regenerate(this.options.value); 
+			jQuery('#' + this.element.id).signaturePad(oc_options).regenerate(this.options.value);
 		}
 		else {
-			jQuery('#' + this.options.sig_id).signaturePad({displayOnly: true}).regenerate(this.options.value);		
+			jQuery('#' + this.options.sig_id).signaturePad({displayOnly: true}).regenerate(this.options.value);
 		}
 	},
 
