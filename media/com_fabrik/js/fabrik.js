@@ -102,7 +102,7 @@ Request.HTML = my.Class(Request, {
 		if (match) {
 			response.html = match[1];
 		}
-		var temp = new Element('div').html(response.html);
+		var temp = $('<div />').html(response.html);
 
 		response.tree = temp.childNodes;
 		response.elements = temp.getElements(options.filter || '*');
@@ -386,7 +386,7 @@ if (typeof (Fabrik) === 'undefined') {
 		if (e.target.get('tag') === 'a') {
 			a = e.target;
 		} else {
-			a = $(this).getElement('a').length > 0 ? $(this).getElement('a') : $(this).closest('a');
+			a = $(this).find('a').length > 0 ? $(this).find('a') : $(this).closest('a');
 		}
 
 		url = a.get('href');
@@ -585,7 +585,7 @@ if (typeof (Fabrik) === 'undefined') {
 		}
 		// Get correct list block
 		if (!l.submit('list.delete')) {
-			e.stop();
+			e.stopPropagation();
 		}
 	};
 

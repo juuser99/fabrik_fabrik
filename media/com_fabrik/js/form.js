@@ -113,7 +113,7 @@ var FbForm = my.Class({
     watchPrintButton: function () {
         var self = this;
         $('a[data-fabrik-print]').on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             if (self.options.print) {
                 window.print();
             } else {
@@ -133,7 +133,7 @@ var FbForm = my.Class({
     watchPdfButton: function () {
         var self = this;
         $('*[data-role="open-form-pdf"]').on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             // Build URL as we could have changed the rowid via ajax pagination
             window.location = 'index.php?option=com_' + Fabrik.package + '&view=details&formid=' +
                 self.id + '&rowid=' + self.options.rowid + '&format=pdf';
@@ -151,7 +151,7 @@ var FbForm = my.Class({
                 return;
             }
             goback.on('click', function (e) {
-                e.stop();
+                e.stopPropagation();
                 if (Fabrik.Windows[winId]) {
                     Fabrik.Windows[winId].close();
                 }
@@ -170,7 +170,8 @@ var FbForm = my.Class({
 
             $(d).slideUp(500);
             a.on('click', function (e) {
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 $(d).slideToggle();
             });
         });
@@ -249,7 +250,7 @@ var FbForm = my.Class({
             // apply fx to div rather than li - damn I'm good
             var tag = (c).prop('tagName');
             if (tag === 'LI' || tag === 'TD') {
-                fxdiv = new Element('div', {'style': 'width:100%'}).adopt(c.getChildren());
+                fxdiv = $('<div />').css({'width' :'100%'}).adopt(c.getChildren());
                 c.empty();
                 fxdiv.inject(c);
             } else {
@@ -387,7 +388,7 @@ var FbForm = my.Class({
     watchClearSession: function () {
         var self = this;
         this.form.find('.clearSession').on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.form.find('input[name=task]').val('removeSession');
             self.clearForm();
             self.form.submit();
@@ -491,7 +492,7 @@ var FbForm = my.Class({
         else {
             this.changePage(dir);
         }
-        e.stop();
+        e.stopPropagation();
     },
 
     saveGroupsToDb: function () {
@@ -1012,7 +1013,7 @@ var FbForm = my.Class({
                         this.form.find('input[name=task]').val('form.delete');
                         this.doSubmit(e, del);
                     } else {
-                        e.stop();
+                        e.stopPropagation();
                         return false;
                     }
 
@@ -1038,7 +1039,7 @@ var FbForm = my.Class({
     doSubmit: function (e, btn) {
         var self = this;
         if (this.submitBroker.enabled()) {
-            e.stop();
+            e.stopPropagation();
             return false;
         }
         this.submitBroker.submit(function () {
@@ -1048,7 +1049,7 @@ var FbForm = my.Class({
             Fabrik.trigger('fabrik.form.submit.start', [self, e, btn]);
             if (self.result === false) {
                 self.result = true;
-                e.stop();
+                e.stopPropagation();
                 Fabrik.loader.stop(self.getBlock());
                 // Update global status error
                 self.updateMainError();
@@ -1079,7 +1080,7 @@ var FbForm = my.Class({
                     data[btn.name] = btn.value;
                     if (btn.name === 'Copy') {
                         data.Copy = 1;
-                        e.stop();
+                        e.stopPropagation();
                     }
                     data.fabrik_ajax = '1';
                     data.format = 'raw';
@@ -1188,13 +1189,13 @@ var FbForm = my.Class({
             Fabrik.trigger('fabrik.form.submit.end', [self]);
             if (self.result === false) {
                 self.result = true;
-                e.stop();
+                e.stopPropagation();
                 // Update global status error
                 self.updateMainError();
             } else {
                 // Enables the list to clean up the form and custom events
                 if (self.options.ajax) {
-                    e.stop();
+                    e.stopPropagation();
                     Fabrik.trigger('fabrik.form.ajax.submit.end', [self]);
                 } else {
                     // Inject submit button name/value.
@@ -1207,12 +1208,12 @@ var FbForm = my.Class({
                         self.form.submit();
                     } else {
                         // Regular button pressed which seems to be triggering form.submit() method.
-                        e.stop();
+                        e.stopPropagation();
                     }
                 }
             }
         });
-        e.stop();
+        e.stopPropagation();
     },
 
     /**
@@ -1416,7 +1417,7 @@ var FbForm = my.Class({
             return;
         }
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
 
         // Find which repeat group was deleted
@@ -1579,7 +1580,7 @@ var FbForm = my.Class({
             return;
         }
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
         var i = $(e.target).closest('.fabrikGroup').id.replace('group', '');
         var group_id = parseInt(i, 10);
@@ -1907,7 +1908,7 @@ var FbForm = my.Class({
         inputs.each(function (i) {
             $(this).on('keypress', function (e) {
                 if (e.key === 'enter') {
-                    e.stop();
+                    e.stopPropagation();
                     if (inputs[i + 1]) {
                         inputs[i + 1].focus();
                     }

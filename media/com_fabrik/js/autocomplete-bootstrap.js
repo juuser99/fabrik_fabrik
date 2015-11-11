@@ -30,14 +30,14 @@ var FbAutocomplete = my.Class({
 			this.matchedResult = false;
 			this.setOptions(options);
 			element = element.replace('-auto-complete', '');
-			this.options.labelelement = typeOf(document.id(element + '-auto-complete')) === "null" ? document.getElement(element + '-auto-complete') : document.id(element + '-auto-complete');
+			this.options.labelelement = typeOf(document.id(element + '-auto-complete')) === "null" ? document.find(element + '-auto-complete') : document.id(element + '-auto-complete');
 			this.cache = {};
 			this.selected = -1;
 			this.mouseinsde = false;
 			$(document).on('keydown', function (e) {
 				self.doWatchKeys(e);
 			});
-			this.element = typeOf(document.id(element)) === "null" ? document.getElement(element) : document.id(element);
+			this.element = typeOf(document.id(element)) === "null" ? document.find(element) : document.id(element);
 			this.buildMenu();
 			if (!this.getInputElement()) {
 				fconsole('autocomplete didn\'t find input element');
@@ -66,7 +66,7 @@ var FbAutocomplete = my.Class({
 			return;
 		}
 		if (e.key === 'tab' || e.key === 'enter') {
-			e.stop();
+			e.stopPropagation();
 			this.closeMenu();
 			if (this.ajax) {
 				this.ajax.cancel();
@@ -132,7 +132,7 @@ var FbAutocomplete = my.Class({
 
 	buildMenu: function ()
 	{
-		this.menu = new Element('ul.dropdown-menu', {'role': 'menu', 'styles': {'z-index': 1056}});
+		this.menu = $('<ul />').addClass('dropdown-menu').attr({'role': 'menu'}).css({'z-index': 1056});
 		this.menu.inject(document.body);
 		this.menu.addEvent('mouseenter', function () {
 			this.mouseinsde = true;
@@ -186,17 +186,18 @@ var FbAutocomplete = my.Class({
 			return false;
 		}
 		if (data.length === 0) {
-			li = new Element('li').adopt(new Element('div.alert.alert-info').adopt(new Element('i').text(Joomla.JText._('COM_FABRIK_NO_RECORDS'))));
+			li = $('<li />').adopt($('<div />').addClass(' alert alert-info')
+				.adopt($('<i>').text(Joomla.JText._('COM_FABRIK_NO_RECORDS'))));
 			li.inject(ul);
 		}
 		for (var i = 0; i < max; i ++) {
 			pair = data[i];
-			a = new Element('a', {'href': '#', 'data-value': pair.value, tabindex: '-1'}).text(pair.text);
-			li = new Element('li').adopt(a);
+			a = $('<a>').attr({'href': '#', 'data-value': pair.value, tabindex: '-1'}).text(pair.text);
+			li = $('<li>').adopt(a);
 			li.inject(ul);
 		}
 		if (data.length > this.options.max) {
-			new Element('li').text('....').inject(ul);
+			$('<li>').text('....').inject(ul);
 		}
 		return true;
 	},
@@ -277,14 +278,14 @@ var FbAutocomplete = my.Class({
 		if (!this.shown) {
 			// Stop enter from submitting when in in-line edit form.
 			if (parseInt(e.code, 10) === 13) {
-				e.stop();
+				e.stopPropagation();
 			}
 			if (parseInt(e.code, 10) === 40) {
 				this.openMenu();
 			}
 		} else {
 			if (!this.isMinTriggerlength()) {
-				e.stop();
+				e.stopPropagation();
 				this.closeMenu();
 			}
 			else {
@@ -300,18 +301,18 @@ var FbAutocomplete = my.Class({
 						this.selected ++;
 					}
 					this.highlight();
-					e.stop();
+					e.stopPropagation();
 					break;
 				case 38: //up
 					if (this.selected - 1 >= -1) {
 						this.selected --;
 						this.highlight();
 					}
-					e.stop();
+					e.stopPropagation();
 					break;
 				case 13://enter
 				case 9://tab
-					e.stop();
+					e.stopPropagation();
 					selected = this.getSelected();
 					if (selected) {
 						selectEvnt = jQuery.Event('click');
@@ -320,7 +321,7 @@ var FbAutocomplete = my.Class({
 					}
 					break;
 				case 27://escape
-					e.stop();
+					e.stopPropagation();
 					this.closeMenu();
 					break;
 				}
@@ -340,10 +341,10 @@ var FbAutocomplete = my.Class({
 		}.bind(this));
 
 		if (typeOf(lis[0]) === 'element') {
-			return lis[0].getElement('a');
+			return lis[0].find('a');
 		} else if (all.length > 0) {
 			// Can occur if autocomplete generated but not clicked on / keyed into.
-			return all[0].getElement('a');
+			return all[0].find('a');
 		}
 
 		return false;

@@ -7,7 +7,7 @@
 
 var FbDisplay = my.Class(FbElement, {
 	constructor: function (element, options) {
-		this.parent(element, options);
+		FbDisplay.Super.call(this, element, options);
 	},
 
 	update: function (val) {

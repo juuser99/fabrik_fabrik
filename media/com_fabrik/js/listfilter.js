@@ -17,6 +17,7 @@ var FbListFilter = my.Class({
     },
 
     constructor: function (options) {
+        var advancedSearchButton;
         this.filters = {};
         this.options = $.extend(this.options, options);
         this.advancedSearch = false;
@@ -26,7 +27,7 @@ var FbListFilter = my.Class({
         var b = this.container.find('.toggleFilters');
         b.on('click', function (e) {
             var dims = b.getPosition();
-            e.stop();
+            e.stopPropagation();
             var x = dims.x - this.filterContainer.getWidth();
             var y = dims.y + b.getHeight();
             this.filterContainer.toggle();
@@ -44,7 +45,7 @@ var FbListFilter = my.Class({
         c.removeEvents();
         c.addEvent('click', function (e) {
             var plugins;
-            e.stop();
+            e.stopPropagation();
 
             // Reset the filter fields that contain previously selected values
             this.container.find('.fabrik_filter').each(function (f) {
@@ -66,8 +67,8 @@ var FbListFilter = my.Class({
                     p.clearFilter();
                 });
             }
-            var injectForm = this.container.get('tag') === 'form' ? this.container : this.container.find('form');
-            new Element('input', {
+            var injectForm = this.container.prop('tagName') === 'FORM' ? this.container : this.container.find('form');
+            $('<input />').attr({
                 'name' : 'resetfilters',
                 'value': 1,
                 'type' : 'hidden'
@@ -79,10 +80,10 @@ var FbListFilter = my.Class({
             }
         }.bind(this));
         if (advancedSearchButton = this.container.find('.advanced-search-link')) {
-            advancedSearchButton.addEvent('click', function (e) {
-                e.stop();
+            advancedSearchButton.on('click', function (e) {
+                e.stopPropagation();
                 var a = e.target;
-                if (a.get('tag') !== 'a') {
+                if (a.prop('tagName') !== 'A') {
                     a = a.closest('a');
                 }
                 var url = a.href;

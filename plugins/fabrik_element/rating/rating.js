@@ -8,7 +8,7 @@
 var FbRating = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.field = $('#' + element);
-		this.parent(element, options);
+		FbRating.Super.call(this, element, options);
 		if (this.options.canRate === false) {
 			return;
 		}
@@ -33,8 +33,8 @@ var FbRating = my.Class(FbElement, {
 			'alt': 'loading',
 			'class': 'ajax-loader'
 		});
-		this.stars = this.element.getElements('.starRating');
-		this.ratingMessage = this.element.getElement('.ratingMessage');
+		this.stars = this.element.find('.starRating');
+		this.ratingMessage = this.element.find('.ratingMessage');
 		this.stars.each(function (i) {
 			i.on('mouseover', function (e) {
 				self.stars.each(function (ii) {
@@ -148,13 +148,13 @@ var FbRating = my.Class(FbElement, {
 	},
 
 	getClearButton: function () {
-		return this.element.getElement('i[data-rating=-1]');
+		return this.element.find('i[data-rating=-1]');
 	},
 
 	update : function (val) {
 		this.rating = val.toInt().round();
 		this.field.value = this.rating;
-		this.element.getElement('.ratingScore').text(val);
+		this.element.find('.ratingScore').text(val);
 		this.setStars();
 	}
 });

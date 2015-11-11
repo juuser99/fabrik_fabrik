@@ -18,7 +18,7 @@ var FbRepeatGroup = my.Class({
      */
     constructor: function (element, options) {
         this.element = $('#' + element);
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.counter = this.getCounter();
         this.watchAdd();
         this.watchDelete();
@@ -31,7 +31,7 @@ var FbRepeatGroup = my.Class({
     watchAdd: function () {
         var newid, self = this;
         this.element.find('a[data-button=addButton]').on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             var div = self.repeatContainers().getLast();
             var newc = self.counter + 1;
             var id = div.id.replace('-' + self.counter, '-' + newc);
@@ -90,7 +90,7 @@ var FbRepeatGroup = my.Class({
         btns.removeEvents();
         btns.each(function (x) {
             $(this).on('click', function (e) {
-                e.stop();
+                e.stopPropagation();
                 var count = self.getCounter();
                 if (count > self.options.repeatmin) {
                     var u = self.repeatContainers().getLast();

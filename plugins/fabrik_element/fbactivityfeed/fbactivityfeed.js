@@ -8,6 +8,6 @@
 var FbActivityfeed = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fbActivityfeed';
-		this.parent(element, options);
+		FbActivityfeed.Super.call(this, element, options);
 	}
 });

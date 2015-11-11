@@ -10,7 +10,7 @@ var FbLike = my.Class(FbElement, {
     constructor: function (element, options) {
         var self = this;
         this.plugin = 'fblike';
-        this.parent(element, options);
+        FbLike.Super.call(this, element, options);
 
         FB.Event.subscribe('edge.create', function (response) {
             self.like('+');

@@ -11,7 +11,7 @@ var fabrikFullcalendar = my.Class({
     constructor: function (ref, options) {
         var self = this;
         this.el = $('#' + ref);
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
 
         this.date = new Date();
 
@@ -176,7 +176,7 @@ var fabrikFullcalendar = my.Class({
             return;
         }
 
-        e.stop();
+        e.stopPropagation();
 
         if (e.target.hasClass('addEventButton')) {
             now = new Date();

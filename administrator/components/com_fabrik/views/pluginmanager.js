@@ -109,7 +109,7 @@ var PluginManager = my.Class({
     watchAdd: function () {
         var self = this;
         $('#addPlugin').on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.accordion.display(-1);
             self.addTop();
         });
@@ -347,7 +347,7 @@ var PluginManager = my.Class({
                 }
             });
         }
-        e.stop();
+        e.stopPropagation();
         $(e.target).closest('.actionContainer').dispose();
     }
 
@@ -359,7 +359,7 @@ var fabrikAdminPlugin = my.Class({
     constructor: function (name, label, options) {
         this.name = name;
         this.label = label;
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
     },
 
     cloned: function () {

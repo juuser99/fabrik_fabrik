@@ -1,2 +1,2 @@
 /*! Fabrik */
-FbJSPeriodical=my.Class({options:{code:"",period:1e3},constructor:function(element,options){this.plugin="fabrikPeriodical",this.parent(element,options);var periodical;this.fx=function(){eval(this.options.code)}.bind(this),this.fx();var periodical=this.fx.periodical(this.options.period,this)}});
+FbJSPeriodical=my.Class({options:{code:"",period:1e3},constructor:function(element,options){this.plugin="fabrikPeriodical",FbJSPeriodical.Super.call(this,element,options);var periodical;this.fx=function(){eval(this.options.code)}.bind(this),this.fx();var periodical=this.fx.periodical(this.options.period,this)}});

@@ -14,20 +14,20 @@ var FbListRadiusLookup = my.Class(FbListPlugin, {
 
 	constructor : function (options) {
 		var self = this;
-		this.parent(options);
+		FbListRadiusLookup.Super.call(this, options);
 
-		if (typeOf(this.options.value) === 'null') {
+		if (this.options.value === undefined) {
 			this.options.value = 0;
 		}
 
-		var clear = this.listform.getElement('.clearFilters');
+		var clear = this.listform.find('.clearFilters');
 		console.log('clear = ', clear);
 		clear.on('mouseup', function () {
 			self.clearFilter();
 		});
 
 		if (typeOf(this.listform) !== 'null') {
-			this.listform = this.listform.getElement('#radius_lookup' + this.options.renderOrder);
+			this.listform = this.listform.find('#radius_lookup' + this.options.renderOrder);
 			if (typeOf(this.listform) === 'null') {
 				fconsole('didnt find element #radius_lookup' + this.options.renderOrder);
 				return;
@@ -57,11 +57,11 @@ var FbListRadiusLookup = my.Class(FbListPlugin, {
 	},
 
 	geoCenter: function (p) {
-		if (typeOf(p) === 'null') {
-			alert(Joomla.JText._('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE'));
+		if (p === undefined) {
+			window.alert(Joomla.JText._('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE'));
 		} else {
-			this.listform.getElement('input[name=radius_search_lat' + this.options.renderOrder + ']').value = p.coords.latitude.toFixed(2);
-			this.listform.getElement('input[name=radius_search_lon' + this.options.renderOrder + ']').value = p.coords.longitude.toFixed(2);
+			this.listform.find('input[name=radius_search_lat' + this.options.renderOrder + ']').val(p.coords.latitude.toFixed(2));
+			this.listform.find('input[name=radius_search_lon' + this.options.renderOrder + ']').val(p.coords.longitude.toFixed(2));
 		}
 	},
 

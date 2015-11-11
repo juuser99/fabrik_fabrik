@@ -8,17 +8,17 @@
 var FbListEmail = my.Class(FbListPlugin, {
 
 	constructor: function (options) {
-		this.parent(options);
+		FbListEmail.Super.call(this, options);
 	},
 
 	buttonAction: function () {
 		var url = 'index.php?option=com_fabrik&controller=list.email&task=popupwin&tmpl=component&ajax=1&id=' + this.listid + '&renderOrder=' + this.options.renderOrder;
 		this.listform.getElements('input[name^=ids]').each(function (id) {
 			if (id.get('value') !== false && id.checked !== false) {
-				url += "&ids[]=" + id.get('value');
+				url += '&ids[]=' + id.get('value');
 			}
 		});
-		if (this.listform.getElement('input[name=checkAll]').checked) {
+		if (this.listform.find('input[name=checkAll]').checked) {
 			url += '&checkAll=1';
 		}
 		else {

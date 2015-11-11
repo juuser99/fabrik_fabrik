@@ -15,7 +15,7 @@ var elementElement = my.Class({
 	},
 
 	constructor: function (el, options) {
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		this.el = el;
 		this.setOptions(options);
 		// if loading in a form plugin then the connect is not yet available in the dom
@@ -61,11 +61,11 @@ var elementElement = my.Class({
 		}
 		var add = this.el.parent().find('button');
 		add.on('mousedown', function (e) {
-			e.stop();
+			e.stopPropagation();
 			self.addPlaceHolder();
 		});
 		add.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 		});
 		FabrikAdmin.model.fields.fabriktable[this.options.table].registerElement(this);
 	},

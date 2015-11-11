@@ -31,7 +31,7 @@ var ListForm = my.Class({
                 self.watchTableDd();
                 self.watchLabel();
                 $('#addAJoin').on('click', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     self.addJoin();
                 });
                 if ($('table.linkedLists')) {
@@ -110,11 +110,11 @@ var ListForm = my.Class({
             $('.addOrder').removeEvents('click');
             $('.deleteOrder').removeEvents('click');
             $('.addOrder').on('click', function (e) {
-                e.stop();
+                e.stopPropagation();
                 self.addOrderBy();
             });
             $('.deleteOrder').on('click', function (e) {
-                e.stop();
+                e.stopPropagation();
                 self.deleteOrderBy(e);
             });
         },
@@ -252,26 +252,22 @@ var ListForm = my.Class({
             var delHtml = '<i class="icon-minus"></i> ';
             delButton.html(delHtml);
 
-            joinType = new Element('select', {
-                'name' : 'jform[params][join_type][]',
-                'class': 'inputbox input-mini'
+            joinType = $(document.createElement('select')).addClass('inputbox input-mini').attr({
+                'name' : 'jform[params][join_type][]'
             }).adopt(this._buildOptions(this.options.joinOpts, joinType));
-            var joinFrom = new Element('select', {
-                'name' : 'jform[params][join_from_table][]',
-                'class': 'inputbox join_from input-medium'
+            var joinFrom = $(document.createElement('select')).addClass('inputbox join_from input-medium').attr({
+                'name' : 'jform[params][join_from_table][]'
             }).adopt(this._buildOptions(this.options.activetableOpts, joinFromTable));
-            groupId = new Element('input', {'type': 'hidden', 'name': 'group_id[]', 'value': groupId});
-            var tableJoin = new Element('select', {
-                'name' : 'jform[params][table_join][]',
-                'class': 'inputbox join_to input-medium'
+            groupId = $(document.createElement('input'))
+                .attr({'type': 'hidden', 'name': 'group_id[]', 'value': groupId});
+            var tableJoin = $(document.createElement('select')).addClass('inputbox join_to input-medium').attr({
+                'name' : 'jform[params][table_join][]'
             }).adopt(this._buildOptions(this.options.tableOpts, joinToTable));
-            var tableKey = new Element('select', {
-                'name' : 'jform[params][table_key][]',
-                'class': 'table_key inputbox input-medium'
+            var tableKey = $(document.createElement('select')).addClass('table_key inputbox input-medium').attr({
+                'name' : 'jform[params][table_key][]'
             }).adopt(this._buildOptions(joinFromFields, thisKey));
-            joinKey = new Element('select', {
-                'name' : 'jform[params][table_join_key][]',
-                'class': 'table_join_key inputbox input-medium'
+            joinKey = $(document.createElement('select')).addClass('table_join_key inputbox input-medium').attr({
+                'name' : 'jform[params][table_join_key][]'
             }).adopt(this._buildOptions(joinToFields, joinKey));
             var repeatRadio =
                 "<fieldset class=\"radio\">" +
@@ -319,7 +315,7 @@ var ListForm = my.Class({
 
         deleteJoin: function (e) {
             var tbl, t;
-            e.stop();
+            e.stopPropagation();
             t = $(e.target).closest('tr');
             tbl = $(e.target).closest('table');
             t.dispose();
@@ -397,7 +393,7 @@ var adminFilters = my.Class({
     constructor: function (el, fields, options) {
         this.el = $('#' + el);
         this.fields = fields;
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.filters = [];
         this.counter = 0;
     },
@@ -420,7 +416,7 @@ var adminFilters = my.Class({
     deleteFilterOption: function (e) {
         this.counter--;
         var tbl, t;
-        e.stop();
+        e.stopPropagation();
         var row = parseInt(e.target.id.replace('filterContainer-del-', ''), 10);
 
         t = $(e.target).closest('tr');
@@ -468,7 +464,7 @@ var adminFilters = my.Class({
         selAccess = selAccess ? selAccess : '';
         grouped = grouped ? grouped : '';
         var conditionsDd = this.options.filterCondDd;
-        var tr = new Element('tr');
+        var tr = $(document.createElement('tr'));
         if (this.counter > 0) {
             var opts = {'type': 'radio', 'name': 'jform[params][filter-grouped][' + this.counter + ']', 'value': '1'};
             opts.checked = (grouped === '1') ? 'checked' : '';
@@ -515,8 +511,8 @@ var adminFilters = my.Class({
                 [and, or]);
         }
 
-        var tdGrouped = new Element('td');
-        var td = new Element('td');
+        var tdGrouped = $('<td>');
+        var td = $('<td>');
 
         if (this.counter <= 0) {
             tdGrouped.appendChild($(document.createElement('input')).attr({
@@ -532,14 +528,14 @@ var adminFilters = my.Class({
         }
         td.appendChild(joinDd);
 
-        var td1 = new Element('td');
+        var td1 = $('<td>');
         td1.innerHTML = this.fields;
-        var td2 = new Element('td');
+        var td2 = $('<td>');
         td2.innerHTML = conditionsDd;
-        var td3 = new Element('td');
-        var td4 = new Element('td');
+        var td3 = $('<td>');
+        var td4 = $('<td>');
         td4.innerHTML = this.options.filterAccess;
-        var td5 = new Element('td');
+        var td5 = $('<td>');
 
         var textArea = $(document.createElement('textarea')).attr({
             'name': 'jform[params][filter-value][]',
@@ -547,7 +543,7 @@ var adminFilters = my.Class({
             'rows': 4
         }).text(selValue);
         td3.appendChild(textArea);
-        td3.appendChild(new Element('br'));
+        td3.appendChild($('<br />'));
 
         var evalopts = [
             {'value': 0, 'label': Joomla.JText._('COM_FABRIK_TEXT')},
@@ -556,7 +552,7 @@ var adminFilters = my.Class({
             {'value': 3, 'label': Joomla.JText._('COM_FABRIK_NO_QUOTES')}
         ];
 
-        var tdType = new Element('td').adopt(this._makeSel('inputbox elementtype', 'jform[params][filter-eval][]', evalopts, evaluate, false));
+        var tdType = $('<td>').adopt(this._makeSel('inputbox elementtype', 'jform[params][filter-eval][]', evalopts, evaluate, false));
 
         var checked = (selJoin !== '' || selFilter !== '' || selCondition !== '' || selValue !== '') ? true : false;
         var delId = this.el.id + '-del-' + this.counter;

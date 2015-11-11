@@ -8,7 +8,7 @@
 var FbTime = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'time';
-		this.parent(element, options);
+		FbTime.Super.call(this, element, options);
 	},
 
 	getValue: function () {

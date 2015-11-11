@@ -46,7 +46,7 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
     },
 
     dowatch: function (e) {
-        var v = Fabrik.blocks[this.form.form.id].formElements[this.options.watch].getValue();
+        var v = Fabrik.blocks[this.form.form.prop('id')].formElements[this.options.watch].getValue();
         this.change(v, e.target.id);
     },
 
@@ -221,7 +221,6 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
             self = this;
         // c is the repeat group count
         this.myAjax = null;
-        this.parent(c);
         FbCascadingdropdown.Super.prototype.cloned(this, c);
         this.spinner = new Spinner(this.element.closest('.fabrikElementContainer'));
         // Cloned seems to be called correctly

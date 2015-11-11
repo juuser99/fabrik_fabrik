@@ -305,7 +305,7 @@ class FabrikHelperHTML
   var el = $(this);
     el.on('click', function(e) {
     	var opts = $opts;
-    	e.stop();
+    	e.stopPropagation();
       opts2 = JSON.decode($(this).prop('rel'));
       opts = $.merge(opts, opts2 || {});
       opts.contentURL = el.prop('href');
@@ -824,6 +824,7 @@ EOD;
 
 			// Ensure bootstrap js is loaded - as J template may not load it.
 			JHtml::_('bootstrap.framework');
+			JHtml::_('jquery.ui');
 
 			// Require js test - list with no cal loading ajax form with cal
 			JHTML::_('behavior.calendar');
@@ -960,9 +961,7 @@ EOD;
 
 		// Load any previously created shim (e.g form which then renders list in outro text)
 		$newShim = $session->get('fabrik.js.shim', array());
-		echo "<pre>";
-		print_r($shim);
-		echo "</pre>";
+
 		foreach ($shim as $k => &$s)
 		{
 			$k .= $ext;
@@ -989,8 +988,6 @@ EOD;
 
 		$deps->deps[] = 'jquery';
 		$deps->deps[] = 'fab/lib/my.class' . $ext;
-
-		//$deps->deps[] = 'fab/mootools-ext' . $ext;
 		$deps->deps[] = 'fab/tipsBootStrapMock' . $ext;
 
 
@@ -1009,7 +1006,7 @@ EOD;
 		$framework['fab/elementlist' . $ext] = $deps;
 		$newShim                             = array_merge($framework, $newShim);
 		$shim                                = json_encode($newShim);
-echo "<pre>";print_r($newShim);echo "</pre>";
+
 		foreach ($requirePaths as $reqK => $repPath)
 		{
 			$pathBits[] = "\n\t\t$reqK : '$repPath'";

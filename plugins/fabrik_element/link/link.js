@@ -5,18 +5,18 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbLink = my.Class(FbElementList, {
+var FbLink = my.Class(FbElementList, {
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikLink';
-		this.parent(element, options);
+		FbLink.Super.call(this, element, options);
 		this.subElements = this._getSubElements();
 	},
 
 	update: function (val) {
 		this.getElement();
-		var subs = this.element.getElements('.fabrikinput');
-		if (typeOf(val) === 'object') {
+		var subs = this.element.find('.fabrikinput');
+		if (typeof(val) === 'object') {
 			subs[0].value = val.label;
 			subs[1].value = val.link;
 		} else {

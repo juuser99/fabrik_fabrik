@@ -25,7 +25,7 @@ var inline = my.Class({
 			target.hide();
 			target.store('origValue', target.get('text'));
 			if (!target.retrieve('inline')) {
-				editor = new Element('input');
+				editor = $('<input />');
 				editor.on('keydown', function (e) {
 					self.checkKey(e, target);
 				});

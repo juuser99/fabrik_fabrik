@@ -6,45 +6,46 @@
  */
 
 var fbVisApprovals = my.Class({
-	options: {},
-	constructor: function (el, options) {
-		this.setOptions(options);
-		this.el = $('#' + el);
-		$(document).on('click', 'a.approve', function (e) {
-			var el = $(this);
-			e.stop();
-			if ($(this).prop('tagName') !== 'A') {
-				el = $(this).closest('a');
-			}
-			new Request.HTML({'url': el.prop('href'),
-				'onSuccess': function () {
-					el.closest('tr').remove();
-				}
-			}).send();
+    options    : {},
+    constructor: function (el, options) {
+        this.setOptions(options);
+        this.el = $('#' + el);
+        $(document).on('click', 'a.approve', function (e) {
+            var el = $(this);
+            e.stopPropagation();
+            if ($(this).prop('tagName') !== 'A') {
+                el = $(this).closest('a');
+            }
+            new Request.HTML({
+                'url'      : el.prop('href'),
+                'onSuccess': function () {
+                    el.closest('tr').remove();
+                }
+            }).send();
 
-		});
-		$(document).on('click', 'a.disapprove', function (e) {
-			var el = $(this);
-			e.stop();
-			if (el.prop('tagName') !== 'A') {
-				el = el.closest('a');
-			}
-			new Request.HTML({'url': el.prop('href'),
-				'onSuccess': function () {
-					el.closest('tr').remove();
-				}
-			}).send();
+        });
+        $(document).on('click', 'a.disapprove', function (e) {
+            var el = $(this);
+            e.stopPropagation();
+            if (el.prop('tagName') !== 'A') {
+                el = el.closest('a');
+            }
+            new $.ajax({
+                'url': el.prop('href'),
+            }).success(function () {
+                    el.closest('tr').remove();
+                });
 
-		});
+        });
 
-		new FloatingTips('.approvalTip', {
-			position: 'right',
-			content: function (e) {
-				var r = e.getNext();
-				r.store('trigger', e);
-				return r;
-			},
-			hideOn: 'mousedown'
-		});
-	}
+        new FloatingTips('.approvalTip', {
+            position: 'right',
+            content : function (e) {
+                var r = e.getNext();
+                r.store('trigger', e);
+                return r;
+            },
+            hideOn  : 'mousedown'
+        });
+    }
 });

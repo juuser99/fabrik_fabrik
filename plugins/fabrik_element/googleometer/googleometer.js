@@ -1,5 +1,5 @@
 var FbGoogleometer = my.Class(FbElement, {
     constructor: function (element, options) {
-        this.parent(element, options);
+        FbGoogleometer.Super.call(this, element, options);
     }
 });

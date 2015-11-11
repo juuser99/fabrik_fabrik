@@ -15,9 +15,9 @@ var Labels = my.Class({
 		$('.fabrikElementContainer').each(function (c) {
 			var label = $(this).find('label');
 			if (label.length !== 0) {
-				var input = c.getElement('input');
+				var input = c.find('input');
 				if (input.length === 0) {
-					input = c.getElement('textarea');
+					input = c.find('textarea');
 				}
 				if (input.length !== 0) {
 					input.val(label.html());
@@ -37,7 +37,7 @@ var Labels = my.Class({
 	},
 
 	toogleLabel: function (e, input, label) {
-		e.stop();
+		e.stopPropagation();
 		if (e.type === 'click') {
 			if (input.val() === label) {
 				input.val('');

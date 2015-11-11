@@ -12,7 +12,7 @@ var FbListJs = my.Class(FbListPlugin, {
 	},
 
 	constructor: function (options) {
-		this.parent(options);
+		FbListJs.Super.call(this, options);
 	},
 
 	buttonAction: function () {

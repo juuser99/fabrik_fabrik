@@ -9,6 +9,6 @@ var FbCount = my.Class(FbElement, {
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikcount';
-		this.parent(element, options);
+		FbCount.Super.call(this, element, options);
 	}
 });

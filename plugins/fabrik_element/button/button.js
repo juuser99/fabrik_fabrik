@@ -16,7 +16,7 @@ var FbButton = my.Class(FbElement, {
 
 			// Unlike element addNewEventAux we need to stop the event otherwise the form is submitted
 			if (e) {
-				e.stop();
+				e.stopPropagation();
 			}
 			typeOf(js) === 'function' ? js.delay(0, this, this) : eval(js);
 		}.bind(this));

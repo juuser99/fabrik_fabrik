@@ -78,7 +78,7 @@ var FbGoogleMap = my.Class(FbElement, {
 
     constructor: function (element, options) {
         this.mapMade = false;
-        this.parent(element, options);
+        FbGoogleMap.Super.call(this, element, options);
 
         this.loadFn = function () {
             switch (this.options.maptype) {
@@ -528,12 +528,12 @@ var FbGoogleMap = my.Class(FbElement, {
                 // Stop enter in geocode field submitting the form.
                 this.element.find('.geocode_input').on('keypress', function (e) {
                     if (e.key === 'enter') {
-                        e.stop();
+                        e.stopPropagation();
                     }
                 });
             } else {
                 this.element.find('.geocode_input').on('keyup', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     self.geoCode(e);
                 });
             }
@@ -559,7 +559,7 @@ var FbGoogleMap = my.Class(FbElement, {
         this.mapMade = false;
         this.map = null;
         this.makeMap();
-        this.parent(c);
+        FbGoogleMap.Super.prototype.cloned(this, c);
     },
 
     update: function (v) {

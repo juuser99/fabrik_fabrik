@@ -32,7 +32,7 @@ var FbCheckBox = my.Class(FbElementList, {
 
 		$(d).slideUp(500);
 		a.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 			$(d).slideToggle();
 		});
 	},

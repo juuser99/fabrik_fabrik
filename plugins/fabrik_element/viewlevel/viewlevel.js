@@ -9,6 +9,6 @@ var FbViewlevel = my.Class(FbElement, {
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikviewlevel';
-		this.parent(element, options);
+		FbViewlevel.Super.call(this, element, options);
 	}
 });

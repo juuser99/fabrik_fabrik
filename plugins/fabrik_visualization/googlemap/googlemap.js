@@ -47,7 +47,7 @@ var FbGoogleMapViz = my.Class({
         this.markers = [];
         this.distanceWidgets = [];
         this.icons = [];
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
 
         if (this.options.ajax_refresh) {
             this.updater = new Request.JSON({
@@ -93,7 +93,7 @@ var FbGoogleMapViz = my.Class({
                     self.container.find('.fabrik_filter').each(function (f) {
                         f.value = '';
                     });
-                    e.stop();
+                    e.stopPropagation();
                     form.submit();
                 });
             }
@@ -105,7 +105,7 @@ var FbGoogleMapViz = my.Class({
                 if (typeOf(res) === 'null' || res.length === 0 || !res.contains(false)) {
                     form.submit();
                 } else {
-                    e.stop();
+                    e.stopPropagation();
                 }
             });
 
@@ -545,7 +545,7 @@ var FbGoogleMapViz = my.Class({
             // Clear the grouped by icon selection
             var clear = this.container.find('.clear-grouped');
             clear.on('click', function (e) {
-                e.stop();
+                e.stopPropagation();
                 self.toggleGrouped(false);
             });
             this.watchingSideBar = true;

@@ -27,7 +27,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
             fconsole('Fabrik adminelement.js: Initialising', plugins, options, id);
         }
         fabrikAdminElement.Super.call(this, plugins, id, 'validationrule');
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.setParentViz();
 
         this.jsAccordion = new Fx.Accordion([], [], {
@@ -40,7 +40,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
                 fconsole('Fabrik adminelement.js: javascript tab Add button not found');
             } else {
                 $('#addJavascript').on('click', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     self.jsAccordion.display(-1);
                     self.addJavascript();
                 });
@@ -61,7 +61,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
             });
 
             $('#javascriptActions').on('click', 'a[data-button=removeButton]', function (e) {
-                e.stop();
+                e.stopPropagation();
                 self.deleteJS(self);
             });
 
@@ -176,8 +176,8 @@ var fabrikAdminElement = my.Class(PluginManager, {
             self = this,
         // Ajax request to load the first part of the plugin form
         // (do[plugin] in, on)
-            div = new Element('div.actionContainer.panel.accordion-group'),
-            a = new Element('a.accordion-toggle', {
+            div = $(document.createElement('div')).addClass('actionContainer panel accordion-group'),
+            a = $(document.createElement('a')).addClass('accordion-toggle').attr({
                 'href': '#'
             });
         a.adopt($(document.createElement('span')).addClass('pluginTitle').text(Joomla.JText._('COM_FABRIK_LOADING')));

@@ -23,11 +23,11 @@ var FloatingTips = my.Class({
 		'notice': false,
 		'html': true,
 		showFn: function (e) {
-			e.stop();
+			e.stopPropagation();
 			return true;
 		},
 		hideFn: function (e) {
-			e.stop();
+			e.stopPropagation();
 			return true;
 		},
 		placement: function (tip, ele) {

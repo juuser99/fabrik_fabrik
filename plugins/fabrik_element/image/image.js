@@ -7,10 +7,11 @@
 
 var FbImage = my.Class(FbFileElement, {
     constructor: function (element, options) {
+        debugger;
         var self = this;
         this.plugin = 'image';
         this.folderlist = [];
-        this.parent(element, options);
+        FbImage.Super.call(this, element, options);
         this.options.rootPath = options.rootPath;
         if (options.editable) {
             this.getMyElements();
@@ -39,16 +40,16 @@ var FbImage = my.Class(FbFileElement, {
         if (!c) {
             return;
         }
-        this.image = c.getElement('.imagedisplayor');
-        this.folderDir = c.getElement('.folderselector');
-        this.imageDir = c.getElement('.imageselector');
+        this.image = c.find('.imagedisplayor');
+        this.folderDir = c.find('.folderselector');
+        this.imageDir = c.find('.imageselector');
         // this.hiddenField is set in FbFileElement
     },
 
     cloned: function (c) {
         this.getMyElements();
         this.ajaxFolder();
-        this.parent(c);
+        FbImage.Super.prototype.cloned(this, c);
     },
 
     hasSubElements: function () {
@@ -60,7 +61,7 @@ var FbImage = my.Class(FbFileElement, {
     },
 
     doAjaxBrowse: function (dir) {
-        this.parent(dir);
+        FbImage.Super.prototype.doAjaxBrowse(this, dir);
         this.changeFolder(dir);
     },
 

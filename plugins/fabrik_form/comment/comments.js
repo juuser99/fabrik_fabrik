@@ -19,7 +19,7 @@ var FabrikComment = my.Class({
             return;
         }
 
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.fx = {};
         this.fx.toggleForms = {};
         this.spinner = new Spinner('fabrik-comments', {'message': 'loading'});
@@ -127,7 +127,7 @@ var FabrikComment = my.Class({
             }
         }
         var v = replyForm.find('textarea').val();
-        e.stop();
+        e.stopPropagation();
         if (v === '') {
             this.spinner.hide();
             window.alert(Joomla.JText._('PLG_FORM_COMMENT_PLEASE_ENTER_A_COMMENT_BEFORE_POSTING'));
@@ -224,7 +224,7 @@ var FabrikComment = my.Class({
                 commentForm.fadeOut();
 
                 a.on('click', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     commentForm.fadeToggle();
                 });
             }
@@ -252,7 +252,7 @@ var FabrikComment = my.Class({
                 });
 
                 self.updateThumbs();
-                e.stop();
+                e.stopPropagation();
             });
         });
         // if admin watch inline edit
@@ -289,7 +289,7 @@ var FabrikComment = my.Class({
                             $(document.createElement('span')).addClass('info').html(r).inject(c);
                         });
 
-                    e.stop();
+                    e.stopPropagation();
                 });
             });
         }

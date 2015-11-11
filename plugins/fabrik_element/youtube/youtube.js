@@ -8,6 +8,6 @@
 var FbYouTube = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fabrikyoutube';
-		this.parent(element, options);
+		FbYouTube.Super.call(this, element, options);
 	}
 });

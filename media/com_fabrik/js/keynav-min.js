@@ -1,2 +1,2 @@
 /*! Fabrik */
-var KeyNav=my.Class({constructor:function(){$(window).on("keypress",function(a){switch(a.code){case 37:case 38:case 39:case 40:Fabrik.trigger("fabrik.keynav",[a.code,a.shift]),a.stop()}})}}),FabrikKeyNav=new KeyNav;
+var KeyNav=my.Class({constructor:function(){$(window).on("keypress",function(a){switch(a.code){case 37:case 38:case 39:case 40:Fabrik.trigger("fabrik.keynav",[a.code,a.shift]),a.stopPropagation()}})}}),FabrikKeyNav=new KeyNav;

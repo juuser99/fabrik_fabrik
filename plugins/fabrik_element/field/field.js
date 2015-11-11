@@ -17,7 +17,7 @@ var FbField = my.Class(FbElement, {
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikfield';
-		this.parent(element, options);
+		FbField.Super.call(this, element, options);
 		/*
 		 * $$$ hugh - testing new masking feature, uses this jQuery widget:
 		 * http://digitalbush.com/projects/masked-input-plugin/
@@ -65,7 +65,7 @@ var FbField = my.Class(FbElement, {
 				jQuery('#' + element.id).geocomplete();
 			}
 		}
-		this.parent(c);
+		FbField.Super.prototype.cloned(this, c);
 	}
 
 });

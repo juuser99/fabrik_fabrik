@@ -29,12 +29,12 @@ AdminPackage = my.Class({
 	_swaplistIni: function (addBtn, removeBtn, source, target) {
 		var self = this;
 		addBtn.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 			self._swaplist(source, target);
 		});
 
 		removeBtn.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 			self._swaplist(target, source);
 		});
 	},

@@ -233,7 +233,7 @@ var fabrikCalendar = my.Class({
 
                 // Ensure new form doesn't open when we double click on the event.
                 eventCont.on('dblclick', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                 });
             }
         }
@@ -981,7 +981,7 @@ var fabrikCalendar = my.Class({
             return;
         }
 
-        e.stop();
+        e.stopPropagation();
 
         if (e.target.className === 'addEventButton') {
             now = new Date();
@@ -1269,7 +1269,7 @@ var fabrikCalendar = my.Class({
                             'color'           : this.options.headingColor,
                             'background-color': this.options.colors.headingBg
                         }).on('click', function (e) {
-                            e.stop();
+                            e.stopPropagation();
                             self.selectedDate.setTime(e.target.className.replace('dayHeading ', '').toInt());
                             var tmpdate = new Date();
                             $(this).parent().parent().find('td').each(function (td) {
@@ -1558,7 +1558,7 @@ var fabrikCalendar = my.Class({
         o.rowid = i[1];
         o.listid = i[0];
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
         this.addEvForm(o);
     },

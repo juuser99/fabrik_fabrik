@@ -80,17 +80,19 @@ Fabrik.Window = my.Class({
      * Tabs can resize content area
      */
     watchTabs: function () {
-        this.window.getElements('.nav-tabs a').addEvent('mouseup', function () {
-            this.fitToWidth();
-            this.drawWindow();
-        }.bind(this));
+        var self = this;
+        $('.nav-tabs a').on('mouseup', function () {
+            self.fitToWidth();
+            self.drawWindow();
+        });
     },
 
     deleteButton: function () {
-        var delClick = function (e) {
-            this.close(e);
-        }.bind(this);
-        var del = $(Fabrik.jLayouts['modal-close'])[0];
+        var self = this,
+            delClick = function (e) {
+                self.close(e);
+            };
+        var del = $(Fabrik.jLayouts['modal-close']);
         del.on('click', delClick);
 
         return del;
@@ -105,7 +107,7 @@ Fabrik.Window = my.Class({
         h = (h === null || h === 'auto') ? this.options.height + 10 : this.window.css('height');
         h = h.toInt();
         var d = {'width': w + 'px', 'height': h + 'px'};
-        this.window.csss(d);
+        this.window.css(d);
 
         if (!(this.modal)) {
             var yy = window.getSize().y / 2 + window.getScroll().y - (h / 2);
@@ -123,7 +125,7 @@ Fabrik.Window = my.Class({
         }
         // Prototype J template css puts margin left on .modals
         d['margin-left'] = 0;
-        this.window.csss(d);
+        this.window.css(d);
     },
 
     /**
@@ -158,10 +160,10 @@ Fabrik.Window = my.Class({
      * Build the window HTML
      */
     makeWindow: function () {
-        var draggerC, dragger, expandButton, expandIcon, resizeIcon, label, cw, ch, handleParts = [];
-        this.window = new Element('div', {
-            'id'   : this.options.id,
-            'class': 'fabrikWindow ' + this.classSuffix + ' modal'
+        var draggerC, dragger, expandButton, expandIcon,
+            self = this, resizeIcon, label, cw, ch, handleParts = [];
+        this.window = $('<div />').addClass('fabrikWindow ' + this.classSuffix + ' modal').attr({
+            'id': this.options.id
         });
 
         // Set window dimensions before center - needed for fileupload crop
@@ -174,30 +176,28 @@ Fabrik.Window = my.Class({
         var hclass = 'handlelabel';
         if (!this.modal) {
             hclass += ' draggable';
-            draggerC = new Element('div', {'class': 'bottomBar modal-footer'});
-            dragger = new Element('div', {'class': 'dragger'});
-            resizeIcon = jQuery(Fabrik.jLayouts['icon-expand'])[0];
-            resizeIcon.inject(dragger);
-            draggerC.adopt(dragger);
+            draggerC = $('<div />').addClass('bottomBar modal-footer');
+            dragger = $('<div />').addClass('dragger');
+            resizeIcon = $(Fabrik.jLayouts['icon-expand']);
+            resizeIcon.prependTo(dragger);
+            draggerC.append(dragger);
         }
 
-        expandIcon = jQuery(Fabrik.jLayouts['icon-full-screen'])[0];
-        label = new Element('h3', {'class': hclass}).text(this.options.title);
+        expandIcon = jQuery(Fabrik.jLayouts['icon-full-screen']);
+        label = $('<h3 />').addClass(hclass).text(this.options.title);
 
         handleParts.push(label);
         if (this.options.expandable && this.modal === false) {
-            expandButton = new Element('a', {
-                'href': '#', 'class': 'expand', 'events': {
-                    'click': function (e) {
-                        this.expand(e);
-                    }.bind(this)
-                }
-            }).adopt(expandIcon);
+            expandButton = $('<a />').addClass('expand').attr({
+                'href': '#'
+            }).on('click', function (e) {
+                self.expand(e);
+            }).append(expandIcon);
             handleParts.push(expandButton);
         }
 
         handleParts.push(del);
-        this.handle = this.getHandle().adopt(handleParts);
+        this.handle = this.getHandle().append(handleParts);
 
         var bottomBarHeight = 15;
         var topBarHeight = 15;
@@ -205,27 +205,29 @@ Fabrik.Window = my.Class({
         if (contentHeight < this.options.loadHeight) {
             contentHeight = this.options.loadHeight;
         }
-        this.contentWrapperEl = new Element('div.contentWrapper', {
-            'styles': {'height': contentHeight + 'px'}
+        this.contentWrapperEl = $('<div />').addClass('contentWrapper').css({
+            'height': contentHeight + 'px'
         });
-        var itemContent = new Element('div', {'class': 'itemContent'});
-        this.contentEl = new Element('div', {'class': 'itemContentPadder'});
-        itemContent.adopt(this.contentEl);
-        this.contentWrapperEl.adopt(itemContent);
+        var itemContent = $('<div />').addClass('itemContent');
+        this.contentEl = $('<div />').addClass('itemContentPadder');
+        itemContent.append(this.contentEl);
+        this.contentWrapperEl.append(itemContent);
         cw = this.windowWidthInPx();
         ch = this.windowDimenionInPx('height');
-        this.contentWrapperEl.csss({'height': ch, 'width': cw + 'px'});
+        this.contentWrapperEl.css({'height': ch, 'width': cw + 'px'});
         if (this.modal) {
-            this.window.adopt([this.handle, this.contentWrapperEl]);
+            this.window.append([this.handle, this.contentWrapperEl]);
         } else {
-            this.window.adopt([this.handle, this.contentWrapperEl, draggerC]);
-            this.window.makeResizable({
-                'handle': dragger,
-                onDrag  : function () {
-                    Fabrik.trigger('fabrik.window.resized', this.window);
-                    this.drawWindow();
-                }.bind(this)
-            });
+            this.window.append([this.handle, this.contentWrapperEl, draggerC]);
+            this.window.draggable(
+                {
+                    'handle': dragger,
+                    drag    : function () {
+                        Fabrik.trigger('fabrik.window.resized', this.window);
+                        this.drawWindow();
+                    }.bind(this)
+                }
+            ).resizable();
             var dragOpts = {'handle': this.handle};
             dragOpts.onComplete = function () {
                 Fabrik.trigger('fabrik.window.moved', this.window);
@@ -237,31 +239,27 @@ Fabrik.Window = my.Class({
         if (!this.options.visible) {
             this.window.fade('hide');
         }
-        document.id(document.body).adopt(this.window);
+        $(document.body).append(this.window);
         this.loadContent();
         this.center();
-        //bad idea - means opening windows are hidden if other code calls another window to hide
-        /*Fabrik.addEvent('fabrik.overlay.hide', function () {
-         this.window.hide();
-         }.bind(this));*/
     },
 
     /**
      * toggle the window full screen
      */
     expand: function (e) {
-        e.stop();
+        e.stopPropagation();
         if (!this.expanded) {
             this.expanded = true;
             var w = window.getSize();
             this.unexpanded = this.window.getCoordinates();
             var scroll = window.getScroll();
-            this.window.setPosition({'x': scroll.x, 'y': scroll.y}).csss({'width': w.x, 'height': w.y});
+            this.window.setPosition({'x': scroll.x, 'y': scroll.y}).css({'width': w.x, 'height': w.y});
         } else {
             this.window.setPosition({
                 'x': this.unexpanded.left,
                 'y': this.unexpanded.top
-            }).csss({'width': this.unexpanded.width, 'height': this.unexpanded.height});
+            }).css({'width': this.unexpanded.width, 'height': this.unexpanded.height});
             this.expanded = false;
         }
         this.drawWindow();
@@ -269,7 +267,7 @@ Fabrik.Window = my.Class({
 
     getHandle: function () {
         var c = this.handleClass();
-        return new Element('div', {'class': 'draggable ' + c});
+        return $('<div />').addClass('draggable ' + c);
     },
 
     handleClass: function () {
@@ -277,7 +275,7 @@ Fabrik.Window = my.Class({
     },
 
     loadContent: function () {
-        var u;
+        var u, self = this;
         $(window).trigger('tips.hideall');
         switch (this.options.loadMethod) {
 
@@ -292,67 +290,67 @@ Fabrik.Window = my.Class({
                 } else {
                     this.contentEl.html(this.options.content);
                 }
-                this.trigger('onContentLoaded', [this]);
+                this.options.onContentLoaded.apply(this);
                 this.watchTabs();
                 break;
             case 'xhr':
-                u = this.window.getElement('.itemContent');
+                u = this.window.find('.itemContent');
                 u = this.contentEl;
                 Fabrik.loader.start(u);
-                new Request.HTML({
-                    'url'    : this.options.contentURL,
-                    'data'   : {'fabrik_window_id': this.options.id},
-                    'update' : u,
-                    onSuccess: function () {
+                new $.ajax({
+                    'url'   : this.options.contentURL,
+                    'data'  : {'fabrik_window_id': this.options.id},
+                    'method': 'post',
+                }).success(function (r) {
+                        u.append(r);
                         Fabrik.loader.stop(u);
-                        this.trigger('onContentLoaded', [this]);
-                        this.watchTabs();
+                        self.options.onContentLoaded.apply(this);
+                        self.watchTabs();
 
                         // Needed for IE11
-                        this.center();
+                        self.center();
                         // Ini any Fabrik JS code that was loaded with the ajax request
                         // window.trigger('fabrik.loaded');
-                    }.bind(this)
-                }).post();
+                    });
                 break;
             case 'iframe':
-                var h = this.options.height - 40;
-                var w = this.contentEl.getScrollSize().x + 40 < window.getWidth() ? this.contentEl.getScrollSize().x + 40 : window.getWidth();
-                u = this.window.getElement('.itemContent');
+                var h = this.options.height - 40,
+                    winWidth = window.getWidth(),
+                    scrollSize = this.contentEl.getScrollSize();
+                var w = scrollSize.x + 40 < winWidth ? scrollSize.x + 40 : winWidth;
+                u = this.window.find('.itemContent');
                 Fabrik.loader.start(u);
 
                 if (this.iframeEl) {
                     this.iframeEl.dispose();
                 }
-                this.iframeEl = new Element('iframe', {
+                this.iframeEl = $('<iframe />').addClass('fabrikWindowIframe').attr({
                     'id'          : this.options.id + '_iframe',
                     'name'        : this.options.id + '_iframe',
-                    'class'       : 'fabrikWindowIframe',
                     'src'         : this.options.contentURL,
                     'marginwidth' : 0,
                     'marginheight': 0,
                     'frameBorder' : 0,
                     'scrolling'   : 'auto',
-                    'styles'      : {
-                        'height': h + 'px',
-                        'width' : w
-                    }
-                }).inject(this.window.getElement('.itemContent'));
+                }).css({
+                    'height': h + 'px',
+                    'width' : w
+                }).inject(this.window.find('.itemContent'));
                 this.iframeEl.hide();
-                this.iframeEl.addEvent('load', function (e) {
-                    Fabrik.loader.stop(this.window.getElement('.itemContent'));
-                    this.iframeEl.show();
-                    this.trigger('onContentLoaded', [this]);
-                    this.watchTabs();
-                }.bind(this));
+                this.iframeEl.on('load', function () {
+                    Fabrik.loader.stop(self.window.find('.itemContent'));
+                    self.iframeEl.show();
+                    self.trigger('onContentLoaded', [this]);
+                    self.watchTabs();
+                });
                 break;
         }
     },
 
     drawWindow: function () {
-        var titleHeight = this.window.getElement('.' + this.handleClass());
+        var titleHeight = this.window.find('.' + this.handleClass());
         titleHeight = titleHeight ? titleHeight.getSize().y : 25;
-        var footer = this.window.getElement('.bottomBar').getSize().y;
+        var footer = this.window.find('.bottomBar').getSize().y;
         this.contentWrapperEl.css('height', this.window.getDimensions().height - (titleHeight + footer));
         this.contentWrapperEl.css('width', this.window.getDimensions().width - 2);
 
@@ -368,7 +366,8 @@ Fabrik.Window = my.Class({
         center = center === undefined ? true : center;
 
         if (this.options.loadMethod !== 'iframe') {
-            // As iframe content may not be on the same domain we CAN'T guarantee access to its body element to work out its dimensions
+            // As iframe content may not be on the same domain we CAN'T
+            // guarantee access to its body element to work out its dimensions
             this.fitToHeight();
             this.fitToWidth();
         }
@@ -377,7 +376,7 @@ Fabrik.Window = my.Class({
             this.center();
         }
         if (!this.options.offset_y && scroll) {
-            var myfx = new Fx.Scroll(window).toElement(this.window);
+            new Fx.Scroll(window).toElement(this.window);
         }
     },
 
@@ -386,10 +385,10 @@ Fabrik.Window = my.Class({
      */
     fitToHeight: function () {
         // Add the top and bottom bars to the content size
-        var titleHeight = this.window.getElement('.' + this.handleClass());
+        var titleHeight = this.window.find('.' + this.handleClass());
         titleHeight = titleHeight ? titleHeight.getSize().y : 25;
-        var footer = this.window.getElement('.bottomBar').getSize().y;
-        var contentEl = this.window.getElement('.itemContent');
+        var footer = this.window.find('.bottomBar').getSize().y;
+        var contentEl = this.window.find('.itemContent');
         var testH = contentEl.getScrollSize().y + titleHeight + footer;
         var h = testH < window.getHeight() ? testH : window.getHeight();
         this.window.css('height', h);
@@ -399,17 +398,16 @@ Fabrik.Window = my.Class({
      * Fit the window width to the min of either its content width or the window width
      */
     fitToWidth: function () {
-        var contentEl = this.window.getElement('.itemContent');
-        var w = contentEl.getScrollSize().x + 25 < window.getWidth() ? contentEl.getScrollSize().x + 25 : window.getWidth();
+        var contentEl = this.window.find('.itemContent'),
+            winWidth = window.getWidth();
+        var w = contentEl.getScrollSize().x + 25 < winWidth ? contentEl.getScrollSize().x + 25 : winWidth;
         this.window.css('width', w);
     },
 
     close: function (e) {
-        if (this.modal) {
-            //document.body.css('overflow', 'auto');
-        }
+
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
         //this.options.destroy = true;
 
@@ -426,12 +424,8 @@ Fabrik.Window = my.Class({
     },
 
     open: function (e) {
-        // Crop fileupload interface doesn't like window scrolling when open, so stop it
-        if (this.modal) {
-            //document.body.css('overflow', 'hidden');
-        }
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
         this.window.fade('show');
         this.trigger('onOpen', [this]);
@@ -446,8 +440,7 @@ Fabrik.Modal = my.Class(Fabrik.Window, {
     classSuffix: 'fabrikWindow-modal',
 
     getHandle: function () {
-        var c = this.handleClass();
-        return new Element('div', {'class': c});
+        return $('<div />').addClass(this.handleClass());
     }
 });
 
@@ -465,14 +458,14 @@ Fabrik.RedirectWindow = my.Class(Fabrik.Window, {
         };
         opts2.id = 'redirect';
         opts = $.merge(opts2, opts);
-        var loadMethod;
+        var loadMethod, url = opts.contentURL;
         //if its a site page load via xhr otherwise load as iframe
         opts.loadMethod = 'xhr';
-        if (!opts.contentURL.contains(Fabrik.liveSite) && (opts.contentURL.contains('http://') || opts.contentURL.contains('https://'))) {
+        if (!url.contains(Fabrik.liveSite) && (url.contains('http://') || url.contains('https://'))) {
             opts.loadMethod = 'iframe';
         } else {
-            if (!opts.contentURL.contains('tmpl=component')) {
-                opts.contentURL += opts.contentURL.contains('?') ? '&tmpl=component' : '?tmpl=component';
+            if (!url.contains('tmpl=component')) {
+                opts.contentURL += url.contains('?') ? '&tmpl=component' : '?tmpl=component';
             }
         }
         this.options = $.extend(this.options, opts);

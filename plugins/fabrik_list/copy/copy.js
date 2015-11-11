@@ -7,6 +7,6 @@
 
 var FbListCopy = my.Class(FbListPlugin, {
 	constructor: function (options) {
-		this.parent(options);
+		FbListCopy.Super.call(this, options);
 	}
 });

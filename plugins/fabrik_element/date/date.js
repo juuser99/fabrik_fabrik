@@ -15,26 +15,28 @@ var FbDateTime = my.Class(FbElement, {
      */
     options: {
         'dateTimeFormat': '',
+        'watchElement'  : '',
         'calendarSetup' : {
-            'eventName'   : 'click',
-            'ifFormat'    : '%Y/%m/%d',
-            'daFormat'    : '%Y/%m/%d',
-            'singleClick' : true,
-            'align'       : 'Tl',
-            'range'       : [1900, 2999],
-            'showsTime'   : false,
-            'timeFormat'  : '24',
-            'electric'    : true,
-            'step'        : 2,
-            'cache'       : false,
-            'showOthers'  : false,
-            'advanced'    : false,
-            'allowedDates': []
+            'eventName'    : 'click',
+            'ifFormat'     : '%Y/%m/%d',
+            'daFormat'     : '%Y/%m/%d',
+            'singleClick'  : true,
+            'align'        : 'Tl',
+            'range'        : [1900, 2999],
+            'showsTime'    : false,
+            'timeFormat'   : '24',
+            'electric'     : true,
+            'step'         : 2,
+            'cache'        : false,
+            'showOthers'   : false,
+            'advanced'     : false,
+            'allowedDates' : [],
+            'dateAllowFunc': ''
         }
     },
 
     constructor: function (element, options) {
-        if (!this.parent(element, options)) {
+        if (!FbDateTime.Super.call(this, element, options)) {
             return false;
         }
         this.hour = '0';
@@ -64,8 +66,8 @@ var FbDateTime = my.Class(FbElement, {
             if (this.options.typing === false) {
                 this.disableTyping();
             } else {
-                this.getDateField().on('blur', function (e) {
-                    var date_str = this.getDateField().value;
+                this.getDateField().on('blur', function () {
+                    var date_str = this.getDateField().val();
                     if (date_str !== '') {
                         var d;
                         //this is the calendar native parseDate call, but it doesnt take into account seconds
@@ -93,7 +95,7 @@ var FbDateTime = my.Class(FbElement, {
             };
             h.delay(100, this);
             this.getCalendarImg().on('click', function (e) {
-                e.stop();
+                e.stopPropagation();
                 if (!self.cal.params.position) {
                     self.cal.showAtElement(self.cal.params.button || self.cal.params.displayArea || self.cal.params.inputField, self.cal.params.align);
                 } else {
@@ -116,7 +118,7 @@ var FbDateTime = my.Class(FbElement, {
      * Once the element is attached to the form, observe the ajax trigger element
      */
     attachedToForm: function () {
-        this.parent();
+        FbDateTime.Super.prototype.attachedToForm(this);
         this.watchAjaxTrigger();
     },
 
@@ -130,26 +132,25 @@ var FbDateTime = my.Class(FbElement, {
         var el = this.form.elements[this.options.watchElement],
             self = this;
         if (el) {
-            el.on('change', function (event) {
+            el.on('change', function () {
                 var data = {
                     'option'    : 'com_fabrik',
                     'format'    : 'raw',
                     'task'      : 'plugin.pluginAjax',
                     'plugin'    : 'date',
                     'method'    : 'ajax_getAllowedDates',
-                    'element_id': this.options.id,
+                    'element_id': self.options.id,
                     'v'         : el.get('value'),
-                    'formid'    : this.form.id
+                    'formid'    : self.form.id
                 };
-                new Request.JSON({
-                    url      : '',
-                    method   : 'post',
-                    'data'   : data,
-                    onSuccess: function (json) {
+                new $.getJSON({
+                    url   : '',
+                    method: 'post',
+                    'data': data
+                }).success(function (json) {
                         self.options.allowedDates = json;
                         self.convertAllowedDates();
-                    }
-                }).send();
+                    });
             });
         }
     },
@@ -157,12 +158,10 @@ var FbDateTime = my.Class(FbElement, {
     /**
      * Image to open calendar can be <img> (J2.5) or <i> (J3)
      *
-     * @return  dom node
+     * @return {jQuery} dom node
      */
-
     getCalendarImg: function () {
-        var i = this.element.getElement('.calendarbutton');
-        return i;
+        return this.element.find('.calendarbutton');
     },
 
     /**
@@ -171,10 +170,11 @@ var FbDateTime = my.Class(FbElement, {
      */
     dateSelect: function (date) {
         // Check PHP events.
-        var allowed = this.options.allowedDates;
+        var allowed = this.options.allowedDates, i,
+            fn = this.options.calendarSetup.dateAllowFunc,
+            matched = false;
         if (allowed.length > 0) {
-            var matched = false;
-            for (var i = 0; i < allowed.length; i++) {
+            for (i = 0; i < allowed.length; i++) {
                 if (allowed[i].format('%Y%m%d') === date.format('%Y%m%d')) {
                     matched = true;
                 }
@@ -184,10 +184,8 @@ var FbDateTime = my.Class(FbElement, {
             }
         }
 
-        var fn = this.options.calendarSetup.dateAllowFunc;
-        if (typeOf(fn) !== 'null' && fn !== '') {
+        if (fn !== '') {
             eval(fn);
-            return result;
         }
     },
 
@@ -210,7 +208,7 @@ var FbDateTime = my.Class(FbElement, {
         }
     },
 
-    calClose: function (calendar) {
+    calClose: function () {
         this.cal.hide();
         $(window).trigger('fabrik.date.close', this);
         if (this.options.validations) {
@@ -223,7 +221,8 @@ var FbDateTime = my.Class(FbElement, {
     /**
      * Called from FbFormSubmit
      *
-     * @params   function  cb  Callback function to run when the element is in an acceptable state for the form processing to continue
+     * @param {function} cb  Callback function to run when the element is
+     * in an acceptable state for the form processing to continue
      *
      * @return  void
      */
@@ -238,10 +237,10 @@ var FbDateTime = my.Class(FbElement, {
             // So just setting the date field to v should be enough.
             //this.update(v);
             if (this.options.editable) {
-                this.getDateField().value = v;
+                this.getDateField().val(v);
             }
         }
-        this.parent(cb);
+        FbDateTime.Super.prototype.onsubmit(this, cb);
     },
 
     /**
@@ -254,17 +253,19 @@ var FbDateTime = my.Class(FbElement, {
     },
 
     makeCalendar: function () {
+        var i,
+            params = this.options.calendarSetup,
+            tmp = ['displayArea', 'button'];
+
         if (this.cal) {
             this.cal.show();
             return;
         }
-        var mustCreate = false;
+
         this.addEventToCalOpts();
-        var params = this.options.calendarSetup;
-        var tmp = ["displayArea", "button"];
 
         for (i = 0; i < tmp.length; i++) {
-            if (typeof params[tmp[i]] === "string") {
+            if (typeof params[tmp[i]] === 'string') {
                 params[tmp[i]] = document.getElementById(params[tmp[i]]);
             }
         }
@@ -273,23 +274,23 @@ var FbDateTime = my.Class(FbElement, {
         var dateEl = params.inputField || params.displayArea;
         var dateFmt = params.inputField ? params.ifFormat : params.daFormat;
         this.cal = null;
-        if (dateEl) {
+        if (dateEl.length > 0) {
             if (this.options.advanced) {
 
                 // If its blank dont try to format
-                if (dateEl.value === '') {
+                if (dateEl.val() === '') {
                     params.date = '';
                 } else {
-                    params.date = Date.parseExact(dateEl.value || dateEl.innerHTML, Date.normalizeFormat(dateFmt));
+                    params.date = Date.parseExact(dateEl.val() || dateEl.html(), Date.normalizeFormat(dateFmt));
 
                     // If using format %b-%Y in Spanish (may be other langs as well)
                     // See http://fabrikar.com/forums/index.php?threads/problem-with-dates-on-a-form.39088/#post-196600
                     if (params.date === null) {
-                        params.date = this.options.value;
+                        params.date = this.options;
                     }
                 }
             } else {
-                params.date = Date.parseDate(dateEl.value || dateEl.innerHTML, dateFmt);
+                params.date = Date.parseDate(dateEl.val() || dateEl.html(), dateFmt);
             }
         }
 
@@ -301,20 +302,22 @@ var FbDateTime = my.Class(FbElement, {
         this.cal.setDateStatusHandler(params.dateStatusFunc);
         this.cal.setDateToolTipHandler(params.dateTooltipFunc);
         this.cal.showsTime = params.showsTime;
-        this.cal.time24 = (params.timeFormat.toString() === "24");
+        this.cal.time24 = (params.timeFormat.toString() === '24');
         this.cal.weekNumbers = params.weekNumbers;
 
         if (params.multiple) {
             cal.multiple = {};
             for (i = params.multiple.length; --i >= 0;) {
                 var d = params.multiple[i];
-                var ds = d.print("%Y%m%d");
+                var ds = d.print('%Y%m%d');
                 this.cal.multiple[ds] = d;
             }
         }
         this.cal.showsOtherMonths = params.showOthers;
         this.cal.yearStep = params.step;
-        this.cal.setRange(params.range[0], params.range[1]);
+        if (params.range !== undefined) {
+            this.cal.setRange(params.range[0], params.range[1]);
+        }
         this.cal.params = params;
 
         this.cal.getDateText = params.dateText;
@@ -327,7 +330,7 @@ var FbDateTime = my.Class(FbElement, {
     disableTyping: function () {
         var self = this;
         if (this.element.length === 0) {
-            fconsole(element + ': not date element container - is this a custom template with a missing $element->containerClass div/li surrounding the element?');
+            fconsole(this.element + ': not date element container - is this a custom template with a missing $element->containerClass div/li surrounding the element?');
             return;
         }
         // yes we really can set the none existant 'readonly' property of the
@@ -375,9 +378,9 @@ var FbDateTime = my.Class(FbElement, {
         if (!this.options.editable) {
             return this.options.value;
         }
-        this.getElement();
+        this.find();
         if (this.cal) {
-            var dateFieldValue = this.getDateField().value;
+            var dateFieldValue = this.getDateField().val();
             if (dateFieldValue === '') {
                 return '';
             }
@@ -389,7 +392,7 @@ var FbDateTime = my.Class(FbElement, {
 
             v = this.cal.date;
         } else {
-            if (this.options.value === '' || this.options.value === null || this.options.value === '0000-00-00 00:00:00') {
+            if (this.dateIsEmpty(this.options.value)) {
                 return '';
             }
             v = new Date.parse(this.options.value);
@@ -398,6 +401,19 @@ var FbDateTime = my.Class(FbElement, {
         return v.format('db');
     },
 
+    /**
+     * Is a string an 'empty' date
+     * @param v
+     * @returns {boolean}
+     */
+    dateIsEmpty: function (v) {
+        return v === '' || v === null || v === '0000-00-00 00:00:00';
+    },
+
+    /**
+     * Does the date time format contains a seconds format string
+     * @returns {boolean}
+     */
     hasSeconds: function () {
         if (this.options.showtime === true && this.timeElement) {
             if (this.options.dateTimeFormat.contains('%S')) {
@@ -418,7 +434,7 @@ var FbDateTime = my.Class(FbElement, {
      * @param  date
      */
     setTimeFromField: function (d) {
-        if (typeOf(d) !== 'date') {
+        if ($.type(d) !== 'date') {
             return;
         }
 
@@ -443,38 +459,29 @@ var FbDateTime = my.Class(FbElement, {
             } else {
                 d.setSeconds(0);
             }
-
-        } else {
-            //hidden fields should still keep their times
-            //d.setHours(0);
-            //d.setMinutes(0);
-            //d.setSeconds(0);
         }
         return d;
     },
 
     watchButtons: function () {
         var self = this;
-        if (this.options.showtime & this.options.editable) {
+        if (this.options.showtime && this.options.editable) {
             this.getTimeField();
             this.getTimeButton();
             if (this.timeButton) {
                 this.timeButton.removeEvents('click');
                 this.timeButton.on('click', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     self.showTime();
                 });
                 if (!this.setUpDone) {
                     if (this.timeElement) {
                         this.dropdown = this.makeDropDown();
                         this.setActive();
-                        this.dropdown.getElement('a.close-time').on('click', function (e) {
-                            e.stop();
+                        this.dropdown.find('a.close-time').on('click', function (e) {
+                            e.stopPropagation();
                             self.hideTime();
                         });
-                        /*document.body.addEvent('click', function () {
-                         this.hideTime();
-                         }.bind());*/
                         this.setUpDone = true;
                     }
                 }
@@ -492,10 +499,11 @@ var FbDateTime = my.Class(FbElement, {
             }.bind(this));
         }
         else {
-            this.element.find('input').each(function (i) {
-                i.on(action, function (e) {
+            this.element.find('input').each(function () {
+                var input = $(this);
+                input.on(action, function (e) {
                     if (typeof(e) === 'object') {
-                        e.stop();
+                        e.stopPropagation();
                     }
                     typeof(js) === 'function' ? js.delay(0, this, this) : eval(js);
                 });
@@ -511,7 +519,7 @@ var FbDateTime = my.Class(FbElement, {
      */
     update: function (val, events) {
         events = events ? events : ['change'];
-        this.getElement();
+        this.find();
 
         if (val === 'invalid date') {
             fconsole(this.element.id + ': date not updated as not valid');
@@ -529,7 +537,7 @@ var FbDateTime = my.Class(FbElement, {
             if (date === null) {
                 // Yes, but we still need to clear the fields! (e.g. from reset())
                 this._getSubElements().each(function (subEl) {
-                    subEl.value = '';
+                    subEl.val('');
                 });
 
                 if (this.cal) {
@@ -574,7 +582,7 @@ var FbDateTime = my.Class(FbElement, {
             //if hidden but form set to show time format dont split up the time as we don't
             // have a time field to put it into
             date = date.format(f);
-            this.getDateField().value = date;
+            this.getDateField().val(date);
 
             return;
         } else {
@@ -588,36 +596,32 @@ var FbDateTime = my.Class(FbElement, {
             this.stateTime();
         }
         this.cal.date = date;
-        this.getDateField().value = date.format(this.options.calendarSetup.ifFormat);
+        this.getDateField().val(date.format(this.options.calendarSetup.ifFormat));
     },
 
     /**
      * get the date field input
      */
     getDateField: function () {
-        return this.element.getElement('.fabrikinput');
+        return this.element.find('.fabrikinput');
     },
 
     /**
      * get time time field input
      */
     getTimeField: function () {
-        this.timeElement = this.getContainer().getElement('.timeField');
+        this.timeElement = this.getContainer().find('.timeField');
         return this.timeElement;
     },
 
     /**
      * Get time time button img
      *
-     * @return   DOM node
+     * @return  {jQuery} Time button
      */
     getTimeButton: function () {
-        this.timeButton = this.getContainer().getElement('.timeButton');
+        this.timeButton = this.getContainer().find('.timeButton');
         return this.timeButton;
-    },
-
-    // Deprecated
-    showCalendar: function (format, e) {
     },
 
     getAbsolutePos: function (el) {
@@ -646,7 +650,8 @@ var FbDateTime = my.Class(FbElement, {
             'padding': '2px;'
         }).attr({
             'id': this.startElement + '_handle'
-        }).html('<i class="icon-clock"></i> ' + this.options.timelabel + '<a href="#" class="close-time pull-right" ><i class="icon-cancel"></i></a>');
+        }).html('<i class="icon-clock"></i> ' + this.options.timelabel +
+            '<a href="#" class="close-time pull-right" ><i class="icon-cancel"></i></a>');
         var d = $(document.createElement('div')).addClass('fbDateTime fabrikWindow').css({
             'z-index': 999999,
             display  : 'none',
@@ -708,9 +713,9 @@ var FbDateTime = my.Class(FbElement, {
         d.inject(document.body);
         var mydrag = new Drag.Move(d);
 
-        var closeTime = handle.getElement('a.close');
+        var closeTime = handle.find('a.close');
         closeTime.on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.hideTime();
         });
 
@@ -799,8 +804,8 @@ var FbDateTime = my.Class(FbElement, {
             if (this.second) {
                 newv += ':' + this.second.toString().pad('2', '0', 'left');
             }
-            var changed = this.timeElement.value !== newv;
-            this.timeElement.value = newv;
+            var changed = this.timeElement.val() !== newv;
+            this.timeElement.val(newv);
             if (changed) {
                 this.fireEvents(['change']);
             }
@@ -816,17 +821,11 @@ var FbDateTime = my.Class(FbElement, {
     setActive: function () {
         var hours = this.dropdown.getElements('.fbdateTime-hour');
         hours.removeClass('btn-success').removeClass('btn-info');
-
         var mins = this.dropdown.getElements('.fbdateTime-minute');
         mins.removeClass('btn-success').removeClass('btn-info');
-
-        if (typeOf(mins[this.minute / 5]) !== 'null') {
-            mins[this.minute / 5].addClass('btn-success');
-        }
+        mins[this.minute / 5].addClass('btn-success');
         var active = hours[this.hour.toInt()];
-        if (typeOf(active) !== 'null') {
-            active.addClass('btn-success');
-        }
+        active.addClass('btn-success');
     },
 
     addEventToCalOpts: function () {
@@ -838,9 +837,9 @@ var FbDateTime = my.Class(FbElement, {
             return this.dateSelect(date);
         }.bind(this);
 
-        this.options.calendarSetup.onClose = function (calendar) {
-            this.calClose(calendar);
-        }.bind(this);
+        this.options.calendarSetup.onClose = function () {
+            this.calClose();
+        };
 
     },
 
@@ -848,19 +847,19 @@ var FbDateTime = my.Class(FbElement, {
         this.setUpDone = false;
         this.hour = 0;
         delete this.cal;
-        var button = this.element.getElement('img');
+        var button = this.element.find('img');
         if (button) {
-            button.id = this.element.id + "_cal_img";
+            button.id = this.element.id + '_cal_img';
         }
-        var datefield = this.element.getElement('input');
-        datefield.id = this.element.id + "_cal";
+        var datefield = this.element.find('input');
+        datefield.id = this.element.id + '_cal';
         this.options.calendarSetup.inputField = datefield.id;
-        this.options.calendarSetup.button = this.element.id + "_img";
+        this.options.calendarSetup.button = this.element.id + '_img';
 
         this.makeCalendar();
         this.cal.hide();
         this.setUp();
-        this.parent(c);
+        FbDateTime.Super.prototype.cloned(this, c);
     }
 });
 

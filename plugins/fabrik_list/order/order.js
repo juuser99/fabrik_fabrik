@@ -8,7 +8,7 @@
 var FbListOrder = my.Class(FbListPlugin, {
 
     constructor: function (options) {
-        this.parent(options);
+        FbListOrder.Super.call(this, options);
 
         //for iE?
         document.ondragstart = function () {
@@ -24,12 +24,12 @@ var FbListOrder = my.Class(FbListPlugin, {
 
         if (!isGrouped) {
             container.css('position', 'relative');
-            if (typeOf(container.getElement('tbody')) !== 'null') {
-                container = container.getElement('tbody');
+            if (typeOf(container.find('tbody')) !== 'null') {
+                container = container.find('tbody');
             }
             this.makeSortable(container);
         } else {
-            var containers = container.getElements('tbody.fabrik_groupdata');
+            var containers = container.find('tbody.fabrik_groupdata');
             containers.each(function (container, x) {
                 container.setProperty('data-order', x);
                 console.log(container, x);
