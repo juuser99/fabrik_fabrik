@@ -33,19 +33,20 @@ var DateFilter = my.Class({
 	},
 
 	makeCalendar: function (id, button) {
+		var self = this;
 		if (this.cals[id]) {
 			this.cals[id].show();
 			return;
 		}
-		button = document.id(button);
-		if (typeOf(button) === 'null') {
+		button = $('#' + button);
+		if (button.length === 0) {
 			return;
 		}
 		this.addEventToCalOpts();
 		var params = Object.clone(this.options.calendarSetup);
-		var tmp = ["displayArea", "button"];
+		var tmp = ['displayArea', 'button'];
 
-		params.inputField = document.id(id);
+		params.inputField = $('#' + id);
 		var dateEl = params.inputField || params.displayArea;
 		var dateFmt = params.inputField ? params.ifFormat : params.daFormat;
 		this.cals[id] = null;//Fabrik.calendar;
@@ -74,24 +75,25 @@ var DateFilter = my.Class({
 		this.cals[id].create();
 		this.cals[id].refresh();
 		this.cals[id].hide();
-		button.addEvent('click', function (e) {
+		button.on('click', function (e) {
 			e.stop();
-			if (!this.cals[id].params.position) {
-				this.cals[id].showAtElement(this.cals[id].params.button || this.cals[id].params.displayArea || this.cals[id].params.inputField, this.cals[id].params.align);
+			if (!self.cals[id].params.position) {
+				self.cals[id].showAtElement(self.cals[id].params.button || self.cals[id].params.displayArea ||
+					self.cals[id].params.inputField, self.cals[id].params.align);
 			} else {
-				this.cal.showAt(this.cals[id].params.position[0], paramss[id].position[1]);
+				self.cal.showAt(self.cals[id].params.position[0], params[id].position[1]);
 			}
-			this.cals[id].show();
-		}.bind(this));
+			self.cals[id].show();
+		});
 
 		// $$$ hugh - need to update cal's date when date is entered by hand in input field
-		this.cals[id].params.inputField.addEvent('blur', function (e) {
-			var date_str = this.cals[id].params.inputField.value;
+		this.cals[id].params.inputField.on('blur', function (e) {
+			var date_str = self.cals[id].params.inputField.value;
 			if (date_str !== '') {
-				var d = Date.parseDate(date_str, this.cals[id].params.ifFormat);
-				this.cals[id].date = d;
+				var d = Date.parseDate(date_str, self.cals[id].params.ifFormat);
+				self.cals[id].date = d;
 			}
-		}.bind(this));
+		});
 
 		//chrome wierdness where we need to delay the hiding if the date picker is hidden
 		var h = function () {

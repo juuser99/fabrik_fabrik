@@ -33,7 +33,7 @@ var FbField = my.Class(FbElement, {
 					this.gcMade = true;
 				}
 			}.bind(this);
-			window.addEvent('google.geolocate.loaded', this.loadFn);
+			$(window).on('google.geolocate.loaded', this.loadFn);
 			Fabrik.loadGoogleMap(false, 'geolocateLoad');
 		}
 	},

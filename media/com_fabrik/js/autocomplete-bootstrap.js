@@ -61,6 +61,7 @@ var FbAutocomplete = my.Class({
 	},
 
 	search: function (e) {
+		var self = this;
 		if (!this.isMinTriggerlength()) {
 			return;
 		}
@@ -70,7 +71,7 @@ var FbAutocomplete = my.Class({
 			if (this.ajax) {
 				this.ajax.cancel();
 			}
-			this.element.trigger('change', new Event.Mock(this.element, 'change'), 500);
+			this.element.trigger('change', new jQuery.Event('change'), 500);
 			return;
 		}
 		this.matchedResult = false;
@@ -92,37 +93,30 @@ var FbAutocomplete = my.Class({
 					this.closeMenu();
 					this.ajax.cancel();
 				}
-				this.ajax = new Request({
+				this.ajax = $.ajax({
 					url: this.options.url,
 					data: {
 						value: v
-					},
-					onRequest: function () {
-						Fabrik.loader.start(this.getInputElement());
-					}.bind(this),
-					onCancel: function () {
-						Fabrik.loader.stop(this.getInputElement());
-						this.ajax = null;
-					}.bind(this),
-					onSuccess: function (e) {
-						Fabrik.loader.stop(this.getInputElement());
-						this.ajax = null;
-						if (typeOf(e) === 'null') {
-							fconsole('Fabrik autocomplete: Ajax response empty');
-							var elModel = Fabrik.getBlock(this.options.formRef).formElements.get(this.element.id);
-							elModel.setErrorMessage(Joomla.JText._('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR'), 'fabrikError', true);
-							return;
-						}
-						this.completeAjax(e, v);
-					}.bind(this),
-					onFailure: function (xhr) {
-						Fabrik.loader.stop(this.getInputElement());
-						this.ajax = null;
-						fconsole('Fabrik autocomplete: Ajax failure: Code ' + xhr.status + ': ' + xhr.statusText);
-						var elModel = Fabrik.getBlock(this.options.formRef).formElements.get(this.element.id);
+					}
+				}).fail(function (jqxhr, textStatus, error) {
+					Fabrik.loader.stop(self.getInputElement());
+					self.ajax = null;
+					fconsole('Fabrik autocomplete: Ajax failure: Code ' + textStatus + ': ' + error);
+					var elModel = Fabrik.getBlock(self.options.formRef).formElements.get(this.element.prop('id'));
+					elModel.setErrorMessage(Joomla.JText._('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR'), 'fabrikError', true);
+				}).always(function () {
+					Fabrik.loader.start(self.getInputElement());
+				}).done(function (e) {
+					Fabrik.loader.stop(self.getInputElement());
+					self.ajax = null;
+					if (typeOf(e) === 'null') {
+						fconsole('Fabrik autocomplete: Ajax response empty');
+						var elModel = Fabrik.getBlock(this.options.formRef).formElements.get(this.element.prop('id'));
 						elModel.setErrorMessage(Joomla.JText._('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR'), 'fabrikError', true);
-					}.bind(this)
-				}).send();
+						return;
+					}
+					this.completeAjax(e, v);
+				});
 			}
 		}
 		this.searchText = v;
@@ -184,7 +178,7 @@ var FbAutocomplete = my.Class({
 			if (form !== false) {
 				elModel = form.formElements.get(this.element.id);
 				blurEvent = elModel.getBlurEvent();
-				this.element.trigger(blurEvent, new Event.Mock(this.element, blurEvent), 700);
+				this.element.trigger(blurEvent, jQuery.Event(blurEvent), 700);
 			}
 
 			// $$$ hugh - fire a Fabrik event, just for good luck.  :)
@@ -192,17 +186,17 @@ var FbAutocomplete = my.Class({
 			return false;
 		}
 		if (data.length === 0) {
-			li = new Element('li').adopt(new Element('div.alert.alert-info').adopt(new Element('i').set('text', Joomla.JText._('COM_FABRIK_NO_RECORDS'))));
+			li = new Element('li').adopt(new Element('div.alert.alert-info').adopt(new Element('i').text(Joomla.JText._('COM_FABRIK_NO_RECORDS'))));
 			li.inject(ul);
 		}
 		for (var i = 0; i < max; i ++) {
 			pair = data[i];
-			a = new Element('a', {'href': '#', 'data-value': pair.value, tabindex: '-1'}).set('text', pair.text);
+			a = new Element('a', {'href': '#', 'data-value': pair.value, tabindex: '-1'}).text(pair.text);
 			li = new Element('li').adopt(a);
 			li.inject(ul);
 		}
 		if (data.length > this.options.max) {
-			new Element('li').set('text', '....').inject(ul);
+			new Element('li').text('....').inject(ul);
 		}
 		return true;
 	},
@@ -217,8 +211,8 @@ var FbAutocomplete = my.Class({
 			this.trigger('selection', [this, this.element.value]);
 			// $$$ hugh - need to fire change event, in case it's something like a join element
 			// with a CDD that watches it.
-			this.element.trigger('change', new Event.Mock(this.element, 'change'), 700);
-			this.element.trigger('blur', new Event.Mock(this.element, 'blur'), 700);
+			this.element.trigger('change', jQuery.Event('change'), 700);
+			this.element.trigger('blur', jQuery.Event('blur'), 700);
 			// $$$ hugh - fire a Fabrik event, just for good luck.  :)
 			Fabrik.trigger('fabrik.autocomplete.selected', [this, this.element.value]);
 		} else {
@@ -282,10 +276,10 @@ var FbAutocomplete = my.Class({
 		var max = this.getListMax(), selected, selectEvnt;
 		if (!this.shown) {
 			// Stop enter from submitting when in in-line edit form.
-			if (e.code.toInt() === 13) {
+			if (parseInt(e.code, 10) === 13) {
 				e.stop();
 			}
-			if (e.code.toInt() === 40) {
+			if (parseInt(e.code, 10) === 40) {
 				this.openMenu();
 			}
 		} else {
@@ -320,7 +314,7 @@ var FbAutocomplete = my.Class({
 					e.stop();
 					selected = this.getSelected();
 					if (selected) {
-						selectEvnt = new Event.Mock(selected, 'click');
+						selectEvnt = jQuery.Event('click');
 						this.makeSelection(selectEvnt, selected);
 						this.closeMenu();
 					}
@@ -340,7 +334,7 @@ var FbAutocomplete = my.Class({
 	 * @return  DOM Node <a>
 	 */
 	getSelected: function () {
-		var all = this.menu.getElements('li'),
+		var all = this.menu.find('li'),
 		lis = all.filter(function (li, i) {
 			return i === this.selected;
 		}.bind(this));
@@ -372,18 +366,20 @@ var FbAutocomplete = my.Class({
 var FabCddAutocomplete = my.Class(FbAutocomplete, {
 
 	search: function (e) {
-		var key;
-		var v = this.getInputElement().get('value');
+		var key,
+			self = this,
+			observer,
+			v = this.getInputElement().val();
 		if (v === '') {
 			this.element.value = '';
 		}
 		if (v !== this.searchText && v !== '') {
-			var observer = document.id(this.options.observerid);
-			if (typeOf(observer) !== 'null') {
+			observer = $('#' + this.options.observerid);
+			if (observer.length !== 0) {
 				if (this.options.formRef) {
 					observer = Fabrik.getBlock(this.options.formRef).formElements[this.options.observerid];
 				}
-				key = observer.get('value') + '.' + v;
+				key = observer.val() + '.' + v;
 			} else {
 				this.parent(e);
 				return;
@@ -398,32 +394,28 @@ var FabCddAutocomplete = my.Class(FbAutocomplete, {
 					this.closeMenu();
 					this.ajax.cancel();
 				}
-				this.ajax = new Request({
+				this.ajax = $.ajax({
 					url : this.options.url,
 					data: {
 						value: v,
 						fabrik_cascade_ajax_update: 1,
-						v: observer.get('value')
-					},
-					onRequest: function () {
-						Fabrik.loader.start(this.getInputElement());
-					}.bind(this),
-					onCancel: function () {
-						Fabrik.loader.stop(this.getInputElement());
-					}.bind(this),
-					onSuccess: function (e) {
-						Fabrik.loader.stop(this.getInputElement());
-						this.ajax = null;
-						this.completeAjax(e);
-					}.bind(this),
-					onFailure: function (xhr) {
-						Fabrik.loader.stop(this.getInputElement());
-						this.ajax = null;
-						fconsole('Fabrik autocomplete: Ajax failure: Code ' + xhr.status + ': ' + xhr.statusText);
-						var elModel = Fabrik.getBlock(this.options.formRef).formElements.get(this.element.id);
-						elModel.setErrorMessage(Joomla.JText._('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR'), 'fabrikError', true);
-					}.bind(this)
-				}).send();
+						v: observer.val()
+					}
+				}).always(function () {
+					Fabrik.loader.start(self.getInputElement());
+				}).success(function (e) {
+					Fabrik.loader.stop(self.getInputElement());
+					self.ajax = null;
+					self.completeAjax(e);
+				}).fail(function (jqXHR, textStatus) {
+					Fabrik.loader.stop(self.getInputElement());
+					self.ajax = null;
+					fconsole('Fabrik autocomplete: Ajax failure: Code ' + jqXHR.status + ': ' + textStatus);
+					var elModel = Fabrik.getBlock(self.options.formRef).formElements.get(this.element.id);
+					elModel.setErrorMessage(Joomla.JText._('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR'), 'fabrikError', true);
+				}).done(function () {
+					Fabrik.loader.stop(self.getInputElement());
+				});
 			}
 		}
 		this.searchText = v;

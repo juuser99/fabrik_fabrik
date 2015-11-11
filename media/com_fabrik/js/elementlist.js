@@ -24,11 +24,11 @@ FbElementList = my.Class(FbElement, {
 	// Get the sub element which are the checkboxes themselves
 
 	_getSubElements: function () {
-		var element = this.getElement();
-		if (!element) {
+		var element = this.find();
+		if (element.length === 0) {
 			this.subElements = [];
 		} else {
-			this.subElements = element.getElements('input[type=' + this.type+ ']');
+			this.subElements = element.find('input[type=' + this.type+ ']');
 		}
 		return this.subElements;
 	},
@@ -42,7 +42,8 @@ FbElementList = my.Class(FbElement, {
 	},
 
 	addNewEvent: function (action, js) {
-		var r, delegate, uid, c;
+		var r, delegate, uid, c,
+			self = this;
 		if (action === 'load') {
 			this.loadEvents.push(js);
 			this.runLoadEvent(js);
@@ -50,7 +51,7 @@ FbElementList = my.Class(FbElement, {
 			c = this.form.form;
 
 			// Added name^= for http://fabrikar.com/forums/showthread.php?t=30563 (js events to show hide multiple groups)
-			delegate = action + ':relay(input[type=' + this.type + '][name^=' + this.options.fullName + '])';
+			delegate = action + ':input[type=' + this.type + '][name^=' + this.options.fullName + ']';
 			if (typeOf(this.form.events[action]) === 'null') {
 				this.form.events[action] = {};
 			}
@@ -62,14 +63,14 @@ FbElementList = my.Class(FbElement, {
 				r = new RegExp('[^a-z|0-9]', 'gi');
 				uid = delegate + js.replace(r, '');
 			}
-			if (typeOf(this.form.events[action][uid]) === 'null') {
+			if (this.form.events[action][uid] === undefined) {
 				this.form.events[action][uid] = true;
 
-				c.addEvent(delegate, function (event, target) {
+				c.on(action, 'input[type=' + this.type + '][name^=' + this.options.fullName + ']', function (event, target) {
 					// As we are delegating the event, and reference to 'this' in the js will refer to the first element
 					// When in a repeat group we want to replace that with a reference to the current element.
 					var elid = target.closest('.fabrikSubElementContainer').id;
-					var that = this.form.formElements[elid];
+					var that = self.form.formElements[elid];
 					var subEls = that._getSubElements();
 					if (subEls.contains(target)) {
 
@@ -81,7 +82,7 @@ FbElementList = my.Class(FbElement, {
 							js.delay(0);
 						}
 					}
-				}.bind(this));
+				});
 			}
 		}
 	},
@@ -95,8 +96,8 @@ FbElementList = my.Class(FbElement, {
 
 	startAddNewOption: function () {
 		var c = this.getContainer(), val;
-		var l = c.getElement('input[name=addPicklistLabel]');
-		var v = c.getElement('input[name=addPicklistValue]');
+		var l = c.find('input[name=addPicklistLabel]');
+		var v = c.find('input[name=addPicklistValue]');
 		var label = l.value;
 		if (v) {
 			val = v.value;
@@ -108,7 +109,7 @@ FbElementList = my.Class(FbElement, {
 		}
 		else {
 			var r = this.subElements.getLast().findClassUp('fabrikgrid_' + this.type).clone();
-			var i = r.getElement('input');
+			var i = r.find('input');
 			i.value = val;
 			i.checked = 'checked';
 			if (this.type === 'checkbox') {
@@ -117,7 +118,7 @@ FbElementList = my.Class(FbElement, {
 				var name = i.name.replace(/^(.*)\[.*\](.*?)$/, '$1$2');
 				i.name = name + '[' + (this.subElements.length) + ']';
 			}
-			r.getElement('.' + this.type + ' span').set('text', label);
+			r.find('.' + this.type + ' span').text(label);
 			r.inject(this.subElements.getLast().findClassUp('fabrikgrid_' + this.type), 'after');
 
 			var index = 0;
@@ -125,7 +126,7 @@ FbElementList = my.Class(FbElement, {
 				index = this.subElements.length;
 			}
 			var is = $('input[name=' + i.name + ']');
-			document.id(this.form.form).trigger('change', {target: is[index]});
+			$('#' + this.form.form).trigger('change', {target: is[index]});
 
 			this._getSubElements();
 			if (v) {
@@ -143,13 +144,13 @@ FbElementList = my.Class(FbElement, {
 		var self = this;
 		if (this.options.allowadd === true && this.options.editable !== false) {
 			var c = this.getContainer();
-			c.getElements('input[name=addPicklistLabel], input[name=addPicklistValue]').addEvent('keypress', function (e) {
-				this.checkEnter(e);
-			}.bind(this));
-			c.getElement('input[type=button]').addEvent('click', function (e) {
+			c.find('input[name=addPicklistLabel], input[name=addPicklistValue]').on('keypress', function (e) {
+				self.checkEnter(e);
+			});
+			c.find('input[type=button]').on('click', function (e) {
 				e.stop();
-				this.startAddNewOption();
-			}.bind(this));
+				self.startAddNewOption();
+			});
 			$(document).on('keypress', function (e) {
 				if (e.key === 'esc' && self.mySlider) {
 					self.mySlider.slideOut();

@@ -14,10 +14,12 @@ var fabrikTableModule = my.Class({
 
 		window.addEvent('load', function (e) {
 			this.blocks = document.id(id).getElements('.fabrik_block');
-			if (window.getHeight() - 70 > this.blocks[1].getStyle("height").toInt() && this.blocks[1].getStyle("height").toInt() != 0) {
-				var h = this.blocks[1].getStyle("height").toInt();
+			var blockOneHeight = parseInt(this.blocks[1].css('height'), 10),
+				h, i;
+			if (window.getHeight() - 70 > blockOneHeight && blockOneHeight !== 0) {
+				h = blockOneHeight;
 			} else {
-				var h = window.getHeight() - 70;
+				h = window.getHeight() - 70;
 			}
 			this.winname = id + '_window';
 			this.form = this.blocks[1].getElement('form');
@@ -29,23 +31,23 @@ var fabrikTableModule = my.Class({
 				'loadMethod': 'html',
 				'title': 'Form',
 				'maximizable': '1',
-				'content': $$('.fabrik_block_col1')[0],
+				'content': $('.fabrik_block_col1')[0],
 				'contentType': 'html'
 			};
-			var i = 0;
+			i = 0;
 			var heights = {};
 			var fx = new Fx.Elements(this.blocks, {
 				wait: false,
 				duration: 600,
 				transition: Fx.Transitions.Quad.easeIn
 			});
-			$$('.fabrik_block').each(function (block) {
-				heights[i] = block.getStyle("height").toInt();
-				if (i != 0) {
+			$('.fabrik_block').each(function (block) {
+				heights[i] = parseInt(block.css('height'), 10);
+				if (i !== 0) {
 					var o = {};
 					o[i] = {
 						height: 0
-					}
+					};
 					fx.set(o);
 				}
 				i++;

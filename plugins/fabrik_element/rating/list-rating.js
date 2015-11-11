@@ -14,6 +14,7 @@ var FbRatingList = my.Class({
 	},
 
 	constructor: function (id, options) {
+		var self = this;
 		options.element = id;
 		this.setOptions(options);
 		this.options = $.append(this.options, options);
@@ -29,72 +30,64 @@ var FbRatingList = my.Class({
 			var stars = tr.getElements('.starRating');
 
 			stars.each(function (star) {
-				star.addEvent('mouseover', function (e) {
-					this.origRating[tr.id] = star.closest('.fabrik_element').find('.ratingMessage').innerHTML.toInt();
+				star.on('mouseover', function (e) {
+					self.origRating[tr.id] = parseInt(star.closest('.fabrik_element').find('.ratingMessage').html(), 10);
 					stars.each(function (ii) {
-						if (this._getRating(star) >= this._getRating(ii)) {
-							if (Fabrik.bootstrapped) {
-								ii.removeClass('icon-star-empty').addClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
+						if (self._getRating(star) >= self._getRating(ii)) {
+							ii.removeClass('icon-star-empty').addClass('icon-star');
 						} else {
-							if (Fabrik.bootstrapped) {
-								ii.addClass('icon-star-empty').removeClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
+							ii.addClass('icon-star-empty').removeClass('icon-star');
 						}
-					}.bind(this));
-					star.closest('.fabrik_element').find('.ratingMessage').innerHTML = star.get('data-fabrik-rating');
-				}.bind(this));
+					});
+					star.closest('.fabrik_element').find('.ratingMessage').html(star.data('fabrik-rating'));
+				});
 
-				star.addEvent('mouseout', function (e) {
+				star.on('mouseout', function (e) {
 					stars.each(function (ii) {
-						if (this.origRating[tr.id] >= this._getRating(ii)) {
-							if (Fabrik.bootstrapped) {
-								ii.removeClass('icon-star-empty').addClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
+						if (self.origRating[tr.id] >= self._getRating(ii)) {
+							ii.removeClass('icon-star-empty').addClass('icon-star');
 						} else {
-							if (Fabrik.bootstrapped) {
 								ii.addClass('icon-star-empty').removeClass('icon-star');
-							} else {
-								ii.src = this.options.insrc;
-							}
 						}
-					}.bind(this));
-					star.closest('.fabrik_element').find('.ratingMessage').innerHTML = this.origRating[tr.id];
-				}.bind(this));
-			}.bind(this));
+					});
+					star.closest('.fabrik_element').find('.ratingMessage').html(this.origRating[tr.id]);
+				});
+			});
 
 			stars.each(function (star) {
-				star.addEvent('click', function (e) {
-					this.doAjax(e, star);
-				}.bind(this));
-			}.bind(this));
+				star.on('click', function (e) {
+					self.doAjax(e, star);
+				});
+			});
 
-		}.bind(this));
+		});
 
 	},
 
+	/**
+	 *
+	 * @param {jQuery} i
+	 * @returns {*}
+	 * @private
+	 */
 	_getRating: function (i) {
-		var r = i.get('data-fabrik-rating');
+		var r = i.data('fabrik-rating');
 		return r.toInt();
 	},
 
 	doAjax : function (e, star) {
+		var self = this;
 		e.stop();
 		this.rating = this._getRating(star);
 		var ratingmsg = star.closest('.fabrik_element').find('.ratingMessage');
 		Fabrik.loader.start(ratingmsg);
 
-		var starRatingCover = new Element('div', {id: 'starRatingCover', styles: {bottom: 0, top: 0, right: 0, left: 0, position: 'absolute', cursor: 'progress'} });
+		var starRatingCover = $(document.createElement('div')).attr({id: 'starRatingCover'})
+			.css({bottom: 0, top: 0, right: 0, left: 0, position: 'absolute', cursor: 'progress'});
 		var starRatingContainer = star.closest('.fabrik_element').find('div');
 		starRatingContainer.grab(starRatingCover, 'top');
 
-		var row = document.id(star).closest('.fabrik_row');
+		var row = $('#' + star).closest('.fabrik_row');
 		var rowid = row.id.replace('list_' + this.options.listRef + '_row_', '');
 		var data = {
 			'option': 'com_fabrik',
@@ -111,31 +104,21 @@ var FbRatingList = my.Class({
 			'rating' : this.rating,
 			'mode' : this.options.mode
 		};
-		new Request({url: '',
-			'data': data,
-			onComplete: function (r) {
+		new $.ajax({url: '',
+			'data': data
+		}).done(function (r) {
 				r = r.toInt();
-				this.rating = r;
-				ratingmsg.set('html', this.rating);
+				self.rating = r;
+				ratingmsg.html(this.rating);
 				Fabrik.loader.stop(ratingmsg);
-				var tag = Fabrik.bootstrapped ? 'i' : 'img';
-				star.closest('.fabrik_element').find(tag).each(function (i, x) {
+				star.closest('.fabrik_element').find('i').each(function (i, x) {
 					if (x < r) {
-						if (Fabrik.bootstrapped) {
-							$(this).removeClass('icon-star-empty').addClass('icon-star');
-						} else {
-							this.src = this.options.insrc;
-						}
+						$(this).removeClass('icon-star-empty').addClass('icon-star');
 					} else {
-						if (Fabrik.bootstrapped) {
-							$(this).addClass('icon-star-empty').removeClass('icon-star');
-						} else {
-							this.src = this.options.insrc;
-						}
+						$(this).addClass('icon-star-empty').removeClass('icon-star');
 					}
-				}.bind(this));
-				document.id('starRatingCover').destroy();
-			}.bind(this)
-		}).send();
+				});
+				$('#starRatingCover').destroy();
+			});
 	}
 });

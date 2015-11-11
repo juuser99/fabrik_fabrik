@@ -25,22 +25,22 @@ var ListFieldsElement = my.Class({
 		this.options = $.append(this.options, options);
 
 		if (this.options.defaultOpts.length > 0) {
-			this.el = document.id(this.el);
+			this.el = $('#' + this.el);
 			if (this.options.mode === 'gui') {
 				this.select = this.el.parent().find('select.elements');
 				els = [this.select];
-				if (typeOf(document.id(this.options.conn)) === 'null') {
+				if ($('#' + this.options.conn).length === 0) {
 					this.watchAdd();
 				}
 			} else {
 				els = document.getElementsByName(this.el.name);
 				this.el.empty();
-				document.id(this.strEl).empty();
+				$('#' + this.strEl).empty();
 			}
 			var opts = this.options.defaultOpts;
 
 			Array.each(els, function (el) {
-				document.id(el).empty();
+				$('#' + el).empty();
 			});
 
 			opts.each(function (opt) {
@@ -50,11 +50,11 @@ var ListFieldsElement = my.Class({
 				}
 				Array.each(els, function (el) {
 					label = opt.label ? opt.label : opt.text;
-					new Element('option', o).set('text', label).inject(el);
+					$(document.createElement('option')).attr(o).text(label).inject(el);
 				});
 			}.bind(this));
 		} else {
-			if (typeOf(document.id(this.options.conn)) === 'null') {
+			if ($('#' + this.options.conn).length === 0) {
 				this.cnnperiodical = setInterval(function () {
 					this.getCnn.call(this, true);
 				}, 500);
@@ -71,7 +71,7 @@ var ListFieldsElement = my.Class({
 	cloned: function (newid, counter)
 	{
 		this.strEl = newid;
-		this.el = document.id(newid);
+		this.el = $('#' + newid);
 		this._cloneProp('conn', counter);
 		this._cloneProp('table', counter);
 		this.setUp();
@@ -88,7 +88,7 @@ var ListFieldsElement = my.Class({
 	},
 
 	getCnn: function () {
-		if (typeOf(document.id(this.options.conn)) === 'null') {
+		if ($('#' + this.options.conn).length === 0) {
 			return;
 		}
 		this.setUp();
@@ -96,20 +96,21 @@ var ListFieldsElement = my.Class({
 	},
 
 	setUp: function () {
-		this.el = document.id(this.el);
+		var self = this;
+		this.el = $('#' + this.el);
 		if (this.options.mode === 'gui') {
 			this.select = this.el.parent().find('select.elements');
 		}
 
-		document.id(this.options.conn).addEvent('change', function () {
-			this.updateMe();
-		}.bind(this));
-		document.id(this.options.table).addEvent('change', function () {
-			this.updateMe();
-		}.bind(this));
+		$('#' + this.options.conn).on('change', function () {
+			self.updateMe();
+		});
+		$('#' + this.options.table).on('change', function () {
+			self.updateMe();
+		});
 
 		// See if there is a connection selected
-		var v = document.id(this.options.conn).get('value');
+		var v = $('#' + this.options.conn).val();
 		if (v !== '' && v !== -1) {
 			this.periodical = setInterval(function () {
 				this.updateMe.call(this, true);
@@ -119,6 +120,7 @@ var ListFieldsElement = my.Class({
 	},
 
 	watchAdd: function () {
+		var self = this;
 		if (this.addWatched === true) {
 			return;
 		}
@@ -126,71 +128,69 @@ var ListFieldsElement = my.Class({
 		this.addWatched = true;
 		var add = this.el.parent().find('button');
 
-		if (typeOf(add) !== 'null') {
-			add.addEvent('mousedown', function (e) {
-				e.stop();
-				this.addPlaceHolder();
-			}.bind(this));
-			add.addEvent('click', function (e) {
-				e.stop();
-			});
-		}
+		add.on('mousedown', function (e) {
+			e.stop();
+			self.addPlaceHolder();
+		});
+		add.on('click', function (e) {
+			e.stop();
+		});
 	},
 
+	/**
+	 *
+	 * @param {event} e
+	 */
 	updateMe: function (e) {
-		if (typeOf(e) === 'event') {
+		var self = this;
+		if (typeof(e) === 'object') {
 			e.stop();
 		}
-		if (document.id(this.el.id + '_loader')) {
-			document.id(this.el.id + '_loader').show();
-		}
-		var cid = document.id(this.options.conn).get('value');
-		var tid = document.id(this.options.table).get('value');
+		$('#' + this.el.id + '_loader').show();
+		var cid = $('#' + this.options.conn).val(),
+			tid = $('#' + this.options.table).val();
 		if (!tid) {
 			return;
 		}
 		clearInterval(this.periodical);
 		var url = 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=element&plugin=field&method=ajax_fields&showall=' + this.options.showAll + '&cid=' + cid + '&t=' + tid;
-		var myAjax = new Request({
+		var myAjax = $.ajax({
 			url: url,
 			method: 'get',
 			data: {
 				'highlightpk': this.options.highlightpk,
 				'k': 2
-			},
-			onComplete: function (r) {
-				var els;
+			}
+		}).done(function (r) {
+			var els;
 
-				// Googlemap inside repeat group & modal repeat
-				if (typeOf(document.id(this.strEl)) !== null) {
-					this.el = document.id(this.strEl);
-				}
-				if (this.options.mode === 'gui') {
-					els = [this.select];
-				} else {
-					els = document.getElementsByName(this.el.name);
-					this.el.empty();
-					document.id(this.strEl).empty();
-				}
-				var opts = eval(r);
+			// Googlemap inside repeat group & modal repeat
+			if ($('#' + self.strEl).length !== 0) {
+				self.el = $('#' + self.strEl);
+			}
+			if (self.options.mode === 'gui') {
+				els = [self.select];
+			} else {
+				els = document.getElementsByName(self.el.name);
+				self.el.empty();
+				$('#' + self.strEl).empty();
+			}
+			var opts = eval(r);
 
+			Array.each(els, function (el) {
+				$('#' + el).empty();
+			});
+
+			opts.each(function (opt) {
+				var o = {'value': opt.value};
+				if (opt.value === self.options.value) {
+					o.selected = 'selected';
+				}
 				Array.each(els, function (el) {
-					document.id(el).empty();
+					$(document.createElement('option')).attr(o).text(opt.label).inject(el);
 				});
-
-				opts.each(function (opt) {
-					var o = {'value': opt.value};
-					if (opt.value === this.options.value) {
-						o.selected = 'selected';
-					}
-					Array.each(els, function (el) {
-						new Element('option', o).set('text', opt.label).inject(el);
-					});
-				}.bind(this));
-				if (document.id(this.el.id + '_loader')) {
-					document.id(this.el.id + '_loader').hide();
-				}
-			}.bind(this)
+			});
+			$('#' + self.el.id + '_loader').hide();
 		});
 		Fabrik.requestQueue.add(myAjax);
 	},

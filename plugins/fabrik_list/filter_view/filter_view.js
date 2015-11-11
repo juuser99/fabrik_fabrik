@@ -8,24 +8,23 @@
 var FbListFilterView = my.Class(FbListPlugin, {
 	constructor : function (options) {
 		this.parent(options);
-		this.groupbyMenus = {};
-		document.getElement('.filter_view').getElements('ul.floating-tip').each(function (ul) {
+		$('.filter_view').find('ul.floating-tip').each(function (ul) {
 			var c = ul.clone();
 			c.fade('hide');
 			c.inject(document.body);
 			c.setStyles({'position': 'absolute'});
 			var trigger = ul.getPrevious();
-			trigger.store('target', c);
-			trigger.addEvent('click', function (e) {
+			trigger.data('target', c);
+			trigger.on('click', function (e) {
 				e.stop();
 				var c = trigger.retrieve('target');
-				c.setStyle('top', trigger.getTop());
-				c.setStyle('left', trigger.getLeft() + trigger.getWidth() / 1.5);
+				c.css('top', trigger.getTop());
+				c.css('left', trigger.getLeft() + trigger.getWidth() / 1.5);
 				c.fade('toggle');
 			});
 			ul.dispose();
 		});
-		document.getElements('.fabrik_filter_view').addEvent('click:relay(a)', function (e) {
+		document.getElements('.fabrik_filter_view').on('click', 'a', function (e) {
 			var href = e.target.get('href');
 		});
 	}

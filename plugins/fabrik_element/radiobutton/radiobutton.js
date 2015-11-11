@@ -31,10 +31,10 @@ FbRadio = my.Class(FbElementList, {
 		if (!c) {
 			return;
 		}
-		c.getElements('.radio.btn-group label').addClass('btn');
+		c.find('.radio.btn-group label').addClass('btn');
 
 
-		c.getElements(".btn-group input[checked=checked]").each(function (input) {
+		c.find(".btn-group input[checked=checked]").each(function (input) {
 			var label = input.closest('label');
 			if (typeOf(label) === 'null') {
 				// J3.2 button group markup - label is after input (no longer the case)
@@ -52,33 +52,38 @@ FbRadio = my.Class(FbElementList, {
 	},
 
 	btnGroupRelay: function () {
-		var c = this.getContainer();
+		var c = this.getContainer(), self = this,
+			id, input;
 		if (!c) {
 			return;
 		}
-		c.getElements('.radio.btn-group label').addClass('btn');
-		c.addEvent('click:relay(.btn-group label)', function (e, label) {
-			var id = label.get('for'), input;
+		c.find('.radio.btn-group label').addClass('btn');
+		c.on('click', '.btn-group label', function (e, label) {
+			id = $(this).prop('for'), input;
 			if (id !== '') {
-				input = document.id(id);
+				input = $('#' + id);
 			}
-			if (typeOf(input) === 'null') {
-				input = label.getElement('input');
+			if (input.length === 0) {
+				input = $(this).find('input');
 			}
-			this.setButtonGroupCSS(input);
-		}.bind(this));
+			self.setButtonGroupCSS(input);
+		});
 	},
 
+	/**
+	 *
+	 * @param {jQuery} input
+	 */
 	setButtonGroupCSS: function (input) {
 		var label;
-		if (input.id !== '') {
-			label = document.getElement('label[for=' + input.id + ']');
+		if (input.prop('id') !== '') {
+			label = $('label[for=' + input.id + ']');
 		}
-		if (typeOf(label) === 'null') {
+		if (label.length === 0) {
 			label = input.closest('label.btn');
 		}
-		var v = input.get('value');
-		var fabchecked = parseInt(input.get('fabchecked'), 10);
+		var v = input.val();
+		var fabchecked = parseInt(input.data('fabchecked'), 10);
 
 		// Protostar in J3.2 adds its own btn-group js code - need to thus apply this section even after input has been unchecked
 		if (!input.get('checked') || fabchecked === 1) {
@@ -101,26 +106,27 @@ FbRadio = my.Class(FbElementList, {
 	},
 
 	watchAddToggle: function () {
-		var c = this.getContainer();
-		var d = c.getElement('div.addoption');
-		var a = c.getElement('.toggle-addoption');
+		var c = this.getContainer(),
+			self = this,
+			d = c.find('div.addoption'),
+			a = c.find('.toggle-addoption');
 		if (this.mySlider) {
 			// Copied in repeating group so need to remove old slider html first
 			var clone = d.clone();
-			var fe = c.getElement('.fabrikElement');
+			var fe = c.find('.fabrikElement');
 			d.parent().destroy();
 			fe.adopt(clone);
-			d = c.getElement('div.addoption');
-			d.setStyle('margin', 0);
+			d = c.find('div.addoption');
+			d.css('margin', 0);
 		}
 		this.mySlider = new Fx.Slide(d, {
 			duration : 500
 		});
 		this.mySlider.hide();
-		a.addEvent('click', function (e) {
+		a.on('click', function (e) {
 			e.stop();
-			this.mySlider.toggle();
-		}.bind(this));
+			self.mySlider.toggle();
+		});
 	},
 
 	getValue: function () {

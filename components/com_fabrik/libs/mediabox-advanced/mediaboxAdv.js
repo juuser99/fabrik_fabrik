@@ -169,9 +169,9 @@ var Mediabox;
 				vmColor: 'ffffff'			// Custom controller colors, hex value minus the # sign, defult is 5ca0b5
 			};
 
-			prevLink.set('html', options.buttonText[0]);
-			nextLink.set('html', options.buttonText[1]);
-			closeLink.set('html', options.buttonText[2]);
+			prevLink.html(options.buttonText[0]);
+			nextLink.html(options.buttonText[1]);
+			closeLink.html(options.buttonText[2]);
 
 			if (Browser.firefox2) {	// Fixes Firefox 2 and Camino 1.6 incompatibility with opacity + flash
 				options.overlayOpacity = 1;
@@ -347,7 +347,7 @@ var Mediabox;
 //				close();
 //				return false;
 //			}
-			media.set('html', '');
+			media.html( '');
 			activeMedia = mediaIndex;
 			prevMedia = ((activeMedia || !options.loop) ? activeMedia : mediaArray.length) - 1;
 			nextMedia = activeMedia + 1;
@@ -846,7 +846,7 @@ var Mediabox;
 //			preload;
 		} else if (mediaType == "ios" || Browser.Platform.ios) {
 			media.setStyles({backgroundImage: "none", display: ""});
-			media.set('html', options.linkText.replace(/\{x\}/gi, URL));
+			media.html( options.linkText.replace(/\{x\}/gi, URL));
 			mediaWidth = options.DefaultWidth;
 			mediaHeight = options.DefaultHeight;
 		} else if (mediaType == "url") {
@@ -856,7 +856,7 @@ var Mediabox;
 		} else if (mediaType == "obj") {
 			if (Browser.Plugins.Flash.version < "8") {
 				media.setStyles({backgroundImage: "none", display: ""});
-				media.set('html', '<div id="mbError"><b>Error</b><br/>Adobe Flash is either not installed or not up to date, please visit <a href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" title="Get Flash" target="_new">Adobe.com</a> to download the free player.</div>');
+				media.html( '<div id="mbError"><b>Error</b><br/>Adobe Flash is either not installed or not up to date, please visit <a href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" title="Get Flash" target="_new">Adobe.com</a> to download the free player.</div>');
 				mediaWidth = options.DefaultWidth;
 				mediaHeight = options.DefaultHeight;
 			} else {
@@ -866,19 +866,19 @@ var Mediabox;
 			}
 		} else {
 			media.setStyles({backgroundImage: "none", display: ""});
-			media.set('html', options.flashText);
+			media.html( options.flashText);
 			mediaWidth = options.defaultWidth;
 			mediaHeight = options.defaultHeight;
 		}
 
-		title.set('html', (options.showCaption) ? captionSplit[0] : "");
-		caption.set('html', (options.showCaption && (captionSplit.length > 1)) ? captionSplit[1] : "");
-		number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/\{x\}/, (options.countBack)?mediaArray.length-activeMedia:activeMedia+1).replace(/\{y\}/, mediaArray.length) : "");
+		title.html( (options.showCaption) ? captionSplit[0] : "");
+		caption.html( (options.showCaption && (captionSplit.length > 1)) ? captionSplit[1] : "");
+		number.html( (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/\{x\}/, (options.countBack)?mediaArray.length-activeMedia:activeMedia+1).replace(/\{y\}/, mediaArray.length) : "");
 
 //		if (options.countBack) {
-//			number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, activeMedia + 1).replace(/{y}/, mediaArray.length) : "");
+//			number.html( (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, activeMedia + 1).replace(/{y}/, mediaArray.length) : "");
 //		} else {
-//			number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, mediaArray.length - activeMedia).replace(/{y}/, mediaArray.length) : "");
+//			number.html( (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, mediaArray.length - activeMedia).replace(/{y}/, mediaArray.length) : "");
 //		}
 
 		if ((prevMedia >= 0) && (mediaArray[prevMedia][0].match(/\.gif|\.jpg|\.jpeg|\.png|twitpic\.com/i))) preloadPrev.src = mediaArray[prevMedia][0].replace(/twitpic\.com/i, "twitpic.com/show/full");

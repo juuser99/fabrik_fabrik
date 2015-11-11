@@ -102,7 +102,7 @@ Request.HTML = my.Class(Request, {
 		if (match) {
 			response.html = match[1];
 		}
-		var temp = new Element('div').set('html', response.html);
+		var temp = new Element('div').html(response.html);
 
 		response.tree = temp.childNodes;
 		response.elements = temp.getElements(options.filter || '*');
@@ -116,7 +116,7 @@ Request.HTML = my.Class(Request, {
 				update.adopt(response.elements);
 			} else {
 
-				update.set('html', response.html);
+				update.html(response.html);
 			}
 		} else if (options.append) {
 			var append = document.id(options.append);

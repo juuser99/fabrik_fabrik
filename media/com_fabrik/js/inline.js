@@ -19,7 +19,7 @@ var inline = my.Class({
 	constructor: function (selector, options)
 	{
 		var self = this;
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		$(document).on('dblclick', selector, function (e, target) {
 			var editor;
 			target.hide();
@@ -46,7 +46,7 @@ var inline = my.Class({
 			target.show();
 		}
 		if (e.key === 'enter' || e.key === 'tab') {
-			target.set('text', e.target.get('value'));
+			target.text(e.target.get('value'));
 			Fabrik.trigger('fabrik.inline.save', [target, e]);
 		}
 	}

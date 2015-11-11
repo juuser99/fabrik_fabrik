@@ -46,7 +46,7 @@ if (typeof(jQuery) !== 'undefined') {
 				label.closest('.btn-group').find("label").removeClass('active btn-success btn-danger btn-primary');
 				if (input.val() === '') {
 					label.addClass('active btn-primary');
-				} else if (input.val().toInt() === 0) {
+				} else if (parseInt(input.val(), 10) === 0) {
 					label.addClass('active btn-danger');
 				} else {
 					label.addClass('active btn-success');

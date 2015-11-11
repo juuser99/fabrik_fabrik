@@ -40,17 +40,17 @@ var Pages = my.Class({
 		this.clearActive();
 		c.addClass('active');
 		this.active = c;
-		var zindexes = document.getElements('.itemPlaceHolder').getStyle('z-index').sort();
-		var max = zindexes.getLast().toInt() + 1;
-		document.getElements('.itemPlaceHolder').each(function (i) {
-			i.setStyle('zindex', i.getStyle('z-index').toInt() - 1);
+		var zindexes = $('.itemPlaceHolder').css('z-index').sort();
+		var max = parseInt(zindexes.getLast(), 10) + 1;
+		$('.itemPlaceHolder').each(function (i) {
+			i.css('zindex', parseInt(i.css('z-index'), 10) - 1);
 		});
-		c.setStyle('z-index', max);
+		c.css('z-index', max);
 	},
 
 	clearActive: function () {
 		delete this.active;
-		document.getElements('.itemPlaceHolder').removeClass('active');
+		$('.itemPlaceHolder').removeClass('active');
 	},
 
 	moveItem: function (k, shift) {
@@ -59,16 +59,16 @@ var Pages = my.Class({
 			var p = this.active.getCoordinates(this.getActivePage().page);
 			switch (k) {
 			case 37: //left
-				this.active.setStyle('left', p.left - 2 - shift);
+				this.active.css('left', p.left - 2 - shift);
 				break;
 			case 38: //up
-				this.active.setStyle('top', p.top - 2 - shift);
+				this.active.css('top', p.top - 2 - shift);
 				break;
 			case 39: //right
-				this.active.setStyle('left', p.left + 1 + shift);
+				this.active.css('left', p.left + 1 + shift);
 				break;
 			case 40: //down
-				this.active.setStyle('top', p.top + 1 + shift);
+				this.active.css('top', p.top + 1 + shift);
 				break;
 			}
 		}

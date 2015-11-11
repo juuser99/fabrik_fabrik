@@ -36,9 +36,8 @@ var FabrikModalRepeat = my.Class({
     },
 
     ready: function () {
-        return typeOf(document.id(this.elid)) === 'null' ? false : true;
+        return $('#' + this.elid).length > 0;
     },
-
 
     testReady: function () {
         if (!this.ready()) {
@@ -51,9 +50,9 @@ var FabrikModalRepeat = my.Class({
     },
 
     setUp: function () {
-        this.button = document.id(this.elid + '_button');
+        this.button = $('#' + this.elid + '_button');
         this.mask = new Mask(document.body, {style: {'background-color': '#000', 'opacity': 0.4, 'z-index': 9998}});
-        $(document).on('click', '*[data-modal=' + this.elid + ']', function (e, target) {
+        $(document).on('click', '*[data-modal=' + this.elid + ']', function (e) {
             e.preventDefault();
             var tbl,
             // Correct when in repeating group
@@ -106,14 +105,15 @@ var FabrikModalRepeat = my.Class({
     },
 
     makeWin: function (target) {
-        var close = new Element('button.btn.button.btn-primary').set('text', 'close');
-        close.addEvent('click', function (e) {
+        var self = this;
+        var close = $(document.createElement('button')).addClass('btn button btn-primary').text('close');
+        close.on('click', function (e) {
             e.stop();
-            this.store(target);
-            this.el[target].hide();
-            this.el[target].inject(this.origContainer);
-            this.close();
-        }.bind(this));
+            self.store(target);
+            self.el[target].hide();
+            self.el[target].inject(self.origContainer);
+            self.close();
+        });
         var controls = new Element('div.controls.form-actions', {
             'styles': {
                 'text-align'   : 'right',
@@ -132,11 +132,7 @@ var FabrikModalRepeat = my.Class({
         Object.each(this.win, function (win, key) {
             var size = this.el[key].getDimensions(true),
                 wsize = win.getDimensions(true);
-            win.setStyles({'width': size.x + 'px'});
-            if (typeof(Fabrik) !== 'undefined' && !Fabrik.bootstrapped) {
-                var y = setup ? wsize.y : size.y + 30;
-                win.setStyle('height', y + 'px');
-            }
+            win.css({'width': size.x + 'px'});
         }.bind(this));
     },
 
@@ -196,53 +192,54 @@ var FabrikModalRepeat = my.Class({
     fixUniqueAttributes: function (source, row) {
         var rowCount = source.closest('table').find('tr').length - 1;
 
-        jQuery.each(row.getElements('*[name]'), function (key, node) {
+        jQuery.each(row.find('*[name]'), function (key, node) {
             node.name += '-' + rowCount;
         });
-        jQuery.each(row.getElements('*[id]'), function (key, node) {
+        jQuery.each(row.find('*[id]'), function (key, node) {
             node.id += '-' + rowCount;
         });
-        jQuery.each(row.getElements('label[for]'), function (key, node) {
+        jQuery.each(row.find('label[for]'), function (key, node) {
             node.label += '-' + rowCount;
         });
     },
 
+    /**
+     *
+     * @param {jQuery} win
+     * @param target
+     */
     watchButtons: function (win, target) {
-        var tr;
-        win.addEvent('click:relay(a.add)', function (e) {
-            if (tr = this.findTr(e)) {
-                this.addRow(target, tr);
+        var tr, self = this;
+        win.on('click', 'a.add', function (e) {
+            if (tr = self.findTr(e)) {
+                self.addRow(target, tr);
             }
             win.position();
             e.stop();
-        }.bind(this));
-        win.addEvent('click:relay(a.remove)', function (e) {
-
-            if (tr = this.findTr(e)) {
+        });
+        win.on('click', 'a.remove', function (e) {
+            if (tr = self.findTr(e)) {
                 tr.dispose();
             }
-            this.resizeWin(false, target);
+            self.resizeWin(false, target);
             win.position();
             e.stop();
-        }.bind(this));
+        });
     },
 
     resetChosen: function (clone) {
-        if (!this.options.j3) {
-            return;
-        }
-        if (jQuery && typeOf(jQuery('select').chosen) !== 'null') {
+        if ($('select').chosen) {
 
             // Chosen reset
-            clone.getElements('select').removeClass('chzn-done').show();
+            clone.find('select').removeClass('chzn-done').show();
 
             // Assign random id
-            jQuery(clone.getElements('select'), function (key, c) {
-                c.id = c.id + '_' + (Math.random() * 10000000).toInt();
+            $(clone.find('select'), function (key, c) {
+                c.id = c.id + '_' + parseInt(Math.random() * 10000000, 10);
             });
-            clone.getElements('.chzn-container').destroy();
+            clone.find('.chzn-container').destroy();
 
-            jQuery(clone).find('select').chosen({
+            $(clone).find('select').chosen({
                 disable_search_threshold: 10,
                 allow_single_deselect   : true
             });
@@ -250,7 +247,7 @@ var FabrikModalRepeat = my.Class({
     },
 
     getTrs: function (target) {
-        return this.win[target].getElement('tbody').getElements('tr');
+        return this.win[target].getElement('tbody').find('tr');
     },
 
     /**
@@ -292,7 +289,7 @@ var FabrikModalRepeat = my.Class({
         // Populate the cloned fields with the json values
         for (i = 0; i < rowcount; i++) {
             keys.each(function (k) {
-                jQuery.each(trs[i].getElements('*[name*=' + k + ']'), function (key, f) {
+                jQuery.each(trs[i].find('*[name*=' + k + ']'), function (key, f) {
                     if (f.get('type') === 'radio') {
                         if (f.value === a[k][i]) {
                             f.checked = true;
@@ -331,7 +328,7 @@ var FabrikModalRepeat = my.Class({
         var json = {};
         for (var i = 0; i < this.names.length; i++) {
             var n = this.names[i];
-            var fields = c.getElements('*[name*=' + n + ']');
+            var fields = c.find('*[name*=' + n + ']');
             json[n] = [];
             fields.each(function (field) {
                 if (field.get('type') === 'radio') {

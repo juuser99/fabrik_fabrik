@@ -56,6 +56,7 @@ var FbListUpdateCol = my.Class(FbListPlugin, {
 	},
 
 	makeUpdateColWindow: function () {
+		var tds, tr_clone, i, self = this;
 		this.windowopts = {
 			'id': 'update_col_win_' + this.options.ref + '_' + this.options.renderOrder,
 			title: Joomla.JText._('PLG_LIST_UPDATE_COL_UPDATE'),
@@ -68,27 +69,27 @@ var FbListUpdateCol = my.Class(FbListPlugin, {
 				this.fitToContent(false);
 			},
 			onContentLoaded: function (win) {
-				var form = document.id('update_col' + this.options.ref + '_' + this.options.renderOrder);
+				var form = $('#update_col' + this.options.ref + '_' + this.options.renderOrder);
 
 				// Add a row
-				form.addEvent('click:relay(a.add)', function (e, target) {
+				form.on('click', 'a.add', function (e, target) {
 					e.preventDefault();
 					var tr;
 					var thead = target.closest('thead');
 					if (thead) {
-						tr = form.getElements('tbody tr').getLast();
+						tr = form.find('tbody tr').getLast();
 					} else {
 						tr = target.closest('tr');
 					}
-					if (tr.getStyle('display') === 'none') {
-						tds = tr.getElements('td');
-						tds[0].getElement('select').selectedIndex = 0;
+					if (tr.css('display') === 'none') {
+						tds = tr.find('td');
+						tds[0].find('select').selectedIndex = 0;
 						tds[1].empty();
 						tr.show();
 					} else {
 						tr_clone = tr.clone();
-						tds = tr_clone.getElements('td');
-						tds[0].getElement('select').selectedIndex = 0;
+						tds = tr_clone.find('td');
+						tds[0].find('select').selectedIndex = 0;
 						tds[1].empty();
 						tr_clone.inject(tr, 'after');
 					}
@@ -96,9 +97,9 @@ var FbListUpdateCol = my.Class(FbListPlugin, {
 				});
 
 				// Delete a row
-				form.addEvent('click:relay(a.delete)', function (e, target) {
+				form.on('click', 'a.delete', function (e, target) {
 					e.preventDefault();
-					var trs = form.getElements('tbody tr');
+					var trs = form.find('tbody tr');
 					if (trs.length === 1) {
 						trs.getLast().hide();
 					} else {
@@ -107,66 +108,65 @@ var FbListUpdateCol = my.Class(FbListPlugin, {
 				});
 
 				// Select an element plugin and load it
-				form.addEvent('change:relay(select.key)', function (e, target) {
-					var els = target.closest('tbody').getElements('.update_col_elements');
+				form.on('change', 'select.key', function (e, target) {
+					var els = $(this).closest('tbody').find('.update_col_elements');
 					for (i = 0; i < els.length; i++) {
 						if (els[i] === target) {
 							continue;
 						}
 						if (els[i].selectedIndex === target.selectedIndex) {
 							// @TODO language
-							alert('This element has already been selected!');
+							window.alert('This element has already been selected!');
 							return;
 						}
 					}
 					var opt = target.options[target.selectedIndex];
 					var row = target.closest('tr');
 					Fabrik.loader.start(row);
-					var update = row.getElement('td.update_col_value');
-					var v = target.get('value');
+					var update = row.find('td.update_col_value');
+					var v = $(this).val();
 					var plugin = opt.get('data-plugin');
 					var id = opt.get('data-id');
 					var counter = 0;
 
 					// Piggy backing on the list advanced search code to get an element and its js
-					var url = "index.php?option=com_fabrik&task=list.elementFilter&format=raw";
+					var url = 'index.php?option=com_fabrik&task=list.elementFilter&format=raw';
 
 					// It looks odd - but to get the element js code to load in correct we need to set the context to a visualization
-					new Request.HTML({'url': url,
+					$.ajax({'url': url,
 						'update': update,
 						'data': {
 							'element': v,
-							'id': this.options.listid,
+							'id': self.options.listid,
 							'elid': id,
 							'plugin': plugin,
 							'counter': counter,
-							'listref':  this.options.ref,
+							'listref':  self.options.ref,
 							'context': 'visualization',
-							'parentView': 'update_col' + this.options.ref + '_' + this.options.renderOrder,
+							'parentView': 'update_col' + self.options.ref + '_' + self.options.renderOrder,
 							'fabrikIngoreDefaultFilterVal': 1
 						},
-						'onComplete': function () {
-							Fabrik.loader.stop(row);
-							win.fitToContent(false);
-						}
-					}).send();
-				}.bind(this));
+					}).done(function () {
+						Fabrik.loader.stop(row);
+						win.fitToContent(false);
+					});
+				});
 
 				// Submit the update
-				form.getElement('input[type=button]').addEvent('click', function (e) {
+				form.find('input[type=button]').on('click', function (e) {
 					e.stop();
 					var i;
-					Fabrik['filter_update_col'  + this.options.ref + '_' + this.options.renderOrder].onSumbit();
+					Fabrik['filter_update_col'  + self.options.ref + '_' + self.options.renderOrder].onSumbit();
 
-					var listForm = document.id('listform_' + this.options.ref);
+					var listForm = $('#listform_' + self.options.ref);
 
 					// Grab all the update settings and put them in a hidden field for later extraction within the update_col php code.
-					i = new Element('input', {'type': 'hidden', 'value': form.toQueryString(), 'name': 'fabrik_update_col'});
+					i = $(document.createElement('input')).attr({'type': 'hidden', 'value': form.toQueryString(), 'name': 'fabrik_update_col'});
 					i.inject(listForm, 'bottom');
 					this.list.submit('list.doPlugin');
 
-				}.bind(this));
-			}.bind(this)
+				});
+			}
 		};
 		this.win = Fabrik.getWindow(this.windowopts);
 		this.win.close();

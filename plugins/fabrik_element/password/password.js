@@ -20,15 +20,16 @@ var FbPassword = my.Class(FbElement, {
 	},
 
 	ini: function () {
+		var self = this;
 		if (this.element) {
-			this.element.addEvent('keyup', function (e) {
-				this.passwordChanged(e);
-			}.bind(this));
+			this.element.on('keyup', function (e) {
+				self.passwordChanged(e);
+			});
 		}
 		if (this.options.ajax_validation === true) {
-			this.getConfirmationField().addEvent('blur', function (e) {
-				this.callvalidation(e);
-			}.bind(this));
+			this.getConfirmationField().on('blur', function (e) {
+				self.callvalidation(e);
+			});
 		}
 
 		if (this.getConfirmationField().get('value') === '') {
@@ -47,15 +48,15 @@ var FbPassword = my.Class(FbElement, {
 	},
 
 	passwordChanged: function () {
-		var strength = this.getContainer().getElement('.strength');
-		if (typeOf(strength) === 'null') {
+		var strength = this.getContainer().find('.strength');
+		if (strength.length === 0) {
 			return;
 		}
-		var strongRegex = new RegExp("^(?=.{6,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
-		var mediumRegex = new RegExp("^(?=.{6,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
-		var enoughRegex = new RegExp("(?=.{6,}).*", "g");
-		var pwd = this.element;
-		var html = '';
+		var strongRegex = new RegExp("^(?=.{6,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g"),
+			mediumRegex = new RegExp("^(?=.{6,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g"),
+			enoughRegex = new RegExp("(?=.{6,}).*", "g"),
+			pwd = this.element,
+			html = '';
 		if (!this.options.progressbar) {
 			if (false === enoughRegex.test(pwd.value)) {
 				html = '<span>' + Joomla.JText._('PLG_ELEMENT_PASSWORD_MORE_CHARACTERS') + '</span>';
@@ -92,10 +93,10 @@ var FbPassword = my.Class(FbElement, {
 			}
 			jQuery(strength).tooltip(options);
 		}
-		strength.set('html', html);
+		strength.html(html);
 	},
 
 	getConfirmationField: function () {
-		return this.getContainer().getElement('input[name*=check]');
+		return this.getContainer().find('input[name*=check]');
 	}
 });

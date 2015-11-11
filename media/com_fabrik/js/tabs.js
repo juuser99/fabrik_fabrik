@@ -37,7 +37,7 @@ var Tabs = my.Class({
 						this.addWindow(e);
 					}.bind(this)
 				}
-			}).adopt([new Element('span').set('text', 'add'), a]));
+			}).adopt([new Element('span').text('add'), a]));
 		}
 		tabs.each(function (t) {
 			this.add(t);
@@ -124,7 +124,7 @@ var Tabs = my.Class({
 				}
 			}
 		});
-		li.adopt(new Element('span').set('text', t + ' '));
+		li.adopt(new Element('span').text(t + ' '));
 
 		var a = new Element('a', {
 			'href': '#',

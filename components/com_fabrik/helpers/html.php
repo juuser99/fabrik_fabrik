@@ -825,23 +825,16 @@ EOD;
 		if (!self::$framework)
 		{
 			$app     = JFactory::getApplication();
-			$version = new JVersion;
 			FabrikHelperHTML::modalJLayouts();
 			$jsAssetBaseURI = self::getJSAssetBaseURI();
 			$fbConfig       = JComponentHelper::getParams('com_fabrik');
 
 			// Only use template test for testing in 2.5 with my temp J bootstrap template.
-			$bootstrapped = in_array($app->getTemplate(), array('bootstrap', 'fabrik4')) || $version->RELEASE > 2.5;
-
 			$ext = self::isDebug() ? '.js' : '-min.js';
 			$src = array();
-			//JHtml::_('behavior.framework', true);
 
 			// Ensure bootstrap js is loaded - as J template may not load it.
-			if ($version->RELEASE > 2.5)
-			{
-				JHtml::_('bootstrap.framework');
-			}
+			JHtml::_('bootstrap.framework');
 
 			// Require js test - list with no cal loading ajax form with cal
 			JHTML::_('behavior.calendar');
@@ -853,10 +846,6 @@ EOD;
 				JHtml::_('formbehavior.chosen', 'select.advancedSelect', null, $chosenOptions);
 			}
 
-			if (self::inAjaxLoadedPage() && !$bootstrapped)
-			{
-				JHtml::_('script', 'media/com_fabrik/js/lib/Event.mock.js');
-			}
 
 			if (!self::inAjaxLoadedPage())
 			{
@@ -872,15 +861,7 @@ EOD;
 
 				$liveSiteReq   = array();
 				$liveSiteReq[] = 'media/com_fabrik/js/fabrik' . $ext;
-
-				if ($bootstrapped)
-				{
-					$liveSiteReq[] = 'media/com_fabrik/js/tipsBootStrapMock' . $ext;
-				}
-				else
-				{
-					$liveSiteReq[] = 'media/com_fabrik/js/tips' . $ext;
-				}
+				$liveSiteReq[] = 'media/com_fabrik/js/tipsBootStrapMock' . $ext;
 
 				$liveSiteSrc   = array();
 				$liveSiteSrc[] = "\tFabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';";
@@ -888,32 +869,12 @@ EOD;
 				$liveSiteSrc[] = "\tFabrik.debug = " . (self::isDebug() ? 'true;' : 'false;');
 				$liveSiteSrc[] = "\tFabrik.jLayouts = " . json_encode(JArrayHelper::toObject(self::$jLayoutsJs)) . ";";
 
-				if ($bootstrapped)
-				{
-					$liveSiteSrc[] = "\tFabrik.bootstrapped = true;";
-				}
-				else
-				{
-					$liveSiteSrc[] = "\tFabrik.iconGen = new IconGenerator({scale: 0.5});";
-					$liveSiteSrc[] = "\tFabrik.bootstrapped = false;";
-				}
-
 				$liveSiteSrc[] = self::tipInt();
 				$liveSiteSrc   = implode("\n", $liveSiteSrc);
 				self::script($liveSiteReq, $liveSiteSrc);
 			}
 			else
 			{
-				if ($bootstrapped)
-				{
-					$liveSiteSrc[] = "\tFabrik.bootstrapped = true;";
-				}
-				else
-				{
-					$liveSiteSrc[] = "\tFabrik.iconGen = new IconGenerator({scale: 0.5});";
-					$liveSiteSrc[] = "\tFabrik.bootstrapped = false;";
-				}
-
 				$liveSiteSrc[] = "\tif (!Fabrik.jLayouts) {
 				Fabrik.jLayouts = {};
 				}

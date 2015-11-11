@@ -12,31 +12,31 @@ AdminPackage = my.Class({
 	},
 
 	simpleUI: function () {
-		var source = document.id('list-pick'),
-		target = document.id('blockslist'),
-		addBtn = document.id('add-list'),
-		removeBtn = document.id('remove-list');
+		var source = $('#list-pick'),
+		target = $('#blockslist'),
+		addBtn = $('#add-list'),
+		removeBtn = $('#remove-list');
 
 		this._swaplistIni(addBtn, removeBtn, source, target);
 
-		source = document.id('form-pick');
-		target = document.id('blocksform');
-		addBtn = document.id('add-form');
-		removeBtn = document.id('remove-form');
+		source = $('#form-pick');
+		target = $('#blocksform');
+		addBtn = $('#add-form');
+		removeBtn = $('#remove-form');
 		this._swaplistIni(addBtn, removeBtn, source, target);
-
 	},
 
 	_swaplistIni: function (addBtn, removeBtn, source, target) {
-		addBtn.addEvent('click', function (e) {
+		var self = this;
+		addBtn.on('click', function (e) {
 			e.stop();
-			this._swaplist(source, target);
-		}.bind(this));
+			self._swaplist(source, target);
+		});
 
-		removeBtn.addEvent('click', function (e) {
+		removeBtn.on('click', function (e) {
 			e.stop();
-			this._swaplist(target, source);
-		}.bind(this));
+			self._swaplist(target, source);
+		});
 	},
 
 	_swaplist: function (source, target) {

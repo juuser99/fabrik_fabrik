@@ -16,26 +16,27 @@ FbCheckBox = my.Class(FbElementList, {
 	},
 
 	watchAddToggle: function () {
-		var c = this.getContainer();
-		var d = c.getElement('div.addoption');
-		var a = c.getElement('.toggle-addoption');
+		var c = this.getContainer(),
+			self = this,
+			d = c.find('div.addoption'),
+			a = c.find('.toggle-addoption'), clone, fe;
 		if (this.mySlider) {
 			// Copied in repeating group so need to remove old slider html first
-			var clone = d.clone();
-			var fe = c.getElement('.fabrikElement');
+			clone = d.clone();
+			fe = c.find('.fabrikElement');
 			d.parent().destroy();
 			fe.adopt(clone);
-			d = c.getElement('div.addoption');
-			d.setStyle('margin', 0);
+			d = c.find('div.addoption');
+			d.css('margin', 0);
 		}
 		this.mySlider = new Fx.Slide(d, {
 			duration : 500
 		});
 		this.mySlider.hide();
-		a.addEvent('click', function (e) {
+		a.on('click', function (e) {
 			e.stop();
-			this.mySlider.toggle();
-		}.bind(this));
+			self.mySlider.toggle();
+		});
 	},
 
 	getValue: function () {
@@ -61,18 +62,19 @@ FbCheckBox = my.Class(FbElementList, {
 	},
 
 	update: function (val) {
-		this.getElement();
-		if (typeOf(val) === 'string') {
+		var self = this;
+		this.find();
+		if (typeof(val) === 'string') {
 			val = val === '' ? [] : JSON.decode(val);
 		}
 		if (!this.options.editable) {
-			this.element.innerHTML = '';
+			this.element.html('');
 			if (val === '') {
 				return;
 			}
 			jQuery.each(val, function (key, v) {
-				this.element.innerHTML += this.options.data[v] + '<br />';
-			}.bind(this));
+				self.element.html(self.element.html() + self.options.data[v] + '<br />');
+			});
 			return;
 		}
 		this._getSubElements();
@@ -82,9 +84,9 @@ FbCheckBox = my.Class(FbElementList, {
 				if (v === el.value) {
 					chx = true;
 				}
-			}.bind(this));
+			});
 			el.checked = chx;
-		}.bind(this));
+		});
 	},
 
 	cloned: function (c) {
