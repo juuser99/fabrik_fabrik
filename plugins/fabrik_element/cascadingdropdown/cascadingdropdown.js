@@ -15,7 +15,7 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
     constructor: function (element, options) {
         var self = this;
         this.ignoreAjax = false;
-        this.parent(element, options);
+        FbCascadingdropdown.Super.call(this, element, options);
         this.plugin = 'cascadingdropdown';
         /**
          * In order to be able to remove specific change event functions when we clone
@@ -222,6 +222,7 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
         // c is the repeat group count
         this.myAjax = null;
         this.parent(c);
+        FbCascadingdropdown.Super.prototype.cloned(this, c);
         this.spinner = new Spinner(this.element.closest('.fabrikElementContainer'));
         // Cloned seems to be called correctly
         if (this.options.watchInSameGroup === true) {

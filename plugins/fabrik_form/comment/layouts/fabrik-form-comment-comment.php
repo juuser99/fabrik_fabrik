@@ -5,7 +5,7 @@ $d = $displayData;
 
 <div class="metadata muted">
 	<small><?php echo FabrikHelperHTML::icon('icon-user'); ?>
-		<?php echo $d->name; ?>, <?php echo FText::_('PLG_FORM_COMMENT_WROTE_ON'); ?> 
+		<?php echo $d->name; ?>, <?php echo FText::_('PLG_FORM_COMMENT_WROTE_ON'); ?>
 	</small>
 	<?php echo FabrikHelperHTML::icon('icon-calendar'); ?>
 	<small><?php echo JHTML::date($d->comment->time_date, $d->dateFormat, 'UTC'); ?></small>
@@ -13,21 +13,14 @@ $d = $displayData;
 	if ($d->internalRating) :
 	?>
 	<div class="rating">
-	<?php 
+	<?php
 	$r = (int) $d->comment->rating;
 	for ($i = 0; $i < $r; $i++) :
-		if ($d->j3) :
-			?>
-			<?php echo FabrikHelperHTML::icon('icon-star'); ?>
-		<?php
-		else :
-			?><img src="' . $d->insrc . '" alt="star" />
-		<?php
-		endif;
+		echo FabrikHelperHTML::icon('icon-star');
 	endfor;
 	?>
 	</div>
-	<?php 
+	<?php
 	endif;
 ?>
 </div>

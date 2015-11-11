@@ -9,6 +9,6 @@ var FbAccess = my.Class(FbElement, {
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikaccess';
-		this.parent(element, options);
+		FbAccess.Super.call(this, element, options);
 	}
 });

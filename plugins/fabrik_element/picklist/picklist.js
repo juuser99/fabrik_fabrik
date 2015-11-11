@@ -169,13 +169,10 @@ var FbPicklist = my.Class(FbElement, {
             d = c.find('div.addoption');
             d.css('margin', 0);
         }
-        this.mySlider = new Fx.Slide(d, {
-            duration: 500
-        });
-        this.mySlider.hide();
+        $(d).slideUp(500);
         a.on('click', function (e) {
             e.stop();
-            self.mySlider.toggle();
+            $(d).slideToggle();
         });
     },
 

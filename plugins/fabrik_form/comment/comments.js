@@ -215,44 +215,25 @@ var FabrikComment = my.Class({
         });
     },
 
-	// toggle fx the reply forms - recalled each time a comment is added via ajax
-	watchReply : function () {
-		var self = this, sel;
-		this.spinner.resize();
-		this.element.closest('.replybutton').each(function (a) {
-			var fx;
-			$(this).removeEvents();
-			var commentform = $(this).parent().parent().getNext();
-			if (commentform.length === 0) {
-				// wierd ie7 ness?
-				commentform = a.closest('.comment').find('.replyForm');
-			}
-			if (commentForm.length > 0) {
-				if (this.options.wysiwyg) {
-					fx = commentform;
-				}
-				else {
-					var li = a.closest('.comment').closest('li');
-                    if (window.ie) {
-                        fx = new Fx.Slide(commentform, 'opacity', {
-                            duration : 5000
-                        });
+    // toggle fx the reply forms - recalled each time a comment is added via ajax
+    watchReply: function () {
+        var self = this, sel;
+        this.spinner.resize();
+        this.element.closest('.replybutton').each(function (a) {
+            var fx;
+            $(this).removeEvents();
+            var commentForm = $(this).parent().parent().getNext();
+            if (commentForm.length === 0) {
+                // wierd ie7 ness?
+                commentForm = a.closest('.comment').find('.replyForm');
+            }
+            if (commentForm.length > 0) {
+                var li = a.closest('.comment').closest('li');
+                commentForm.fadeOut();
 
-				} else {
-					if (this.fx.toggleForms.hasOwnProperty(li.id)) {
-						fx = this.fx.toggleForms[li.id];
-					} else {
-						fx = new Fx.Slide(commentform, 'opacity', {
-							duration : 5000
-						});
-						this.fx.toggleForms[li.id] = fx;
-					}
-				}
-
-                fx.hide();
                 a.on('click', function (e) {
                     e.stop();
-                    fx.toggle();
+                    commentForm.fadeToggle();
                 });
             }
         });

@@ -5,13 +5,13 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbCheckBox = my.Class(FbElementList, {
+var FbCheckBox = my.Class(FbElementList, {
 
 	type: 'checkbox', // Sub element type
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikcheckbox';
-		this.parent(element, options);
+		FbCheckBox.Super.call(this, element, options);
 		this._getSubElements();
 	},
 
@@ -29,13 +29,11 @@ FbCheckBox = my.Class(FbElementList, {
 			d = c.find('div.addoption');
 			d.css('margin', 0);
 		}
-		this.mySlider = new Fx.Slide(d, {
-			duration : 500
-		});
-		this.mySlider.hide();
+
+		$(d).slideUp(500);
 		a.on('click', function (e) {
 			e.stop();
-			self.mySlider.toggle();
+			$(d).slideToggle();
 		});
 	},
 
@@ -94,7 +92,7 @@ FbCheckBox = my.Class(FbElementList, {
 			this.watchAddToggle();
 			this.watchAdd();
 		}
-		this.parent(c);
+		FbCheckBox.Super.prototype.cloned(this, c);
 	}
 
 });

@@ -4,9 +4,9 @@ defined('JPATH_BASE') or die;
 $d = $displayData;
 $labelText = FText::_($d->label);
 $labelText = $labelText == '' ? '&nbsp;' : $labelText;
-$l = $d->j3 ? '' : $labelText;
+$l = '';
 $l .= $d->icons;
-$l .= $d->j3 ? $labelText : '';
+$l .= $labelText;
 
 if ($d->view == 'form' && !($d->canUse || $d->canView))
 {

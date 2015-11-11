@@ -1548,25 +1548,16 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$name = $this->getHTMLName($repeatCounter);
 		$params = $this->getParams();
 		$default = (array) $defaultValue;
+		$layout = $this->getLayout('form-dropdownlist');
+		$displayData = new stdClass;
+		$displayData->id = $id;
+		$displayData->options = $tmp;
+		$displayData->default = $default;
+		$displayData->name = $name;
+		$displayData->editable = $this->isEditable();
+		$displayData->attributes = 'class="fabrikinput form-control inputbox input ' . $this->getAdvancedSelectClass() . ' ' . $params->get('bootstrap_class', 'input-large') . '" size="1"';
+		$html[] = $layout->render($displayData);
 
-		if (FabrikWorker::j3())
-		{
-			$layout = $this->getLayout('form-dropdownlist');
-			$displayData = new stdClass;
-			$displayData->id = $id;
-			$displayData->options = $tmp;
-			$displayData->default = $default;
-			$displayData->name = $name;
-			$displayData->editable = $this->isEditable();
-			$displayData->attributes = 'class="fabrikinput form-control inputbox input ' . $this->getAdvancedSelectClass() . ' ' . $params->get('bootstrap_class', 'input-large') . '" size="1"';
-			$html[] = $layout->render($displayData);
-		}
-		else
-		{
-			$advancedClass = $this->getAdvancedSelectClass();
-			$attributes = 'class="fabrikinput inputbox input ' . $advancedClass . ' ' . $params->get('bootstrap_class', 'input-large') . '" size="1"';
-			$html[] = JHTML::_('select.genericlist', $tmp, $name, $attributes, 'value', 'text', $default, $id);
-		}
 	}
 
 	/**
@@ -1608,16 +1599,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		FabrikHelperHTML::jLayoutJs($singleLayout, $singleLayout, $displayData, array($this->layoutBasePath()));
 
 		$html[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
-
-		if (FabrikWorker::j3())
-		{
-			$html[] = $layout->render($displayData);
-		}
-		else
-		{
-			$html[] = FabrikHelperHTML::aList('radio', $tmp, $thisElName, $attributes, $defaultValue, 'value', 'text', $displayData->optsPerRow, $displayData->editable);
-		}
-
+		$html[] = $layout->render($displayData);
 		$html[] = '</div>';
 	}
 
@@ -1761,27 +1743,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$singleLayout = 'fabrik-element-' . $this->getPluginName() . '-form-checkbox';
 		FabrikHelperHTML::jLayoutJs($singleLayout, $singleLayout, $displayData, array($this->layoutBasePath()));
 
-		if (FabrikWorker::j3())
-		{
-			$html[] = $layout->render($displayData);
-		}
-		else
-		{
-			$html[] = FabrikHelperHTML::aList('checkbox', $tmp, $name, $attributes, $default, 'value', 'text', $displayData->optsPerRow, $displayData->editable);
-		}
-
-		if (empty($tmp) && !FabrikWorker::j3())
-		{
-			$tmpIds = array();
-			$o = new stdClass;
-			$o->text = 'dummy';
-			$o->value = 'dummy';
-			$tmpIds[] = $o;
-			$tmp = $tmpIds;
-			$dummy = FabrikHelperHTML::aList('checkbox', $tmp, $name, $attributes, $default, 'value', 'text', 1, true);
-			$html[] = '<div class="chxTmplNode">' . $dummy . '</div>';
-		}
-
+		$html[] = $layout->render($displayData);
 		$html[] = '</div>';
 	}
 

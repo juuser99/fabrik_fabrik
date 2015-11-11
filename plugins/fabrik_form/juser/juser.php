@@ -161,10 +161,6 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 							$this->getFieldName('juser_field_name', true) => $o_user->name,
 							$this->getFieldName('juser_field_username', true) => $o_user->username);
 
-						if (!FabrikWorker::j3())
-						{
-							$fields[$this->getFieldName('juser_field_usertype', true)] = $o_user->group_id;
-						}
 
 						$query->insert($tableName);
 

@@ -21,7 +21,6 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminViewElements extends JViewLegacy
 {
 	/**
@@ -48,7 +47,7 @@ class FabrikAdminViewElements extends JViewLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return  void
 	 */
@@ -57,11 +56,7 @@ class FabrikAdminViewElements extends JViewLegacy
 	{
 		if ($this->getLayout() == 'confirmdelete')
 		{
-			if (FabrikWorker::j3())
-			{
-				$this->setLayout('bootstrap_confirmdelete');
-			}
-
+			$this->setLayout('bootstrap_confirmdelete');
 			$this->confirmdelete();
 
 			return;
@@ -74,16 +69,16 @@ class FabrikAdminViewElements extends JViewLegacy
 			return;
 		}
 		// Initialise variables.
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state = $this->get('State');
-		$this->formOptions = $this->get('FormOptions');
+		$app                     = JFactory::getApplication();
+		$input                   = $app->input;
+		$this->items             = $this->get('Items');
+		$this->pagination        = $this->get('Pagination');
+		$this->state             = $this->get('State');
+		$this->formOptions       = $this->get('FormOptions');
 		$this->showInListOptions = $this->get('ShowInListOptions');
-		$this->groupOptions = $this->get('GroupOptions');
-		$this->pluginOptions = $this->get('PluginOptions');
-		$this->packageOptions = $this->get('PackageOptions');
+		$this->groupOptions      = $this->get('GroupOptions');
+		$this->pluginOptions     = $this->get('PluginOptions');
+		$this->packageOptions    = $this->get('PackageOptions');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -95,11 +90,7 @@ class FabrikAdminViewElements extends JViewLegacy
 		$this->addToolbar();
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
 
-		if (FabrikWorker::j3())
-		{
-			$this->sidebar = JHtmlSidebar::render();
-		}
-
+		$this->sidebar = JHtmlSidebar::render();
 		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
@@ -165,58 +156,55 @@ class FabrikAdminViewElements extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_ELEMENTS', false, FText::_('JHELP_COMPONENTS_FABRIK_ELEMENTS'));
 
-		if (FabrikWorker::j3())
-		{
-			JHtmlSidebar::setAction('index.php?option=com_fabrik&view=elements');
+		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=elements');
 
-			if (!empty($this->packageOptions))
-			{
-				array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
-				JHtmlSidebar::addFilter(
+		if (!empty($this->packageOptions))
+		{
+			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
+			JHtmlSidebar::addFilter(
 				FText::_('JOPTION_SELECT_PUBLISHED'),
 				'package',
 				JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
-				);
-			}
+			);
+		}
 
-			JHtmlSidebar::addFilter(
+		JHtmlSidebar::addFilter(
 			FText::_('COM_FABRIK_SELECT_PLUGIN'),
 			'filter_plugin',
 			JHtml::_('select.options', $this->pluginOptions, 'value', 'text', $this->state->get('filter.plugin'), true)
-			);
+		);
 
-			JHtmlSidebar::addFilter(
+		JHtmlSidebar::addFilter(
 			FText::_('COM_FABRIK_SELECT_FORM'),
 			'filter_form',
 			JHtml::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
-			);
+		);
 
-			JHtmlSidebar::addFilter(
+		JHtmlSidebar::addFilter(
 			FText::_('COM_FABRIK_SELECT_GROUP'),
 			'filter_group',
 			JHtml::_('select.options', $this->groupOptions, 'value', 'text', $this->state->get('filter.group'), true)
-			);
+		);
 
-			$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
-			JHtmlSidebar::addFilter(
+		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+		JHtmlSidebar::addFilter(
 			FText::_('JOPTION_SELECT_PUBLISHED'),
 			'filter_published',
 			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
-			);
+		);
 
-			JHtmlSidebar::addFilter(
+		JHtmlSidebar::addFilter(
 			FText::_('COM_FABRIK_SELECT_SHOW_IN_LIST'),
 			'filter_showinlist',
 			JHtml::_('select.options', $this->showInListOptions, 'value', 'text', $this->state->get('filter.showinlist'), true)
-			);
-		}
+		);
 	}
 
 	/**
 	 * Show a screen asking if the user wants to delete the lists forms/groups/elements
 	 * and if they want to drop the underlying database table
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return  void
 	 */
@@ -224,7 +212,7 @@ class FabrikAdminViewElements extends JViewLegacy
 	protected function confirmdelete($tpl = null)
 	{
 		$model = $this->getModel();
-		$app = JFactory::getApplication();
+		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$model->setState('filter.cid', $input->get('cid', array(), 'array'));
 		$this->items = $this->get('Items');
@@ -240,7 +228,7 @@ class FabrikAdminViewElements extends JViewLegacy
 
 	protected function addConfirmDeleteToolbar()
 	{
-		$app = JFactory::getApplication();
+		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_CONFIRM_DELETE'), 'checkbox-unchecked');
@@ -253,7 +241,7 @@ class FabrikAdminViewElements extends JViewLegacy
 	/**
 	 * Show a view for selecting which group the element should be copied to
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return  void
 	 */
@@ -262,12 +250,12 @@ class FabrikAdminViewElements extends JViewLegacy
 	{
 		JSession::checkToken() or die('Invalid Token');
 		$model = $this->getModel();
-		$app = JFactory::getApplication();
+		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$model->setState('filter.cid', $input->get('cid', array(), 'array'));
 		$this->items = $this->get('Items');
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$db          = JFactory::getDbo();
+		$query       = $db->getQuery(true);
 		$query->select('id, name')->from('#__fabrik_groups')->order('name');
 		$db->setQuery($query);
 		$this->groups = $db->loadObjectList();
@@ -284,7 +272,7 @@ class FabrikAdminViewElements extends JViewLegacy
 
 	protected function addConfirmCopyToolbar()
 	{
-		$app = JFactory::getApplication();
+		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_COPY_TO_WHICH_GROUP'), 'checkbox-unchecked');

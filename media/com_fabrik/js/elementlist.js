@@ -12,7 +12,7 @@ FbElementList = my.Class(FbElement, {
 	type: 'text', // Sub element type
 
 	constructor: function (element, options) {
-		this.parent(element, options);
+		FbElementList.Super.call(this, element, options);
 		this.addSubClickEvents();
 		this._getSubElements();
 		if (this.options.allowadd === true && this.options.editable !== false) {

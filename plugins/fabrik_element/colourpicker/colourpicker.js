@@ -50,7 +50,7 @@ var ColourPicker = my.Class(FbElement, {
             options.value = [0, 0, 0, 1];
         }
 
-        this.parent(element, options);
+        ColourPicker.Super.call(this, element, options);
         options.outputs = this.outputs;
         this.element = $('#' + element);
         this.ini();
@@ -90,7 +90,7 @@ var ColourPicker = my.Class(FbElement, {
     },
 
     cloned: function (c) {
-        this.parent(c);
+        ColourPicker.Super.prototype.cloned(this, c);
 
         // Recreate the tabs
         var widget = this.element.closest('.fabrikSubElementContainer').find('.colourpicker-widget'),

@@ -747,8 +747,10 @@ var FbFileElement = my.Class(FbElement, {
         var el = this.element.closest('.fabrikElement');
         this.breadcrumbs = el.find('.breadcrumbs');
         this.folderdiv = el.find('.folderselect');
-        this.slider = new Fx.Slide(this.folderdiv, {duration: 500});
-        this.slider.hide();
+
+        this.folderdiv.slideUp(500, function() {
+            // Animation complete.
+        });
         this.hiddenField = el.find('.folderpath');
         el.find('.toggle').addEvent('click', function (e) {
             e.stop();
@@ -825,9 +827,9 @@ var FbFileElement = my.Class(FbElement, {
                         $(document.createElement('a')).attr({'href': '#'}).text(folder)).inject(self.folderdiv);
                 });
                 if (r.length === 0) {
-                    this.slider.hide();
+                    this.folderdiv.slideUp(500);
                 } else {
-                    this.slider.slideIn();
+                    this.folderdiv.slideDown(500);
                 }
                 this.watchAjaxFolderLinks();
                 this.hiddenField.value = '/' + this.folderlist.join('/') + '/';

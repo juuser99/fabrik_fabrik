@@ -61,8 +61,7 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 		// $$$ hugh - strip spaces first, account for "foo,bar, baz, foo"
 		$data = array_map('trim', $data);
 		$data = array_unique($data);
-		$img = FabrikWorker::j3() ? 'bookmark.png' : 'tag.png';
-		$icon = FabrikHelperHTML::image($img, 'form', @$this->tmpl, array('alt' => 'tag'));
+		$icon = FabrikHelperHTML::image('bookmark.png', 'form', @$this->tmpl, array('alt' => 'tag'));
 		$tmplData = new stdClass;
 		$tmplData->tags = array();
 

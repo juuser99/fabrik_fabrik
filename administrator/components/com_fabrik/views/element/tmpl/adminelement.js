@@ -26,7 +26,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
         if (Fabrik.debug) {
             fconsole('Fabrik adminelement.js: Initialising', plugins, options, id);
         }
-        this.parent(plugins, id, 'validationrule');
+        fabrikAdminElement.Super.call(this, plugins, id, 'validationrule');
         this.options = $.append(this.options, options);
         this.setParentViz();
 

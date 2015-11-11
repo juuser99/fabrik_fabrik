@@ -28,8 +28,8 @@ class JFormFieldFabrikTemplate extends JFormFieldFolderList
 	/**
 	 * The form field type.
 	 *
-	 * @var		string
-	 * @since	1.6
+	 * @var        string
+	 * @since    1.6
 	 */
 	public $type = 'FabrikTemplate';
 
@@ -40,16 +40,8 @@ class JFormFieldFabrikTemplate extends JFormFieldFolderList
 	 */
 	protected function getOptions()
 	{
-		$view = $this->element['view'] ? $this->element['view'] : 'list';
-
-		if (FabrikWorker::j3())
-		{
-			$this->element['directory'] = $this->directory = '/components/com_fabrik/views/' . $view . '/tmpl/';
-		}
-		else
-		{
-			$this->element['directory'] = '/components/com_fabrik/views/' . $view . '/tmpl25/';
-		}
+		$view                       = $this->element['view'] ? $this->element['view'] : 'list';
+		$this->element['directory'] = $this->directory = '/components/com_fabrik/views/' . $view . '/tmpl/';
 
 		return parent::getOptions();
 	}

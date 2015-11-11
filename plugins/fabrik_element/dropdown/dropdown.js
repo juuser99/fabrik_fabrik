@@ -34,13 +34,10 @@ var FbDropdown = my.Class(FbElement, {
 			ad.name = this.element.id + '_additions';
 
 		}
-		this.mySlider = new Fx.Slide(d, {
-			duration: 500
-		});
-		this.mySlider.hide();
+		$(d).slideUp(500);
 		a.on('click', function (e) {
 			e.stop();
-			self.mySlider.toggle();
+			$(d).slideToggle();
 		});
 	},
 
@@ -94,7 +91,7 @@ var FbDropdown = my.Class(FbElement, {
 		if (!this.options.editable) {
 			return this.options.value;
 		}
-		if (typeOf(this.element.get('value')) === 'null') {
+		if (this.element.val() === null) {
 			return '';
 		}
 		if (this.options.multiple) {
@@ -106,7 +103,7 @@ var FbDropdown = my.Class(FbElement, {
 			});
 			return r;
 		}
-		return this.element.get('value');
+		return this.element.val();
 	},
 
 	reset: function ()

@@ -167,13 +167,11 @@ var FbForm = my.Class({
         this.fx.addOptions = [];
         this.getForm().find('.addoption').each(function (d) {
             var a = $(this).closest('.fabrikElementContainer').find('.toggle-addoption');
-            var mySlider = new Fx.Slide(d, {
-                duration: 500
-            });
-            mySlider.hide();
+
+            $(d).slideUp(500);
             a.on('click', function (e) {
                 e.stop();
-                mySlider.toggle();
+                $(d).slideToggle();
             });
         });
     },
@@ -1535,7 +1533,7 @@ var FbForm = my.Class({
             Fabrik.trigger('fabrik.form.group.delete.end', [this, e, i, delIndex]);
         } else {
             var toel = subGroup.getPrevious();
-            var myFx = new Fx.Tween(subGroup, {
+            new Fx.Tween(subGroup, {
                 'property': 'opacity',
                 duration  : 300,
                 onComplete: function () {
@@ -1788,7 +1786,6 @@ var FbForm = my.Class({
                     bits.splice(bits.length - 1, 1, c);
                     subElementContainer.id = bits.join('_');
                 }
-                var origelid = el.options.element;
                 // clone js element controller, set form to be passed by reference and
                 // not cloned
                 var ignore = el.unclonableProperties();
@@ -1948,19 +1945,19 @@ var FbForm = my.Class({
     },
 
     showErrors: function (data) {
-        var d = null,
-            mainError = his.form.find('.fabrikMainError');
+        var d = null, e, x, y,
+            mainError = this.form.find('.fabrikMainError'),
+            errors = data.errors;
         if (data.id === this.id) {
-            // show errors
-            var errors = new Hash(data.errors);
+            // Show errors
             if (Object.keys(errors).length > 0) {
                 mainError.html(this.options.error);
                 mainError.removeClass('fabrikHide');
                 errors.each(function (a, key) {
-                    var e = $('#' + key + '_error');
+                    e = $('#' + key + '_error');
                     if (e.length > 0) {
-                        for (var x = 0; x < a.length; x++) {
-                            for (var y = 0; y < a[x].length; y++) {
+                        for (x = 0; x < a.length; x++) {
+                            for (y = 0; y < a[x].length; y++) {
                                 d = $(document.createElement('div')).text(a[x][y]).inject(e);
                             }
                         }
@@ -2001,8 +1998,8 @@ var FbForm = my.Class({
     stopEnterSubmitting: function () {
         var self = this;
         var inputs = this.form.find('input.fabrikinput');
-        inputs.each(function (el, i) {
-            el.on('keypress', function (e) {
+        inputs.each(function (i) {
+            $(this).on('keypress', function (e) {
                 if (e.key === 'enter') {
                     e.stop();
                     if (inputs[i + 1]) {

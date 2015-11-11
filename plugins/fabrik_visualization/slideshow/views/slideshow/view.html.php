@@ -35,7 +35,6 @@ class FabrikViewSlideshow extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$srcs = FabrikHelperHTML::framework();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
@@ -93,8 +92,7 @@ class FabrikViewSlideshow extends JViewLegacy
 
 		//FabrikHelperHTML::slimbox();
 
-		$tpl = $j3 ? 'bootstrap' : 'default';
-		$tpl = $params->get('slideshow_viz_layout', $tpl);
+		$tpl = $params->get('slideshow_viz_layout', 'bootstrap');
 		$tmplpath = $model->pathBase . 'slideshow/views/slideshow/tmpl/' . $tpl;
 		$this->_setPath('template', $tmplpath);
 		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/slideshow/views/slideshow/tmpl/' . $tpl . '/template.css');

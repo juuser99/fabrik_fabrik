@@ -119,13 +119,11 @@ FbRadio = my.Class(FbElementList, {
 			d = c.find('div.addoption');
 			d.css('margin', 0);
 		}
-		this.mySlider = new Fx.Slide(d, {
-			duration : 500
-		});
+		$(d).slideUp(500);
 		this.mySlider.hide();
 		a.on('click', function (e) {
 			e.stop();
-			self.mySlider.toggle();
+			$(d).slideToggle();
 		});
 	},
 

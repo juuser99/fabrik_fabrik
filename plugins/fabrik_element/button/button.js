@@ -8,7 +8,7 @@
 var FbButton = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fabrikButton';
-		this.parent(element, options);
+		FbButton.Super.call(this, element, options);
 	},
 
 	addNewEventAux: function (action, js) {

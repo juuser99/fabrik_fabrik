@@ -394,7 +394,6 @@ class FabrikAdminModelList extends FabModelAdmin
 		$opts->joinOpts        = $joinTypeOpts;
 		$opts->tableOpts       = $connModel->getThisTables(true);
 		$opts->activetableOpts = $activeTableOpts;
-		$opts->j3              = FabrikWorker::j3();
 		$opts                  = json_encode($opts);
 
 		$filterOpts               = new stdClass;
@@ -402,7 +401,6 @@ class FabrikAdminModelList extends FabModelAdmin
 		$filterOpts->filterCondDd = $this->getFilterConditionDd(false, 'jform[params][filter-conditions][]', 2);
 		$filterOpts->filterAccess = JHtml::_('access.level', 'jform[params][filter-access][]', $item->access, 'class="input-small"');
 		$filterOpts->filterAccess = str_replace(array("\n", "\r"), '', $filterOpts->filterAccess);
-		$filterOpts->j3           = FabrikWorker::j3();
 		$filterOpts               = json_encode($filterOpts);
 
 		$formModel    = $this->getFormModel();

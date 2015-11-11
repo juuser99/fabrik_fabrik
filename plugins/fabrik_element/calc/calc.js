@@ -10,7 +10,7 @@ var FbCalc = my.Class(FbElement, {
     constructor: function (element, options) {
         this.plugin = 'calc';
         this.oldAjaxCalc = null;
-        this.parent(element, options);
+        FbCalc.Super.call(this, element, options);
     },
 
     attachedToForm: function () {
@@ -120,7 +120,7 @@ var FbCalc = my.Class(FbElement, {
 
 
     cloned: function (c) {
-        this.parent(c);
+        FbCalc.Super.prototype.cloned(this, c);
         this.attachedToForm();
     },
 

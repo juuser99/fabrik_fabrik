@@ -342,7 +342,6 @@ EOD;
 		$input                 = $app->input;
 		$layout                = self::getLayout('form.fabrik-email-form');
 		$displayData           = new stdClass;
-		$displayData->j3       = FabrikWorker::j3();
 		$displayData->package  = $app->getUserState('com_fabrik.package', 'fabrik');
 		$displayData->referrer = $input->get('referrer', '', 'string');
 		$document              = JFactory::getDocument();
@@ -361,17 +360,7 @@ EOD;
 	{
 		$config   = JFactory::getConfig();
 		$document = JFactory::getDocument();
-		$j3       = FabrikWorker::j3();
 		$document->setTitle($config->get('sitename'));
-
-		if (!$j3)
-		{
-			?>
-			<a href='javascript:window.close();'> <span class="small"><?php echo FText::_('COM_FABRIK_CLOSE_WINDOW'); ?>
-</span>
-			</a>
-			<?php
-		}
 	}
 
 	/**
@@ -1004,13 +993,7 @@ EOD;
 		$deps->deps[] = 'jquery';
 		$deps->deps[] = 'fab/lib/my.class' . $ext;
 
-		if ($navigator->getBrowser() == 'msie' && !$j3)
-		{
-			$deps->deps[] = 'fab/lib/flexiejs/flexie' . $ext;
-		}
-
-		$deps->deps[] = 'fab/mootools-ext' . $ext;
-		$deps->deps[] = 'fab/lib/Event.mock';
+		//$deps->deps[] = 'fab/mootools-ext' . $ext;
 		$deps->deps[] = 'fab/tipsBootStrapMock' . $ext;
 
 
@@ -1423,16 +1406,8 @@ EOD;
 			}
 			else
 			{
-				if (FabrikWorker::j3())
-				{
-					JHTML::stylesheet('components/com_fabrik/libs/slimbox2/css/slimbox2.css');
-					self::script('components/com_fabrik/libs/slimbox2/js/slimbox2.js');
-				}
-				else
-				{
-					JHTML::stylesheet('components/com_fabrik/libs/slimbox1.64/css/slimbox.css');
-					self::script('components/com_fabrik/libs/slimbox1.64/js/slimbox.js');
-				}
+				JHTML::stylesheet('components/com_fabrik/libs/slimbox2/css/slimbox2.css');
+				self::script('components/com_fabrik/libs/slimbox2/js/slimbox2.js');
 			}
 
 			self::$modal = true;
@@ -1636,13 +1611,12 @@ EOD;
 		JText::script('COM_FABRIK_NO_RECORDS');
 		JText::script('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR');
 		$class    = $plugin === 'cascadingdropdown' ? 'FabCddAutocomplete' : 'FbAutocomplete';
-		$jsFile   = FabrikWorker::j3() ? 'autocomplete-bootstrap' : 'autocomplete';
+		$jsFile   = 'autocomplete-bootstrap';
 		$needed   = array();
-		$needed[] = self::isDebug() ? 'fab/lib/my.class' : 'fab/lib/my.class-min';
+		//$needed[] = self::isDebug() ? 'fab/lib/my.class' : 'fab/lib/my.class-min';
 		$needed[] = self::isDebug() ? 'fab/fabrik' : 'fab/fabrik-min';
 		$needed[] = self::isDebug() ? 'fab/' . $jsFile : 'fab/' . $jsFile . '-min';
 		$needed[] = self::isDebug() ? 'fab/encoder' : 'fab/encoder-min';
-		$needed[] = 'fab/lib/Event.mock';
 
 		$needed = implode("', '", $needed);
 		self::addScriptDeclaration(
@@ -1920,7 +1894,7 @@ EOD;
 
 		$forceImage = FArrayHelper::getValue($opts, 'forceImage', false);
 
-		if (FabrikWorker::j3() && $forceImage !== true)
+		if ($forceImage !== true)
 		{
 			unset($properties['alt']);
 			$class = FArrayHelper::getValue($properties, 'icon-class', '');
@@ -2024,7 +1998,7 @@ EOD;
 
 			// For values like '1"'
 			$value      = htmlspecialchars($values[$i], ENT_QUOTES);
-			$inputClass = FabrikWorker::j3() ? '' : $type;
+			$inputClass = '';
 
 			if (array_key_exists('input', $classes))
 			{
@@ -2035,7 +2009,7 @@ EOD;
 					' name="' . $thisName . '" value="' . $value . '" ';
 			$sel = in_array($values[$i], $selected);
 			$chx .= $sel ? ' checked="checked" />' : ' />';
-			$labelClass = FabrikWorker::j3() && !$buttonGroup ? $type : '';
+			$labelClass = !$buttonGroup ? $type : '';
 
 			if (array_key_exists('label', $classes))
 			{
@@ -2072,10 +2046,7 @@ EOD;
 		$elementBeforeLabel = true, $optionsPerRow = 4, $classes = array(), $buttonGroup = false, $dataAttributes = array(),
 $inputDataAttributes = array())
 	{
-		if (FabrikWorker::j3())
-		{
-			$elementBeforeLabel = true;
-		}
+		$elementBeforeLabel = true;
 
 		$containerClasses = array_key_exists('container', $classes) ? implode(' ', $classes['container']) : '';
 		$dataAttributes   = implode(' ', $dataAttributes);
@@ -2099,22 +2070,7 @@ $inputDataAttributes = array())
 		}
 		else
 		{
-			if (FabrikWorker::j3())
-			{
-				$grid = self::bootstrapGrid($items, $optionsPerRow, 'fabrikgrid_' . $type);
-			}
-			else
-			{
-				$grid[] = '<ul>';
-
-				foreach ($items as $i => $s)
-				{
-					$clear  = ($i % $optionsPerRow == 0) ? 'clear:left;' : '';
-					$grid[] = '<li style="' . $clear . 'float:left;width:' . $w . '%;padding:0;margin:0;">' . $s . '</li>';
-				}
-
-				$grid[] = '</ul>';
-			}
+			$grid = self::bootstrapGrid($items, $optionsPerRow, 'fabrikgrid_' . $type);
 		}
 
 		return $grid;

@@ -22,6 +22,6 @@ jQuery(document).ready(function ($) {
 });
 
 jQuery(window).on('fabrik.loaded', function($) {
-	Fabrik.addEvent('fabrik.list.update', $.slimbox.scanPage);
-	Fabrik.addEvent('fabrik.cdd.update', $.slimbox.scanPage);
+	Fabrik.addEvent('fabrik.list.update', jQuery.slimbox.scanPage);
+	Fabrik.addEvent('fabrik.cdd.update', jQuery.slimbox.scanPage);
 });

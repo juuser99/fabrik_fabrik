@@ -9,13 +9,8 @@ $to   = $d->to;
 
 $calOpts = ArrayHelper::toString($d->calOpts);
 
-if ($d->j3) :
-	$from->img = '<button id ="' . $from->id . '_cal_img" class="btn calendarbutton">' . $from->img . '</button>';
-	$to->img   = '<button id ="' . $to->id . '_cal_img" class="btn calendarbutton">' . $to->img . '</button>';
-endif;
-
-$prepend = $d->j3 ? '<div class="input-append">' : '';
-$append  = $d->j3 ? '</div>' : '';
+$from->img = '<button id ="' . $from->id . '_cal_img" class="btn calendarbutton">' . $from->img . '</button>';
+$to->img   = '<button id ="' . $to->id . '_cal_img" class="btn calendarbutton">' . $to->img . '</button>';
 
 if ($d->filterType === 'range-hidden') :
 	?>
@@ -33,19 +28,19 @@ else :
 	?>
 
 	<?php echo FText::_('COM_FABRIK_DATE_RANGE_BETWEEN') . ' '; ?>
-	<?php echo $prepend; ?>
+	<div class="input-append">
 	<input type="text" name="<?php echo $from->name; ?>" id="<?php echo $from->id; ?>"
 		value="<?php echo $from->value; ?>"<?php echo $calOpts; ?> />
 	<?php echo $from->img; ?>
-	<?php echo $append; ?>
+	</div>
 	<br />
 
 	<?php echo FText::_('COM_FABRIK_DATE_RANGE_AND') . ' '; ?>
-	<?php echo $prepend; ?>
+	<div class="input-append">
 	<input type="text" name="<?php echo $to->name; ?>" id="<?php echo $to->id; ?>"
 		value="<?php echo $to->value; ?>"<?php echo $calOpts; ?> />
 	<?php echo $to->img; ?>
-	<?php echo $append; ?>
+	</div>
 
 <?php
 endif;

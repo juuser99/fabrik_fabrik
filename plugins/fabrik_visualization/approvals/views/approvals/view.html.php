@@ -34,7 +34,6 @@ class FabrikViewApprovals extends JViewLegacy
 	public function display($tpl = 'default')
 	{
 		$model = $this->getModel();
-		$j3 = FabrikWorker::j3();
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
@@ -54,10 +53,9 @@ class FabrikViewApprovals extends JViewLegacy
 		$this->containerId = $this->get('ContainerId');
 		$this->calName = $this->get('VizName');
 		$this->params = $model->getParams();
-		$tpl = $j3 ? 'bootstrap' : $tpl;
-		$this->_setPath('template', JPATH_SITE . '/plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tpl);
+		$this->_setPath('template', JPATH_SITE . '/plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . 'bootstrap');
 
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tpl . '/template.css');
+		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/approvals/views/approvals/tmpl/bootstrap/template.css');
 
 		$ref = $model->getJSRenderContext();
 		$js = "var $ref = new fbVisApprovals('approvals_" . $id . "');\n";

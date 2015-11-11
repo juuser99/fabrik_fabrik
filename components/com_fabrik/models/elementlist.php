@@ -862,7 +862,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	{
 		$params = $this->getParams();
 
-		return FabrikWorker::j3() && $params->get('btnGroup', false);
+		return $params->get('btnGroup', false);
 	}
 
 	/**
