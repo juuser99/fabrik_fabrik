@@ -381,7 +381,8 @@ var FabCddAutocomplete = my.Class(FbAutocomplete, {
 				}
 				key = observer.val() + '.' + v;
 			} else {
-				this.parent(e);
+
+				FabCddAutocomplete.Super.prototype.search.call(this, e);
 				return;
 			}
 			this.positionMenu();

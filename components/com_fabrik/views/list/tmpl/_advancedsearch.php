@@ -33,22 +33,11 @@ $input = $app->input;
 				<td><?php echo $row['condition'];?></td>
 				<td class='filtervalue'><?php echo $row['filter'];?></td>
 				<td>
-				<?php if (FabrikWorker::j3()) : ?>
-					<div class="button-group">
-						<a class="advanced-search-remove-row btn btn-danger" href="#">
-							<?php echo FabrikHelperHTML::image('minus.png', 'list', $this->tmpl);?>
-						</a>
-					</div>
-				<?php else: ?>
-					<ul class="fabrik_action">
-					<li>
-						<a class="advanced-search-remove-row" href="#">
-							<?php echo FabrikHelperHTML::image('minus-sign.png', 'list', $this->tmpl);?>
-						</a>
-					</li>
-					</ul>
-				<?php endif;?>
-
+				<div class="button-group">
+					<a class="advanced-search-remove-row btn btn-danger" href="#">
+						<?php echo FabrikHelperHTML::image('minus.png', 'list', $this->tmpl);?>
+					</a>
+				</div>
 				</td>
 			</tr>
 			<?php endforeach;?>

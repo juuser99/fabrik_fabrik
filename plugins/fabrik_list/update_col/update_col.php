@@ -536,16 +536,14 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		$listRef = $model->getRenderContext();
 		$prefix = 'fabrik___update_col[list_' . $listRef . '][';
 		$elements = '<select class="inputbox key update_col_elements" size="1" name="' . $prefix . 'key][]">' . implode("\n", $options) . '</select>';
-		$j3 = FabrikWorker::j3();
-		$addImg = $j3 ? 'plus.png' : 'add.png';
-		$removeImg = $j3 ? 'remove.png' : 'del.png';
+		$addImg = 'plus.png';
+		$removeImg = 'remove.png';
 
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->listRef = $listRef;
 		$layoutData->renderOrder = $this->renderOrder;
-		$layoutData->j3 = $j3;
 		$layoutData->addImg = FabrikHelperHTML::image($addImg, 'list', $model->getTmpl());
 		$layoutData->delImg = FabrikHelperHTML::image($removeImg, 'list', $model->getTmpl());
 		$layoutData->elements = $elements;

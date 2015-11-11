@@ -12,7 +12,7 @@ var FrontPackage = my.Class(Canvas, {
 
 	constructor: function (opts) {
 		opts.editabe = false;
-		this.parent(opts);
+		FrontPackage.Super.call(this, opts);
 		this.setup();
 		Fabrik.addEvent('fabrik.list.add', function (e) {
 			this.loadForm(e);

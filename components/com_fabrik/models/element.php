@@ -1526,7 +1526,6 @@ class PlgFabrik_Element extends FabrikPlugin
 		$displayData->canView = $this->canView();
 		$displayData->id = $this->getHTMLId($repeatCounter);
 		$displayData->canUse = $this->canUse();
-		$displayData->j3 = FabrikWorker::j3();
 		$displayData->hidden = $this->isHidden();
 		$displayData->label = FText::_($element->label);
 		$displayData->hasLabel = $this->get('hasLabel');
@@ -1615,7 +1614,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			$err = '<span>' . $err . '</span>';
 			$usersConfig = JComponentHelper::getParams('com_fabrik');
-			$icon = FabrikWorker::j3() ? $usersConfig->get('error_icon', 'exclamation-sign') . '.png' : 'alert.png';
+			$icon = $usersConfig->get('error_icon', 'exclamation-sign') . '.png';
 			$str .= '<a href="#" class="fabrikTip" title="' . $err . '" opts="{notice:true}">' . FabrikHelperHTML::image($icon, 'form', $tmpl)
 			. '</a>';
 		}

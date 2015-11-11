@@ -10,7 +10,7 @@ var FbBirthday = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'birthday';
 		this.default_sepchar = '-';
-		this.parent(element, options);
+		FbBirthday.Super.call(this, element, options);
 	},
 
 	getValue: function () {

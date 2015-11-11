@@ -10,7 +10,7 @@ var ListPluginManager = my.Class(PluginManager, {
     type: 'list',
 
     constructor: function (plugins, id) {
-        this.parent(plugins, id);
+        ListPluginManager.Super.call(this, plugins, id);
     }
 
 });

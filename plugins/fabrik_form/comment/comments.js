@@ -221,26 +221,11 @@ var FabrikComment = my.Class({
             }
             if (commentForm.length > 0) {
                 var li = a.closest('.comment').closest('li');
-                if (window.ie) {
-                    fx = new Fx.Slide(commentForm, 'opacity', {
-                        duration: 5000
-                    });
+                commentForm.fadeOut();
 
-                } else {
-                    if (sel.fx.toggleForms.hasOwnProperty(li.id)) {
-                        fx = sel.fx.toggleForms[li.id];
-                    } else {
-                        fx = new Fx.Slide(commentForm, 'opacity', {
-                            duration: 5000
-                        });
-                        sel.fx.toggleForms[li.id] = fx;
-                    }
-                }
-
-                fx.hide();
                 a.on('click', function (e) {
                     e.stop();
-                    fx.toggle();
+                    commentForm.fadeToggle();
                 });
             }
         });

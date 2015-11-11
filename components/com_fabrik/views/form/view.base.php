@@ -64,7 +64,7 @@ class FabrikViewFormBase extends FabrikView
 		$w        = new FabrikWorker;
 
 		/** @var FabrikFEModelForm $model */
-		$model           = $this->getModel('form');
+		$model = $this->getModel('form');
 
 		if (!$model)
 		{
@@ -195,9 +195,8 @@ class FabrikViewFormBase extends FabrikView
 		JDEBUG ? $profiler->mark('form view: after getRelatedTables()') : null;
 		$this->setMessage();
 
-		$jTmplFolder = FabrikWorker::j3() ? 'tmpl' : 'tmpl25';
-		$folder      = $model->isEditable() ? 'form' : 'details';
-		$this->addTemplatePath($this->_basePath . '/' . $folder . '/' . $jTmplFolder . '/' . $tmpl);
+		$folder = $model->isEditable() ? 'form' : 'details';
+		$this->addTemplatePath($this->_basePath . '/' . $folder . '/tmpl/' . $tmpl);
 
 		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $folder . '/' . $tmpl);
@@ -389,7 +388,7 @@ class FabrikViewFormBase extends FabrikView
 			}
 		}
 		//Also in popup window create first a printURL ..&tmpl=component&iframe=1&print=1...
-		if ($input->get('print',0) != 1)
+		if ($input->get('print', 0) != 1)
 		{
 
 			if ($this->showPrint)
@@ -512,7 +511,7 @@ class FabrikViewFormBase extends FabrikView
 		}
 
 		FabrikHelperHTML::iniRequireJS($shim);
-		$actions   = trim(implode("\n", $jsActions));
+		$actions = trim(implode("\n", $jsActions));
 		FabrikHelperHTML::windows('a.fabrikWin');
 		FabrikHelperHTML::tips('.hasTip', array(), "$('$bKey')");
 		$model->getFormCss();
@@ -686,7 +685,7 @@ class FabrikViewFormBase extends FabrikView
 		// 3.0 needed for ajax requests
 		$opts->listid = (int) $this->get('ListModel')->getId();
 
-		$errorIcon       = FabrikWorker::j3() ? $fbConfig->get('error_icon', 'exclamation-sign') . '.png' : 'alert.png';
+		$errorIcon       = $fbConfig->get('error_icon', 'exclamation-sign') . '.png';
 		$this->errorIcon = FabrikHelperHTML::image($errorIcon, 'form', $this->tmpl);
 
 		$imgs               = new stdClass;
@@ -879,7 +878,7 @@ class FabrikViewFormBase extends FabrikView
 		$deleteIcon  = $params->get('delete_icon', '');
 		$goBackLabel = FText::_($params->get('goback_button_label'));
 		$goBackIcon  = $params->get('goback_icon', '');
-		$btnLayout  = FabrikHelperHTML::getLayout('fabrik-button');
+		$btnLayout   = FabrikHelperHTML::getLayout('fabrik-button');
 
 		if ($resetIcon !== '')
 		{
@@ -903,7 +902,7 @@ class FabrikViewFormBase extends FabrikView
 			$copyLabel = $params->get('copy_icon_location', 'before') == 'before' ? $copyIcon . '&nbsp;' . $copyLabel : $copyLabel . '&nbsp;' . $copyIcon;
 		}
 
-		$layoutData = (object) array(
+		$layoutData       = (object) array(
 			'type' => 'submit',
 			'class' => 'button',
 			'name' => 'Copy',
@@ -920,7 +919,7 @@ class FabrikViewFormBase extends FabrikView
 		}
 
 		$layoutData = (object) array(
-			'type' =>  $model->isAjax() ? 'button' : 'submit',
+			'type' => $model->isAjax() ? 'button' : 'submit',
 			'class' => 'button',
 			'name' => 'apply',
 			'label' => $applyLabel
@@ -937,7 +936,7 @@ class FabrikViewFormBase extends FabrikView
 		}
 
 		$layoutData = (object) array(
-			'type' =>  'submit',
+			'type' => 'submit',
 			'class' => 'btn-danger button',
 			'name' => 'delete',
 			'label' => $deleteLabel
@@ -954,7 +953,7 @@ class FabrikViewFormBase extends FabrikView
 		}
 
 		$layoutData = (object) array(
-			'type' =>  'button',
+			'type' => 'button',
 			'class' => 'button',
 			'name' => 'Goback',
 			'label' => $goBackLabel,
@@ -977,7 +976,7 @@ class FabrikViewFormBase extends FabrikView
 			}
 
 			$layoutData = (object) array(
-				'type' =>  $model->isAjax() ? 'button' : 'submit',
+				'type' => $model->isAjax() ? 'button' : 'submit',
 				'class' => 'btn-primary button ' . $submitClass,
 				'name' => 'Submit',
 				'label' => $submitLabel
@@ -992,8 +991,8 @@ class FabrikViewFormBase extends FabrikView
 
 		if ($this->isMultiPage)
 		{
-			$layoutData = (object) array(
-				'type' =>  'button',
+			$layoutData       = (object) array(
+				'type' => 'button',
 				'class' => 'fabrikPagePrevious button',
 				'name' => 'fabrikPagePrevious',
 				'label' => FabrikHelperHTML::icon('icon-previous', FText::_('COM_FABRIK_PREV'))
@@ -1001,7 +1000,7 @@ class FabrikViewFormBase extends FabrikView
 			$form->prevButton = $btnLayout->render($layoutData);
 
 			$layoutData = (object) array(
-				'type' =>  'button',
+				'type' => 'button',
 				'class' => 'fabrikPageNext button',
 				'name' => 'fabrikPageNext',
 				'label' => FText::_('COM_FABRIK_NEXT') . '&nbsp;' . FabrikHelperHTML::icon('icon-next')

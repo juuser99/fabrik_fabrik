@@ -42,7 +42,6 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->rowid = (int) $this->getFormModel()->getRowId();
 		$opts->id = $this->id;
-		$opts->j3 = FabrikWorker::j3();
 
 		return array('FbNotes', $id, $opts);
 	}
@@ -59,8 +58,7 @@ class PlgFabrik_ElementNotes extends PlgFabrik_ElementDatabasejoin
 	{
 		$params = $this->getParams();
 		$tmp = $this->_getOptions($data, $repeatCounter, true);
-		$layoutName = FabrikWorker::j3() ? 'form' : 'form-25';
-		$layout = $this->getLayout($layoutName);
+		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->id = $this->getHTMLId($repeatCounter);
 		$layoutData->labels = array();

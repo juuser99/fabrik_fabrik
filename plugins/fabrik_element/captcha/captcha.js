@@ -7,6 +7,6 @@
 
 var FbCaptcha = my.Class(FbElement, {
 	constructor: function (element, options) {
-		this.parent(element, options);
+		FbCaptcha.Super.call(this, element, options);
 	}
 });

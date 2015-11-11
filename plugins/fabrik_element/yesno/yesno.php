@@ -94,19 +94,14 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/yesno/images/', 'image', 'list', false);
 		$raw = $this->getFullName() . '_raw';
 		$data = $thisRow->$raw;
-		$j3 = FabrikWorker::j3();
 
 		if ($data == '1')
 		{
-			$icon = $j3 ? 'checkmark.png' : '1_8bit.png';
-
-			return FabrikHelperHTML::image($icon, 'list', $this->tmpl, array('alt' => FText::_('JYES')));
+			return FabrikHelperHTML::image('checkmark.png', 'list', $this->tmpl, array('alt' => FText::_('JYES')));
 		}
 		else
 		{
-			$icon = $j3 ? 'remove.png' : '0_8bit.png';
-
-			return FabrikHelperHTML::image($icon, 'list', $this->tmpl, array('alt' => FText::_('JNO')));
+			return FabrikHelperHTML::image('remove.png', 'list', $this->tmpl, array('alt' => FText::_('JNO')));
 		}
 	}
 
@@ -253,7 +248,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	protected function buttonGroup()
 	{
 		$params = $this->getParams();
-		$ok = FabrikWorker::j3() && $params->get('btnGroup', true);
+		$ok = $params->get('btnGroup', true);
 
 		return $ok;
 	}

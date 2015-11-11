@@ -1,6 +1,6 @@
 var FbAttending = my.Class(FbElement, {
     constructor: function (element, options) {
-        this.parent(element, options);
+        FbAttending.Super.call(this, element, options);
         this.watchJoin();
         this.spinner = new Asset.image(Fabrik.liveSite + 'media/com_fabrik/images/ajax-loader.gif', {
             'alt'  : 'loading',

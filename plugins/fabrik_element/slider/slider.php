@@ -76,7 +76,6 @@ class PlgFabrik_ElementSlider extends PlgFabrik_Element
 		$layoutData->name = $this->getHTMLName($repeatCounter);;
 		$layoutData->value = $val;
 		$layoutData->width = $width;
-		$layoutData->j3 = FabrikWorker::j3();
 		$layoutData->showNone = $params->get('slider-shownone');
 		$layoutData->outSrc = FabrikHelperHTML::image('clear_rating_out.png', 'form', $this->tmpl, array(), true);
 		$layoutData->labels = $labels;

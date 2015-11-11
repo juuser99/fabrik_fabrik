@@ -13,7 +13,7 @@ var CronAdmin = my.Class(PluginManager, {
 
 	constructor: function (options) {
 		var plugins = [];
-		this.parent(plugins);
+		CronAdmin.Super.call(this, plugins);
 		this.options = $.append(this.options, options);
 		this.watchSelector();
 	},

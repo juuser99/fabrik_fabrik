@@ -20,7 +20,6 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik
  * @since       1.6
  */
-
 class FabrikAdminViewConnections extends JViewLegacy
 {
 	/**
@@ -47,7 +46,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return  void
 	 */
@@ -55,11 +54,11 @@ class FabrikAdminViewConnections extends JViewLegacy
 	public function display($tpl = null)
 	{
 		// Initialise variables.
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$this->items = $this->get('Items');
+		$app              = JFactory::getApplication();
+		$input            = $app->input;
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$this->state = $this->get('State');
+		$this->state      = $this->get('State');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -71,11 +70,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 		$this->addToolbar();
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
 
-		if (FabrikWorker::j3())
-		{
-			$this->sidebar = JHtmlSidebar::render();
-		}
-
+		$this->sidebar = JHtmlSidebar::render();
 		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
@@ -83,7 +78,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 	/**
 	 * Add the page title and toolbar.
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 *
 	 * @return  void
 	 */
@@ -91,7 +86,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo	= FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_CONNECTIONS'), 'connections.png');
 
 		if ($canDo->get('core.create'))
@@ -137,26 +132,23 @@ class FabrikAdminViewConnections extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, FText::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
 
-		if (FabrikWorker::j3())
-		{
-			JHtmlSidebar::setAction('index.php?option=com_fabrik&view=connections');
+		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=connections');
 
-			$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
-			JHtmlSidebar::addFilter(
+		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+		JHtmlSidebar::addFilter(
 			FText::_('JOPTION_SELECT_PUBLISHED'),
 			'filter_published',
 			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
-			);
+		);
 
-			if (!empty($this->packageOptions))
-			{
-				array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
-				JHtmlSidebar::addFilter(
+		if (!empty($this->packageOptions))
+		{
+			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', FText::_('COM_FABRIK_SELECT_PACKAGE')));
+			JHtmlSidebar::addFilter(
 				FText::_('JOPTION_SELECT_PUBLISHED'),
 				'package',
 				JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
-				);
-			}
+			);
 		}
 	}
 }

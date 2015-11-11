@@ -36,7 +36,6 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
-		$j3 = FabrikWorker::j3();
 		$Itemid = FabrikWorker::itemId();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
@@ -86,15 +85,14 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$urls->add = 'index.php?option=com_' . $package . '&view=visualization&format=raw&Itemid=' . $Itemid . '&id=' . $id;
 		$user = JFactory::getUser();
 		$legend = $params->get('show_fullcalendar_legend', 0) ? $model->getLegend() : '';
-		$tpl = $j3 ? 'bootstrap' : 'default';
-		$tpl = $params->get('fullcalendar_layout', $j3);
+		$tpl = $params->get('fullcalendar_layout', 'bootstrap');
 		$options = new stdClass;
 		$options->url = $urls;
 		$options->dateLimits = $model->getDateLimits();
 
 		$options->deleteables = $model->getDeleteAccess();
 		$options->eventLists = $model->getEventLists();
-		
+
 		$options->calendarId = $calendar->id;
 		$options->popwiny = $params->get('yoffset', 0);
 		$options->urlfilters = $urlfilters;
@@ -145,21 +143,11 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$options->readonly = (bool) $params->get('calendar-read-only', false);
 		$options->timeFormat = $params->get('time_format', '%X');
 		$options->readonlyMonth = (bool) $params->get('readonly_monthview', false);
-		$options->j3 = FabrikWorker::j3();
+		$options->buttons = new stdClass;
+		$options->buttons->del = '<button class="btn popupDelete" data-task="deleteCalEvent"><i class="icon-delete"></i></button>';
+		$options->buttons->edit = '<button class="btn popupEdit" data-task="editCalEvent"><i class="icon-edit"></i></button>';
+		$options->buttons->view = '<button class="btn popupView" data-task="viewCalEvent"><i class="icon-eye"></i></button>';
 
-		if (FabrikWorker::j3())
-		{
-			$options->buttons = new stdClass;
-			$options->buttons->del = '<button class="btn popupDelete" data-task="deleteCalEvent"><i class="icon-delete"></i></button>';
-			$options->buttons->edit = '<button class="btn popupEdit" data-task="editCalEvent"><i class="icon-edit"></i></button>';
-			$options->buttons->view = '<button class="btn popupView" data-task="viewCalEvent"><i class="icon-eye"></i></button>';
-		}
-		else
-		{
-			$src = COM_FABRIK_LIVESITE . 'plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tpl . '/images/minus-sign.png';
-			$options->buttons = '<img src="' . $src . '"
-				alt = "del" class="fabrikDeleteEvent" />' . FText::_('PLG_VISUALIZATION_CALENDAR_DELETE');
-		}
 
 		$json = json_encode($options);
 
@@ -192,7 +180,7 @@ class FabrikViewFullcalendar extends JViewLegacy
 
 		$srcs = FabrikHelperHTML::framework();
 		FabrikHelperHTML::styleSheet('plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/fullcalendar.css');
-		
+
 		$srcs[] = 'media/com_fabrik/js/listfilter.js';
 		$srcs[] = 'plugins/fabrik_visualization/fullcalendar/fullcalendar.js';
 
@@ -213,7 +201,7 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$lib = COM_FABRIK_LIVESITE . 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/';
 		$document->addScript($lib . 'lib/moment.min.js');
 		$document->addScript($lib . 'fullcalendar.js');
-		
+
 		return parent::display();
 	}
 

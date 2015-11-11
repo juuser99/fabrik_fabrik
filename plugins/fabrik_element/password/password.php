@@ -103,7 +103,6 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 
 		$layoutData->pw2Attributes     = $bits;
 		$element->name                 = $origName;
-		$layoutData->j3                = FabrikWorker::j3();
 		$layoutData->showStrengthMeter = $params->get('strength_meter', 1) == 1;
 
 		return $layout->render($layoutData);
@@ -209,7 +208,7 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 		$opts                  = $this->getElementJSOptions($repeatCounter);
 		$formParams            = $this->getFormModel()->getParams();
 		$opts->ajax_validation = $formParams->get('ajax_validations') === '1';
-		$opts->progressbar     = FabrikWorker::j3() ? true : false;
+		$opts->progressbar     = true;
 
 		JText::script('PLG_ELEMENT_PASSWORD_STRONG');
 		JText::script('PLG_ELEMENT_PASSWORD_MEDIUM');

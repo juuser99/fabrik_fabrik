@@ -237,7 +237,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		FabrikHelperHTML::mcl();
-		$j3 = FabrikWorker::j3();
 
 		$element = $this->getElement();
 		$paramsKey = $this->getFullName(true, false);
@@ -413,10 +412,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$opts->cropheight = (int) $params->get('fileupload_crop_height');
 		$opts->ajax_max = (int) $params->get('ajax_max', 4);
 		$opts->dragdrop = true;
-		$icon = $j3 ? 'picture' : 'image.png';
-		$resize = $j3 ? 'expand-2' : 'resize.png';
-		$opts->previewButton = FabrikHelperHTML::image($icon, 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
-		$opts->resizeButton = FabrikHelperHTML::image($resize, 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
+		$opts->previewButton = FabrikHelperHTML::image('picture', 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
+		$opts->resizeButton = FabrikHelperHTML::image('expand-2', 'form', @$this->tmpl, array('alt' => FText::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
 		$opts->files = $oFiles;
 
 		$opts->winWidth = (int) $params->get('win_width', 400);
@@ -2391,7 +2388,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$displayData->canvasSupport = FabrikHelperHTML::canvasSupport();
 		$displayData->dropBoxStyle = $dropBoxStyle;
 		$displayData->field = implode("\n", $str);
-		$displayData->j3 = FabrikWorker::j3();
 		$str = (array) $layout->render($displayData);
 
 		FabrikHelperHTML::jLayoutJs('fabrik-progress-bar', 'fabrik-progress-bar', (object) array('context' => '', 'animated' => true));
