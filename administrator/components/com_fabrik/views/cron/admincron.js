@@ -19,16 +19,10 @@ var CronAdmin = my.Class(PluginManager, {
 	},
 
 	watchSelector: function () {
-		if (typeof(jQuery) !== 'undefined') {
-			jQuery('#jform_plugin').bind('change', function (e) {
-				this.changePlugin(e);
-			}.bind(this));
-		}
-
-		document.id('jform_plugin').addEvent('change', function (e) {
-			e.stop();
-			this.changePlugin(e);
-		}.bind(this));
+		var self = this;
+		$('#jform_plugin').on('change', function (e) {
+			self.changePlugin(e);
+		});
 	},
 
 	changePlugin: function (e) {
@@ -40,7 +34,7 @@ var CronAdmin = my.Class(PluginManager, {
 				'format': 'raw',
 				'plugin': e.target.get('value')
 			},
-			'update': document.id('plugin-container'),
+			'update': $('#plugin-container'),
 			'onComplete': function () {
 				this.updateBootStrap();
 			}.bind(this)

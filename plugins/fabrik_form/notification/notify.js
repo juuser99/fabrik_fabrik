@@ -7,35 +7,35 @@
 
 var Notify = my.Class({
 
-	constructor: function (el, options) {
-		this.options = options;
-		var target = document.id(el),
-		notify;
-		if (target.getStyle('display') === 'none') {
-			target = target.parent();
-		}
+    constructor: function (el, options) {
+        var self = self,
+            target = $('#' + el),
+            notify;
+        this.options = options;
+        if (target.css('display') === 'none') {
+            target = target.parent();
+        }
 
-		target.addEvent('change', function (e) {
-			notify = document.id(el).checked ? 1 : 0;
-			Fabrik.loader.start(target, Joomla.JText._('COM_FABRIK_LOADING'));
-			var myAjax = new Request({
-				url: 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=notification&method=toggleNotification',
-				data: {
-					g: 'form',
-					format: 'raw',
-					fabrik_notification: 1,
-					listid: this.options.listid,
-					formid: this.options.formid,
-					rowid: this.options.rowid,
-					notify: notify
-				},
+        target.on('change', function (e) {
+            notify = target.prop('checked') ? 1 : 0;
+            Fabrik.loader.start(target, Joomla.JText._('COM_FABRIK_LOADING'));
+            $.ajax({
+                url : 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=notification&method=toggleNotification',
+                data: {
+                    g                  : 'form',
+                    format             : 'raw',
+                    fabrik_notification: 1,
+                    listid             : self.options.listid,
+                    formid             : self.options.formid,
+                    rowid              : self.options.rowid,
+                    notify             : notify
+                },
 
-				onComplete: function (r) {
-					alert(r);
-					Fabrik.loader.stop(target);
-				}.bind(this)
-			}).send();
+            }).done(function (r) {
+                window.alert(r);
+                Fabrik.loader.stop(target);
+            });
 
-		}.bind(this));
-	}
+        });
+    }
 });

@@ -10,7 +10,7 @@
 
 var KeyNav = my.Class({
 	constructor : function () {
-		window.addEvent('keypress', function (e) {
+		$(window).on('keypress', function (e) {
 			switch (e.code) {
 			case 37: //left
 			case 38: //up

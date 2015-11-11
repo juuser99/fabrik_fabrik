@@ -16,19 +16,20 @@ var FbDropdown = my.Class(FbElement, {
 	},
 
 	watchAddToggle : function () {
-		var c = this.getContainer();
-		var d = c.getElement('div.addoption');
-
-		var a = c.getElement('.toggle-addoption');
+		var self = this,
+			c = this.getContainer(),
+			d = c.find('div.addoption'),
+			a = c.find('.toggle-addoption'),
+			clone, fe, ad;
 		if (this.mySlider) {
 			//copied in repeating group so need to remove old slider html first
-			var clone = d.clone();
-			var fe = c.getElement('.fabrikElement');
+			clone = d.clone();
+			fe = c.find('.fabrikElement');
 			d.parent().destroy();
 			fe.adopt(clone);
-			d = c.getElement('div.addoption');
-			d.setStyle('margin', 0);
-			var ad = d.getElement('input[name*=_additions]');
+			d = c.find('div.addoption');
+			d.css('margin', 0);
+			ad = d.find('input[name*=_additions]');
 			ad.id = this.element.id + '_additions';
 			ad.name = this.element.id + '_additions';
 
@@ -37,16 +38,16 @@ var FbDropdown = my.Class(FbElement, {
 			duration: 500
 		});
 		this.mySlider.hide();
-		a.addEvent('click', function (e) {
+		a.on('click', function (e) {
 			e.stop();
-			this.mySlider.toggle();
-		}.bind(this));
+			self.mySlider.toggle();
+		});
 	},
 
 	addClick: function (e) {
-		var c = this.getContainer();
-		var l = c.getElement('input[name=addPicklistLabel]');
-		var v = c.getElement('input[name=addPicklistValue]');
+		var c = this.getContainer(), val;
+		var l = c.find('input[name=addPicklistLabel]');
+		var v = c.find('input[name=addPicklistValue]');
 		var label = l.value;
 		if (v) {
 			val = v.value;
@@ -54,40 +55,38 @@ var FbDropdown = my.Class(FbElement, {
 			val = label;
 		}
 		if (val === '' || label === '') {
-			alert(Joomla.JText._('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL'));
+			window.alert(Joomla.JText._('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL'));
 		}
 		else {
-			var opt = new Element('option', {
+			var opt = $(document.createElement('option')).attr({
 				'selected': 'selected',
 				'value': val
-			}).set('text', label).inject(document.id(this.element.id));
+			}).text(label).inject($('#' + this.element.id));
 			e.stop();
 			if (v) {
 				v.value = '';
 			}
 			l.value = '';
 			this.addNewOption(val, label);
-			document.id(this.element.id).trigger('change', {stop: function () {}});
+			$('#' + this.element.id).trigger('change', {stop: function () {}});
 			if (this.mySlider) {
 				this.mySlider.toggle();
 			}
 			if (this.options.advanced)
 			{
-				jQuery("#" + this.element.id).trigger("liszt:updated");
+				$('#' + this.element.id).trigger('liszt:updated');
 			}
 		}
 	},
 
 	watchAdd: function () {
-		var val;
 		if (this.options.allowadd === true && this.options.editable !== false) {
-			var id = this.element.id;
 			var c = this.getContainer();
 			if (this.addClickEvent) {
-				c.getElement('input[type=button]').removeEvent('click', this.addClickEvent);
+				c.find('input[type=button]').removeEvent('click', this.addClickEvent);
 			}
 			this.addClickEvent = this.addClick.bind(this);
-			c.getElement('input[type=button]').addEvent('click', this.addClickEvent);
+			c.find('input[type=button]').on('click', this.addClickEvent);
 		}
 	},
 
@@ -117,28 +116,27 @@ var FbDropdown = my.Class(FbElement, {
 	},
 
 	update: function (val) {
-		var opts = [];
-		if  ((typeOf(val) === 'string') && (JSON.validate(val))) {
+		var opts = [],
+			self = this;
+		if  ((typeof(val) === 'string') && (JSON.validate(val))) {
 			val = JSON.decode(val);
 		}
-		if (typeOf(val) === 'null') {
+		if (val === undefined) {
 			val = [];
 		}
 
-		this.getElement();
-		if (typeOf(this.element) === 'null') {
-			return;
-		}
+		this.find();
+
 		this.options.element = this.element.id;
 		if (!this.options.editable) {
-			this.element.set('html', '');
-			jQuery.each(val, function (key, v) {
-				this.element.innerHTML += this.options.data[v] + '<br />';
-			}.bind(this));
+			this.element.html('');
+			jQuery.each(val, function () {
+				self.element.html(self.element.html() + self.options.data[this] + '<br />');
+			});
 			return;
 		}
 		opts = this.element.getElements('option');
-		if (typeOf(val) === 'number') {
+		if (typeof(val) === 'number') {
 
 			// Numbers dont have indexOf() methods so ensure they are strings
 			val = val.toString();

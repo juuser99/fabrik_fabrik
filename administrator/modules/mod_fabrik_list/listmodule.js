@@ -14,11 +14,15 @@ var fabrikTableModule = my.Class({
             {});
 
         window.addEvent('load', function (e) {
+            var h,
+                i = 0,
+                heights = {},
+                blockOneHeight = parseInt(this.blocks[1].css('height'), 10);
             this.blocks = document.id(id).getElements('.fabrik_block');
-            if (window.getHeight() - 70 > this.blocks[1].getStyle("height").toInt() && this.blocks[1].getStyle("height").toInt() != 0) {
-                var h = this.blocks[1].getStyle("height").toInt();
+            if (window.getHeight() - 70 > blockOneHeight && blockOneHeight !== 0) {
+                h = blockOneHeight;
             } else {
-                var h = window.getHeight() - 70;
+                h = window.getHeight() - 70;
             }
             this.winname = id + '_window';
             this.form = this.blocks[1].getElement('form');
@@ -33,12 +37,10 @@ var fabrikTableModule = my.Class({
                 'content'    : $('.fabrik_block_col1')[0],
                 'contentType': 'html'
             };
-            var i = 0;
-            var heights = {};
             var fx = new Fx.Elements(this.blocks, {wait: false, duration: 600, transition: Fx.Transitions.Quad.easeIn});
             jQuery.each($('.fabrik_block'), function (key, block) {
-                heights[i] = block.getStyle('height').toInt();
-                if (i != 0) {
+                heights[i] = parseInt(block.css('height'), 10);
+                if (i !== 0) {
                     var o = {};
                     o[i] = {height: 0};
                     fx.set(o);
@@ -79,7 +81,7 @@ var fabrikTableModule = my.Class({
         //table doesn't attach the watchRows events to the new edit links (even though it calls
         //watchRows() when it updates itself.
         this.blocks[0].getElements('.fabrik___rowlink').removeEvents();
-        oTable.watchRows();
+
         this.blocks[0].getElements('.fabrik___rowlink').addEvent('click', function (event) {
             if (!$(this.winname)) {
                 this.blocks[1].show();

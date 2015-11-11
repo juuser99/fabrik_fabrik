@@ -56,15 +56,16 @@ var FbFormSubmit = my.Class({
 	 * @return  void
 	 */
 	submit: function (cb) {
+		var self = this;
 		this.running = true;
-		jQuery.each(this.elements, function (key, element) {
-			this.results[key] = null;
+		$.each(this.elements, function (key, element) {
+			self.results[key] = null;
 			element.onsubmit(function (res) {
-				this.results[key] = res;
-			}.bind(this));
-		}.bind(this));
+				self.results[key] = res;
+			});
+		});
 		this.checker = setInterval(function () {
-			this.check.call(this, [cb]);
+			self.check.call(self, [cb]);
 		}, 500);
 	},
 

@@ -13,21 +13,21 @@ var Labels = my.Class({
 	constructor: function () {
 		var self = this;
 		$('.fabrikElementContainer').each(function (c) {
-			var label = ($this).find('label');
+			var label = $(this).find('label');
 			if (label.length !== 0) {
 				var input = c.getElement('input');
-				if (typeOf(input) === 'null') {
+				if (input.length === 0) {
 					input = c.getElement('textarea');
 				}
-				if (typeOf(input) !== 'null') {
-					input.value = label[0].innerHTML;
+				if (input.length !== 0) {
+					input.val(label.html());
 
-					input.addEvent('click', function (e) {
-						self.toogleLabel(e, input, label[0].innerHTML);
+					input.on('click', function (e) {
+						self.toogleLabel(e, input, label.html());
 					});
 
-					input.addEvent('blur', function (e) {
-						self.toogleLabel(e, input, label[0].innerHTML);
+					input.on('blur', function (e) {
+						self.toogleLabel(e, input, label.html());
 					});
 					label.html('');
 					c.find('.fabrikLabel').remove();
@@ -37,14 +37,14 @@ var Labels = my.Class({
 	},
 
 	toogleLabel: function (e, input, label) {
-		new Event(e).stop();
+		e.stop();
 		if (e.type === 'click') {
-			if (input.get('value') === label) {
-				input.value = '';
+			if (input.val() === label) {
+				input.val('');
 			}
 		} else {
-			if (input.get('value') === '') {
-				input.value = label;
+			if (input.val() === '') {
+				input.val(label);
 			}
 		}
 	}

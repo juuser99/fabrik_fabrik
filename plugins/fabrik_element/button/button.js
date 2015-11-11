@@ -12,7 +12,7 @@ var FbButton = my.Class(FbElement, {
 	},
 
 	addNewEventAux: function (action, js) {
-		this.element.addEvent(action, function (e) {
+		this.element.on(action, function (e) {
 
 			// Unlike element addNewEventAux we need to stop the event otherwise the form is submitted
 			if (e) {

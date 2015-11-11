@@ -9,7 +9,7 @@ var fbVisApprovals = my.Class({
 	options: {},
 	constructor: function (el, options) {
 		this.setOptions(options);
-		this.el = document.id(el);
+		this.el = $('#' + el);
 		$(document).on('click', 'a.approve', function (e) {
 			var el = $(this);
 			e.stop();

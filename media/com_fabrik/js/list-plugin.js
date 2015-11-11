@@ -18,7 +18,7 @@ var FbListPlugin = my.Class({
 	},
 
 	constructor: function (options) {
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		this.result = true; // set this to false in window.fireEvents to stop
 												// current action (e.g. stop ordering when
 												// fabrik.list.order run)
@@ -28,14 +28,14 @@ var FbListPlugin = my.Class({
 			// Viz doesn't have getForm method;
 			if (typeof this.getList().getForm === 'function') {
 				this.listform = this.getList().getForm();
-				var l = this.listform.getElement('input[name=listid]');
+				var l = this.listform.find('input[name=listid]');
 				// in case its in a viz
 				if (typeOf(l) === 'null') {
 					return;
 				}
 				this.listid = l.value;
 			} else {
-				this.listform = this.getList().container.getElement('form');
+				this.listform = this.getList().container.find('form');
 			}
 		}
 
@@ -74,7 +74,7 @@ var FbListPlugin = my.Class({
 			return;
 		}
 		// Might need to be this.listform and not document
-		document.on('click', '.' + this.options.name, function (e, element) {
+		$(document).on('click', '.' + this.options.name, function (e, element) {
 			if (e.rightClick) {
 				return;
 			}
@@ -89,9 +89,9 @@ var FbListPlugin = my.Class({
 			// if the row button is clicked check its associated checkbox
 			if ($(this).closest('.fabrik_row')) {
 				row = $(this).closest('.fabrik_row');
-				if (row.getElement('input[name^=ids]')) {
-					chx = row.getElement('input[name^=ids]');
-					this.listform.getElements('input[name^=ids]').set('checked', false);
+				if (row.find('input[name^=ids]')) {
+					chx = row.find('input[name^=ids]');
+					this.listform.find('input[name^=ids]').prop('checked', false);
 					chx.set('checked', true);
 				}
 			}
@@ -108,8 +108,8 @@ var FbListPlugin = my.Class({
 				return;
 			}
 			var n = this.options.name.split('-');
-			this.listform.find('input[name=fabrik_listplugin_name]').value = n[0];
-			this.listform.find('input[name=fabrik_listplugin_renderOrder]').value = n.getLast();
+			this.listform.find('input[name=fabrik_listplugin_name]').val(n[0]);
+			this.listform.find('input[name=fabrik_listplugin_renderOrder]').val(n.getLast());
 			this.buttonAction();
 		}.bind(this));
 	},

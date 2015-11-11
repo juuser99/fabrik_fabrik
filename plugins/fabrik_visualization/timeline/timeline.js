@@ -14,6 +14,7 @@ var FbVisTimeline = my.Class({
 	},
 
 	constructor : function (json, options) {
+		var self = this;
 		this.json = eval(json);
 		this.options = $.append(this.options, options);
 
@@ -45,7 +46,7 @@ var FbVisTimeline = my.Class({
 
 		var bandBase = {
 				trackGap : 0.2,
-				width : "70%",
+				width : '70%',
 				intervalUnit : Timeline.DateTime.DAY,
 				intervalPixels : 50
 			};
@@ -69,9 +70,7 @@ var FbVisTimeline = my.Class({
 		}
 
 		SimileAjax.History.enabled = false;
-		this.tl = Timeline.create(document.id("my-timeline"), bandTracks, this.options.orientation);
-
-		// this.eventSource.loadJSON(this.json, '');
+		this.tl = Timeline.create($('#my-timeline'), bandTracks, this.options.orientation);
 
 		this.start = 0;
 
@@ -96,17 +95,17 @@ var FbVisTimeline = my.Class({
 			data.controller = 'visualization.timeline';
 		}
 		this.start = 0;
-		this.counter = new Element('div.timelineTotals').inject(document.id("my-timeline"), 'before');
-		this.counter.set('text', 'loading');
+		this.counter = $(document.createElement('div')).addClass('timelineTotals').inject($('#my-timeline'), 'before');
+		this.counter.text('loading');
 		this.ajax = new Request.JSON({
 			url: 'index.php',
 			data: data,
 			onSuccess: function (json) {
 				this.start = this.start + this.options.step;
 				if (this.start >= json.fabrik.total) {
-					this.counter.set('text', 'loaded ' + json.fabrik.total);
+					this.counter.text('loaded ' + json.fabrik.total);
 				} else {
-					this.counter.set('text', 'loading ' + this.start + ' / ' + json.fabrik.total);
+					this.counter.text('loading ' + this.start + ' / ' + json.fabrik.total);
 				}
 
 				this.eventSource.loadJSON(json.timeline.events, '');
@@ -123,26 +122,27 @@ var FbVisTimeline = my.Class({
 
 		Fabrik.addEvent('fabrik.advancedSearch.submit', function (e) {
 			console.log('cancel ajax');
-			this.ajax.cancel();
-		}.bind(this));
+			self.ajax.cancel();
+		});
 
 		this.ajax.send();
 
-		window.addEvent('resize', function () {
-			if (this.resizeTimerID === null) {
-				this.resizeTimerID = window.setTimeout(function () {
-					this.resizeTimerID = null;
-					this.tl.layout();
-				}.bind(this), 500);
+		$(window).on('resize', function () {
+			if (self.resizeTimerID === null) {
+				self.resizeTimerID = window.setTimeout(function () {
+					self.resizeTimerID = null;
+					self.tl.layout();
+				}, 500);
 			}
-		}.bind(this));
+		});
 
 		this.watchDatePicker();
 	},
 
 	watchDatePicker: function () {
-		var dateEl = document.id('timelineDatePicker');
-		if (typeOf(dateEl) === 'null') {
+		var dateEl = $('#timelineDatePicker'),
+			self = this;
+		if (dateEl.length === 0) {
 			return;
 		}
 		var params = {'eventName': 'click',
@@ -164,15 +164,15 @@ var FbVisTimeline = my.Class({
 			cal.hide();
 		};
 		params.onSelect = function () {
-			if (this.cal.dateClicked || this.cal.hiliteToday) {
-				this.cal.callCloseHandler();
-				dateEl.value = this.cal.date.format(dateFmt);
-				this.tl.getBand(0).setCenterVisibleDate(this.cal.date);
+			if (self.cal.dateClicked || self.cal.hiliteToday) {
+				self.cal.callCloseHandler();
+				dateEl.value = self.cal.date.format(dateFmt);
+				self.tl.getBand(0).setCenterVisibleDate(self.cal.date);
 			}
-		}.bind(this);
+		};
 
 		params.inputField = dateEl;
-		params.button = document.id('timelineDatePicker_cal_img');
+		params.button = $('#timelineDatePicker_cal_img');
 		params.align = "Tl";
 		params.singleClick = true;
 
@@ -191,26 +191,24 @@ var FbVisTimeline = my.Class({
 		this.cal.refresh();
 		this.cal.hide();
 
-		if (typeOf(params.button) !== 'null') {
-			params.button.addEvent('click', function (e) {
-				this.cal.showAtElement(params.button);
-				this.cal.show();
-			}.bind(this));
-		}
-		dateEl.addEvent('blur', function (e) {
-			this.updateFromField();
-		}.bind(this));
+		params.button.on('click', function (e) {
+			self.cal.showAtElement(params.button);
+			self.cal.show();
+		});
+		dateEl.on('blur', function (e) {
+			self.updateFromField();
+		});
 
-		dateEl.addEvent('keyup', function (e) {
+		dateEl.on('keyup', function (e) {
 			if (e.key === 'enter') {
-				this.updateFromField();
+				self.updateFromField();
 			}
-		}.bind(this));
+		});
 
 	},
 
 	updateFromField: function () {
-		var dateStr = document.id('timelineDatePicker').value;
+		var dateStr = $('#timelineDatePicker').val();
 		d = Date.parseDate(dateStr, this.options.dateFormat);
 		this.cal.date = d;
 		var newdate = new Date(this.cal.date.getTime() - (this.cal.date.getTimezoneOffset() * 60000));

@@ -36,16 +36,21 @@ var FbDatabasejoin = my.Class(FbElement, {
 	},
 
 	watchAdd: function () {
+		var self = this, c, b;
 		if (c = this.getContainer()) {
-			var b = c.getElement('.toggle-addoption');
+			b = c.find('.toggle-addoption');
 
 			// If duplicated remove old events
 
-			b.removeEvent('click', this.watchAddEvent);
+			b.removeEvent('click', function (e) {
+				self.start(e);
+			});
 
 			this.watchAddEvent = this.start.bind(this);
 
-			b.addEvent('click', this.watchAddEvent);
+			b.on('click', function (e) {
+				self.start(e);
+			});
 		}
 	},
 
@@ -93,7 +98,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		if (typeOf(this.element) === 'null' || typeOf(c) === 'null') {
 			return;
 		}
-		var a = c.getElement('.toggle-addoption'),
+		var a = c.find('.toggle-addoption'),
 			url = typeOf(a) === 'null' ? e.target.get('href') : a.get('href');
 
 
@@ -182,13 +187,13 @@ var FbDatabasejoin = my.Class(FbElement, {
 		case 'dropdown':
 		/* falls through */
 		case 'multilist':
-			var sel = typeOf(this.options.value) === 'array' ? this.options.value : Array.from(this.options.value);
+			var sel = $.isArray(this.options.value) ? this.options.value : [this.options.value];
 			selected = sel.contains(v) ? 'selected' : '';
-			opt = new Element('option', {'value': v, 'selected': selected}).set('text', l);
-			document.id(this.element.id).adopt(opt);
+			opt = $(document.createElement('option')).attr({'value': v, 'selected': selected}).text(l);
+			$('#' + this.element.id).adopt(opt);
 			if (this.options.advanced)
 			{
-				jQuery("#" + this.element.id).trigger("liszt:updated");
+				$('#' + this.element.id).trigger('liszt:updated');
 			}
 			break;
 		case 'auto-complete':
@@ -213,7 +218,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 
 	_addOption: function (opt, l, v) {
 		var sel = typeOf(this.options.value) === 'array' ? this.options.value : Array.from(this.options.value),
-			i = opt.getElement('input'),
+			i = opt.find('input'),
 			last, injectWhere,
 			subOpts = this.getSubOptions(),
 			checked = sel.contains(v) ? true : false,
@@ -226,14 +231,14 @@ var FbDatabasejoin = my.Class(FbElement, {
 			i.name = this.options.fullName + '[' + nameInterator + ']';
 		}
 
-		opt.getElement('span').set('html', l);
-		opt.getElement('input').set('value', v);
+		opt.find('span').html(l);
+		opt.find('input').set('value', v);
 		last = subOpts.length === 0 ? this.element : subOpts.getLast();
 		injectWhere = subOpts.length === 0 ? 'bottom' : 'after';
 		var subOption = subOpts.length === 0 ? last : jQuery(last).closest('div[data-role=suboption]')[0];
 
 		opt.inject(subOption, injectWhere);
-		opt.getElement('input').checked = checked;
+		opt.find('input').checked = checked;
 	},
 
 	hasSubElements: function () {
@@ -252,20 +257,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	 * @return  dom node(visible checkbox)
 	 */
 	getCheckboxTmplNode: function () {
-		if (Fabrik.bootstrapped) {
-			this.chxTmplNode = jQuery(Fabrik.jLayouts['fabrik-element-' + this.plugin + '-form-checkbox'])[0];
-		} else {
-			if (!this.chxTmplNode && this.options.displayType === 'checkbox')
-			{
-				var chxs = this.element.getElements('> .fabrik_subelement');
-				if (chxs.length === 0) {
-					this.chxTmplNode = this.element.getElement('.chxTmplNode').getChildren()[0].clone();
-					this.element.getElement('.chxTmplNode').destroy();
-				} else {
-					this.chxTmplNode = chxs.getLast().clone();
-				}
-			}
-		}
+		this.chxTmplNode = jQuery(Fabrik.jLayouts['fabrik-element-' + this.plugin + '-form-checkbox'])[0];
 
 		return this.chxTmplNode;
 	},
@@ -335,8 +327,8 @@ var FbDatabasejoin = my.Class(FbElement, {
 				}.bind(this));
 
 				if (changed) {
-					this.element.trigger('change', new Event.Mock(this.element, 'change'));
-					this.element.trigger('blur', new Event.Mock(this.element, 'blur'));
+					this.element.trigger('change');
+					this.element.trigger('blur');
 				}
 
 				this.activePopUp = false;
@@ -350,15 +342,15 @@ var FbDatabasejoin = my.Class(FbElement, {
 			case 'dropdown':
 			/* falls through */
 			case 'multilist':
-				o = this.element.getElements('option');
+				o = this.element.find('option');
 				break;
 			case 'checkbox':
-				o = this.element.getElements('[data-role=suboption] input[type=checkbox]');
+				o = this.element.find('[data-role=suboption] input[type=checkbox]');
 				break;
 			case 'radio':
 			/* falls through */
 			default:
-				o = this.element.getElements('[data-role=suboption] input[type=radio]');
+				o = this.element.find('[data-role=suboption] input[type=radio]');
 				break;
 		}
 		return o;
@@ -390,7 +382,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 				case 'dropdown':
 				/* falls through */
 				case 'multilist':
-					var o = this.element.getElements('option').filter(function (o, x) {
+					var o = this.element.find('option').filter(function (o, x) {
 						if (o.get('value') === v) {
 							this.options.displayType === 'dropdown' ? this.element.selectedIndex = x : o.selected = true;
 							return true;
@@ -409,7 +401,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 				case 'radio':
 				/* falls through */
 				default:
-					o = this.element.getElements('.fabrik_subelement').filter(function (o, x) {
+					o = this.element.find('.fabrik_subelement').filter(function (o, x) {
 						if (o.get('value') === v) {
 							o.checked = true;
 							return true;
@@ -425,36 +417,37 @@ var FbDatabasejoin = my.Class(FbElement, {
 					return;
 				}
 				// $$$ hugh - fire change blur event, so things like auto-fill will pick up change
-				this.element.trigger('change', new Event.Mock(this.element, 'change'));
-				this.element.trigger('blur', new Event.Mock(this.element, 'blur'));
+				this.element.trigger('change');
+				this.element.trigger('blur');
 			}.bind(this)
 		}).send();
 	},
 
 	watchSelect: function () {
-		var c, winId;
+		var c, winId,
+			self = this;
 		if (c = this.getContainer()) {
-			var sel = c.getElement('.toggle-selectoption');
-			if (typeOf(sel) !== 'null') {
-				sel.addEvent('click', function (e) {
-					this.selectRecord(e);
-				}.bind(this));
+			var sel = c.find('.toggle-selectoption');
+			if (sel.length > 0) {
+				sel.on('click', function (e) {
+					self.selectRecord(e);
+				});
 				Fabrik.addEvent('fabrik.list.row.selected', function (json) {
-					if (this.options.listid.toInt() === json.listid.toInt() && this.activeSelect) {
-						this.update(json.rowid);
-						winId = this.element.id + '-popupwin-select';
+					if (self.options.listid.toInt() === json.listid.toInt() && self.activeSelect) {
+						self.update(json.rowid);
+						winId = self.element.id + '-popupwin-select';
 						if (Fabrik.Windows[winId]) {
 							Fabrik.Windows[winId].close();
 						}
 					}
-				}.bind(this));
+				});
 
 				// Used for auto-completes in repeating groups to stop all fields updating when a record
 				// is selected
 				this.unactiveFn = function () {
-					this.activeSelect = false;
-				}.bind(this);
-				window.addEvent('fabrik.dbjoin.unactivate', this.unactiveFn);
+					self.activeSelect = false;
+				};
+				$(window).on('fabrik.dbjoin.unactivate', this.unactiveFn);
 				this.selectThenAdd();
 			}
 			this.selectThenAdd();
@@ -467,16 +460,17 @@ var FbDatabasejoin = my.Class(FbElement, {
 	 * @return void
 	 */
 	selectThenAdd: function () {
+		var self = this;
 		Fabrik.addEvent('fabrik.block.added', function (block, blockid) {
 			if (blockid === 'list_' + this.options.listid + this.options.listRef) {
-				block.form.addEvent('click:relay(.addbutton)', function (event, target) {
+				block.form.on('click', '.addbutton', function (event) {
 					event.preventDefault();
-					var id = this.selectRecordWindowId();
+					var id = self.selectRecordWindowId();
 					Fabrik.Windows[id].close();
-					this.start(event, true);
-				}.bind(this));
+					self.start(event, true);
+				});
 			}
-		}.bind(this));
+		});
 	},
 
 	/**
@@ -492,9 +486,9 @@ var FbDatabasejoin = my.Class(FbElement, {
 		this.activeSelect = true;
 		e.stop();
 		var id = this.selectRecordWindowId();
-		var url = this.getContainer().getElement('a.toggle-selectoption').href;
-		url += "&triggerElement=" + this.element.id;
-		url += "&resetfilters=1";
+		var url = this.getContainer().find('a.toggle-selectoption').href;
+		url += '&triggerElement=' + this.element.id;
+		url += '&resetfilters=1';
 		url += '&c=' + this.options.listRef;
 
 		this.windowopts = {
@@ -534,12 +528,12 @@ var FbDatabasejoin = my.Class(FbElement, {
 	},
 
 	update: function (val) {
-		this.getElement();
+		this.find();
 		if (typeOf(this.element) === 'null') {
 			return;
 		}
 		if (!this.options.editable) {
-			this.element.set('html', '');
+			this.element.html('');
 			if (val === '') {
 				return;
 			}
@@ -613,7 +607,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	 * back from Google.  For now, VERY limited support, only for simple dropdown type.
 	 */
 	updateByLabel: function (label) {
-		this.getElement();
+		this.find();
 		if (typeOf(this.element) === 'null') {
 			return;
 		}
@@ -622,7 +616,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 			this.update(label);
 		}
 		// OK, it's an editable dropdown, so let's see if we can find a matching option text
-		var options = this.element.getElements('option');
+		var options = this.element.find('option');
 		options.some(function (option) {
 			if (option.text === label) {
 				this.update(option.value);
@@ -640,26 +634,26 @@ var FbDatabasejoin = my.Class(FbElement, {
 
 	showDesc: function (e) {
 		var v = e.target.selectedIndex;
-		var c = this.getContainer().getElement('.dbjoin-description');
-		var show = c.getElement('.description-' + v);
-		c.getElements('.notice').each(function (d) {
+		var c = this.getContainer().find('.dbjoin-description');
+		var show = c.find('.description-' + v);
+		c.find('.notice').each(function (d) {
 			if (d === show) {
 				var myfx = new Fx.Tween(show, {'property': 'opacity',
 					'duration': 400,
 					'transition': Fx.Transitions.linear
 				});
 				myfx.set(0);
-				d.setStyle('display', '');
+				d.css('display', '');
 				myfx.start(0, 1);
 			} else {
-				d.setStyle('display', 'none');
+				d.css('display', 'none');
 			}
 		});
 	},
 
 	getValue: function () {
 		var v = null;
-		this.getElement();
+		this.find();
 		if (!this.options.editable) {
 			return this.options.value;
 		}
@@ -676,7 +670,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 			return this.element.get('value');
 		case 'multilist':
 			var r = [];
-			this.element.getElements('option').each(function (opt) {
+			this.element.find('option').each(function (opt) {
 				if (opt.selected) {
 					r.push(opt.value);
 				}
@@ -737,7 +731,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	getValues: function () {
 		var v = [];
 		var search = (this.options.displayType !== 'dropdown') ? 'input' : 'option';
-		document.id(this.element.id).getElements(search).each(function (f) {
+		$('#' + this.element.id).find(search).each(function (f) {
 			v.push(f.value);
 		});
 		return v;
@@ -761,7 +755,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		var f = this.getAutoCompleteLabelField();
 		f.id = this.element.id + '-auto-complete';
 		f.name = this.element.name.replace('[]', '') + '-auto-complete';
-		document.id(f.id).value = '';
+		$('#' + f.id).val('');
 		new FbAutocomplete(this.element.id, this.options.autoCompleteOpts);
 	},
 
@@ -810,6 +804,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	},
 
 	init: function () {
+		var self = this;
 		// Could be in a popup add record form, in which case we don't want to ini on a main page load
 		if (typeOf(this.element) === 'null') {
 			return;
@@ -856,9 +851,9 @@ var FbDatabasejoin = my.Class(FbElement, {
 		if (this.options.editable) {
 			this.watchSelect();
 			if (this.options.showDesc === true) {
-				this.element.addEvent('change', function (e) {
-					this.showDesc(e);
-				}.bind(this));
+				this.element.on('change', function (e) {
+					self.showDesc(e);
+				});
 			}
 		}
 	},
@@ -873,16 +868,17 @@ var FbDatabasejoin = my.Class(FbElement, {
 	},
 
 	addNewEventAux: function (action, js) {
+		var self = this;
 		switch (this.options.displayType) {
 		case 'dropdown':
 		/* falls through */
 		default:
 			if (this.element) {
-				this.element.addEvent(action, function (e) {
+				this.element.on(action, function (e) {
 					if (e) {
 						e.stop();
 					}
-					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
+					(typeof(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}
 			break;
@@ -891,27 +887,27 @@ var FbDatabasejoin = my.Class(FbElement, {
 		case 'radio':
 			this._getSubElements();
 			this.subElements.each(function (el) {
-				el.addEvent(action, function () {
-					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
+				el.on(action, function () {
+					(typeof(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}.bind(this));
 			break;
 		case 'auto-complete':
 			var f = this.getAutoCompleteLabelField();
-			if (typeOf(f) !== 'null') {
-				f.addEvent(action, function (e) {
+			if (f.length > 0) {
+				f.on(action, function (e) {
 					if (e) {
 						e.stop();
 					}
-					(typeOf(js) === 'function') ? js.delay(700, this, this) : eval(js);
+					(typeof(js) === 'function') ? js.delay(700, this, this) : eval(js);
 				}.bind(this));
 			}
 			if (this.element) {
-				this.element.addEvent(action, function (e) {
+				this.element.on(action, function (e) {
 					if (e) {
 						e.stop();
 					}
-					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
+					(typeof(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}
 			break;

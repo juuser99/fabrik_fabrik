@@ -302,7 +302,7 @@ var Autofill = my.Class({
 				el.update(val);
 
 				// Trigger change events to automatcially fire any other chained auto-fill form plugins
-				el.element.trigger(el.getBlurEvent(), new Event.Mock(el.element, el.getBlurEvent()));
+				el.element.trigger(el.getBlurEvent());
 				return true;
 			}
 		} else {
@@ -315,7 +315,7 @@ var Autofill = my.Class({
 					el.update(val);
 
 					// Trigger change events to automatcially fire any other chained auto-fill form plugins
-					el.element.trigger(el.getBlurEvent(), new Event.Mock(el.element, el.getBlurEvent()));
+					el.element.trigger(el.getBlurEvent());
 				}.bind(this));
 				return true;
 			}

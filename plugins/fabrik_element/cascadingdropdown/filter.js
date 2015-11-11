@@ -7,105 +7,96 @@
 
 var CascadeFilter = my.Class({
 	constructor: function (observerid, opts) {
+		var self = this,
+				v;
 		this.options = opts;
-		this.observer = document.id(observerid);
+		this.observer = $('#' + observerid);
 		// autocompletes don't have an id on the hidden value field, but have it as class
-		if (!this.observer) {
-			this.observer = document.getElements('.' + observerid);
+		if (this.observer.length === 0) {
+			this.observer = $('.' + observerid);
 			if (this.observer) {
 				this.observer = this.observer[0];
 			}
 		}
 		if (this.observer) {
-			new Element('img', {'id': this.options.filterid + '_loading', 'src': Fabrik.liveSite + 'media/com_fabrik/images/ajax-loader.gif', 'alt': 'loading...', 'styles': {'opacity': '0'}}).inject(this.observer, 'before');
-			var v = this.observer.get('value');
-			this.myAjax = new Request({url: '', method: 'post',
-				'data': {
-					'option': 'com_fabrik',
-					'format': 'raw',
-					'task': 'plugin.pluginAjax',
-					'plugin': 'cascadingdropdown',
-					'method': 'ajax_getOptions',
-					'element_id': this.options.elid,
-					'v': v,
-					'formid': this.options.formid,
-					'fabrik_cascade_ajax_update': 1,
-					'filterview': 'table'
-				},
-				onComplete: function (e) {
-					this.ajaxComplete(e);
-				}.bind(this)
+			$(document.createElement('img')).attr({
+				'id' : this.options.filterid + '_loading',
+				'src': Fabrik.liveSite + 'media/com_fabrik/images/ajax-loader.gif',
+				'alt': 'loading...'
+			}).
+			css({'opacity': '0'}).inject(this.observer, 'before');
+			v = this.observer.get('value');
+
+			this.ajaxData = {
+				'option'                    : 'com_fabrik',
+				'format'                    : 'raw',
+				'task'                      : 'plugin.pluginAjax',
+				'plugin'                    : 'cascadingdropdown',
+				'method'                    : 'ajax_getOptions',
+				'element_id'                : this.options.elid,
+				'v'                         : v,
+				'formid'                    : this.options.formid,
+				'fabrik_cascade_ajax_update': 1,
+				'filterview'                : 'table'
+			};
+
+			this.observer.on('change', function () {
+				self.update();
 			});
 
-			this.observer.addEvent('change', function () {
-				/*
-				this.periodcount = 0;
-				document.id(this.options.filterid + '_loading').setStyle('opacity', '1');
-				var v = this.observer.get('value');
-				this.myAjax.options.data.v = v;
-				// $$$ hugh - added this so we fake out submitted form data for use as placeholders in query filter
-				$filterData = eval(this.options.filterobj).getFilterData();
-				Object.append(this.myAjax.options.data, $filterData);
-				this.myAjax.send();
-				*/
-				this.update();
-			}.bind(this));
-
-			this.update();
+			this.periodical = setInterval(function () {
+				this.update.call(this, [cb]);
+			}, 500);
+			this.periodcount = 0;
 		} else {
 			fconsole('observer not found ', observerid);
 		}
 	},
 
-	update: function () {
-		if (this.observer) {
-			this.myAjax.options.data.v = this.observer.get('value');
-			// $$$ hugh - added this so we fake out submitted form data for use as placeholders in query filter
-			$filterData = eval(this.options.filterobj).getFilterData();
-			Object.append(this.myAjax.options.data, $filterData);
-			this.myAjax.send();
-		}
-	},
+    update: function () {
+        var self = this,
+            filterData = eval(this.options.filterobj).getFilterData();
 
-	ajaxComplete: function (json) {
-		json = JSON.decode(json);
-		/*
-		this.periodcount ++;
-		if (this.periodcount > 5) {
-			this.endAjax();
-			return;
-		}
-		*/
-		if (typeOf(document.id(this.options.filterid)) === 'null') {
-			fconsole('filterid not found: ', this.options.filterid);
-			this.endAjax();
-			return;
-		}
+        if (this.observer) {
+            // $$$ hugh - added this so we fake out submitted form data for use as placeholders in query filter
+            Object.append(this.ajaxData, filterData, {v: this.observer.val()});
 
-		document.id(this.options.filterid).empty();
-		json.each(function (item) {
-			new Element('option', {'value': item.value}).appendText(item.text).inject(document.id(this.options.filterid));
-		}.bind(this));
-		/*
-		if (json.length > 0) {
-			if (!this.setupDone && (json.length === 1 && json[0].value === this.options.noselectionvalue) === false) {
-				this.endAjax();
-			}
-		} else {
-			this.endAjax();
-		}
-		*/
-		this.endAjax();
-	},
+            this.myAjax = $.ajax({
+                url       : '',
+                method: 'post',
+                'data'    : this.ajaxData
+            }).done(function (e) {
+                self.ajaxComplete(e);
+            });
+        }
+    },
 
-	endAjax: function ()
-	{
-		document.id(this.options.filterid + '_loading').setStyle('opacity', '0');
-		//clearInterval(this.periodical);
-		document.id(this.options.filterid).value = this.options.def;
-		if (this.options.advanced)
-		{
-			jQuery('#' + this.options.filterid).trigger('liszt:updated');
-		}
-	}
+    ajaxComplete: function (json) {
+        var self = this;
+        json = JSON.decode(json);
+
+        if (($('#' + this.options.filterid)).length === 0) {
+            fconsole('filterid not found: ', this.options.filterid);
+            this.endAjax();
+            return;
+        }
+
+        $('#' + this.options.filterid).empty();
+        json.each(function (item) {
+            $(document.createElement('option')).attr({'value': item.value}).text(item.text)
+                .inject($('#' + self.options.filterid));
+            $('#' + self.options.filterid).val(self.options.def);
+        });
+
+        this.endAjax();
+    },
+
+    endAjax: function () {
+        $('#' + this.options.filterid + '_loading').css('opacity', '0');
+	    $('#' + this.options.filterid).val(this.options.def);
+	    if (this.options.advanced)
+	    {
+		    $('#' + this.options.filterid).trigger('liszt:updated');
+	    }
+    }
 });

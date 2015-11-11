@@ -30,10 +30,10 @@ var elementElement = my.Class({
 	},
 
 	ready: function () {
-		if (typeOf(document.id(this.options.conn)) === 'null') {
+		if ($('#' + this.options.conn).length === 0) {
 			return false;
 		}
-		if (typeOf(FabrikAdmin.model.fields.fabriktable) === 'undefined') {
+		if (FabrikAdmin.model.fields.fabriktable === undefined) {
 			return false;
 		}
 		if (Object.getLength(FabrikAdmin.model.fields.fabriktable) === 0) {
@@ -54,21 +54,19 @@ var elementElement = my.Class({
 	},
 
 	setUp: function () {
-		var s = this.el;
-		this.el = document.id(this.el);
-		if (typeOf(this.el) === 'null') {
+		var s = this.el, self = this;
+		this.el = $('#' + this.el);
+		if (this.el.length === 0) {
 			fconsole('element didnt find me, ', s);
 		}
 		var add = this.el.parent().find('button');
-		if (typeOf(add) !== 'null') {
-			add.addEvent('mousedown', function (e) {
-				e.stop();
-				this.addPlaceHolder();
-			}.bind(this));
-			add.addEvent('click', function (e) {
-				e.stop();
-			});
-		}
+		add.on('mousedown', function (e) {
+			e.stop();
+			self.addPlaceHolder();
+		});
+		add.on('click', function (e) {
+			e.stop();
+		});
 		FabrikAdmin.model.fields.fabriktable[this.options.table].registerElement(this);
 	},
 

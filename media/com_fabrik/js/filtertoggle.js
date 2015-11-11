@@ -13,35 +13,35 @@
  */
 FabFilterToggle = my.Class({
 	constructor: function (ref) {
-		var list = document.id('list_' + ref);
-		var form = document.id('listform_' + ref);
+		var list = $('#list_' + ref),
+			form = $('#listform_' + ref);
 		Fabrik.addEvent('fabrik.list.update', function (l) {
 			if (l.id === ref) {
-				list.getElements('.fabrik___heading span.filter').hide();
+				list.find('.fabrik___heading span.filter').hide();
 			}
 			return true;
 		});
 
-		list.getElements('span.heading').each(function (h) {
+		list.find('span.heading').each(function (h) {
 			var f = h.getNext(), i;
 			if (f) {
 				h.addClass('filtertitle');
-				h.setStyle('cursor', 'pointer');
-				if (i = f.getElement('input')) {
+				h.css('cursor', 'pointer');
+				if (i = f.find('input')) {
 					i.set('placeholder', h.get('text'));
 				}
 				f.hide();
 			}
 		});
-		list.addEvent('click:relay(span.heading)', function (e) {
-			var f = e.target.getNext();
-			if (f) {
+		list.on('click', 'span.heading', function (e) {
+			var f = $(this).getNext();
+			if (f.length > 0) {
 				f.toggle();
-				var i = form.getElement('.fabrikFilterContainer');
+				var i = form.find('.fabrikFilterContainer');
 				var offsetP = list.getOffsetParent() ? list.getOffsetParent() : document.body;
 				var p = f.getPosition(offsetP);
 				i.setPosition({'x': p.x - 5, 'y': p.y + f.getSize().y});
-				if (f.getStyle('display') === 'none') {
+				if (f.css('display') === 'none') {
 					i.hide();
 				} else {
 					i.show();
@@ -49,18 +49,18 @@ FabFilterToggle = my.Class({
 			}
 		});
 
-		var c = form.getElement('.clearFilters');
+		var c = form.find('.clearFilters');
 		if (typeOf(c) !== 'null') {
-			c.addEvent('click', function () {
-				form.getElement('.fabrikFilterContainer').hide();
-				form.getElements('.fabrik___heading .filter').hide();
+			c.on('click', function () {
+				form.find('.fabrikFilterContainer').hide();
+				form.find('.fabrik___heading .filter').hide();
 			});
 		}
-		var s = form.getElement('.fabrik_filter_submit');
+		var s = form.find('.fabrik_filter_submit');
 		if (typeOf(s) !== 'null') {
-			s.addEvent('click', function () {
-				form.getElement('.fabrikFilterContainer').hide();
-				form.getElements('.fabrik___heading .filter').hide();
+			s.on('click', function () {
+				form.find('.fabrikFilterContainer').hide();
+				form.find('.fabrik___heading .filter').hide();
 			});
 		}
 	}

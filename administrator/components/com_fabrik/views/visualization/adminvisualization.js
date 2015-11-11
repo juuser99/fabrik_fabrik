@@ -7,45 +7,38 @@
 
 var AdminVisualization = my.Class(PluginManager, {
 
-	options: {},
+    options: {},
 
-	initialize: function (options, lang) {
-		this.options = $.append(this.options, options);
-		this.watchSelector();
-	},
+    initialize: function (options, lang) {
+        this.options = $.append(this.options, options);
+        this.watchSelector();
+    },
 
-	watchSelector: function () {
-		if (typeof(jQuery) !== 'undefined') {
-			jQuery('#jform_plugin').bind('change', function (e) {
-				this.changePlugin(e);
-			}.bind(this));
-		} else {
-			document.id('jform_plugin').addEvent('change', function (e) {
-				e.stop();
-				this.changePlugin(e);
-			}.bind(this));
-		}
-	},
+    watchSelector: function () {
+        var self = this;
+        $('#jform_plugin').on('change', function (e) {
+            e.stop();
+            self.changePlugin(e);
+        });
+    },
 
-	changePlugin: function (e) {
-		var myAjax = new Request({
-			url: 'index.php',
-			'evalResponse': false,
-			'evalScripts' : function (script, text) {
-					this.script = script;
-				}.bind(this),
-			'data': {
-				'option': 'com_fabrik',
-				'task': 'visualization.getPluginHTML',
-				'format': 'raw',
-				'plugin': e.target.get('value')
-			},
-			'update': document.id('plugin-container'),
-			'onComplete': function (r) {
-				document.id('plugin-container').set('html', r);
-				Browser.exec(this.script);
-				this.updateBootStrap();
-			}.bind(this)
-		}).send();
-	}
+    changePlugin: function (e) {
+        $.ajax({
+            url           : 'index.php',
+            'evalResponse': false,
+            'evalScripts' : function (script, text) {
+                this.script = script;
+            }.bind(this),
+            'data'        : {
+                'option': 'com_fabrik',
+                'task'  : 'visualization.getPluginHTML',
+                'format': 'raw',
+                'plugin': $(e.target).val()
+            },
+        }).done(function (r) {
+            $('#plugin-container').html(r);
+            Browser.exec(this.script);
+            this.updateBootStrap();
+        });
+    }
 });

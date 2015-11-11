@@ -15,7 +15,7 @@ var Canvas = my.Class({
 	},
 
 	constructor: function (opts) {
-		this.options = $.append(this.options, opts);
+		this.options = $.extend(this.options, opts);
 		Fabrik.addEvent('fabrik.page.insert', function (e) {
 			this.insertPage(e);
 		}.bind(this));

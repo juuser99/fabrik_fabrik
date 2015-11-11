@@ -35,7 +35,7 @@ this.Form.Placeholder = my.Class({
 		clearOnSubmit: true
 	},
 	constructor: function (selector, options) {
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		document.getElements(selector).each (function (el) {
 			if (typeOf(el.get('placeholder')) !== 'null') {
 				el.store('placeholder', el.get('placeholder'));

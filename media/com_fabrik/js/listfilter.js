@@ -17,52 +17,47 @@ var FbListFilter = my.Class({
         }
     },
 
-	constructor: function (options) {
-		this.filters = {};
-		this.options = $.append(this.options, options);
-		this.advancedSearch = false;
-		this.container = document.id(this.options.container);
-		this.filterContainer = this.container.getElements('.fabrikFilterContainer');
-		this.filtersInHeadings = this.container.getElements('.listfilter');
-		var b = this.container.getElement('.toggleFilters'),
-            advancedSearchButton;
-		if (typeOf(b) !== 'null') {
-			b.addEvent('click', function (e) {
-				e.stop();
-				this.filterContainer.toggle();
-				this.filtersInHeadings.toggle();
-			}.bind(this));
+    constructor: function (options) {
+        var self = this;
+        this.filters = {};
+        this.options = $.extend(this.options, options);
+        this.advancedSearch = false;
+        this.container = document.id(this.options.container);
+        this.filterContainer = this.container.find('.fabrikFilterContainer');
+        this.filtersInHeadings = this.container.find('.listfilter');
+        var b = this.container.find('.toggleFilters');
+        b.on('click', function (e) {
+            e.stop();
+            this.filterContainer.toggle();
+            this.filtersInHeadings.toggle();
+        }.bind(this));
 
-            if (typeOf(this.filterContainer) !== 'null') {
-                this.filterContainer.hide();
-                this.filtersInHeadings.toggle();
-            }
-        }
+        this.filterContainer.hide();
+        this.filtersInHeadings.toggle();
 
         if (typeOf(this.container) === 'null') {
             return;
         }
         this.getList();
-        var c = this.container.getElement('.clearFilters');
-        if (typeOf(c) !== 'null') {
-            c.removeEvents();
-            c.addEvent('click', function (e) {
-                e.stop();
+        var c = this.container.find('.clearFilters');
+        c.removeEvents();
+        c.on('click', function (e) {
+            var plugins;
+            e.stop();
 
-                // Reset the filter fields that contain previously selected values
-                this.container.getElements('.fabrik_filter').each(function (f) {
-                    this.clearAFilter(f);
-                }.bind(this));
-                this.clearPlugins();
-                this.submitClearForm();
-            }.bind(this));
-        }
-        if (advancedSearchButton = this.container.getElement('.advanced-search-link')) {
+            // Reset the filter fields that contain previously selected values
+            self.container.find('.fabrik_filter').each(function (f) {
+                self.clearAFilter(f);
+            });
+            self.clearPlugins();
+            self.submitClearForm();
+        });
+        if (advancedSearchButton = this.container.find('.advanced-search-link')) {
             advancedSearchButton.addEvent('click', function (e) {
                 e.stop();
                 var a = e.target;
                 if (a.get('tag') !== 'a') {
-                    a = a.getParent('a');
+                    a = a.closest('a');
                 }
                 var url = a.href;
                 url += '&listref=' + this.options.ref;
@@ -75,7 +70,7 @@ var FbListFilter = my.Class({
                     width          : 710,
                     height         : 340,
                     y              : this.options.popwiny,
-                    onContentLoaded: function () {
+                    onContentLoaded: function (win) {
                         var list = Fabrik.blocks['list_' + this.options.ref];
                         if (typeOf(list) === 'null') {
                             list = Fabrik.blocks[this.options.container];
@@ -108,28 +103,28 @@ var FbListFilter = my.Class({
         return this.list;
     },
 
-	addFilter: function (plugin, f) {
-		if (this.filters.hasOwnProperty(plugin) === false) {
-			this.filters[plugin] = [];
-		}
-		this.filters[plugin].push(f);
-	},
+    addFilter: function (plugin, f) {
+        if (this.filters.hasOwnProperty(plugin) === false) {
+            this.filters[plugin] = [];
+        }
+        this.filters[plugin].push(f);
+    },
 
-	onSubmit: function () {
-		if (this.filters.date) {
-			jQuery.each(this.filters.date, function (key, f) {
-				f.onSubmit();
-			});
-		}
-	},
+    onSubmit: function () {
+        if (this.filters.date) {
+            jQuery.each(this.filters.date, function (key, f) {
+                f.onSubmit();
+            });
+        }
+    },
 
-	onUpdateData: function () {
-		if (this.filters.date) {
-			jQuery.each(this.filters.date, function (key, f) {
-				f.onUpdateData();
-			});
-		}
-	},
+    onUpdateData: function () {
+        if (this.filters.date) {
+            jQuery.each(this.filters.date, function (key, f) {
+                f.onUpdateData();
+            });
+        }
+    },
 
     // $$$ hugh - added this primarily for CDD element, so it can get an array to
     // emulate submitted form data

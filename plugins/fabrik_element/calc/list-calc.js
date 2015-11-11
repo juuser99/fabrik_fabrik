@@ -56,7 +56,7 @@ var FbCalcList = my.Class({
 				jQuery.each(json, function (id, html) {
 					var cell = this.list.list.getElement('#' + id + ' .' + this.options.element);
 					if (typeOf(cell) !== 'null' && html !== false) {
-						cell.set('html', html);
+						cell.html(html);
 					}
 				}.bind(this));
 			}.bind(this)

@@ -7,66 +7,66 @@
 
 var FbListToggle = my.Class({
 
-	constructor: function (form) {
+    constructor: function (form) {
+        var self = this,
+            selector = '#' + form.id + ' .togglecols .dropdown-menu a, #' + form.id + ' .togglecols .dropdown-menu li';
+        // Stop dropdown closing on click
+        jQuery(selector).click(function (e) {
+            e.stopPropagation();
+        });
 
-		// Stop dropdown closing on click
-		jQuery('#' + form.id + ' .togglecols .dropdown-menu a, #' + form.id + ' .togglecols .dropdown-menu li').click(function (e) {
-			e.stopPropagation();
-		});
+        // Set up toggle events for elements
+        form.on('mouseup', 'a[data-toggle-col]', function (e, btn) {
+            var state = $(this).data('toggle-state'),
+                col = $(this).data('toggle-col');
+            self.toggleColumn(col, state, btn);
+        });
 
-		// Set up toggle events for elements
-		form.addEvent('mouseup:relay(a[data-toggle-col])', function (e, btn) {
-			var state = btn.get('data-toggle-state');
-			var col = btn.get('data-toggle-col');
-			this.toggleColumn(col, state, btn);
-		}.bind(this));
+        // Toggle events for groups (toggles all elements in group)
+        form.on('mouseup', 'a[data-toggle-group]', function (e, group) {
+            var state = $(this).data('toggle-state'), muted,
+                groupName = $(this).data('toggle-group'),
+                links = $('a[data-toggle-parent-group=' + groupName + ']');
 
-		// Toggle events for groups (toggles all elements in group)
-		var groups = form.getElements('a[data-toggle-group]');
-		form.addEvent('mouseup:relay(a[data-toggle-group])', function (e, group) {
-			var state = group.get('data-toggle-state'), muted,
-			groupName = group.get('data-toggle-group'),
-			links = document.getElements('a[data-toggle-parent-group=' + groupName + ']');
+            links.each(function (btn) {
+                var col = btn.data('toggle-col');
+                self.toggleColumn(col, state, btn);
+            });
 
-			links.each(function (btn) {
-				var col = btn.get('data-toggle-col');
-				this.toggleColumn(col, state, btn);
-			}.bind(this));
+            state = state === 'open' ? 'close' : 'open';
+            muted = state === 'open' ? '' : ' muted';
+            group.find('i')[0].className = 'icon-eye-' + state + muted;
+            group.data('toggle-state', state);
 
-			state = state === 'open' ? 'close' : 'open';
-			muted = state === 'open' ? '' : ' muted';
-			group.getElement('i').className = 'icon-eye-' + state + muted;
-			group.set('data-toggle-state', state);
+        }.bind(this));
+    },
 
-		}.bind(this));
-	},
+    /**
+     * Toggle column
+     *
+     * @param col   Element name
+     * @param state Open/closed
+     * @param btn   Button/link which initiated the toggle
+     */
+    toggleColumn: function (col, state, btn) {
+        var muted;
+        state = state === 'open' ? 'close' : 'open';
 
-	/**
-	 * Toggle column
-	 *
-	 * @param col   Element name
-	 * @param state Open/closed
-	 * @param btn   Button/link which initiated the toggle
-	 */
-	toggleColumn: function (col, state, btn) {
-		var muted;
-		state = state === 'open' ? 'close' : 'open';
+        if (state === 'open') {
+            document.find('.fabrik___heading .' + col).show();
+            document.find('.fabrikFilterContainer .' + col).show();
+            document.find('.fabrik_row  .' + col).show();
+            document.find('.fabrik_calculations  .' + col).show();
+            muted = '';
+        } else {
+            document.find('.fabrik___heading .' + col).hide();
+            document.find('.fabrikFilterContainer .' + col).hide();
+            document.find('.fabrik_row  .' + col).hide();
+            document.find('.fabrik_calculations  .' + col).hide();
+            muted = ' muted';
+        }
 
-		if (state === 'open') {
-			document.getElements('.fabrik___heading .' + col).show();
-			document.getElements('.fabrikFilterContainer .' + col).show();
-			document.getElements('.fabrik_row  .' + col).show();
-			document.getElements('.fabrik_calculations  .' + col).show();
-			muted = '';
-		} else {
-			document.getElements('.fabrik___heading .' + col).hide();
-			document.getElements('.fabrikFilterContainer .' + col).hide();
-			document.getElements('.fabrik_row  .' + col).hide();
-			document.getElements('.fabrik_calculations  .' + col).hide();
-			muted = ' muted';
-		}
-
-		btn.getElement('i').className = 'icon-eye-' + state + muted;
-		btn.set('data-toggle-state', state);
-	}
+        btn.find('i')[0].className = 'icon-eye-' + state + muted;
+        btn.data('toggle-state', state);
+    }
 });

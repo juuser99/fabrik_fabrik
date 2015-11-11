@@ -13,6 +13,7 @@ var FbListRadiusLookup = my.Class(FbListPlugin, {
 	},
 
 	constructor : function (options) {
+		var self = this;
 		this.parent(options);
 
 		if (typeOf(this.options.value) === 'null') {
@@ -21,9 +22,9 @@ var FbListRadiusLookup = my.Class(FbListPlugin, {
 
 		var clear = this.listform.getElement('.clearFilters');
 		console.log('clear = ', clear);
-		clear.addEvent('mouseup', function () {
-			this.clearFilter();
-		}.bind(this));
+		clear.on('mouseup', function () {
+			self.clearFilter();
+		});
 
 		if (typeOf(this.listform) !== 'null') {
 			this.listform = this.listform.getElement('#radius_lookup' + this.options.renderOrder);

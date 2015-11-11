@@ -49,7 +49,7 @@ var FloatingTips = my.Class({
 			// We should override any Fabrik3 custom tip settings with bootstrap3 data-foo attributes in JLayouts
 			return;
 		}
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		this.options.fxProperties = {transition: eval(this.options.tipfx), duration: this.options.duration};
 
 		// Any tip (not necessarily in this instance has asked for all other tips to be hidden.
