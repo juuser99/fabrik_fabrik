@@ -10,7 +10,7 @@ var FbSlideshowViz = my.Class({
 	options: {},
 
 	constructor: function (element, options) {
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		var opts = {
 			controller: true,
 			delay: parseInt(this.options.slideshow_delay, 10),

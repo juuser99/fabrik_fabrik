@@ -8,7 +8,7 @@
 var FbPicklist = my.Class(FbElement, {
     constructor: function (element, options) {
         this.plugin = 'fabrikpicklist';
-        this.parent(element, options);
+        FbPicklist.Super.call(this, element, options);
         if (this.options.allowadd === true) {
             this.watchAddToggle();
             this.watchAdd();
@@ -138,7 +138,7 @@ var FbPicklist = my.Class(FbElement, {
                     to.adopt(li);
                     this.sortable.addItems(li);
 
-                    e.stop();
+                    e.stopPropagation();
                     if (typeOf(value) === 'element') {
                         value.value = '';
                     }
@@ -171,7 +171,7 @@ var FbPicklist = my.Class(FbElement, {
         }
         $(d).slideUp(500);
         a.on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             $(d).slideToggle();
         });
     },
@@ -183,6 +183,6 @@ var FbPicklist = my.Class(FbElement, {
             this.watchAdd();
         }
         this.makeSortable();
-        this.parent(c);
+        FbPicklist.Super.prototype.cloned(this, c);
     }
 });

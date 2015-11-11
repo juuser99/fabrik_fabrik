@@ -10,14 +10,14 @@ var AdminVisualization = my.Class(PluginManager, {
     options: {},
 
     initialize: function (options, lang) {
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.watchSelector();
     },
 
     watchSelector: function () {
         var self = this;
         $('#jform_plugin').on('change', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.changePlugin(e);
         });
     },

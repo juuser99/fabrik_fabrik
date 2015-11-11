@@ -8,6 +8,6 @@
 var FbComment = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fbComment';
-		this.parent(element, options);
+		FbComment.Super.call(this, element, options);
 	}
 });

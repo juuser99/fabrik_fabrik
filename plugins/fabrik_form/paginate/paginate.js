@@ -12,10 +12,10 @@ FabRecordSet = my.Class({
         this.options = {
             liveSite: ''
         };
-        $.append(this.options, options);
+        $.extend(this.options, options);
         var f = this.form.getForm(),
             formId = this.form.id;
-        this.pkfield = f.getElement('input[name=rowid]');
+        this.pkfield = f.find('input[name=rowid]');
         this.view = this.form.options.editable === true ? 'form' : 'details';
         this.url = this.options.liveSite + 'index.php?option=com_fabrik&format=raw&view=plugin&g=form&task=pluginAjax&plugin=paginate&method=xRecord&formid=' + formId + '&mode=' + this.options.view + '&rowid=';
         this.watchButtons();

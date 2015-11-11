@@ -25,7 +25,7 @@ var FbTimer = my.Class(FbElement, {
     constructor: function (element, options) {
         var self = this;
         this.plugin = 'fabriktimer';
-        this.parent(element, options);
+        FbTimer.Super.call(this, element, options);
         var b = $('#' + this.options.element + '_button');
         this.seg = 0;
         this.min = 0;
@@ -39,7 +39,7 @@ var FbTimer = my.Class(FbElement, {
 
         this.incremental = 1;
         b.on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             if (self.state === 'started') {
                 self.pause();
                 //b.value = Joomla.JText._('PLG_ELEMENT_TIMER_START');

@@ -8,10 +8,11 @@
 var FbListCanEditRow = my.Class(FbListPlugin, {
 
 	constructor: function (options) {
-		this.parent(options);
+		FbListCanEditRow.Super.call(this, options);
+		var self = this;
 		Fabrik.addEvent('onCanEditRow', function (list, args) {
-			this.onCanEditRow(list, args);
-		}.bind(this));
+			self.onCanEditRow(list, args);
+		});
 	},
 
 	onCanEditRow: function (list, rowid) {

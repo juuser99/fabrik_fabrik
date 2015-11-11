@@ -8,7 +8,7 @@
 var FbFileUpload = my.Class(FbFileElement, {
     constructor: function (element, options) {
         this.plugin = 'fileupload';
-        this.parent(element, options);
+        FbFileUpload.Super.call(this, element, options);
         if (this.options.folderSelect === '1' && this.options.editable === true) {
             this.ajaxFolder();
         }
@@ -136,9 +136,9 @@ var FbFileUpload = my.Class(FbFileElement, {
 
 	watchBrowseButton: function () {
 		if (this.options.useWIP && !this.options.ajax_upload && this.options.editable !== false) {
-			document.id(this.element.id).removeEvent('change', this.doBrowseEvent);
+			$(this.element.id).removeEvent('change', this.doBrowseEvent);
 			this.doBrowseEvent = this.doBrowse.bind(this);
-			document.id(this.element.id).addEvent('change', this.doBrowseEvent);
+			$(this.element.id).on('change', this.doBrowseEvent);
 		}
 	},
 
@@ -209,7 +209,7 @@ var FbFileUpload = my.Class(FbFileElement, {
         if (this.options.ajax_upload && this.options.ajax_max > 1) {
             return this.options.listName + '___' + this.options.elementShortName;
         } else {
-            return this.parent(elId);
+            return FbFileUpload.Super.prototype.getFormElementsKey(this, elId);
         }
     },
 
@@ -221,22 +221,21 @@ var FbFileUpload = my.Class(FbFileElement, {
         // Fabrik.removeEvent('fabrik.form.submit.start', this.submitEvent);
     },
 
-	cloned: function (c) {
-		// replaced cloned image with default image
-		if (this.element.closest('.fabrikElement').length === 0) {
-			return;
-		}
-		var i = this.element.closest('.fabrikElement').find('img');
-		if (i) {
-			i.src = this.options.defaultImage !== '' ? Fabrik.liveSite + this.options.defaultImage : '';
-		}
-		c = this.getContainer();
-		if (c) {
-			c.find('[data-file]').destroy();
-		}
-		this.watchBrowseButton();
-		this.parent(c);
-	},
+    cloned: function (c) {
+        // replaced cloned image with default image
+        if (this.element.closest('.fabrikElement').length === 0) {
+            return;
+        }
+        var i = this.element.closest('.fabrikElement').find('img');
+        if (i) {
+            i.src = Fabrik.liveSite + this.options.defaultImage;
+        }
+
+        this.getContainer().find('[data-file]').destroy();
+        this.watchBrowseButton();
+
+        return FbFileUpload.Super.prototype.cloned(this, c);
+    },
 
 	decloned: function (groupid) {
 		var i = $('#form_' + this.form.id).find('input[name=fabrik_deletedimages[' + groupid + ']');
@@ -516,7 +515,7 @@ var FbFileUpload = my.Class(FbFileElement, {
 
         // (4) UPLOAD FILES FIRE STARTER
         this.startbutton.on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.uploader.start();
         });
         // (5) KICK-START PLUPLOAD
@@ -573,7 +572,7 @@ var FbFileUpload = my.Class(FbFileElement, {
                     'class': 'icon-delete'
                 })
                 .on('click', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     self.pluploadRemoveFile(e);
                 })
         );
@@ -588,7 +587,7 @@ var FbFileUpload = my.Class(FbFileElement, {
     },
 
     pluploadRemoveFile: function (e) {
-        e.stop();
+        e.stopPropagation();
         if (!window.confirm(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE'))) {
             return;
         }
@@ -636,7 +635,7 @@ var FbFileUpload = my.Class(FbFileElement, {
     },
 
     pluploadResize: function (e) {
-        e.stop();
+        e.stopPropagation();
         var a = e.target.closest();
         if (this.widget) {
             this.widget.setImage(a.href, a.retrieve('filepath'));
@@ -666,7 +665,7 @@ var FbFileUpload = my.Class(FbFileElement, {
             // alert(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ALL_FILES'));
         } else {
             this.saveWidgetState();
-            this.parent(cb);
+            return FbFileUpload.Super.prototype.onsubmit(this, cb);
         }
     },
 
@@ -739,7 +738,7 @@ var ImageWidget = my.Class({
             }
         };
 
-        $.append(this.imageDefault, opts);
+        $.extend(this.imageDefault, opts);
 
         this.windowopts = {
             'id'             : this.canvas.id + '-mocha',

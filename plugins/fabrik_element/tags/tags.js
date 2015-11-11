@@ -13,7 +13,7 @@ var FbTags = my.Class(FbElement, {
 	},
 
 	initialize: function (element, options) {
-		this.parent(element, options);
+		FbTags.Super.call(this, element, options);
 		if (this.options.editable) {
 			this.setUp();
 		}
@@ -118,7 +118,7 @@ var FbTags = my.Class(FbElement, {
 
 	cloned: function (c) {
 		Fabrik.trigger('fabrik.tags.update', this);
-		this.parent(c);
+		FbTags.Super.prototype.cloned(this, c);
 		this.setUp();
 	}
 });

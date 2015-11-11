@@ -13,7 +13,7 @@ var tablesElement = my.Class({
 
     constructor: function (el, options) {
         this.el = el;
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         // If loading in a form plugin then the connect is not yet available in the dom
         if ($('#' + this.options.conn).length === 0) {
             this.periodical = setInterval(function () {
@@ -54,7 +54,7 @@ var tablesElement = my.Class({
     updateMe: function (e) {
         var self = this;
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
         if (this.loader) {
             this.loader.show();

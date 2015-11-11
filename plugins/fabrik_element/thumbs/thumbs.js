@@ -8,7 +8,7 @@
 var FbThumbs = my.Class(FbElement, {
     constructor: function (element, options, thumb) {
         this.field = $('#' + element);
-        this.parent(element, options);
+        FbThumbs.Super.call(this, element, options);
         this.thumb = thumb;
         this.spinner = new Spinner(this.getContainer());
         this.setupj3();
@@ -22,7 +22,7 @@ var FbThumbs = my.Class(FbElement, {
             self = this;
 
         up.addEvent('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             if (self.options.canUse) {
                 add = up.hasClass('btn-success') ? false : true;
                 self.doAjax('up', add);
@@ -39,7 +39,7 @@ var FbThumbs = my.Class(FbElement, {
         });
 
         down.addEvent('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             if (self.options.canUse) {
                 add = down.hasClass('btn-danger') ? false : true;
                 self.doAjax('down', add);

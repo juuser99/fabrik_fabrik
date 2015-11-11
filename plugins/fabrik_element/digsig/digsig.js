@@ -7,7 +7,7 @@
 
 var FbDigsig = my.Class(FbElement, {
 	constructor: function (element, options) {
-		this.parent(element, options);
+		FbDigsig.Super.call(this, element, options);
 		this.plugin = 'digsig';
 
 		if (this.options.editable === true) {

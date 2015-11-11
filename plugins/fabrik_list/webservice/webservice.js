@@ -7,7 +7,7 @@
 
 var FbListWebservice = my.Class(FbListPlugin, {
 	constructor: function (options) {
-		this.parent(options);
+		FbListWebservice.Super.call(this, options);
 	},
 
 	buttonAction: function () {

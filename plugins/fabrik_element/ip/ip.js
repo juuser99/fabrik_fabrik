@@ -8,6 +8,6 @@
 var FbIp = my.Class({
 	constructor: function (element, options) {
 		this.plugin = 'FbIp';
-		this.parent(element, options);
+		FbIp.Super.call(this, element, options);
 	}
 });

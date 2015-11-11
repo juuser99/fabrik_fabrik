@@ -22,7 +22,7 @@ var ListFieldsElement = my.Class({
 		this.strEl = el;
 		var label, els;
 		this.el = el;
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 
 		if (this.options.defaultOpts.length > 0) {
 			this.el = $('#' + this.el);
@@ -129,11 +129,11 @@ var ListFieldsElement = my.Class({
 		var add = this.el.parent().find('button');
 
 		add.on('mousedown', function (e) {
-			e.stop();
+			e.stopPropagation();
 			self.addPlaceHolder();
 		});
 		add.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 		});
 	},
 
@@ -144,7 +144,7 @@ var ListFieldsElement = my.Class({
 	updateMe: function (e) {
 		var self = this;
 		if (typeof(e) === 'object') {
-			e.stop();
+			e.stopPropagation();
 		}
 		$('#' + this.el.id + '_loader').show();
 		var cid = $('#' + this.options.conn).val(),

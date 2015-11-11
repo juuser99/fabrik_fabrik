@@ -9,6 +9,6 @@ var FbUsergroup = my.Class(FbElement, {
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikusergroup';
-		this.parent(element, options);
+		FbUsergroup.Super.call(this, element, options);
 	}
 });

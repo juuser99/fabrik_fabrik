@@ -19,7 +19,7 @@ var fabrikFusiongraph = my.Class({
 	constructor: function (el, d, options) {
 		//todo doesnt seem to work with 1 record of data
 		this.el = el;
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		this.json = d;
 		this.render();
 	},

@@ -89,7 +89,7 @@ FbElementList = my.Class(FbElement, {
 
 	checkEnter: function (e) {
 		if (e.key === 'enter') {
-			e.stop();
+			e.stopPropagation();
 			this.startAddNewOption();
 		}
 	},
@@ -148,7 +148,7 @@ FbElementList = my.Class(FbElement, {
 				self.checkEnter(e);
 			});
 			c.find('input[type=button]').on('click', function (e) {
-				e.stop();
+				e.stopPropagation();
 				self.startAddNewOption();
 			});
 			$(document).on('keypress', function (e) {

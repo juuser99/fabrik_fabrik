@@ -667,7 +667,6 @@ class FabrikViewFormBase extends FabrikView
 		$script[] = $vstr;
 
 		// Placeholder
-		$script[] = "\tnew Form.Placeholder('.fabrikForm input');";
 		$this->_addJavascriptSumbit($script, $listId, $aWYSIWYGNames);
 
 		if (FabrikHelperHTML::inAjaxLoadedPage())

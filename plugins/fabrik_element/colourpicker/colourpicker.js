@@ -84,7 +84,7 @@ var ColourPicker = my.Class(FbElement, {
 
         var close = this.widget.find('.modal-header a');
         close.on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.widget.hide();
         });
     },
@@ -115,8 +115,8 @@ var ColourPicker = my.Class(FbElement, {
         });
         tabs.each(function (tab) {
             tab.on('click', function (e) {
-                e.stop();
-                jQuery(tab).tab('show');
+                e.stopPropagation();
+                $(tab).tab('show');
             });
         });
 
@@ -263,7 +263,7 @@ var ColourPicker = my.Class(FbElement, {
     },
 
     toggleWidget: function (e) {
-        e.stop();
+        e.stopPropagation();
         this.widget.toggle();
     }
 });
@@ -274,7 +274,7 @@ var ColourPickerSwatch = my.Class({
 
     initialize: function (element, options) {
         this.element = $('#' + element);
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.callback = this.options.callback;
         this.outputs = this.options.outputs;
         this.redField = null;
@@ -327,7 +327,7 @@ var ColourPickerSwatch = my.Class({
     },
 
     updateFromSwatch: function (e) {
-        e.stop();
+        e.stopPropagation();
         var c = new Color($(e.target).css('background-color'));
         this.options.colour.red = c[0];
         this.options.colour.green = c[1];

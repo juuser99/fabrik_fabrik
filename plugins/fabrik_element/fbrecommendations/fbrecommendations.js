@@ -8,6 +8,6 @@
 var FbRecommendations = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fbRecommendations';
-		this.parent(element, options);
+		FbRecommendations.Super.call(this, element, options);
 	}
 });

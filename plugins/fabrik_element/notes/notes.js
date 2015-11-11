@@ -19,7 +19,7 @@ var FbNotes = my.Class(FbElement, {
 
     constructor: function (element, options) {
         this.plugin = 'notes';
-        this.parent(element, options);
+        FbNotes.Super.call(this, element, options);
         this.setUp();
     },
 
@@ -40,7 +40,7 @@ var FbNotes = my.Class(FbElement, {
     },
 
     submit: function (e) {
-        e.stop();
+        e.stopPropagation();
         var label = this.field.get('value');
         if (label !== '') {
             Fabrik.loader.start(this.element);

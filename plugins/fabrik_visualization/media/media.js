@@ -15,13 +15,13 @@ var FbMediaViz = my.Class({
 
 	constructor: function (el, options) {
 		this.el = el;
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		this.render();
 	},
 
 	render: function () {
 		if (this.options.which_player === 'jw') {
-			jwplayer("jw_player").setup({
+			jwplayer('jw_player').setup({
 				//'flashplayer': this.options.jw_swf_url,
 				'width': this.options.width,
 				'height': this.options.height,

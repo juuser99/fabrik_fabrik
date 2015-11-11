@@ -40,7 +40,7 @@ UpdateColSelect = my.Class({
 
 var FbListUpdateCol = my.Class(FbListPlugin, {
 	constructor: function (options) {
-		this.parent(options);
+		FbListUpdateCol.Super.call(this, options);
 		if (this.options.userSelect) {
 			Fabrik['filter_update_col' + this.options.ref + '_' + this.options.renderOrder] = new UpdateColSelect();
 			this.makeUpdateColWindow();
@@ -154,7 +154,7 @@ var FbListUpdateCol = my.Class(FbListPlugin, {
 
 				// Submit the update
 				form.find('input[type=button]').on('click', function (e) {
-					e.stop();
+					e.stopPropagation();
 					var i;
 					Fabrik['filter_update_col'  + self.options.ref + '_' + self.options.renderOrder].onSumbit();
 

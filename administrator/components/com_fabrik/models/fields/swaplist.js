@@ -12,25 +12,25 @@ var SwapList = my.Class({
         var self = this;
         this.to = $('#' + to);
         $('#' + addbutton).on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             $('#jform__createGroup0').prop('checked', true);
             self.addSelectedToList(self.from, self.to);
             self.delSelectedFromList(self.from);
         });
 
         $('#' + removebutton).on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.addSelectedToList(self.to, self.from);
             self.delSelectedFromList(self.to);
         });
 
         $('#' + upbutton).on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.moveInList(-1);
         });
 
         $('#' + downbutton).on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.moveInList(+1);
         });
 

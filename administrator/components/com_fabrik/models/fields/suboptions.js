@@ -14,7 +14,7 @@ var Suboptions = my.Class({
     },
 
     constructor: function (name, options) {
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.element = $('#' + this.options.id);
 
         if (this.element.length === 0) {
@@ -78,7 +78,7 @@ var Suboptions = my.Class({
 
     addOption: function (e) {
         this.addSubElement();
-        e.stop();
+        e.stopPropagation();
     },
 
     removeSubElement: function (e) {
@@ -86,13 +86,13 @@ var Suboptions = my.Class({
         if ($('#sub_subElementBody').find('li').length > 1) {
             $('#sub_content_' + id).dispose();
         }
-        e.stop();
+        e.stopPropagation();
     },
 
     addJ3SubElement: function (sValue, sText, sCurChecked) {
         var chx = this._chx(sValue, sCurChecked);
         var delButton = this._deleteButton();
-        var tr = new Element('tr').adopt([
+        var tr = $(document.createElement('tr')).adopt([
             $(document.createElement('td')).addClass('handle subhandle'),
             $(document.createElement('td')).attr({width: '30%'}).adopt(this._valueField(sValue)),
             $(document.createElement('td')).attr({width: '30%'}).adopt(this._labelField(sText)),

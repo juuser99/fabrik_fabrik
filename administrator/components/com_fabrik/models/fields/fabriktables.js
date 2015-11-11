@@ -15,7 +15,7 @@ var fabriktablesElement = my.Class({
 
     constructor: function (el, options) {
         this.el = el;
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.elements = [];
         this.elementLists = {}; // keyed on specific element options
         this.waitingElements = {}; // keyed on specific element options
@@ -82,7 +82,7 @@ var fabriktablesElement = my.Class({
     updateMe: function (e) {
         var self = this;
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
         var cid = this.cnn.get('value');
         // keep repeating the periodical until the cnn drop down is completed
@@ -233,7 +233,7 @@ var fabriktablesElement = my.Class({
         if (element.options.value === '') {
             o.selected = 'selected';
         }
-        new Element('option', o).appendText('-').inject(target);
+        $(document.createElement('option')).attr(o).text('-').inject(target);
         dotValue = element.options.value.replace('.', '___');
         opts.each(function (opt) {
             var v = opt.value.replace('[]', '');

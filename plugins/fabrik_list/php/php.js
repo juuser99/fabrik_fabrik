@@ -5,9 +5,9 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbListPHP = my.Class(FbListPlugin, {
+var FbListPHP = my.Class(FbListPlugin, {
 	constructor: function (options) {
-		this.parent(options);
+		FbListPHP.Super.call(this, options);
 	},
 
 	buttonAction: function (event) {
@@ -50,7 +50,7 @@ FbListPHP = my.Class(FbListPlugin, {
 		}
 
 		if (additional_data) {
-			this.list.getForm().getElement('input[name=fabrik_listplugin_options]').value = Json.encode(hdata);
+			this.list.getForm().find('input[name=fabrik_listplugin_options]').val(Json.encode(hdata));
 		}
 		if (this.options.js_code !== '') {
 			var result = eval('(function() {' + this.options.js_code + '}())');

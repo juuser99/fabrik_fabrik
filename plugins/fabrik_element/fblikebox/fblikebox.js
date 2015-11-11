@@ -8,6 +8,6 @@
 var FbLikebox = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fbLikebox';
-		this.parent(element, options);
+		FbLikebox.Super.call(this, element, options);
 	}
 });

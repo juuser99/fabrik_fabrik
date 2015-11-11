@@ -9,9 +9,10 @@ var fabrikFullcalendar = my.Class({
 	options: {
 	},
 
-	constructor: function (ref, options) {
-		this.el  = document.id(ref);
-		this.options = $.append(this.options, options);
+    constructor: function (ref, options) {
+        var self = this;
+        this.el = $('#' + ref);
+        this.options = $.extend(this.options, options);
 
 		this.date = new Date();
 		this.clickdate = null;

@@ -13,7 +13,7 @@ FbJSPeriodical = my.Class({
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikPeriodical';
-		this.parent(element, options);
+		FbJSPeriodical.Super.call(this, element, options);
 		var periodical;
 
 		this.fx = function () {

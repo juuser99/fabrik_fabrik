@@ -7,7 +7,7 @@
 
 var FbSlider = my.Class(FbElement, {
     constructor: function (element, options) {
-        this.parent(element, options);
+        FbSlider.Super.call(this, element, options);
         this.plugin = 'slider';
         this.makeSlider();
     },
@@ -25,15 +25,15 @@ var FbSlider = my.Class(FbElement, {
                 fconsole('no element found for slider');
                 return;
             }
-            this.output = this.element.getElement('.fabrikinput');
-            this.output2 = this.element.getElement('.slider_output');
+            this.output = this.element.find('.fabrikinput');
+            this.output2 = this.element.find('.slider_output');
 
             this.output.value = this.options.value;
             this.output2.text(this.options.value);
 
             this.mySlide = new Slider(
-                this.element.getElement('.fabrikslider-line'),
-                this.element.getElement('.knob'),
+                this.element.find('.fabrikslider-line'),
+                this.element.find('.knob'),
                 {
                     onChange  : function (pos) {
                         this.output.value = pos;
@@ -93,7 +93,7 @@ var FbSlider = my.Class(FbElement, {
     cloned: function (c) {
         delete this.mySlide;
         this.makeSlider();
-        this.parent(c);
+        FbSlider.Super.prototype.cloned(this, c);
     }
 
 });

@@ -22,8 +22,8 @@ var fabrikTableModule = my.Class({
 				h = window.getHeight() - 70;
 			}
 			this.winname = id + '_window';
-			this.form = this.blocks[1].getElement('form');
-			this.details = this.blocks[1].getElement('.fabrikDetails');
+			this.form = this.blocks[1].find('form');
+			this.details = this.blocks[1].find('.fabrikDetails');
 			this.o = {
 				'id': this.winname,
 				'width': 690,
@@ -56,7 +56,7 @@ var fabrikTableModule = my.Class({
 			this.watchViewLinks();
 			this.watchEditLinks();
 			var links = [];
-			links.extend([this.blocks[0].getElement('.addbutton')]);
+			links.extend([this.blocks[0].find('.addbutton')]);
 			links.extend(this.blocks[1].getElements('.button'));
 			links.each(function (l) {
 				if (l) {
@@ -97,9 +97,9 @@ var fabrikTableModule = my.Class({
 			} else {
 				document.id(this.winname).show();
 			}
-			this.blocks[1].getElement('.fabrikForm').show();
-			this.blocks[1].getElement('.fabrikDetails').hide();
-			var e = new Event(event).stop();
+			this.blocks[1].find('.fabrikForm').show();
+			this.blocks[1].find('.fabrikDetails').hide();
+			event.stopPropagation();
 		}.bind(this));
 	},
 
@@ -115,9 +115,9 @@ var fabrikTableModule = my.Class({
 			} else {
 				document.id(this.winname).show();
 			}
-			this.blocks[1].getElement('.fabrikForm').hide();
-			this.blocks[1].getElement('.fabrikDetails').show();
-			var e = new Event(event).stop();
+			this.blocks[1].find('.fabrikForm').hide();
+			this.blocks[1].find('.fabrikDetails').show();
+			event.stopPropagation();
 		}.bind(this));
 	}
 });

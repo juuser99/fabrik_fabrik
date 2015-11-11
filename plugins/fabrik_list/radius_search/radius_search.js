@@ -74,7 +74,7 @@ function geoCode() {
 
 				if (btn.length !== 0) {
 					btn.on('click', function (e) {
-						e.stop();
+						e.stopPropagation();
 						doGeoCode(trigger);
 					});
 					fld.on('keyup', function (e) {
@@ -124,7 +124,7 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 
 	constructor : function (options) {
 		var self = this;
-		this.parent(options);
+		FbListRadiusSearch.Super.call(this, options);
 		Fabrik.radiusSearch = Fabrik.radiusSearch ? Fabrik.radiusSearch  : {};
 
 		var mapid = 'radius_search_geocode_map' + this.options.renderOrder;
@@ -255,7 +255,7 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 				},
 				'onClose': function (e, x) {
 					var active;
-					if (!this.active && confirm(Joomla.JText._('PLG_LIST_RADIUS_SEARCH_CLEAR_CONFIRM'))) {
+					if (!this.active && window.confirm(Joomla.JText._('PLG_LIST_RADIUS_SEARCH_CLEAR_CONFIRM'))) {
 						active = 0;
 					} else {
 						active = 1;
@@ -266,7 +266,7 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 		var win = Fabrik.getWindow(winOpts);
 
 		b.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 
 			// Show the map.
 			c.css({'position': 'relative', 'left': 0});
@@ -322,8 +322,8 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 	},
 
 	geoCenter: function (p) {
-		if (typeOf(p) === 'null') {
-			alert(Joomla.JText._('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE'));
+		if (p === null) {
+			window.alert(Joomla.JText._('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE'));
 		} else {
 			this.listform.find('input[name*=radius_search_lat]').value = p.coords.latitude.toFixed(2);
 			this.listform.find('input[name*=radius_search_lon]').value = p.coords.longitude.toFixed(2);

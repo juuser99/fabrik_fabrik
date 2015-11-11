@@ -92,14 +92,13 @@ var FabrikModalRepeat = my.Class({
     },
 
     makeTarget: function (target) {
-        this.win[target] = new Element('div', {
-            'data-modal-content': target,
-            'styles'            : {
-                'padding'         : '5px',
-                'background-color': '#fff',
-                'display'         : 'none',
-                'z-index'         : 9999
-            }
+        this.win[target] = $(document.createElement('div')).attr({
+            'data-modal-content': target
+        }).css({
+            'padding'         : '5px',
+            'background-color': '#fff',
+            'display'         : 'none',
+            'z-index'         : 9999
         }).inject(document.body);
 
     },
@@ -108,17 +107,15 @@ var FabrikModalRepeat = my.Class({
         var self = this;
         var close = $(document.createElement('button')).addClass('btn button btn-primary').text('close');
         close.on('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.store(target);
             self.el[target].hide();
             self.el[target].inject(self.origContainer);
             self.close();
         });
-        var controls = new Element('div.controls.form-actions', {
-            'styles': {
-                'text-align'   : 'right',
-                'margin-bottom': 0
-            }
+        var controls = $(document.createElement('div')).addClass('controls form-actions').css({
+            'text-align'   : 'right',
+            'margin-bottom': 0
         }).adopt(close);
 
         this.win[target].adopt(controls);
@@ -146,7 +143,7 @@ var FabrikModalRepeat = my.Class({
     _getRadioValues: function (target) {
         var radiovals = [], sel;
         jQuery.each(this.getTrs(target), function (key, tr) {
-            var v = (sel = tr.getElement('input[type=radio]:checked')) ? sel.get('value') : '';
+            var v = (sel = tr.find('input[type=radio]:checked')) ? sel.get('value') : '';
             radiovals.push(v);
         });
         return radiovals;
@@ -156,7 +153,7 @@ var FabrikModalRepeat = my.Class({
         // Reapply radio button selections
         var r;
         jQuery.each(this.getTrs(target), function (i, tr) {
-            if (r = tr.getElement('input[type=radio][value=' + radiovals[i] + ']')) {
+            if (r = tr.find('input[type=radio][value=' + radiovals[i] + ']')) {
                 r.checked = 'checked';
             }
         });
@@ -215,7 +212,7 @@ var FabrikModalRepeat = my.Class({
                 self.addRow(target, tr);
             }
             win.position();
-            e.stop();
+            e.stopPropagation();
         });
         win.on('click', 'a.remove', function (e) {
             if (tr = self.findTr(e)) {
@@ -223,7 +220,7 @@ var FabrikModalRepeat = my.Class({
             }
             self.resizeWin(false, target);
             win.position();
-            e.stop();
+            e.stopPropagation();
         });
     },
 
@@ -247,7 +244,7 @@ var FabrikModalRepeat = my.Class({
     },
 
     getTrs: function (target) {
-        return this.win[target].getElement('tbody').find('tr');
+        return this.win[target].find('tbody').find('tr');
     },
 
     /**
@@ -271,7 +268,7 @@ var FabrikModalRepeat = my.Class({
         if (typeOf(a) === 'null') {
             a = {};
         }
-        var tr = this.win[target].getElement('tbody').getElement('tr'),
+        var tr = this.win[target].find('tbody').find('tr'),
             keys = Object.keys(a),
             newrow = keys.length === 0 || a[keys[0]].length === 0 ? true : false,
             rowcount = newrow ? 1 : a[keys[0]].length;

@@ -78,7 +78,7 @@ var FbListPlugin = my.Class({
 			if (e.rightClick) {
 				return;
 			}
-			e.stop();
+			e.stopPropagation();
 
 			// Check that the button clicked belongs to this this.list
 			if ($(this).data('list') !== this.list.options.listRef) {

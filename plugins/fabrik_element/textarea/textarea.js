@@ -9,28 +9,29 @@ var FbTextarea = my.Class(FbElement, {
     constructor: function (element, options) {
 
         this.plugin = 'fabriktextarea';
-        this.parent(element, options);
+        FbTextarea.Super.call(this, element, options);
 
+        var self = this;
         // $$$ rob need to slightly delay this as if lots of js loaded (eg maps)
         // before the editor then the editor may not yet be loaded
 
-        this.periodFn = function () {
+        var periodFn = function () {
 
             // Seems that tinyMCE isn't created if FbLike element published in form
-            this.getTextContainer();
+            self.getTextContainer();
             if (typeof tinyMCE !== 'undefined') {
-                if (this.container !== false) {
+                if (self.container !== false) {
                     clearInterval(p);
-                    this.watchTextContainer();
+                    self.watchTextContainer();
                 }
             } else {
                 clearInterval(p);
-                this.watchTextContainer();
+                self.watchTextContainer();
             }
         };
 
         var p = setInterval(function () {
-            this.periodFn.call(this);
+            periodFn.call(this);
         }, 200);
 
         Fabrik.addEvent('fabrik.form.page.change.end', function (form) {
@@ -54,7 +55,7 @@ var FbTextarea = my.Class(FbElement, {
     },
 
     unclonableProperties: function () {
-        var props = this.parent();
+        var props = FbTextarea.Super.prototype.unclonableProperties(this);
         props.push('container');
         return props;
     },
@@ -90,7 +91,7 @@ var FbTextarea = my.Class(FbElement, {
                 fconsole('no fabrikElementContainer class found for textarea');
                 return;
             }
-            var element = c.getElement('.fabrik_characters_left');
+            var element = c.find('.fabrik_characters_left');
 
             if (element.length > 0) {
                 this.warningFX = new Fx.Morph(element, {duration: 1000, transition: Fx.Transitions.Quart.easeOut});
@@ -204,7 +205,7 @@ var FbTextarea = my.Class(FbElement, {
         }
         this.getTextContainer();
         this.watchTextContainer();
-        this.parent(c);
+        FbTextarea.Super.prototype.clone(this, c);
     },
 
     /**
@@ -307,7 +308,7 @@ var FbTextarea = my.Class(FbElement, {
     },
 
     informKeyPress: function () {
-        var charsleftEl = this.getContainer().getElement('.fabrik_characters_left'),
+        var charsleftEl = this.getContainer().find('.fabrik_characters_left'),
             content = this.getContent(),
             charsLeft = this.itemsLeft();
         if (this.limitReached()) {
@@ -322,7 +323,7 @@ var FbTextarea = my.Class(FbElement, {
         } else {
             charsleftEl.css('color', this.origCol);
         }
-        charsleftEl.getElement('span').html(charsLeft);
+        charsleftEl.find('span').html(charsLeft);
     },
 
     /**

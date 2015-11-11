@@ -7,7 +7,7 @@
 
 var FbListFilterView = my.Class(FbListPlugin, {
 	constructor : function (options) {
-		this.parent(options);
+		FbListFilterView.Super.call(this, options);
 		$('.filter_view').find('ul.floating-tip').each(function (ul) {
 			var c = ul.clone();
 			c.fade('hide');
@@ -16,7 +16,7 @@ var FbListFilterView = my.Class(FbListPlugin, {
 			var trigger = ul.getPrevious();
 			trigger.data('target', c);
 			trigger.on('click', function (e) {
-				e.stop();
+				e.stopPropagation();
 				var c = trigger.retrieve('target');
 				c.css('top', trigger.getTop());
 				c.css('left', trigger.getLeft() + trigger.getWidth() / 1.5);

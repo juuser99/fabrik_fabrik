@@ -8,6 +8,6 @@
 FbTimestamp = my.Class(FbElement, {
 	initialize: function (element, options) {
 		this.plugin = 'fabriktimestamp';
-		this.parent(element, options);
+		FbTimestamp.Super.call(this, element, options);
 	}
 });

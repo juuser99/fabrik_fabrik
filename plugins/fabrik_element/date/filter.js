@@ -76,7 +76,7 @@ var DateFilter = my.Class({
 		this.cals[id].refresh();
 		this.cals[id].hide();
 		button.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 			if (!self.cals[id].params.position) {
 				self.cals[id].showAtElement(self.cals[id].params.button || self.cals[id].params.displayArea ||
 					self.cals[id].params.inputField, self.cals[id].params.align);

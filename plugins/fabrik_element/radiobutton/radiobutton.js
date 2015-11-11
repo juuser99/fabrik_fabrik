@@ -5,7 +5,7 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbRadio = my.Class(FbElementList, {
+var FbRadio = my.Class(FbElementList, {
 
 	options: {
 		btnGroup: true
@@ -15,7 +15,7 @@ FbRadio = my.Class(FbElementList, {
 
 	constructor: function (element, options) {
 		this.plugin = 'fabrikradiobutton';
-		this.parent(element, options);
+		FbRadio.Super.call(this, element, options);
 		this.btnGroup();
 	},
 
@@ -122,7 +122,7 @@ FbRadio = my.Class(FbElementList, {
 		$(d).slideUp(500);
 		this.mySlider.hide();
 		a.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 			$(d).slideToggle();
 		});
 	},
@@ -184,7 +184,7 @@ FbRadio = my.Class(FbElementList, {
 			this.watchAddToggle();
 			this.watchAdd();
 		}
-		this.parent(c);
+		FbRadio.Super.prototype.cloned(this, c);
 		this.btnGroup();
 	},
 

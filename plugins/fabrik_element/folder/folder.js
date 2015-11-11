@@ -8,6 +8,6 @@
 var FbFolder = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fabrikfolder';
-		this.parent(element, options);
+		FbFolder.Super.call(this, element, options);
 	}
 });

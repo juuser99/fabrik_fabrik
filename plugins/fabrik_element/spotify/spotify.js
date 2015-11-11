@@ -8,6 +8,6 @@
 var FbSpotify = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'spotify';
-		this.parent(element, options);
+		FbSpotify.Super.call(this, element, options);
 	}
 });

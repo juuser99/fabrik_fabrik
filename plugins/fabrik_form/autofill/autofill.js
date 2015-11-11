@@ -20,15 +20,8 @@ var Autofill = my.Class({
 	},
 
 	constructor: function (options) {
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		this.attached = [];
-		/*if (Browser.ie) {
-			this.setUp(Fabrik.blocks['form_' + this.options.formid]);
-		} else {
-			Fabrik.addEvent('fabrik.form.elements.added', function (form) {
-				this.setUp(form);
-			}.bind(this));
-		}*/
 		this.setupDone = false;
 
 		/*
@@ -275,7 +268,7 @@ var Autofill = my.Class({
 			}
 		}.bind(this));
 		if (this.options.editOrig === true) {
-			this.form.getForm().getElement('input[name=rowid]').value = this.json.__pk_val;
+			this.form.getForm().find('input[name=rowid]').val(json.__pk_val);
 		}
 		Fabrik.trigger('fabrik.form.autofill.update.end', [this, json]);
 	},

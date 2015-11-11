@@ -12,7 +12,7 @@ var FbPassword = my.Class(FbElement, {
 	},
 
 	constructor: function (element, options) {
-		this.parent(element, options);
+		FbPassword.Super.call(this, element, options);
 		if (!this.options.editable) {
 			return;
 		}
@@ -43,7 +43,7 @@ var FbPassword = my.Class(FbElement, {
 
 	cloned: function (c) {
 		console.log('cloned');
-		this.parent(c);
+		FbPassword.Super.prototype.cloned(this, c);
 		this.ini();
 	},
 

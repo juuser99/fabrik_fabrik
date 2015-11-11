@@ -17,7 +17,7 @@ var FbRatingList = my.Class({
 		var self = this;
 		options.element = id;
 		this.setOptions(options);
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		if (this.options.canRate === false) {
 			return;
 		}
@@ -77,7 +77,7 @@ var FbRatingList = my.Class({
 
 	doAjax : function (e, star) {
 		var self = this;
-		e.stop();
+		e.stopPropagation();
 		this.rating = this._getRating(star);
 		var ratingmsg = star.closest('.fabrik_element').find('.ratingMessage');
 		Fabrik.loader.start(ratingmsg);

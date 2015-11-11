@@ -7,6 +7,6 @@
 
 var FbListDownload = my.Class(FbListPlugin, {
 	constructor : function (options) {
-		this.parent(options);
+		FbListDownload.Super.call(this, options);
 	}
 });

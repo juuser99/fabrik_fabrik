@@ -6,12 +6,12 @@ var FbAttending = my.Class(FbElement, {
             'alt'  : 'loading',
             'class': 'ajax-loader'
         });
-        this.message = this.element.getElement('.msg');
+        this.message = this.element.find('.msg');
     },
 
     watchJoin: function () {
         var self = this,
-            b = this.getContainer().getElement('*[data-action="add"]');
+            b = this.getContainer().find('*[data-action="add"]');
 
         // If duplicated remove old events
 

@@ -11,13 +11,14 @@
 var FbElement = my.Class({
 
     options: {
-        element   : null,
-        defaultVal: '',
-        value     : '',
-        label     : '',
-        editable  : false,
-        isJoin    : false,
-        joinId    : 0
+        element      : null,
+        defaultVal   : '',
+        value        : '',
+        label        : '',
+        editable     : false,
+        isJoin       : false,
+        joinId       : 0,
+        inRepeatGroup: false
     },
 
     /**
@@ -225,21 +226,18 @@ var FbElement = my.Class({
 
     //store new options created by user in hidden field
     addNewOption: function (val, label) {
-        var a;
-        var added = $('#' + this.options.element + '_additions').val();
-        var json = {'val': val, 'label': label};
-        if (added !== '') {
-            a = JSON.decode(added);
-        } else {
-            a = [];
-        }
+        var a,
+            additions = $('#' + this.options.element + '_additions'),
+            added = additions.val(),
+            json = {'val': val, 'label': label},
+            s = '[', i;
+        a = added !== '' ? JSON.decode(added) : [];
         a.push(json);
-        var s = '[';
-        for (var i = 0; i < a.length; i++) {
+        for (i = 0; i < a.length; i++) {
             s += JSON.encode(a[i]) + ',';
         }
         s = s.substring(0, s.length - 1) + ']';
-        $('#' + this.options.element + '_additions').val(s);
+        additions.val(s);
     },
 
     getLabel: function () {
@@ -348,9 +346,9 @@ var FbElement = my.Class({
             this.element.removeClass('chzn-done');
             this.element.addClass('chzn-select');
             this.element.parent().find('.chzn-container').destroy();
-            jQuery('#' + this.element.id).chosen();
+            $('#' + this.element.id).chosen();
             var changeEvent = this.getChangeEvent();
-            jQuery('#' + this.options.element).on('change', {changeEvent: changeEvent}, function (event) {
+            $('#' + this.options.element).on('change', {changeEvent: changeEvent}, function (event) {
                 $('#' + self.id).trigger(event.data.changeEvent, jQuery.Event(event.data.changeEvent));
             });
         }
@@ -423,13 +421,13 @@ var FbElement = my.Class({
             t.attr(klass, msg);
             a = t.data('popover').tip().find('.popover-content');
 
-            var d = new Element('div');
+            var d = $('<div>');
             d.html(a.html());
-            var li = new Element('li.' + klass);
+            var li = $('<li>').addClass(klass);
             li.html(msg);
-            new Element('i.' + this.form.options.images.alert).inject(li, 'top');
+            $('<i>').addClass(this.form.options.images.alert).inject(li, 'top');
             d.find('ul').adopt(li);
-            t.attr('data-content', unescape(d.get('html')));
+            t.data('content', unescape(d.get('html')));
             t.data('popover').setContent();
             t.data('popover').options.content = d.get('html');
             t.data('popover').hide();
@@ -461,7 +459,7 @@ var FbElement = my.Class({
     },
 
     setErrorMessage: function (msg, classname) {
-        var a, m, i;
+        var a, i;
         var classes = ['fabrikValidating', 'fabrikError', 'fabrikSuccess'];
         var container = this.getContainer();
         if (container === false) {
@@ -469,7 +467,7 @@ var FbElement = my.Class({
             return;
         }
         classes.each(function (c) {
-            var r = classname === c ? container.addClass(c) : container.removeClass(c);
+            classname === c ? container.addClass(c) : container.removeClass(c);
         });
         var errorElements = this.getErrorElement();
         errorElements.each(function (e) {
@@ -479,8 +477,6 @@ var FbElement = my.Class({
             case 'fabrikError':
                 Fabrik.loader.stop(this.element);
                 this.addTipMsg(msg);
-                errorElements[0].adopt(a);
-
                 container.removeClass('success').removeClass('info').addClass('error');
 
                 // If tmpl has additional error message divs (e.g labels above) then set html msg there
@@ -542,15 +538,17 @@ var FbElement = my.Class({
     },
 
     setorigId: function () {
-        // $$$ added inRepeatGroup option, as repeatCounter > 0 doesn't help
-        // if element is in first repeat of a group
-        //if (this.options.repeatCounter > 0) {
         if (this.options.inRepeatGroup) {
             var e = this.options.element;
             this.origId = e.substring(0, e.length - 1 - this.options.repeatCounter.toString().length);
         }
     },
 
+    /**
+     * Decrease name
+     * @param {int} delIndex
+     * @returns {*}
+     */
     decreaseName: function (delIndex) {
         var element = this.find(),
             self = this;
@@ -574,11 +572,10 @@ var FbElement = my.Class({
     },
 
     /**
-     * @param    string    name to decrease
-     * @param    int        delete index
-     * @param    string    name suffix to keep (used for db join autocomplete element)
+     * @param {string  n         name to decrease
+     * @param {int}    delIndex  delete index
+     * @param {string} suffix    name suffix to keep (used for db join auto-complete element)
      */
-
     _decreaseId: function (n, delIndex, suffix) {
         var suffixFound = false;
         suffix = suffix ? suffix : false;
@@ -606,11 +603,10 @@ var FbElement = my.Class({
     },
 
     /**
-     * @param    string    name to decrease
-     * @param    int        delete index
-     * @param    string    name suffix to keep (used for db join autocomplete element)
+     * @param {string} n         name to decrease
+     * @param {int}    delIndex  delete index
+     * @param {string} suffix    name suffix to keep (used for db join auto-complete element)
      */
-
     _decreaseName: function (n, delIndex, suffix) {
         suffix = suffix ? suffix : false;
         var suffixFound = false;
@@ -748,12 +744,12 @@ var FbFileElement = my.Class(FbElement, {
         this.breadcrumbs = el.find('.breadcrumbs');
         this.folderdiv = el.find('.folderselect');
 
-        this.folderdiv.slideUp(500, function() {
+        this.folderdiv.slideUp(500, function () {
             // Animation complete.
         });
         this.hiddenField = el.find('.folderpath');
         el.find('.toggle').addEvent('click', function (e) {
-            e.stop();
+            e.stopPropagation();
             self.slider.toggle();
         });
         this.watchAjaxFolderLinks();
@@ -773,7 +769,7 @@ var FbFileElement = my.Class(FbElement, {
 
     browseFolders: function (e) {
         var text = $(e.target).text();
-        e.stop();
+        e.stopPropagation();
         this.folderlist.push(text);
         var dir = this.options.dir + this.folderlist.join(this.options.ds);
         this.addCrumb(text);
@@ -781,7 +777,7 @@ var FbFileElement = my.Class(FbElement, {
     },
 
     useBreadcrumbs: function (e) {
-        e.stop();
+        e.stopPropagation();
         var self = this;
         var c = e.target.className;
         this.folderlist = [];
@@ -806,14 +802,14 @@ var FbFileElement = my.Class(FbElement, {
 
         var self = this,
             data = {
-            'dir'       : dir,
-            'option'    : 'com_fabrik',
-            'format'    : 'raw',
-            'task'      : 'plugin.pluginAjax',
-            'plugin'    : 'fileupload',
-            'method'    : 'ajax_getFolders',
-            'element_id': this.options.id
-        };
+                'dir'       : dir,
+                'option'    : 'com_fabrik',
+                'format'    : 'raw',
+                'task'      : 'plugin.pluginAjax',
+                'plugin'    : 'fileupload',
+                'method'    : 'ajax_getFolders',
+                'element_id': this.options.id
+            };
         new $.ajax({
             url : '',
             data: data

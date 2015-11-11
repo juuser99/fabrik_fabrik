@@ -31,7 +31,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		this.activePopUp = false;
 		this.activeSelect = false;
 		this.plugin = 'databasejoin';
-		this.parent(element, options);
+		FbDatabasejoin.Super.call(this, element, options);
 		this.init();
 	},
 
@@ -77,7 +77,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		visible = false;
 		if (e) {
 			// Loading from click
-			e.stop();
+			e.stopPropagation();
 			onContentLoaded = function (win) {
 				win.fitToContent();
 			};
@@ -129,7 +129,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		if (this.options.displayType === 'auto-complete') {
 			return 'change';
 		}
-		return this.parent();
+		return FbDatabasejoin.Super.prototype.getBlurEvent(this);
 	},
 
 	/**
@@ -246,7 +246,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		if (d === 'checkbox' || d === 'radio') {
 			return true;
 		}
-		return this.parent();
+		return FbDatabasejoin.Super.prototype.hasSubElements(this);
 	},
 
 	/**
@@ -462,7 +462,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	selectThenAdd: function () {
 		var self = this;
 		Fabrik.addEvent('fabrik.block.added', function (block, blockid) {
-			if (blockid === 'list_' + this.options.listid + this.options.listRef) {
+			if (blockid === 'list_' + self.options.listid + self.options.listRef) {
 				block.form.on('click', '.addbutton', function (event) {
 					event.preventDefault();
 					var id = self.selectRecordWindowId();
@@ -484,7 +484,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	selectRecord: function (e) {
 		$(window).trigger('fabrik.dbjoin.unactivate');
 		this.activeSelect = true;
-		e.stop();
+		e.stopPropagation();
 		var id = this.selectRecordWindowId();
 		var url = this.getContainer().find('a.toggle-selectoption').href;
 		url += '&triggerElement=' + this.element.id;
@@ -740,7 +740,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	cloned: function (c) {
 		//c is the repeat group count
 		this.activePopUp = false;
-		this.parent(c);
+		FbDatabasejoin.Super.prototype.cloned(this, c);
 		this.init();
 		this.watchSelect();
 		if (this.options.displayType === 'auto-complete') {
@@ -753,9 +753,9 @@ var FbDatabasejoin = my.Class(FbElement, {
 	 */
 	cloneAutoComplete: function () {
 		var f = this.getAutoCompleteLabelField();
-		f.id = this.element.id + '-auto-complete';
-		f.name = this.element.name.replace('[]', '') + '-auto-complete';
-		$('#' + f.id).val('');
+		f.prop('id', this.element.prop('id') + '-auto-complete');
+		f.prop('name', this.element.propt('name').replace('[]', '') + '-auto-complete');
+		$('#' + f.prop('id')).val('');
 		new FbAutocomplete(this.element.id, this.options.autoCompleteOpts);
 	},
 
@@ -858,6 +858,10 @@ var FbDatabasejoin = my.Class(FbElement, {
 		}
 	},
 
+	/**
+	 *
+	 * @returns {jQuery}
+	 */
 	getAutoCompleteLabelField: function () {
 		var p = this.element.closest('.fabrikElement');
 		var f = p.find('input[name*=-auto-complete]');
@@ -876,7 +880,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 			if (this.element) {
 				this.element.on(action, function (e) {
 					if (e) {
-						e.stop();
+						e.stopPropagation();
 					}
 					(typeof(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
@@ -897,7 +901,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 			if (f.length > 0) {
 				f.on(action, function (e) {
 					if (e) {
-						e.stop();
+						e.stopPropagation();
 					}
 					(typeof(js) === 'function') ? js.delay(700, this, this) : eval(js);
 				}.bind(this));
@@ -905,7 +909,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 			if (this.element) {
 				this.element.on(action, function (e) {
 					if (e) {
-						e.stop();
+						e.stopPropagation();
 					}
 					(typeof(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
@@ -917,12 +921,10 @@ var FbDatabasejoin = my.Class(FbElement, {
 	decreaseName: function (delIndex) {
 		if (this.options.displayType === 'auto-complete') {
 			var f = this.getAutoCompleteLabelField();
-			if (typeOf(f) !== 'null') {
-				f.name = this._decreaseName(f.name, delIndex, '-auto-complete');
-				f.id = this._decreaseId(f.id, delIndex, '-auto-complete');
-			}
+				f.prop('name', this._decreaseName(f.prop('name'), delIndex, '-auto-complete'));
+				f.prop('id', this._decreaseId(f.prop('id'), delIndex, '-auto-complete'));
 		}
-		return this.parent(delIndex);
+		return FbDatabasejoin.Super.prototype.decreaseName(this, delIndex);
 	},
 
 	/**

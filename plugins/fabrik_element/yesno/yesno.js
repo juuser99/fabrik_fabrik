@@ -5,10 +5,10 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-FbYesno = my.Class(FbRadio, {
+var FbYesno = my.Class(FbRadio, {
 	constructor: function (element, options) {
 		this.plugin = 'fabrikyesno';
-		this.parent(element, options);
+		FbYesno.Super.call(this, element, options);
 	},
 
 	getChangeEvent: function () {

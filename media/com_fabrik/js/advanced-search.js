@@ -73,7 +73,7 @@ AdvancedSearch = my.Class({
             if (!self.options.ajax) {
                 return;
             }
-            e.stop();
+            e.stopPropagation();
 
             list.submit(self.options.controller + '.filter');
         });
@@ -145,7 +145,7 @@ AdvancedSearch = my.Class({
 
     addRow: function (e) {
         this.options.counter++;
-        e.stop();
+        e.stopPropagation();
         var tr = this.form.find('.advanced-search-list').find('tbody').find('tr').getLast();
         var clone = tr.clone();
         clone.removeClass('oddRow1').removeClass('oddRow0').addClass('oddRow' + this.options.counter % 2);
@@ -173,7 +173,7 @@ AdvancedSearch = my.Class({
     },
 
     removeRow: function (e) {
-        e.stop();
+        e.stopPropagation();
         if (this.form.find('.advanced-search-remove-row').length > 1) {
             this.options.counter--;
             var tr = e.target.closest('tr');
@@ -232,7 +232,7 @@ AdvancedSearch = my.Class({
         var tr = $(event.target).parent().parent();
         var table = tr.parent();
         table.removeChild(tr);
-        event.stop();
+        event.stopPropagation();
     }
 
 });

@@ -18,7 +18,7 @@ var fabrikGraph = my.Class({
 	},
 
 	constructor: function (el, d, options) {
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 		//todo doesnt seem to work with 1 record of data
 		this.el = el;
 		this.json = d;

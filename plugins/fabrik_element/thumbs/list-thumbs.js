@@ -17,7 +17,7 @@ var FbThumbsList = my.Class({
     },
 
     constructor: function (id, options) {
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.col = document.find('.' + id);
         if (this.options.voteType === 'comment') {
             this.setUpBootstrappedComments();
@@ -55,7 +55,7 @@ var FbThumbsList = my.Class({
                 }
             }
             else {
-                e.stop();
+                e.stopPropagation();
                 self.doNoAccess();
             }
         });
@@ -72,7 +72,7 @@ var FbThumbsList = my.Class({
                 down = td.find('button.thumb-down');
 
                 up.on('click', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     if (self.options.canUse) {
                         add = up.hasClass('btn-success') ? false : true;
                         self.doAjax(up, 'up', add);
@@ -90,7 +90,7 @@ var FbThumbsList = my.Class({
                 });
 
                 down.on('click', function (e) {
-                    e.stop();
+                    e.stopPropagation();
                     if (self.options.canUse) {
                         add = down.hasClass('btn-danger') ? false : true;
                         self.doAjax(down, 'down', add);

@@ -8,7 +8,7 @@
 var FbDropdown = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fabrikdropdown';
-		this.parent(element, options);
+		FbDropdown.Super.call(this, element, options);
 		if (this.options.allowadd === true && this.options.editable !== false) {
 			this.watchAddToggle();
 			this.watchAdd();
@@ -36,7 +36,7 @@ var FbDropdown = my.Class(FbElement, {
 		}
 		$(d).slideUp(500);
 		a.on('click', function (e) {
-			e.stop();
+			e.stopPropagation();
 			$(d).slideToggle();
 		});
 	},
@@ -45,9 +45,9 @@ var FbDropdown = my.Class(FbElement, {
 		var c = this.getContainer(), val;
 		var l = c.find('input[name=addPicklistLabel]');
 		var v = c.find('input[name=addPicklistValue]');
-		var label = l.value;
-		if (v) {
-			val = v.value;
+		var label = l.val();
+		if (v.length > 0) {
+			val = v.val();
 		} else {
 			val = label;
 		}
@@ -55,11 +55,11 @@ var FbDropdown = my.Class(FbElement, {
 			window.alert(Joomla.JText._('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL'));
 		}
 		else {
-			var opt = $(document.createElement('option')).attr({
+			$(document.createElement('option')).attr({
 				'selected': 'selected',
 				'value': val
-			}).text(label).inject($('#' + this.element.id));
-			e.stop();
+			}).text(label).prependTo($('#' + this.element.id));
+			e.stopPropagation();
 			if (v) {
 				v.value = '';
 			}
@@ -96,7 +96,7 @@ var FbDropdown = my.Class(FbElement, {
 		}
 		if (this.options.multiple) {
 			var r = [];
-			this.element.getElements('option').each(function (opt) {
+			this.element.find('option').each(function (opt) {
 				if (opt.selected) {
 					r.push(opt.value);
 				}
@@ -132,7 +132,7 @@ var FbDropdown = my.Class(FbElement, {
 			});
 			return;
 		}
-		opts = this.element.getElements('option');
+		opts = this.element.find('option');
 		if (typeof(val) === 'number') {
 
 			// Numbers dont have indexOf() methods so ensure they are strings
@@ -154,7 +154,7 @@ var FbDropdown = my.Class(FbElement, {
 			this.watchAddToggle();
 			this.watchAdd();
 		}
-		this.parent(c);
+		FbDropdown.Super.prototype.cloned(this, c);
 	}
 
 });

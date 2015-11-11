@@ -8,6 +8,6 @@
 var FbInternalId = my.Class(FbElement, {
 	constructor: function (element, options) {
 		this.plugin = 'fbInternalId';
-		this.parent(element, options);
+		FbInternalId.Super.call(this, element, options);
 	}
 });

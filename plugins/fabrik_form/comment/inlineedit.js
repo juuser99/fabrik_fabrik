@@ -18,7 +18,7 @@ var InlineEdit = my.Class({
     },
 
     constructor: function (element, options) {
-        this.options = $.append(this.options, options);
+        this.options = $.extend(this.options, options);
         this.element = element;
         this.originalText = element.get('html').replace(/<br>/gi, '\n');
         this.input = $(document.createElement('textarea')).addClass(this.options.inputClass)

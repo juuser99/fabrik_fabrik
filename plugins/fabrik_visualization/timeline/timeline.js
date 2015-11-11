@@ -16,7 +16,7 @@ var FbVisTimeline = my.Class({
 	constructor : function (json, options) {
 		var self = this;
 		this.json = eval(json);
-		this.options = $.append(this.options, options);
+		this.options = $.extend(this.options, options);
 
 		this.resizeTimerID = null;
 		this.tl = null;

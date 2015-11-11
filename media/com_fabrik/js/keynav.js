@@ -17,7 +17,7 @@ var KeyNav = my.Class({
 			case 39: //right
 			case 40: //down
 				Fabrik.trigger('fabrik.keynav', [e.code, e.shift]);
-				e.stop();
+				e.stopPropagation();
 				break;
 			}
 		});

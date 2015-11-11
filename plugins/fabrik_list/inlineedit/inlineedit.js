@@ -9,7 +9,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
 
     constructor: function (options) {
         var self = this;
-        this.parent(options);
+        FbListInlineEdit.Super.call(this, options);
         this.defaults = {};
         this.editors = {};
         this.inedit = false;
@@ -150,7 +150,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
                     return;
                 }
                 if (typeOf(this.td.getNext()) === 'element') {
-                    e.stop();
+                    e.stopPropagation();
                     this.select(e, this.td.getNext());
                 }
                 break;
@@ -172,7 +172,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
                     return;
                 }
                 if (typeOf(this.td.getPrevious()) === 'element') {
-                    e.stop();
+                    e.stopPropagation();
                     this.select(e, this.td.getPrevious());
                 }
                 break;
@@ -187,7 +187,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
                 }
                 index = row.find('td').indexOf(this.td);
                 if (typeOf(row.getNext()) === 'element') {
-                    e.stop();
+                    e.stopPropagation();
                     nexttds = row.getNext().find('td');
                     this.select(e, nexttds[index]);
                 }
@@ -203,14 +203,14 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
                 }
                 index = row.find('td').indexOf(this.td);
                 if (typeOf(row.getPrevious()) === 'element') {
-                    e.stop();
+                    e.stopPropagation();
                     nexttds = row.getPrevious().find('td');
                     this.select(e, nexttds[index]);
                 }
                 break;
             case 27:
                 //escape
-                e.stop();
+                e.stopPropagation();
                 if (!this.inedit) {
                     this.td.removeClass(this.options.focusClass);
                     this.td = null;
@@ -227,7 +227,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
                 if (this.inedit || typeOf(this.td) !== 'element') {
                     return;
                 }
-                e.stop();
+                e.stopPropagation();
                 if (typeOf(this.editing) === 'element') {
                     // stop textarea elements from submitting when you press enter
                     if (this.editors[this.activeElementId].contains('<textarea')) {
@@ -381,7 +381,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
             return false;
         }
         if (typeOf(e) !== 'null') {
-            e.stop();
+            e.stopPropagation();
         }
         var element = this.getElementName(td);
         var rowid = this.getRowId(td);
@@ -567,7 +567,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
         this.saving = true;
         this.inedit = false;
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
 
         eObj = Fabrik['inlineedit_' + opts.elid];
@@ -658,7 +658,7 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
 
     cancel: function (e) {
         if (e) {
-            e.stop();
+            e.stopPropagation();
         }
         var row = this.editing.closest('.fabrik_row'),
             rowId = this.getRowId(row),
