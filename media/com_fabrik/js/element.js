@@ -184,7 +184,7 @@ var FbElement = my.Class({
     renewEvents: function () {
         var self = this;
         jQuery.each(this.events, function (type, fns) {
-            self.element.removeEvents(type);
+            self.element.off(type);
             fns.each(function (js) {
                 self.addNewEventAux(type, js);
             });
@@ -450,7 +450,7 @@ var FbElement = my.Class({
             if (li) {
                 li.destroy();
             }
-            t.attr('data-content', d.get('html'));
+            t.data('content', d.get('html'));
             t.data('popover').setContent();
             t.data('popover').options.content = d.get('html');
             t.data('popover').hide();
@@ -783,7 +783,7 @@ var FbFileElement = my.Class(FbElement, {
         this.folderlist = [];
         this.breadcrumbs.find('a').each(function (link) {
             if (link.className !== c) {
-                self.folderlist.push(e.target.innerHTML);
+                self.folderlist.push($(e.target).html());
             }
         });
 

@@ -12,6 +12,7 @@ var fabrikCalendar = my.Class({
         months         : ['January', 'Feburary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         shortMonths    : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
         viewType       : 'month',
+        first_week_day : 0,
         calendarId     : 1,
         tmpl           : 'default',
         'Itemid'       : 0,
@@ -50,8 +51,9 @@ var fabrikCalendar = my.Class({
         this.HOUR = this.MINUTE * 60; // the number of milliseconds in an hour
         this.DAY = this.HOUR * 24; // the number of milliseconds in a day
         this.WEEK = this.DAY * 7; // the number of milliseconds in a week
-        this.date = new Date();//date used to display currenlty viewed page of calendar
-        this.selectedDate = new Date(); //date used to highlight appropriate parts of calendar (doesnt change when you navigate around the calendar)
+        this.date = new Date();//date used to display currently viewed page of calendar
+        //date used to highlight appropriate parts of calendar (doesn't change when you navigate around the calendar)
+        this.selectedDate = new Date();
         this.entries = {};
         this.droppables = {'month': [], 'week': [], 'day': []};
         this.fx = {};
@@ -207,7 +209,7 @@ var fabrikCalendar = my.Class({
         dataContent = Joomla.JText._('PLG_VISUALIZATION_CALENDAR_EVENT_START_END').substitute(replace);
 
         if (buttons !== '') {
-            dataContent += '<hr /><div class=\"btn-group\" style=\"text-align:center;display:block\">' + buttons + '</div>';
+            dataContent += '<hr /><div class="btn-group" style="text-align:center;display:block">' + buttons + '</div>';
         }
 
         eventCont = $(document.createElement('a')).addClass('fabrikEvent label ' + entry.status)
@@ -293,10 +295,11 @@ var fabrikCalendar = my.Class({
     },
 
     _getFirstDayInMonthCalendar: function (firstDate) {
-        var origDate = new Date();
+        var origDate = new Date(),
+            backwardsDaysDelta;
         origDate.setTime(firstDate.valueOf());
         if (firstDate.getDay() !== this.options.first_week_day) {
-            var backwardsDaysDelta = firstDate.getDay() - this.options.first_week_day;
+            backwardsDaysDelta = firstDate.getDay() - this.options.first_week_day;
             if (backwardsDaysDelta < 0) {
                 backwardsDaysDelta = 7 + backwardsDaysDelta;
             }
@@ -306,7 +309,6 @@ var fabrikCalendar = my.Class({
         if (origDate.getMonth() === firstDate.getMonth()) {
             var weekLength = 7 * 24 * 60 * 60 * 1000;
             //go back a day at a time till we get to the first week of this month view
-            //while(firstDate.getUTCDate() > 1) {
             while (firstDate.getDate() > 1) {
                 firstDate.setTime(firstDate.valueOf() - this.DAY);
             }
@@ -314,9 +316,21 @@ var fabrikCalendar = my.Class({
         return firstDate;
     },
 
+    /**
+     * Between (end date present) or same (no end date)
+     * @param {Date} date
+     * @param {object} entry
+     * @returns {boolean}
+     */
+    dateBetweenOrSame: function (date, entry) {
+        var between = date.isDateBetween(entry.startdate, entry.enddate);
+        return (entry.enddate !== '' && between) || (entry.enddate === '' && entry.startdate.isSameDay(date));
+    },
+
     showMonth: function () {
         // Set the date to the first day of the month
-        var firstDate = new Date(), self = this;
+        var firstDate = new Date(), self = this,
+            height, width;
         firstDate.setTime(this.date.valueOf());
         firstDate.setDate(1);
         firstDate = this._getFirstDayInMonthCalendar(firstDate);
@@ -347,16 +361,14 @@ var fabrikCalendar = my.Class({
                 );
                 var gridSize = 0;
                 this.entries.each(function (entry) {
-                    // Between (end date present) or same (no end date)
-                    if ((entry.enddate !== '' && firstDate.isDateBetween(entry.startdate, entry.enddate)) || (entry.enddate === '' && entry.startdate.isSameDay(firstDate))) {
+                    if (this.dateBetweenOrSame(firstDate, entry)) {
                         gridSize++;
                     }
                 }.bind(this));
 
                 var j = 0;
                 this.entries.each(function (entry) {
-                    // Between (end date present) or same (no end date)
-                    if ((entry.enddate !== '' && firstDate.isDateBetween(entry.startdate, entry.enddate)) || (entry.enddate === '' && entry.startdate.isSameDay(firstDate))) {
+                    if (this.dateBetweenOrSame(firstDate, entry)) {
                         var existingEvents = td.find('.fabrikEvent').length;
 
                         var dayHeadingSize = td.find('.date').getSize().y;
@@ -368,7 +380,6 @@ var fabrikCalendar = my.Class({
 
                         top = top + (existingEvents * height);
                         var left = width * colcounter;
-                        // var opts = {'width': width, 'height': height, 'view': 'monthView'};
                         var opts = {'view': 'monthView', 'max-width': width};
                         opts.top = top;
                         if (window.ie) {
@@ -409,21 +420,15 @@ var fabrikCalendar = my.Class({
             }
         });
 
-        this.entries.each(function (entry) {
-            var item = this.el.find('.fabrikEvent_' + entry._listid + '_' + entry.id);
-            if (item) {
-                //this.makeDragMonthEntry(item);
-            }
-        }.bind(this));
         this._highLightToday();
-        this.el.find('.monthDisplay').innerHTML = this.options.months[this.date.getMonth()] + " " + this.date.getFullYear();
+        this.el.find('.monthDisplay').html(this.options.months[this.date.getMonth()] + ' ' + this.date.getFullYear());
     },
 
     _makePopUpWin: function () {
         if (this.options.readonly) {
             return;
         }
-        if (typeOf(this.popup) === 'null') {
+        if (this.popup === null) {
             var popLabel = $(document.createElement('div')).addClass('popLabel');
             var del = $(document.createElement('div')).addClass('popupDelete').html(this.options.buttons);
 
@@ -469,20 +474,21 @@ var fabrikCalendar = my.Class({
      * @since  3.0.7
      */
     removeWeekEvents: function () {
-        var wday = this.date.getDay();
+        var wday = this.date.getDay(),
+            firstDate = new Date(),
+            WeekTds = {},
+            trs = this.el.find('.weekView tr'),
+            i, j;
         wday = wday - this.options.first_week_day.toInt();
-        var firstDate = new Date();
         firstDate.setTime(this.date.getTime() - (wday * this.DAY));
-        var WeekTds = {};
-        var trs = this.el.find('.weekView tr');
-        for (var i = 1; i < trs.length; i++) {
+        for (i = 1; i < trs.length; i++) {
             firstDate.setHours(i - 1, 0, 0);
             if (i !== 1) {
                 firstDate.setTime(firstDate.getTime() - (6 * this.DAY));
             }
             var tds = trs[i].find('td');
             for (j = 1; j < tds.length; j++) {
-                if (typeOf(WeekTds[j - 1]) === 'null') {
+                if (WeekTds[j - 1] === undefined) {
                     WeekTds[j - 1] = [];
                 }
                 var td = tds[j];
@@ -492,8 +498,8 @@ var fabrikCalendar = my.Class({
                 }
 
                 td.addClass('day');
-                if (typeOf(td.retrieve('calevents')) !== 'null') {
-                    td.retrieve('calevents').each(function (evnt) {
+                if (td.data('calevents') !== undefined) {
+                    td.data('calevents').each(function (evnt) {
                         evnt.destroy();
                     });
                 }
@@ -512,32 +518,63 @@ var fabrikCalendar = my.Class({
 
     },
 
+    gridSize: function (counterDate) {
+        var maxoffsets = {}, h, startdate, enddate, opts, gridSize = 1;
+        this.entries.each(function (entry) {
+
+            // Between (end date present) or same (no end date)
+            startdate = new Date(entry.startdate_locale);
+            enddate = new Date(entry.enddate_locale);
+            if ((entry.enddate !== '' && counterDate.isDateBetween(startdate, enddate)) ||
+                (enddate === '' && startdate.isSameDay(counterDate))) {
+                opts = this._buildEventOpts({
+                    entry     : entry,
+                    curdate   : counterDate,
+                    divclass  : '.weekView',
+                    'tdOffset': i
+                });
+                // Work out the left offset for the event - stops concurrent events overlapping each other
+                for (h = opts.startHour; h <= opts.endHour; h++) {
+                    maxoffsets[h] = typeOf(maxoffsets[h]) === 'null' ? 0 : maxoffsets[h] + 1;
+                }
+            }
+        }.bind(this));
+
+        Object.each(maxoffsets, function (o) {
+            if (o > gridSize) {
+                gridSize = o;
+            }
+        });
+
+        return gridSize;
+    },
+
     showWeek: function () {
-        var j, h;
-        var wday = this.date.getDay();
+        var monthHtml, i, hdiv, ht, thbg, trs, ths, td, WeekTds,
+            firstDate, counterDate, lastDate, gridSize,
+            wday = this.date.getDay();
         // Barbara : offset
         wday = wday - this.options.first_week_day.toInt();
 
-        var firstDate = new Date();
+        firstDate = new Date();
         firstDate.setTime(this.date.getTime() - (wday * this.DAY));
 
-        var counterDate = new Date();
+        counterDate = new Date();
         counterDate.setTime(this.date.getTime() - (wday * this.DAY));
 
-        var lastDate = new Date();
+        lastDate = new Date();
         lastDate.setTime(this.date.getTime() + ((6 - wday) * this.DAY));
 
-        this.el.find('.monthDisplay').innerHTML = (firstDate.getDate()) + "  " + this.options.months[firstDate.getMonth()] + " " + firstDate.getFullYear() + " - ";
-        this.el.find('.monthDisplay').innerHTML += (lastDate.getDate()) + "  " + this.options.months[lastDate.getMonth()] + " " + lastDate.getFullYear();
-
-        var trs = this.el.find('.weekView tr');
+        monthHtml = firstDate.getDate() + ' ' + this.options.months[firstDate.getMonth()] +
+            ' ' + firstDate.getFullYear() + ' - ' +
+            lastDate.getDate() + '  ' + this.options.months[lastDate.getMonth()] + ' ' + lastDate.getFullYear();
+        this.el.find('.monthDisplay').html(monthHtml);
+        trs = this.el.find('.weekView tr');
 
         // Put dates in top row
-        var ths = trs[0].find('th');
+        ths = trs[0].find('th');
+        WeekTds = this.removeWeekEvents();
 
-        var WeekTds = this.removeWeekEvents();
-
-        var hdiv, ht, thbg;
         for (i = 0; i < ths.length; i++) {
             ths[i].className = 'dayHeading';
             ths[i].addClass(counterDate.getTime());
@@ -551,36 +588,11 @@ var fabrikCalendar = my.Class({
             ths[i].empty().adopt(hdiv);
 
             var eventWidth = 10;
-            var maxoffsets = {};
             var offsets = {};
             var hourTds = WeekTds[i];
 
             // Build max offsets first
-            this.entries.each(function (entry) {
-
-                // Between (end date present) or same (no end date)
-                var startdate = new Date(entry.startdate_locale);
-                var enddate = new Date(entry.enddate_locale);
-                if ((entry.enddate !== '' && counterDate.isDateBetween(startdate, enddate)) || (enddate === '' && startdate.isSameDay(counterDate))) {
-                    var opts = this._buildEventOpts({
-                        entry     : entry,
-                        curdate   : counterDate,
-                        divclass  : '.weekView',
-                        'tdOffset': i
-                    });
-                    // Work out the left offset for the event - stops concurrent events overlapping each other
-                    for (var h = opts.startHour; h <= opts.endHour; h++) {
-                        maxoffsets[h] = typeOf(maxoffsets[h]) === 'null' ? 0 : maxoffsets[h] + 1;
-                    }
-                }
-            }.bind(this));
-
-            var gridSize = 1;
-            Object.each(maxoffsets, function (o) {
-                if (o > gridSize) {
-                    gridSize = o;
-                }
-            });
+            gridSize = this.gridSize(counterDate);
 
             // Add event divs
             this.entries.each(function (entry) {
@@ -611,7 +623,6 @@ var fabrikCalendar = my.Class({
                     td = hourTds[startIndex];
 
                     // Work out event div width - taking into account 1px margin between each event
-                    //eventWidth = Math.floor((td.getSize().x - gridSize) / gridSize);
                     eventWidth = Math.floor((td.getSize().x - gridSize) / (gridSize + 1));
                     opts.width = eventWidth + 'px';
                     opts['margin-left'] = thisOffset * (eventWidth + 1);
@@ -620,13 +631,14 @@ var fabrikCalendar = my.Class({
                     div.inject(document.body);
                     var padding = div.css('padding-left').toInt() + div.css('padding-right').toInt();
                     div.css('width', div.css('width').toInt() - padding + 'px');
-                    div.store('opts', opts);
-                    div.store('relativeTo', td);
-                    div.store('gridSize', gridSize);
+                    div.data('opts', opts);
+                    div.data('relativeTo', td);
+                    div.data('gridSize', gridSize);
 
-                    var calEvents = td.retrieve('calevents', []);
+                    var calEvents = td.data('calevents');
+                    calEvents = calEvents === undefined ? [] : calEvents;
                     calEvents.push(div);
-                    td.store('calevents', calEvents);
+                    td.data('calevents', calEvents);
                     div.position({'relativeTo': td, 'position': 'upperLeft'});
                 }
             }.bind(this));
@@ -735,8 +747,8 @@ var fabrikCalendar = my.Class({
                 td.className = '';
                 td.addClass('day');
 
-                if (typeOf(td.retrieve('calevents')) !== 'null') {
-                    td.retrieve('calevents').each(function (evnt) {
+                if (td.data('calevents') !== undefined) {
+                    td.data('calevents').each(function (evnt) {
                         evnt.destroy();
                     });
                 }
@@ -753,7 +765,7 @@ var fabrikCalendar = my.Class({
      * Show the days events
      */
     showDay: function () {
-        var trs = this.el.find('.dayView tr'), h, td,
+        var trs = this.el.find('.dayView tr'), h, td, monthHtml,
 
         // Put date in top row
             thbg = trs[0].childNodes[1].css('background-color');
@@ -825,38 +837,40 @@ var fabrikCalendar = my.Class({
                 opts['margin-left'] = maxOffset * (eventWidth + 1);
                 var div = this._makeEventRelDiv(entry, opts, null, td);
                 div.addClass('day-event');
-                div.store('relativeTo', td);
-                div.store('gridSize', gridSize);
+                div.data('relativeTo', td);
+                div.data('gridSize', gridSize);
                 div.inject(document.body);
 
                 var padding = div.css('padding-left').toInt() + div.css('padding-right').toInt();
                 div.css('width', div.css('width').toInt() - padding + 'px');
-                div.store('opts', opts);
+                div.data('opts', opts);
 
-                var calEvents = td.retrieve('calevents', []);
+                var calEvents = td.data('calevents');
+                calEvents = calEvents === undefined ? [] : calEvents;
                 calEvents.push(div);
-                td.store('calevents', calEvents);
+                td.data('calevents', calEvents);
                 div.position({'relativeTo': td, 'position': 'upperLeft'});
             }
         }.bind(this));
 
-
-        this.el.find('.monthDisplay').innerHTML = (this.date.getDate()) + "  " + this.options.months[this.date.getMonth()] + " " + this.date.getFullYear();
+        monthHtml = this.date.getDate() + '  ' + this.options.months[this.date.getMonth()] + ' ' +
+            this.date.getFullYear();
+        this.el.find('.monthDisplay').html(monthHtml);
     },
 
     renderMonthView: function () {
-        var d, tr;
+        var d, tr, daysLabels, firstWeekDay = this.options.first_week_day;
         this.fadePopWin(0);
         var firstDate = this._getFirstDayInMonthCalendar(new Date());
 
         // Barbara : reorganize days labels according to first day of week
-        var days_labels = this.options.days.slice(this.options.first_week_day).concat(this.options.days.slice(0, this.options.first_week_day));
+        daysLabels = this.options.days.slice(firstWeekDay).concat(this.options.days.slice(0, firstWeekDay));
 
         // Barbara : set a tmpDate that has the same shift regarding the beginning of the week
         var tmpDate = new Date();
         tmpDate.setTime(firstDate.valueOf());
-        if (firstDate.getDay() !== this.options.first_week_day) {
-            var backwardsDaysDelta = firstDate.getDay() - this.options.first_week_day;
+        if (firstDate.getDay() !== firstWeekDay) {
+            var backwardsDaysDelta = firstDate.getDay() - firstWeekDay;
             //first day of week
             tmpDate.setTime(firstDate.valueOf() - (backwardsDaysDelta * 24 * 60 * 60 * 1000));
         }
@@ -877,7 +891,7 @@ var fabrikCalendar = my.Class({
                         'color'           : this._getColor(this.options.colors.headingColor, tmpDate),
                         'background-color': this._getColor(this.options.colors.headingBg, tmpDate)
                     }
-                ).appendText(days_labels[d]));
+                ).text(daysLabels[d]));
                 // Barbara : added use of tmpDate
                 tmpDate.setTime(tmpDate.getTime() + this.DAY);
             }
@@ -1157,7 +1171,7 @@ var fabrikCalendar = my.Class({
                             'color'           : this.options.headingColor,
                             'background-color': this.options.colors.headingBg
                         })
-                        .appendText(this.options.days[this.date.getDay()]));
+                        .text(this.options.days[this.date.getDay()]));
                 }
             }
             tbody.appendChild(tr);
@@ -1170,7 +1184,7 @@ var fabrikCalendar = my.Class({
                 for (d = 0; d < 2; d++) {
                     if (d === 0) {
                         var hour = (i.length === 1) ? i + '0:00' : i + ':00';
-                        tr.adopt($(document.createElement('td')).addClass('day').appendText(hour));
+                        tr.adopt($(document.createElement('td')).addClass('day').text(hour));
                     } else {
                         //'display': 'table-cell',
                         tr.adopt($(document.createElement('td')).addClass('day')
@@ -1245,7 +1259,7 @@ var fabrikCalendar = my.Class({
                 this.showMonth();
                 break;
         }
-        Cookie.write("fabrik.viz.calendar.view", this.options.viewType);
+        Cookie.write('fabrik.viz.calendar.view', this.options.viewType);
     },
 
     renderWeekView: function () {
@@ -1281,7 +1295,7 @@ var fabrikCalendar = my.Class({
                                     td.removeClass('selectedDay');
                                 }
                             });
-                        }).appendText(this.options.days[d - 1]));
+                        }).text(this.options.days[d - 1]));
                 }
             }
             tbody.appendChild(tr);
@@ -1340,14 +1354,14 @@ var fabrikCalendar = my.Class({
     },
 
     repositionEvents: function () {
-        document.find('a.week-event, a.day-event').each(function (a) {
-            var td = a.retrieve('relativeTo');
-            a.position({'relativeTo': td, 'position': 'upperLeft'});
-            var gridSize = a.retrieve('gridSize');
+        $('a.week-event, a.day-event').each(function () {
+            var td = $(this).data('relativeTo');
+            $(this).position({'relativeTo': td, 'position': 'upperLeft'});
+            var gridSize = $(this).data('gridSize');
             var eventWidth = Math.floor((td.getSize().x - gridSize) / gridSize);
-            var padding = a.css('padding-left').toInt() + a.css('padding-right').toInt();
+            var padding = $(this).css('padding-left').toInt() + $(this).css('padding-right').toInt();
             eventWidth = eventWidth - padding;
-            a.css('width', eventWidth + 'px');
+            $(this).css('width', eventWidth + 'px');
         });
     },
 
@@ -1422,7 +1436,7 @@ var fabrikCalendar = my.Class({
         if (typeOf(Cookie.read('fabrik.viz.calendar.date')) !== 'null') {
             this.date = new Date(Cookie.read('fabrik.viz.calendar.date'));
         }
-        var startview = typeOf(Cookie.read("fabrik.viz.calendar.view")) === 'null' ? this.options.viewType : Cookie.read("fabrik.viz.calendar.view");
+        var startview = typeOf(Cookie.read('fabrik.viz.calendar.view')) === 'null' ? this.options.viewType : Cookie.read('fabrik.viz.calendar.view');
         switch (startview) {
             case 'dayView':
                 this.renderDayView();
@@ -1489,7 +1503,7 @@ var fabrikCalendar = my.Class({
             }
             time = o.startdate.split(' ');
             time = time[1];
-            time = time.split(":");
+            time = time.split(':');
             d = d.split('-');
             d2 = new Date();
             m = (d[1]).toInt() - 1;
@@ -1506,7 +1520,7 @@ var fabrikCalendar = my.Class({
             if (o.enddate) {
                 d = o.enddate.split(' ');
                 d = d[0];
-                if (d.trim() === "") {
+                if (d.trim() === '') {
                     return;
                 }
                 if (d === '0000-00-00') {
@@ -1515,7 +1529,7 @@ var fabrikCalendar = my.Class({
                 }
                 time = o.enddate.split(' ');
                 time = time[1];
-                time = time.split(":");
+                time = time.split(':');
 
                 d = d.split('-');
                 d2 = new Date();
@@ -1696,7 +1710,7 @@ Date.WEEK = 7 * Date.DAY;
 /** Returns the number of days in the current month */
 Date.prototype.getMonthDays = function (month) {
     var year = this.getFullYear();
-    if (typeof month === "undefined") {
+    if (typeof month === 'undefined') {
         month = this.getMonth();
     }
     if (((0 === (year % 4)) && ((0 !== (year % 100)) || (0 === (year % 400)))) && month === 1) {

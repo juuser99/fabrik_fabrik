@@ -201,7 +201,7 @@ var ListFieldsElement = my.Class({
 	 */
 	addPlaceHolder: function () {
 		var list = this.el.parent().find('select');
-		var v = list.get('value');
+		var v = list.val();
 		if (this.options.addBrackets) {
 			v = v.replace(/\./, '___');
 			v = '{' + v + '}';

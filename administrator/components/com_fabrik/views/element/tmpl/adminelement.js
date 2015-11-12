@@ -30,18 +30,18 @@ var fabrikAdminElement = my.Class(PluginManager, {
         this.options = $.extend(this.options, options);
         this.setParentViz();
 
-        this.jsAccordion = new Fx.Accordion([], [], {
+       /* this.jsAccordion = new Fx.Accordion([], [], {
             alwaysHide: true,
             display   : -1,
             duration  : 'short'
-        });
-        $(document).domready(function () {
+        });*/
+        $(document).ready(function () {
             if ($('#addJavascript').length === 0) {
                 fconsole('Fabrik adminelement.js: javascript tab Add button not found');
             } else {
                 $('#addJavascript').on('click', function (e) {
                     e.stopPropagation();
-                    self.jsAccordion.display(-1);
+                    //self.jsAccordion.display(-1);
                     self.addJavascript();
                 });
             }
@@ -52,9 +52,9 @@ var fabrikAdminElement = my.Class(PluginManager, {
                 self.addJavascript(opt);
             });
 
-            self.jsPeriodical = setInterval(function () {
+          /*  self.jsPeriodical = setInterval(function () {
                 self.iniJsAccordion.call(self, true);
-            }, 500);
+            }, 500);*/
 
             $('#jform_plugin').on('change', function (e) {
                 self.changePlugin(e);
@@ -124,7 +124,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
         });
     },
 
-    iniJsAccordion: function () {
+    /*iniJsAccordion: function () {
         if (this.jsAjaxed === this.options.jsevents.length) {
             if (this.options.jsevents.length === 1) {
                 this.jsAccordion.display(0);
@@ -133,7 +133,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
             }
             clearInterval(this.jsPeriodical);
         }
-    },
+    },*/
 
     changePlugin: function (e) {
         var self = this;
@@ -151,7 +151,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
                 'id'    : this.options.id,
                 'task'  : 'element.getPluginHTML',
                 'format': 'raw',
-                'plugin': e.target.get('value')
+                'plugin': $(e.target).val()
             },
         }).done(function (r) {
             $('#plugin-container').html(r);
@@ -167,7 +167,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
         if (Fabrik.debug) {
             fconsole('Fabrik adminelement.js: Deleting JS entry: ', c.id);
         }
-        c.dispose();
+        c.remove();
         this.jsAjaxed--;
     },
 
@@ -180,15 +180,14 @@ var fabrikAdminElement = my.Class(PluginManager, {
             a = $(document.createElement('a')).addClass('accordion-toggle').attr({
                 'href': '#'
             });
-        a.adopt($(document.createElement('span')).addClass('pluginTitle').text(Joomla.JText._('COM_FABRIK_LOADING')));
+        a.append($(document.createElement('span')).addClass('pluginTitle').text(Joomla.JText._('COM_FABRIK_LOADING')));
         var toggler = $(document.createElement('div')).addClass('title pane-toggler accordion-heading')
-            .adopt($(document.createElement('strong')).adopt(a));
+            .append($(document.createElement('strong')).adopt(a));
         var body = $(document.createElement('div')).addClass('accordion-body');
 
-        div.adopt(toggler);
-        div.adopt(body);
-        this.jsAccordion.addSection(toggler, body);
-        div.inject(document.id('javascriptActions'));
+        div.append(toggler);
+        div.append(body);
+        div.appendTo($('javascriptActions'));
         var c = this.jsCounter;
         var request = new $.ajax({
             url : 'index.php',
@@ -291,16 +290,11 @@ var fabrikAdminElement = my.Class(PluginManager, {
 
     setParentViz: function () {
         if (parseInt(this.options.parentid, 10) !== 0) {
-            var myFX = new Fx.Tween('elementFormTable', {
-                property: 'opacity',
-                duration: 500,
-                wait    : false
-            }).set(0);
             $('#unlink').on('click', function () {
                 if (this.checked) {
-                    myFX.start(0, 1);
+                    $('elementFormTable').fadeIn();
                 } else {
-                    myFX.start(1, 0);
+                    $('elementFormTable').fadeOut();
                 }
             });
         }

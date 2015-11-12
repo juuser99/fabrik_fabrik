@@ -26,7 +26,7 @@
 			type="text"
 			label="COM_FABRIK_GOOGLE_BUSINESS_SIGNATURE_LABEL"
 			description="COM_FABRIK_GOOGLE_BUSINESS_SIGNATURE_DESC" />
-			
+
 		<field name="unpublish_clones"
 			type="radio"
 			default="0"
@@ -34,9 +34,9 @@
 			description="COM_FABRIK_UNPUBLISH_CLONES_DESC"
 			label="COM_FABRIK_UNPUBLISH_CLONES_LABEL">
 				<option value="0">JNO</option>
-				<option value="1">JYES</option>	
+				<option value="1">JYES</option>
 		</field>
-		
+
 		<field name="allow_user_defines"
 			class="radio btn-group"
 			type="radio"
@@ -251,11 +251,11 @@
             		default="0"
             		description="COM_FABRIK_LABELS_DESC"
             		label="COM_FABRIK_LABELS_LABEL">
-                		<option value="0">COM_FABRIK_LABELS_DEFAULT</option>      
+                		<option value="0">COM_FABRIK_LABELS_DEFAULT</option>
                 		<option value="1">COM_FABRIK_LABELS_LOWERCASE</option>
                 		<option value="2">COM_FABRIK_LABELS_UCWORDS</option>
                 		<option value="3">COM_FABRIK_LABELS_CAPFIRST</option>
-                		<option value="4">COM_FABRIK_LABELS_CAPS</option>          
+                		<option value="4">COM_FABRIK_LABELS_CAPS</option>
         	</field>
     	</fieldset>
 
@@ -332,14 +332,14 @@
 				<option value="1">COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_PER_ELEMENT</option>
 				<!--<option value="2">JYES</option>-->
 		</field>
-		
+
 		<field name="advanced_behavior_options"
 			type="text"
 			menu="hide"
 			default="{}"
 			description="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_OPTIONS_DESC"
 			label="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_OPTIONS_LABEL" />
-			
+
 	</fieldset>
 
 	<fieldset label="COM_FABRIK_JAVASCRIPT" name="javascript">
@@ -375,7 +375,7 @@
 				<option value="2">JYES</option>
 		</field>
 
-		<field name="tipfx"
+		<!--<field name="tipfx"
 			description="COM_FABRIK_TIP_FX_DESC"
 			label="COM_FABRIK_TIP_FX_LABEL"
 			default="linear"
@@ -391,9 +391,9 @@
 				<option value="Back">Back</option>
 				<option value="Bounce">Bounce</option>
 				<option value="Elastic">Elastic</option>
-		</field>
+		</field>-->
 
-		<field name="tipfx_ease"
+		<!--<field name="tipfx_ease"
 			default="easeIn"
 			description="COM_FABRIK_TIP_EASE_DESC"
 			label="COM_FABRIK_TIP_EASE_LABEL"
@@ -401,7 +401,7 @@
 				<option value="easeIn">In</option>
 				<option value="easeOut">Out</option>
 				<option value="easeInOut">InOut</option>
-		</field>
+		</field>-->
 
 		<field name="tipfx_duration"
 			size="3"
@@ -424,7 +424,7 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 		</field>
-		
+
 		<field name="autocomplete_min_trigger_chars"
 			size="3"
 			default="1"
@@ -436,7 +436,7 @@
 			default=""
 			description="COM_FABRIK_REQUIREJS_BASE_URI_DESC"
 			label="COM_FABRIK_REQUIREJS_BASE_URI_LABEL" />
-		
+
 	</fieldset>
 
 	<fieldset label="COM_FABRIK_DEBUGGING" name="debug">

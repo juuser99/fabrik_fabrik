@@ -20,14 +20,15 @@ var ListForm = my.Class({
         autoChangeDbName: true,
 
         options: {
-            j3: true
+            j3: true,
+            activetableOpts: []
         },
 
         constructor: function (options) {
             var rows,
                 self = this;
-            $(document).domready(function () {
-                self.options = $.append(self.options, options);
+            $(document).ready(function () {
+                self.options = $.extend(self.options, options);
                 self.watchTableDd();
                 self.watchLabel();
                 $('#addAJoin').on('click', function (e) {
@@ -51,13 +52,13 @@ var ListForm = my.Class({
                                     actual.push(i);
                                 }
                             });
-                            document.find('input[name*=faceted_list_order]').value = JSON.stringify(actual);
+                            $('input[name*=faceted_list_order]').value = JSON.stringify(actual);
                         }
                     });
                 }
 
-                if (document.find('table.linkedForms')) {
-                    rows = document.find('table.linkedForms').find('tbody');
+                if ($('table.linkedForms')) {
+                    rows = $('table.linkedForms').find('tbody');
                     new Sortables(rows, {
                         'handle': '.handle',
                         'onSort': function (element, clone) {
@@ -73,7 +74,7 @@ var ListForm = my.Class({
                                     actual.push(i);
                                 }
                             });
-                            document.find('input[name*=faceted_form_order]').value = JSON.stringify(actual);
+                            $('input[name*=faceted_form_order]').value = JSON.stringify(actual);
                         }
                     });
                 }
@@ -92,7 +93,7 @@ var ListForm = my.Class({
          */
         watchLabel: function () {
             this.autoChangeDbName = jQuery('#jform__database_name').val() === '';
-            jQuery('#jform_label').on('keyup', function (e) {
+            jQuery('#jform_label').on('keyup', function () {
                 if (this.autoChangeDbName) {
                     var label = jQuery('#jform_label').val().trim().toLowerCase();
                     label = label.replace(/\W+/g, '_');
@@ -106,14 +107,16 @@ var ListForm = my.Class({
         },
 
         watchOrderButtons: function () {
-            var self = this;
-            $('.addOrder').removeEvents('click');
-            $('.deleteOrder').removeEvents('click');
-            $('.addOrder').on('click', function (e) {
+            var self = this,
+                add = $('.addOrder'),
+                del = $('.deleteOrder');
+            add.off('click');
+            del.off('click');
+            add.on('click', function (e) {
                 e.stopPropagation();
                 self.addOrderBy();
             });
-            $('.deleteOrder').on('click', function (e) {
+            del.on('click', function (e) {
                 e.stopPropagation();
                 self.deleteOrderBy(e);
             });
@@ -122,17 +125,17 @@ var ListForm = my.Class({
         addOrderBy: function (e) {
             var t;
             if (e) {
-                t = e.target.closest('.orderby_container');
+                t = $(e.target).closest('.orderby_container');
             } else {
-                t = document.find('.orderby_container');
+                t = $('.orderby_container');
             }
-            t.clone().inject(t, 'after');
+            t.after(t.clone());
             this.watchOrderButtons();
         },
 
         deleteOrderBy: function (e) {
-            if (document.find('.orderby_container').length > 1) {
-                e.target.closest('.orderby_container').dispose();
+            if ($('.orderby_container').length > 1) {
+                $(e.target).closest('.orderby_container').remove();
                 this.watchOrderButtons();
             }
         },
@@ -182,10 +185,10 @@ var ListForm = my.Class({
                 var url = 'index.php?option=com_fabrik&format=raw&task=list.ajax_updateColumDropDowns&cid=' +
                     cid + '&table=' + table;
                 $.ajax({
-                    url       : url,
-                    method    : 'post',
+                    url   : url,
+                    method: 'post',
                 }).done(function (r) {
-                        eval(r);
+                    eval(r);
                 });
             });
         },
@@ -198,17 +201,19 @@ var ListForm = my.Class({
         },
 
         _findActiveTables: function () {
-            var t = $('.join_from').combine($('.join_to'));
-            t.each(function (sel) {
-                var v = sel.val();
-                if (this.options.activetableOpts.indexOf(v) === -1) {
-                    this.options.activetableOpts.push(v);
+            var t = $.extend($('.join_from'), $('.join_to')),
+                self = this;
+            t.each(function () {
+                var v = $(this).val();
+                if (self.options.activetableOpts.indexOf(v) === -1) {
+                    self.options.activetableOpts.push(v);
                 }
-            }.bind(this));
+            });
             this.options.activetableOpts.sort();
         },
 
-        addJoin: function (groupId, joinId, joinType, joinToTable, thisKey, joinKey, joinFromTable, joinFromFields, joinToFields, repeat) {
+        addJoin: function (groupId, joinId, joinType, joinToTable, thisKey, joinKey,
+                           joinFromTable, joinFromFields, joinToFields, repeat) {
             var repeaton, repeatoff, headings, row,
                 self = this;
             joinType = joinType ? joinType : 'left';
@@ -253,30 +258,35 @@ var ListForm = my.Class({
             delButton.html(delHtml);
 
             joinType = $(document.createElement('select')).addClass('inputbox input-mini').attr({
-                'name' : 'jform[params][join_type][]'
-            }).adopt(this._buildOptions(this.options.joinOpts, joinType));
+                'name': 'jform[params][join_type][]'
+            }).append(this._buildOptions(this.options.joinOpts, joinType));
             var joinFrom = $(document.createElement('select')).addClass('inputbox join_from input-medium').attr({
-                'name' : 'jform[params][join_from_table][]'
-            }).adopt(this._buildOptions(this.options.activetableOpts, joinFromTable));
+                'name': 'jform[params][join_from_table][]'
+            }).append(this._buildOptions(this.options.activetableOpts, joinFromTable));
             groupId = $(document.createElement('input'))
                 .attr({'type': 'hidden', 'name': 'group_id[]', 'value': groupId});
             var tableJoin = $(document.createElement('select')).addClass('inputbox join_to input-medium').attr({
-                'name' : 'jform[params][table_join][]'
-            }).adopt(this._buildOptions(this.options.tableOpts, joinToTable));
+                'name': 'jform[params][table_join][]'
+            }).append(this._buildOptions(this.options.tableOpts, joinToTable));
             var tableKey = $(document.createElement('select')).addClass('table_key inputbox input-medium').attr({
-                'name' : 'jform[params][table_key][]'
-            }).adopt(this._buildOptions(joinFromFields, thisKey));
+                'name': 'jform[params][table_key][]'
+            }).append(this._buildOptions(joinFromFields, thisKey));
             joinKey = $(document.createElement('select')).addClass('table_join_key inputbox input-medium').attr({
-                'name' : 'jform[params][table_join_key][]'
-            }).adopt(this._buildOptions(joinToFields, joinKey));
+                'name': 'jform[params][table_join_key][]'
+            }).append(this._buildOptions(joinToFields, joinKey));
             var repeatRadio =
-                "<fieldset class=\"radio\">" +
-                "<input type=\"radio\" id=\"joinrepeat" + this.joinCounter + "\" value=\"1\" name=\"jform[params][join_repeat][" + this.joinCounter + "][]\" " + repeaton + "/><label for=\"joinrepeat" + this.joinCounter + "\">" + Joomla.JText._('JYES') + "</label>" +
-                "<input type=\"radio\" id=\"joinrepeatno" + this.joinCounter + "\" value=\"0\" name=\"jform[params][join_repeat][" + this.joinCounter + "][]\" " + repeatoff + "/><label for=\"joinrepeatno" + this.joinCounter + "\">" + Joomla.JText._('JNO') + "</label>" +
-                "</fieldset>";
+                '<fieldset class="radio">' +
+                '<input type="radio" id="joinrepeat' + this.joinCounter +
+                '" value="1" name="jform[params][join_repeat][' +
+                this.joinCounter + '][]" ' + repeaton + '/><label for="joinrepeat' + this.joinCounter + '">' +
+                Joomla.JText._('JYES') + '</label>' +
+                '<input type="radio" id="joinrepeatno' + this.joinCounter +
+                '" value="0" name="jform[params][join_repeat][' + this.joinCounter + '][]" ' + repeatoff +
+                '/><label for="joinrepeatno' + this.joinCounter + '">' + Joomla.JText._('JNO') + '</label>' +
+                '</fieldset>';
 
-            headings = $(document.createElement('thead')).adopt(
-                $(document.createElement('tr')).adopt([
+            headings = $(document.createElement('thead')).append(
+                $(document.createElement('tr')).append([
                     $(document.createElement('th')).text('id'),
                     $(document.createElement('th')).text(Joomla.JText._('COM_FABRIK_JOIN_TYPE')),
                     $(document.createElement('th')).text(Joomla.JText._('COM_FABRIK_FROM')),
@@ -288,27 +298,27 @@ var ListForm = my.Class({
                 ])
             );
 
-            row = $(document.createElement('tr')).attr({'id': 'join' + this.joinCounter}).adopt([
-                $(document.createElement('td')).adopt(ii),
-                $(document.createElement('td')).adopt([groupId, joinType]),
-                $(document.createElement('td')).adopt(joinFrom),
-                $(document.createElement('td')).adopt(tableJoin),
-                $(document.createElement('td.table_key')).adopt(tableKey),
-                $(document.createElement('td.table_join_key')).adopt(joinKey),
+            row = $(document.createElement('tr')).attr({'id': 'join' + this.joinCounter}).append([
+                $(document.createElement('td')).append(ii),
+                $(document.createElement('td')).append([groupId, joinType]),
+                $(document.createElement('td')).append(joinFrom),
+                $(document.createElement('td')).append(tableJoin),
+                $(document.createElement('td')).addClass('table_key').append(tableKey),
+                $(document.createElement('td')).addClass('table_join_key').append(joinKey),
                 $(document.createElement('td')).html(repeatRadio),
-                $(document.createElement('td')).adopt(delButton)
+                $(document.createElement('td')).append(delButton)
             ]);
 
             var sContent = $(document.createElement('table')).addClass('table-striped table')
-                .adopt([
+                .append([
                     headings,
-                    tbody.adopt(row)
+                    tbody.append(row)
                 ]);
             if (this.joinCounter === 0) {
-                sContent.inject($('#joindtd'));
+                sContent.appendTo($('#joindtd'));
             } else {
                 var tb = $('#joindtd').find('tbody');
-                row.inject(tb);
+                row.appendTo(tb);
             }
             this.joinCounter++;
         },
@@ -318,45 +328,49 @@ var ListForm = my.Class({
             e.stopPropagation();
             t = $(e.target).closest('tr');
             tbl = $(e.target).closest('table');
-            t.dispose();
+            t.remove();
             if (tbl.find('tbody tr').length === 0) {
-                tbl.dispose();
+                tbl.remove();
             }
         },
 
         watchJoins: function () {
-            var self = this;
-            $('div[id^=table-sliders-data]').on('change', '.join_from', function () {
-                var row = $(this).closest('tr');
-                var activeJoinCounter = row.prop('id').replace('join', '');
+            var self = this, url, conn, table, row, activeJoinCounter,
+                sliders = $('div[id^=table-sliders-data]');
+            sliders.on('change', '.join_from', function () {
+                row = $(this).closest('tr');
+                activeJoinCounter = row.prop('id').replace('join', '');
                 self.updateJoinStatement(activeJoinCounter);
-                var table = $(this).val();
-                var conn = $('input[name*=connection_id]').val();
+                table = $(this).val();
+                conn = $('input[name*=connection_id]').val();
 
-                var update = row.find('td.table_key');
-                var url = 'index.php?option=com_fabrik&format=raw&task=list.ajax_loadTableDropDown&table=' + table + '&conn=' + conn;
-                var myAjax = new Request.HTML({
+                url = 'index.php?option=com_fabrik&format=raw&' +
+                    'task=list.ajax_loadTableDropDown&table=' + table + '&conn=' + conn;
+
+                $.ajax({
                     url   : url,
-                    method: 'post',
-                    update: update
-                }).send();
+                    method: 'post'
+                }).complete(function (r) {
+                    row.find('td.table_key').html(r.responseText);
+                });
             });
 
-            $('div[id^=table-sliders-data]').on('change', '.join_to', function (e, target) {
-                var row = $(this).closest(rowContainer);
-                var activeJoinCounter = row.prop('id').replace('join', '');
-                this.updateJoinStatement(activeJoinCounter);
-                var table = $(this).val();
-                var conn = $('input[name*=connection_id]').val();
-                var url = 'index.php?name=jform[params][table_join_key][]&option=com_fabrik&format=raw&task=list.ajax_loadTableDropDown&table=' +
+            sliders.on('change', '.join_to', function () {
+                row = $(this).closest('tr');
+                activeJoinCounter = row.prop('id').replace('join', '');
+                self.updateJoinStatement(activeJoinCounter);
+                table = $(this).val();
+                conn = $('input[name*=connection_id]').val();
+                url = 'index.php?name=jform[params][table_join_key][]' +
+                    '&option=com_fabrik&format=raw&task=list.ajax_loadTableDropDown&table=' +
                     table + '&conn=' + conn;
 
-                var update = row.find('td.table_join_key');
-                var myAjax = new Request.HTML({
+                $.ajax({
                     url   : url,
-                    method: 'post',
-                    update: update
-                }).send();
+                    method: 'post'
+                }).complete(function (r) {
+                    row.find('td.table_join_key').html(r.responseText);
+                });
             });
             this.watchFieldList('join_type');
             this.watchFieldList('table_join_key');
@@ -365,22 +379,15 @@ var ListForm = my.Class({
 
         updateJoinStatement: function (activeJoinCounter) {
             var fields = $('#join' + activeJoinCounter + ' .inputbox');
-            fields = Array.from(fields);
-            var type = fields[0].val();
-            var fromTable = fields[1].val();
-            var toTable = fields[2].val();
-            var fromKey = fields[3].val();
-            var toKey = fields[4].val();
+            var type = $(fields[0]).val();
+            var fromTable = $(fields[1]).val();
+            var toTable = $(fields[2]).val();
+            var fromKey = $(fields[3]).val();
+            var toKey = $(fields[4]).val();
             var str = type + ' JOIN ' + toTable + ' ON ' + fromTable + '.' + fromKey + ' = ' + toTable + '.' + toKey;
-            var desc = $('#join-desc-' + activeJoinCounter);
-            if (typeOf(desc) !== 'null') {
-                desc.html(str);
-            }
-
+            $('#join-desc-' + activeJoinCounter).html(str);
         }
-
-    })
-    ;
+    });
 
 ////////////////////////////////////////////
 
@@ -400,7 +407,7 @@ var adminFilters = my.Class({
 
     addHeadings: function () {
         var thead = $(document.createElement('thead'))
-            .adopt($(document.createElement('tr')).attr({'id': 'filterTh', 'class': 'title'}).adopt(
+            .append($(document.createElement('tr')).attr({'id': 'filterTh', 'class': 'title'}).append(
                 $(document.createElement('th')).text(Joomla.JText._('COM_FABRIK_JOIN')),
                 $(document.createElement('th')).text(Joomla.JText._('COM_FABRIK_FIELD')),
                 $(document.createElement('th')).text(Joomla.JText._('COM_FABRIK_CONDITION')),
@@ -410,14 +417,13 @@ var adminFilters = my.Class({
                 $(document.createElement('th')).text(Joomla.JText._('COM_FABRIK_GROUPED')),
                 $(document.createElement('th')).text(Joomla.JText._('COM_FABRIK_DELETE'))
             ));
-        thead.inject($('#filterContainer'), 'before');
+        thead.insertBefore($('#filterContainer'));
     },
 
     deleteFilterOption: function (e) {
         this.counter--;
         var tbl, t;
         e.stopPropagation();
-        var row = parseInt(e.target.id.replace('filterContainer-del-', ''), 10);
 
         t = $(e.target).closest('tr');
         tbl = $(e.target).closest('table');
@@ -426,7 +432,7 @@ var adminFilters = my.Class({
             tbl.hide();
         }
         // in 3.1 we have to hide the rows rather than destroy otherwise the form doesn't submit!!!
-        t.find('input, select, textarea').dispose();
+        t.find('input, select, textarea').remove();
         t.hide();
     },
 
@@ -434,7 +440,8 @@ var adminFilters = my.Class({
         var opts = [];
         showSelect = showSelect === true ? true : false;
         if (showSelect) {
-            opts.push($(document.createElement('option')).attr({'value': ''}).text(Joomla.JText._('COM_FABRIK_PLEASE_SELECT')));
+            opts.push($(document.createElement('option')).attr({'value': ''})
+                .text(Joomla.JText._('COM_FABRIK_PLEASE_SELECT')));
         }
         pairs.each(function (pair) {
             if (pair.value === sel) {
@@ -444,16 +451,14 @@ var adminFilters = my.Class({
                 opts.push($(document.createElement('option')).attr({'value': pair.value}).text(pair.label));
             }
         });
-        return $(document.createElement('select')).addClass(c + ' input-medium').attr('name', name).adopt(opts);
+        return $(document.createElement('select')).addClass(c + ' input-medium').attr('name', name).append(opts);
     },
 
     addFilterOption: function (selJoin, selFilter, selCondition, selValue, selAccess, evaluate, grouped) {
         var and, or, joinDd, groupedNo, groupedYes, i, sels,
             self = this;
         if (this.counter <= 0) {
-            if (this.el.closest('table').find('thead')) {
-                // We've already added the thead - in 3.1 we have to hide the rows rather than destroy otherwise the form doesn't submit!!!
-            } else {
+            if (this.el.closest('table').find('thead').length === 0) {
                 this.addHeadings();
             }
         }
@@ -468,7 +473,7 @@ var adminFilters = my.Class({
         if (this.counter > 0) {
             var opts = {'type': 'radio', 'name': 'jform[params][filter-grouped][' + this.counter + ']', 'value': '1'};
             opts.checked = (grouped === '1') ? 'checked' : '';
-            groupedYes = $(document.createElement('label')).text(Joomla.JText._('JYES')).adopt(
+            groupedYes = $(document.createElement('label')).text(Joomla.JText._('JYES')).append(
                 $(document.createElement('input')).attr(opts)
             );
             // Need to redeclare opts for ie8 otherwise it renders a field!
@@ -479,13 +484,13 @@ var adminFilters = my.Class({
             };
             opts.checked = (grouped !== '1') ? 'checked' : '';
 
-            groupedNo = $(document.createElement('label')).text(Joomla.JText._('JNO')).adopt(
+            groupedNo = $(document.createElement('label')).text(Joomla.JText._('JNO')).append(
                 $(document.createElement('input')).attr(opts)
             );
 
         }
         if (this.counter === 0) {
-            joinDd = $(document.createElement('span').text('WHERE').adopt(
+            joinDd = $(document.createElement('span')).text('WHERE').append(
                 $(document.createElement('input'))
                     .addClass('inputbox')
                     .attr({
@@ -493,7 +498,7 @@ var adminFilters = my.Class({
                         'id'   : 'paramsfilter-join',
                         'name' : 'jform[params][filter-join][]',
                         'value': selJoin
-                    })));
+                    }));
         } else {
             if (selJoin === 'AND') {
                 and = $(document.createElement('option')).attr({'value': 'AND', 'selected': 'selected'}).text('AND');
@@ -507,7 +512,7 @@ var adminFilters = my.Class({
                 .attr({
                     'id'  : 'paramsfilter-join',
                     'name': 'jform[params][filter-join][]'
-                }).adopt(
+                }).append(
                 [and, or]);
         }
 
@@ -515,26 +520,26 @@ var adminFilters = my.Class({
         var td = $('<td>');
 
         if (this.counter <= 0) {
-            tdGrouped.appendChild($(document.createElement('input')).attr({
+            tdGrouped.append($(document.createElement('input')).attr({
                 'type' : 'hidden',
                 'name' : 'jform[params][filter-grouped][' + this.counter + ']',
                 'value': '0'
             }));
-            tdGrouped.appendChild($(document.createElement('span')).text('n/a'));
+            tdGrouped.append($(document.createElement('span')).text('n/a'));
 
         } else {
-            tdGrouped.appendChild(groupedNo);
-            tdGrouped.appendChild(groupedYes);
+            tdGrouped.append(groupedNo);
+            tdGrouped.append(groupedYes);
         }
-        td.appendChild(joinDd);
+        td.append(joinDd);
 
         var td1 = $('<td>');
-        td1.innerHTML = this.fields;
+        td1.html(this.fields);
         var td2 = $('<td>');
-        td2.innerHTML = conditionsDd;
+        td2.html(conditionsDd);
         var td3 = $('<td>');
         var td4 = $('<td>');
-        td4.innerHTML = this.options.filterAccess;
+        td4.html(this.options.filterAccess);
         var td5 = $('<td>');
 
         var textArea = $(document.createElement('textarea')).attr({
@@ -542,8 +547,8 @@ var adminFilters = my.Class({
             'cols': 17,
             'rows': 4
         }).text(selValue);
-        td3.appendChild(textArea);
-        td3.appendChild($('<br />'));
+        td3.append(textArea);
+        td3.append($('<br />'));
 
         var evalopts = [
             {'value': 0, 'label': Joomla.JText._('COM_FABRIK_TEXT')},
@@ -552,24 +557,25 @@ var adminFilters = my.Class({
             {'value': 3, 'label': Joomla.JText._('COM_FABRIK_NO_QUOTES')}
         ];
 
-        var tdType = $('<td>').adopt(this._makeSel('inputbox elementtype', 'jform[params][filter-eval][]', evalopts, evaluate, false));
+        var sel = this._makeSel('inputbox elementtype', 'jform[params][filter-eval][]', evalopts, evaluate, false);
+        var tdType = $('<td>').append(sel);
 
         var checked = (selJoin !== '' || selFilter !== '' || selCondition !== '' || selValue !== '') ? true : false;
         var delId = this.el.id + '-del-' + this.counter;
 
         var a = '<button id="' + delId + '" class="btn btn-danger"><i class="icon-minus"></i> </button>';
         td5.html(a);
-        tr.appendChild(td);
+        tr.append(td);
 
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        tr.appendChild(td3);
-        tr.appendChild(tdType);
-        tr.appendChild(td4);
-        tr.appendChild(tdGrouped);
-        tr.appendChild(td5);
+        tr.append(td1);
+        tr.append(td2);
+        tr.append(td3);
+        tr.append(tdType);
+        tr.append(td4);
+        tr.append(tdGrouped);
+        tr.append(td5);
 
-        this.el.appendChild(tr);
+        this.el.append(tr);
 
         this.el.closest('table').show();
         $('#' + delId).on('click', function (e) {

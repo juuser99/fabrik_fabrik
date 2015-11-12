@@ -35,7 +35,7 @@ var FbRepeatGroup = my.Class({
             var div = self.repeatContainers().getLast();
             var newc = self.counter + 1;
             var id = div.id.replace('-' + self.counter, '-' + newc);
-            var c = $(document.createElement('div')).addClass('repeatGroup').attr({'id': id}).html(div.innerHTML);
+            var c = $(document.createElement('div')).addClass('repeatGroup').attr({'id': id}).html(div.html());
             c.inject(div, 'after');
             self.counter = newc;
 
@@ -87,7 +87,7 @@ var FbRepeatGroup = my.Class({
     watchDelete: function () {
         var btns = this.element.find('a[data-button=deleteButton]'),
             self = this;
-        btns.removeEvents();
+        btns.off();
         btns.each(function (x) {
             $(this).on('click', function (e) {
                 e.stopPropagation();

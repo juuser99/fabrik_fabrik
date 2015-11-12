@@ -17,12 +17,12 @@ var FbListFilterView = my.Class(FbListPlugin, {
 			trigger.data('target', c);
 			trigger.on('click', function (e) {
 				e.stopPropagation();
-				var c = trigger.retrieve('target');
+				var c = trigger.data('target');
 				c.css('top', trigger.getTop());
 				c.css('left', trigger.getLeft() + trigger.getWidth() / 1.5);
 				c.fade('toggle');
 			});
-			ul.dispose();
+			ul.remove();
 		});
 		document.getElements('.fabrik_filter_view').on('click', 'a', function (e) {
 			var href = e.target.get('href');

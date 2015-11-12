@@ -1083,12 +1083,11 @@ EOD;
 	{
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$opts        = new stdClass;
-		$opts->tipfx = 'Fx.Transitions.' . $usersConfig->get('tipfx', 'Linear');
-
-		if ($usersConfig->get('tipfx', 'Linear') !== 'Linear')
+		//$opts->tipfx = 'Fx.Transitions.' . $usersConfig->get('tipfx', 'Linear');
+		/*if ($usersConfig->get('tipfx', 'Linear') !== 'Linear')
 		{
 			$opts->tipfx .= '.' . $usersConfig->get('tipfx_ease', 'easeIn');
-		}
+		}*/
 
 		$opts->duration = $usersConfig->get('tipfx_duration', '500');
 		$opts->distance = (int) $usersConfig->get('tipfx_distance', '20');

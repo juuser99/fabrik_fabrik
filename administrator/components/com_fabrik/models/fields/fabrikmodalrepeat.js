@@ -14,6 +14,7 @@ var FabrikModalRepeat = my.Class({
     },
 
     constructor: function (el, names, field, opts) {
+        var self = this;
         this.names = names;
         this.field = field;
         this.content = false;
@@ -22,13 +23,15 @@ var FabrikModalRepeat = my.Class({
         this.win = {};
         this.el = {};
         this.field = {};
-        this.options = $.append(this.options, opts);
+        this.options = $.extend(this.options, opts);
 
         // If the parent field is inserted via js then we delay the loading until the html is present
         if (!this.ready()) {
-            this.timer = setInterval(function () {
-                this.testReady.call(this, true);
-            }, 500);
+
+            var timerFn = function () {
+                self.testReady.call(self, true);
+            };
+            this.timer = setInterval(timerFn, 500);
 
         } else {
             this.setUp();
@@ -36,7 +39,8 @@ var FabrikModalRepeat = my.Class({
     },
 
     ready: function () {
-        return $('#' + this.elid).length > 0;
+        // Not sure why but can't use $
+        return jQuery('#' + this.elid).length > 0;
     },
 
     testReady: function () {
@@ -50,26 +54,23 @@ var FabrikModalRepeat = my.Class({
     },
 
     setUp: function () {
-        this.button = $('#' + this.elid + '_button');
+        var self = this;
+        this.button = jQuery('#' + this.elid + '_button');
         this.mask = new Mask(document.body, {style: {'background-color': '#000', 'opacity': 0.4, 'z-index': 9998}});
-        $(document).on('click', '*[data-modal=' + this.elid + ']', function (e) {
+        jQuery(document).on('click', '*[data-modal=' + this.elid + ']', function (e) {
             e.preventDefault();
             var tbl,
             // Correct when in repeating group
-                id = $(this).next('input').id,
-                c = $(this).closest('li');
-            this.field[id] = $(this).next('input');
-            if (!c) {
-                // Joomla 3
-                c = $(this).closest('div.control-group');
-            }
-            this.origContainer = c;
+                id = jQuery(this).next('input').prop('id'),
+                c = jQuery(this).closest('div.control-group');
+            self.field[id] = $(this).next('input');
+            self.origContainer = c;
             tbl = c.find('table');
             if (tbl.length > 0) {
-                this.el[id] = tbl;
+                self.el[id] = tbl;
             }
-            this.openWindow(id);
-        }.bind(this));
+            self.openWindow(id);
+        });
     },
 
     openWindow: function (target) {
@@ -78,7 +79,7 @@ var FabrikModalRepeat = my.Class({
             makeWin = true;
             this.makeTarget(target);
         }
-        this.el[target].inject(this.win[target], 'top');
+        this.el[target].prependTo(this.win[target]);
         this.el[target].show();
 
         if (!this.win[target] || makeWin) {
@@ -86,26 +87,26 @@ var FabrikModalRepeat = my.Class({
         }
         this.win[target].show();
         this.win[target].position();
-        this.resizeWin(true, target);
+        this.resizeWin();
         this.win[target].position();
         this.mask.show();
     },
 
     makeTarget: function (target) {
-        this.win[target] = $(document.createElement('div')).attr({
-            'data-modal-content': target
-        }).css({
+        this.win[target] = jQuery(document.createElement('div')).data(
+           'modal-content', target
+        ).css({
             'padding'         : '5px',
             'background-color': '#fff',
             'display'         : 'none',
             'z-index'         : 9999
-        }).inject(document.body);
+        }).prependTo(document.body);
 
     },
 
     makeWin: function (target) {
         var self = this;
-        var close = $(document.createElement('button')).addClass('btn button btn-primary').text('close');
+        var close = jQuery(document.createElement('button')).addClass('btn button btn-primary').text('close');
         close.on('click', function (e) {
             e.stopPropagation();
             self.store(target);
@@ -113,70 +114,67 @@ var FabrikModalRepeat = my.Class({
             self.el[target].inject(self.origContainer);
             self.close();
         });
-        var controls = $(document.createElement('div')).addClass('controls form-actions').css({
+        var controls = jQuery(document.createElement('div')).addClass('controls form-actions').css({
             'text-align'   : 'right',
             'margin-bottom': 0
-        }).adopt(close);
+        }).append(close);
 
-        this.win[target].adopt(controls);
+        this.win[target].append(controls);
         this.win[target].position();
         this.content = this.el[target];
         this.build(target);
         this.watchButtons(this.win[target], target);
     },
 
-    resizeWin: function (setup, target) {
+    resizeWin: function () {
+        var self = this;
         Object.each(this.win, function (win, key) {
-            var size = this.el[key].getDimensions(true),
-                wsize = win.getDimensions(true);
-            win.css({'width': size.x + 'px'});
-        }.bind(this));
+            //var size = self.el[key].getDimensions(true);
+            win.css({'width': self.el[key].width() + 'px'});
+        });
     },
 
     close: function () {
-        Object.each(this.win, function (win, key) {
+        Object.each(this.win, function (win) {
             win.hide();
         });
         this.mask.hide();
     },
 
     _getRadioValues: function (target) {
-        var radiovals = [], sel;
-        jQuery.each(this.getTrs(target), function (key, tr) {
-            var v = (sel = tr.find('input[type=radio]:checked')) ? sel.get('value') : '';
-            radiovals.push(v);
+        var radioVals = [];
+        this.getTrs(target).each(function () {
+            var v = $(this).find('input[type=radio]:checked').val();
+            radioVals.push(v);
         });
-        return radiovals;
+        return radioVals;
     },
 
     _setRadioValues: function (radiovals, target) {
         // Reapply radio button selections
-        var r;
-        jQuery.each(this.getTrs(target), function (i, tr) {
-            if (r = tr.find('input[type=radio][value=' + radiovals[i] + ']')) {
-                r.checked = 'checked';
-            }
+        this.getTrs(target).each(function (i) {
+            $(this).find('input[type=radio][value=' + radiovals[i] + ']').prop('checked', true);
         });
     },
 
     /**
      * Add a new row of fields
      * @param target
-     * @param srouce
+     * @param {jQuery} source Source of the row to copy
      */
     addRow: function (target, source) {
         // Store radio button selections
-        var radiovals = this._getRadioValues(target),
+        var radioVals = this._getRadioValues(target),
             body = source.closest('table').find('tbody'),
             clone = this.tmpl.clone(true, true);
-        clone.inject(body);
+        clone.appendTo(body);
         this.stripe(target);
 
         this.fixUniqueAttributes(source, clone);
 
         // Reapply values as renaming radio buttons
-        this._setRadioValues(radiovals, target);
-        this.resizeWin(false, target);
+        this._setRadioValues(radioVals, target);
+        this.resizeWin();
         this.resetChosen(clone);
     },
 
@@ -189,14 +187,14 @@ var FabrikModalRepeat = my.Class({
     fixUniqueAttributes: function (source, row) {
         var rowCount = source.closest('table').find('tr').length - 1;
 
-        jQuery.each(row.find('*[name]'), function (key, node) {
-            node.name += '-' + rowCount;
+        jQuery.each(row.find('*[name]'), function () {
+            $(this).prop('name', $(this).prop('name') + '-' + rowCount);
         });
-        jQuery.each(row.find('*[id]'), function (key, node) {
-            node.id += '-' + rowCount;
+        jQuery.each(row.find('*[id]'), function () {
+            $(this).prop('id', $(this).prop('id') + '-' + rowCount);
         });
-        jQuery.each(row.find('label[for]'), function (key, node) {
-            node.label += '-' + rowCount;
+        jQuery.each(row.find('label[for]'), function () {
+            $(this).prop('label', $(this).prop('label') + '-' + rowCount);
         });
     },
 
@@ -216,27 +214,27 @@ var FabrikModalRepeat = my.Class({
         });
         win.on('click', 'a.remove', function (e) {
             if (tr = self.findTr(e)) {
-                tr.dispose();
+                tr.remove();
             }
-            self.resizeWin(false, target);
+            self.resizeWin();
             win.position();
             e.stopPropagation();
         });
     },
 
     resetChosen: function (clone) {
-        if ($('select').chosen) {
+        if (jQuery('select').chosen) {
 
             // Chosen reset
             clone.find('select').removeClass('chzn-done').show();
 
             // Assign random id
-            $(clone.find('select'), function (key, c) {
-                c.id = c.id + '_' + parseInt(Math.random() * 10000000, 10);
+            jQuery(clone.find('select'), function (key, c) {
+                $(this).prop('id', $(this).prop('id') + '_' + parseInt(Math.random() * 10000000, 10));
             });
             clone.find('.chzn-container').destroy();
 
-            $(clone).find('select').chosen({
+            jQuery(clone).find('select').chosen({
                 disable_search_threshold: 10,
                 allow_single_deselect   : true
             });
@@ -264,7 +262,7 @@ var FabrikModalRepeat = my.Class({
             this.makeWin(target);
         }
 
-        var a = JSON.decode(this.field[target].get('value'));
+        var a = JSON.decode(this.field[target].val());
         if (typeOf(a) === 'null') {
             a = {};
         }
@@ -305,41 +303,47 @@ var FabrikModalRepeat = my.Class({
         }
         this.tmpl = tr;
         if (newrow) {
-            tr.dispose();
+            tr.remove();
         }
 
     },
 
+    /**
+     * Find a table <tr> node above the event.target  node
+     * @param {object} e Event
+     * @returns {jQuery}
+     */
     findTr: function (e) {
-        var tr = e.target.getParents().filter(function (p) {
-            return p.get('tag') === 'tr';
-        });
-        return (tr.length === 0) ? false : tr[0];
+        return $(e.target).closest('tr');
     },
 
     store: function (target) {
-        var c = this.content;
-        c = this.el[target];
+        var c = this.el[target], i, n, fields;
 
         // Get the current values
         var json = {};
-        for (var i = 0; i < this.names.length; i++) {
-            var n = this.names[i];
-            var fields = c.find('*[name*=' + n + ']');
-            json[n] = [];
-            fields.each(function (field) {
-                if (field.get('type') === 'radio') {
-                    if (field.get('checked') === true) {
-                        json[n].push(field.get('value'));
-                    }
-                } else {
-                    json[n].push(field.get('value'));
-                }
-            }.bind(this));
+        for (i = 0; i < this.names.length; i++) {
+            n = this.names[i];
+            fields = c.find('*[name*=' + n + ']');
+            json[n] = this.getStoreFieldValues(fields);
         }
         // Store them in the parent field.
         this.field[target].value = JSON.encode(json);
         return true;
+    },
+
+    getStoreFieldValues: function (fields) {
+        var values = [];
+        fields.each(function () {
+            if ($(this).prop('type') === 'radio') {
+                if ($(this).prop('checked') === true) {
+                    values.push($(this).val());
+                }
+            } else {
+                values.push($(this).val());
+            }
+        });
+        return values;
     }
 
 });

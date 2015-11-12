@@ -27,37 +27,37 @@ var FbAutocomplete = my.Class({
 	initialize: function (element, options) {
 		var self = this;
 		window.addEvent('domready', function () {
-			this.matchedResult = false;
-			this.setOptions(options);
+			self.matchedResult = false;
+			self.setOptions(options);
 			element = element.replace('-auto-complete', '');
-			this.options.labelelement = typeOf(document.id(element + '-auto-complete')) === "null" ? document.find(element + '-auto-complete') : document.id(element + '-auto-complete');
+			self.options.labelelement = $('#' + element + '-auto-complete').length === 0 ? $(element + '-auto-complete') : $('#' + element + '-auto-complete');
 			this.cache = {};
 			this.selected = -1;
 			this.mouseinsde = false;
 			$(document).on('keydown', function (e) {
 				self.doWatchKeys(e);
 			});
-			this.element = typeOf(document.id(element)) === "null" ? document.find(element) : document.id(element);
+			this.element = $('#' + element).length === 0 ? $(element) : $('#' + element);
 			this.buildMenu();
 			if (!this.getInputElement()) {
 				fconsole('autocomplete didn\'t find input element');
 				return;
 			}
-			this.getInputElement().setProperty('autocomplete', 'off');
-			this.getInputElement().addEvent('keyup', function (e) {
-				this.search(e);
-			}.bind(this));
+			this.getInputElement().prop('autocomplete', 'off');
+			this.getInputElement().on('keyup', function (e) {
+				self.search(e);
+			});
 
-			this.getInputElement().addEvent('blur', function (e) {
-				if (this.options.storeMatchedResultsOnly) {
-					if (!this.matchedResult) {
-						if (typeof(this.data) === 'undefined' || !(this.data.length === 1 && this.options.autoLoadSingleResult)) {
-							this.element.value = '';
+			this.getInputElement().on('blur', function (e) {
+				if (self.options.storeMatchedResultsOnly) {
+					if (!self.matchedResult) {
+						if (typeof(self.data) === 'undefined' || !(self.data.length === 1 && self.options.autoLoadSingleResult)) {
+							self.element.value = '';
 						}
 					}
 				}
-			}.bind(this));
-		}.bind(this));
+			});
+		});
 	},
 
 	search: function (e) {
@@ -75,7 +75,7 @@ var FbAutocomplete = my.Class({
 			return;
 		}
 		this.matchedResult = false;
-		var v = this.getInputElement().get('value');
+		var v = this.getInputElement().val();
 		if (v === '') {
 			this.element.value = '';
 		}
@@ -132,17 +132,18 @@ var FbAutocomplete = my.Class({
 
 	buildMenu: function ()
 	{
+		var self = this;
 		this.menu = $('<ul />').addClass('dropdown-menu').attr({'role': 'menu'}).css({'z-index': 1056});
 		this.menu.inject(document.body);
 		this.menu.addEvent('mouseenter', function () {
-			this.mouseinsde = true;
-		}.bind(this));
-		this.menu.addEvent('mouseleave', function () {
-			this.mouseinsde = false;
-		}.bind(this));
-		this.menu.addEvent('click:relay(a)', function (e, target) {
-			this.makeSelection(e, target);
-		}.bind(this));
+			self.mouseinsde = true;
+		});
+		this.menu.on('mouseleave', function () {
+			self.mouseinsde = false;
+		});
+		this.menu.on('click', 'a', function (e, target) {
+			self.makeSelection(e, target);
+		});
 	},
 
 	getInputElement: function () {
@@ -192,7 +193,8 @@ var FbAutocomplete = my.Class({
 		}
 		for (var i = 0; i < max; i ++) {
 			pair = data[i];
-			a = $('<a>').attr({'href': '#', 'data-value': pair.value, tabindex: '-1'}).text(pair.text);
+			a = $('<a>').attr({'href': '#', tabindex: '-1'})
+				.data('value', pair.value).text(pair.text);
 			li = $('<li>').adopt(a);
 			li.inject(ul);
 		}
@@ -202,12 +204,17 @@ var FbAutocomplete = my.Class({
 		return true;
 	},
 
+	/**
+	 * Make selection
+	 * @param {object} e  Event
+	 * @param {jQuery} li Li node
+	 */
 	makeSelection: function (e, li) {
 		e.preventDefault();
 		// $$$ tom - make sure an item was selected before operating on it.
-		if (typeOf(li) !== 'null') {
-			this.getInputElement().value = li.get('text');
-			this.element.value = li.getProperty('data-value');
+		if (li.length !== 0) {
+			this.getInputElement().value = li.text();
+			this.element.value = li.data('value');
 			this.closeMenu();
 			this.trigger('selection', [this, this.element.value]);
 			// $$$ hugh - need to fire change event, in case it's something like a join element
@@ -253,7 +260,7 @@ var FbAutocomplete = my.Class({
 	},
 
 	isMinTriggerlength: function () {
-		var v = this.getInputElement().get('value');
+		var v = this.getInputElement().val();
 		return v.length >= this.options.minTriggerChars;
 	},
 
@@ -270,11 +277,15 @@ var FbAutocomplete = my.Class({
 		return this.data.length > this.options.max ? this.options.max : this.data.length;
 	},
 
+	/**
+	 * Deal with the open / close of the menu based on the key down event
+	 * @param {object} e Key event
+	 */
 	doWatchKeys: function (e) {
 		if (document.activeElement !== this.getInputElement()) {
 			return;
 		}
-		var max = this.getListMax(), selected, selectEvnt;
+
 		if (!this.shown) {
 			// Stop enter from submitting when in in-line edit form.
 			if (parseInt(e.code, 10) === 13) {
@@ -289,43 +300,53 @@ var FbAutocomplete = my.Class({
 				this.closeMenu();
 			}
 			else {
-				if (e.key === 'enter' || e.key === 'tab') {
-					$(window).trigger('blur');
-				}
-				switch (e.code) {
-				case 40://down
-					if (!this.shown) {
-						this.openMenu();
-					}
-					if (this.selected + 1 <= max) {
-						this.selected ++;
-					}
-					this.highlight();
-					e.stopPropagation();
-					break;
-				case 38: //up
-					if (this.selected - 1 >= -1) {
-						this.selected --;
-						this.highlight();
-					}
-					e.stopPropagation();
-					break;
-				case 13://enter
-				case 9://tab
-					e.stopPropagation();
-					selected = this.getSelected();
-					if (selected) {
-						selectEvnt = jQuery.Event('click');
-						this.makeSelection(selectEvnt, selected);
-						this.closeMenu();
-					}
-					break;
-				case 27://escape
-					e.stopPropagation();
-					this.closeMenu();
-					break;
-				}
+				this.handleWatchKey(e);
+				e.stopPropagation();
 			}
+		}
+	},
+
+	/**
+	 * Handle the key down event
+	 * @param {object} e Key event
+	 */
+	handleWatchKey: function (e) {
+		var max = this.getListMax(), selected, selectEvnt;
+		if (e.key === 'enter' || e.key === 'tab') {
+			$(window).trigger('blur');
+		}
+		switch (e.code) {
+			case 40://down
+				if (!this.shown) {
+					this.openMenu();
+				}
+				if (this.selected + 1 <= max) {
+					this.selected ++;
+				}
+				this.highlight();
+
+				break;
+			case 38: //up
+				if (this.selected - 1 >= -1) {
+					this.selected --;
+					this.highlight();
+				}
+				e.stopPropagation();
+				break;
+			case 13://enter
+			case 9://tab
+				e.stopPropagation();
+				selected = this.getSelected();
+				if (selected) {
+					selectEvnt = jQuery.Event('click');
+					this.makeSelection(selectEvnt, selected);
+					this.closeMenu();
+				}
+				break;
+			case 27://escape
+				e.stopPropagation();
+				this.closeMenu();
+				break;
 		}
 	},
 

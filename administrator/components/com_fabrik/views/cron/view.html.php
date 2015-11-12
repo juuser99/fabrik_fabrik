@@ -82,7 +82,7 @@ class FabrikAdminViewCron extends JViewLegacy
 
 		$shim = array();
 		$dep = new stdClass;
-		$dep->deps = array('admin/pluginmanager');
+		$dep->deps = array('fab/fabrik', 'admin/pluginmanager');
 		$shim['admin/cron/admincron'] = $dep;
 
 		$opts = new stdClass;

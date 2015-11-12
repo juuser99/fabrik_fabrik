@@ -46,7 +46,7 @@ var ColourPicker = my.Class(FbElement, {
 
     constructor: function (element, options) {
         this.plugin = 'colourpicker';
-        if (typeOf(options.value) === 'null' || options.value[0] === 'undefined') {
+        if (options.value === null || options.value[0] === undefined) {
             options.value = [0, 0, 0, 1];
         }
 
@@ -125,27 +125,26 @@ var ColourPicker = my.Class(FbElement, {
     },
 
     setOutputs: function (output) {
+        var self = this;
         this.outputs = {};
         this.outputs.backgrounds = this.getContainer().find('.colourpicker_bgoutput');
         this.outputs.foregrounds = this.getContainer().find('.colourpicker_output');
 
-        this.outputs.backgrounds.each(function (i) {
+        this.outputs.backgrounds.each(function () {
 
             // Copy group, delete group add group - set outputs seems to be called twice
-            i.removeEvents('click');
-            i.addEvent('click', function (e) {
-                this.toggleWidget(e);
-            }.bind(this));
-
-        }.bind(this));
+            $(this).off('click');
+            $(this).on('click', function (e) {
+                self.toggleWidget(e);
+            });
+        });
 
         this.outputs.foregrounds.each(function (i) {
-            i.removeEvents('click');
-            i.addEvent('click', function (e) {
-                this.toggleWidget(e);
-            }.bind(this));
-
-        }.bind(this));
+            $(this).off('click');
+            $(this).on('click', function (e) {
+                self.toggleWidget(e);
+            });
+        });
     },
 
     createSliders: function (element) {
@@ -285,7 +284,7 @@ var ColourPickerSwatch = my.Class({
     },
 
     createColourSwatch: function (element) {
-        var j, self = this, i, swatchLine, line
+        var j, self = this, i, swatchLine, line,
         swatchDiv = $(document.createElement('div')).css({
             'float'      : 'left',
             'margin-left': '5px',

@@ -27,21 +27,21 @@ var PluginManager = my.Class({
         this.type = type;
         $(document).ready(function () {
             i;
-            self.accordion = new Fx.Accordion([], [], {
-                alwaysHide: true,
-                display   : -1,
-                duration  : 'short'
-            });
+            /*self.accordion = new Fx.Accordion([], [], {
+             alwaysHide: true,
+             display   : -1,
+             duration  : 'short'
+             });*/
             for (i = 0; i < plugins.length; i++) {
-                this.addTop(plugins[i]);
+                self.addTop(plugins[i]);
             }
-            this.periodical = setInterval(function () {
-                this.iniAccordion.call(this, true);
-            }, 500);
+            /*  this.periodical = setInterval(function () {
+             this.iniAccordion.call(this, true);
+             }, 500);*/
 
-            this.watchPluginSelect();
-            this.watchDelete();
-            this.watchAdd();
+            self.watchPluginSelect();
+            self.watchDelete();
+            self.watchAdd();
 
             var pluginArea = $('#plugins');
             pluginArea.on('click', 'h3.title', function () {
@@ -54,9 +54,8 @@ var PluginManager = my.Class({
                 target.toggleClass('pane-toggler-down');
             });
 
-            this.watchDescriptions(pluginArea);
+            self.watchDescriptions(pluginArea);
         });
-
     },
 
     /**
@@ -73,16 +72,16 @@ var PluginManager = my.Class({
         });
     },
 
-    iniAccordion: function () {
-        if (this.pluginTotal === this.plugins.length) {
-            if (this.plugins.length === 1) {
-                this.accordion.display(0);
-            } else {
-                this.accordion.display(-1);
-            }
-            clearInterval(this.periodical);
-        }
-    },
+    /*iniAccordion: function () {
+     if (this.pluginTotal === this.plugins.length) {
+     if (this.plugins.length === 1) {
+     this.accordion.display(0);
+     } else {
+     this.accordion.display(-1);
+     }
+     clearInterval(this.periodical);
+     }
+     },*/
 
     /**
      * Has the form finished loading and are there any outstanding ajax requests
@@ -110,7 +109,7 @@ var PluginManager = my.Class({
         var self = this;
         $('#addPlugin').on('click', function (e) {
             e.stopPropagation();
-            self.accordion.display(-1);
+            // self.accordion.display(-1);
             self.addTop();
         });
     },
@@ -140,15 +139,15 @@ var PluginManager = my.Class({
             loading = Joomla.JText._('COM_FABRIK_LOADING').toLowerCase(),
             txt = plugin !== '' ? plugin + ' ' + loading : loading;
 
-        a.adopt($(document.createElement('span')).addClass('pluginTitle').text(txt));
+        a.append($(document.createElement('span')).addClass('pluginTitle').text(txt));
         var toggler = $(document.createElement('div')).addClass('title pane-toggler accordion-heading')
-            .adopt($(document.createElement('strong')).adopt(a));
+            .append($(document.createElement('strong')).append(a));
         var body = $(document.createElement('div')).addClass('accordion-body');
 
-        div.adopt(toggler);
-        div.adopt(body);
-        div.inject($('#plugins'));
-        this.accordion.addSection(toggler, body);
+        div.append(toggler);
+        div.append(body);
+        div.appendTo($('#plugins'));
+        //this.accordion.addSection(toggler, body);
         var tt_temp = this.topTotal + 1; //added temp variable
 
         // Ajax request to load the first part of the plugin form (do[plugin]
@@ -169,15 +168,16 @@ var PluginManager = my.Class({
             'id'              : this.id
         };
 
-        var request = $.ajax({
-            url   : 'index.php',
-            data  : d,
-            update: body
-        }).always(function () {
-            if (Fabrik.debug) {
-                fconsole('Fabrik pluginmanager: Adding', self.type, 'entry', tt_temp.toString());
+        $.ajax({
+            url       : 'index.php',
+            data      : d,
+            beforeSend: function () {
+                if (Fabrik.debug) {
+                    fconsole('Fabrik pluginmanager: Adding', self.type, 'entry', tt_temp.toString());
+                }
             }
-        }).done(function () {
+        }).done(function (r) {
+            body.append(r);
             if (plugin !== '') {
                 // Sent temp variable as c to addPlugin, so they are aligned properly
                 self.addPlugin(plugin, tt_temp);
@@ -191,7 +191,7 @@ var PluginManager = my.Class({
         });
         this.topTotal++;
 
-        Fabrik.requestQueue.add(request);
+        //Fabrik.requestQueue.add(request);
     },
 
     // Bootstrap specific
@@ -199,13 +199,13 @@ var PluginManager = my.Class({
     updateBootStrap: function () {
         $('.radio.btn-group label').addClass('btn');
 
-        jQuery.each(document.find('.btn-group input[checked=checked]'), function (key, el) {
-            if (el.val() === '') {
-                $('label[for=' + el.prop('id') + ']').addClass('active btn-primary');
-            } else if (el.val() === '0') {
-                $('label[for=' + el.prop('id') + ']').addClass('active btn-danger');
+        $('.btn-group input[checked=checked]').each(function () {
+            if ($(this).val() === '') {
+                $('label[for=' + $(this).prop('id') + ']').addClass('active btn-primary');
+            } else if ($(this).val() === '0') {
+                $('label[for=' + $(this).prop('id') + ']').addClass('active btn-danger');
             } else {
-                $('label[for=' + el.prop('id') + ']').addClass('active btn-success');
+                $('label[for=' + $(this).prop('id') + ']').addClass('active btn-success');
             }
             $('*[rel=tooltip]').tooltip();
         });
@@ -228,7 +228,7 @@ var PluginManager = my.Class({
 
     watchPluginSelect: function () {
         var self = this;
-       $('#adminForm').on('change', 'select.elementtype', function (event) {
+        $('#adminForm').on('change', 'select.elementtype', function (event) {
             event.preventDefault();
             var plugin = $(this).val();
             var container = $(this).closest('.pluginContainer'),
@@ -244,14 +244,14 @@ var PluginManager = my.Class({
         var self = this;
         c = typeOf(c) === 'number' ? c : this.pluginTotal;
         if (plugin === '') {
-            $('#plugins').find('.actionContainer')[c].find('.pluginOpts').empty();
+            $($('#plugins').find('.actionContainer')[c]).find('.pluginOpts').empty();
             return;
         }
 
         // Ajax request to load the plugin content
         var request = new $.ajax({
-            url        : 'index.php',
-            data       : {
+            url       : 'index.php',
+            data      : {
                 'option': 'com_fabrik',
                 'view'  : 'plugin',
                 'format': 'raw',
@@ -260,33 +260,29 @@ var PluginManager = my.Class({
                 'c'     : c,
                 'id'    : this.id
             },
-            update     : $('#plugins').find('.actionContainer')[c].find('.pluginOpts'),
-            onRequest  : function () {
+            beforeSend: function () {
                 if (Fabrik.debug) {
                     fconsole('Fabrik pluginmanager: Loading', self.type, 'type', plugin, 'for entry', c.toString());
                 }
-            },
-            onSuccess  : function () {
-                var container = $('#plugins').find('.actionContainer')[c],
+            }
+        }).fail(function (jqXHR, textStatus) {
+                fconsole('Fabrik pluginmanager addPlugin ajax exception:', textStatus);
+            }).success(function (r) {
+
+                var container = $($('#plugins').find('.actionContainer')[c]),
                     title = container.find('span.pluginTitle'),
                     heading = plugin,
                     desc = container.find('input[name*=plugin_description]');
                 if (desc) {
                     heading += ': ' + desc.val();
                 }
+                container.find('.pluginOpts').html(r);
                 title.text(heading);
                 self.pluginTotal++;
                 self.updateBootStrap();
                 FabrikAdmin.reTip();
-            },
-            onFailure  : function (xhr) {
-                fconsole('Fabrik pluginmanager addPlugin ajax failed:', xhr);
-            },
-            onException: function (headerName, value) {
-                fconsole('Fabrik pluginmanager addPlugin ajax exception:', headerName, value);
-            }
-        });
-        Fabrik.requestQueue.add(request);
+            });
+        //Fabrik.requestQueue.add(request);
     },
 
     deletePlugin: function (e) {
@@ -348,7 +344,7 @@ var PluginManager = my.Class({
             });
         }
         e.stopPropagation();
-        $(e.target).closest('.actionContainer').dispose();
+        $(e.target).closest('.actionContainer').remove();
     }
 
 });

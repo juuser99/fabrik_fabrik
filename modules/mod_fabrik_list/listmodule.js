@@ -84,9 +84,9 @@ var fabrikTableModule = my.Class({
 		// table doesn't attach the watchRows events to the new edit links (even
 		// though it calls
 		// watchRows() when it updates itself.
-		this.blocks[0].getElements('.fabrik___rowlink').removeEvents();
+		this.blocks[0].getElements('.fabrik___rowlink').off();
 		oTable.watchRows();
-		this.blocks[0].getElements('.fabrik___rowlink').addEvent('click', function (event) {
+		this.blocks[0].getElements('.fabrik___rowlink').on('click', function (event) {
 			if (!document.id(this.winname)) {
 				this.blocks[1].show();
 				if (this.options.mooversion > 1.1) {
@@ -104,7 +104,7 @@ var fabrikTableModule = my.Class({
 	},
 
 	watchViewLinks: function () {
-		this.blocks[0].getElements('.fabrik___viewrowlink').addEvent('click', function (event) {
+		this.blocks[0].getElements('.fabrik___viewrowlink').on('click', function (event) {
 			if (!$(this.winname)) {
 				this.blocks[1].show();
 				if (this.options.mooversion > 1.1) {

@@ -25,11 +25,11 @@ AdvancedSearch = my.Class({
         this.form = $('#advanced-search-win' + this.options.listref).find('form');
         this.trs = Array.from([]);
         if (add.length > 0) {
-            add.removeEvents('click');
+            add.off('click');
             add.on('click', function (e) {
                 self.addRow(e);
             });
-            clearAll.removeEvents('click');
+            clearAll.off('click');
             clearAll.on('click', function (e) {
                 self.resetForm(e);
             });
@@ -91,7 +91,7 @@ AdvancedSearch = my.Class({
         var remove = this.form.find('.advanced-search-remove-row'),
             self = this;
         //should really just delegate these events from the adv search table
-        remove.removeEvents();
+        remove.off();
         remove.on('click', function (e) {
             self.removeRow(e);
         });
@@ -100,7 +100,7 @@ AdvancedSearch = my.Class({
     watchElementList: function () {
         var select = this.form.find('select.key'),
             self = this;
-        select.removeEvents();
+        select.off();
         select.on('change', function (e) {
             self.updateValueInput(e);
         });
@@ -181,7 +181,7 @@ AdvancedSearch = my.Class({
                 duration  : 800,
                 transition: Fx.Transitions.Quart.easeOut,
                 onComplete: function () {
-                    tr.dispose();
+                    tr.remove();
                 }
             });
             fx.start({
@@ -203,7 +203,7 @@ AdvancedSearch = my.Class({
         }
         table.find('tbody tr').each(function (i) {
             if (i >= 1) {
-                $(this).dispose();
+                $(this).remove();
             }
             if (i === 0) {
                 $(this).find('.inputbox').each(function () {

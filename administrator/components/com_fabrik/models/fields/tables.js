@@ -45,7 +45,7 @@ var tablesElement = my.Class({
             self.updateMe();
         });
         // See if there is a connection selected
-        var v = this.cnn.get('value');
+        var v = this.cnn.val();
         if (v !== '' && v !== -1) {
             this.updateMe();
         }

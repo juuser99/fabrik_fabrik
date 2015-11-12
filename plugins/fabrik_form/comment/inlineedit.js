@@ -61,7 +61,7 @@ var InlineEdit = my.Class({
 
     newLine: function () {
         this.element.innerHTML = this.element.innerHTML.replace('&nbsp;', '');
-        this.input.removeEvents('keydown');
+        this.input.off('keydown');
     },
 
     complete: function () {

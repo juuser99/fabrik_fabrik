@@ -15,11 +15,11 @@ Dependencies:
 (function(){
 	Slideshow.Flash = new Class({
 		Extends: Slideshow,
-	
+
 		options: {
 			color: ['#FFF']
 		},
-	
+
 	/**
 	Constructor: initialize
 		Creates an instance of the Slideshow class.

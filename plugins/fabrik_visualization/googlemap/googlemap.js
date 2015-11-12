@@ -527,7 +527,7 @@ var FbGoogleMapViz = my.Class({
                     .html(linkText);
 
                 // Store the group key for later use in the toggle co
-                a.store('data-groupkey', i.groupkey);
+                a.data('groupkey', i.groupkey);
                 var h = $(document.createElement('div')).addClass('groupedContainer' + k).adopt(a);
                 h.inject(c);
             }
@@ -564,7 +564,7 @@ var FbGoogleMapViz = my.Class({
         $('#' + this.options.container).find('.grouped_sidebar a').removeClass('active');
         if (clicked) {
             clicked.addClass('active');
-            this.toggledGroup = clicked.retrieve('data-groupkey');
+            this.toggledGroup = clicked.data('data-groupkey');
         }
 
         this.markers.each(function (marker) {

@@ -50,10 +50,10 @@ var FloatingTips = my.Class({
 			return;
 		}
 		this.options = $.extend(this.options, options);
-		this.options.fxProperties = {transition: eval(this.options.tipfx), duration: this.options.duration};
+		this.options.fxProperties = {duration: this.options.duration};
 
 		// Any tip (not necessarily in this instance has asked for all other tips to be hidden.
-		window.addEvent('tips.hideall', function (e, trigger) {
+		$(document).on('tips.hideall', function (e, trigger) {
 			this.hideOthers(trigger);
 		}.bind(this));
 		if (elements) {
@@ -62,7 +62,7 @@ var FloatingTips = my.Class({
 	},
 
 	attach: function (elements) {
-		this.elements = document.getElements(elements);
+		this.elements = $(elements);
 		this.elements.each(function (trigger) {
 			var thisOpts = JSON.decode(trigger.get('opts', '{}').opts);
 			thisOpts = thisOpts ? thisOpts : {};
@@ -74,9 +74,9 @@ var FloatingTips = my.Class({
 			if (opts.content === 'title') {
 				opts.content = trigger.get('title');
 				trigger.erase('title');
-			} else if (typeOf(opts.content) === 'function') {
+			} else if ($.type(opts.content) === 'function') {
 				var c = opts.content(trigger);
-				opts.content = typeOf(c) === 'null' ? '' : c.innerHTML;
+				opts.content = c === null ? '' : c.innerHTML;
 			}
 			// Should always use the default placement function which can then via the
 			// Fabrik event allow for custom tip placement

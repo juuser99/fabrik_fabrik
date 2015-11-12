@@ -1457,7 +1457,7 @@ var FbForm = my.Class({
                 duration  : 300,
                 onComplete: function () {
                     if (subgroups.length > 1) {
-                        subGroup.dispose();
+                        subGroup.remove();
                     }
 
                     jQuery.each(self.formElements, function (k, e) {
@@ -1605,7 +1605,7 @@ var FbForm = my.Class({
 
             var sub = subgroups[0].find('.fabrikSubGroupElements');
             if (sub.length === 0) {
-                group.find('.fabrikNotice').dispose();
+                group.find('.fabrikNotice').remove();
                 sub = subgroups[0];
 
                 // Table group
@@ -1613,7 +1613,7 @@ var FbForm = my.Class({
                 add.inject(sub.find('td.fabrikGroupRepeater'));
                 sub.css('display', '');
             } else {
-                subgroups[0].find('.fabrikNotice').dispose();
+                subgroups[0].find('.fabrikNotice').remove();
                 subgroups[0].find('.fabrikSubGroupElements').show();
             }
 

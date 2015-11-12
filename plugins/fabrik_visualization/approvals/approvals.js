@@ -42,7 +42,7 @@ var fbVisApprovals = my.Class({
             position: 'right',
             content : function (e) {
                 var r = e.getNext();
-                r.store('trigger', e);
+                r.data('trigger', e);
                 return r;
             },
             hideOn  : 'mousedown'

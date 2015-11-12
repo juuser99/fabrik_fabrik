@@ -37,13 +37,13 @@ var FbListFilter = my.Class({
         this.filterContainer.hide();
         this.filtersInHeadings.toggle();
 
-        if (typeOf(this.container) === 'null') {
+        if (this.container.length === 0) {
             return;
         }
         this.getList();
         var c = this.container.find('.clearFilters');
-        c.removeEvents();
-        c.addEvent('click', function (e) {
+        c.off();
+        c.on('click', function (e) {
             var plugins;
             e.stopPropagation();
 
@@ -150,18 +150,18 @@ var FbListFilter = my.Class({
     getFilterData: function () {
         var h = {};
         this.container.find('.fabrik_filter').each(function (f) {
-            if (f.id.test(/value$/)) {
-                var key = f.id.match(/(\S+)value$/)[1];
+            if ($(this).prop('id').test(/value$/)) {
+                var key = $(this).prop('id').match(/(\S+)value$/)[1];
                 // $$$ rob added check that something is select - possibly causes js
                 // error in ie
-                if (f.get('tag') === 'select' && f.selectedIndex !== -1) {
-                    h[key] = document.id(f.options[f.selectedIndex]).get('text');
+                if ($(this).prop('tagName') === 'SELECT' && this.selectedIndex !== -1) {
+                    h[key] = $('#' + this.options[this.selectedIndex]).text();
                 } else {
-                    h[key] = f.get('value');
+                    h[key] = $(this).val();
                 }
-                h[key + '_raw'] = f.get('value');
+                h[key + '_raw'] = $(this).val();
             }
-        }.bind(this));
+        });
         return h;
     },
 

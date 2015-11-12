@@ -6,9 +6,9 @@
  */
 
 var doGeoCode = function (btn) {
-	var uberC = btn.retrieve('uberC'),
-		mapid = btn.retrieve('mapid'),
-		address =  btn.retrieve('fld').value,
+	var uberC = btn.data('uberC'),
+		mapid = btn.data('mapid'),
+		address =  btn.data('fld').value,
 		geocoder = new google.maps.Geocoder();
 
 	if (!Fabrik.radiusSearchResults) {
@@ -58,19 +58,19 @@ function geoCode() {
 			var c = map.closest('.radius_search_geocode');
 			var btn = c.find('button');
 			var trigger = btn ? btn : c.find('.radius_search_geocode_field');
-			if (trigger.retrieve('events-added', 0).toInt() !== 1) {
+			if (trigger.data('events-added', 0).toInt() !== 1) {
 				Fabrik.radiusSearch[map.id] = typeOf(Fabrik.radiusSearch[map.id]) === 'null' ? {} : Fabrik.radiusSearch[map.id];
 				Fabrik.radiusSearch[map.id].map = new google.maps.Map(map, mapOptions);
 
 				var uberC = c.closest('.radius_search');
 
-				trigger.store('events-added', 1);
-				trigger.store('uberC', uberC);
-				trigger.store('mapid', map.id);
+				trigger.data('events-added', 1);
+				trigger.data('uberC', uberC);
+				trigger.data('mapid', map.id);
 
 
 				var fld = c.find('.radius_search_geocode_field');
-				trigger.store('fld', fld);
+				trigger.data('fld', fld);
 
 				if (btn.length !== 0) {
 					btn.on('click', function (e) {
@@ -270,12 +270,12 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 
 			// Show the map.
 			c.css({'position': 'relative', 'left': 0});
-			var w = b.retrieve('win');
+			var w = b.data('win');
 			w.center();
 			w.open();
 		});
 
-		b.store('win', win);
+		b.data('win', win);
 		this.button = b;
 		this.win = win;
 
@@ -290,7 +290,7 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 	 * clearing filters
 	 */
 	injectIntoListForm: function () {
-		var win = this.button.retrieve('win');
+		var win = this.button.data('win');
 		var c = win.contentEl.clone();
 		c.hide();
 		this.button.parent().adopt(c);
