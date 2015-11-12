@@ -146,15 +146,16 @@ var FbList = my.Class({
     },
 
     watchGroupByMenu: function () {
+        var self = this;
         if (this.options.ajax) {
-            this.form.on('click:relay(*[data-groupBy])', function (e, target) {
-                this.options.groupedBy = target.get('data-groupBy');
+            this.form.on('click', '*[data-groupBy]', function (e) {
+                self.options.groupedBy = $(this).data('groupBy');
                 if (e.rightClick) {
                     return;
                 }
                 e.preventDefault();
-                this.updateRows();
-            }.bind(this));
+                self.updateRows();
+            });
         }
     },
 
@@ -167,8 +168,7 @@ var FbList = my.Class({
             minimizable: false,
             width      : 360,
             height     : 120,
-            content    : '',
-            bootstrap  : true
+            content    : ''
         };
         if (this.options.view === 'csv') {
 
@@ -539,7 +539,7 @@ var FbList = my.Class({
     watchOrder: function () {
         var elementId = false,
             hs = $('#' + this.options.form).find('.fabrikorder, .fabrikorder-asc, .fabrikorder-desc');
-        hs.removeEvents('click');
+        hs.off('click');
         hs.each(function (h) {
             h.on('click', function (e) {
                 var img = 'ordernone.png',
@@ -563,25 +563,25 @@ var FbList = my.Class({
                  * to specifically remove the current class and add the new one.
                  */
 
-                switch (h.className) {
+                switch (h[0].className) {
                     case 'fabrikorder-asc':
                         newOrderClass = 'fabrikorder-desc';
-                        bsClassAdd = h.get('data-sort-desc-icon');
-                        bsClassRemove = h.get('data-sort-asc-icon');
+                        bsClassAdd = h.data('sort-desc-icon');
+                        bsClassRemove = h.data('sort-asc-icon');
                         orderdir = 'desc';
                         img = 'orderdesc.png';
                         break;
                     case 'fabrikorder-desc':
                         newOrderClass = 'fabrikorder';
-                        bsClassAdd = h.get('data-sort-icon');
-                        bsClassRemove = h.get('data-sort-desc-icon');
+                        bsClassAdd = h.data('sort-icon');
+                        bsClassRemove = h.data('sort-desc-icon');
                         orderdir = '-';
                         img = 'ordernone.png';
                         break;
                     case 'fabrikorder':
                         newOrderClass = 'fabrikorder-asc';
-                        bsClassAdd = h.get('data-sort-asc-icon');
-                        bsClassRemove = h.get('data-sort-icon');
+                        bsClassAdd = h.data('sort-asc-icon');
+                        bsClassRemove = h.data('sort-icon');
                         orderdir = 'asc';
                         img = 'orderasc.png';
                         break;
@@ -605,12 +605,12 @@ var FbList = my.Class({
                         var otherIcon = otherH.firstElementChild;
                         switch (otherH.className) {
                             case 'fabrikorder-asc':
-                                otherIcon.removeClass(otherH.get('data-sort-asc-icon'));
-                                otherIcon.addClass(otherH.get('data-sort-icon'));
+                                otherIcon.removeClass(otherH.data('sort-asc-icon'));
+                                otherIcon.addClass(otherH.data('sort-icon'));
                                 break;
                             case 'fabrikorder-desc':
-                                otherIcon.removeClass(otherH.get('data-sort-desc-icon'));
-                                otherIcon.addClass(otherH.get('data-sort-icon'));
+                                otherIcon.removeClass(otherH.data('sort-desc-icon'));
+                                otherIcon.addClass(otherH.data('sort-icon'));
                                 break;
                             case 'fabrikorder':
                                 break;
@@ -633,11 +633,12 @@ var FbList = my.Class({
     },
 
     storeCurrentValue: function () {
-        this.getFilters().each(function (f) {
-            if (this.options.filterMethod !== 'submitform') {
-                f.store('initialvalue', f.val());
+        var self = this;
+        this.getFilters().each(function () {
+            if (self.options.filterMethod !== 'submitform') {
+                $(this).data('initialvalue', f.val());
             }
-        }.bind(this));
+        });
     },
 
     watchFilters: function () {
@@ -663,7 +664,7 @@ var FbList = my.Class({
 
         // Watch submit if present regardless of this.options.filterMethod
         if (submit) {
-            submit.removeEvents();
+            submit.off();
             submit.on('click', function (e) {
                 e.stopPropagation();
                 this.doFilter();
@@ -896,7 +897,7 @@ var FbList = my.Class({
                     'opacity': 0
                 });
             }).chain(function () {
-                row.dispose();
+                row.remove();
                 self.checkEmpty();
             });
         }
@@ -907,7 +908,7 @@ var FbList = my.Class({
 
     clearRows: function () {
         this.list.find('.fabrik_row').each(function (tr) {
-            tr.dispose();
+            tr.remove();
         });
     },
 
@@ -1312,13 +1313,12 @@ var FbGroupedToggler = my.Class({
 
     options: {
         collapseOthers: false,
-        startCollapsed: false,
-        bootstrap     : false
+        startCollapsed: false
     },
 
     constructor: function (container, options) {
-        var rows, h, img, state;
-        if (typeOf(container) === 'null') {
+        var rows, h, img, state, self = this;
+        if (container === undefined) {
             return;
         }
         this.options = $.extend(this.options, options);
@@ -1334,70 +1334,67 @@ var FbGroupedToggler = my.Class({
             e.stopPropagation();
             e.preventDefault(); //should work according to http://mootools.net/blog/2011/09/10/mootools-1-4-0/
 
-            if (this.options.collapseOthers) {
-                this.collapse();
+            if (self.options.collapseOthers) {
+                self.collapse();
             }
-            h = $(e.target).closest('.fabrik_groupheading');
-            img = this.options.bootstrap ? h.find('*[data-role="toggle"]') : h.find('img');
-            state = img.retrieve('showgroup', true);
+            h = $(this).closest('.fabrik_groupheading');
+            img = h.find('*[data-role="toggle"]');
+            state = img.data('showgroup');
+            state = state === undefined ? true : state;
 
-            if (h.getNext() && h.getNext().hasClass('fabrik_groupdata')) {
+            if (h.next().hasClass('fabrik_groupdata')) {
                 // For div tmpl
-                rows = h.getNext();
+                rows = h.next();
             } else {
-                rows = h.parent().getNext();
+                rows = h.parent().next();
             }
             state ? rows.hide() : rows.show();
-            this.setIcon(img, state);
+            self.setIcon(img, state);
             state = state ? false : true;
-            img.store('showgroup', state);
+            img.data('showgroup', state);
             return false;
-        }.bind(this));
+        });
     },
 
     setIcon: function (img, state) {
-        if (this.options.bootstrap) {
-            var expandIcon = img.get('data-expand-icon'),
-                collapsedIcon = img.get('data-collapse-icon');
-            if (state) {
-                img.removeClass(expandIcon);
-                img.addClass(collapsedIcon);
-            } else {
-                img.addClass(expandIcon);
-                img.removeClass(collapsedIcon);
-            }
+        var expandIcon = img.data('expand-icon'),
+            collapsedIcon = img.data('collapse-icon');
+        if (state) {
+            img.removeClass(expandIcon);
+            img.addClass(collapsedIcon);
         } else {
-            if (state) {
-                img.src = img.src.replace('orderasc', 'orderneutral');
-            } else {
-                img.src = img.src.replace('orderneutral', 'orderasc');
-            }
+            img.addClass(expandIcon);
+            img.removeClass(collapsedIcon);
         }
     },
 
     collapse: function () {
+        var selector = 'i',
+            self = this,
+            i = this.container.find('.fabrik_groupheading a ' + selector);
+
         this.container.find('.fabrik_groupdata').hide();
-        var selector = this.options.bootstrap ? 'i' : 'img';
-        var i = this.container.find('.fabrik_groupheading a ' + selector);
+
         if (i.length === 0) {
             i = this.container.find('.fabrik_groupheading ' + selector);
         }
         i.each(function (img) {
             img.store('showgroup', false);
-            this.setIcon(img, true);
-        }.bind(this));
+            self.setIcon(img, true);
+        });
     },
 
     expand: function () {
+        var self = this,
+            i = this.container.find('.fabrik_groupheading a img');
         this.container.find('.fabrik_groupdata').show();
-        var i = this.container.find('.fabrik_groupheading a img');
         if (i.length === 0) {
             i = this.container.find('.fabrik_groupheading img');
         }
         i.each(function (img) {
             img.store('showgroup', true);
-            this.setIcon(img, false);
-        }.bind(this));
+            self.setIcon(img, false);
+        });
     },
 
     toggle: function () {
@@ -1419,13 +1416,14 @@ var FbListActions = my.Class({
     },
 
     constructor: function (list, options) {
+        var self = this;
         this.options = $.extend(this.options, options);
         this.list = list; // main list js object
         this.actions = [];
         this.setUpSubMenus();
         Fabrik.on('fabrik.list.update', function (list, json) {
-            this.observe();
-        }.bind(this));
+            self.observe();
+        });
         this.observe();
     },
 
@@ -1459,7 +1457,7 @@ var FbListActions = my.Class({
                     content : c
                 });
                 var tip = new FloatingTips(trigger, tipOpts);
-                el.dispose();
+                el.remove();
             }
         });
     },
@@ -1519,7 +1517,7 @@ var FbListActions = my.Class({
                             return !e.target.checked;
                         },
                         showFn   : function (e, trigger) {
-                            Fabrik.activeRow = ul.parent().retrieve('activeRow');
+                            Fabrik.activeRow = ul.parent().data('activeRow');
                             trigger.store('list', this.list);
                             return e.target.checked;
                         }.bind(this.list)
@@ -1536,13 +1534,11 @@ var FbListActions = my.Class({
         });
         // watch the top/master chxbox
         var chxall = this.list.form.find('input[name=checkAll]');
-        if (typeOf(chxall) !== 'null') {
-            chxall.store('listid', this.list.id);
-        }
+        chxall.data('listid', this.list.id);
 
         var c = function (el) {
             var p = el.closest('.fabrik___heading');
-            return typeOf(p) !== 'null' ? p.find(this.options.selector) : '';
+            return p.length !== 0 ? p.find(this.options.selector) : '';
         }.bind(this);
 
         var t = Fabrik.tips ? Object.clone(Fabrik.tips.options) : {};
@@ -1557,7 +1553,7 @@ var FbListActions = my.Class({
                 return !e.target.checked;
             },
             showFn   : function (e, trigger) {
-                trigger.retrieve('tip').click.store('list', this.list);
+                trigger.data('tip').click.store('list', this.list);
                 return e.target.checked;
             }.bind(this.list)
         });

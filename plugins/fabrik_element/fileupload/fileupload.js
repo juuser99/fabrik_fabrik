@@ -478,7 +478,7 @@ var FbFileUpload = my.Class(FbFileElement, {
                 resizebutton.show();
                 resizebutton.href = response.uri;
                 resizebutton.id = 'resizebutton_' + file.id;
-                resizebutton.store('filepath', response.filepath);
+                resizebutton.data('filepath', response.filepath);
             }
             if (this.widget) {
                 this.widget.setImage(response.uri, response.filepath, file.params);
@@ -638,7 +638,7 @@ var FbFileUpload = my.Class(FbFileElement, {
         e.stopPropagation();
         var a = e.target.closest();
         if (this.widget) {
-            this.widget.setImage(a.href, a.retrieve('filepath'));
+            this.widget.setImage(a.href, a.data('filepath'));
         }
     },
 

@@ -380,7 +380,7 @@
 				<option value="2">JYES</option>
 		</field>
 
-		<field name="tipfx"
+		<!--<field name="tipfx"
 			description="COM_FABRIK_TIP_FX_DESC"
 			label="COM_FABRIK_TIP_FX_LABEL"
 			default="linear"
@@ -396,9 +396,9 @@
 				<option value="Back">Back</option>
 				<option value="Bounce">Bounce</option>
 				<option value="Elastic">Elastic</option>
-		</field>
+		</field>-->
 
-		<field name="tipfx_ease"
+		<!--<field name="tipfx_ease"
 			default="easeIn"
 			description="COM_FABRIK_TIP_EASE_DESC"
 			label="COM_FABRIK_TIP_EASE_LABEL"
@@ -406,7 +406,7 @@
 				<option value="easeIn">In</option>
 				<option value="easeOut">Out</option>
 				<option value="easeInOut">InOut</option>
-		</field>
+		</field>-->
 
 		<field name="tipfx_duration"
 			size="3"

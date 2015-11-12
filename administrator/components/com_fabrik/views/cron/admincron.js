@@ -26,19 +26,18 @@ var CronAdmin = my.Class(PluginManager, {
 	},
 
 	changePlugin: function (e) {
-		var myAjax = new Request.HTML({
+		var self = this;
+		$.ajax({
 			url: 'index.php',
 			'data': {
 				'option': 'com_fabrik',
 				'task': 'cron.getPluginHTML',
 				'format': 'raw',
-				'plugin': e.target.get('value')
-			},
-			'update': $('#plugin-container'),
-			'onComplete': function () {
-				this.updateBootStrap();
-			}.bind(this)
-
-		}).send();
+				'plugin': $(e.target).val()
+			}
+		}).complete(function (r) {
+			$('#plugin-container').html(r);
+			self.updateBootStrap();
+		});
 	}
 });

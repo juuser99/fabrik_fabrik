@@ -469,7 +469,7 @@ var FbDateTime = my.Class(FbElement, {
             this.getTimeField();
             this.getTimeButton();
             if (this.timeButton) {
-                this.timeButton.removeEvents('click');
+                this.timeButton.off('click');
                 this.timeButton.on('click', function (e) {
                     e.stopPropagation();
                     self.showTime();
@@ -671,26 +671,24 @@ var FbDateTime = my.Class(FbElement, {
         });
 
         var clickEvent = function (e) {
-                self.minute = self.formatMinute(e.target.innerHTML);
+                self.minute = self.formatMinute($(e.target).html());
                 self.stateTime();
                 self.setActive();
             },
             overEvent = function (e) {
-                var h = e.target;
-                if (self.minute !== this.formatMinute(h.html())) {
-                    $(this).addClass('btn-info');
+                if (self.minute !== this.formatMinute($(e.target).html())) {
+                    $(e.target).addClass('btn-info');
                 }
             },
             outEvent = function (e) {
-                var h = e.target;
-                if (this.minute !== this.formatMinute(h.innerHTML)) {
-                    e.target.removeClass('btn-info');
+                if (this.minute !== this.formatMinute($(e.target).html())) {
+                    $(e.target).removeClass('btn-info');
                 }
             };
 
         for (i = 0; i < 12; i++) {
             h = $(document.createElement('a')).addClass('btn fbdateTime-minute btn-mini').css({'width': '10px'});
-            h.innerHTML = (i * 5);
+            h.html(i * 5);
             d2.appendChild(h);
             h.on('click', clickEvent);
             h.on('mouseover', overEvent);

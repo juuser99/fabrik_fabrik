@@ -76,7 +76,7 @@ var elementElement = my.Class({
 	 */
 	addPlaceHolder: function () {
 		var list = this.el.parent().find('select');
-		this.insertTextAtCaret(this.el, '{' + list.get('value') + '}');
+		this.insertTextAtCaret(this.el, '{' + list.val() + '}');
 	},
 
 	getOpts: function () {

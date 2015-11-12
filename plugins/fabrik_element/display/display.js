@@ -12,7 +12,7 @@ var FbDisplay = my.Class(FbElement, {
 
 	update: function (val) {
 		if (this.getElement()) {
-			this.element.innerHTML = val;
+			this.element.html(val);
 		}
 	}
 });

@@ -71,7 +71,7 @@ var Suboptions = my.Class({
             e.preventDefault();
             var trs = self.element.find('tbody tr');
             if (trs.length > 1) {
-                $(this).closest('tr').dispose();
+                $(this).closest('tr').remove();
             }
         });
     },
@@ -84,7 +84,7 @@ var Suboptions = my.Class({
     removeSubElement: function (e) {
         var id = e.target.id.replace('sub_delete_', '');
         if ($('#sub_subElementBody').find('li').length > 1) {
-            $('#sub_content_' + id).dispose();
+            $('#sub_content_' + id).remove();
         }
         e.stopPropagation();
     },

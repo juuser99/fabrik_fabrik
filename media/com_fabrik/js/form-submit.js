@@ -29,10 +29,8 @@ var FbFormSubmit = my.Class({
 	/**
 	 * Add form element to the broker
 	 *
-	 * @param   string   key     Element key
-	 * @param   element  Object  Element object
-	 *
-	 * @return  void
+	 * @param {string}   key      Element key
+	 * @param {object}   element  Element object
 	 */
 	addElement: function (key, element) {
 		this.elements[key] = element;
@@ -41,7 +39,7 @@ var FbFormSubmit = my.Class({
 	/**
 	 * Is the broker already running
 	 *
-	 * @return  bool
+	 * @return  {bool}
 	 */
 	enabled: function () {
 		return this.running;
@@ -50,10 +48,8 @@ var FbFormSubmit = my.Class({
 	/**
 	 * Called from form.js.
 	 *
-	 * @param   function  cb  Callback - fired once all elements have completed
+	 * @param {function}  cb  Callback - fired once all elements have completed
 	 *                        their own onsubmit callbacks and return true
-	 *
-	 * @return  void
 	 */
 	submit: function (cb) {
 		var self = this;
@@ -72,9 +68,7 @@ var FbFormSubmit = my.Class({
 	/**
 	 * Periodical checker on the element callback state (stored in this.results)
 	 *
-	 * @param   function  cb  Main submit() callback
-	 *
-	 * @return  void
+	 * @param {function} cb  Main submit() callback
 	 */
 	check: function (cb) {
 		var values = Object.values(this.results);

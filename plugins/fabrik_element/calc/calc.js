@@ -126,7 +126,7 @@ var FbCalc = my.Class(FbElement, {
 
     update: function (val) {
         if (this.getElement()) {
-            this.element.innerHTML = val;
+            this.element.html(val);
             this.options.value = val;
         }
     },

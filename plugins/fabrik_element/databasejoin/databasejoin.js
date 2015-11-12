@@ -543,13 +543,13 @@ var FbDatabasejoin = my.Class(FbElement, {
 			var h = this.form.getFormData();
 
 			val.each(function (v) {
-				if (typeOf(h[v]) !== 'null') {
-					this.element.innerHTML += h[v] + '<br />';
+				if (h[v] !== null) {
+					this.element.html(this.element.html() + h[v] + '<br />');
 				} else {
 					//for detailed view prev/next pagination v is set via elements
 					//getROValue() method and is thus in the correct format - not sure that
 					// h.get(v) is right at all but leaving in incase i've missed another scenario
-					this.element.innerHTML += v + '<br />';
+					this.element.html(this.element.html() + v + '<br />');
 				}
 			}.bind(this));
 			return;
@@ -559,7 +559,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 
 	setValue: function (val) {
 		var found = false;
-		if (typeOf(this.element.options) !== 'null') { //needed with repeat group code
+		if (this.element.options !== null) { //needed with repeat group code
 			for (var i = 0; i < this.element.options.length; i++) {
 				if (this.element.options[i].value === val) {
 					this.element.options[i].selected = true;

@@ -33,14 +33,13 @@ var FbRadio = my.Class(FbElementList, {
 		}
 		c.find('.radio.btn-group label').addClass('btn');
 
-
-		c.find(".btn-group input[checked=checked]").each(function (input) {
-			var label = input.closest('label');
-			if (typeOf(label) === 'null') {
+		c.find('.btn-group input[checked=checked]').each(function (input) {
+			var label = input.closest('label'), v;
+			if (label.length === 0) {
 				// J3.2 button group markup - label is after input (no longer the case)
 				label = input.getNext();
 			}
-			v = input.get('value');
+			v = input.val();
 			if (v === '') {
 				label.addClass('active btn-primary');
 			} else if (v === '0') {
@@ -85,10 +84,12 @@ var FbRadio = my.Class(FbElementList, {
 		var v = input.val();
 		var fabchecked = parseInt(input.data('fabchecked'), 10);
 
-		// Protostar in J3.2 adds its own btn-group js code - need to thus apply this section even after input has been unchecked
+		// Protostar in J3.2 adds its own btn-group js code -
+		// need to thus apply this section even after input has been unchecked
 		if (!input.get('checked') || fabchecked === 1) {
 			if (label) {
-				label.closest('.btn-group').find('label').removeClass('active').removeClass('btn-success').removeClass('btn-danger').removeClass('btn-primary');
+				label.closest('.btn-group').find('label').removeClass('active')
+					.removeClass('btn-success').removeClass('btn-danger').removeClass('btn-primary');
 				if (v === '') {
 					label.addClass('active btn-primary');
 				} else if (v.toInt() === 0) {
@@ -99,7 +100,7 @@ var FbRadio = my.Class(FbElementList, {
 			}
 			input.set('checked', true);
 
-			if (typeOf(fabchecked) === 'null') {
+			if (typeof(fabchecked) === null) {
 				input.set('fabchecked', 1);
 			}
 		}
@@ -156,14 +157,14 @@ var FbRadio = my.Class(FbElementList, {
 	update: function (val) {
 		if (!this.options.editable) {
 			if (val === '') {
-				this.element.innerHTML = '';
+				this.element.html('');
 				return;
 			}
-			this.element.innerHTML = this.options.data[val];
+			this.element.html(this.options.data[val]);
 			return;
 		} else {
 			var els = this._getSubElements();
-			if (typeOf(val) === 'array') {
+			if ($.isArray(val) === 'array') {
 				els.each(function (el) {
 					if (val.contains(el.value)) {
 						this.setButtonGroupCSS(el);

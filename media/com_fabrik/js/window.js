@@ -322,7 +322,7 @@ Fabrik.Window = my.Class({
                 Fabrik.loader.start(u);
 
                 if (this.iframeEl) {
-                    this.iframeEl.dispose();
+                    this.iframeEl.remove();
                 }
                 this.iframeEl = $('<iframe />').addClass('fabrikWindowIframe').attr({
                     'id'          : this.options.id + '_iframe',
@@ -351,7 +351,7 @@ Fabrik.Window = my.Class({
         var titleHeight = this.window.find('.' + this.handleClass());
         titleHeight = titleHeight ? titleHeight.getSize().y : 25;
         var footer = this.window.find('.bottomBar').getSize().y;
-        this.contentWrapperEl.css('height', this.window.getDimensions().height - (titleHeight + footer));
+        this.contentWrapperEl.css('height', this.window.height() - (titleHeight + footer));
         this.contentWrapperEl.css('width', this.window.getDimensions().width - 2);
 
         // Resize iframe when window is resized

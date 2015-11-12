@@ -88,18 +88,18 @@ defined('_JEXEC') or die('Restricted access');
 <script type="text/javascript"><!--
 
 function watchAttachements() {
-	document.getElements('.addattachment').removeEvents();
-	document.getElements('.delattachment').removeEvents();
-	document.getElements('.addattachment').addEvent('click', function (e) {
-		e.stop();
-		var li = e.target.getParent('.attachment');
+	$('.addattachment').off();
+	$('.delattachment').off();
+	$('.addattachment').on('click', function (e) {
+		e.stopPropagation();
+		var li = $(this).parent('.attachment');
 		li.clone().inject(li, 'after');
 		watchAttachements();
 	});
 
-	document.getElements('.delattachment').addEvent('click', function (e) {
-		e.stop();
-		if(document.getElements('.addattachment').length > 1) {
+	$('.delattachment').on('click', function (e) {
+		e.stopPropagation();
+		if($('.addattachment').length > 1) {
 			e.target.getParent('.attachment').dispose();
 		}
 		watchAttachements();

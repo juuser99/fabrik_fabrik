@@ -35,51 +35,50 @@ this.Form.Placeholder = my.Class({
 		clearOnSubmit: true
 	},
 	constructor: function (selector, options) {
+		var self = this;
 		this.options = $.extend(this.options, options);
 		document.getElements(selector).each (function (el) {
-			if (typeOf(el.get('placeholder')) !== 'null') {
-				el.store('placeholder', el.get('placeholder'));
+			if (el.data('placeholder') !== undefined) {
+				el.data('placeholder', el.get('placeholder'));
 				el.store('origColor', el.getStyle('color'));
-				var isPassword = el.get('type') === 'password' ? true : false;
-				el.store('isPassword', isPassword);
+				var isPassword = el.prop('type') === 'password' ? true : false;
+				el.data('isPassword', isPassword);
 				this.activatePlaceholder(el);
-				el.addEvents({
-					'focus': function() {
-						this.deactivatePlaceholder(el);
-					}.bind(this),
-				 	'blur': function() {
-						this.activatePlaceholder(el);
-				 	}.bind(this)
+				el.on('focus', function() {
+					self.deactivatePlaceholder(el);
+				});
+				el.on('blur', function () {
+					self.activatePlaceholder(el);
 				});
 
 				if (el.closest('form').length > 0 && this.options.clearOnSubmit) {
-					el.closest('form').addEvent('submit', function (e) {
-						if (el.get('value') === el.retrieve('placeholder')) {
-							el.set('value', '');
+					el.closest('form').on('submit', function () {
+						if (el.val() === el.data('placeholder')) {
+							el.val('');
 						}
-					}.bind(this));
+					});
 				}
 			}
-		}.bind(this));
+		});
 	},
 
 	activatePlaceholder: function (el) {
-		if (el.get('value') === '' || el.get('value') === el.retrieve('placeholder')) {
-			if (el.retrieve('isPassword')) {
-				el.set('type', 'text');
+		if (el.val() === '' || el.val() === el.data('placeholder')) {
+			if (el.data('isPassword')) {
+				el.data('type', 'text');
 			}
-			el.setStyle('color', el.retrieve('origColor'));
-			el.set('value', el.retrieve('placeholder'));
+			el.css('color', el.data('origColor'));
+			el.data('value', el.data('placeholder'));
 		}
 
 	},
 	deactivatePlaceholder: function (el) {
-		if (el.get('value') === el.retrieve('placeholder')) {
-			if (el.retrieve('isPassword')) {
-				el.set('type', 'password');
+		if (el.val() === el.data('placeholder')) {
+			if (el.data('isPassword')) {
+				el.data('type', 'password');
 			}
-			el.set('value', '');
-			el.setStyle('color', el.retrieve('origColor'));
+			el.data('value', '');
+			el.css('color', el.data('origColor'));
 		}
 	}
 });

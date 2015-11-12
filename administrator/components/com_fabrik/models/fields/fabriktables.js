@@ -84,7 +84,7 @@ var fabriktablesElement = my.Class({
         if (e) {
             e.stopPropagation();
         }
-        var cid = this.cnn.get('value');
+        var cid = this.cnn.val();
         // keep repeating the periodical until the cnn drop down is completed
         if (!cid) {
             return;
@@ -143,7 +143,7 @@ var fabriktablesElement = my.Class({
         var self = this;
         this.elements.each(function (element) {
             var opts = element.getOpts();
-            var table = this.el.get('value');
+            var table = this.el.val();
             if (table === '') {
                 // $$$ rob don't empty as this messes up parameter saving in paypal
                 // plugin
@@ -167,7 +167,7 @@ var fabriktablesElement = my.Class({
                 }
             } else {
 
-                var cid = this.cnn.get('value');
+                var cid = this.cnn.val();
                 this.elementLists[key] = '';
 
                 var ajaxopts = {

@@ -542,10 +542,10 @@ var FbListInlineEdit = my.Class(FbListPlugin, {
 
     watchControls: function (td) {
         var self = this;
-        td.find('.inline-save').removeEvents('click').on('click', function (e) {
+        td.find('.inline-save').off('click').on('click', function (e) {
             self.save(e, td);
         });
-        td.find('.inline-cancel').removeEvents('click').on('click', function (e) {
+        td.find('.inline-cancel').off('click').on('click', function (e) {
             self.cancel(e, td);
         });
     },

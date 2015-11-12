@@ -118,11 +118,16 @@ class FabrikAdminViewList extends JViewLegacy
 		$srcs[] = 'administrator/components/com_fabrik/views/pluginmanager.js';
 		$srcs[] = 'administrator/components/com_fabrik/views/list/tmpl/adminlist.js';
 
-		$shim                              = array();
-		$dep                               = new stdClass;
-		$dep->deps                         = array('admin/pluginmanager');
+		$shim = array();
+		$dep = new stdClass;
+		$dep->deps = array('fab/fabrik', 'admin/pluginmanager');
 		$shim['admin/list/tmpl/adminlist'] = $dep;
-		$shim['adminfields/tables']        = $dep;
+		$shim['adminfields/tables'] = $dep;
+
+		//test
+		$deps = new stdClass;
+		$dep->deps = array('fab/fabrik');
+		$shim['admin/pluginmanager'] = $dep;
 		FabrikHelperHTML::iniRequireJS($shim);
 		FabrikHelperHTML::script($srcs, $this->js);
 		parent::display($tpl);

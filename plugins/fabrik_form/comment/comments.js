@@ -98,8 +98,8 @@ var FabrikComment = my.Class({
     },
 
     updateThumbs: function () {
-        this.thumbs.removeEvents();
-        this.thumbs.addEvents();
+        this.thumbs.off();
+        this.thumbs.on();
     },
 
     /**
@@ -221,7 +221,7 @@ var FabrikComment = my.Class({
         this.spinner.resize();
         this.element.closest('.replybutton').each(function (a) {
             var fx;
-            $(this).removeEvents();
+            $(this).off();
             var commentForm = $(this).parent().parent().getNext();
             if (commentForm.length === 0) {
                 // wierd ie7 ness?
@@ -238,9 +238,9 @@ var FabrikComment = my.Class({
             }
         });
         // watch delete comment buttons
-        this.element.find('.del-comment').each(function (a) {
-            a.removeEvents();
-            a.on('click', function (e) {
+        this.element.find('.del-comment').each(function () {
+            $(this).off();
+            $(this).on('click', function (e) {
                 $.ajax({
                     'url'   : '',
                     'method': 'get',
@@ -253,7 +253,7 @@ var FabrikComment = my.Class({
                         'g'       : 'form',
                         'formid'  : this.options.formid,
                         'rowid'   : this.options.rowid,
-                        comment_id: $(e.target).closest('.comment').prop('id').replace('comment-', '')
+                        comment_id: $(this).closest('.comment').prop('id').replace('comment-', '')
                     }
                 }).done(function (e) {
                     self.deleteComplete(e);
@@ -266,18 +266,18 @@ var FabrikComment = my.Class({
         // if admin watch inline edit
         if (this.options.admin) {
 
-            this.element.find('.comment-content').each(function (a) {
-                a.removeEvents();
-                a.on('click', function (e) {
-                    a.inlineEdit({
+            this.element.find('.comment-content').each(function () {
+                $(this).off();
+                $(this).on('click', function (e) {
+                    $(this).inlineEdit({
                         'defaultval': '',
                         'type'      : 'textarea',
                         'onComplete': function (editing, oldcontent, newcontent) {
                             self.saveComment(editing);
                         }
                     });
-                    var c = $(e.target).parent();
-                    var commentid = c.prop('id').replace('comment-', '');
+                    var c = $(this).parent(),
+                        commentid = c.prop('id').replace('comment-', '');
                     new $.ajax({
                         'url'   : '',
                         'method': 'get',
@@ -293,7 +293,7 @@ var FabrikComment = my.Class({
                             'rowid'    : self.options.rowid
                         },
                     }).done(function (r) {
-                            c.find('.info').dispose();
+                            c.find('.info').remove();
                             $(document.createElement('span')).addClass('info').html(r).inject(c);
                         });
 
@@ -313,7 +313,7 @@ var FabrikComment = my.Class({
             'opacity': 0,
             'height' : 0
         }).chain(function () {
-            c.dispose();
+            c.remove();
         });
     }
 });

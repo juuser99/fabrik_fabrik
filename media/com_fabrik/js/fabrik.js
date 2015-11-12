@@ -568,10 +568,10 @@ if (typeof (Fabrik) === 'undefined') {
 				// Floating
 				var wrapper = target.closest('.floating-tip-wrapper');
 				if (wrapper.length > 0) {
-					var refList = wrapper.retrieve('list');
+					var refList = wrapper.data('list');
 					ref = refList.id;
 				} else {
-					ref = target.get('data-listRef');
+					ref = target.data('listRef');
 				}
 
 				l = Fabrik.blocks[ref];
@@ -628,7 +628,7 @@ if (typeof (Fabrik) === 'undefined') {
 	 */
 	Fabrik.openSingleView = function (view, e, target) {
 		var url, loadMethod = 'xhr', a;
-		var listRef = target.get('data-list');
+		var listRef = target.data('list');
 		var list = Fabrik.blocks[listRef];
 		if (!list.options.ajax_links) {
 			return;
@@ -648,7 +648,7 @@ if (typeof (Fabrik) === 'undefined') {
 		}
 		url = a.prop('href');
 		url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
-		loadMethod = a.data('data-loadmethod');
+		loadMethod = a.data('loadmethod');
 		if (typeOf(loadMethod) === 'null') {
 			loadMethod = 'xhr';
 		}

@@ -23,30 +23,30 @@ var inline = my.Class({
 		$(document).on('dblclick', selector, function (e, target) {
 			var editor;
 			target.hide();
-			target.store('origValue', target.get('text'));
-			if (!target.retrieve('inline')) {
+			target.data('origValue', target.text());
+			if (!target.data('inline')) {
 				editor = $('<input />');
 				editor.on('keydown', function (e) {
 					self.checkKey(e, target);
 				});
 				editor.inject(target, 'after').focus();
 				editor.hide();
-				target.store('inline', editor);
+				target.data('inline', editor);
 			} else {
-				editor = target.retrieve('inline');
+				editor = target.data('inline');
 			}
-			editor.set('value', target.get('text')).toggle().focus();
+			editor.val(target.text()).toggle().focus();
 			editor.select();
 		});
 	},
 
 	checkKey: function (e, target) {
 		if (e.key === 'enter' || e.key === 'esc' || e.key === 'tab') {
-			target.retrieve('inline').hide();
+			target.data('inline').hide();
 			target.show();
 		}
 		if (e.key === 'enter' || e.key === 'tab') {
-			target.text(e.target.get('value'));
+			target.text($(e.target).val());
 			Fabrik.trigger('fabrik.inline.save', [target, e]);
 		}
 	}

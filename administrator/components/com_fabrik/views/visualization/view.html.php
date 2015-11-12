@@ -82,7 +82,7 @@ class FabrikAdminViewVisualization extends JViewLegacy
 
 		$shim                                           = array();
 		$dep                                            = new stdClass;
-		$dep->deps                                      = array('admin/pluginmanager');
+		$dep->deps                                      = array('fab/fabrik', 'admin/pluginmanager');
 		$shim['admin/visualization/adminvisualization'] = $dep;
 
 		FabrikHelperHTML::iniRequireJS($shim);

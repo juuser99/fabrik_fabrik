@@ -123,7 +123,7 @@ var FbRating = my.Class(FbElement, {
 				url: '',
 				'data': data
 			}).done(function () {
-				self.spinner.dispose();
+				self.spinner.remove();
 			});
 		}
 	},

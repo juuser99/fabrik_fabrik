@@ -36,11 +36,11 @@ var Canvas = my.Class({
 				// object with
 				// left/top/bottom/right, so its perfect
 
-				.store('type', li.retrieve('type')).css({
+				.data('type', li.data('type')).css({
 					'opacity' : 0.7,
 					'position' : 'absolute'
-				}).addEvent('emptydrop', function () {
-					li.dispose();
+				}).on('emptydrop', function () {
+					li.remove();
 				}).inject(document.body);
 
 				var drag = clone.makeDraggable({
@@ -61,7 +61,7 @@ var Canvas = my.Class({
 
 							// do something ...
 							this.insertLocation = el.getCoordinates(over);
-							this.openListWindow(el.retrieve('type'));
+							this.openListWindow(el.data('type'));
 							over.tween('background-color', '#fff');
 						}
 						clone.dispose();
