@@ -48,16 +48,16 @@ var FbTimer = my.Class(FbElement, {
                 var v = this.element.val().split(':');
                 switch (v.length) {
                     case 3:
-                        this.hour = (v[0] === '') ? 0 : parseInt(v[0], 10);
-                        this.min = (v[1] === '') ? 0 : parseInt(v[1], 10);
-                        this.seg = (v[2] === '') ? 0 : parseInt(v[2], 10);
+                        self.hour = v[0] === '' ? 0 : parseInt(v[0], 10);
+                        self.min = v[1] === '' ? 0 : parseInt(v[1], 10);
+                        self.seg = v[2] === '' ? 0 : parseInt(v[2], 10);
                         break;
                     case 2:
-                        this.min = (v[0] === '') ? 0 : parseInt(v[0], 10);
-                        this.seg = (v[1] === '') ? 0 : parseInt(v[1], 10);
+                        self.min = v[0] === '' ? 0 : parseInt(v[0], 10);
+                        self.seg = v[1] === '' ? 0 : parseInt(v[1], 10);
                         break;
                     case 1:
-                        this.seg = (v[0] === '') ? 0 : parseInt(v[0], 10);
+                        self.seg = v[0] === '' ? 0 : parseInt(v[0], 10);
                         break;
                 }
                 self.start();
@@ -102,22 +102,22 @@ var FbTimer = my.Class(FbElement, {
     },
 
     time: function () {
-        var time_to_show = (this.hour < 10) ? "0" + this.hour : this.hour;
-        time_to_show += ((this.min < 10) ? ":0" : ":") + this.min;
-        time_to_show += ((this.seg < 10) ? ":0" : ":") + this.seg;
+        var time_to_show = (this.hour < 10) ? '0' + this.hour : this.hour;
+        time_to_show += ((this.min < 10) ? ':0' : ':') + this.min;
+        time_to_show += ((this.seg < 10) ? ':0' : ':') + this.seg;
         return time_to_show;
     },
 
     reset: function () {
         //reset time to initial values
-        start_array = this.options.startCrono.split(":");
-        end_array = this.options.endCrono.split(":");
+        var start_array = this.options.startCrono.split(':'),
+            end_array = this.options.endCrono.split(':');
 
-        this.startMin = start_array[0].toInt();
-        this.startSeg = start_array[1].toInt();
+        this.startMin = parseInt(start_array[0], 10);
+        this.startSeg = parseInt(start_array[1], 10);
 
-        this.endMin = end_array[0].toInt();
-        this.endSeg = end_array[1].toInt();
+        this.endMin = parseInt(end_array[0], 10);
+        this.endSeg = parseInt(end_array[1], 10);
 
         if (this.endMin !== this.startMin) {
             this.incremental = (this.endMin > this.startMin) ? 1 : -1;

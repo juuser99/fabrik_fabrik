@@ -17,7 +17,7 @@ var FbListFilter = my.Class({
     },
 
     constructor: function (options) {
-        var advancedSearchButton;
+        var advancedSearchButton, self = this;
         this.filters = {};
         this.options = $.extend(this.options, options);
         this.advancedSearch = false;
@@ -26,10 +26,7 @@ var FbListFilter = my.Class({
         this.filtersInHeadings = this.container.find('.listfilter');
         var b = this.container.find('.toggleFilters');
         b.on('click', function (e) {
-            var dims = b.getPosition();
             e.stopPropagation();
-            var x = dims.x - this.filterContainer.getWidth();
-            var y = dims.y + b.getHeight();
             this.filterContainer.toggle();
             this.filtersInHeadings.toggle();
         }.bind(this));
@@ -50,19 +47,19 @@ var FbListFilter = my.Class({
             // Reset the filter fields that contain previously selected values
             this.container.find('.fabrik_filter').each(function (f) {
                 if (f.name.contains('[value]') || f.name.contains('fabrik_list_filter_all') || f.hasClass('autocomplete-trigger')) {
-                    if (f.get('tag') === 'select') {
-                        f.selectedIndex = f.get('multiple') ? -1 : 0;
+                    if ($(this).prop('tagName') === 'SELECT') {
+                        this.selectedIndex = $(this).prop('multiple') ? -1 : 0;
                     } else {
-                        if (f.get('type') === 'checkbox') {
-                            f.checked = false;
+                        if ($(this).prop('type') === 'checkbox') {
+                            this.checked = false;
                         } else {
-                            f.value = '';
+                            this.value = '';
                         }
                     }
                 }
             });
             plugins = this.getList().plugins;
-            if (typeOf(plugins) !== 'null') {
+            if (plugins !== null) {
                 plugins.each(function (p) {
                     p.clearFilter();
                 });
@@ -87,34 +84,34 @@ var FbListFilter = my.Class({
                     a = a.closest('a');
                 }
                 var url = a.href;
-                url += '&listref=' + this.options.ref;
+                url += '&listref=' + self.options.ref;
                 this.windowopts = {
-                    'id'           : 'advanced-search-win' + this.options.ref,
+                    'id'           : 'advanced-search-win' + self.options.ref,
                     title          : Joomla.JText._('COM_FABRIK_ADVANCED_SEARCH'),
                     loadMethod     : 'xhr',
                     evalScripts    : true,
                     contentURL     : url,
                     width          : 710,
                     height         : 340,
-                    y              : this.options.popwiny,
+                    y              : self.options.popwiny,
                     onContentLoaded: function (win) {
-                        var list = Fabrik.blocks['list_' + this.options.ref];
-                        if (typeOf(list) === 'null') {
-                            list = Fabrik.blocks[this.options.container];
-                            this.options.advancedSearch.parentView = this.options.container;
+                        var list = Fabrik.blocks['list_' + self.options.ref];
+                        if (list.length === 0) {
+                            list = Fabrik.blocks[self.options.container];
+                            self.options.advancedSearch.parentView = self.options.container;
                         }
-                        list.advancedSearch = new AdvancedSearch(this.options.advancedSearch);
+                        list.advancedSearch = new AdvancedSearch(self.options.advancedSearch);
                         mywin.fitToContent(false);
-                    }.bind(this)
+                    }
                 };
-                var mywin = Fabrik.getWindow(this.windowopts);
-            }.bind(this));
+                var mywin = Fabrik.getWindow(self.windowopts);
+            });
         }
     },
 
     getList: function () {
         this.list = Fabrik.blocks[this.options.type + '_' + this.options.ref];
-        if (typeOf(this.list) === 'null') {
+        if (this.list.length === 0) {
             this.list = Fabrik.blocks[this.options.container];
         }
         return this.list;
@@ -166,10 +163,10 @@ var FbListFilter = my.Class({
     },
 
     update: function () {
-        jQuery.each(this.filters, function (plugin, fs) {
+        $.each(this.filters, function (plugin, fs) {
             fs.each(function (f) {
                 f.update();
-            }.bind(this));
-        }.bind(this));
+            });
+        });
     }
 });

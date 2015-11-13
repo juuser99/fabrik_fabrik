@@ -11,6 +11,12 @@ FbElementList = my.Class(FbElement, {
 
 	type: 'text', // Sub element type
 
+	/**
+	 * Constructor
+	 * @param {string} element
+	 * @param {object} options
+	 * @returns {*}
+	 */
 	constructor: function (element, options) {
 		FbElementList.Super.call(this, element, options);
 		this.addSubClickEvents();

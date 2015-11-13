@@ -208,7 +208,6 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 		$opts                  = $this->getElementJSOptions($repeatCounter);
 		$formParams            = $this->getFormModel()->getParams();
 		$opts->ajax_validation = $formParams->get('ajax_validations') === '1';
-		$opts->progressbar     = true;
 
 		JText::script('PLG_ELEMENT_PASSWORD_STRONG');
 		JText::script('PLG_ELEMENT_PASSWORD_MEDIUM');

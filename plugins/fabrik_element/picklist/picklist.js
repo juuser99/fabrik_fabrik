@@ -6,6 +6,13 @@
  */
 
 var FbPicklist = my.Class(FbElement, {
+
+    /**
+     * Constructor
+     * @param {string} element
+     * @param {object} options
+     * @returns {*}
+     */
     constructor: function (element, options) {
         this.plugin = 'fabrikpicklist';
         FbPicklist.Super.call(this, element, options);
@@ -87,7 +94,7 @@ var FbPicklist = my.Class(FbElement, {
         var lists = [c.find('.fromList'), c.find('.toList')];
         for (i = 0; i < lists.length; i++) {
             to = lists[i];
-            limit = (to === element || typeOf(element) === 'null') ? 1 : 2;
+            limit = (to === element[0] || element.length === 0) ? 1 : 2;
             var notice = to.find('li.emptyplicklist');
             var lis = to.find('li');
             lis.length > limit ? notice.hide() : notice.show();
@@ -107,12 +114,11 @@ var FbPicklist = my.Class(FbElement, {
     },
 
     watchAdd: function () {
-        var id = this.element.id,
-            c = this.getContainer(),
+        var c = this.getContainer(),
             to = c.find('.toList'),
             btn = c.find('input[type=button]');
 
-        if (typeOf(btn) === 'null') {
+        if (btn.length === 0) {
             return;
         }
         btn.on(
@@ -121,7 +127,7 @@ var FbPicklist = my.Class(FbElement, {
                 var val,
                     value = c.find('input[name=addPicklistValue]'),
                     labelEl = c.find('input[name=addPicklistLabel]'),
-                    label = labelEl.get('value');
+                    label = labelEl.val();
                 if (value.length > 0) {
                     val = value.val();
                 } else {
@@ -132,17 +138,14 @@ var FbPicklist = my.Class(FbElement, {
                 } else {
 
                     var li = $(document.createElement('li')).addClass('picklist').attr({
-                        'id'   : this.element.id + '_value_' + val
+                        'id'   : this.element.prop('id') + '_value_' + val
                     }).text(label);
 
-                    to.adopt(li);
+                    to.append(li);
                     this.sortable.addItems(li);
 
                     e.stopPropagation();
-                    if (typeOf(value) === 'element') {
-                        value.value = '';
-                    }
-                    labelEl.value = '';
+                    labelEl.val('');
                     this.setData();
                     this.addNewOption(val, label);
                     this.showNotices();
@@ -156,7 +159,6 @@ var FbPicklist = my.Class(FbElement, {
 
     watchAddToggle: function () {
         var c = this.getContainer(),
-            self = this,
             d = c.find('div.addoption'),
             a = c.find('.toggle-addoption'),
             clone, fe;
@@ -165,7 +167,7 @@ var FbPicklist = my.Class(FbElement, {
             clone = d.clone();
             fe = c.find('.fabrikElement');
             d.parent().destroy();
-            fe.adopt(clone);
+            fe.append(clone);
             d = c.find('div.addoption');
             d.css('margin', 0);
         }
@@ -176,6 +178,10 @@ var FbPicklist = my.Class(FbElement, {
         });
     },
 
+    /**
+     * Run when the element is cloned in a repeat group
+     * @param {number} c
+     */
     cloned: function (c) {
         delete this.sortable;
         if (this.options.allowadd === true) {

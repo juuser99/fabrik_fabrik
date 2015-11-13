@@ -30,14 +30,14 @@ var FabrikComment = my.Class({
 
     ajaxComplete: function (d) {
         d = JSON.decode(d);
-        var depth = (d.depth.toInt() * 20) + 'px';
+        var depth = (parseInt(d.depth, 10) * 20) + 'px';
         var id = 'comment_' + d.id;
         var li = $(document.createElement('li')).attr({
             'id': id
         })
             .css({'margin-left': depth}
         ).html(d.content);
-        if (this.currentLi.get('tag') === 'li') {
+        if (this.currentLi.prop('tagName') === 'LI') {
             li.inject(this.currentLi, 'after');
         } else {
             li.inject(this.currentLi);
@@ -47,8 +47,8 @@ var FabrikComment = my.Class({
         fx.start(0, 100);
 
         this.watchReply();
-        if (typeOf(d.message) !== 'null') {
-            alert(d.message.title, d.message.message);
+        if (d.message !== undefined) {
+            window.alert(d.message.title, d.message.message);
         }
         // For update
         this.spinner.hide();
@@ -74,25 +74,29 @@ var FabrikComment = my.Class({
             'label' : this.options.label
         };
 
-        this.element.find('.replyForm').each(function (f) {
-            var input = f.find('textarea');
+        this.element.find('.replyForm').each(function () {
+            var input = $(this).find('textarea');
             if (!input) {
                 return;
             }
-            f.find('button.submit').on('click', function (e) {
+            $(this).find('button.submit').on('click', function (e) {
                 self.doInput(e);
             });
 
-            input.on('click', function (e) {
-                self.testInput(e);
+            input.on('click', function () {
+                self.testInput($(this));
             });
 
         });
     },
 
-    testInput: function (e) {
-        if (e.target.val() === Joomla.JText._('PLG_FORM_COMMENT_TYPE_A_COMMENT_HERE')) {
-            e.target.value = '';
+    /**
+     *
+     * @param {jQuery} node
+     */
+    testInput: function (node) {
+        if (node.val() === Joomla.JText._('PLG_FORM_COMMENT_TYPE_A_COMMENT_HERE')) {
+            node.val('');
         }
     },
 
@@ -121,7 +125,7 @@ var FabrikComment = my.Class({
         }
 
         if (e.type === 'keydown') {
-            if (e.keyCode.toInt() !== 13) {
+            if (parseInt(e.keyCode, 10) !== 13) {
                 this.spinner.hide();
                 return;
             }
@@ -211,19 +215,18 @@ var FabrikComment = my.Class({
     watchReply: function () {
         var self = this, sel;
         this.spinner.resize();
-        this.element.closest('.replybutton').each(function (a) {
-            var fx;
+        this.element.closest('.replybutton').each(function () {
             $(this).off();
-            var commentForm = $(this).parent().parent().getNext();
+            var commentForm = $(this).parent().parent().next();
             if (commentForm.length === 0) {
                 // wierd ie7 ness?
-                commentForm = a.closest('.comment').find('.replyForm');
+                commentForm = $(this).closest('.comment').find('.replyForm');
             }
             if (commentForm.length > 0) {
-                var li = a.closest('.comment').closest('li');
+                var li = $(this).closest('.comment').closest('li');
                 commentForm.fadeOut();
 
-                a.on('click', function (e) {
+                $(this).on('click', function (e) {
                     e.stopPropagation();
                     commentForm.fadeToggle();
                 });

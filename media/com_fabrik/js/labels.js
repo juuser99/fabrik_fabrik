@@ -12,12 +12,12 @@ var Labels = my.Class({
 
 	constructor: function () {
 		var self = this;
-		$('.fabrikElementContainer').each(function (c) {
+		$('.fabrikElementContainer').each(function () {
 			var label = $(this).find('label');
 			if (label.length !== 0) {
-				var input = c.find('input');
+				var input = $(this).find('input');
 				if (input.length === 0) {
-					input = c.find('textarea');
+					input = $(this).find('textarea');
 				}
 				if (input.length !== 0) {
 					input.val(label.html());
@@ -30,12 +30,18 @@ var Labels = my.Class({
 						self.toogleLabel(e, input, label.html());
 					});
 					label.html('');
-					c.find('.fabrikLabel').remove();
+					$(this).find('.fabrikLabel').remove();
 				}
 			}
-		}.bind(this));
+		});
 	},
 
+	/**
+	 *
+	 * @param {object} e Event
+	 * @param {jQuery} input
+	 * @param {string} label
+     */
 	toogleLabel: function (e, input, label) {
 		e.stopPropagation();
 		if (e.type === 'click') {

@@ -58,6 +58,7 @@ var FbThumbs = my.Class(FbElement, {
 
     doAjax: function (th, add) {
         add = add ? true : false;
+        var self = this;
         if (this.options.editable === false) {
             this.spinner.show();
             var data = {
@@ -79,10 +80,10 @@ var FbThumbs = my.Class(FbElement, {
 
             new $.ajax({
                 url   : '',
-                'data': data,
+                'data': data
             }).done(function (r) {
                     r = JSON.decode(r);
-                    this.spinner.hide();
+                    self.spinner.hide();
                     if (r.error) {
                         console.log(r.error);
                     } else {

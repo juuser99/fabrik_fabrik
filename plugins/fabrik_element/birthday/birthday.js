@@ -20,14 +20,14 @@ var FbBirthday = my.Class(FbElement, {
 		}
 		this.getElement();
 
-		this._getSubElements().each(function (f) {
-			v.push(f.get('value'));
+		this._getSubElements().each(function () {
+			v.push($(this).val());
 		});
 		return v;
 	},
 
 	update: function (val) {
-		if (typeOf(val) === 'string') {
+		if (typeof(val) === 'string') {
 			var sepchar = this.options.separator;
 			if (val.indexOf(sepchar) === -1) {
 				sepchar = this.default_sepchar;

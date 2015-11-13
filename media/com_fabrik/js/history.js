@@ -10,27 +10,24 @@
 
 var History = my.Class({
 	constructor: function (undobutton, redobutton) {
+		var self = this;
 		this.recording = true;
 		this.pointer = -1;
-		if (document.id(undobutton)) {
-			document.id(undobutton).addEvent('click', function (e) {
-				this.undo(e);
-			}.bind(this));
-		}
-		if (document.id(redobutton)) {
-			document.id(redobutton).addEvent('click', function (e) {
-				this.redo(e);
-			}.bind(this));
-		}
+		$(undobutton).on('click', function (e) {
+			self.undo(e);
+		});
+			$(redobutton).on('click', function (e) {
+				self.redo(e);
+			});
 		Fabrik.addEvent('fabrik.history.on', function (e) {
-			this.on(e);
-		}.bind(this));
+			self.on(e);
+		});
 		Fabrik.addEvent('fabrik.history.off', function (e) {
-			this.off(e);
-		}.bind(this));
+			self.off(e);
+		});
 		Fabrik.addEvent('fabrik.history.add', function (e) {
-			this.add(e);
-		}.bind(this));
+			self.add(e);
+		});
 		this.history = [];
 	},
 
@@ -60,11 +57,12 @@ var History = my.Class({
 	},
 
 	add : function (obj, undofunc, undoparams, redofunc, redoparams) {
+		var self = this;
 		if (this.recording) {
 			// remove history which is newer than current pointer location
 			var newh = this.history.filter(function (h, x) {
-				return x <= this.pointer;
-			}.bind(this));
+				return x <= self.pointer;
+			});
 			this.history = newh;
 			this.history.push({
 				'object' : obj,

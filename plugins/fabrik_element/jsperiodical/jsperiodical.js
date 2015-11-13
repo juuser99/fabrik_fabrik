@@ -11,6 +11,12 @@ FbJSPeriodical = my.Class({
 		period : 1000
 	},
 
+	/**
+	 * Constructor
+	 * @param {string} element
+	 * @param {object} options
+	 * @returns {*}
+	 */
 	constructor: function (element, options) {
 		this.plugin = 'fabrikPeriodical';
 		FbJSPeriodical.Super.call(this, element, options);

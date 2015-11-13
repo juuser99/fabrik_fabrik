@@ -20,18 +20,19 @@ var FbDropdown = my.Class(FbElement, {
 			c = this.getContainer(),
 			d = c.find('div.addoption'),
 			a = c.find('.toggle-addoption'),
+			id = this.element.prop('id'),
 			clone, fe, ad;
 		if (this.mySlider) {
 			//copied in repeating group so need to remove old slider html first
 			clone = d.clone();
 			fe = c.find('.fabrikElement');
 			d.parent().destroy();
-			fe.adopt(clone);
+			fe.append(clone);
 			d = c.find('div.addoption');
 			d.css('margin', 0);
 			ad = d.find('input[name*=_additions]');
-			ad.id = this.element.id + '_additions';
-			ad.name = this.element.id + '_additions';
+			ad.id = id + '_additions';
+			ad.name = id + '_additions';
 
 		}
 		$(d).slideUp(500);
@@ -58,20 +59,20 @@ var FbDropdown = my.Class(FbElement, {
 			$(document.createElement('option')).attr({
 				'selected': 'selected',
 				'value': val
-			}).text(label).prependTo($('#' + this.element.id));
+			}).text(label).prependTo(this.element);
 			e.stopPropagation();
 			if (v) {
 				v.value = '';
 			}
 			l.value = '';
 			this.addNewOption(val, label);
-			$('#' + this.element.id).trigger('change', {stop: function () {}});
+			this.element.trigger('change', {stop: function () {}});
 			if (this.mySlider) {
 				this.mySlider.toggle();
 			}
 			if (this.options.advanced)
 			{
-				$('#' + this.element.id).trigger('liszt:updated');
+				this.element.trigger('liszt:updated');
 			}
 		}
 	},

@@ -14,14 +14,14 @@ var FbSlider = my.Class(FbElement, {
 
     makeSlider: function () {
         var isNull = false;
-        if (typeOf(this.options.value) === 'null' || this.options.value === '') {
+        if (this.options.value === null || this.options.value === '') {
             this.options.value = '';
             isNull = true;
         }
-        this.options.value = this.options.value === '' ? '' : this.options.value.toInt();
+        this.options.value = this.options.value === '' ? '' : parseInt(this.options.value, 10);
         var v = this.options.value;
         if (this.options.editable === true) {
-            if (typeOf(this.element) === 'null') {
+            if (this.element.length === 0) {
                 fconsole('no element found for slider');
                 return;
             }
@@ -42,7 +42,7 @@ var FbSlider = my.Class(FbElement, {
                         this.output.trigger('blur');
                         this.callChange();
                     }.bind(this),
-                    onComplete: function (pos) {
+                    onComplete: function () {
                         // Fire for validations
                         this.output.trigger('blur');
                         this.element.trigger('change');
@@ -62,7 +62,7 @@ var FbSlider = my.Class(FbElement, {
 
     watchClear: function () {
         var self = this;
-        this.element.on('click', '.clearslider', function (e, target) {
+        this.element.on('click', '.clearslider', function (e) {
             e.preventDefault();
             self.mySlide.set(0);
             self.output.val('');
@@ -76,7 +76,7 @@ var FbSlider = my.Class(FbElement, {
     },
 
     callChange: function () {
-        typeOf(this.changejs) === 'function' ? this.changejs.delay(0) : eval(this.changejs);
+        $.type(this.changejs) === 'function' ? this.changejs.delay(0) : eval(this.changejs);
     },
 
     addNewEvent: function (action, js) {

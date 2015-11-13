@@ -92,10 +92,10 @@ var Suboptions = my.Class({
     addJ3SubElement: function (sValue, sText, sCurChecked) {
         var chx = this._chx(sValue, sCurChecked);
         var delButton = this._deleteButton();
-        var tr = $(document.createElement('tr')).adopt([
+        var tr = $(document.createElement('tr')).append([
             $(document.createElement('td')).addClass('handle subhandle'),
-            $(document.createElement('td')).attr({width: '30%'}).adopt(this._valueField(sValue)),
-            $(document.createElement('td')).attr({width: '30%'}).adopt(this._labelField(sText)),
+            $(document.createElement('td')).attr({width: '30%'}).append(this._valueField(sValue)),
+            $(document.createElement('td')).attr({width: '30%'}).append(this._labelField(sText)),
             $(document.createElement('td')).attr({width: '10%'}).html(
                 chx
             ),

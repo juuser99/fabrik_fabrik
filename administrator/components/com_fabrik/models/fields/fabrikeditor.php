@@ -145,9 +145,9 @@ window.addEvent(\'domready\', function () {
 		      + (r.$horizScroll ? r.scrollBar.getWidth() : 0)
 		      + 2;
 		h = h < ' . $minHeight . ' ? ' . $minHeight . ' : h;
-		c = document.id("' . $aceId . '-aceContainer").getStyle("height").toInt();
+		c = $("' . $aceId . '-aceContainer").css("height").toInt();
 		if (c !== h) {
-			document.id("' . $aceId . '-aceContainer").setStyle("height", h.toString() + "px");
+			$("' . $aceId . '-aceContainer").css("height", h.toString() + "px");
 			FbEditor.resize();
 		}
 	}

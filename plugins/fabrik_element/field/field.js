@@ -23,13 +23,13 @@ var FbField = my.Class(FbElement, {
 		 * http://digitalbush.com/projects/masked-input-plugin/
 		 */
 		if (this.options.use_input_mask) {
-			jQuery('#' + element).mask(this.options.input_mask);
+			this.element.mask(this.options.input_mask);
 		}
 		if (this.options.geocomplete) {
 			this.gcMade = false;
 			this.loadFn = function () {
 				if (this.gcMade === false) {
-					jQuery('#' + this.element.id).geocomplete();
+					this.element.geocomplete();
 					this.gcMade = true;
 				}
 			}.bind(this);
@@ -54,16 +54,10 @@ var FbField = my.Class(FbElement, {
 
 	cloned: function (c) {
 		if (this.options.use_input_mask) {
-			var element = this.getElement();
-			if (element) {
-				jQuery('#' + element.id).mask(this.options.input_mask);
-			}
+			this.getElement().mask(this.options.input_mask);
 		}
 		if (this.options.geocomplete) {
-			var element = this.getElement();
-			if (element) {
-				jQuery('#' + element.id).geocomplete();
-			}
+			this.getElement().geocomplete();
 		}
 		FbField.Super.prototype.cloned(this, c);
 	}

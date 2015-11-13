@@ -72,24 +72,24 @@ var FbListUpdateCol = my.Class(FbListPlugin, {
 				var form = $('#update_col' + this.options.ref + '_' + this.options.renderOrder);
 
 				// Add a row
-				form.on('click', 'a.add', function (e, target) {
+				form.on('click', 'a.add', function (e) {
 					e.preventDefault();
 					var tr;
-					var thead = target.closest('thead');
+					var thead = $(this).closest('thead');
 					if (thead) {
-						tr = form.find('tbody tr').getLast();
+						tr = form.find('tbody tr').last();
 					} else {
-						tr = target.closest('tr');
+						tr = $(this).closest('tr');
 					}
 					if (tr.css('display') === 'none') {
 						tds = tr.find('td');
-						tds[0].find('select').selectedIndex = 0;
+						tds[0].find('select').prop('selectedIndex', 0);
 						tds[1].empty();
 						tr.show();
 					} else {
 						tr_clone = tr.clone();
 						tds = tr_clone.find('td');
-						tds[0].find('select').selectedIndex = 0;
+						tds[0].find('select').prop('selectedIndex', 0);
 						tds[1].empty();
 						tr_clone.inject(tr, 'after');
 					}

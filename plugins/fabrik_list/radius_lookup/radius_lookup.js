@@ -34,7 +34,6 @@ var FbListRadiusLookup = my.Class(FbListPlugin, {
 			}
 		}
 
-		//this.options.value = this.options.value.toInt();
 		if (typeOf(this.listform) === 'null') {
 			return;
 		}

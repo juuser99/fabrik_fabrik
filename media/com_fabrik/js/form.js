@@ -89,7 +89,7 @@ var FbForm = my.Class({
         // reference chaos with cascading dropdowns etc.
         this.repeatGroupMarkers = {};
         if (this.form) {
-            this.form.find('.fabrikGroup').each(function (group) {
+            this.form.find('.fabrikGroup').each(function () {
                 var id = this.id.replace('group', '');
                 var c = $(this).find('.fabrikSubGroup').length;
                 //if no joined repeating data then c should be 0 and not 1
@@ -165,14 +165,15 @@ var FbForm = my.Class({
 
     watchAddOptions: function () {
         this.fx.addOptions = [];
-        this.getForm().find('.addoption').each(function (d) {
-            var a = $(this).closest('.fabrikElementContainer').find('.toggle-addoption');
+        this.getForm().find('.addoption').each(function () {
+            var d = $(this),
+                a = d.closest('.fabrikElementContainer').find('.toggle-addoption');
 
-            $(d).slideUp(500);
+            d.slideUp(500);
             a.on('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                $(d).slideToggle();
+                d.slideToggle();
             });
         });
     },
@@ -208,10 +209,10 @@ var FbForm = my.Class({
     /**
      * Attach an effect to an elements
      *
-     * @param   string  id      Element or group to apply the fx TO, triggered from another element
-     * @param   string  method  JS event which triggers the effect (click,change etc.)
+     * @param   {string}  id      Element or group to apply the fx TO, triggered from another element
+     * @param   {string}  method  JS event which triggers the effect (click,change etc.)
      *
-     * @return false if no element found or element fx
+     * @return {bool} false if no element found or element fx
      */
     addElementFX: function (id, method) {
         var c, k, fxdiv;
@@ -250,7 +251,7 @@ var FbForm = my.Class({
             // apply fx to div rather than li - damn I'm good
             var tag = (c).prop('tagName');
             if (tag === 'LI' || tag === 'TD') {
-                fxdiv = $('<div />').css({'width' :'100%'}).adopt(c.getChildren());
+                fxdiv = $('<div />').css({'width': '100%'}).append(c.getChildren());
                 c.empty();
                 fxdiv.inject(c);
             } else {
@@ -277,13 +278,45 @@ var FbForm = my.Class({
     },
 
     /**
+     * Create the fx key
+     * @param {string} id Element id
+     * @returns {string}
+     * @private
+     */
+    _createFxKey: function (id) {
+        var k;
+        id = id.replace('fabrik_trigger_', '');
+        if (id.slice(0, 6) === 'group_') {
+            id = id.slice(6, id.length);
+            // weird fix?
+            if (id.slice(0, 6) === 'group_') {
+                id = id.slice(6, id.length);
+            }
+            k = id;
+        } else {
+            id = id.slice(8, id.length);
+            k = 'element' + id;
+        }
+        return k;
+    },
+
+    /**
+     *
+     * @param {string} id Element id
+     * @returns {bool}
+     * @private
+     */
+    _groupFx: function (id) {
+        return id.replace('fabrik_trigger_', '').slice(0, 6) === 'group_';
+    },
+
+    /**
      * An element state has changed, so lets run any associated effects
      *
      * @param   string  id            Element id to run the effect on
      * @param   string  method        Method to run
      * @param   object  elementModel  The element JS object which is calling the fx, this is used to work ok which repeat group the fx is applied on
      */
-
     doElementFX: function (id, method, elementModel) {
         var k, groupfx, fx, fxElement;
 
@@ -294,7 +327,8 @@ var FbForm = my.Class({
             targetInRepeat = target.options.inRepeatGroup;
         }
 
-        // Update the element id that we will apply the fx to to be that of the calling elementModels group (if in a repeat group)
+        // Update the element id that we will apply the fx to to be that of the calling elementModels group
+        // (if in a repeat group)
         if (elementModel && targetInRepeat) {
             if (elementModel.options.inRepeatGroup) {
                 var bits = id.split('_');
@@ -302,21 +336,8 @@ var FbForm = my.Class({
                 id = bits.join('_');
             }
         }
-        // Create the fx key
-        id = id.replace('fabrik_trigger_', '');
-        if (id.slice(0, 6) === 'group_') {
-            id = id.slice(6, id.length);
-            // weird fix?
-            if (id.slice(0, 6) === 'group_') {
-                id = id.slice(6, id.length);
-            }
-            k = id;
-            groupfx = true;
-        } else {
-            groupfx = false;
-            id = id.slice(8, id.length);
-            k = 'element' + id;
-        }
+        k = this._createFxKey(id);
+        groupfx = this._groupFx(id);
 
         // Get the stored fx
         fx = this.fx.elements[k];
@@ -337,15 +358,13 @@ var FbForm = my.Class({
         }
 
         // For repeat groups rendered as tables we cant apply fx on td so get child
-        if (fxElement.get('tag') === 'td') {
+        if (fxElement.prop('tagName') === 'TD') {
             fxElement = fxElement.getChildren()[0];
         }
         switch (method) {
             case 'show':
                 fxElement.fade('show').removeClass('fabrikHide');
                 if (groupfx) {
-                    // strange fix for ie8
-                    // http://fabrik.unfuddle.com/projects/17220/tickets/by_number/703?cycle=true
                     $('#' + id).find('.fabrikinput').css('opacity', '1');
                 }
                 break;
@@ -416,7 +435,7 @@ var FbForm = my.Class({
                     }
                     p.inject(firstGroup, 'before');
                     page.each(function (group) {
-                        p.adopt($('#group' + group));
+                        p.append($('#group' + group));
                     });
                 }
             });
@@ -460,7 +479,8 @@ var FbForm = my.Class({
             // the top of the page to avoid large space appearing at the bottom of the page.
             $('.tool-tip').css('top', 0);
 
-            // Don't prepend with Fabrik.liveSite, as it can create cross origin browser errors if you are on www and livesite is not on www.
+            // Don't prepend with Fabrik.liveSite,
+            // as it can create cross origin browser errors if you are on www and livesite is not on www.
             url = 'index.php?option=com_fabrik&format=raw&task=form.ajax_validate&form_id=' + this.id;
 
             Fabrik.loader.start(this.getBlock(), Joomla.JText._('COM_FABRIK_VALIDATING'));
@@ -622,8 +642,8 @@ var FbForm = my.Class({
     },
 
     destroyElements: function () {
-        jQuery.each(this.formElements, function (index, el) {
-            el.destroy();
+        jQuery.each(this.formElements, function () {
+            $(this).destroy();
         });
     },
 
@@ -638,7 +658,7 @@ var FbForm = my.Class({
          * resetting themselves when you add a new group
          */
         var added = [], i, self = this;
-        jQuery.each(a, function (gid, elements) {
+        $.each(a, function (gid, elements) {
             elements.each(function (el) {
                 if ($.isArray(el)) {
                     // Paul - check that element exists before adding it http://fabrikar.com/forums/index.php?threads/ajax-validation-never-ending-in-forms.36907
@@ -650,9 +670,11 @@ var FbForm = my.Class({
                     added.push(self.addElement(oEl, el[1], gid));
                 }
                 else if (typeof(el) === 'object') {
-                    // Paul - check that element exists before adding it http://fabrikar.com/forums/index.php?threads/ajax-validation-never-ending-in-forms.36907
+                    // Paul - check that element exists before adding it
+                    // http://fabrikar.com/forums/index.php?threads/ajax-validation-never-ending-in-forms.36907
                     if ($('#' + el.options.element).length === 0) {
-                        fconsole('Fabrik form::addElements: Cannot add element "' + el.options.element + '" because it does not exist in HTML.');
+                        fconsole('Fabrik form::addElements: Cannot add element "' + el.options.element +
+                            '" because it does not exist in HTML.');
                         return;
                     }
                     added.push(self.addElement(el, el.options.element, gid));
@@ -715,7 +737,7 @@ var FbForm = my.Class({
         var el = this.formElements[elementId];
         if (!el) {
             // E.g. db join rendered as chx
-            var els = Object.each(this.formElements, function (e) {
+            var els = $.each(this.formElements, function (e) {
                 if (elementId === e.baseElementId) {
                     el = e;
                 }
@@ -841,12 +863,12 @@ var FbForm = my.Class({
 
     _completeValidaton: function (r, id, origid) {
         r = JSON.decode(r);
-        if (typeOf(r) === 'null') {
+        if (r === null) {
             this._showElementError(['Oups'], id);
             this.result = true;
             return;
         }
-        jQuery.each(this.formElements, function (key, el) {
+        $.each(this.formElements, function (key, el) {
             el.afterAjaxValidation();
         });
         Fabrik.trigger('fabrik.form.element.validation.complete', [this, r, id, origid]);
@@ -865,17 +887,23 @@ var FbForm = my.Class({
         }
     },
 
+    /**
+     *
+     * @param {object} d
+     * @returns {object}
+     * @private
+     */
     _prepareRepeatsForAjax: function (d) {
         this.getForm();
 
         //data should be keyed on the data stored in the elements name between []'s which is the group id
-        jQuery.each(this.form.find('input[name^=fabrik_repeat_group]'),
-            function (k, e) {
+        $.each(this.form.find('input[name^=fabrik_repeat_group]'),
+            function () {
                 // $$$ hugh - had a client with a table called fabrik_repeat_group, which was hosing up here,
                 // so added a test to narrow the element name down a bit!
-                if (e.id.test(/fabrik_repeat_group_\d+_counter/)) {
-                    var c = e.name.match(/\[(.*)\]/)[1];
-                    d['fabrik_repeat_group[' + c + ']'] = e.val();
+                if (this.id.test(/fabrik_repeat_group_\d+_counter/)) {
+                    var c = this.name.match(/\[(.*)\]/)[1];
+                    d['fabrik_repeat_group[' + c + ']'] = $(this).val();
                 }
             }
         );
@@ -888,7 +916,7 @@ var FbForm = my.Class({
         var err = false;
         jQuery.each(d, function (k, v) {
             k = k.replace(/\[(.*)\]/, '').replace(/%5B(.*)%5D/, '');// for dropdown validations
-            if (typeof(self.formElements[k]) !== 'undefined') {
+            if (self.formElements[k] !== undefined) {
                 var el = self.formElements[k];
                 if (gids.contains(parseInt(el.groupid, 10))) {
                     if (r.errors[k]) {
@@ -1023,12 +1051,11 @@ var FbForm = my.Class({
             });
         }
         var submits = this.form.find('button[type=submit]').combine([apply, submit, copy]);
-        submits.each(function (btn) {
-            if (typeOf(btn) !== 'null') {
-                btn.on('click', function (e) {
-                    self.doSubmit(e, btn);
-                });
-            }
+        submits.each(function () {
+            var btn = $(this);
+            btn.on('click', function (e) {
+                self.doSubmit(e, btn);
+            });
         });
 
         this.form.on('submit', function (e) {
@@ -1064,7 +1091,7 @@ var FbForm = my.Class({
                     'value': parseInt(self.currentPage, 10),
                     'type' : 'hidden'
                 });
-                self.form.adopt(i);
+                self.form.append(i);
             }
             if (self.options.ajax) {
                 // Do ajax val only if onSubmit val ok
@@ -1340,7 +1367,7 @@ var FbForm = my.Class({
 
         Fabrik.trigger('fabrik.form.group.duplicate.min', [this]);
 
-        Object.each(this.options.group_repeats, function (canRepeat, groupId) {
+        $.each(this.options.group_repeats, function (canRepeat, groupId) {
 
             if (self.options.minRepeat[groupId] === undefined) {
                 return;
@@ -1350,20 +1377,20 @@ var FbForm = my.Class({
                 return;
             }
 
-            var repeat_counter = self.form.find('#fabrik_repeat_group_' + groupId + '_counter'),
-                repeat_rows, repeat_real, add_btn, deleteButton, i, repeat_id_0, deleteEvent;
+            var repeatCounter = self.form.find('#fabrik_repeat_group_' + groupId + '_counter'),
+                repeatRows, repeatReal, add_btn, deleteButton, i, repeat_id_0, deleteEvent;
 
-            if (repeat_counter.length === 0) {
+            if (repeatCounter.length === 0) {
                 return;
             }
 
-            repeat_rows = repeat_real = parseInt(repeat_counter.value, 10);
+            repeatRows = repeatReal = parseInt(repeatCounter.val(), 10);
 
-            if (repeat_rows === 1) {
+            if (repeatRows === 1) {
                 repeat_id_0 = self.form.find('#' + self.options.group_pk_ids[groupId] + '_0');
 
-                if (typeOf(repeat_id_0) !== 'null' && repeat_id_0.value === '') {
-                    repeat_real = 0;
+                if (repeat_id_0.val() === '') {
+                    repeatReal = 0;
                 }
             }
 
@@ -1377,7 +1404,7 @@ var FbForm = my.Class({
              * $$$ paul - fixing min of 0 for Jaanus
              * http://fabrikar.com/forums/index.php?threads/couple-issues-with-protostar-template.35917/
              **/
-            if (min === 0 && repeat_real === 0) {
+            if (min === 0 && repeatReal === 0) {
 
                 // Create mock event
                 deleteButton = self.form.find('#group' + groupId + ' .deleteGroup');
@@ -1388,14 +1415,14 @@ var FbForm = my.Class({
                 self.deleteGroup(deleteEvent, group, subGroup);
 
             }
-            else if (repeat_rows < min) {
+            else if (repeatRows < min) {
                 // Create mock event
                 add_btn = self.form.find('#group' + groupId + ' .addGroup');
                 if (add_btn.length > 0) {
                     var add_e = jQuery.Event('click');
 
                     // Duplicate group
-                    for (i = repeat_rows; i < min; i++) {
+                    for (i = repeatRows; i < min; i++) {
                         self.duplicateGroup(add_e);
                     }
                 }
@@ -1423,7 +1450,7 @@ var FbForm = my.Class({
         // Find which repeat group was deleted
         var delIndex = 0;
         group.find('.deleteGroup').each(function (b, x) {
-            if (b.find('img') === e.target || b.find('i') === e.target || b === e.target) {
+            if ($(this).find('img') === $(e.target) || $(this).find('i') === $(e.target) || $(this) === $(e.target)) {
                 delIndex = x;
             }
         });
@@ -1460,7 +1487,7 @@ var FbForm = my.Class({
                         subGroup.remove();
                     }
 
-                    jQuery.each(self.formElements, function (k, e) {
+                    $.each(self.formElements, function (k, e) {
                         if (typeOf(e.element) !== 'null') {
                             if ($('#' + e.element.id).length === 0) {
                                 e.decloned(i);
@@ -1472,7 +1499,7 @@ var FbForm = my.Class({
                     // Minus the removed group
                     subgroups = group.find('.fabrikSubGroup');
                     var nameMap = {};
-                    jQuery.each(self.formElements, function (k, e) {
+                    $.each(self.formElements, function (k, e) {
                         if (e.groupid === i) {
                             nameMap[k] = e.decreaseName(delIndex);
                         }
@@ -1480,7 +1507,7 @@ var FbForm = my.Class({
                     // ensure that formElements' keys are the same as their object's ids
                     // otherwise delete first group, add 2 groups - ids/names in last
                     // added group are not updated
-                    jQuery.each(nameMap, function (oldKey, newKey) {
+                    $.each(nameMap, function (oldKey, newKey) {
                         if (oldKey !== newKey) {
                             self.formElements[newKey] = self.formElements[oldKey];
                             delete self.formElements[oldKey];
@@ -1517,7 +1544,7 @@ var FbForm = my.Class({
         if (sge.length === 0) {
             sge = subGroup;
             var add = sge.find('.addGroup');
-            var lastth = sge.closest('table').find('thead th').getLast();
+            var lastth = sge.closest('table').find('thead th').find();
             if (add.length > 0) {
                 add.inject(lastth);
             }
@@ -1560,7 +1587,7 @@ var FbForm = my.Class({
         // /stupid fix for radio buttons loosing their checked value
         var tocheck = [];
         group.find('.fabrikinput').each(function (i) {
-            if (i.type === 'radio' && i.getProperty('checked')) {
+            if (this.type === 'radio' && $(this).prop('checked')) {
                 tocheck.push(i);
             }
         });
@@ -1631,7 +1658,7 @@ var FbForm = my.Class({
         }
 
         tocheck.each(function (i) {
-            i.setProperty('checked', true);
+            $(this).prop('checked', true);
         });
 
         this.subelementCounter = 0;
@@ -1640,64 +1667,62 @@ var FbForm = my.Class({
             hasSubElements = false,
             inputs = clone.find('.fabrikinput'),
             lastinput = null;
-        jQuery.each(this.formElements, function (index, el) {
+        $.each(this.formElements, function (index, el) {
             var formElementFound = false;
             subElementContainer = null;
             var subElementCounter = -1;
-            inputs.each(function (input) {
+            $.each(function (input) {
 
                 hasSubElements = el.hasSubElements();
 
-                container = input.closest('.fabrikSubElementContainer');
-                var testid = (hasSubElements && container) ? container.id : input.id;
+                container = $(this).closest('.fabrikSubElementContainer');
+                var testid = (hasSubElements && container) ? container.id : this.id;
                 var cloneName = el.getCloneName();
 
                 // Looser test that previous === to catch db join rendered as checkbox
                 if (testid.contains(cloneName)) {
-                    lastinput = input;
+                    lastinput = $(this);
                     formElementFound = true;
 
                     if (hasSubElements) {
                         subElementCounter++;
-                        subElementContainer = input.closest('.fabrikSubElementContainer');
+                        subElementContainer = $(this).closest('.fabrikSubElementContainer');
 
                         // Clone the first inputs event to all subelements
                         // $$$ hugh - sanity check in case we have an element which has no input
                         if ($('#' + testid).find('input')) {
-                            input.cloneEvents($('#' + testid).find('input'));
+                            $(this).cloneEvents($('#' + testid).find('input'));
                         }
                         // Note: Radio's etc. now have their events delegated from the form - so no need to duplicate them
 
                     } else {
-                        input.cloneEvents(el.element);
+                        $(this).cloneEvents(el.element);
 
                         // Update the element id use el.element.id rather than input.id as
                         // that may contain _1 at end of id
                         var bits = Array.from(el.element.id.split('_'));
                         bits.splice(bits.length - 1, 1, c);
-                        input.id = bits.join('_');
+                        this.id = bits.join('_');
 
                         // Update labels for non sub elements
-                        var l = input.closest('.fabrikElementContainer').find('label');
-                        if (l) {
-                            l.setProperty('for', input.id);
-                        }
+                        var l = $(this).closest('.fabrikElementContainer').find('label');
+                        l.prop('for', input.id);
                     }
-                    if (typeOf(input.name) !== 'null') {
-                        input.name = input.name.replace('[0]', '[' + c + ']');
+                    if (this.name !== undefined) {
+                        this.name = this.name.replace('[0]', '[' + c + ']');
                     }
                 }
             });
 
             if (formElementFound) {
-                if (hasSubElements && typeOf(subElementContainer) !== 'null') {
+                if (hasSubElements && subElementContainer.length > 0) {
                     // if we are checking subelements set the container id after they have all
                     // been processed
                     // otherwise if check only works for first subelement and no further
                     // events are cloned
 
                     // $$$ rob fix for date element
-                    var bits = Array.from(el.options.element.split('_'));
+                    var bits = el.options.element.split('_');
                     bits.splice(bits.length - 1, 1, c);
                     subElementContainer.id = bits.join('_');
                 }
@@ -1785,9 +1810,9 @@ var FbForm = my.Class({
             tmpIntro = '',
             targets = group.find('*[data-role="group-repeat-intro"]');
 
-        targets.each(function (target, i) {
+        targets.each(function (i) {
             tmpIntro = intro.replace('{i}', i + 1);
-            target.html(tmpIntro);
+            $(this).html(tmpIntro);
         });
     },
 
@@ -1846,7 +1871,7 @@ var FbForm = my.Class({
             this.result = true;
             return;
         }
-        jQuery.each(this.formElements, function (key, el) {
+        $.each(this.formElements, function (key, el) {
             el.reset();
         });
     },
@@ -1878,7 +1903,7 @@ var FbForm = my.Class({
 
     /** add additional data to an element - e.g database join elements */
     appendInfo: function (data) {
-        jQuery.each(this.formElements, function (key, el) {
+        $.each(this.formElements, function (key, el) {
             if (el.appendInfo) {
                 el.appendInfo(data, key);
             }
@@ -1891,7 +1916,7 @@ var FbForm = my.Class({
         if (!this.form) {
             return;
         }
-        jQuery.each(this.formElements, function (key, el) {
+        $.each(this.formElements, function (key, el) {
             if (key === this.options.primaryKey) {
                 self.form.find('input[name=rowid]').value = '';
             }

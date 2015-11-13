@@ -16,6 +16,7 @@ var FbFormSubmit = my.Class({
 	 */
 	elements: {},
 
+
 	running: false,
 
 	/**

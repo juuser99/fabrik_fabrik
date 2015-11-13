@@ -285,17 +285,17 @@ var FabrikModalRepeat = my.Class({
         for (i = 0; i < rowcount; i++) {
             keys.each(function (k) {
                 jQuery.each(trs[i].find('*[name*=' + k + ']'), function (key, f) {
-                    if (f.get('type') === 'radio') {
+                    if ($(this).prop('type') === 'radio') {
                         if (f.value === a[k][i]) {
                             f.checked = true;
                         }
                     } else {
                         // Works for input,select and textareas
                         f.value = a[k][i];
-                        if (f.get('tag') === 'select' && typeof jQuery !== 'undefined') {
+                        if (f.prop('tagName') === 'SELECT') {
 
                             // Manually fire chosen dropdown update
-                            jQuery(f).trigger('liszt:updated');
+                            $(f).trigger('liszt:updated');
                         }
                     }
                 });

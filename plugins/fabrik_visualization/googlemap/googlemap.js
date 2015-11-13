@@ -140,7 +140,7 @@ var FbGoogleMapViz = my.Class({
         }
         var mapOpts = {
             center            : new google.maps.LatLng(this.options.lat, this.options.lon),
-            zoom              : this.options.zoomlevel.toInt(),
+            zoom              : parseInt(this.options.zoomlevel, 10),
             mapTypeId         : this.options.maptype,
             scaleControl      : this.options.scalecontrol,
             mapTypeControl    : this.options.maptypecontrol,
@@ -166,15 +166,15 @@ var FbGoogleMapViz = my.Class({
         this.addIcons();
         this.addOverlays();
 
-        google.maps.event.addListener(this.map, "click", function (e) {
+        google.maps.event.addListener(this.map, 'click', function (e) {
             this.setCookies(e);
         }.bind(this));
 
-        google.maps.event.addListener(this.map, "moveend", function (e) {
+        google.maps.event.addListener(this.map, 'moveend', function (e) {
             this.setCookies(e);
         }.bind(this));
 
-        google.maps.event.addListener(this.map, "zoomend", function (e) {
+        google.maps.event.addListener(this.map, 'zoomend', function (e) {
             this.setCookies(e);
         }.bind(this));
 
@@ -184,13 +184,13 @@ var FbGoogleMapViz = my.Class({
 
         if (this.options.use_cookies) {
             // $$$ jazzbass - get previous stored location
-            var mymapzoom = Cookie.read("mymapzoom_" + this.options.id);
-            var mymaplat = Cookie.read("mymaplat_" + this.options.id);
-            var mymaplng = Cookie.read("mymaplng_" + this.options.id);
+            var mymapzoom = Cookie.read('mymapzoom_' + this.options.id);
+            var mymaplat = Cookie.read('mymaplat_' + this.options.id);
+            var mymaplng = Cookie.read('mymaplng_' + this.options.id);
 
             if (mymaplat && mymaplat !== '0' && mymapzoom !== '0') {
                 this.map.setCenter(new google.maps.LatLng(mymaplat.toFloat(), mymaplng.toFloat()));
-                this.map.setZoom(mymapzoom.toInt());
+                this.map.setZoom(parseInt(mymapzoom, 10));
             } else {
                 this.center();
             }
@@ -242,9 +242,9 @@ var FbGoogleMapViz = my.Class({
 
     setCookies: function () {
         if (this.options.use_cookies) {
-            Cookie.write("mymapzoom_" + this.options.id, this.map.getZoom(), {duration: 7});
-            Cookie.write("mymaplat_" + this.options.id, this.map.getCenter().lat(), {duration: 7});
-            Cookie.write("mymaplng_" + this.options.id, this.map.getCenter().lng(), {duration: 7});
+            Cookie.write('mymapzoom_' + this.options.id, this.map.getZoom(), {duration: 7});
+            Cookie.write('mymaplat_' + this.options.id, this.map.getCenter().lat(), {duration: 7});
+            Cookie.write('mymaplng_' + this.options.id, this.map.getCenter().lng(), {duration: 7});
         }
     },
 
@@ -280,7 +280,7 @@ var FbGoogleMapViz = my.Class({
             var i = 0;
             for (i = 1; i <= 5; ++i) {
                 styles.push({
-                    'url'   : Fabrik.liveSite + "components/com_fabrik/libs/googlemaps/markerclustererplus/images/m" + i + ".png",
+                    'url'   : Fabrik.liveSite + 'components/com_fabrik/libs/googlemaps/markerclustererplus/images/m' + i + '.png',
                     'height': sizes[i - 1],
                     'width' : sizes[i - 1]
                 });
@@ -389,7 +389,7 @@ var FbGoogleMapViz = my.Class({
         markerOptions.title = title;
         var marker = new google.maps.Marker(markerOptions);
         marker.groupkey = groupkey;
-        google.maps.event.addListener(marker, "click", function () {
+        google.maps.event.addListener(marker, 'click', function () {
             // $$$ jazzbass
             this.setCookies();
             //end
@@ -449,7 +449,7 @@ var FbGoogleMapViz = my.Class({
 
     toggleOverlay: function (e) {
         if (e.target.id.test(/overlay_chbox_(\d+)/)) {
-            var olk = e.target.id.match(/overlay_chbox_(\d+)/)[1].toInt();
+            var olk = parseInt(e.target.id.match(/overlay_chbox_(\d+)/)[1], 10);
             if (e.target.checked) {
                 this.options.overlays[olk].setMap(this.map);
             } else {
@@ -480,7 +480,8 @@ var FbGoogleMapViz = my.Class({
     },
 
     renderGroupedSideBar: function () {
-        var a, linkText, c, label = '';
+        var a, linkText, c, label = '',
+            self = this;
         if (!this.options.use_groups) {
             return;
         }
@@ -492,7 +493,7 @@ var FbGoogleMapViz = my.Class({
         c.empty();
         // Iterate over the map icons to find the group by info
         this.options.icons.each(function (i) {
-            if (typeOf(this.grouped[i.groupkey]) === 'null') {
+            if (this.grouped[i.groupkey] === undefined) {
 
                 linkText = i.groupkey;
 
@@ -528,7 +529,7 @@ var FbGoogleMapViz = my.Class({
 
                 // Store the group key for later use in the toggle co
                 a.data('groupkey', i.groupkey);
-                var h = $(document.createElement('div')).addClass('groupedContainer' + k).adopt(a);
+                var h = $(document.createElement('div')).addClass('groupedContainer' + k).append(a);
                 h.inject(c);
             }
             this.grouped[i.groupkey].push(i);

@@ -22,11 +22,11 @@ var FbElement = my.Class({
     },
 
     /**
-     * Ini the element
-     *
-     * @return  bool  false if $(this.options.element) not found
+     * Constructor
+     * @param {string} element
+     * @param {object} options
+     * @returns {*}
      */
-
     constructor: function (element, options) {
         var self = this;
         this.plugin = '';
@@ -255,8 +255,10 @@ var FbElement = my.Class({
         }
     },
 
-    //below functions can override in plugin element classes
-
+    /**
+     * Update the element's value
+     * @param {string|object|array} val
+     */
     update: function (val) {
         //have to call find() - otherwise inline editor doesn't work when editing 2nd row of data.
         if (this.find()) {
@@ -338,6 +340,7 @@ var FbElement = my.Class({
 
     /**
      * Run when the element is cloned in a repeat group
+     * @param {number} c
      */
     cloned: function (c) {
         var self = this;
@@ -361,14 +364,16 @@ var FbElement = my.Class({
     },
 
     /**
-     * get the wrapper dom element that contains all of the elements dom objects
+     * Fet the wrapper dom element that contains all of the elements dom objects
+     * @return {jQuery}
      */
     getContainer: function () {
-        return typeOf(this.element) === 'null' ? false : this.element.closest('.fabrikElementContainer');
+        return this.element.closest('.fabrikElementContainer');
     },
 
     /**
      * get the dom element which shows the error messages
+     * @return {jQuery}
      */
     getErrorElement: function () {
         return this.getContainer().find('.fabrikErrorMessage');
@@ -376,6 +381,7 @@ var FbElement = my.Class({
 
     /**
      * get the dom element which contains the label
+     * @return {jQuery}
      */
     getLabelElement: function () {
         return this.getContainer().find('.fabrikLabel');
@@ -426,7 +432,7 @@ var FbElement = my.Class({
             var li = $('<li>').addClass(klass);
             li.html(msg);
             $('<i>').addClass(this.form.options.images.alert).inject(li, 'top');
-            d.find('ul').adopt(li);
+            d.find('ul').append(li);
             t.data('content', unescape(d.get('html')));
             t.data('popover').setContent();
             t.data('popover').options.content = d.get('html');
@@ -640,7 +646,7 @@ var FbElement = my.Class({
         if (this.options.inRepeatGroup === false) {
             return false;
         }
-        return this.element.id.split('_').getLast();
+        return this.element.prop('id').split('_').pop();
     },
 
     getBlurEvent: function () {
@@ -790,7 +796,7 @@ var FbFileElement = my.Class(FbElement, {
         var home = [this.breadcrumbs.find('a').shift().clone(),
             this.breadcrumbs.find('span').shift().clone()];
         this.breadcrumbs.empty();
-        this.breadcrumbs.adopt(home);
+        this.breadcrumbs.append(home);
         this.folderlist.each(function (txt) {
             self.addCrumb(txt);
         });
@@ -819,7 +825,7 @@ var FbFileElement = my.Class(FbElement, {
 
                 r.each(function (folder) {
 
-                    $(document.createElement('li')).addClass('fileupload_folder').adopt(
+                    $(document.createElement('li')).addClass('fileupload_folder').append(
                         $(document.createElement('a')).attr({'href': '#'}).text(folder)).inject(self.folderdiv);
                 });
                 if (r.length === 0) {
@@ -835,7 +841,7 @@ var FbFileElement = my.Class(FbElement, {
 
 
     addCrumb: function (txt) {
-        this.breadcrumbs.adopt(
+        this.breadcrumbs.append(
             $(document.createElement('a')).attr({'href': '#', 'class': 'crumb' + this.folderlist.length}).text(txt),
             $(document.createElement('span')).text(' / ')
         );

@@ -92,7 +92,7 @@ var FbRadio = my.Class(FbElementList, {
 					.removeClass('btn-success').removeClass('btn-danger').removeClass('btn-primary');
 				if (v === '') {
 					label.addClass('active btn-primary');
-				} else if (v.toInt() === 0) {
+				} else if (parseInt(v, 10) === 0) {
 					label.addClass('active btn-danger');
 				} else {
 					label.addClass('active btn-success');
@@ -116,7 +116,7 @@ var FbRadio = my.Class(FbElementList, {
 			var clone = d.clone();
 			var fe = c.find('.fabrikElement');
 			d.parent().destroy();
-			fe.adopt(clone);
+			fe.append(clone);
 			d = c.find('div.addoption');
 			d.css('margin', 0);
 		}

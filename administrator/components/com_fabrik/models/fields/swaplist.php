@@ -52,9 +52,6 @@ class JFormFieldSwapList extends JFormFieldList
 
 		list($this->currentGroups, $this->currentGroupList) = $this->getCurrentGroupList();
 		list($this->groups, $this->groupList) = $this->getGroupList();
-		$str = '';
-
-		$checked = empty($this->current_groups) ? 'checked="checked"' : '';
 
 		if (empty($this->groups) && empty($this->currentGroups))
 		{

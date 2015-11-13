@@ -25,7 +25,7 @@ var FbTime = my.Class(FbElement, {
 	},
 
 	update: function (val) {
-		if (typeOf(val) === 'string') {
+		if (typeof(val) === 'string') {
 			val = val.split(this.options.separator);
 		}
 		this._getSubElements().each(function (f, x) {

@@ -18,7 +18,7 @@ var FbButton = my.Class(FbElement, {
 			if (e) {
 				e.stopPropagation();
 			}
-			typeOf(js) === 'function' ? js.delay(0, this, this) : eval(js);
+			$.type(js) === 'function' ? js.delay(0, this, this) : eval(js);
 		}.bind(this));
 	}
 });

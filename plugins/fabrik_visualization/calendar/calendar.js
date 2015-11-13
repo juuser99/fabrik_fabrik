@@ -163,7 +163,7 @@ var fabrikCalendar = my.Class({
             'width'           : opts.width,
             'cursor'          : 'pointer',
             'margin-left'     : opts['margin-left'],
-            'top'             : opts.top.toInt() + 'px',
+            'top'             : parseInt(opts.top, 10) + 'px',
             'position'        : 'absolute',
             'border'          : '1px solid #666666',
             'border-right'    : '0',
@@ -173,10 +173,10 @@ var fabrikCalendar = my.Class({
             'padding'         : '0 4px'
         };
         if (opts.height) {
-            style.height = opts.height.toInt() + 'px';
+            style.height = parseInt(opts.heigh, 10) + 'px';
         }
         if (opts.left) {
-            style.left = opts.left.toInt() + 1 + 'px';
+            style.left = parseInt(opts.left, 10) + 1 + 'px';
         }
         style['max-width'] = opts['max-width'] ? opts['max-width'] - 10 + 'px' : '';
         var id = 'fabrikEvent_' + entry._listid + '_' + entry.id;
@@ -249,7 +249,7 @@ var fabrikCalendar = my.Class({
         } else {
             x = $(document.createElement('span')).html(label);
         }
-        eventCont.adopt(x);
+        eventCont.append(x);
         return eventCont;
     },
 
@@ -353,7 +353,7 @@ var fabrikCalendar = my.Class({
                 }
                 td.empty();
                 // Barbara : added greyscaled week-ends color option
-                td.adopt(
+                td.append(
                     $(document.createElement('div')).addClass('date').css({
                             'background-color': this._getColor('#E8EEF7', firstDate)
                         }
@@ -390,7 +390,7 @@ var fabrikCalendar = my.Class({
                         opts.startMin = entry.startdate.getMinutes();
                         opts.endMin = entry.enddate.getMinutes();
                         opts['margin-left'] = 0;
-                        td.adopt(this._makeEventRelDiv(entry, opts, firstDate, td));
+                        td.append(this._makeEventRelDiv(entry, opts, firstDate, td));
                     }
                     j++;
                 }.bind(this));
@@ -433,7 +433,7 @@ var fabrikCalendar = my.Class({
             var del = $(document.createElement('div')).addClass('popupDelete').html(this.options.buttons);
 
             this.popup = $(document.createElement('div')).addClass('popWin').css({'position': 'absolute'})
-                .adopt([popLabel, del]);
+                .append([popLabel, del]);
 
             this.popup.inject(document.body);
             /********** FX EVETNT *************/
@@ -479,7 +479,7 @@ var fabrikCalendar = my.Class({
             WeekTds = {},
             trs = this.el.find('.weekView tr'),
             i, j;
-        wday = wday - this.options.first_week_day.toInt();
+        wday = wday - parseInt(this.options.first_week_day, 10);
         firstDate.setTime(this.date.getTime() - (wday * this.DAY));
         for (i = 1; i < trs.length; i++) {
             firstDate.setHours(i - 1, 0, 0);
@@ -554,7 +554,7 @@ var fabrikCalendar = my.Class({
             firstDate, counterDate, lastDate, gridSize,
             wday = this.date.getDay();
         // Barbara : offset
-        wday = wday - this.options.first_week_day.toInt();
+        wday = wday - parseInt(this.options.first_week_day, 10);
 
         firstDate = new Date();
         firstDate.setTime(this.date.getTime() - (wday * this.DAY));
@@ -585,7 +585,7 @@ var fabrikCalendar = my.Class({
             hdiv = $(document.createElement('div'))
                 .css({'background-color': this._getColor(thbg, counterDate)}).text(ht);
 
-            ths[i].empty().adopt(hdiv);
+            ths[i].empty().append(hdiv);
 
             var eventWidth = 10;
             var offsets = {};
@@ -629,8 +629,9 @@ var fabrikCalendar = my.Class({
                     var div = this._makeEventRelDiv(entry, opts, null, td);
                     div.addClass('week-event');
                     div.inject(document.body);
-                    var padding = div.css('padding-left').toInt() + div.css('padding-right').toInt();
-                    div.css('width', div.css('width').toInt() - padding + 'px');
+                    var padding = parseInt(div.css('padding-left'), 10) +
+                        parseInt(div.css('padding-right'), 10);
+                    div.css('width', parseInt(div.css('width'), 10) - padding + 'px');
                     div.data('opts', opts);
                     div.data('relativeTo', td);
                     div.data('gridSize', gridSize);
@@ -703,7 +704,7 @@ var fabrikCalendar = my.Class({
         var marginleft = width * existing.length;
         existing.css('width', width + 'px');
         var v = opts.divclass.substr(1, opts.divclass.length);
-        width -= td.css('border-width').toInt();
+        width -= parseInt(td.css('border-width'), 10);
         opts = {
             'z-index'         : 999,
             'margin-left'     : marginleft + 'px',
@@ -731,7 +732,7 @@ var fabrikCalendar = my.Class({
     removeDayEvents: function () {
         var firstDate = new Date();
 
-        var tzOffset = new Date().get('gmtoffset').replace(/0+$/, '').toInt();
+        var tzOffset = parseInt(new Date().get('gmtoffset').replace(/0+$/, ''), 10);
 
         var hourTds = [];
         firstDate.setTime(this.date.valueOf());
@@ -771,7 +772,7 @@ var fabrikCalendar = my.Class({
             thbg = trs[0].childNodes[1].css('background-color');
         ht = this.options.days[this.date.getDay()];
         h = $(document.createElement('div')).css({'background-color': this._getColor(thbg, this.date)}).text(ht);
-        trs[0].childNodes[1].empty().adopt(h);
+        trs[0].childNodes[1].empty().append(h);
 
         // Clear out old data
         var hourTds = this.removeDayEvents();
@@ -841,8 +842,9 @@ var fabrikCalendar = my.Class({
                 div.data('gridSize', gridSize);
                 div.inject(document.body);
 
-                var padding = div.css('padding-left').toInt() + div.css('padding-right').toInt();
-                div.css('width', div.css('width').toInt() - padding + 'px');
+                var padding = parseInt(div.css('padding-left'), 10) +
+                    parseInt(div.css('padding-right'), 10);
+                div.css('width', parseInt(div.css('width'), 10) - padding + 'px');
                 div.data('opts', opts);
 
                 var calEvents = td.data('calevents');
@@ -884,7 +886,7 @@ var fabrikCalendar = my.Class({
             tr = $(document.createElement('tr'));
             // Barbara : added greyscaled week-ends color option
             for (d = 0; d < 7; d++) {
-                tr.adopt($(document.createElement('th')).addClass('dayHeading').css({
+                tr.append($(document.createElement('th')).addClass('dayHeading').css({
                         'width'           : '80px',
                         'height'          : '20px',
                         'text-align'      : 'center',
@@ -909,7 +911,7 @@ var fabrikCalendar = my.Class({
                     //'display': 'table-cell', doesnt work in IE7
                     var bgCol = this.options.colors.bg;
                     var extraClass = (this.selectedDate.isSameDay(firstDate)) ? 'selectedDay' : '';
-                    tr.adopt($(document.createElement('td'))
+                    tr.append($(document.createElement('td'))
                         .addClass('day ' + (firstDate.getTime()) + extraClass)
                         .css({
                             'width'           : this.options.monthday.width + 'px',
@@ -947,11 +949,11 @@ var fabrikCalendar = my.Class({
                 .css({
                     'position': 'relative'
                 }
-            ).adopt(
+            ).append(
                 $(document.createElement('table')).css({
                         'border-collapse': 'collapse'
                     }
-                ).adopt(
+                ).append(
                     tbody
                 )
             );
@@ -1135,7 +1137,7 @@ var fabrikCalendar = my.Class({
         var today = new Date();
         this.el.find('.viewContainerTBody td').each(
             function (td) {
-                var newDate = new Date(this._getTimeFromClassName(td.className).toInt());
+                var newDate = parseInt(new Date(this._getTimeFromClassName(td.className), 10));
                 if (today.equalsTo(newDate)) {
                     td.addClass('today');
                 } else {
@@ -1161,9 +1163,9 @@ var fabrikCalendar = my.Class({
             tr = $(document.createElement('tr'));
             for (d = 0; d < 2; d++) {
                 if (d === 0) {
-                    tr.adopt($(document.createElement('td')).addClass('day'));
+                    tr.append($(document.createElement('td')).addClass('day'));
                 } else {
-                    tr.adopt($(document.createElement('th')).addClass('dayHeading')
+                    tr.append($(document.createElement('th')).addClass('dayHeading')
                         .css({
                             'width'           : '80px',
                             'height'          : '20px',
@@ -1184,10 +1186,10 @@ var fabrikCalendar = my.Class({
                 for (d = 0; d < 2; d++) {
                     if (d === 0) {
                         var hour = (i.length === 1) ? i + '0:00' : i + ':00';
-                        tr.adopt($(document.createElement('td')).addClass('day').text(hour));
+                        tr.append($(document.createElement('td')).addClass('day').text(hour));
                     } else {
                         //'display': 'table-cell',
-                        tr.adopt($(document.createElement('td')).addClass('day')
+                        tr.append($(document.createElement('td')).addClass('day')
                                 .css({
                                     'width'           : '100%',
                                     'height'          : '10px',
@@ -1215,9 +1217,9 @@ var fabrikCalendar = my.Class({
                 .css({
                     'position': 'relative'
                 })
-                .adopt(
+                .append(
                 $(document.createElement('table')).css({'border-collapse': 'collapse'})
-                    .adopt(
+                    .append(
                     tbody
                 )
             );
@@ -1273,9 +1275,9 @@ var fabrikCalendar = my.Class({
             tr = $(document.createElement('tr'));
             for (d = 0; d < we; d++) {
                 if (d === 0) {
-                    tr.adopt($(document.createElement('td')).addClass('day'));
+                    tr.append($(document.createElement('td')).addClass('day'));
                 } else {
-                    tr.adopt($(document.createElement('th')).addClass('dayHeading')
+                    tr.append($(document.createElement('th')).addClass('dayHeading')
                         .css({
                             'width'           : this.options.weekday.width + 'px',
                             'height'          : (this.options.weekday.height - 10) + 'px',
@@ -1284,15 +1286,15 @@ var fabrikCalendar = my.Class({
                             'background-color': this.options.colors.headingBg
                         }).on('click', function (e) {
                             e.stopPropagation();
-                            self.selectedDate.setTime(e.target.className.replace('dayHeading ', '').toInt());
+                            self.selectedDate.setTime(parseInt($(this).prop('class').replace('dayHeading ', ''), 10));
                             var tmpdate = new Date();
-                            $(this).parent().parent().find('td').each(function (td) {
-                                var t = td.className.replace('day ', '').replace(' selectedDay').toInt();
+                            $(this).parent().parent().find('td').each(function () {
+                                var t = parseInt($(this).prop('class').replace('day ', '').replace(' selectedDay'), 10);
                                 tmpdate.setTime(t);
                                 if (tmpdate.getDayOfYear() === this.selectedDate.getDayOfYear()) {
-                                    td.addClass('selectedDay');
+                                    $(this).addClass('selectedDay');
                                 } else {
-                                    td.removeClass('selectedDay');
+                                    $(this).removeClass('selectedDay');
                                 }
                             });
                         }).text(this.options.days[d - 1]));
@@ -1308,9 +1310,9 @@ var fabrikCalendar = my.Class({
                 for (d = 0; d < we; d++) {
                     if (d === 0) {
                         var hour = (i.length === 1) ? i + '0:00' : i + ':00';
-                        tr.adopt($(document.createElement('td')).addClass('day').text(hour));
+                        tr.append($(document.createElement('td')).addClass('day').text(hour));
                     } else {
-                        tr.adopt($(document.createElement('td')).addClass('day')
+                        tr.append($(document.createElement('td')).addClass('day')
                             .css({
                                 'width'           : this.options.weekday.width + 'px',
                                 'height'          : this.options.weekday.height + 'px',
@@ -1339,10 +1341,10 @@ var fabrikCalendar = my.Class({
             }
             this.weekView = $(document.createElement('div')).addClass('weekView').css({
                 'position': 'relative'
-            }).adopt(
+            }).append(
                 $(document.createElement('table')).css({
                     'border-collapse': 'collapse'
-                }).adopt(
+                }).append(
                     tbody
                 )
             );
@@ -1359,7 +1361,7 @@ var fabrikCalendar = my.Class({
             $(this).position({'relativeTo': td, 'position': 'upperLeft'});
             var gridSize = $(this).data('gridSize');
             var eventWidth = Math.floor((td.getSize().x - gridSize) / gridSize);
-            var padding = $(this).css('padding-left').toInt() + $(this).css('padding-right').toInt();
+            var padding = parseInt($(this).css('padding-left'), 10) + parseInt($(this).css('padding-right'), 10);
             eventWidth = eventWidth - padding;
             $(this).css('width', eventWidth + 'px');
         });
@@ -1426,8 +1428,8 @@ var fabrikCalendar = my.Class({
             self.openAddEvent(e);
         });
         var bs = [];
-        var nav = $(document.createElement('div')).addClass('calendarNav').adopt(
-            $(document.createElement('ul')).addClass('viewMode').adopt(bs));
+        var nav = $(document.createElement('div')).addClass('calendarNav').append(
+            $(document.createElement('ul')).addClass('viewMode').append(bs));
 
         this.el.appendChild(nav);
         //position relative messes up the drag of events
@@ -1506,14 +1508,14 @@ var fabrikCalendar = my.Class({
             time = time.split(':');
             d = d.split('-');
             d2 = new Date();
-            m = (d[1]).toInt() - 1;
+            m = parseInt(d[1], 10) - 1;
             //setFullYear produced a stack overflow in ie7 go figure? and recursrive error in ff6 - reverting to setYear()
             d2.setYear(d[0]);
             d2.setMonth(m, d[2]);
             d2.setDate(d[2]);
-            d2.setHours(time[0].toInt());
-            d2.setMinutes(time[1].toInt());
-            d2.setSeconds(time[2].toInt());
+            d2.setHours(parseInt(time[0], 10));
+            d2.setMinutes(parseInt(time[1], 10));
+            d2.setSeconds(parseInt(time[2], 10));
             o.startdate = d2;
             this.entries[key] = o;
 
@@ -1533,14 +1535,14 @@ var fabrikCalendar = my.Class({
 
                 d = d.split('-');
                 d2 = new Date();
-                m = (d[1]).toInt() - 1;
+                m = parseInt(d[1], 10) - 1;
                 //setFullYear produced a stack overflow in ie7 go figure? and recursrive error in ff6 - reverting to setYear()
                 d2.setYear(d[0]);
                 d2.setMonth(m, d[2]);
                 d2.setDate(d[2]);
-                d2.setHours(time[0].toInt());
-                d2.setMinutes(time[1].toInt());
-                d2.setSeconds(time[2].toInt());
+                d2.setHours(parseInt(time[0], 10));
+                d2.setMinutes(parseInt(time[1], 10));
+                d2.setSeconds(parseInt(time[2], 10));
                 o.enddate = d2;
             }
         }
@@ -1648,12 +1650,12 @@ var fabrikCalendar = my.Class({
         var ul = $(document.createElement('ul'));
         a.each(function (l) {
             var li = $(document.createElement('li'));
-            li.adopt($(document.createElement('div')).css({'background-color': l.colour}),
+            li.append($(document.createElement('div')).css({'background-color': l.colour}),
                 $(document.createElement('span')).text(l.label)
             );
             ul.appendChild(li);
         }.bind(this));
-        $(document.createElement('div')).addClass('calendar-legend').adopt([
+        $(document.createElement('div')).addClass('calendar-legend').append([
             $(document.createElement('h3')).text(Joomla.JText._('PLG_VISUALIZATION_CALENDAR_KEY')),
             ul
         ]).inject(this.el, 'after');

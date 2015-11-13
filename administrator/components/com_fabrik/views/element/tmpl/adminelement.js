@@ -137,7 +137,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
 
     changePlugin: function (e) {
         var self = this;
-        $('#plugin-container').empty().adopt($(document.createElement('span'))
+        $('#plugin-container').empty().append($(document.createElement('span'))
                 .text(Joomla.JText._('COM_FABRIK_LOADING'))
         );
         var myAjax = $.ajax({
@@ -182,7 +182,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
             });
         a.append($(document.createElement('span')).addClass('pluginTitle').text(Joomla.JText._('COM_FABRIK_LOADING')));
         var toggler = $(document.createElement('div')).addClass('title pane-toggler accordion-heading')
-            .append($(document.createElement('strong')).adopt(a));
+            .append($(document.createElement('strong')).append(a));
         var body = $(document.createElement('div')).addClass('accordion-body');
 
         div.append(toggler);
@@ -276,7 +276,7 @@ var fabrikAdminElement = my.Class(PluginManager, {
             } else {
                 t += condition.getSelected()[0].text + ' "' + value.value.trim() + '", ';
             }
-            var trigtype = trigger.getSelected().closest('optgroup').get('label')[0].toLowerCase();
+            var trigtype = trigger.getSelected().closest('optgroup').prop('label').toLowerCase();
             t += event.getSelected()[0].text + ' ' + trigtype.substring(0, trigtype.length - 1);
             t += ' "' + trigger.getSelected()[0].text + '"';
         } else {

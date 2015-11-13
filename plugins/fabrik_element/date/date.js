@@ -97,7 +97,8 @@ var FbDateTime = my.Class(FbElement, {
             this.getCalendarImg().on('click', function (e) {
                 e.stopPropagation();
                 if (!self.cal.params.position) {
-                    self.cal.showAtElement(self.cal.params.button || self.cal.params.displayArea || self.cal.params.inputField, self.cal.params.align);
+                    self.cal.showAtElement(self.cal.params.button || self.cal.params.displayArea ||
+                        self.cal.params.inputField, self.cal.params.align);
                 } else {
                     self.cal.showAt(self.cal.params.position[0], params.position[1]);
                 }
@@ -306,7 +307,7 @@ var FbDateTime = my.Class(FbElement, {
         this.cal.weekNumbers = params.weekNumbers;
 
         if (params.multiple) {
-            cal.multiple = {};
+            this.cal.multiple = {};
             for (i = params.multiple.length; --i >= 0;) {
                 var d = params.multiple[i];
                 var ds = d.print('%Y%m%d');
@@ -330,7 +331,8 @@ var FbDateTime = my.Class(FbElement, {
     disableTyping: function () {
         var self = this;
         if (this.element.length === 0) {
-            fconsole(this.element + ': not date element container - is this a custom template with a missing $element->containerClass div/li surrounding the element?');
+            fconsole(this.element + ': not date element container - ' +
+                'is this a custom template with a missing $element->containerClass div/li surrounding the element?');
             return;
         }
         // yes we really can set the none existant 'readonly' property of the
@@ -384,7 +386,8 @@ var FbDateTime = my.Class(FbElement, {
             if (dateFieldValue === '') {
                 return '';
             }
-            // User can press back button in which case date may already be in correct format and calendar date incorrect
+            // User can press back button in which case date may already be in
+            // correct format and calendar date incorrect
             var re = new RegExp('\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}');
             if (dateFieldValue.match(re) !== null) {
                 return dateFieldValue;
@@ -444,17 +447,17 @@ var FbDateTime = my.Class(FbElement, {
             time = time.replace('PM', '').replace('AM', '');
 
             var t = time.split(':');
-            var h = t[0] ? t[0].toInt() : 0;
+            var h = t[0] ? parseInt(t[0], 10) : 0;
             if (afternoon) {
                 h += 12;
             }
-            var m = t[1] ? t[1].toInt() : 0;
+            var m = t[1] ? parseInt(t[1], 10) : 0;
 
             d.setHours(h);
             d.setMinutes(m);
 
             if (t[2] && this.hasSeconds()) {
-                var s = t[2] ? t[2].toInt() : 0;
+                var s = t[2] ? parseInt(t[2], 10) : 0;
                 d.setSeconds(s);
             } else {
                 d.setSeconds(0);
@@ -522,14 +525,14 @@ var FbDateTime = my.Class(FbElement, {
         this.find();
 
         if (val === 'invalid date') {
-            fconsole(this.element.id + ': date not updated as not valid');
+            fconsole(this.element.prop('id') + ': date not updated as not valid');
 
             return;
         }
 
         var date;
 
-        if (typeOf(val) === 'string') {
+        if (typeof(val) === 'string') {
             // $$$ hugh - if val is empty string, like from a clearForm(), the Date.parse() is
             // going to return null, swhich will then blow up in a few lines.
             date = Date.parse(val);
@@ -568,7 +571,7 @@ var FbDateTime = my.Class(FbElement, {
             this.fireEvents(events);
         }
 
-        if (typeOf(val) === 'null' || val === false) {
+        if (val === 'null' || val === false) {
             return;
         }
 
@@ -661,10 +664,10 @@ var FbDateTime = my.Class(FbElement, {
 
         d.appendChild(handle);
         var padder = $(document.createElement('div')).addClass('itemContentPadder');
-        padder.adopt($(document.createElement('p')).text('Hours'));
-        padder.adopt(this.hourButtons(0, 12));
-        padder.adopt(this.hourButtons(12, 24));
-        padder.adopt($(document.createElement('p')).text('Minutes'));
+        padder.append($(document.createElement('p')).text('Hours'));
+        padder.append(this.hourButtons(0, 12));
+        padder.append(this.hourButtons(12, 24));
+        padder.append($(document.createElement('p')).text('Minutes'));
         var d2 = $(document.createElement('div')).addClass('btn-group').css({
             clear     : 'both',
             paddingTop: '5px'
@@ -783,7 +786,7 @@ var FbDateTime = my.Class(FbElement, {
         this.timeActive = false;
         this.dropdown.hide();
         if (this.options.validations !== false) {
-            this.form.doElementValidation(this.element.id);
+            this.form.doElementValidation(this.element.prop('id'));
         }
         Fabrik.trigger('fabrik.date.hidetime', this);
         Fabrik.trigger('fabrik.date.select', this);
@@ -822,7 +825,7 @@ var FbDateTime = my.Class(FbElement, {
         var mins = this.dropdown.getElements('.fbdateTime-minute');
         mins.removeClass('btn-success').removeClass('btn-info');
         mins[this.minute / 5].addClass('btn-success');
-        var active = hours[this.hour.toInt()];
+        var active = hours[parseInt(this.hour, 10)];
         active.addClass('btn-success');
     },
 
@@ -846,13 +849,13 @@ var FbDateTime = my.Class(FbElement, {
         this.hour = 0;
         delete this.cal;
         var button = this.element.find('img');
-        if (button) {
-            button.id = this.element.id + '_cal_img';
+        if (button.length > 0) {
+            button.prop('id', this.element.prop('id') + '_cal_img');
         }
         var datefield = this.element.find('input');
-        datefield.id = this.element.id + '_cal';
+        datefield.id = this.element.prop('id') + '_cal';
         this.options.calendarSetup.inputField = datefield.id;
-        this.options.calendarSetup.button = this.element.id + '_img';
+        this.options.calendarSetup.button = this.element.prop('id') + '_img';
 
         this.makeCalendar();
         this.cal.hide();
