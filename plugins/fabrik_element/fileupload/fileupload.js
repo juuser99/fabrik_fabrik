@@ -261,7 +261,7 @@ var FbFileUpload = my.Class(FbFileElement, {
                     this.uploader.files = [];
                     this.element.parent().find('[id$=_dropList] tr').destroy();
                 } else {
-                    this.element.set('value', '');
+                    this.element.val('');
                 }
             } else {
                 var i = this.element.find('img');

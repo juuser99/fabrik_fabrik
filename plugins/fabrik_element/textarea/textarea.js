@@ -149,12 +149,11 @@ var FbTextarea = my.Class(FbElement, {
     /**
      * Forward an event from tinyMce to the text editor - useful for triggering ajax validations
      *
-     * @param   string  event  Event name
      */
-    forwardEvent: function (event) {
+    forwardEvent: function () {
         var textarea = tinyMCE.activeEditor.getElement(),
             c = this.getContent();
-        textarea.set('value', c);
+        textarea.val(c);
         textarea.trigger('blur');
     },
 

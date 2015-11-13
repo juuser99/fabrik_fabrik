@@ -98,10 +98,10 @@ var FbRadio = my.Class(FbElementList, {
 					label.addClass('active btn-success');
 				}
 			}
-			input.set('checked', true);
+			input.prop('checked', true);
 
-			if (typeof(fabchecked) === null) {
-				input.set('fabchecked', 1);
+			if (fabchecked === null) {
+				input.prop('fabchecked', 1);
 			}
 		}
 	},
