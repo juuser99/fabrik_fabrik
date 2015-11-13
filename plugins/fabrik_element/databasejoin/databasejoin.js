@@ -232,7 +232,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		}
 
 		opt.find('span').html(l);
-		opt.find('input').set('value', v);
+		opt.find('input').val(v);
 		last = subOpts.length === 0 ? this.element : subOpts.getLast();
 		injectWhere = subOpts.length === 0 ? 'bottom' : 'after';
 		var subOption = subOpts.length === 0 ? last : jQuery(last).closest('div[data-role=suboption]')[0];
