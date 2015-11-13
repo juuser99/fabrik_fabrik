@@ -20,33 +20,33 @@ var inline = my.Class({
 	{
 		var self = this;
 		this.options = $.extend(this.options, options);
-		$(document).on('dblclick', selector, function (e, target) {
+		$(document).on('dblclick', selector, function () {
 			var editor;
-			target.hide();
-			target.data('origValue', target.text());
-			if (!target.data('inline')) {
+			$(this).hide();
+			$(this).data('origValue', (this).text());
+			if (!$(this).data('inline')) {
 				editor = $('<input />');
 				editor.on('keydown', function (e) {
-					self.checkKey(e, target);
+					self.checkKey(e, this);
 				});
-				editor.inject(target, 'after').focus();
+				editor.inject($(this), 'after').focus();
 				editor.hide();
-				target.data('inline', editor);
+				$(this).data('inline', editor);
 			} else {
-				editor = target.data('inline');
+				editor = $(this).data('inline');
 			}
-			editor.val(target.text()).toggle().focus();
+			editor.val($(this).text()).toggle().focus();
 			editor.select();
 		});
 	},
 
 	checkKey: function (e, target) {
 		if (e.key === 'enter' || e.key === 'esc' || e.key === 'tab') {
-			target.data('inline').hide();
-			target.show();
+			$(target).data('inline').hide();
+			$(target).show();
 		}
 		if (e.key === 'enter' || e.key === 'tab') {
-			target.text($(e.target).val());
+			$(target).text($(e.target).val());
 			Fabrik.trigger('fabrik.inline.save', [target, e]);
 		}
 	}

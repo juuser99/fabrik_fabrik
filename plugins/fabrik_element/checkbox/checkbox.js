@@ -25,7 +25,7 @@ var FbCheckBox = my.Class(FbElementList, {
 			clone = d.clone();
 			fe = c.find('.fabrikElement');
 			d.parent().destroy();
-			fe.adopt(clone);
+			fe.append(clone);
 			d = c.find('div.addoption');
 			d.css('margin', 0);
 		}

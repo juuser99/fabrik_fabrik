@@ -187,15 +187,15 @@ var FbAutocomplete = my.Class({
 			return false;
 		}
 		if (data.length === 0) {
-			li = $('<li />').adopt($('<div />').addClass(' alert alert-info')
-				.adopt($('<i>').text(Joomla.JText._('COM_FABRIK_NO_RECORDS'))));
+			li = $('<li />').append($('<div />').addClass(' alert alert-info')
+				.append($('<i>').text(Joomla.JText._('COM_FABRIK_NO_RECORDS'))));
 			li.inject(ul);
 		}
 		for (var i = 0; i < max; i ++) {
 			pair = data[i];
 			a = $('<a>').attr({'href': '#', tabindex: '-1'})
 				.data('value', pair.value).text(pair.text);
-			li = $('<li>').adopt(a);
+			li = $('<li>').append(a);
 			li.inject(ul);
 		}
 		if (data.length > this.options.max) {

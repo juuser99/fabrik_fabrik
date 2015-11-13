@@ -22,7 +22,7 @@ var SliderField = my.Class({
         });
     },
 
-    update: function () {
+    update: function (val) {
         if (!this.options.editable) {
             this.element.html(val);
             return;
@@ -73,12 +73,12 @@ var ColourPicker = my.Class(FbElement, {
             this.createSliders(this.strElement);
         }
         this.swatch = new ColourPickerSwatch(this.options.element, this.options, this);
-        this.widget.find('#' + this.options.element + '-swatch').empty().adopt(this.swatch);
+        this.widget.find('#' + this.options.element + '-swatch').empty().append(this.swatch);
         this.widget.hide();
 
         if (this.options.showPicker) {
             this.grad = new ColourPickerGradient(this.options.element, this.options, this);
-            this.widget.find('#' + this.options.element + '-picker').empty().adopt(this.grad.square);
+            this.widget.find('#' + this.options.element + '-picker').empty().append(this.grad.square);
         }
         this.update(this.options.value);
 
@@ -124,7 +124,7 @@ var ColourPicker = my.Class(FbElement, {
         this.ini();
     },
 
-    setOutputs: function (output) {
+    setOutputs: function () {
         var self = this;
         this.outputs = {};
         this.outputs.backgrounds = this.getContainer().find('.colourpicker_bgoutput');
@@ -139,7 +139,7 @@ var ColourPicker = my.Class(FbElement, {
             });
         });
 
-        this.outputs.foregrounds.each(function (i) {
+        this.outputs.foregrounds.each(function () {
             $(this).off('click');
             $(this).on('click', function (e) {
                 self.toggleWidget(e);
@@ -192,17 +192,17 @@ var ColourPicker = my.Class(FbElement, {
                 'value': value
             });
 
-        var tds = [$(document.createElement('td')).text(label), $(document.createElement('td')).adopt(sliderField)];
-        var tr1 = $(document.createElement('tr')).adopt(tds);
+        var tds = [$(document.createElement('td')).text(label), $(document.createElement('td')).append(sliderField)];
+        var tr1 = $(document.createElement('tr')).append(tds);
 
         this.tbody.appendChild(tr1);
         this[colour + 'Field'] = sliderField;
     },
 
     updateAll: function (red, green, blue) {
-        red = red ? red.toInt() : 0;
-        green = green ? green.toInt() : 0;
-        blue = blue ? blue.toInt() : 0;
+        red = red ? parseInt(red, 10) : 0;
+        green = green ? parseInt(green, 10) : 0;
+        blue = blue ? parseInt(blue, 10) : 0;
 
         if (this.options.showPicker) {
             this.redField.value = red;
@@ -239,11 +239,11 @@ var ColourPicker = my.Class(FbElement, {
             this.element.html(val);
             return;
         }
-        if (typeOf(val) === 'null') {
+        if (val === null || val === undefined) {
             val = [0, 0, 0];
         } else {
-            if (typeOf(val) === 'string') {
-                val = val.split(",");
+            if (typeof(val) === 'string') {
+                val = val.split(',');
             }
         }
         this.updateAll(val[0], val[1], val[2]);
@@ -251,13 +251,12 @@ var ColourPicker = my.Class(FbElement, {
     },
 
     updateFromField: function (evt, col) {
-        var val = Math.min(255, evt.target.value.toInt());
+        var val = Math.min(255, parseInt(evt.target.value, 10));
         evt.target.value = val;
-        if (isNaN(val)) {
-            val = 0;
-        } else {
+        if (!isNaN(val)) {
             this.options.colour[col] = val;
-            this.options.callback(this.options.colour.red + ',' + this.options.colour.green + ',' + this.options.colour.blue);
+            this.options.callback(this.options.colour.red + ',' + this.options.colour.green +
+                ',' + this.options.colour.blue);
         }
     },
 
@@ -277,6 +276,8 @@ var ColourPickerSwatch = my.Class({
         this.callback = this.options.callback;
         this.outputs = this.options.outputs;
         this.redField = null;
+        this.greenField = null;
+        this.blueField = null;
         this.widget = $(document.createElement('div'));
         this.colourNameOutput = $(document.createElement('span')).css({'padding': '3px'}).inject(this.widget);
         this.createColourSwatch(element);
@@ -299,7 +300,7 @@ var ColourPickerSwatch = my.Class({
             j = 0;
             jQuery.each(line, function (colour, colname) {
                 var swatchId = element + 'swatch-' + i + '-' + j;
-                swatchLine.adopt($(document.createElement('div'))
+                swatchLine.append($(document.createElement('div'))
                     .attr({
                         'id'    : swatchId
                     })
@@ -320,9 +321,9 @@ var ColourPickerSwatch = my.Class({
                 j++;
             });
 
-            swatchDiv.adopt(swatchLine);
+            swatchDiv.append(swatchLine);
         }
-        this.widget.adopt(swatchDiv);
+        this.widget.append(swatchDiv);
     },
 
     updateFromSwatch: function (e) {
@@ -438,7 +439,7 @@ var ColourPickerGradient = my.Class({
      * Position the circle based on a colour. As we are looking at HSB. saturation is defined on the x axis
      * and brightness on the left axis (both defined as percentages)
      *
-     * @param  Color  c
+     * @param {Color}  c
      */
     positionCircleFromColour: function (c) {
         this.saturarion = c.hsb[1];

@@ -103,9 +103,9 @@ Fabrik.Window = my.Class({
             w = this.window.css('width'),
             h = this.window.css('height');
         w = (w === null || w === 'auto') ? pxWidth : this.window.css('width');
-        w = w.toInt();
+        w = parseInt(w, 10);
         h = (h === null || h === 'auto') ? this.options.height + 10 : this.window.css('height');
-        h = h.toInt();
+        h = parseInt(h, 10);
         var d = {'width': w + 'px', 'height': h + 'px'};
         this.window.css(d);
 
@@ -153,7 +153,7 @@ Fabrik.Window = my.Class({
         if (dim.indexOf('%') !== -1) {
             return Math.floor(window.getSize()[coord] * (dim.toFloat() / 100));
         }
-        return dim.toInt();
+        return parseInt(dim, 10);
     },
 
     /**
@@ -276,7 +276,7 @@ Fabrik.Window = my.Class({
 
     loadContent: function () {
         var u, self = this;
-        $(window).trigger('tips.hideall');
+
         switch (this.options.loadMethod) {
 
             case 'html':

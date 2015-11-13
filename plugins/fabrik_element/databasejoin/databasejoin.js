@@ -43,13 +43,13 @@ var FbDatabasejoin = my.Class(FbElement, {
 			// If duplicated remove old events
 
 			b.removeEvent('click', function (e) {
-				self.start(e);
+				self.start(e, false);
 			});
 
 			this.watchAddEvent = this.start.bind(this);
 
 			b.on('click', function (e) {
-				self.start(e);
+				self.start(e, false);
 			});
 		}
 	},
@@ -95,14 +95,14 @@ var FbDatabasejoin = my.Class(FbElement, {
 			return;
 		}
 
-		if (typeOf(this.element) === 'null' || typeOf(c) === 'null') {
+		if (this.element === null || c === null) {
 			return;
 		}
 		var a = c.find('.toggle-addoption'),
-			url = typeOf(a) === 'null' ? e.target.get('href') : a.get('href');
+			url = a.length === 0 ? $(e.target).prop('href') : a.prop('href');
 
 
-		var id = this.element.id + '-popupwin';
+		var id = this.element.prop('id') + '-popupwin';
 		this.windowopts = {
 			'id': id,
 			'title': Joomla.JText._('PLG_ELEMENT_DBJOIN_ADD'),
@@ -179,7 +179,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	 */
 	addOption: function (v, l, autoCompleteUpdate)
 	{
-		l = Encoder.htmlDecode(l);
+		l = Encoder.htmlDecode(l), opt;
 		autoCompleteUpdate = typeof(autoCompleteUpdate) !== 'undefined' ? autoCompleteUpdate : true;
 		var opt, selected, labelField;
 
@@ -190,10 +190,10 @@ var FbDatabasejoin = my.Class(FbElement, {
 			var sel = $.isArray(this.options.value) ? this.options.value : [this.options.value];
 			selected = sel.contains(v) ? 'selected' : '';
 			opt = $(document.createElement('option')).attr({'value': v, 'selected': selected}).text(l);
-			$('#' + this.element.id).adopt(opt);
+			this.element.append(opt);
 			if (this.options.advanced)
 			{
-				$('#' + this.element.id).trigger('liszt:updated');
+				this.element.trigger('liszt:updated');
 			}
 			break;
 		case 'auto-complete':
@@ -210,7 +210,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		case 'radio':
 		/* falls through */
 		default:
-			var opt = jQuery(Fabrik.jLayouts['fabrik-element-' + this.plugin + '-form-radio'])[0];
+			opt = jQuery(Fabrik.jLayouts['fabrik-element-' + this.plugin + '-form-radio'])[0];
 			this._addOption(opt, l, v);
 			break;
 		}
@@ -413,7 +413,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 					break;
 				}
 
-				if (typeOf(this.element) === 'null') {
+				if (this.element.length === 0) {
 					return;
 				}
 				// $$$ hugh - fire change blur event, so things like auto-fill will pick up change
@@ -433,7 +433,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 					self.selectRecord(e);
 				});
 				Fabrik.addEvent('fabrik.list.row.selected', function (json) {
-					if (self.options.listid.toInt() === json.listid.toInt() && self.activeSelect) {
+					if (parseInt(self.options.listid, 10) === parseInt(json.listid, 10) && self.activeSelect) {
 						self.update(json.rowid);
 						winId = self.element.id + '-popupwin-select';
 						if (Fabrik.Windows[winId]) {
@@ -487,7 +487,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		e.stopPropagation();
 		var id = this.selectRecordWindowId();
 		var url = this.getContainer().find('a.toggle-selectoption').href;
-		url += '&triggerElement=' + this.element.id;
+		url += '&triggerElement=' + this.element.prop('id');
 		url += '&resetfilters=1';
 		url += '&c=' + this.options.listRef;
 
@@ -515,7 +515,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	 * @return  string
 	 */
 	selectRecordWindowId: function () {
-		return this.element.id + '-popupwin-select';
+		return this.element.prop('id') + '-popupwin-select';
 	},
 
 	numChecked: function () {
@@ -523,13 +523,13 @@ var FbDatabasejoin = my.Class(FbElement, {
 			return null;
 		}
 		return this._getSubElements().filter(function (c) {
-			return c.value !== "0" ? c.checked : false;
+			return c.value !== '0' ? c.checked : false;
 		}).length;
 	},
 
 	update: function (val) {
 		this.find();
-		if (typeOf(this.element) === 'null') {
+		if (this.element.length === 0) {
 			return;
 		}
 		if (!this.options.editable) {
@@ -608,7 +608,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	 */
 	updateByLabel: function (label) {
 		this.find();
-		if (typeOf(this.element) === 'null') {
+		if (this.element.length === 0) {
 			return;
 		}
 		// If it's not editable or not a drop-down, just punt to a normal update()
@@ -657,7 +657,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		if (!this.options.editable) {
 			return this.options.value;
 		}
-		if (typeOf(this.element) === 'null') {
+		if (this.element.length === 0) {
 			return '';
 		}
 		switch (this.options.displayType) {
@@ -731,7 +731,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	getValues: function () {
 		var v = [];
 		var search = (this.options.displayType !== 'dropdown') ? 'input' : 'option';
-		$('#' + this.element.id).find(search).each(function (f) {
+		this.element.find(search).each(function (f) {
 			v.push(f.value);
 		});
 		return v;
@@ -756,7 +756,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 		f.prop('id', this.element.prop('id') + '-auto-complete');
 		f.prop('name', this.element.propt('name').replace('[]', '') + '-auto-complete');
 		$('#' + f.prop('id')).val('');
-		new FbAutocomplete(this.element.id, this.options.autoCompleteOpts);
+		new FbAutocomplete(this.element.prop('id'), this.options.autoCompleteOpts);
 	},
 
 	watchObserve: function () {
@@ -806,7 +806,7 @@ var FbDatabasejoin = my.Class(FbElement, {
 	init: function () {
 		var self = this;
 		// Could be in a popup add record form, in which case we don't want to ini on a main page load
-		if (typeOf(this.element) === 'null') {
+		if (this.element.length === 0) {
 			return;
 		}
 		if (this.options.editable) {

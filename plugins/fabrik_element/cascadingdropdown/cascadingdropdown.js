@@ -12,9 +12,16 @@
 
 var FbCascadingdropdown = my.Class(FbDatabasejoin, {
 
+    options: {
+        showPleaseSelect: false,
+        watchInSameGroup: true,
+        watchChangeEvent: 'change'
+    },
+
     constructor: function (element, options) {
         var self = this;
         this.ignoreAjax = false;
+        options = $.extend(this.options, options);
         FbCascadingdropdown.Super.call(this, element, options);
         this.plugin = 'cascadingdropdown';
         /**
@@ -71,12 +78,12 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
          * http://fabrikar.com/forums/showthread.php?p=109638#post109638
          */
         if (window.ie) {
-            if (this.options.repeatCounter.toInt() === 0) {
+            if (parseInt(this.options.repeatCounter, 10) === 0) {
                 // this is the original cdd element
                 var s = triggerid.substr(triggerid.length - 2, 1);
                 var i = triggerid.substr(triggerid.length - 1, 1);
                 // test for "_x" at end of trigger id where x is an int
-                if (s === '_' && typeOf(parseInt(i, 10)) === 'number' && i !== '0') {
+                if (s === '_' && typeof(parseInt(i, 10)) === 'number' && i !== '0') {
                     //found so this is the bug where a third watch element incorrectly updates orig
                     return;
                 }
@@ -102,17 +109,15 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
         };
         data = Object.append(formdata, data);
         if (this.myAjax) {
-            // $$$ rob stops ascyro behaviour when older ajax call might take longer than new call and thus populate the dd with old data.
-            this.myAjax.cancel();
+            // $$$ rob stops ascyro behaviour when older ajax call might take longer than new
+            // call and thus populate the dd with old data.
+            this.myAjax.abort();
         }
         this.myAjax = $.ajax({
-            url       : '',
-            method    : 'post',
-            'data'    : data,
-            dataType  : 'json',
-            onComplete: function () {
-                this.spinner.hide();
-            }.bind(this),
+            url     : '',
+            method  : 'post',
+            'data'  : data,
+            dataType: 'json'
         }).fail(function (jqxhr, textStatus, error) {
             console.log(textStatus + '', '' + error);
         }).done(function () {
@@ -129,20 +134,20 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
                 self.element.find('div').destroy();
             }
 
-            if (this.options.showDesc === true) {
+            if (self.options.showDesc === true) {
                 c = self.getContainer().find('.dbjoin-description');
                 c.empty();
             }
-            this.myAjax = null;
+            self.myAjax = null;
             var singleResult = json.length === 1;
             if (!this.ignoreAjax) {
                 json.each(function (k) {
                     var item = this;
-                    if (this.options.editable === false) {
+                    if (self.options.editable === false) {
 
                         // Pretify new lines to brs
                         item.text = item.text.replace(/\n/g, '<br />');
-                        $(document.createElement('div')).html(item.text).inject(this.element);
+                        $(document.createElement('div')).html(item.text).inject(self.element);
                     } else {
                         updateField = (item.value !== '' && item.value === origValue) || singleResult;
                         self.addOption(item.value, item.text, updateField);
@@ -168,9 +173,10 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
                 }
             }
             self.ignoreAjax = false;
-            // $$$ hugh - need to remove/add 'readonly' class ???  Probably need to add/remove the readonly="readonly" attribute as well
+            // $$$ hugh - need to remove/add 'readonly' class ???
+            // Probably need to add/remove the readonly="readonly" attribute as well
             //this.element.disabled = (this.element.options.length === 1 ? true : false);
-            if (self.options.editable && this.options.displayType === 'dropdown') {
+            if (self.options.editable && self.options.displayType === 'dropdown') {
                 if (self.element.options.length === 1) {
                     // SELECTS DON'T HAVE READONLY PROPERTIES
                     //this.element.setProperty('readonly', true);
@@ -275,7 +281,7 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
      */
     cloneAutoComplete: function () {
         var f = this.getAutoCompleteLabelField();
-        f.id = this.element.id + '-auto-complete';
+        f.id = this.element.prop('id') + '-auto-complete';
         f.name = this.element.name.replace('[]', '') + '-auto-complete';
         $('#' + f.id).val('');
         new FabCddAutocomplete(this.element.id, this.options.autoCompleteOpts);
@@ -289,17 +295,12 @@ var FbCascadingdropdown = my.Class(FbDatabasejoin, {
             c = this.getContainer().find('.dbjoin-description'),
             show = c.find('.description-' + v),
             myFx;
-        c.getElements('.notice').each(function (d) {
-            if (d === show) {
-                myFx = new Fx.Style(show, 'opacity', {
-                    duration  : 400,
-                    transition: Fx.Transitions.linear
-                });
-                myFx.set(0);
-                d.show();
-                myFx.start(0, 1);
+        c.find('.notice').each(function () {
+            if ($(this) === show) {
+                show.fadeIn();
+                $(this).show();
             } else {
-                d.hide();
+                $(this).hide();
             }
         }.bind(this));
     }

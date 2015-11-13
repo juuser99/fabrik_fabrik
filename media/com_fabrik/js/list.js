@@ -64,7 +64,7 @@ var FbList = my.Class({
         this.groupToggle = new FbGroupedToggler(this.form, this.options.groupByOpts);
         new FbListKeys(this);
         if (this.list) {
-            if (this.list.get('tag') === 'table') {
+            if (this.list.prop('tagName') === 'TABLE') {
                 this.tbody = this.list.find('tbody');
             }
             if (typeOf(this.tbody) === 'null') {
@@ -176,9 +176,9 @@ var FbList = my.Class({
             this.openCSVWindow();
         } else {
             if (this.form.find('.csvExportButton')) {
-                this.form.find('.csvExportButton').each(function (b) {
-                    if (b.hasClass('custom') === false) {
-                        b.on('click', function (e) {
+                this.form.find('.csvExportButton').each(function () {
+                    if ($(this).hasClass('custom') === false) {
+                        $(this).on('click', function (e) {
                             self.openCSVWindow();
                             e.stopPropagation();
                         });
@@ -240,8 +240,8 @@ var FbList = my.Class({
         var c = $('<form />').attr({
             'action': url,
             'method': 'post'
-        }).adopt([$('<div />').attr(divopts).text(Joomla.JText._('COM_FABRIK_FILE_TYPE')), $('<label />').html(rad5),
-            $('<label />').adopt(
+        }).append([$('<div />').attr(divopts).text(Joomla.JText._('COM_FABRIK_FILE_TYPE')), $('<label />').html(rad5),
+            $('<label />').append(
                 [$('<input />').attr({
                     'type' : 'radio',
                     'name' : 'excel',
@@ -252,26 +252,26 @@ var FbList = my.Class({
             $('<br />'), $('<br />'),
             $('<div />').attr(divopts).text(Joomla.JText._('COM_FABRIK_INCLUDE_FILTERS')),
             $('<label />').html(rad),
-            $('<label />').adopt([$('<input />').attr({
+            $('<label />').append([$('<input />').attr({
                 'type' : 'radio',
                 'name' : 'incfilters',
                 'value': '0'
             }), $('<span />').text(no)]), $('<br />'),
             $('<div />').attr(divopts).text(Joomla.JText._('COM_FABRIK_INCLUDE_DATA')),
             $('<label />').html(rad4),
-            $('<label />').adopt([$('<input />').attr({
+            $('<label />').append([$('<input />').attr({
                 'type' : 'radio',
                 'name' : 'inctabledata',
                 'value': '0'
             }), $('<span />').text(no)]), $('<br />'),
             $('<div />').attr(divopts).text(Joomla.JText._('COM_FABRIK_INCLUDE_RAW_DATA')),
-            $('<label />').html(rad2), $('<label />').adopt([$('<input />').attr({
+            $('<label />').html(rad2), $('<label />').append([$('<input />').attr({
                 'type' : 'radio',
                 'name' : 'incraw',
                 'value': '0'
             }), $('<span />').text(no)]), $('<br />'),
             $('<div />').attr(divopts).text(Joomla.JText._('COM_FABRIK_INCLUDE_CALCULATIONS')),
-            $('<label />').html(rad3), $('<label />').adopt([$('<input />').attr({
+            $('<label />').html(rad3), $('<label />').append([$('<input />').attr({
                 'type' : 'radio',
                 'name' : 'inccalcs',
                 'value': '0'
@@ -292,7 +292,7 @@ var FbList = my.Class({
                 var r = $('<div />').attr(divopts).text(label);
                 r.inject(c);
                 $('<label />').html(rad).inject(c);
-                $('<label />').adopt([$('<input />').attr({
+                $('<label />').append([$('<input />').attr({
                     'type' : 'radio',
                     'name' : 'fields[' + k + ']',
                     'value': '0'
@@ -311,7 +311,7 @@ var FbList = my.Class({
                 var r = $('<div />').attr(divopts).text(el.label);
                 r.inject(c);
                 $('<label />').html(rad).inject(c);
-                $('<label />').adopt([$('<input />').attr({
+                $('<label />').append([$('<input />').attr({
                     'type' : 'radio',
                     'name' : 'fields[' + el.name + ']',
                     'value': '0'
@@ -322,7 +322,7 @@ var FbList = my.Class({
 
         $('<div />').css({
             'text-align': 'right'
-        }).adopt($('<input />').attr({
+        }).append($('<input />').attr({
             'type' : 'button',
             'name' : 'submit',
             'value': Joomla.JText._('COM_FABRIK_EXPORT'),
@@ -401,10 +401,10 @@ var FbList = my.Class({
             // selected fields
             if (!fields) {
                 fields = {};
-                $('#exportcsv').find('input[name^=field]').each(function (i) {
-                    if (i.checked) {
-                        var k = i.name.replace('fields[', '').replace(']', '');
-                        fields[k] = i.val();
+                $('#exportcsv').find('input[name^=field]').each(function () {
+                    if (this.checked) {
+                        var k = this.name.replace('fields[', '').replace(']', '');
+                        fields[k] = $(this).val();
                     }
                 });
             }
@@ -465,53 +465,57 @@ var FbList = my.Class({
     /**
      * Add filter options to CSV export info
      *
-     * @param   objet  opts
+     * @param {object} opts
      *
-     * @return  opts
+     * @return {object} opts
      */
     csvExportFilterOpts: function (opts) {
         var ii = 0,
             aa, bits,
             advancedPointer = 0,
+            self = this,
             testii,
-            usedAdvancedKeys = ['value', 'condition', 'join', 'key', 'search_type', 'match', 'full_words_only', 'eval', 'grouped_to_previous', 'hidden', 'elementid'];
+            usedAdvancedKeys = ['value', 'condition', 'join', 'key', 'search_type', 'match', 'full_words_only',
+                'eval', 'grouped_to_previous', 'hidden', 'elementid'];
 
-        this.getFilters().each(function (f) {
-            bits = f.name.split('[');
+        this.getFilters().each(function () {
+            bits = this.name.split('[');
             if (bits.length > 3) {
                 testii = parseInt(bits[3].replace(']', ''), 10);
                 ii = testii > ii ? testii : ii;
 
-                if (f.get('type') === 'checkbox' || f.get('type') === 'radio') {
-                    if (f.checked) {
-                        opts[f.name] = f.val();
+                if ($(this).prop('type') === 'checkbox' || $(this).prop('type') === 'radio') {
+                    if (this.checked) {
+                        opts[this.name] = $(this).val();
                     }
                 } else {
-                    opts[f.name] = f.val();
+                    opts[this.name] = $(this).val();
                 }
             }
-        }.bind(this));
+        });
 
         ii++;
 
-        Object.each(this.options.advancedFilters, function (values, key) {
+        $.each(this.options.advancedFilters, function (key, values) {
             if (usedAdvancedKeys.contains(key)) {
                 advancedPointer = 0;
                 for (aa = 0; aa < values.length; aa++) {
                     advancedPointer = aa + ii;
-                    aName = 'fabrik___filter[list_' + this.options.listRef + '][' + key + '][' + advancedPointer + ']';
+                    var aName = 'fabrik___filter[list_' + self.options.listRef + '][' +
+                        key + '][' + advancedPointer + ']';
                     opts[aName] = values[aa];
                 }
             }
-        }.bind(this));
+        });
 
         return opts;
     },
 
     addPlugins: function (a) {
+        var self = this;
         a.each(function (p) {
-            p.list = this;
-        }.bind(this));
+            p.list = self;
+        });
         this.plugins = a;
     },
 
@@ -538,19 +542,19 @@ var FbList = my.Class({
 
     watchOrder: function () {
         var elementId = false,
+            klasses,
             hs = $('#' + this.options.form).find('.fabrikorder, .fabrikorder-asc, .fabrikorder-desc');
         hs.off('click');
-        hs.each(function (h) {
+        hs.each(function () {
+            var h = $(this);
             h.on('click', function (e) {
                 var img = 'ordernone.png',
                     orderdir = '',
                     newOrderClass = '',
                     bsClassAdd = '',
                     bsClassRemove = '';
-                // $$$ rob in pageadaycalendar.com h was null so reset to e.target
-                h = $(e.target);
                 var td = $(this).closest('.fabrik_ordercell');
-                if ($(this).prop('tagName') !== 'A') {
+                if (h.prop('tagName') !== 'A') {
                     h = td.closest('a');
                 }
 
@@ -563,7 +567,7 @@ var FbList = my.Class({
                  * to specifically remove the current class and add the new one.
                  */
 
-                switch (h[0].className) {
+                switch (h.prop('class')) {
                     case 'fabrikorder-asc':
                         newOrderClass = 'fabrikorder-desc';
                         bsClassAdd = h.data('sort-desc-icon');
@@ -601,16 +605,17 @@ var FbList = my.Class({
 
                 // Swap images - if list doing ajax nav then we need to do this
                 if (this.options.singleOrdering) {
-                    $('#' + this.options.form).find('.fabrikorder, .fabrikorder-asc, .fabrikorder-desc').each(function (otherH) {
-                        var otherIcon = otherH.firstElementChild;
-                        switch (otherH.className) {
+                    klasses = '.fabrikorder, .fabrikorder-asc, .fabrikorder-desc';
+                    $('#' + this.options.form).find(klasses).each(function () {
+                        var otherIcon = $(this).firstElementChild;
+                        switch ($(this).prop('class')) {
                             case 'fabrikorder-asc':
-                                otherIcon.removeClass(otherH.data('sort-asc-icon'));
-                                otherIcon.addClass(otherH.data('sort-icon'));
+                                otherIcon.removeClass($(this).data('sort-asc-icon'));
+                                otherIcon.addClass($(this).data('sort-icon'));
                                 break;
                             case 'fabrikorder-desc':
-                                otherIcon.removeClass(otherH.data('sort-desc-icon'));
-                                otherIcon.addClass(otherH.data('sort-icon'));
+                                otherIcon.removeClass($(this).data('sort-desc-icon'));
+                                otherIcon.addClass($(this).data('sort-icon'));
                                 break;
                             case 'fabrikorder':
                                 break;
@@ -628,6 +633,10 @@ var FbList = my.Class({
 
     },
 
+    /**
+     * Get filter jQuery nodes
+     * @returns {Query}
+     */
     getFilters: function () {
         return $('#' + this.options.form).find('.fabrik_filter');
     },
@@ -636,27 +645,27 @@ var FbList = my.Class({
         var self = this;
         this.getFilters().each(function () {
             if (self.options.filterMethod !== 'submitform') {
-                $(this).data('initialvalue', f.val());
+                $(this).data('initialvalue', $(this).val());
             }
         });
     },
 
     watchFilters: function () {
-        var e = '',
+        var eventType = '',
             self = this,
             submit = $('#' + this.options.form).find('.fabrik_filter_submit');
-        this.getFilters().each(function (f) {
-            e = f.get('tag') === 'select' ? 'change' : 'blur';
+        this.getFilters().each(function () {
+            eventType = $(this).prop('tagName') === 'SELECT' ? 'change' : 'blur';
             if (self.options.filterMethod !== 'submitform') {
-                f.removeEvent(e);
-                f.on(e, function (e) {
+                $(this).off(eventType);
+                $(this).on(eventType, function (e) {
                     e.stopPropagation();
-                    if ($(e.target).data('initialvalue') !== $(e.target).val()) {
+                    if ($(this).data('initialvalue') !== $(this).val()) {
                         self.doFilter();
                     }
                 });
             } else {
-                f.on(e, function (e) {
+                $(this).on(eventType, function () {
                     submit.highlight('#ffaa00');
                 });
             }
@@ -673,9 +682,9 @@ var FbList = my.Class({
         this.getFilters().on('keydown', function (e) {
             if (e.code === 13) {
                 e.stopPropagation();
-                this.doFilter();
+                self.doFilter();
             }
-        }.bind(this));
+        });
     },
 
     doFilter: function () {
@@ -690,8 +699,8 @@ var FbList = my.Class({
 
     // highlight active row, deselect others
     setActive: function (activeTr) {
-        this.list.find('.fabrik_row').each(function (tr) {
-            tr.removeClass('activeRow');
+        this.list.find('.fabrik_row').each(function () {
+            $(this).removeClass('activeRow');
         });
         activeTr.addClass('activeRow');
     },
@@ -719,8 +728,8 @@ var FbList = my.Class({
     },
 
     uncheckAll: function () {
-        this.form.find('input[name^=ids]').each(function (c) {
-            c.checked = '';
+        this.form.find('input[name^=ids]').each(function () {
+            this.checked = '';
         });
     },
 
@@ -734,19 +743,20 @@ var FbList = my.Class({
         if (task === 'list.delete') {
             var ok = false;
             var delCount = 0;
-            this.form.find('input[name^=ids]').each(function (c) {
-                if (c.checked) {
+            this.form.find('input[name^=ids]').each(function () {
+                if (this.checked) {
                     delCount++;
                     ok = true;
                 }
             });
             if (!ok) {
-                alert(Joomla.JText._('COM_FABRIK_SELECT_ROWS_FOR_DELETION'));
+                window.alert(Joomla.JText._('COM_FABRIK_SELECT_ROWS_FOR_DELETION'));
                 Fabrik.loader.stop('listform_' + this.options.listRef);
                 return false;
             }
-            var delMsg = delCount === 1 ? Joomla.JText._('COM_FABRIK_CONFIRM_DELETE_1') : Joomla.JText._('COM_FABRIK_CONFIRM_DELETE').replace('%s', delCount);
-            if (!confirm(delMsg)) {
+            var delMsg = delCount === 1 ? Joomla.JText._('COM_FABRIK_CONFIRM_DELETE_1') :
+                Joomla.JText._('COM_FABRIK_CONFIRM_DELETE').replace('%s', delCount);
+            if (!window.confirm(delMsg)) {
                 Fabrik.loader.stop('listform_' + this.options.listRef);
                 this.uncheckAll();
                 return false;
@@ -836,11 +846,11 @@ var FbList = my.Class({
      *
      * @since   3.0.7
      *
-     * @return  array
+     * @return {array} array
      */
     getRowIds: function () {
         var keys = [];
-        jQuery.each(this.options.data, function (k, group) {
+        $.each(this.options.data, function (k, group) {
             group.each(function (row) {
                 keys.push(row.data.__pk_val);
             });
@@ -859,7 +869,7 @@ var FbList = my.Class({
      */
     getRow: function (id) {
         var found = {};
-        jQuery.each(this.options.data, function (key, group) {
+        $.each(this.options.data, function (key, group) {
             for (var i = 0; i < group.length; i++) {
                 var row = group[i];
                 if (row && row.data.__pk_val === id) {
@@ -907,8 +917,8 @@ var FbList = my.Class({
     },
 
     clearRows: function () {
-        this.list.find('.fabrik_row').each(function (tr) {
-            tr.remove();
+        this.list.find('.fabrik_row').each(function () {
+            $(this).remove();
         });
     },
 
@@ -957,12 +967,12 @@ var FbList = my.Class({
             history.pushState(data, 'fabrik.list.rows');
         }
         if (data.id === this.id && data.model === 'list') {
-            var header = $('#' + this.options.form).find('.fabrik___heading').getLast();
+            var header = $('#' + this.options.form).find('.fabrik___heading').last();
             var headings = new Hash(data.headings);
             headings.each(function (data, key) {
                 key = '.' + key;
                 try {
-                    if (typeOf(header.find(key)) !== 'null') {
+                    if (typeOf(header[key]) !== 'null') {
                         // $$$ rob 28/10/2011 just alter span to allow for maintaining filter toggle links
                         header.find(key).find('span').html(data);
                     }
@@ -1004,10 +1014,10 @@ var FbList = my.Class({
                             thisrowtemplate = $(container);
                             thisrowtemplate.html(this.options.rowtemplate);
                         } else {
-                            container = this.options.rowtemplate.get('tag') === 'tr' ? '<table />' : '<div />';
+                            container = this.options.rowtemplate.prop('tagName') === 'TR' ? '<table />' : '<div />';
                             thisrowtemplate = $(container);
                             // ie tmp fix for mt 1.2 setHTML on table issue
-                            thisrowtemplate.adopt(this.options.rowtemplate.clone());
+                            thisrowtemplate.append(this.options.rowtemplate.clone());
                         }
                         var row = groupData[i];
                         jQuery.each(row.data, function (key, val) {
@@ -1041,11 +1051,11 @@ var FbList = my.Class({
             // Grouped data - show all tbodys, then hide empty tbodys (not going to work for none <table> tpls)
             var tbodys = this.list.find('tbody');
             tbodys.css('display', '');
-            tbodys.each(function (tbody) {
-                if (!tbody.hasClass('fabrik_groupdata')) {
-                    var groupTbody = tbody.getNext();
+            tbodys.each(function () {
+                if (!$(this).hasClass('fabrik_groupdata')) {
+                    var groupTbody = $(this).next();
                     if (groupTbody.find('.fabrik_row').length === 0) {
-                        tbody.hide();
+                        $(this).hide();
                         groupTbody.hide();
                     }
                 }
@@ -1150,9 +1160,9 @@ var FbList = my.Class({
                 // selected
             }.bind(this));
         }
-        this.form.find('input[name^=ids]').each(function (i) {
+        this.form.find('input[name^=ids]').each(function () {
             var input = $(this);
-            input.on('change', function (e) {
+            input.on('change', function () {
                 self.toggleJoinKeysChx(input);
             });
         });
@@ -1220,7 +1230,8 @@ var FbList = my.Class({
         if (as.length === 0) {
             as = this.form.find('.pagination a');
         }
-        as.each(function (a) {
+        as.each(function () {
+            var a = $(this);
             a.on('click', function (e) {
                 e.stopPropagation();
                 if (a.prop('tagName') === 'A') {
@@ -1248,19 +1259,17 @@ var FbList = my.Class({
     },
 
     /**
-     * currently only called from element raw view when using inline edit plugin
+     * Currently only called from element raw view when using inline edit plugin
      * might need to use for ajax nav as well?
+     * @param {object} json
      */
-
     updateCals: function (json) {
         var types = ['sums', 'avgs', 'count', 'medians'];
-        this.form.find('.fabrik_calculations').each(function (c) {
+        this.form.find('.fabrik_calculations').each(function () {
+            var c = $(this);
             types.each(function (type) {
                 jQuery.each(json[type], function (key, val) {
-                    var target = c.find('.' + key);
-                    if (typeOf(target) !== 'null') {
-                        target.html(val);
-                    }
+                    c.find('.' + key).html(val);
                 });
             });
         });
@@ -1356,6 +1365,11 @@ var FbGroupedToggler = my.Class({
         });
     },
 
+    /**
+     * Set icon state
+     * @param {jQuery} img
+     * @param {bool} state
+     */
     setIcon: function (img, state) {
         var expandIcon = img.data('expand-icon'),
             collapsedIcon = img.data('collapse-icon');
@@ -1378,9 +1392,9 @@ var FbGroupedToggler = my.Class({
         if (i.length === 0) {
             i = this.container.find('.fabrik_groupheading ' + selector);
         }
-        i.each(function (img) {
-            img.store('showgroup', false);
-            self.setIcon(img, true);
+        i.each(function () {
+            $(this).data('showgroup', false);
+            self.setIcon($(this), true);
         });
     },
 
@@ -1391,9 +1405,9 @@ var FbGroupedToggler = my.Class({
         if (i.length === 0) {
             i = this.container.find('.fabrik_groupheading img');
         }
-        i.each(function (img) {
-            img.store('showgroup', true);
-            self.setIcon(img, false);
+        i.each(function () {
+            $(this).store('showgroup', true);
+            self.setIcon($(this), false);
         });
     },
 
@@ -1440,12 +1454,12 @@ var FbListActions = my.Class({
             return;
         }
         this.actions = this.list.form.find(this.options.selector);
-        this.actions.each(function (ul) {
+        this.actions.each(function () {
+            var el =  $(this).find('ul');
             // Sub menus ie group by options
-            if (ul.find('ul')) {
-                var el = ul.find('ul');
-                var c = $('<div />').adopt(el.clone());
-                var trigger = el.getPrevious();
+            if (el.length > 0) {
+                var c = $('<div />').append(el.clone()),
+                    trigger = el.getPrevious();
                 if (trigger.find('.fabrikTip')) {
                     trigger = trigger.find('.fabrikTip');
                 }
@@ -1464,21 +1478,22 @@ var FbListActions = my.Class({
 
     setUpDefault: function () {
         this.actions = this.list.form.find(this.options.selector);
-        this.actions.each(function (ul) {
-            if (ul.parent().hasClass('fabrik_buttons')) {
+        this.actions.each(function () {
+            if ($(this).parent().hasClass('fabrik_buttons')) {
                 return;
             }
-            ul.fade(0.6);
-            var r = ul.closest('.fabrik_row').length > 0 ? ul.closest('.fabrik_row') : ul.closest('.fabrik___heading');
+            $(this).fade(0.6);
+            var r =  $(this).closest('.fabrik_row').length > 0 ?
+                $(this).closest('.fabrik_row') :  $(this).closest('.fabrik___heading');
             if (r) {
                 // $$$ hugh - for some strange reason, if we use 1 the object disappears
                 // in Chrome and Safari!
                 r.ons({
-                    'mouseenter': function (e) {
-                        ul.fade(0.99);
+                    'mouseenter': function () {
+                        $(this).fade(0.99);
                     },
-                    'mouseleave': function (e) {
-                        ul.fade(0.6);
+                    'mouseleave': function () {
+                        $(this).fade(0.6);
                     }
                 });
             }
@@ -1487,20 +1502,12 @@ var FbListActions = my.Class({
 
     setUpFloating: function () {
         var chxFound = false;
-        this.list.form.find(this.options.selector).each(function (ul) {
+        this.list.form.find(this.options.selector).each(function () {
+            var ul = $(this);
             if (ul.closest('.fabrik_row')) {
-                if (i = ul.closest('.fabrik_row').find('input[type=checkbox]')) {
+                var i = ul.closest('.fabrik_row').find('input[type=checkbox]');
+                if (i.length > 0) {
                     chxFound = true;
-                    var hideFn = function (e, elem, leaving) {
-                        if (!e.target.checked) {
-                            this.hide(e, elem);
-                        }
-                        if (leaving === 'tip') {
-                            // elem.checked = false; (cant do this otherwise delete
-                            // confirmation wont delete anything
-                        }
-                    };
-
                     var c = function (el, o) {
                         var r = ul.parent();
                         r.store('activeRow', ul.closest('.fabrik_row'));
@@ -1529,8 +1536,8 @@ var FbListActions = my.Class({
             }
         }.bind(this));
 
-        this.list.form.find('.fabrik_select input[type=checkbox]').on('click', function (e) {
-            Fabrik.activeRow = e.target.closest('.fabrik_row');
+        this.list.form.find('.fabrik_select input[type=checkbox]').on('click', function () {
+            Fabrik.activeRow = $(this).closest('.fabrik_row');
         });
         // watch the top/master chxbox
         var chxall = this.list.form.find('input[name=checkAll]');
@@ -1560,14 +1567,9 @@ var FbListActions = my.Class({
         var tip = new FloatingTips(chxall, tipChxAllOpts);
 
         // hide markup that contained the actions
-        if (this.list.form.find('.fabrik_actions') && chxFound) {
+        if (chxFound) {
             this.list.form.find('.fabrik_actions').hide();
         }
-        if (this.list.form.find('.fabrik_calculation')) {
-            var calc = this.list.form.find('.fabrik_calculation').getLast();
-            if (typeOf(calc) !== 'null') {
-                calc.hide();
-            }
-        }
+        this.list.form.find('.fabrik_calculation').last().hide();
     }
 });

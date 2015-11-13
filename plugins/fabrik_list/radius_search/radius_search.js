@@ -23,7 +23,7 @@ var doGeoCode = function (btn) {
 			parseGeoCodeResult(uberC, mapid, results[0].geometry.location);
 			Fabrik.radiusSearchResults[address] = results[0].geometry.location;
 		} else {
-			alert(Joomla.JText._('PLG_LIST_RADIUS_SEARCH_GEOCODE_ERROR').replace('%s', status));
+			window.alert(Joomla.JText._('PLG_LIST_RADIUS_SEARCH_GEOCODE_ERROR').replace('%s', status));
 		}
 	});
 };
@@ -39,7 +39,7 @@ var parseGeoCodeResult = function (uberC, mapid, loc) {
 	uberC.find('input[name^=radius_search_geocode_lon]').value = loc.lng();
 	Fabrik.radiusSearch[mapid].map.setCenter(loc);
 	Fabrik.radiusSearch[mapid].marker.setPosition(loc);
-}
+};
 
 
 function geoCode() {
@@ -52,14 +52,15 @@ function geoCode() {
 			zoom: 4,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
-		Fabrik.radiusSearch = typeOf(Fabrik.radiusSearch) === 'null' ? {} : Fabrik.radiusSearch;
+		Fabrik.radiusSearch = Fabrik.radiusSearch === undefined ? {} : Fabrik.radiusSearch;
 		var radiusSearchMaps = $('.radius_search_geocode_map');
 		radiusSearchMaps.each(function (map) {
 			var c = map.closest('.radius_search_geocode');
 			var btn = c.find('button');
 			var trigger = btn ? btn : c.find('.radius_search_geocode_field');
-			if (trigger.data('events-added', 0).toInt() !== 1) {
-				Fabrik.radiusSearch[map.id] = typeOf(Fabrik.radiusSearch[map.id]) === 'null' ? {} : Fabrik.radiusSearch[map.id];
+			if (parseInt(trigger.data('events-added', 0), 10) !== 1) {
+				Fabrik.radiusSearch[map.id] = Fabrik.radiusSearch[map.id] === undefined ? {} :
+					Fabrik.radiusSearch[map.id];
 				Fabrik.radiusSearch[map.id].map = new google.maps.Map(map, mapOptions);
 
 				var uberC = c.closest('.radius_search');
@@ -97,9 +98,9 @@ function geoCode() {
 					});
 				}
 
-				var zoom = uberC.find('input[name=geo_code_def_zoom]').get('value').toInt();
-				var lat = uberC.find('input[name=geo_code_def_lat]').get('value').toFloat();
-				var lon = uberC.find('input[name=geo_code_def_lon]').get('value').toFloat();
+				var zoom = parseInt(uberC.find('input[name=geo_code_def_zoom]').get('value'), 10);
+				var lat = parseInt(uberC.find('input[name=geo_code_def_lat]').get('value'), 10);
+				var lon = parseInt(uberC.find('input[name=geo_code_def_lon]').get('value'), 10);
 				Fabrik.trigger('google.radiusmap.loaded', [map.id, zoom, lat, lon]);
 			}
 		});
@@ -149,7 +150,7 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 					position: latlng
 				});
 
-				google.maps.event.addListener(Fabrik.radiusSearch[mapid].marker, "dragend", function () {
+				google.maps.event.addListener(Fabrik.radiusSearch[mapid].marker, 'dragend', function () {
 					var loc = Fabrik.radiusSearch[mapid].marker.getPosition();
 					var uberC = $('#' + mapid).closest('.radius_search');
 					var geocodeLat = uberC.find('input[name^=radius_search_geocode_lat]');
@@ -163,13 +164,13 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 
 			Fabrik.loadGoogleMap(true, 'geoCode');
 
-			if (typeOf(this.options.value) === 'null') {
+			if (this.options.value === null || this.options.value === undefined) {
 				this.options.value = 0;
 			}
 
-			if (typeOf(this.listform) !== 'null') {
+			if (this.listform.length > 0) {
 				this.listform = this.listform.find('#radius_search' + this.options.renderOrder);
-				if (typeOf(this.listform) === 'null') {
+				if (this.listform.length === 0) {
 					fconsole('didnt find element #radius_search' + this.options.renderOrder);
 					return;
 				}
@@ -191,8 +192,8 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 
 			}
 
-			this.options.value = this.options.value.toInt();
-			if (typeOf(this.listform) === 'null') {
+			this.options.value = parseInt(this.options.value, 10);
+			if (this.listform.length === 0) {
 				return;
 			}
 			var output = this.listform.find('.radius_search_distance');
@@ -238,7 +239,7 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 	makeWin: function (mapid) {
 		var c = $('#' + mapid).closest('.radius_search'),
 			b = $(document.createElement('button')).addClass('btn button').html('<i class="icon-location"></i> ' + Joomla.JText._('COM_FABRIK_SEARCH'));
-		c.parent().adopt(b);
+		c.parent().append(b);
 		var offset_y = this.options.offset_y > 0 ? this.options.offset_y : null;
 		var winOpts = {
 				'id': 'win_' + mapid,
@@ -293,7 +294,7 @@ var FbListRadiusSearch = my.Class(FbListPlugin, {
 		var win = this.button.data('win');
 		var c = win.contentEl.clone();
 		c.hide();
-		this.button.parent().adopt(c);
+		this.button.parent().append(c);
 		return true;
 	},
 

@@ -192,12 +192,12 @@ var FbTextarea = my.Class(FbElement, {
             var txt = p.find('textarea').clone(true, true);
             var charLeft = p.find('.fabrik_characters_left');
             p.empty();
-            p.adopt(txt);
+            p.append(txt);
             if (charLeft.length > 0) {
-                p.adopt(charLeft.clone());
+                p.append(charLeft.clone());
             }
             txt.removeClass('mce_editable');
-            txt.setStyle('display', '');
+            txt.css('display', '');
             this.element = txt;
             var id = this.options.isGroupJoin ? this.options.htmlId : this.options.element;
             //tinyMCE.execCommand('mceAddControl', false, id);
@@ -209,7 +209,7 @@ var FbTextarea = my.Class(FbElement, {
     },
 
     /**
-     * run when the element is decloled from the form as part of a deleted repeat group
+     * run when the element is decloned from the form as part of a deleted repeat group
      */
     decloned: function (groupid) {
         if (this.options.wysiwyg) {
@@ -239,7 +239,7 @@ var FbTextarea = my.Class(FbElement, {
 
     getContent: function () {
         if (this.options.wysiwyg) {
-            return tinyMCE.activeEditor.getContent().replace(/<\/?[^>]+(>|$)/g, "");
+            return tinyMCE.activeEditor.getContent().replace(/<\/?[^>]+(>|$)/g, '');
         } else {
             return this.container.value;
         }
@@ -262,23 +262,22 @@ var FbTextarea = my.Class(FbElement, {
     },
 
     _getTinyInstance: function () {
-        return tinyMCE.majorVersion.toInt() >= 4 ? tinyMCE.get(this.element.id) : tinyMCE.getInstanceById(this.element.id);
+        var id = this.element.prop('id');
+        return parseInt(tinyMCE.majorVersion, 10) >= 4 ? tinyMCE.get(id) : tinyMCE.getInstanceById(id);
     },
 
     _addTinyEditor: function (id) {
-        if (tinyMCE.majorVersion.toInt() >= 4) {
+        if (parseInt(tinyMCE.majorVersion, 10) >= 4) {
             tinyMCE.execCommand('mceAddEditor', false, id);
-        }
-        else {
+        } else {
             tinyMCE.execCommand('mceAddControl', false, id);
         }
     },
 
     _removeTinyEditor: function (id) {
-        if (tinyMCE.majorVersion.toInt() >= 4) {
+        if (parseInt(tinyMCE.majorVersion, 10) >= 4) {
             tinyMCE.execCommand('mceRemoveEditor', false, id);
-        }
-        else {
+        } else {
             tinyMCE.execCommand('mceRemoveControl', false, id);
         }
     },
@@ -291,9 +290,7 @@ var FbTextarea = my.Class(FbElement, {
             return r;
         } else {
             this.getTextContainer();
-            if (typeOf(this.container) !== 'null') {
-                this.container.value = c;
-            }
+            this.container.val(c);
         }
         return null;
     },
@@ -309,7 +306,6 @@ var FbTextarea = my.Class(FbElement, {
 
     informKeyPress: function () {
         var charsleftEl = this.getContainer().find('.fabrik_characters_left'),
-            content = this.getContent(),
             charsLeft = this.itemsLeft();
         if (this.limitReached()) {
             this.limitContent();

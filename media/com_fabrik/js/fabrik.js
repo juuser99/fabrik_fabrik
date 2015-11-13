@@ -113,7 +113,7 @@ Request.HTML = my.Class(Request, {
 		if (options.update) {
 			var update = document.id(options.update).empty();
 			if (options.filter) {
-				update.adopt(response.elements);
+				update.append(response.elements);
 			} else {
 
 				update.html(response.html);
@@ -123,7 +123,7 @@ Request.HTML = my.Class(Request, {
 			if (options.filter) {
 				response.elements.reverse().inject(append);
 			} else {
-				append.adopt(temp.getChildren());
+				append.append(temp.getChildren());
 			}
 		}
 		if (options.evalScripts) {
@@ -383,13 +383,13 @@ if (typeof (Fabrik) === 'undefined') {
 		}
 		var url, a, title;
 		e.preventDefault();
-		if (e.target.get('tag') === 'a') {
+		if ($(e.target).prop('tagName') === 'A') {
 			a = e.target;
 		} else {
 			a = $(this).find('a').length > 0 ? $(this).find('a') : $(this).closest('a');
 		}
 
-		url = a.get('href');
+		url = a.prop('href');
 		url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
 
 		// Only one edit window open at the same time.
@@ -639,7 +639,7 @@ if (typeof (Fabrik) === 'undefined') {
 			return;
 		}
 		list.setActive(row);
-		var rowid = row.id.split('_').getLast();
+		var rowid = row.id.split('_').pop();
 
 		if ($(e.target).prop('tagName') === 'A') {
 			a = $(e.target);

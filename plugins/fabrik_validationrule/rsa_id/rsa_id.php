@@ -99,7 +99,7 @@ class PlgFabrik_ValidationruleRsa_id extends PlgFabrik_Validationrule
       err.addClass("help-inline");
       err.empty();
       var msg = new Element("span").set("text", res[2].join(" "));
-      err.adopt(el.alertImage,  msg);
+      err.append(el.alertImage,  msg);
       err.show()
     els["' . $opts->displayGender_id . '"].clear();
     els["' . $opts->displayDate_id . '"].clear();

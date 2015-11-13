@@ -27,7 +27,7 @@ var InlineEdit = my.Class({
             .on('blur', this.complete.bind(this))
             .attr({'value': this.originalText});
 
-        this.input.css('margin-left', this.input.css('margin-left').toInt() - 1);
+        this.input.css('margin-left', parseInt(this.input.css('margin-left'), 10) - 1);
         this.originalWidth = this.element.css('width');
         this.element.setStyles({'visibility': 'hidden', 'position': 'absolute', 'width': this.element.offsetWidth});
         this.input.inject(this.element, 'after');

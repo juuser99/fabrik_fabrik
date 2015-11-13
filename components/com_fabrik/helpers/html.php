@@ -784,7 +784,6 @@ EOD;
 				'media/com_fabrik/js/lib/mcl/Cmorph.js', 'media/com_fabrik/js/lib/mcl/Layer.js', 'media/com_fabrik/js/lib/mcl/LayerHash.js',
 				'media/com_fabrik/js/lib/mcl/Thread.js');
 
-			// , 'media/com_fabrik/js/canvas-extra.js'
 			self::script($src);
 			self::$mcl = true;
 		}
@@ -1309,7 +1308,9 @@ EOD;
 			}
 		}
 
-		array_unshift($files, 'jquery');
+		// Always ensure fabrik is loaded.
+		array_unshift($files, 'fab/fabrik');
+
 		$files     = array_unique($files);
 		$files     = "['" . implode("', '", $files) . "']";
 		$require[] = 'requirejs(' . ($files) . ', function ($) {';

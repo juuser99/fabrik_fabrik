@@ -41,10 +41,7 @@ var ListForm = my.Class({
                         'handle': '.handle',
                         'onSort': function (element, clone) {
                             var s = this.serialize(1, function (item) {
-                                if (item.find('input')) {
-                                    return item.find('input').name.split('][').getLast().replace(']', '');
-                                }
-                                return '';
+                                return item.find('input').prop('name').split('][').pop().replace(']', '');
                             });
                             var actual = [];
                             s.each(function (i) {
@@ -63,10 +60,7 @@ var ListForm = my.Class({
                         'handle': '.handle',
                         'onSort': function (element, clone) {
                             var s = this.serialize(1, function (item) {
-                                if (item.find('input')) {
-                                    return item.find('input').name.split('][').getLast().replace(']', '');
-                                }
-                                return '';
+                                return item.find('input').prop('name').split('][').pop().replace(']', '');
                             });
                             var actual = [];
                             s.each(function (i) {

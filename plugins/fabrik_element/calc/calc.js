@@ -14,19 +14,20 @@ var FbCalc = my.Class(FbElement, {
     },
 
     attachedToForm: function () {
+        var eventType, v2, o2,
+            elements = this.form.formElements;
         if (this.options.ajax) {
-            var o2;
             // @TODO - might want to think about firing ajaxCalc here as well, if we've just been added to the form
             // as part of duplicating a group.  Don't want to do it in cloned(), as that would be before elements
             // we observe have finished setting themselves up.  So just need to work out if this is on page load
             // or on group clone.
-            var form = this.form;
             this.options.observe.each(function (o) {
+                eventType = elements[o2].getChangeEvent();
                 if (o === '') {
                     return;
                 }
-                if (this.form.formElements[o]) {
-                    this.form.formElements[o].addNewEventAux(this.form.formElements[o].getChangeEvent(), function (e) {
+                if (elements[o]) {
+                    elements[o].addNewEventAux(elements[o].getChangeEvent(), function (e) {
                         this.calc(e);
                     }.bind(this));
                 }
@@ -38,8 +39,8 @@ var FbCalc = my.Class(FbElement, {
                     // @TODO:  this needs updating as we dont store as join.x.element any more?
                     if (this.options.canRepeat) {
                         o2 = o + '_' + this.options.repeatCounter;
-                        if (this.form.formElements[o2]) {
-                            this.form.formElements[o2].addNewEventAux(this.form.formElements[o2].getChangeEvent(), function (e) {
+                        if (elements[o2]) {
+                            elements[o2].addNewEventAux(eventType, function (e) {
                                 this.calc(e);
                             }.bind(this));
                         }
@@ -51,7 +52,7 @@ var FbCalc = my.Class(FbElement, {
                                 o2 = 'join___' + this.form.options.group_join_ids[k] + '___' + o + '_' + v2;
                                 if (this.form.formElements[o2]) {
                                     // Think we can add this one as sticky ...
-                                    this.form.formElements[o2].addNewEvent(this.form.formElements[o2].getChangeEvent(), function (e) {
+                                    elements[o2].addNewEvent(eventType, function (e) {
                                         this.calc(e);
                                     }.bind(this));
                                 }
@@ -98,7 +99,7 @@ var FbCalc = my.Class(FbElement, {
             'element_id': this.options.id,
             'formid'    : this.form.id
         };
-        data = Object.append(formdata, data);
+        data = $.extend(formdata, data);
         Fabrik.loader.start(this.element.parent(), Joomla.JText._('COM_FABRIK_LOADING'));
         $.ajax({
             'url' : '',

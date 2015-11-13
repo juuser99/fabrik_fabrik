@@ -35,7 +35,7 @@ var FbField = my.Class(FbElement, {
 			this.gcMade = false;
 			this.loadFn = function () {
 				if (this.gcMade === false) {
-					jQuery('#' + this.element.id).geocomplete();
+					this.element.geocomplete();
 					this.gcMade = true;
 				}
 			}.bind(this);
@@ -72,10 +72,7 @@ var FbField = my.Class(FbElement, {
 			}
 		}
 		if (this.options.geocomplete) {
-			var element = this.getElement();
-			if (element) {
-				jQuery('#' + element.id).geocomplete();
-			}
+			this.getElement().geocomplete();
 		}
 		FbField.Super.prototype.cloned(this, c);
 	}

@@ -85,7 +85,7 @@ var FbImage = my.Class(FbFileElement, {
         }).done(function (r) {
             var newImages = eval(r);
             newImages.each(function (opt) {
-                folder.adopt($(document.createElement('option')).attr({
+                folder.append($(document.createElement('option')).attr({
                     'value': opt.value
                 }).text(opt.text));
             });
@@ -93,7 +93,7 @@ var FbImage = my.Class(FbFileElement, {
         });
     },
 
-    showImage: function (e) {
+    showImage: function () {
         if (this.imageDir) {
             if (this.imageDir.options.length === 0) {
                 this.image.src = '';

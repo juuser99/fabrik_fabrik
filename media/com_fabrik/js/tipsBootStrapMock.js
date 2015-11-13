@@ -45,6 +45,7 @@ var FloatingTips = my.Class({
 	},
 
 	constructor: function (elements, options) {
+		var self = this;
 		if (Fabrik.bootstrapVersion('modal') === '3.x') {
 			// We should override any Fabrik3 custom tip settings with bootstrap3 data-foo attributes in JLayouts
 			return;
@@ -52,10 +53,6 @@ var FloatingTips = my.Class({
 		this.options = $.extend(this.options, options);
 		this.options.fxProperties = {duration: this.options.duration};
 
-		// Any tip (not necessarily in this instance has asked for all other tips to be hidden.
-		$(document).on('tips.hideall', function (e, trigger) {
-			this.hideOthers(trigger);
-		}.bind(this));
 		if (elements) {
 			this.attach(elements);
 		}
@@ -63,6 +60,7 @@ var FloatingTips = my.Class({
 
 	attach: function (elements) {
 		this.elements = $(elements);
+		var self = this;
 		this.elements.each(function (trigger) {
 			var thisOpts = JSON.decode(trigger.get('opts', '{}').opts);
 			thisOpts = thisOpts ? thisOpts : {};
@@ -70,7 +68,7 @@ var FloatingTips = my.Class({
 				thisOpts.defaultPos = thisOpts.position;
 				delete(thisOpts.position);
 			}
-			var opts = Object.merge(Object.clone(this.options), thisOpts);
+			var opts = Object.merge(Object.clone(self.options), thisOpts);
 			if (opts.content === 'title') {
 				opts.content = trigger.get('title');
 				trigger.erase('title');
@@ -80,7 +78,7 @@ var FloatingTips = my.Class({
 			}
 			// Should always use the default placement function which can then via the
 			// Fabrik event allow for custom tip placement
-			opts.placement = this.options.placement;
+			opts.placement = self.options.placement;
 			opts.title = opts.heading;
 
 			if (trigger.hasClass('tip-small')) {
@@ -93,7 +91,7 @@ var FloatingTips = my.Class({
 				jQuery(trigger).popoverex(opts);
 			}
 
-		}.bind(this));
+		});
 
 	},
 
@@ -114,10 +112,6 @@ var FloatingTips = my.Class({
 	},
 
 	hide: function (trigger, evnt) {
-
-	},
-
-	hideOthers: function (except) {
 
 	},
 

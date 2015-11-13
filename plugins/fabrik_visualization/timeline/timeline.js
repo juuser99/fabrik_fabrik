@@ -74,8 +74,6 @@ var FbVisTimeline = my.Class({
 
 		this.start = 0;
 
-		//http://dev.ecicultuurfabriek.nl/administrator/index.php?currentList=43&format=raw&option=com_fabrik&task=visualization.ajax_getEvents&visualizationid=3
-
 		var data = {
 			'option': 'com_fabrik',
 			'format': 'raw',
@@ -97,26 +95,24 @@ var FbVisTimeline = my.Class({
 		this.start = 0;
 		this.counter = $(document.createElement('div')).addClass('timelineTotals').inject($('#my-timeline'), 'before');
 		this.counter.text('loading');
-		this.ajax = new Request.JSON({
+		this.ajax = $.getJSON({
 			url: 'index.php',
-			data: data,
-			onSuccess: function (json) {
-				this.start = this.start + this.options.step;
-				if (this.start >= json.fabrik.total) {
-					this.counter.text('loaded ' + json.fabrik.total);
-				} else {
-					this.counter.text('loading ' + this.start + ' / ' + json.fabrik.total);
-				}
+			data: data
+		}).failure(function (xhr) {
+			window.alert(xhr.status + ': ' + xhr.statusText);
+		}).success(function (json) {
+			self.start = self.start + self.options.step;
+			if (self.start >= json.fabrik.total) {
+				self.counter.text('loaded ' + json.fabrik.total);
+			} else {
+				self.counter.text('loading ' + this.start + ' / ' + json.fabrik.total);
+			}
 
-				this.eventSource.loadJSON(json.timeline.events, '');
-				if (json.fabrik.done.toInt() === 0) {
-					this.ajax.options.data.start = json.fabrik.next;
-					this.ajax.options.data.currentList = json.fabrik.currentList;
-					this.ajax.send();
-				}
-			}.bind(this),
-			onFailure: function (xhr) {
-				alert(xhr.status + ': ' + xhr.statusText);
+			self.eventSource.loadJSON(json.timeline.events, '');
+			if (parseInt(json.fabrik.done, 10) === 0) {
+				self.ajax.options.data.start = json.fabrik.next;
+				self.ajax.options.data.currentList = json.fabrik.currentList;
+				self.ajax.send();
 			}
 		});
 
@@ -149,7 +145,7 @@ var FbVisTimeline = my.Class({
 				'ifFormat': this.options.dateFormat,
 				'daFormat': this.options.dateFormat,
 				'singleClick': true,
-				'align': "Br",
+				'align': 'Br',
 				'range': [1900, 2999],
 				'showsTime': false,
 				'timeFormat': '24',
@@ -208,7 +204,7 @@ var FbVisTimeline = my.Class({
 	},
 
 	updateFromField: function () {
-		var dateStr = $('#timelineDatePicker').val();
+		var dateStr = $('#timelineDatePicker').val(),
 		d = Date.parseDate(dateStr, this.options.dateFormat);
 		this.cal.date = d;
 		var newdate = new Date(this.cal.date.getTime() - (this.cal.date.getTimezoneOffset() * 60000));

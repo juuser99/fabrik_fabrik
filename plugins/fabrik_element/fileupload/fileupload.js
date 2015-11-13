@@ -51,7 +51,7 @@ var FbFileUpload = my.Class(FbFileElement, {
      */
     redraw: function () {
         if (this.options.ajax_upload) {
-            var browseButton = $('#' + this.element.id + '_browseButton'),
+            var browseButton = $('#' + this.element.prop('id') + '_browseButton'),
                 c = $('#' + this.options.element + '_container'),
                 diff = browseButton.getPosition().y - c.getPosition().y;
             // $$$ hugh - working on some IE issues
@@ -70,9 +70,9 @@ var FbFileUpload = my.Class(FbFileElement, {
 
 	doBrowse: function (evt) {
 		if (window.File && window.FileReader && window.FileList && window.Blob) {
-			var reader;
-			var files = evt.target.files;
-			var f = files[0];
+            var reader, self = this,
+                files = evt.target.files,
+                f = files[0];
 
 			// Only process image files.
 			if (f.type.match('image.*')) {
@@ -262,7 +262,7 @@ var FbFileUpload = my.Class(FbFileElement, {
 
     makeVideoPreview: function () {
         return $(document.createElement('video')).attr({
-            'id'      : this.element.id + '_video_preview',
+            'id'      : this.element.prop('id') + '_video_preview',
             'controls': true
         });
     },
@@ -295,7 +295,7 @@ var FbFileUpload = my.Class(FbFileElement, {
         } else {
             tr = $(document.createElement('tr')).addClass('plupload_droptext').html('<td colspan="4"><i class="icon-move"></i> ' +
                 Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_DRAG_FILES_HERE') + ' </td>');
-            this.container.find('tbody').adopt(tr);
+            this.container.find('tbody').append(tr);
         }
         this.container.find('thead').hide();
     },
@@ -311,8 +311,9 @@ var FbFileUpload = my.Class(FbFileElement, {
         if (this.options.editable === false) {
             return;
         }
-        var a, self = this;
-        var el = this.find();
+        var a, self = this,
+            elementId = this.element.prop('id'),
+            el = this.find();
         if (el.length === 0) {
             return;
         }
@@ -349,9 +350,9 @@ var FbFileUpload = my.Class(FbFileElement, {
 
         var plupopts = {
             runtimes           : this.options.ajax_runtime,
-            browse_button      : this.element.id + '_browseButton',
-            container          : this.element.id + '_container',
-            drop_element       : this.element.id + '_dropList_container',
+            browse_button      : elementId + '_browseButton',
+            container          : elementId + '_container',
+            drop_element       : elementId + '_dropList_container',
             url                : 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=fileupload&method=ajax_upload&element_id=' + this.options.elid,
             max_file_size      : this.options.max_file_size + 'kb',
             unique_names       : false,
@@ -378,8 +379,6 @@ var FbFileUpload = my.Class(FbFileElement, {
         });
 
         /*
-         * this.uploader.bind('PostInit', function (up, params) { debugger; this.pluploadContainer.find('input').setStyle('width', '1px');
-         * }.bind(this));
          */
         this.uploader.bind('FilesRemoved', function (up, files) {
         });
@@ -418,10 +417,10 @@ var FbFileUpload = my.Class(FbFileElement, {
 
                         innerLi = self.imageCells(file, title, a);
 
-                        self.droplist.adopt($(document.createElement(rElement)).attr({
+                        self.droplist.append($(document.createElement(rElement)).attr({
                             id     : file.id,
                             'class': 'plupload_delete'
-                        }).adopt(innerLi));
+                        }).append(innerLi));
                     }
                 }
             });
@@ -529,11 +528,11 @@ var FbFileUpload = my.Class(FbFileElement, {
      */
     imageCells: function (file, title, a) {
         var del = this.deleteImgButton(), filename, status;
-        var icon = $(document.createElement('td')).addClass('span1 plupload_resize').adopt(a);
+        var icon = $(document.createElement('td')).addClass('span1 plupload_resize').append(a);
 
         var progress = Fabrik.jLayouts['fabrik-progress-bar'];
         status = $(document.createElement('td')).addClass('span5 plupload_file_status').html(progress);
-        filename = $(document.createElement('td')).addClass('span6 plupload_file_name').adopt(title);
+        filename = $(document.createElement('td')).addClass('span6 plupload_file_name').append(title);
 
         return [filename, icon, status, del];
 
@@ -564,7 +563,7 @@ var FbFileUpload = my.Class(FbFileElement, {
     deleteImgButton: function () {
         var icon = Fabrik.jLayouts['fabrik-icon-delete'],
             self = this;
-        return $(document.createElement('td')).addClass('span1 plupload_file_action').adopt(
+        return $(document.createElement('td')).addClass('span1 plupload_file_action').append(
             $(document.createElement('a'))
                 .html(icon)
                 .attr({
@@ -582,7 +581,7 @@ var FbFileUpload = my.Class(FbFileElement, {
         if (file.type === undefined) {
             return file.type === 'image';
         }
-        var ext = file.name.split('.').getLast().toLowerCase();
+        var ext = file.name.split('.').pop().toLowerCase();
         return ['jpg', 'jpeg', 'png', 'gif'].contains(ext);
     },
 
@@ -592,7 +591,7 @@ var FbFileUpload = my.Class(FbFileElement, {
             return;
         }
 
-        var id = $(e.target).closest('tr').prop('id').split('_').getLast();// alreadyuploaded_8_13
+        var id = $(e.target).closest('tr').prop('id').split('_').pop();// alreadyuploaded_8_13
         // $$$ hugh - removed ' span' from the find(), as this blows up on some templates
         var f = $(e.target).closest('tr').find('.plupload_file_name').get('text');
 
@@ -675,8 +674,8 @@ var FbFileUpload = my.Class(FbFileElement, {
     saveWidgetState: function () {
         if (typeOf(this.widget) !== 'null') {
             this.widget.images.each(function (image, key) {
-                key = key.split('\\').getLast();
-                var f = document.find('input[name*=' + key + ']').filter(function (fld) {
+                key = key.split('\\').pop();
+                var f = $('input[name*=' + key + ']').filter(function (fld) {
                     return fld.name.contains('[crop]');
                 });
                 f = f.getLast();
@@ -745,8 +744,8 @@ var ImageWidget = my.Class({
             'type'           : 'modal',
             content          : this.canvas.parent(),
             loadMethod       : 'html',
-            width            : this.imageDefault.imagedim.w.toInt() + 40,
-            height           : this.imageDefault.imagedim.h.toInt() + 150,
+            width            : parseInt(this.imageDefault.imagedim.w, 10) + 40,
+            height           : parseInt(this.imageDefault.imagedim.h, 10) + 150,
             storeOnClose     : true,
             createShowOverLay: false,
             crop             : opts.crop,
@@ -1170,8 +1169,8 @@ var ImageWidget = my.Class({
         }).inject(document.body);
         var ctx = target.getContext('2d');
 
-        var file = filepath.split('\\').getLast();
-        var f = document.find('input[name*=' + file + ']').filter(function (fld) {
+        var file = filepath.split('\\').pop();
+        var f = $('input[name*=' + file + ']').filter(function (fld) {
             return fld.name.contains('cropdata');
         });
 

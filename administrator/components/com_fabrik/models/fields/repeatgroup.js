@@ -24,6 +24,10 @@ var FbRepeatGroup = my.Class({
         this.watchDelete();
     },
 
+    /**
+     *
+     * @returns {jQuery}
+     */
     repeatContainers: function () {
         return this.element.find('.repeatGroup');
     },
@@ -32,7 +36,7 @@ var FbRepeatGroup = my.Class({
         var newid, self = this;
         this.element.find('a[data-button=addButton]').on('click', function (e) {
             e.stopPropagation();
-            var div = self.repeatContainers().getLast();
+            var div = self.repeatContainers().last();
             var newc = self.counter + 1;
             var id = div.id.replace('-' + self.counter, '-' + newc);
             var c = $(document.createElement('div')).addClass('repeatGroup').attr({'id': id}).html(div.html());
@@ -93,7 +97,7 @@ var FbRepeatGroup = my.Class({
                 e.stopPropagation();
                 var count = self.getCounter();
                 if (count > self.options.repeatmin) {
-                    var u = self.repeatContainers().getLast();
+                    var u = self.repeatContainers().last();
                     u.destroy();
                 }
                 self.rename(x);

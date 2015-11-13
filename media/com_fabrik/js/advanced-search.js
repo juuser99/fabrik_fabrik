@@ -34,7 +34,7 @@ AdvancedSearch = my.Class({
                 self.resetForm(e);
             });
             this.trs.each(function (tr) {
-                tr.inject(self.form.find('.advanced-search-list').find('tr').getLast(), 'after');
+                tr.inject(self.form.find('.advanced-search-list').find('tr').last(), 'after');
             });
         }
 
@@ -81,7 +81,7 @@ AdvancedSearch = my.Class({
 
     getList: function () {
         var list = Fabrik.blocks['list_' + this.options.listref];
-        if (typeOf(list) === 'null') {
+        if (list === undefined) {
             list = Fabrik.blocks[this.options.parentView];
         }
         return list;
@@ -146,7 +146,7 @@ AdvancedSearch = my.Class({
     addRow: function (e) {
         this.options.counter++;
         e.stopPropagation();
-        var tr = this.form.find('.advanced-search-list').find('tbody').find('tr').getLast();
+        var tr = this.form.find('.advanced-search-list').find('tbody').find('tr').last();
         var clone = tr.clone();
         clone.removeClass('oddRow1').removeClass('oddRow0').addClass('oddRow' + this.options.counter % 2);
         clone.inject(tr, 'after');
