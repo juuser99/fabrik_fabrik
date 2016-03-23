@@ -414,11 +414,19 @@ class FabrikFEModelPluginmanager extends FabModel
 			$query = $db->getQuery(true);
 			$select = '*, e.name AS name, e.id AS id, e.published AS published, e.label AS label,'
 			. 'e.plugin, e.params AS params, e.access AS access, e.ordering AS ordering';
+
+			/**
+			 * Removing join to #__extensions, as the J! 3.5 release changed collation of J! tables,
+			 * and this breaks the join.  And we don't actually seem to use the joined data, as far as
+			 * I can see, all the join would do is remove any plugin rows which aren't 'fabrik_element',
+			 * but by definition anything we select from #_fabrik_elements is an element.
+			 */
+
 			$query->select($select);
 			$query->from('#__{package}_elements AS e');
-			$query->join('INNER', '#__extensions AS p ON p.element = e.plugin');
+			//$query->join('INNER', '#__extensions AS p ON p.element = e.plugin');
 			$query->where('group_id IN (' . implode(',', $groupIds) . ')');
-			$query->where('p.folder = "fabrik_element"');
+			//$query->where('p.folder = "fabrik_element"');
 
 			// Ignore trashed elements
 			$query->where('e.published != -2');
