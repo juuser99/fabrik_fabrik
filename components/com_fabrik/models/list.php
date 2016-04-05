@@ -5365,6 +5365,7 @@ class FabrikFEModelList extends JModelForm
 		$input = $this->app->input;
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$moduleId = 0;
+		$properties= '';
 		// Are we coming from a post request via a module?
 		$requestRef = $input->get('listref', '', 'string');
 
