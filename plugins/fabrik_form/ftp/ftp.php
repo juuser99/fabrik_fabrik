@@ -18,7 +18,6 @@ use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
 use \JModelLegacy;
-use Fabrik\Helpers\StringHelper;
 use \RuntimeException;
 use \JFile;
 use JFolder;

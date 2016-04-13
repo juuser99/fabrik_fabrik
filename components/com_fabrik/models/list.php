@@ -220,7 +220,7 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Pagination
 	 *
-	 * @var FPagination
+	 * @var Pagination
 	 */
 	protected $nav = null;
 

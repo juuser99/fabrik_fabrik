@@ -20,4 +20,6 @@ class_alias('Fabrik\Helpers\Worker', 'FabrikWorker');
 class_alias('Fabrik\Helpers\StringHelper', 'FabrikString');
 class_alias('Fabrik\Helpers\ArrayHelper', 'FArrayHelper');
 class_alias('Fabrik\Helpers\Uploader', 'FabrikUploader');
+class_alias('Fabrik\Helpers\Pagination', 'FPagination');
+class_alias('Fabrik\Helpers\LayoutFile', 'FabrikLayoutFile');
 class_alias('Fabrik\Helpers\Image', 'FabimageHelper');

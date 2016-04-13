@@ -64,7 +64,7 @@ class PlgSystemFabrikcron extends JPlugin
 	 * return  void
 	 */
 
-	public function plgSystemFabrikcron(&$subject, $config)
+	public function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 	}

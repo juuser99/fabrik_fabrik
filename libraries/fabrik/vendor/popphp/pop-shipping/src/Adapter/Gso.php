@@ -12,6 +12,7 @@
  * @namespace
  */
 namespace Pop\Shipping\Adapter;
+use Fabrik\Helpers\ArrayHelper;
 
 /**
  * Gso shipping adapter class
@@ -393,7 +394,7 @@ class Gso extends AbstractAdapter
 		$this->signatureRequired = 'ADULT_SIG_REQD'; // >SIG_REQD or SIG_NOT_REQD or ADULT_SIG_REQD
 
 		echo "shipoing info = ";print_r($this->shippingInfo);
-		$serviceType = isset($this->shippingInfo->serviceType) ? $this->shippingInfo->serviceType : 'STANDARD_OVERNIGHT';
+		$serviceType = ArrayHelper::getValue($this->shippingInfo, 'serviceType', 'EEK');
 		echo "serice type = $serviceType";
 		// TODO - not sure if $this->declaredValue should be per package or as total?
 		return [
@@ -417,7 +418,7 @@ class Gso extends AbstractAdapter
 			'DeliveryZip' => $this->shipTo['Address']['PostalCode'],
 			'ServiceCode' => $serviceType,
 			'ShipmentReference' => $this->shipmentReference,
-			'DeclaredValue' => $this->declaredValue,
+			'DeclaredValue' => floatval($this->declaredValue),
 			'CODValue' => $this->CODValue,
 			'Weight' => $package->getWeight(),
 			'SignatureCode' => $this->signatureRequired
@@ -476,9 +477,14 @@ class Gso extends AbstractAdapter
 			$request['Shipment']['Package'] = $this->addPackageLineItem($package);
 		}
 
-		$this->client   = new \SoapClient($this->wsdl['shipping'], ['trace' => 1]);
-		$this->client->__setSoapHeaders($this->requestHeader);
-		$this->response = $this->client->SubmitShipment($request);
+		try {
+			$this->client   = new \SoapClient($this->wsdl['shipping'], ['trace' => 1]);
+			$this->client->__setSoapHeaders($this->requestHeader);
+			$this->response = $this->client->SubmitShipment($request);
+		} catch (\Exception $e)
+		{
+			throw new \Exception($e->getMessage());
+		}
 
 		if ($this->response->SubmitShipmentResult->Result->Code == '1')
 		{

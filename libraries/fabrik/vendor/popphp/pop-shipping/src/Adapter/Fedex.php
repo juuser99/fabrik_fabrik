@@ -384,7 +384,7 @@ class Fedex extends AbstractAdapter
 
         $label = $this->response->CompletedShipmentDetail->CompletedPackageDetails->Label->Parts->Image;
 
-        return ['png', base64_decode($label)];
+        return ['png', $label];
     }
 
     /**
