@@ -14,7 +14,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
 
-require_once JPATH_COMPONENT . '/helpers/adminhtml.php';
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.tooltip');
 JHTML::_('script', 'system/multiselect.js', false, true);

@@ -39,7 +39,6 @@ class JFormFieldImagelibs extends JFormFieldList
 
 	protected function getOptions()
 	{
-		require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
 		$imageLibs = Image::getLibs();
 
 		if (empty($imageLibs))
