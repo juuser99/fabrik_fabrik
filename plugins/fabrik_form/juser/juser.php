@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -15,9 +17,17 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \JFactory;
+use \JUser as JoomlaUser;
+use \JRoute;
+use \JUri;
+use \JDate;
+use \JApplicationHelper;
+use \JUserHelper;
+use \JComponentHelper;
+use \Exception;
+use \RuntimeException;
+use \JSession;
 
 /**
  * Create a Joomla user from the forms data
@@ -26,7 +36,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.juser
  * @since       3.0
  */
-class PlgFabrik_FormJUser extends plgFabrik_Form
+class JUser extends \plgFabrik_Form
 {
 	/**
 	 * Name field
@@ -40,14 +50,14 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	 *
 	 * @var  string
 	 */
-	protected $emailfield = '';
+	protected $emailField = '';
 
 	/**
 	 * User name field
 	 *
 	 * @var  string
 	 */
-	protected $usernamefield = '';
+	protected $usernameField = '';
 
 	/**
 	 * Group id field
@@ -61,15 +71,25 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	 *
 	 * @var  string
 	 */
-	protected $passwordfield = '';
+	protected $passwordField = '';
+
+	protected $passwordValue = '';
+	
+	protected $nameValue = '';
+	
+	protected $userIdField;
+
+	protected $emailValue = '';
 
 	/**
 	 * Block field
 	 *
 	 * @var  string
 	 */
-	protected $blockfield = '';
+	protected $blockField = '';
 
+
+	protected $usernameValue = '';
 	/**
 	 * Get an element name
 	 *
@@ -100,6 +120,8 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	public function onLoad()
 	{
 		$params    = $this->getParams();
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		// don't do anything if this is a details view
@@ -168,15 +190,15 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		// If we are editing a user, we need to make sure the password field is cleared
 		if (Worker::getMenuOrRequestVar('rowid'))
 		{
-			$this->passwordfield                            = $this->getFieldName('juser_field_password');
-			$formModel->data[$this->passwordfield]          = '';
-			$formModel->data[$this->passwordfield . '_raw'] = '';
+			$this->passwordField                            = $this->getFieldName('juser_field_password');
+			$formModel->data[$this->passwordField]          = '';
+			$formModel->data[$this->passwordField . '_raw'] = '';
 
 			// $$$$ hugh - testing 'sync on edit'
 			if ($params->get('juser_sync_on_edit', 0) == 1)
 			{
-				$this->useridfield = $this->getFieldName('juser_field_userid');
-				$userId            = (int) ArrayHelper::getValue($formModel->data, $this->useridfield . '_raw');
+				$this->userIdField = $this->getFieldName('juser_field_userid');
+				$userId            = (int) ArrayHelper::getValue($formModel->data, $this->userIdField . '_raw');
 				/**
 				 * $$$ hugh - after a validation failure, userid _raw is an array.
 				 * Trying to work out why, and fix that, but need a bandaid for now.
@@ -189,7 +211,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 				if ($userId > 0)
 				{
 					// See https://github.com/Fabrik/fabrik/issues/1026 - don't use JFactory as this loads in session stored user
-					$user = new JUser($userId);
+					$user = new JoomlaUser($userId);
 
 					if ($user->get('id') == $userId)
 					{
@@ -197,13 +219,13 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 						$formModel->data[$this->namefield]          = $user->get('name');
 						$formModel->data[$this->namefield . '_raw'] = $user->get('name');
 
-						$this->usernamefield                            = $this->getFieldName('juser_field_username');
-						$formModel->data[$this->usernamefield]          = $user->get('username');
-						$formModel->data[$this->usernamefield . '_raw'] = $user->get('username');
+						$this->usernameField                            = $this->getFieldName('juser_field_username');
+						$formModel->data[$this->usernameField]          = $user->get('username');
+						$formModel->data[$this->usernameField . '_raw'] = $user->get('username');
 
-						$this->emailfield                            = $this->getFieldName('juser_field_email');
-						$formModel->data[$this->emailfield]          = $user->get('email');
-						$formModel->data[$this->emailfield . '_raw'] = $user->get('email');
+						$this->emailField                            = $this->getFieldName('juser_field_email');
+						$formModel->data[$this->emailField]          = $user->get('email');
+						$formModel->data[$this->emailField . '_raw'] = $user->get('email');
 						// @FIXME this is out of date for J1.7 - no gid field
 						if ($params->get('juser_field_usertype') != '')
 						{
@@ -223,9 +245,9 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 						if ($params->get('juser_field_block') != '')
 						{
-							$this->blockfield                            = $this->getFieldName('juser_field_block');
-							$formModel->data[$this->blockfield]          = $user->get('block');
-							$formModel->data[$this->blockfield . '_raw'] = $user->get('block');
+							$this->blockField                            = $this->getFieldName('juser_field_block');
+							$formModel->data[$this->blockField]          = $user->get('block');
+							$formModel->data[$this->blockField . '_raw'] = $user->get('block');
 						}
 					}
 				}
@@ -247,6 +269,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($params->get('juser_field_userid') != '' && $params->get('juser_delete_user', false))
 		{
+			/** @var \FabrikFEModelForm $formModel */
 			$formModel   = $this->getModel();
 			$listModel   = $formModel->getListModel();
 			$db          = $listModel->getDb();
@@ -257,7 +280,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 			foreach ($userIds as $userId)
 			{
-				$user = new JUser((int) $userId);
+				$user = new JoomlaUser((int) $userId);
 
 				$isRoot = $user->authorise('core.admin');
 
@@ -300,7 +323,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 						{
 							if (!empty($row->$userIdField))
 							{
-								$user = new JUser((int) $row->$userIdField);
+								$user = new JoomlaUser((int) $row->$userIdField);
 
 								// Bail out now and return false, or just carry on?
 								if (!$user->delete())
@@ -328,6 +351,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	 */
 	public function onBeforeStore()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params    = $this->getParams();
 		$input     = $this->app->input;
@@ -360,7 +384,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		$usersConfig    = JComponentHelper::getParams('com_users');
 		$userActivation = $usersConfig->get('useractivation');
-		$sendpassword   = $usersConfig->get('sendpassword', 1);
+		$sendPassword   = $usersConfig->get('sendpassword', 1);
 
 		// Initialize some variables
 		$me = $this->user;
@@ -377,7 +401,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($params->get('juser_field_userid') != '')
 		{
-			$this->useridfield = $this->getFieldName('juser_field_userid');
+			$this->userIdField = $this->getFieldName('juser_field_userid');
 
 			/*
 			 * This test would cause a fail if you were editing a record which contained the user data in a join
@@ -397,7 +421,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			}
 			else
 			{
-				$originalId = $formModel->formData[$this->useridfield];
+				$originalId = $formModel->formData[$this->userIdField];
 
 				// $$$ hugh - if it's a user element, it'll be an array
 				if (is_array($originalId))
@@ -410,11 +434,11 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		else
 		{
 			$originalId        = 0;
-			$this->useridfield = '';
+			$this->userIdField = '';
 		}
 
-		// Create a new JUser object
-		$user = new JUser($originalId);
+		// Create a new JoomlaUser object
+		$user = new JoomlaUser($originalId);
 
 		// Are we dealing with a new user which we need to create?
 		$isNew = ($user->get('id') < 1);
@@ -422,23 +446,21 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		if ($isNew && $usersConfig->get('allowUserRegistration') == '0' && !$bypassRegistration)
 		{
 			throw new RuntimeException(Text::_('Access Forbidden - Registration not enabled'), 400);
-
-			return false;
 		}
 
 		$data = array();
 
-		$this->passwordfield = $this->getFieldName('juser_field_password');
-		$this->passwordvalue = $this->getFieldValue('juser_field_password', $formModel->formData);
+		$this->passwordField = $this->getFieldName('juser_field_password');
+		$this->passwordValue = $this->getFieldValue('juser_field_password', $formModel->formData);
 
 		$this->namefield = $this->getFieldName('juser_field_name');
-		$this->namevalue = $this->getFieldValue('juser_field_name', $formModel->formData);
+		$this->nameValue = $this->getFieldValue('juser_field_name', $formModel->formData);
 
-		$this->usernamefield = $this->getFieldName('juser_field_username');
-		$this->usernamevalue = $this->getFieldValue('juser_field_username', $formModel->formData);
+		$this->usernameField = $this->getFieldName('juser_field_username');
+		$this->usernameValue = $this->getFieldValue('juser_field_username', $formModel->formData);
 
-		$this->emailfield = $this->getFieldName('juser_field_email');
-		$this->emailvalue = $this->getFieldValue('juser_field_email', $formModel->formData);
+		$this->emailField = $this->getFieldName('juser_field_email');
+		$this->emailValue = $this->getFieldValue('juser_field_email', $formModel->formData);
 
 		$data['id'] = $originalId;
 
@@ -447,12 +469,12 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($params->get('juser_field_block') != '')
 		{
-			$this->blockfield = $this->getFieldName('juser_field_block');
-			$blocked          = ArrayHelper::getValue($formModel->formData, $this->blockfield, '');
+			$this->blockField = $this->getFieldName('juser_field_block');
+			$blocked          = ArrayHelper::getValue($formModel->formData, $this->blockField, '');
 
 			if (is_array($blocked))
 			{
-				// Probably a dropdown
+				// Probably a drop-down
 				$data['block'] = (int) $blocked[0];
 			}
 			else
@@ -465,11 +487,11 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			$data['block'] = 0;
 		}
 
-		$data['username']  = $this->usernamevalue;
-		$data['password']  = $this->passwordvalue;
-		$data['password2'] = $this->passwordvalue;
-		$data['name']      = $this->namevalue;
-		$data['email']     = $this->emailvalue;
+		$data['username']  = $this->usernameValue;
+		$data['password']  = $this->passwordValue;
+		$data['password2'] = $this->passwordValue;
+		$data['name']      = $this->nameValue;
+		$data['email']     = $this->emailValue;
 
 		$ok = $this->check($data);
 
@@ -497,7 +519,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			return false;
 		}
 
-		// Lets save the JUser object
+		// Lets save the JoomlaUser object
 		if (!$user->save())
 		{
 			$this->app->enqueueMessage(Text::_('CANNOT SAVE THE USER INFORMATION'), 'message');
@@ -509,9 +531,9 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$input->set('newuserid', $user->id);
 		$input->cookie->set('newuserid', $user->id);
 		$this->session->set('newuserid', $user->id);
-		$input->set('newuserid_element', $this->useridfield);
-		$input->cookie->set('newuserid_element', $this->useridfield);
-		$this->session->set('newuserid_element', $this->useridfield);
+		$input->set('newuserid_element', $this->userIdField);
+		$input->cookie->set('newuserid_element', $this->userIdField);
+		$this->session->set('newuserid_element', $this->userIdField);
 		/*
 		 * Time for the email magic so get ready to sprinkle the magic dust...
 		 */
@@ -528,7 +550,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 				$data['sitename'] = $this->config->get('sitename');
 				$data['siteurl']  = JUri::base();
 
-				$uri  = JURI::getInstance();
+				$uri  = JUri::getInstance();
 				$base = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
 
 				// Handle account activation/confirmation emails.
@@ -543,7 +565,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 						$data['sitename']
 					);
 
-					if ($sendpassword)
+					if ($sendPassword)
 					{
 						$emailBody = Text::sprintf(
 							'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
@@ -578,7 +600,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 						$data['sitename']
 					);
 
-					if ($sendpassword)
+					if ($sendPassword)
 					{
 						$emailBody = Text::sprintf(
 							'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY',
@@ -606,7 +628,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 				{
 					$emailSubject = Text::sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
 
-					if ($sendpassword)
+					if ($sendPassword)
 					{
 						$emailBody = Text::sprintf(
 							'PLG_FABRIK_FORM_JUSER_AUTO_LOGIN_BODY',
@@ -637,7 +659,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 						$data['sitename']
 					);
 
-					if ($sendpassword)
+					if ($sendPassword)
 					{
 						$emailBody = Text::sprintf(
 							'COM_USERS_EMAIL_REGISTERED_BODY',
@@ -699,9 +721,9 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		 * $session->set('user', $user);
 		 * } */
 
-		if (!empty($this->useridfield))
+		if (!empty($this->userIdField))
 		{
-			$formModel->updateFormData($this->useridfield, $user->get('id'), true, true);
+			$formModel->updateFormData($this->userIdField, $user->get('id'), true, true);
 		}
 
 		if ($ftable == $jos_users)
@@ -754,7 +776,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	/**
 	 * Check that username is not greater than 150 characters
 	 *
-	 * @param   JUser $user
+	 * @param   JoomlaUser $user
 	 * @param   array &$data
 	 *
 	 * @return array $data
@@ -799,7 +821,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		if (($userActivation == '1' || $userActivation == '2') && !$bypassActivation)
 		{
 			jimport('joomla.user.helper');
-			$data['activation'] = JApplication::getHash(JUserHelper::genRandomPassword());
+			$data['activation'] = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
 			$data['block']      = 1;
 		}
 
@@ -848,7 +870,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 			$this->_db->setQuery($query);
 			$rows = $this->_db->loadObjectList();
 
-			// Send mail to all superadministrators id
+			// Send mail to all super administrators id
 			foreach ($rows as $row)
 			{
 				$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
@@ -866,13 +888,14 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	/**
 	 * Set user group ids
 	 *
-	 * @param   object $me   New joomla user
-	 * @param   object $user Joomla user before juser plugin run
+	 * @param   JoomlaUser $me   New joomla user
+	 * @param   object     $user Joomla user before juser plugin run
 	 *
 	 * @return  array   group ids
 	 */
 	protected function setGroupIds($me, $user)
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel      = $this->getModel();
 		$isNew          = $user->get('id') < 1;
 		$params         = $this->getParams();
@@ -919,9 +942,9 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	/**
 	 * Filter possible group ids based on the current logged in user and the plugin's group white-list settings
 	 *
-	 * @param array $data
-	 * @param jUser $me
-	 * @param array $groupIds
+	 * @param array      $data
+	 * @param joomlaUser $me
+	 * @param array      $groupIds
 	 *
 	 * @return array
 	 */
@@ -984,8 +1007,8 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$failure_page	= $params->get('juser_failure_page', '');
 		 */
 
-		$username            = $this->usernamevalue;
-		$password            = $this->passwordvalue;
+		$username            = $this->usernameValue;
+		$password            = $this->passwordValue;
 		$options             = array();
 		$options['remember'] = true;
 		$options['return']   = '';
@@ -1023,10 +1046,8 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 	 */
 	protected function check($post)
 	{
-		$params      = $this->getParams();
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel   = $this->getModel();
-		$userElement = $formModel->getElement($params->get('juser_field_userid'), true);
-		$userElName  = $userElement === false ? false : $userElement->getFullName();
 		$userId      = (int) $post['id'];
 		$db          = Worker::getDbo(true);
 		$ok          = true;
@@ -1041,19 +1062,19 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($post['username'] == '')
 		{
-			$this->raiseError($formModel->errors, $this->usernamefield, Text::_('JLIB_DATABASE_ERROR_PLEASE_ENTER_A_USER_NAME'));
+			$this->raiseError($formModel->errors, $this->usernameField, Text::_('JLIB_DATABASE_ERROR_PLEASE_ENTER_A_USER_NAME'));
 			$ok = false;
 		}
 
 		if (preg_match("#[<>\"'%;()&]#i", $post['username']) || StringHelper::strlen(utf8_decode($post['username'])) < 2)
 		{
-			$this->raiseError($formModel->errors, $this->usernamefield, Text::sprintf('VALID_AZ09', Text::_('Username'), 2));
+			$this->raiseError($formModel->errors, $this->usernameField, Text::sprintf('VALID_AZ09', Text::_('Username'), 2));
 			$ok = false;
 		}
 
-		if ((trim($post['email']) == "") || !Worker::isEmail($post['email']))
+		if ((trim($post['email']) == '') || !Worker::isEmail($post['email']))
 		{
-			$this->raiseError($formModel->errors, $this->emailfield, Text::_('JLIB_DATABASE_ERROR_VALID_MAIL'));
+			$this->raiseError($formModel->errors, $this->emailField, Text::_('JLIB_DATABASE_ERROR_VALID_MAIL'));
 			$ok = false;
 		}
 
@@ -1061,7 +1082,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		{
 			if ($userId === 0)
 			{
-				$this->raiseError($formModel->errors, $this->passwordfield, Text::_('Please enter a password'));
+				$this->raiseError($formModel->errors, $this->passwordField, Text::_('Please enter a password'));
 				$ok = false;
 			}
 		}
@@ -1069,7 +1090,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		{
 			if ($post['password'] != $post['password2'])
 			{
-				$this->raiseError($formModel->errors, $this->passwordfield, Text::_('PASSWORD DO NOT MATCH.'));
+				$this->raiseError($formModel->errors, $this->passwordField, Text::_('PASSWORD DO NOT MATCH.'));
 				$ok = false;
 			}
 		}
@@ -1082,7 +1103,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($xid > 0)
 		{
-			$this->raiseError($formModel->errors, $this->usernamefield, Text::_('JLIB_DATABASE_ERROR_USERNAME_INUSE'));
+			$this->raiseError($formModel->errors, $this->usernameField, Text::_('JLIB_DATABASE_ERROR_USERNAME_INUSE'));
 			$ok = false;
 		}
 
@@ -1094,7 +1115,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 
 		if ($xid > 0)
 		{
-			$this->raiseError($formModel->errors, $this->emailfield, Text::_('JLIB_DATABASE_ERROR_EMAIL_INUSE'));
+			$this->raiseError($formModel->errors, $this->emailField, Text::_('JLIB_DATABASE_ERROR_EMAIL_INUSE'));
 			$ok = false;
 		}
 

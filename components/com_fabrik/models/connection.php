@@ -177,7 +177,7 @@ class FabrikFEModelConnection extends FabModel
 	/**
 	 * Load the connection associated with the table
 	 *
-	 * @return  object  database object using connection details false if connection error
+	 * @return  JDatabaseDriver  database object using connection details false if connection error
 	 */
 	public function &getDb()
 	{

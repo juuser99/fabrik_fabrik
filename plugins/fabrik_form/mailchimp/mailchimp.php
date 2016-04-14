@@ -8,14 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use \MCAPI;
+use \RuntimeException;
+use \JFilterInput;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 require_once 'MCAPI.class.php';
 
 /**
@@ -25,8 +28,7 @@ require_once 'MCAPI.class.php';
  * @subpackage  Fabrik.form.mailchimp
  * @since       3.0
  */
-
-class PlgFabrik_FormMailchimp extends PlgFabrik_Form
+class Mailchimp extends \PlgFabrik_Form
 {
 	protected $html = null;
 
@@ -104,10 +106,11 @@ class PlgFabrik_FormMailchimp extends PlgFabrik_Form
 	 *
 	 * @return	bool
 	 */
-
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$emailData = $this->getProcessData();
 		$filter = JFilterInput::getInstance();
@@ -115,7 +118,7 @@ class PlgFabrik_FormMailchimp extends PlgFabrik_Form
 
 		if (!array_key_exists('fabrik_mailchimp_signup', $post) && (bool) $params->get('mailchimp_userconfirm', true) === true)
 		{
-			return;
+			return true;
 		}
 
 		$listId = $params->get('mailchimp_listid');
@@ -186,11 +189,11 @@ class PlgFabrik_FormMailchimp extends PlgFabrik_Form
 		$emailType = $params->get('mailchimp_email_type', 'html');
 		$doubleOptin = (bool) $params->get('mailchimp_double_optin', true);
 		$updateExisting = (bool) $params->get('mailchimp_update_existing', true);
-		$retval = $api->listSubscribe($listId, $email, $opts, $emailType, $doubleOptin, $updateExisting);
+		$api->listSubscribe($listId, $email, $opts, $emailType, $doubleOptin, $updateExisting);
 
 		if ($api->errorCode)
 		{
-			$this->app->enqueueMessage($api->errorCode, 'Mailchimp: ' . $api->errorMessage, 'notice');
+			$this->app->enqueueMessage($api->errorCode . ' - Mailchimp: ' . $api->errorMessage, 'notice');
 
 			if ((bool) $params->get('mailchimp_fail_on_error', true) === true)
 			{

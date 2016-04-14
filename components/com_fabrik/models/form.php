@@ -2422,6 +2422,16 @@ class FabrikFEModelForm extends FabModelForm
 	}
 
 	/**
+	 * Add error
+	 * @param   string   $element
+	 * @param   string  $msg
+	 */
+	public function addError($element, $msg)
+	{
+		$this->errors[$element][] = $msg;
+	}
+
+	/**
 	 * Get a JSON encoded string of error and modified data messages
 	 *
 	 * @return string

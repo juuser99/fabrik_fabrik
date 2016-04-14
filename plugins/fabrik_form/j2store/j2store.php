@@ -8,15 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
-
+use \JFactory;
+use \J2StoreStrapper;
+use \J2Product;
+use \F0FTable;
+use \F0FModel;
+use \stdClass;
 /**
  * Creates a J2Store add to cart button
  *
@@ -24,7 +28,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.j2store
  * @since       3.0
  */
-class PlgFabrik_FormJ2Store extends PlgFabrik_Form
+class J2Store extends \PlgFabrik_Form
 {
 	/**
 	 * Plugin name

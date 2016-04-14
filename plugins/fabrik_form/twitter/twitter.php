@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -16,9 +18,11 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \JFactory;
+use \JModelLegacy;
+use \RuntimeException;
+use \JRoute;
+use \TwitterOAuthException;
 
 if (!class_exists('TwitterOAuth'))
 {
@@ -36,9 +40,6 @@ if (!class_exists('TwitterOAuth'))
 	require_once COM_FABRIK_FRONTEND . '/libs/twitteroauth/src/TwitterOAuth.php';
 }
 
-//JLoader::registerNamespace('Abraham\TwitterOAuth\TwitterOAuth', COM_FABRIK_FRONTEND . '/libs/twitteroauth/src');
-//JLoader::discover('TwitterOAuth', COM_FABRIK_FRONTEND . '/libs/twitteroauth/src');
-
 /**
  * Post content to twitter
  *
@@ -47,7 +48,7 @@ if (!class_exists('TwitterOAuth'))
  * @since       3.0
  */
 
-class PlgFabrik_FormTwitter extends PlgFabrik_Form
+class Twitter extends \PlgFabrik_Form
 {
 	/**
 	 * Max length of message
@@ -83,7 +84,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	 *
 	 * @param   int  $id  form id
 	 *
-	 * @return  FabrikFEModelForm
+	 * @return  \FabrikFEModelForm
 	 */
 	protected function buildModel($id)
 	{
@@ -148,6 +149,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 
 	protected function sendTweet($connection)
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $this->app->input;
 		$formdata = $this->session->get('com_' . $this->package . '.form.data');
@@ -163,7 +165,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		} */
 
 		// Get logged in user to help with tests
-		$user = $connection->get('account/verify_credentials');
+		$connection->get('account/verify_credentials');
 		$msg = $_SESSION['msg'];
 
 		$parameters = array('status' => $msg);
@@ -200,6 +202,8 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		$params = $this->getParams();
 		global $_SESSION;
 		$input = $this->app->input;
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		$this->session->set('com_' . $this->package . '.form.twitter.showmessage', $params->get('twitter-show-success-msg', 0));
@@ -289,6 +293,8 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	public function getEmailData()
 	{
 		$input = $this->app->input;
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$data = parent::getEmailData();
 		$id = $input->get('rowid');
@@ -314,6 +320,8 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 	 * Call back function used from within bitlifyMessage() to URL shorten each link
 	 *
 	 * @param   string  $url  full url to shorten
+	 *
+	 * 0throws RuntimeException
 	 *
 	 * @return  string  shortened url
 	 */
@@ -359,7 +367,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 			if (!empty($bitly_login) && !empty($bitly_key))
 			{
 				require_once JPATH_SITE . '/components/com_fabrik/libs/bitly/bitly.php';
-				$this->bitly = $bitly = new bitly($bitly_login, $bitly_key);
+				$this->bitly = $bitly = new \bitly($bitly_login, $bitly_key);
 			}
 			else
 			{
@@ -390,7 +398,6 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		if ($twitter_msg_field_id != '')
 		{
 			$elementModel = Worker::getPluginManager()->getElementPlugin($twitter_msg_field_id);
-			$element = $elementModel->getElement(true);
 			$twitter_msg_field = $elementModel->getFullName(true, false);
 			$msg = $data[$twitter_msg_field];
 		}
@@ -494,6 +501,7 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		$access_token = $connection->oauth("oauth/access_token", array("oauth_verifier" => $_REQUEST['oauth_verifier']));
 
 		// Save the access token to the element params
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$formModel->setId($input->getInt('formid'));
 		$row = $formModel->getForm();
@@ -504,24 +512,20 @@ class PlgFabrik_FormTwitter extends PlgFabrik_Form
 		$pairs = array('twitter_oauth_token' => 'oauth_token', 'twitter_oauth_token_secret' => 'oauth_token_secret',
 			'twitter_oauth_user' => 'screen_name');
 
-		$js = array();
-
 		$jsValues = array();
 
-		foreach ($pairs as $paramname => $requestname)
+		foreach ($pairs as $paramName => $requestName)
 		{
-			$tokens = (array) ArrayHelper::getValue($opts, $paramname);
-			$newtokens = array();
+			$newTokens = array();
 
 			for ($i = 0; $i <= $counter; $i++)
 			{
-				$newtokens[$i] = ($i == $counter) ? $access_token[$requestname] : '';
-				$jsid = '#jform_params_' . $paramname . '-' . $i;
-				//$js[] = "window.opener.document.getElement('$jsid').value = '$newtokens[$i]';";
-				$jsValues[]= array($jsid, $newtokens[$i]);
+				$newTokens[$i] = ($i == $counter) ? $access_token[$requestName] : '';
+				$jsId = '#jform_params_' . $paramName . '-' . $i;
+				$jsValues[]= array($jsId, $newTokens[$i]);
 			}
 
-			$opts[$paramname] = $newtokens;
+			$opts[$paramName] = $newTokens;
 		}
 
 		$json = json_encode($jsValues);

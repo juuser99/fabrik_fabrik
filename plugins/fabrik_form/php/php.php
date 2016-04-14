@@ -8,13 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \RuntimeException;
+use \JFile;
+use \JFilterInput;
 
 /**
  * Run some php when the form is submitted
@@ -23,14 +25,14 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.php
  * @since       3.0
  */
-class PlgFabrik_FormPHP extends PlgFabrik_Form
+class PHP extends \PlgFabrik_Form
 {
 	/**
 	 * canEditGroup, called when canEdit called in group model
 	 *
-	 * @param   FabrikFEModelGroup  $groupModel  Group model
+	 * @param   \FabrikFEModelGroup  $groupModel  Group model
 	 *
-	 * @return  void
+	 * @return  bool
 	 */
 	public function onCanEditGroup($groupModel)
 	{
@@ -68,11 +70,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 
 			if ($this->html === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'notice');
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -121,7 +121,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Sets up any end html (after form close tag)
 	 *
-	 * @return  void
+	 * @return  bool
 	 */
 	public function getEndContent()
 	{
@@ -195,7 +195,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		{
 			if ($this->_runPHP() === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'error');
 			}
 		}
 
@@ -217,7 +217,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		{
 			if ($this->_runPHP(null, $groups) === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'error');
 			}
 		}
 
@@ -239,7 +239,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		{
 			if ($this->_runPHP(null, $groups) === false)
 			{
-				return JError::raiseWarning(E_WARNING, 'php form plugin failed');
+				$this->app->enqueueMessage('php form plugin failed', 'error');
 			}
 		}
 
@@ -329,7 +329,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 *
 	 * @return	bool
 	 */
-	public function onJSOpts(&$opts)
+	public function onJSOpts()
 	{
 		$params = $this->getParams();
 
@@ -378,8 +378,8 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run plugins php code/script
 	 *
-	 * @param   FabrikFEModelGroup  &$groupModel  Group model
-	 * @param   array               $data         List rows when deleteing record(s)
+	 * @param   \FabrikFEModelGroup  &$groupModel  Group model
+	 * @param   array                $data         List rows when deleteing record(s)
 	 *
 	 * @return bool false if error running php code
 	 */
@@ -397,6 +397,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		 * $formModel->updateFormData('tablename___elementname', $newvalue);
 		 */
 
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 		$method = $params->get('only_process_curl');

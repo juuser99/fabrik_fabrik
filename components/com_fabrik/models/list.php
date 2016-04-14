@@ -818,7 +818,7 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Get the table's filter model
 	 *
-	 * @return  model	filter model
+	 * @return  FabrikFEModelListfilter	filter model
 	 */
 	public function &getFilterModel()
 	{

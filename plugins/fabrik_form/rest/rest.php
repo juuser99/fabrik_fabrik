@@ -8,15 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
+use \SimpleXMLElement;
+use \RuntimeException;
+use \FabrikOauth;
+use \JUri;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 require_once 'fabrikOAuth.php';
 
 /**
@@ -26,12 +30,12 @@ require_once 'fabrikOAuth.php';
  * @subpackage  Fabrik.form.rest
  * @since       3.0
  */
-class PlgFabrik_FormRest extends PlgFabrik_Form
+class Rest extends \PlgFabrik_Form
 {
 	/**
 	 * @var FabrikOauth
 	 */
-	private $client;
+	private $oAuth;
 
 	/**
 	 * Constructor
@@ -53,7 +57,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 */
 	protected function requestMethod()
 	{
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$method    = $formModel->isNewRecord() ? 'POST' : 'PUT';
 		$fkData    = $this->fkData();
@@ -76,7 +80,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	{
 		if (!isset($this->fkData))
 		{
-			/** @var FabrikFEModelForm $formModel */
+			/** @var \FabrikFEModelForm $formModel */
 			$formModel    = $this->getModel();
 			$params       = $this->getParams();
 			$this->fkData = array();
@@ -120,6 +124,8 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	protected function fkElement()
 	{
 		$params    = $this->getParams();
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		return $formModel->getElement($params->get('foreign_key'), true);
@@ -163,6 +169,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 */
 	protected function process()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params    = $this->getParams();
 		$fkElement = $this->fkElement();
@@ -223,7 +230,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * @param   string  $endpoint  URL end point
 	 * @param   string  $data      Querystring variables
 	 *
-	 * @return  JHttpResponse
+	 * @return  \JHttpResponse
 	 */
 	private function processOAuth($endpoint, $data)
 	{
@@ -244,21 +251,20 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 
 	/**
 	 * Process rest call via CURL
-	 * @param $endpoint
+	 * @param string $endpoint
+	 * @param array $data
 	 *
-	 * @return bool|void
+	 * @return bool
 	 */
 	private function processCurl($endpoint, $data)
 	{
 		if (!function_exists('curl_init'))
 		{
 			throw new RuntimeException('CURL NOT INSTALLED', 500);
-
-			return;
 		}
 
 		// Set up CURL object
-		$chandle   = curl_init();
+		$curl   = curl_init();
 
 		// Request headers
 		$headers = array();
@@ -268,19 +274,21 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 
 		foreach ($curlOpts as $key => $value)
 		{
-			curl_setopt($chandle, $key, $value);
+			curl_setopt($curl, $key, $value);
 		}
 
-		$output = curl_exec($chandle);
+		$output = curl_exec($curl);
 
-		if (!$this->handleError($output, $chandle))
+		if (!$this->handleError($output, $curl))
 		{
-			curl_close($chandle);
+			curl_close($curl);
 
 			// Return true otherwise form processing interrupted
 			return false;
 		}
-		curl_close($chandle);
+		curl_close($curl);
+
+		return true;
 	}
 
 	/**
@@ -299,10 +307,10 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	/**
 	 * Create the data structure containing the data to send
 	 *
-	 * @param   string $include   list of fields to include
-	 * @param   xml    $xmlParent Parent node if rendering as xml (ignored if include is json and prob something i want
-	 *                            to deprecate)
-	 * @param   array  &$headers  Headers
+	 * @param   string  $include   list of fields to include
+	 * @param   string  $xmlParent Parent node if rendering as xml (ignored if include is json and prob something i want
+	 *                             to deprecate)
+	 * @param   array   &$headers  Headers
 	 *
 	 * @return mixed
 	 */
@@ -310,7 +318,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	{
 		$postData = array();
 
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$w         = new Worker;
 		$fkElement = $this->fkElement();
@@ -382,7 +390,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 				{
 					$postData[$i] = $formModel->formData[$i];
 				}
-				elseif (array_key_exists($i, $formModel->fullFormData, $i))
+				elseif (array_key_exists($i, $formModel->fullFormData))
 				{
 					$postData[$i] = $formModel->fullFormData[$i];
 				}
@@ -456,31 +464,31 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	/**
 	 * Handle any error generated
 	 *
-	 * @param   mixed  &$output CURL request result - may be a json string
-	 * @param   object $chandle CURL object
+	 * @param   mixed     &$output CURL request result - may be a json string
+	 * @param   resource  $curl CURL object
 	 *
 	 * @return boolean
 	 */
-	private function handleError(&$output, $chandle)
+	private function handleError(&$output, $curl)
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if (Worker::isJSON($output))
 		{
 			$output = json_decode($output);
 
-			// @TODO make this more generic - currently only for apparty
 			if (isset($output->errors))
 			{
 				// Have to set something in the errors array otherwise form validates
-				$formModel->_arErrors['dummy___elementname'][] = 'woops!';
-				$formModel->getForm()->error                   = implode(', ', $output->errors);
+				$formModel->addError('dummy___elementname', 'woops!');
+				$formModel->getForm()->set('error', implode(', ', $output->errors));
 
 				return false;
 			}
 		}
 
-		$httpCode = curl_getinfo($chandle, CURLINFO_HTTP_CODE);
+		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
 		switch ($httpCode)
 		{
@@ -507,9 +515,9 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 				break;
 		}
 
-		if (curl_errno($chandle))
+		if (curl_errno($curl))
 		{
-			$this->app->enqueueMessage('Fabrik Rest form plugin: ' . curl_error($chandle), 'error');
+			$this->app->enqueueMessage('Fabrik Rest form plugin: ' . curl_error($curl), 'error');
 
 			return false;
 		}
@@ -577,9 +585,9 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	/**
 	 * Update the form models data with data from CURL request
 	 *
-	 * @param   Joomla\Registry\Registry $params       Parameters
-	 * @param   array                    $responseBody Response body
-	 * @param   array                    $data         Data returned from CURL request
+	 * @param   \Joomla\Registry\Registry $params       Parameters
+	 * @param   array                     $responseBody Response body
+	 * @param   array                     $data         Data returned from CURL request
 	 *
 	 * @return  void
 	 */
@@ -588,6 +596,8 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 		$w         = new Worker;
 		$dataMap   = $params->get('put_include_list', '');
 		$include   = $w->parseMessageForPlaceholder($dataMap, $responseBody, true);
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if (Worker::isJSON($include))

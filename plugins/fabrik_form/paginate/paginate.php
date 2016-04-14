@@ -8,17 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
-use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
-use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \stdClass;
+use \JLayoutFile;
+use \JRoute;
 
 /**
  * Form record next/prev scroll plugin
@@ -27,7 +27,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.paginate
  * @since       3.0
  */
-class PlgFabrik_FormPaginate extends PlgFabrik_Form
+class Paginate extends \PlgFabrik_Form
 {
 	/**
 	 * Output
@@ -61,7 +61,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 	 */
 	public function getBottomContent()
 	{
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if (!$this->show())
@@ -71,7 +71,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		}
 
 		$input = $this->app->input;
-		$formId = $formModel->getForm()->id;
+		$formId = $formModel->getForm()->get('id');
 		$mode = StringHelper::strtolower($input->get('view', 'form'));
 		$this->ids = $this->getNavIds();
 		$linkStartPrev = $this->ids->index == 0 ? ' disabled' : '';
@@ -107,7 +107,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 	 */
 	protected function getNavIds()
 	{
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 		$table = $listModel->getTable();
@@ -154,7 +154,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		 */
 		$params = $this->getParams();
 
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$formModel->checkAccessFromListSettings();
 		$where = $params->get('paginate_where');
@@ -183,7 +183,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 	 */
 	public function onAfterJSLoad()
 	{
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 
@@ -220,6 +220,8 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$formId = $input->getInt('formid');
 		$rowId = $input->get('rowid', '', 'string');
 		$mode = $input->get('mode', 'details');
+
+		/** @var \FabrikFEModelForm $model */
 		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$model->setId($formId);
 		$this->setModel($model);

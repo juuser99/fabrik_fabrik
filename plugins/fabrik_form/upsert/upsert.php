@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \JModelLegacy;
+use \stdClass;
 
 /**
  * Update / insert a database record into any table
@@ -25,12 +26,12 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.upsert
  * @since       3.0.7
  */
-class PlgFabrik_FormUpsert extends PlgFabrik_Form
+class Upsert extends \PlgFabrik_Form
 {
 	/**
 	 * Database driver
 	 *
-	 * @var JDatabaseDriver
+	 * @var \JDatabaseDriver
 	 */
 	protected $upsertDb = null;
 
@@ -43,6 +44,8 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$w = new Worker;
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		// @FIXME to use selected connection
 		$upsertDb = $this->getDb();
@@ -51,7 +54,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 
 		if (!$this->shouldProcess('upsert_conditon', null, $params))
 		{
-			return;
+			return true;
 		}
 
 		$table = $this->getTableName();
@@ -111,7 +114,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	/**
 	 * Get db
 	 *
-	 * @return JDatabaseDriver
+	 * @return \JDatabaseDriver
 	 */
 	protected function getDb()
 	{
@@ -142,7 +145,7 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		$upsert = json_decode($params->get('upsert_fields'));
 		$fields = array();
 
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if ($formModel->isNewRecord() || !$upsertRowExists)
@@ -244,6 +247,8 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$cid = $params->get('connection_id');
+
+		/** @var \FabrikFEModelConnection $connectionModel */
 		$connectionModel = JModelLegacy::getInstance('connection', 'FabrikFEModel');
 		$connectionModel->setId($cid);
 		$db = $connectionModel->getDb();

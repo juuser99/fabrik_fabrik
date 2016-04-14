@@ -110,7 +110,8 @@ class FabrikSubscriptionsIPN
 		$subErrors = $subUser->getErrors();
 		if (!empty($subErrors))
 		{
-			$msg = $subUser->getError() . "<br>" . $subUser->get('email') . " / userid = " . $subUser->get('id') . ' NOT set to ' . $gid[0];
+			$msg = $subUser->getError() . "<br>" . $subUser->get('email') .
+				" / userid = " . $subUser->get('id') . ' NOT set ';
 			$this->reportError($msg);
 		}
 		else
@@ -119,9 +120,9 @@ class FabrikSubscriptionsIPN
 			$this->log('fabrik.ipn.setusergid', $msg);
 		}
 
-		$mailFrom = $app->getCfg('mailfrom');
-		$fromName = $app->getCfg('fromname');
-		$siteName = $app->getCfg('sitename');
+		$mailFrom = $app->get('mailfrom');
+		$fromName = $app->get('fromname');
+		$siteName = $app->get('sitename');
 
 		$txn_id = $request['txn_id'];
 		$payer_email = $request['payer_email'];
@@ -181,7 +182,7 @@ class FabrikSubscriptionsIPN
 	 */
 	protected function expireOldSubs($userid)
 	{
-		JLog::add('fabrik.ipn.expireOldSubs.start', JLog::INFO, 'expired old subs for ' . $subUser->get('id'));
+		JLog::add('fabrik.ipn.expireOldSubs.start', JLog::INFO, 'expired old subs for ' . $userid);
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -474,7 +475,7 @@ class FabrikSubscriptionsIPN
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
 		$this->log('fabrik.ipn.txn_type_subscr_payment', $msg);
-		return $this->activateSubscription($tableModel, $request, $set_list, $err_msg, true);
+		return $this->activateSubscription($listModel, $request, $set_list, $err_msg, true);
 	}
 
 	/**
@@ -614,7 +615,6 @@ class FabrikSubscriptionsIPN
 
 		// Start logging...
 		JLog::add($body, JLog::ERROR, $subject);
-		continue;
 	}
 
 	/**
@@ -648,7 +648,7 @@ class FabrikSubscriptionsIPN
 		// Eekk no invoice number found in returned data - inform the sys admin
 		if ($invoice === '')
 		{
-			$this->reportError('missing invoice', $receiver_email, array_merge($request, $set_list));
+			$this->reportError('missing invoice', $receiver_email, $request);
 			return false;
 		}
 		return $invoice;

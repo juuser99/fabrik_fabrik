@@ -23,6 +23,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 
 class FabrikTableSubscription extends JTable
 {
+	public $userid;
+
 	/**
 	 * Constructor
 	 *

@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \stdClass;
+use \JRoute;
 
 /**
  * Redirect the user when the form is submitted
@@ -25,7 +26,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.redirect
  * @since       3.0
  */
-class PlgFabrik_FormRedirect extends PlgFabrik_Form
+class Redirect extends \PlgFabrik_Form
 {
 	/*
 	 * Cache the navIds for "save and next" so we don't run the queries twice
@@ -41,6 +42,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 */
 	public function onLastProcess()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$context = $formModel->getRedirectContext();
@@ -49,7 +51,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$surl = (array) $this->session->get($context . 'url', array());
 		$stitle = (array) $this->session->get($context . 'title', array());
 		$smsg = (array) $this->session->get($context . 'msg', array());
-		$sshowsystemmsg = (array) $this->session->get($context . 'showsystemmsg', array());
+		$show = (array) $this->session->get($context . 'showsystemmsg', array());
 
 		$this->formModel = $formModel;
 		$w = new Worker;
@@ -69,19 +71,19 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			unset($surl[$this->renderOrder]);
 			unset($stitle[$this->renderOrder]);
 			unset($smsg[$this->renderOrder]);
-			unset($sshowsystemmsg[$this->renderOrder]);
+			unset($show[$this->renderOrder]);
 
 			$this->session->set($context . 'url', $surl);
 			$this->session->set($context . 'title', $stitle);
 			$this->session->set($context . 'msg', $smsg);
-			$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
+			$this->session->set($context . 'showsystemmsg', $show);
 
 			return true;
 		}
 
 		$this->_storeInSession();
-		$sshowsystemmsg[$this->renderOrder] = true;
-		$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
+		$show[$this->renderOrder] = true;
+		$this->session->set($context . 'showsystemmsg', $show);
 
 		if ($this->data['save_and_next'] === '1')
 		{
@@ -91,11 +93,11 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 			if ($this->app->isAdmin())
 			{
-				$url = 'index.php?option=com_' . $this->package . '&task=form.view&formid=' . $form->id;
+				$url = 'index.php?option=com_' . $this->package . '&task=form.view&formid=' . $form->get('id');
 			}
 			else
 			{
-				$url = 'index.php?option=com_' . $this->package . '&view=form&Itemid=' . $itemId . '&formid=' . $form->id  . '&listid=' . $formModel->getListModel()->getId();
+				$url = 'index.php?option=com_' . $this->package . '&view=form&Itemid=' . $itemId . '&formid=' . $form->get('id')  . '&listid=' . $formModel->getListModel()->getId();
 			}
 
 			$url .= $next_rowid;
@@ -124,10 +126,10 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			// Redirect not working in admin.
 			if (!$this->app->isAdmin())
 			{
-				$sshowsystemmsg[$this->renderOrder] = false;
-				$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
+				$show[$this->renderOrder] = false;
+				$this->session->set($context . 'showsystemmsg', $show);
 
-				$stitle[$this->renderOrder] = $form->label;
+				$stitle[$this->renderOrder] = $form->get('label');
 				$this->session->set($context . 'title', $stitle);
 
 				$surl[$this->renderOrder] = 'index.php?option=com_' . $this->package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax';
@@ -207,6 +209,8 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	public function customProcessResult($method)
 	{
 		$input = $this->app->input;
+		
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		// If we are applying the form don't run redirect
@@ -251,7 +255,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	/**
 	 * Takes the forms data and merges it with the jump page
 	 *
-	 * @return new jump page
+	 * @return string new jump page
 	 */
 	protected function buildJumpPage()
 	{
@@ -261,10 +265,11 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		 *  if there is still an issue it would make a lot more sense to manually set the element's table model rather than calling
 		 * force in the getFullName() code - as doing so increases the table query count by a magnitude of 2
 		 */
+		
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$jumpPage = $this->data['jump_page'];
-		$reserved = array('format', 'view', 'layout', 'task');
-		$queryvars = array();
+		$queryVars = array();
 
 		if ($this->data['append_jump_url'] == '1')
 		{
@@ -281,7 +286,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 					if (array_key_exists($name, $tmpData))
 					{
-						$this->_appendQS($queryvars, $name, $tmpData[$name]);
+						$this->_appendQS($queryVars, $name, $tmpData[$name]);
 					}
 					else
 					{
@@ -289,7 +294,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 						if (array_key_exists($element->name, $tmpData))
 						{
-							$this->_appendQS($queryvars, $element->name, $tmpData[$element->name]);
+							$this->_appendQS($queryVars, $element->name, $tmpData[$element->name]);
 						}
 					}
 				}
@@ -300,16 +305,16 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 
 		if ($isMabmot)
 		{
-			$queryvars['isMambot'] = 'isMambot=1';
+			$queryVars['isMambot'] = 'isMambot=1';
 		}
 
-		if (empty($queryvars))
+		if (empty($queryVars))
 		{
 			return $jumpPage;
 		}
 
 		$jumpPage .= (!strstr($jumpPage, "?")) ? "?" : "&";
-		$jumpPage .= implode('&', $queryvars);
+		$jumpPage .= implode('&', $queryVars);
 
 		return $jumpPage;
 	}
@@ -317,26 +322,26 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	/**
 	 * Append data to query string array
 	 *
-	 * @param   array   &$queryvars  Previously added querystring variables
+	 * @param   array   &$queryVars  Previously added querystring variables
 	 * @param   string  $key         Key
 	 * @param   mixed   $val         Value string or array
 	 * @param	bool	$appendEmpty	Append even if value is empty, default true
 	 *
 	 * @return  void
 	 */
-	protected function _appendQS(&$queryvars, $key, $val, $appendEmpty = true)
+	protected function _appendQS(&$queryVars, $key, $val, $appendEmpty = true)
 	{
 		if (is_array($val))
 		{
 			if (count($val) === 1)
 			{
-				$this->_appendQS($queryvars, $key, $val[0], $appendEmpty);
+				$this->_appendQS($queryVars, $key, $val[0], $appendEmpty);
 			}
 			else
 			{
 				foreach ($val as $v)
 				{
-					$this->_appendQS($queryvars, "{$key}[value][]", $v, $appendEmpty);
+					$this->_appendQS($queryVars, "{$key}[value][]", $v, $appendEmpty);
 				}
 			}
 		}
@@ -345,7 +350,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			if ($appendEmpty || ($appendEmpty && !empty($val)))
 			{
 				$val = urlencode(stripslashes($val));
-				$queryvars[] = $key . '=' . $val;
+				$queryVars[] = $key . '=' . $val;
 			}
 		}
 	}
@@ -362,7 +367,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	 */
 	protected function _storeInSession()
 	{
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getlistModel();
 		$input = $this->app->input;
@@ -400,7 +405,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 					if (array_key_exists($name, $tmpData))
 					{
 						$value = $tmpData[$name];
-						$match = $element->getElement()->filter_exact_match;
+						$match = $element->getElement()->get('filter_exact_match');
 
 						if (!is_array($value))
 						{
@@ -462,23 +467,23 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 	/**
 	 * Determines if a condition has been set and decides if condition is matched
 	 *
-	 * @param   object  $params  Plugin params
+	 * @param   \Joomla\Registry\Registry  $params  Plugin params
 	 *
 	 * @return bool true if you should redirect, false ignores redirect
 	 */
 	protected function shouldRedirect($params)
 	{
 		// If we are applying the form don't run redirect
-		if (array_key_exists('apply', $this->formModel->formData))
+		if (array_key_exists('apply', $this->getModel()->formData))
 		{
 			return false;
 		}
 
 		/**
-		 * If noredirect QS present and non 0, don't redirect.
+		 * If no redirect QS present and non 0, don't redirect.
 		 * Used by things like frontend add option on joins to squash any redirection on the join's form.
 		 */
-		if (ArrayHelper::getValue($this->formModel->formData, 'noredirect', 0) !== 0)
+		if (ArrayHelper::getValue($this->getModel()->formData, 'noredirect', 0) !== 0)
 		{
 			return false;
 		}
@@ -499,14 +504,15 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			return $this->navIds;
 		}
 
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 		$listModel->filters = null;
 		$filterModel = $listModel->getFilterModel();
 		$filterModel->destroyRequest();
 		$this->app->input->set('view', 'list');
-		$listref = $listModel->getId() . '_com_' . $this->package . '_' . $listModel->getId();
-		$this->app->input->set('listref', $listref);
+		$listRef = $listModel->getId() . '_com_' . $this->package . '_' . $listModel->getId();
+		$this->app->input->set('listref', $listRef);
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 		$query = $db->getQuery(true);

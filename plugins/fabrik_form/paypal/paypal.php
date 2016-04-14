@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -15,18 +17,23 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \FabTable;
+use \fabrikPayPalIPN;
+use \JFilterInput;
+use \JFactory;
+use \JTable;
+use \JModelLegacy;
+use \stdClass;
+use \RuntimeException;
 
 /**
- * Redirects the browser to paypal to perform payment
+ * Redirects the browser to Paypal to perform payment
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.form.paypal
  * @since       3.0
  */
-class PlgFabrik_FormPaypal extends PlgFabrik_Form
+class Paypal extends \PlgFabrik_Form
 {
 	/*
 	 * J! Log
@@ -44,6 +51,8 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $this->app->input;
 		$this->data = $this->getProcessData();
@@ -484,7 +493,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 	 * without a paypal account (subscriptions require a Paypal account)
 	 * We do this after the subscription code has been run as this code is still needed to look up the correct item_name
 	 *
-	 * @param   JParameters  $params  Params
+	 * @param   \Joomla\Registry\Registry  $params  Params
 	 *
 	 * @since 3.0.10
 	 *
@@ -550,10 +559,10 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		 */
 		$input = $this->app->input;
 		$formId = $input->getInt('formid');
-		$rowId = $input->getString('rowid', '', 'string');
+		$rowId = $input->getString('rowid', '');
 		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$formModel->setId($formId);
 		$params = $formModel->getParams();
@@ -603,6 +612,9 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 	{
 		//header('HTTP/1.1 200 OK');
 
+		$ipnFunction = '';
+		$txnTypeFunction = '';
+		$res = '';
 		$input = $this->app->input;
 		$mail = JFactory::getMailer();
 		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
@@ -615,7 +627,7 @@ class PlgFabrik_FormPaypal extends PlgFabrik_Form
 		// Pretty sure they are added but double add
 		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$formModel->setId($formId);
 		$listModel = $formModel->getlistModel();

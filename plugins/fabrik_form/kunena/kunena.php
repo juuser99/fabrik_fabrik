@@ -8,14 +8,18 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \KunenaForumMessage;
+use \KunenaForumTopic;
+use \CKunenaPost;
+use \RuntimeException;
+use \JFile;
 
 /**
  * Creates a thread in kunena forum
@@ -24,7 +28,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.kunena
  * @since       3.0
  */
-class PlgFabrik_FormKunena extends PlgFabrik_Form
+class Kunena extends \PlgFabrik_Form
 {
 	/**
 	 * Run right at the end of the form processing
@@ -32,7 +36,6 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 	 *
 	 * @return	bool
 	 */
-
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
@@ -73,11 +76,13 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$app = $this->app;
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $app->input;
 		$w = new Worker;
 
-		$catid = $params->get('kunena_category', 0);
+		$catId = $params->get('kunena_category', 0);
 
 		$files[] = COM_FABRIK_BASE . 'components/com_kunena/class.kunena.php';
 		$files[] = COM_FABRIK_BASE . 'components/com_kunena/lib/kunena.defines.php';
@@ -102,7 +107,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 
 		// Added action in request
 		$input->set('action', $action);
-		$input->set('catid', $catid);
+		$input->set('catid', $catId);
 		$msg = $w->parseMessageForPlaceHolder($params->get('kunena_content'), $formModel->fullFormData);
 		$subject = $params->get('kunena_title');
 		$input->set('message', $msg);
@@ -137,6 +142,8 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 
 		$params = $this->getParams();
 		$app = $this->app;
+		
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $app->input;
 
@@ -144,7 +151,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		$now = $this->date;
 		$w = new Worker;
 
-		$catid = $params->get('kunena_category', 0);
+		$catId = $params->get('kunena_category', 0);
 
 		// Added action in request
 		$msg = $w->parseMessageForPlaceHolder($params->get('kunena_content'), $formModel->fullFormData);
@@ -156,7 +163,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		$input->set('id', 0);
 
 		$topic = new KunenaForumTopic;
-		$topic->category_id = $catid;
+		$topic->category_id = $catId;
 		$topic->subject = $subject;
 		$topic->first_post_time = $topic->last_post_time = $now->toUnix();
 		$topic->first_post_userid = $topic->last_post_userid = $user->get('id');
@@ -169,7 +176,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 			$message->setTopic($topic);
 
 			$message->subject = $subject;
-			$message->catid = $catid;
+			$message->catid = $catId;
 			$message->name = $user->get('name');
 			$message->time = $now->toUnix();
 			$message->message = $msg;

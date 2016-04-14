@@ -6,6 +6,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -13,9 +15,11 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \JFactory;
+use \stdClass;
+use \JFile;
+use \JFolder;
+use \JFilterInput;
 
 /**
  * Log form submissions
@@ -24,7 +28,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.logs
  * @since       3.0
  */
-class PlgFabrik_FormLogs extends PlgFabrik_Form
+class Logs extends \PlgFabrik_Form
 {
 	/**
 	 * Run when the form loads
@@ -33,7 +37,9 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 	 */
 	public function onLoad()
 	{
-		$params    = $this->getParams();
+		$params = $this->getParams();
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$view      = $this->app->input->get('view', 'form');
 
@@ -45,8 +51,6 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		{
 			$this->log('form.load.form');
 		}
-
-		return true;
 	}
 
 	/**
@@ -96,6 +100,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 	 */
 	protected function getNewData()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 		$fabrikDb  = $listModel->getDb();
@@ -137,7 +142,16 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 	 */
 	protected function log($messageType)
 	{
-		$params        = $this->getParams();
+		$app             = JFactory::getApplication();
+		$sep_2compare    = '';
+		$sep_compare     = '';
+		$params          = $this->getParams();
+		$clabelsCreateDb = array();
+		$custom_msg      = '';
+		$clabels_csv     = '';
+		$cdata_csv       = '';
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel     = $this->getModel();
 		$input         = $this->app->input;
 		$db            = Worker::getDBO();
@@ -171,7 +185,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		{
 			if (!JFolder::create($logsPath))
 			{
-				return;
+				return true;
 			}
 		}
 
@@ -182,7 +196,6 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 		$w            = new Worker;
 		$logsFile     = $logsPath . '/' . $w->parseMessageForPlaceHolder($params->get('logs_file')) . $randomFileName . '.' . $ext;
 		$logsMode     = $params->get('logs_append_or_overwrite');
-		$date_element = $params->get('logs_date_field');
 		$date_now     = $params->get('logs_date_now');
 
 		// COMPARE DATA
@@ -237,7 +250,6 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 						foreach ($groups as $groupModel)
 						{
-							$group         = $groupModel->getGroup();
 							$elementModels = $groupModel->getPublishedElements();
 
 							foreach ($elementModels as $elementModel)
@@ -732,7 +744,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 				if (Worker::isEmail($email))
 				{
 					$mail = JFactory::getMailer();
-					$res  = $mail->sendMail($emailFrom, $emailFrom, $email, $subject, $email_msg, true);
+					$mail->sendMail($emailFrom, $emailFrom, $email, $subject, $email_msg, true);
 				}
 				else
 				{

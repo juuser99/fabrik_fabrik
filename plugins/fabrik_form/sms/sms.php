@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \JFile;
+use \JFilterInput;
 
 /**
  * Send an SMS
@@ -25,7 +26,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.sms
  * @since       3.0
  */
-class PlgFabrik_FormSMS extends PlgFabrik_Form
+class Sms extends \PlgFabrik_Form
 {
 	/**
 	 * Run right at the end of the form processing
@@ -45,6 +46,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 	 */
 	protected function process()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$data = $formModel->formData;
@@ -95,6 +97,8 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$msg    = $params->get('sms_message', '');
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 
@@ -114,6 +118,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 	 */
 	protected function defaultMessage()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 		$arDontEmailThesKeys = array();
@@ -138,7 +143,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 
 				if (!array_key_exists($element->name, $data))
 				{
-					$elName = $element->getFullName();
+					$elName = $elementModel->getFullName();
 				}
 				else
 				{
@@ -152,7 +157,6 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 					if (array_key_exists($elName, $data))
 					{
 						$val = stripslashes($data[$elName]);
-						$params = $elementModel->getParams();
 
 						if (method_exists($elementModel, 'getEmailValue'))
 						{

@@ -8,14 +8,18 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
+use \Exception;
+use \sObject;
+use \SforcePartnerClient;
+use \JComponentHelper;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 /**
  * Submit or update data to Salesforce.com
@@ -24,15 +28,13 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.salesforce
  * @since       3.0
  */
-
-class PlgFabrik_FormSalesforce extends PlgFabrik_Form
+class Salesforce extends \PlgFabrik_Form
 {
 	/**
 	 * Build the Salesforce.com API client
 	 *
 	 * @return  SforcePartnerClient
 	 */
-
 	private function client()
 	{
 		// Get the path to the Toolkit, set in the options on install.
@@ -71,13 +73,15 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
+	 * @throws Exception
+	 *
 	 * @return	bool
 	 */
 	public function onAfterProcess()
 	{
 		@ini_set("soap.wsdl_cache_enabled", "0");
 
-		/** @var FabrikFEModelForm $formModel */
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$client = $this->client();
 		$params = $this->getParams();
@@ -99,7 +103,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		}
 
 		$updateObject = $params->get('salesforce_updateobject', 'Lead');
-		$loginResult = $client->login($userName, $password . $token);
+		$client->login($userName, $password . $token);
 
 		$givenObject = array($updateObject);
 		$fields = $client->describeSObjects($givenObject)->fields;
@@ -178,17 +182,17 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 				{
 					foreach ($result->errors as $error)
 					{
-						JError::raiseWarning(500, Text::_('SALESFORCE_ERR') . $error->message);
+						$this->app->enqueueMessage(Text::_('SALESFORCE_ERR') . $error->message, 'error');
 					}
 				}
 				else
 				{
-					JError::raiseWarning(500, Text::_('SALESFORCE_ERR') . $result->errors->message);
+					$this->app->enqueueMessage(Text::_('SALESFORCE_ERR') . $result->errors->message, 'error');
 				}
 			}
 			else
 			{
-				JError::raiseWarning(500, Text::sprintf(SALESFORCE_NOCREATE, $updateObject));
+				$this->app->enqueueMessage(Text::sprintf(SALESFORCE_NOCREATE, $updateObject), 'error');
 			}
 		}
 	}
@@ -240,7 +244,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 
 			return $results;
 		}
-		catch (exception $e)
+		catch (Exception $e)
 		{
 			/* This is reached if there is a major problem in the data or with
 			 * the salesforce.com connection. Normal data errors are caught by

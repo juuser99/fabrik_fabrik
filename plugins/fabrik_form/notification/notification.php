@@ -6,6 +6,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -13,9 +15,9 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \Exception;
+use \JFactory;
+use \stdClass;
 
 /**
  * Allows users to subscribe to updates to a given row and receive emails
@@ -25,7 +27,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.notification
  * @since       3.0
  */
-class PlgFabrik_FormNotification extends PlgFabrik_Form
+class Notification extends \PlgFabrik_Form
 {
 	/**
 	 * Inject custom html into the bottom of the form
@@ -47,6 +49,8 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 	public function getBottomContent()
 	{
 		$params = $this->getParams();
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $this->app->input;
 
@@ -182,7 +186,6 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 
 			foreach ($userIds as $userId)
 			{
-				$ok = true;
 				$query->clear('set');
 				$fields2 = array_merge($fields, array('user_id = ' . $userId));
 				$query->insert('#__{package}_notification')->set($fields2);
@@ -193,7 +196,6 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 				}
 				catch (Exception $e)
 				{
-					$ok = false;
 				}
 			}
 		}
@@ -206,6 +208,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 	 */
 	protected function triggered()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 
@@ -249,7 +252,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 			return;
 		}
 
-		$rowId = $input->getString('rowid', '', 'string');
+		$rowId = $input->getString('rowid', '');
 		$why = $rowId == '' ? 'author' : 'editor';
 		$this->process($notify, $why);
 
@@ -262,8 +265,7 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		$date = $db->q($this->date->toSql());
 		$ref = $this->getRef();
 		$msg = $notify ? Text::_('PLG_CRON_NOTIFICATION_ADDED') : Text::_('PLG_CRON_NOTIFICATION_REMOVED');
-		$app = JFactory::getApplication();
-		$app->enqueueMessage($msg);
+		$this->app->enqueueMessage($msg);
 		$query = $db->getQuery(true);
 		$fields = array('reference = ' . $ref, 'event = ' . $event, 'date_time = ' . $date);
 

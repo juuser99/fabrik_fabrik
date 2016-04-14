@@ -8,14 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use\RuntimeException;
+use \JFactory;
+use \JConfig;
+use \stdClass;
 
 /**
  * Send a receipt
@@ -24,7 +27,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.receipt
  * @since       3.0
  */
-class PlgFabrik_FormReceipt extends PlgFabrik_Form
+class Receipt extends \PlgFabrik_Form
 {
 	protected $html = null;
 
@@ -71,6 +74,8 @@ class PlgFabrik_FormReceipt extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$input = $this->app->input;
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if ($params->get('ask-receipt'))

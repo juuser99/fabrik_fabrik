@@ -6,6 +6,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -13,9 +15,7 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use \JModelLegacy;
 
 /**
  * Form limit submissions plugin
@@ -24,12 +24,12 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.limit
  * @since       3.0
  */
-class PlgFabrik_FormLimit extends PlgFabrik_Form
+class Limit extends \PlgFabrik_Form
 {
 	/**
 	 * Process the plugin, called when form is loaded
 	 *
-	 * @return  void
+	 * @return  bool
 	 */
 	public function onLoad()
 	{
@@ -44,12 +44,14 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	private function _process()
 	{
 		$params = $this->getParams();
+
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$this->data = $this->getProcessData();
 
 		if (!$this->shouldProcess('limit_condition', null, $params))
 		{
-			return;
+			return true;
 		}
 
 		if ($params->get('limit_allow_anonymous'))
@@ -104,6 +106,7 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	 */
 	protected function count()
 	{
+		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$field = $params->get('limit_userfield');
@@ -179,6 +182,8 @@ class PlgFabrik_FormLimit extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$listId = (int) $params->get('limit_table');
+
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$listModel->setId($listId);
 		$dbTable = $listModel->getTable()->db_table_name;
