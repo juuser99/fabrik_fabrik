@@ -26,7 +26,7 @@ use \JFilterInput;
  * @subpackage  Fabrik.form.sms
  * @since       3.0
  */
-class Sms extends \PlgFabrik_Form
+class Sms extends Form
 {
 	/**
 	 * Run right at the end of the form processing
@@ -46,7 +46,6 @@ class Sms extends \PlgFabrik_Form
 	 */
 	protected function process()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$data = $formModel->formData;
@@ -97,8 +96,6 @@ class Sms extends \PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$msg    = $params->get('sms_message', '');
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 
@@ -118,7 +115,6 @@ class Sms extends \PlgFabrik_Form
 	 */
 	protected function defaultMessage()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 		$arDontEmailThesKeys = array();

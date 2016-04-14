@@ -36,7 +36,7 @@ use \JSession;
  * @subpackage  Fabrik.form.juser
  * @since       3.0
  */
-class JUser extends \plgFabrik_Form
+class JUser extends Form
 {
 	/**
 	 * Name field
@@ -120,8 +120,6 @@ class JUser extends \plgFabrik_Form
 	public function onLoad()
 	{
 		$params    = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		// don't do anything if this is a details view
@@ -269,7 +267,6 @@ class JUser extends \plgFabrik_Form
 
 		if ($params->get('juser_field_userid') != '' && $params->get('juser_delete_user', false))
 		{
-			/** @var \FabrikFEModelForm $formModel */
 			$formModel   = $this->getModel();
 			$listModel   = $formModel->getListModel();
 			$db          = $listModel->getDb();
@@ -351,7 +348,6 @@ class JUser extends \plgFabrik_Form
 	 */
 	public function onBeforeStore()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params    = $this->getParams();
 		$input     = $this->app->input;
@@ -895,7 +891,6 @@ class JUser extends \plgFabrik_Form
 	 */
 	protected function setGroupIds($me, $user)
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel      = $this->getModel();
 		$isNew          = $user->get('id') < 1;
 		$params         = $this->getParams();
@@ -1046,7 +1041,6 @@ class JUser extends \plgFabrik_Form
 	 */
 	protected function check($post)
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel   = $this->getModel();
 		$userId      = (int) $post['id'];
 		$db          = Worker::getDbo(true);

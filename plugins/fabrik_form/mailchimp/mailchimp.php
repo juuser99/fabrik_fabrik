@@ -28,7 +28,7 @@ require_once 'MCAPI.class.php';
  * @subpackage  Fabrik.form.mailchimp
  * @since       3.0
  */
-class Mailchimp extends \PlgFabrik_Form
+class Mailchimp extends Form
 {
 	protected $html = null;
 
@@ -109,8 +109,6 @@ class Mailchimp extends \PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$emailData = $this->getProcessData();
 		$filter = JFilterInput::getInstance();

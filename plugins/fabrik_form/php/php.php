@@ -25,7 +25,7 @@ use \JFilterInput;
  * @subpackage  Fabrik.form.php
  * @since       3.0
  */
-class PHP extends \PlgFabrik_Form
+class PHP extends Form
 {
 	/**
 	 * canEditGroup, called when canEdit called in group model
@@ -396,10 +396,7 @@ class PHP extends \PlgFabrik_Form
 		 * if you want to modify the submitted form data
 		 * $formModel->updateFormData('tablename___elementname', $newvalue);
 		 */
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$listModel = $formModel->getListModel();
 		$method = $params->get('only_process_curl');
 		/*
 		 *  $$$ rob this is poor when submitting the form the data is stored in formData, when editing its stored in _data -

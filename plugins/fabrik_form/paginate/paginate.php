@@ -27,7 +27,7 @@ use \JRoute;
  * @subpackage  Fabrik.form.paginate
  * @since       3.0
  */
-class Paginate extends \PlgFabrik_Form
+class Paginate extends Form
 {
 	/**
 	 * Output
@@ -61,7 +61,6 @@ class Paginate extends \PlgFabrik_Form
 	 */
 	public function getBottomContent()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if (!$this->show())
@@ -107,7 +106,6 @@ class Paginate extends \PlgFabrik_Form
 	 */
 	protected function getNavIds()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 		$table = $listModel->getTable();
@@ -153,8 +151,6 @@ class Paginate extends \PlgFabrik_Form
 		 * Let's set it here before use it
 		 */
 		$params = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$formModel->checkAccessFromListSettings();
 		$where = $params->get('paginate_where');
@@ -183,7 +179,6 @@ class Paginate extends \PlgFabrik_Form
 	 */
 	public function onAfterJSLoad()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 

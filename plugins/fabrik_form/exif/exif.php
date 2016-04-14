@@ -22,7 +22,7 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik.form.exif
  * @since       3.0
  */
-class Exif extends \PlgFabrik_Form
+class Exif extends Form
 {
 	/**
 	 * Map field
@@ -136,7 +136,6 @@ class Exif extends \PlgFabrik_Form
 
 	public function onBeforeStore()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$data = $formModel->formData;
 		$params = $this->getParams();

@@ -33,7 +33,7 @@ use \RuntimeException;
  * @subpackage  Fabrik.form.paypal
  * @since       3.0
  */
-class Paypal extends \PlgFabrik_Form
+class Paypal extends Form
 {
 	/*
 	 * J! Log
@@ -51,8 +51,6 @@ class Paypal extends \PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $this->app->input;
 		$this->data = $this->getProcessData();

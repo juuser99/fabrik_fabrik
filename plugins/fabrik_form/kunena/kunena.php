@@ -28,7 +28,7 @@ use \JFile;
  * @subpackage  Fabrik.form.kunena
  * @since       3.0
  */
-class Kunena extends \PlgFabrik_Form
+class Kunena extends Form
 {
 	/**
 	 * Run right at the end of the form processing
@@ -76,8 +76,6 @@ class Kunena extends \PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$app = $this->app;
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $app->input;
 		$w = new Worker;
@@ -142,8 +140,6 @@ class Kunena extends \PlgFabrik_Form
 
 		$params = $this->getParams();
 		$app = $this->app;
-		
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $app->input;
 

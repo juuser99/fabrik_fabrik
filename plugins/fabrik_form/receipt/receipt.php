@@ -27,7 +27,7 @@ use \stdClass;
  * @subpackage  Fabrik.form.receipt
  * @since       3.0
  */
-class Receipt extends \PlgFabrik_Form
+class Receipt extends Form
 {
 	protected $html = null;
 
@@ -74,8 +74,6 @@ class Receipt extends \PlgFabrik_Form
 	{
 		$params = $this->getParams();
 		$input = $this->app->input;
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if ($params->get('ask-receipt'))

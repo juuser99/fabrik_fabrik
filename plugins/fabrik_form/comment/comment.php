@@ -56,7 +56,7 @@ class FabrikTableComment extends \FabTable
  * @subpackage  Fabrik.form.comment
  * @since       3.0
  */
-class Comment extends \PlgFabrik_Form
+class Comment extends Form
 {
 	/**
 	 * HTML comment form

@@ -26,7 +26,7 @@ use \stdClass;
  * @subpackage  Fabrik.form.upsert
  * @since       3.0.7
  */
-class Upsert extends \PlgFabrik_Form
+class Upsert extends Form
 {
 	/**
 	 * Database driver
@@ -45,7 +45,6 @@ class Upsert extends \PlgFabrik_Form
 		$params = $this->getParams();
 		$w = new Worker;
 
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		// @FIXME to use selected connection
 		$upsertDb = $this->getDb();
@@ -144,8 +143,6 @@ class Upsert extends \PlgFabrik_Form
 		$upsertDb = $this->getDb();
 		$upsert = json_decode($params->get('upsert_fields'));
 		$fields = array();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if ($formModel->isNewRecord() || !$upsertRowExists)

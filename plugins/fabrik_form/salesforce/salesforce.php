@@ -28,7 +28,7 @@ use \JComponentHelper;
  * @subpackage  Fabrik.form.salesforce
  * @since       3.0
  */
-class Salesforce extends \PlgFabrik_Form
+class Salesforce extends Form
 {
 	/**
 	 * Build the Salesforce.com API client
@@ -80,8 +80,6 @@ class Salesforce extends \PlgFabrik_Form
 	public function onAfterProcess()
 	{
 		@ini_set("soap.wsdl_cache_enabled", "0");
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$client = $this->client();
 		$params = $this->getParams();

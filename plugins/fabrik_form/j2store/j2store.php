@@ -28,7 +28,7 @@ use \stdClass;
  * @subpackage  Fabrik.form.j2store
  * @since       3.0
  */
-class J2Store extends \PlgFabrik_Form
+class J2Store extends Form
 {
 	/**
 	 * Plugin name

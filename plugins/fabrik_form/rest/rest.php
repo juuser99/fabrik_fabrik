@@ -30,7 +30,7 @@ require_once 'fabrikOAuth.php';
  * @subpackage  Fabrik.form.rest
  * @since       3.0
  */
-class Rest extends \PlgFabrik_Form
+class Rest extends Form
 {
 	/**
 	 * @var FabrikOauth
@@ -57,7 +57,6 @@ class Rest extends \PlgFabrik_Form
 	 */
 	protected function requestMethod()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$method    = $formModel->isNewRecord() ? 'POST' : 'PUT';
 		$fkData    = $this->fkData();
@@ -80,7 +79,6 @@ class Rest extends \PlgFabrik_Form
 	{
 		if (!isset($this->fkData))
 		{
-			/** @var \FabrikFEModelForm $formModel */
 			$formModel    = $this->getModel();
 			$params       = $this->getParams();
 			$this->fkData = array();
@@ -124,8 +122,6 @@ class Rest extends \PlgFabrik_Form
 	protected function fkElement()
 	{
 		$params    = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		return $formModel->getElement($params->get('foreign_key'), true);
@@ -169,7 +165,6 @@ class Rest extends \PlgFabrik_Form
 	 */
 	protected function process()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params    = $this->getParams();
 		$fkElement = $this->fkElement();
@@ -317,8 +312,6 @@ class Rest extends \PlgFabrik_Form
 	private function buildOutput($include, $xmlParent, &$headers)
 	{
 		$postData = array();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$w         = new Worker;
 		$fkElement = $this->fkElement();
@@ -471,7 +464,6 @@ class Rest extends \PlgFabrik_Form
 	 */
 	private function handleError(&$output, $curl)
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		if (Worker::isJSON($output))

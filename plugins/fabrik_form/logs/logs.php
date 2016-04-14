@@ -28,7 +28,7 @@ use \JFilterInput;
  * @subpackage  Fabrik.form.logs
  * @since       3.0
  */
-class Logs extends \PlgFabrik_Form
+class Logs extends Form
 {
 	/**
 	 * Run when the form loads
@@ -38,8 +38,6 @@ class Logs extends \PlgFabrik_Form
 	public function onLoad()
 	{
 		$params = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$view      = $this->app->input->get('view', 'form');
 
@@ -100,7 +98,6 @@ class Logs extends \PlgFabrik_Form
 	 */
 	protected function getNewData()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 		$fabrikDb  = $listModel->getDb();
@@ -150,8 +147,6 @@ class Logs extends \PlgFabrik_Form
 		$custom_msg      = '';
 		$clabels_csv     = '';
 		$cdata_csv       = '';
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel     = $this->getModel();
 		$input         = $this->app->input;
 		$db            = Worker::getDBO();

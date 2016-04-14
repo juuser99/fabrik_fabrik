@@ -26,7 +26,7 @@ use \JRoute;
  * @subpackage  Fabrik.form.redirect
  * @since       3.0
  */
-class Redirect extends \PlgFabrik_Form
+class Redirect extends Form
 {
 	/*
 	 * Cache the navIds for "save and next" so we don't run the queries twice
@@ -42,7 +42,6 @@ class Redirect extends \PlgFabrik_Form
 	 */
 	public function onLastProcess()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$context = $formModel->getRedirectContext();
@@ -209,8 +208,6 @@ class Redirect extends \PlgFabrik_Form
 	public function customProcessResult($method)
 	{
 		$input = $this->app->input;
-		
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		// If we are applying the form don't run redirect
@@ -265,8 +262,6 @@ class Redirect extends \PlgFabrik_Form
 		 *  if there is still an issue it would make a lot more sense to manually set the element's table model rather than calling
 		 * force in the getFullName() code - as doing so increases the table query count by a magnitude of 2
 		 */
-		
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$jumpPage = $this->data['jump_page'];
 		$queryVars = array();
@@ -367,7 +362,6 @@ class Redirect extends \PlgFabrik_Form
 	 */
 	protected function _storeInSession()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getlistModel();
 		$input = $this->app->input;
@@ -504,7 +498,6 @@ class Redirect extends \PlgFabrik_Form
 			return $this->navIds;
 		}
 
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 		$listModel->filters = null;

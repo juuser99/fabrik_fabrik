@@ -8,6 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Form;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -16,6 +17,7 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
+use \JProfiler;
 
 jimport('joomla.application.component.model');
 
@@ -26,7 +28,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class PlgFabrik_Form extends FabrikPlugin
+class Form extends \FabrikPlugin
 {
 	/**
 	 * Formatted email data
@@ -253,7 +255,6 @@ class PlgFabrik_Form extends FabrikPlugin
 		 * cases where this function gets called early in submission processing.  So watch out for that.  If calcs start
 		 * showing up with incorrect values in emails, this is probably why.
 		 */
-
 		$model = $this->getModel();
 
 		if (isset($model->emailData))
@@ -450,7 +451,7 @@ class PlgFabrik_Form extends FabrikPlugin
 	 */
 	protected function setDelayedRedirect($url)
 	{
-		$formModel = $this->model;
+		$formModel = $this->getModel();
 		$context = $formModel->getRedirectContext();
 
 		/* $$$ hugh - fixing issue with new redirect, which now needs to be an array.
@@ -463,6 +464,13 @@ class PlgFabrik_Form extends FabrikPlugin
 		$this->session->set($context . 'redirect_content_how', 'samepage');
 	}
 
+	/**
+	 * @return \FabrikFEModelForm
+	 */
+	public function getModel()
+	{
+		return parent::getModel();
+	}
 	/**
 	 * Get the class to manage the plugin
 	 * to ensure that the file is loaded only once

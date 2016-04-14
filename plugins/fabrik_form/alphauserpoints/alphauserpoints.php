@@ -25,7 +25,7 @@ use Fabrik\Helpers\Worker;
  * @since       3.0.7
  */
 
-class AlphaUserPoints extends \PlgFabrik_Form
+class AlphaUserPoints extends Form
 {
 	/**
 	 * Run right at the end of the form processing

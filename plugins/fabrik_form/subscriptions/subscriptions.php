@@ -38,7 +38,7 @@ JTable::addIncludePath(JPATH_SITE . '/plugins/fabrik_form/subscriptions/tables')
  * @subpackage  Fabrik.form.subscriptions
  * @since       3.0
  */
-class Subscriptions extends \PlgFabrik_Form
+class Subscriptions extends Form
 {
 	/**
 	 * Gateway
@@ -321,7 +321,6 @@ class Subscriptions extends \PlgFabrik_Form
 	protected function pendingSub($newRow = true)
 	{
 		// Check if the user has pending subscriptions
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$rowId = $formModel->getRowId();
 
@@ -355,7 +354,6 @@ class Subscriptions extends \PlgFabrik_Form
 	 */
 	public function onAfterProcess()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$input = $this->app->input;
@@ -442,7 +440,6 @@ class Subscriptions extends \PlgFabrik_Form
 	 */
 	protected function getNotifyUrl()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$testSite = $params->get('subscriptions_test_site', '');
@@ -469,7 +466,6 @@ class Subscriptions extends \PlgFabrik_Form
 	 */
 	protected function getReturnUrl()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$testSite = $params->get('subscriptions_test_site', '');

@@ -36,7 +36,7 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik.form.article
  * @since       3.0
  */
-class Article extends \PlgFabrik_Form
+class Article extends Form
 {
 	/**
 	 * Images

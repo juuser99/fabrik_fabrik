@@ -27,7 +27,7 @@ use \stdClass;
  * @subpackage  Fabrik.form.notification
  * @since       3.0
  */
-class Notification extends \PlgFabrik_Form
+class Notification extends Form
 {
 	/**
 	 * Inject custom html into the bottom of the form
@@ -49,8 +49,6 @@ class Notification extends \PlgFabrik_Form
 	public function getBottomContent()
 	{
 		$params = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $this->app->input;
 
@@ -208,7 +206,6 @@ class Notification extends \PlgFabrik_Form
 	 */
 	protected function triggered()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 

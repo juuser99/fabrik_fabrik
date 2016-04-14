@@ -34,7 +34,7 @@ use \JPath;
  * @subpackage  Fabrik.form.email
  * @since       3.0
  */
-class Email extends \PlgFabrik_Form
+class Email extends Form
 {
 	/**
 	 * Attachment files
@@ -85,7 +85,6 @@ class Email extends \PlgFabrik_Form
 		jimport('joomla.mail.helper');
 		$w = new Worker;
 
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$emailTemplate = JPath::clean(JPATH_SITE . '/plugins/fabrik_form/email/tmpl/' . $params->get('email_template', ''));
 
@@ -546,7 +545,6 @@ class Email extends \PlgFabrik_Form
 		$params = $this->getParams();
 		$data = $this->getProcessData();
 
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$groups = $formModel->getGroupsHiarachy();
 
@@ -690,7 +688,6 @@ class Email extends \PlgFabrik_Form
 		$ignore = $this->getDontEmailKeys();
 		$message = '';
 
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$groupModels = $formModel->getGroupsHiarachy();
 

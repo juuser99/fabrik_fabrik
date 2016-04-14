@@ -24,7 +24,7 @@ use \JModelLegacy;
  * @subpackage  Fabrik.form.limit
  * @since       3.0
  */
-class Limit extends \PlgFabrik_Form
+class Limit extends Form
 {
 	/**
 	 * Process the plugin, called when form is loaded
@@ -44,8 +44,6 @@ class Limit extends \PlgFabrik_Form
 	private function _process()
 	{
 		$params = $this->getParams();
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$this->data = $this->getProcessData();
 
@@ -106,7 +104,6 @@ class Limit extends \PlgFabrik_Form
 	 */
 	protected function count()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$field = $params->get('limit_userfield');

@@ -40,7 +40,7 @@ use \FabrikFEModelForm;
  * @subpackage  Fabrik.form.autofill
  * @since       3.0
  */
-class Autofill extends \PlgFabrik_Form
+class Autofill extends Form
 {
 	/**
 	 * Need to do this rather than on onLoad as otherwise in chrome form.js addevents is fired

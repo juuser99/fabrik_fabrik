@@ -27,7 +27,7 @@ use \JModelLegacy;
  * @subpackage  Fabrik.form.confirmation
  * @since       3.0
  */
-class Confirmation extends \PlgFabrik_Form
+class Confirmation extends Form
 {
 	protected $runAway = false;
 
@@ -73,7 +73,6 @@ class Confirmation extends \PlgFabrik_Form
 	 */
 	public function onBeforeStore()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$params = $this->getParams();
 		$input = $this->app->input;
@@ -166,7 +165,6 @@ class Confirmation extends \PlgFabrik_Form
 	 */
 	public function getBottomContent()
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $this->app->input;
 

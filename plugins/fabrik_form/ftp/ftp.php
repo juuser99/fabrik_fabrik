@@ -30,7 +30,7 @@ use JPath;
  * @subpackage  Fabrik.form.ftp
  * @since       3.0.7
  */
-class Ftp extends \PlgFabrik_Form
+class Ftp extends Form
 {
 	/**
 	 * Posted form keys that we don't want to include in the message
@@ -278,7 +278,6 @@ class Ftp extends \PlgFabrik_Form
 		$ignore = $this->getDontEmailKeys();
 		$message = '';
 
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$groupModels = $formModel->getGroupsHiarachy();
 

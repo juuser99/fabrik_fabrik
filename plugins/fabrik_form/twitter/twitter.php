@@ -48,7 +48,7 @@ if (!class_exists('TwitterOAuth'))
  * @since       3.0
  */
 
-class Twitter extends \PlgFabrik_Form
+class Twitter extends Form
 {
 	/**
 	 * Max length of message
@@ -149,7 +149,6 @@ class Twitter extends \PlgFabrik_Form
 
 	protected function sendTweet($connection)
 	{
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$input = $this->app->input;
 		$formdata = $this->session->get('com_' . $this->package . '.form.data');
@@ -202,8 +201,6 @@ class Twitter extends \PlgFabrik_Form
 		$params = $this->getParams();
 		global $_SESSION;
 		$input = $this->app->input;
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 
 		$this->session->set('com_' . $this->package . '.form.twitter.showmessage', $params->get('twitter-show-success-msg', 0));
@@ -293,8 +290,6 @@ class Twitter extends \PlgFabrik_Form
 	public function getEmailData()
 	{
 		$input = $this->app->input;
-
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$data = parent::getEmailData();
 		$id = $input->get('rowid');
