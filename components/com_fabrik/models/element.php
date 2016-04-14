@@ -1624,7 +1624,6 @@ class Element extends \FabrikPlugin
 		$displayData->canView    = $this->canView();
 		$displayData->id         = $this->getHTMLId($repeatCounter);
 		$displayData->canUse     = $this->canUse();
-		$displayData->j3         = Worker::j3();
 		$displayData->hidden     = $this->isHidden();
 		$displayData->label      = Text::_($element->label);
 		$displayData->hasLabel   = $this->get('hasLabel');

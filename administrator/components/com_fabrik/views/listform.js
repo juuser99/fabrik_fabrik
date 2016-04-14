@@ -10,7 +10,6 @@ define(['jquery'], function (jQuery) {
         Implements: [Options],
 
         options: {
-            j3: true
         },
 
         initialize: function (options) {
@@ -185,8 +184,7 @@ define(['jquery'], function (jQuery) {
         watchFieldList: function (name) {
             document.getElement('div[id^=table-sliders-data]').addEvent('change:relay(select[name*=' + name + '])',
                 function (e, target) {
-                    var rowContainer = this.options.j3 ? 'tr' : 'table';
-                    this.updateJoinStatement(target.getParent(rowContainer).id.replace('join', ''));
+                    this.updateJoinStatement(target.getParent('tr').id.replace('join', ''));
                 }.bind(this));
         },
 
@@ -246,9 +244,6 @@ define(['jquery'], function (jQuery) {
             });
 
             var delHtml = '<i class="icon-minus"></i> ';
-            if (!this.options.j3) {
-                delHtml += Joomla.JText._('COM_FABRIK_DELETE');
-            }
             delButton.set('html', delHtml);
 
             joinType = new Element('select', {
@@ -284,126 +279,41 @@ define(['jquery'], function (jQuery) {
                 "\">" + Joomla.JText._('JNO') + "</label>" +
                 "</fieldset>";
 
-            if (this.options.j3) {
-                headings = new Element('thead').adopt(
-                    new Element('tr').adopt([
-                        new Element('th').set('text', 'id'),
-                        new Element('th').set('text', Joomla.JText._('COM_FABRIK_JOIN_TYPE')),
-                        new Element('th').set('text', Joomla.JText._('COM_FABRIK_FROM')),
-                        new Element('th').set('text', Joomla.JText._('COM_FABRIK_TO')),
-                        new Element('th').set('text', Joomla.JText._('COM_FABRIK_FROM_COLUMN')),
-                        new Element('th').set('text', Joomla.JText._('COM_FABRIK_TO_COLUMN')),
-                        new Element('th').set('text', Joomla.JText._('COM_FABRIK_REPEAT_GROUP_BUTTON_LABEL')),
-                        new Element('th')
-                    ])
-                );
+            headings = new Element('thead').adopt(
+                new Element('tr').adopt([
+                    new Element('th').set('text', 'id'),
+                    new Element('th').set('text', Joomla.JText._('COM_FABRIK_JOIN_TYPE')),
+                    new Element('th').set('text', Joomla.JText._('COM_FABRIK_FROM')),
+                    new Element('th').set('text', Joomla.JText._('COM_FABRIK_TO')),
+                    new Element('th').set('text', Joomla.JText._('COM_FABRIK_FROM_COLUMN')),
+                    new Element('th').set('text', Joomla.JText._('COM_FABRIK_TO_COLUMN')),
+                    new Element('th').set('text', Joomla.JText._('COM_FABRIK_REPEAT_GROUP_BUTTON_LABEL')),
+                    new Element('th')
+                ])
+            );
 
-                row = new Element('tr', {'id': 'join' + this.joinCounter}).adopt([
-                    new Element('td').adopt(ii),
-                    new Element('td').adopt([groupId, joinType]),
-                    new Element('td').adopt(joinFrom),
-                    new Element('td').adopt(tableJoin),
-                    new Element('td.table_key').adopt(tableKey),
-                    new Element('td.table_join_key').adopt(joinKey),
-                    new Element('td').set('html', repeatRadio),
-                    new Element('td').adopt(delButton)
-                ]);
-            } else {
-                headings = new Element('thead').adopt([
-                    new Element('tr', {
-                        events  : {
-                            'click': function (e) {
-                                e.stop();
-                                var tbody = e.target.getParent('.adminform').getElement('tbody');
-                                var myFx = new Fx.Slide(tbody, {duration: 500});
-                                Browser.ie ? tbody.toggle() : myFx.toggle();
-                            }
-                        },
-                        'styles': {
-                            'cursor': 'pointer'
-                        }
-                    }).adopt(
-                        new Element('td', {'colspan': '2'}).adopt(new Element('div', {
-                            'id'    : 'join-desc-' + this.joinCounter,
-                            'styles': {
-                                'margin'          : '5px',
-                                'background-color': '#fefefe',
-                                'padding'         : '5px',
-                                'border'          : '1px dotted #666666'
-                            }
-                        }))
-                    )
-                ]);
+            row = new Element('tr', {'id': 'join' + this.joinCounter}).adopt([
+                new Element('td').adopt(ii),
+                new Element('td').adopt([groupId, joinType]),
+                new Element('td').adopt(joinFrom),
+                new Element('td').adopt(tableJoin),
+                new Element('td.table_key').adopt(tableKey),
+                new Element('td.table_join_key').adopt(joinKey),
+                new Element('td').set('html', repeatRadio),
+                new Element('td').adopt(delButton)
+            ]);
 
-                row = [
-                    new Element('tr').adopt([
-                        new Element('td').set('text', 'id'),
-                        new Element('td').adopt(ii)
-                    ]),
-                    new Element('tr').adopt([
-                        new Element('td').adopt([groupId]).set('text', Joomla.JText._('COM_FABRIK_JOIN_TYPE')),
-
-                        new Element('td').adopt(joinType)
-                    ]),
-
-                    new Element('tr').adopt([
-                        new Element('td').set('text', Joomla.JText._('COM_FABRIK_FROM')),
-                        new Element('td').adopt(joinFrom)
-                    ]),
-
-                    new Element('tr').adopt([
-                        new Element('td').set('text', Joomla.JText._('COM_FABRIK_TO')),
-                        new Element('td').adopt(tableJoin)
-                    ]),
-
-                    new Element('tr').adopt([
-                        new Element('td').set('text', Joomla.JText._('COM_FABRIK_FROM_COLUMN')),
-                        new Element('td', {'id': 'joinThisTableId' + this.joinCounter}).adopt(
-                            tableKey
-                        )
-                    ]),
-
-                    new Element('tr').adopt([
-                        new Element('td').set('text', Joomla.JText._('COM_FABRIK_TO_COLUMN')),
-                        new Element('td', {'id': 'joinJoinTableId' + this.joinCounter}).adopt(joinKey)
-                    ]),
-
-                    new Element('tr').set('html', '<td>' + Joomla.JText._('COM_FABRIK_REPEAT_GROUP_BUTTON_LABEL') + '</td><td>' + repeatRadio + '</td>'),
-
-                    new Element('tr').adopt([
-                        new Element('td', {'colspan': '2'}).adopt([
-                            delButton
-                        ])
-                    ])
-                ];
-            }
-            var tableClass = this.options.j3 ? 'table-striped' : 'adminform';
-            var id = this.options.j3 ? '' : 'join' + this.joinCounter;
-            var sContent = new Element('table', {'class': tableClass + ' table', 'id': id}).adopt([
+            var sContent = new Element('table', {'class': 'table-striped table'}).adopt([
                 headings,
                 tbody.adopt(row)
             ]);
-            if (this.options.j3) {
 
-                if (this.joinCounter === 0) {
-                    sContent.inject(document.id('joindtd'));
-                } else {
-                    var tb = document.id('joindtd').getElement('tbody');
-                    row.inject(tb);
-                }
-
+            if (this.joinCounter === 0) {
+                sContent.inject(document.id('joindtd'));
             } else {
-                var d = new Element('div', {'id': 'join'}).adopt(sContent);
-                d.inject(document.id('joindtd'));
-                if (thisKey !== '') {
-
-                    var myFx = new Fx.Slide(tbody, {duration: 500});
-                    Browser.ie ? tbody.hide() : myFx.slideIn();
-                    //tbody.hide();
-                }
-                this.updateJoinStatement(this.joinCounter);
+                var tb = document.id('joindtd').getElement('tbody');
+                row.inject(tb);
             }
-
 
             this.joinCounter++;
         },
@@ -411,30 +321,23 @@ define(['jquery'], function (jQuery) {
         deleteJoin: function (e) {
             var tbl, t;
             e.stop();
-            if (this.options.j3) {
-                t = e.target.getParent('tr');
-                tbl = e.target.getParent('table');
-            } else {
-                t = document.id(e.target.up(4)); //was 3 but that was the tbody
-            }
+            t = e.target.getParent('tr');
+            tbl = e.target.getParent('table');
             t.dispose();
-            if (this.options.j3) {
-                if (tbl.getElements('tbody tr').length === 0) {
-                    tbl.dispose();
-                }
+            if (tbl.getElements('tbody tr').length === 0) {
+                tbl.dispose();
             }
         },
 
         watchJoins: function () {
-            var rowContainer = this.options.j3 ? 'tr' : 'table';
             document.getElement('div[id^=table-sliders-data]').addEvent('change:relay(.join_from)', function (e, target) {
-                var row = target.getParent(rowContainer);
+                var row = target.getParent('tr');
                 var activeJoinCounter = row.id.replace('join', '');
                 this.updateJoinStatement(activeJoinCounter);
                 var table = target.get('value');
                 var conn = document.getElement('input[name*=connection_id]').get('value');
 
-                var update = this.options.j3 ? row.getElement('td.table_key') : document.id('joinThisTableId' + activeJoinCounter);
+                var update = row.getElement('td.table_key');
                 var url = 'index.php?option=com_fabrik&format=raw&task=list.ajax_loadTableDropDown&table=' + table + '&conn=' + conn;
                 var myAjax = new Request.HTML({
                     url   : url,
@@ -444,14 +347,14 @@ define(['jquery'], function (jQuery) {
             }.bind(this));
 
             document.getElement('div[id^=table-sliders-data]').addEvent('change:relay(.join_to)', function (e, target) {
-                var row = target.getParent(rowContainer);
+                var row = target.getParent('tr');
                 var activeJoinCounter = row.id.replace('join', '');
                 this.updateJoinStatement(activeJoinCounter);
                 var table = target.get('value');
                 var conn = document.getElement('input[name*=connection_id]').get('value');
                 var url = 'index.php?name=jform[params][table_join_key][]&option=com_fabrik&format=raw&task=list.ajax_loadTableDropDown&table=' + table + '&conn=' + conn;
 
-                var update = this.options.j3 ? row.getElement('td.table_join_key') : document.id('joinJoinTableId' + activeJoinCounter);
+                var update = row.getElement('td.table_join_key');
                 var myAjax = new Request.HTML({
                     url   : url,
                     method: 'post',

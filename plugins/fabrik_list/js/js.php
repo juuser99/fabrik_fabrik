@@ -59,7 +59,7 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 	{
 		$img = parent::getImageName();
 
-		if (Worker::j3() && $img === 'php.png')
+		if ($img === 'php.png')
 		{
 			$img = 'lightning';
 		}

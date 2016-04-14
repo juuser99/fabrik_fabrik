@@ -352,7 +352,6 @@ EOD;
 		$input                 = $app->input;
 		$layout                = self::getLayout('form.fabrik-email-form');
 		$displayData           = new stdClass;
-		$displayData->j3       = Worker::j3();
 		$displayData->package  = $app->getUserState('com_fabrik.package', 'fabrik');
 		$displayData->referrer = $input->get('referrer', '', 'string');
 		$document              = JFactory::getDocument();
@@ -371,17 +370,7 @@ EOD;
 	{
 		$config   = JFactory::getConfig();
 		$document = JFactory::getDocument();
-		$j3       = Worker::j3();
 		$document->setTitle($config->get('sitename'));
-
-		if (!$j3)
-		{
-			?>
-			<a href='javascript:window.close();'> <span class="small"><?php echo Text::_('COM_FABRIK_CLOSE_WINDOW'); ?>
-</span>
-			</a>
-			<?php
-		}
 	}
 
 	/**
@@ -1045,7 +1034,6 @@ EOD;
 		$requirePaths = self::requirePaths();
 		$framework    = array();
 		$deps         = array();
-		$j3           = Worker::j3();
 
 		$requirejsBaseURI = self::getJSAssetBaseURI();
 
@@ -1062,26 +1050,10 @@ EOD;
 			$newShim[$k] = $s;
 		}
 
-		$navigator = JBrowser::getInstance();
-
-		if ($navigator->getBrowser() == 'msie' && !$j3)
-		{
-			$deps[] = 'lib/flexiejs/flexie';
-		}
-
 		$deps[] = 'fab/utils';
 		$deps[] = 'jquery';
-
 		$deps[] = 'fab/mootools-ext';
 		$deps[] = 'lib/Event.mock';
-
-		if (!$j3)
-		{
-			$deps[] = 'lib/art';
-			$deps[] = 'fab/tips';
-			$deps[] = 'fab/icons';
-			$deps[] = 'fab/icongen';
-		}
 
 		self::addRequireJsShim($framework, 'fab/fabrik', $deps, false);
 		self::addRequireJsShim($framework, 'fab/autocomplete-bootstrap', array('fab/fabrik'), false);
@@ -1440,23 +1412,6 @@ EOD;
 			}
 		}
 
-		// Need to load element for ajax popup forms in IE.
-		$needed = array();
-
-		if (!Worker::j3())
-		{
-			$needed[] = self::isDebug() ? 'fab/icongen' : 'fab/icongen-min';
-			$needed[] = self::isDebug() ? 'fab/icons' : 'fab/icons-min';
-		}
-
-		foreach ($needed as $need)
-		{
-			if (!in_array($need, $files))
-			{
-				array_unshift($files, $need);
-			}
-		}
-
 		$files     = array_unique($files);
 
 		// Set names from $files keys if assoc array. In general it is for require js files
@@ -1571,16 +1526,8 @@ EOD;
 			}
 			else
 			{
-				if (Worker::j3())
-				{
-					JHtml::stylesheet('components/com_fabrik/libs/slimbox2/css/slimbox2.css');
-					self::script('components/com_fabrik/libs/slimbox2/js/slimbox2.js');
-				}
-				else
-				{
-					JHtml::stylesheet('components/com_fabrik/libs/slimbox1.64/css/slimbox.css');
-					self::script('components/com_fabrik/libs/slimbox1.64/js/slimbox.js');
-				}
+				JHtml::stylesheet('components/com_fabrik/libs/slimbox2/css/slimbox2.css');
+				self::script('components/com_fabrik/libs/slimbox2/js/slimbox2.js');
 			}
 
 			self::$modal = true;
@@ -1785,12 +1732,7 @@ EOD;
 		$str  = json_encode($json);
 		Text::script('COM_FABRIK_NO_RECORDS');
 		Text::script('COM_FABRIK_AUTOCOMPLETE_AJAX_ERROR');
-		$jsFile = 'autocomplete';
-
-		if (Worker::j3())
-		{
-			$jsFile = $plugin === 'cascadingdropdown' ? 'autocomplete-bootstrap-cdd' : 'autocomplete-bootstrap';
-		}
+		$jsFile = $plugin === 'cascadingdropdown' ? 'autocomplete-bootstrap-cdd' : 'autocomplete-bootstrap';
 
 		$needed   = array();
 		$needed[] = 'fab/' . $jsFile ;
@@ -2055,7 +1997,7 @@ EOD;
 	 * @param   array|string $properties Assoc list of properties or string (if you just want to set the image alt tag)
 	 * @param   bool         $srcOnly    Src only (default false)
 	 * @param   array        $opts       Additional render options:
-	 *                                   forceImage: regardless of in J3 site - render an <img> if set to true
+	 *                                   forceImage: render an <img> if set to true
 	 *                                   (bypasses bootstrap icon loading)
 	 *
 	 * @since 3.0
@@ -2071,7 +2013,7 @@ EOD;
 
 		$forceImage = ArrayHelper::getValue($opts, 'forceImage', false);
 
-		if (Worker::j3() && $forceImage !== true)
+		if ($forceImage !== true)
 		{
 			unset($properties['alt']);
 			$class = ArrayHelper::getValue($properties, 'icon-class', '');
@@ -2208,10 +2150,7 @@ EOD;
 		$elementBeforeLabel = true, $optionsPerRow = 4, $classes = array(), $buttonGroup = false, $dataAttributes = array(),
 		$inputDataAttributes = array())
 	{
-		if (Worker::j3())
-		{
-			$elementBeforeLabel = true;
-		}
+		$elementBeforeLabel = true;
 
 		$containerClasses = array_key_exists('container', $classes) ? implode(' ', $classes['container']) : '';
 		$dataAttributes   = implode(' ', $dataAttributes);
@@ -2235,22 +2174,7 @@ EOD;
 		}
 		else
 		{
-			if (Worker::j3())
-			{
-				$grid = self::bootstrapGrid($items, $optionsPerRow, 'fabrikgrid_' . $type);
-			}
-			else
-			{
-				$grid[] = '<ul>';
-
-				foreach ($items as $i => $s)
-				{
-					$clear  = ($i % $optionsPerRow == 0) ? 'clear:left;' : '';
-					$grid[] = '<li style="' . $clear . 'float:left;width:' . $w . '%;padding:0;margin:0;">' . $s . '</li>';
-				}
-
-				$grid[] = '</ul>';
-			}
+			$grid = self::bootstrapGrid($items, $optionsPerRow, 'fabrikgrid_' . $type);
 		}
 
 		return $grid;

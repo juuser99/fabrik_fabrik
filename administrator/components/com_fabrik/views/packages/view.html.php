@@ -75,11 +75,7 @@ class FabrikAdminViewPackages extends JViewLegacy
 		FabrikAdminHelper::setViewLayout($this);
 		$this->addToolbar();
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
-
-		if (Worker::j3())
-		{
-			$this->sidebar = JHtmlSidebar::render();
-		}
+		$this->sidebar = JHtmlSidebar::render();
 
 		Html::iniRequireJS();
 		parent::display($tpl);
@@ -144,16 +140,13 @@ class FabrikAdminViewPackages extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_PACKAGES', false, Text::_('JHELP_COMPONENTS_FABRIK_PACKAGES'));
 
-		if (Worker::j3())
-		{
-			JHtmlSidebar::setAction('index.php?option=com_fabrik&view=packages');
+		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=packages');
 
-			$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
-			JHtmlSidebar::addFilter(
-			Text::_('JOPTION_SELECT_PUBLISHED'),
-			'filter_published',
-			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
-			);
-		}
+		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+		JHtmlSidebar::addFilter(
+		Text::_('JOPTION_SELECT_PUBLISHED'),
+		'filter_published',
+		JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+		);
 	}
 }

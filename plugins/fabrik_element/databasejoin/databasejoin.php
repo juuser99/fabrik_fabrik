@@ -1569,24 +1569,15 @@ class Databasejoin extends ElementList
 		$params  = $this->getParams();
 		$default = (array) $defaultValue;
 
-		if (Worker::j3())
-		{
-			$layout                  = $this->getLayout('form-dropdownlist');
-			$displayData             = new stdClass;
-			$displayData->id         = $id;
-			$displayData->options    = $tmp;
-			$displayData->default    = $default;
-			$displayData->name       = $name;
-			$displayData->editable   = $this->isEditable();
-			$displayData->attributes = 'class="fabrikinput form-control inputbox input ' . $this->getAdvancedSelectClass() . ' ' . $params->get('bootstrap_class', 'input-large') . '" size="1"';
-			$html[]                  = $layout->render($displayData);
-		}
-		else
-		{
-			$advancedClass = $this->getAdvancedSelectClass();
-			$attributes    = 'class="fabrikinput inputbox input ' . $advancedClass . ' ' . $params->get('bootstrap_class', 'input-large') . '" size="1"';
-			$html[]        = JHtml::_('select.genericlist', $tmp, $name, $attributes, 'value', 'text', $default, $id);
-		}
+		$layout                  = $this->getLayout('form-dropdownlist');
+		$displayData             = new stdClass;
+		$displayData->id         = $id;
+		$displayData->options    = $tmp;
+		$displayData->default    = $default;
+		$displayData->name       = $name;
+		$displayData->editable   = $this->isEditable();
+		$displayData->attributes = 'class="fabrikinput form-control inputbox input ' . $this->getAdvancedSelectClass() . ' ' . $params->get('bootstrap_class', 'input-large') . '" size="1"';
+		$html[]                  = $layout->render($displayData);
 	}
 
 	/**
@@ -1630,16 +1621,7 @@ class Databasejoin extends ElementList
 		Html::jLayoutJs($rowOptsLayout, $rowOptsLayout, $displayData, array($this->layoutBasePath()));
 
 		$html[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
-
-		if (Worker::j3())
-		{
-			$html[] = $layout->render($displayData);
-		}
-		else
-		{
-			$html[] = Html::aList('radio', $tmp, $thisElName, $attributes, $defaultValue, 'value', 'text', $displayData->optsPerRow, $displayData->editable);
-		}
-
+		$html[] = $layout->render($displayData);
 		$html[] = '</div>';
 	}
 
@@ -1787,27 +1769,7 @@ class Databasejoin extends ElementList
 		$rowOptsLayout = 'fabrik-element-' . $this->getPluginName() . '-form-rowopts';
 		Html::jLayoutJs($rowOptsLayout, $rowOptsLayout, $displayData, array($this->layoutBasePath()));
 
-		if (Worker::j3())
-		{
-			$html[] = $layout->render($displayData);
-		}
-		else
-		{
-			$html[] = Html::aList('checkbox', $tmp, $name, $attributes, $default, 'value', 'text', $displayData->optsPerRow, $displayData->editable);
-		}
-
-		if (empty($tmp) && !Worker::j3())
-		{
-			$tmpIds   = array();
-			$o        = new stdClass;
-			$o->text  = 'dummy';
-			$o->value = 'dummy';
-			$tmpIds[] = $o;
-			$tmp      = $tmpIds;
-			$dummy    = Html::aList('checkbox', $tmp, $name, $attributes, $default, 'value', 'text', 1, true);
-			$html[]   = '<div class="chxTmplNode">' . $dummy . '</div>';
-		}
-
+		$html[] = $layout->render($displayData);
 		$html[] = '</div>';
 	}
 

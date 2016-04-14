@@ -59,11 +59,7 @@ class FabrikAdminViewHome extends JViewLegacy
 		$this->addToolbar();
 		FabrikAdminHelper::addSubmenu('home');
 		FabrikAdminHelper::setViewLayout($this);
-
-		if (Worker::j3())
-		{
-			$this->sidebar = JHtmlSidebar::render();
-		}
+		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
 	}

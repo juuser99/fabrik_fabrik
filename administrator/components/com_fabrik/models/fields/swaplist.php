@@ -40,7 +40,6 @@ class JFormFieldSwapList extends JFormFieldList
 	 */
 	protected function getInput()
 	{
-		$j3 = Worker::j3();
 		$from = $this->id . '-from';
 		$add = $this->id . '-add';
 		$remove = $this->id . '-remove';
@@ -66,35 +65,19 @@ class JFormFieldSwapList extends JFormFieldList
 		}
 		else
 		{
-			if ($j3)
-			{
-				$str =	Text::_('COM_FABRIK_AVAILABLE_GROUPS');
-				$str .= '<br />' . $this->groupList;
-				$str .= '<button class="button btn btn-success btn-small" type="button" id="' . $this->id . '-add">';
-				$str .= '<i class="icon-new"></i>' . Text::_('COM_FABRIK_ADD') . '</button>';
-				$str .= '<br />' . Text::_('COM_FABRIK_CURRENT_GROUPS');
-				$str .= '<br />' . $this->currentGroupList;
-				$str .= '<button class="button btn btn-small" type="button" id="' . $this->id . '-up" >';
-				$str .= '<i class="icon-arrow-up"></i> ' . Text::_('COM_FABRIK_UP') . '</button> ';
-				$str .= '<button class="button btn btn-small" type="button" id="' . $this->id . '-down" >';
-				$str .= '<i class="icon-arrow-down"></i> ' . Text::_('COM_FABRIK_DOWN') . '</button> ';
-				$str .= '<button class="button btn btn-danger btn-small" type="button" id="' . $this->id . '-remove">';
-				$str .= '<i class="icon-delete"></i> ' . Text::_('COM_FABRIK_REMOVE');
-				$str .= '</button>';
-			}
-			else
-			{
-				$str .= '<input type="text" readonly="readonly" class="readonly" style="clear:left" size="44" value="'
-					. Text::_('COM_FABRIK_AVAILABLE_GROUPS') . ':" />';
-				$str .= $this->groupList;
-				$str .= '<input class="button btn" type="button" id="' . $this->id . '-add" value="' . Text::_('COM_FABRIK_ADD') . '" />';
-				$str .= '<input type="text" readonly="readonly" class="readonly" style="clear:left" size="44" value="'
-					. Text::_('COM_FABRIK_CURRENT_GROUPS') . ':" />';
-				$str .= $this->currentGroupList;
-				$str .= '<input class="button" type="button" value="' . Text::_('COM_FABRIK_UP') . '" id="' . $this->id . '-up" />';
-				$str .= '<input class="button" type="button" value="' . Text::_('COM_FABRIK_DOWN') . '" id="' . $this->id . '-down" />';
-				$str .= '<input class="button" type="button" value="' . Text::_('COM_FABRIK_REMOVE') . '" id="' . $this->id . '-remove"/>';
-			}
+			$str =	Text::_('COM_FABRIK_AVAILABLE_GROUPS');
+			$str .= '<br />' . $this->groupList;
+			$str .= '<button class="button btn btn-success btn-small" type="button" id="' . $this->id . '-add">';
+			$str .= '<i class="icon-new"></i>' . Text::_('COM_FABRIK_ADD') . '</button>';
+			$str .= '<br />' . Text::_('COM_FABRIK_CURRENT_GROUPS');
+			$str .= '<br />' . $this->currentGroupList;
+			$str .= '<button class="button btn btn-small" type="button" id="' . $this->id . '-up" >';
+			$str .= '<i class="icon-arrow-up"></i> ' . Text::_('COM_FABRIK_UP') . '</button> ';
+			$str .= '<button class="button btn btn-small" type="button" id="' . $this->id . '-down" >';
+			$str .= '<i class="icon-arrow-down"></i> ' . Text::_('COM_FABRIK_DOWN') . '</button> ';
+			$str .= '<button class="button btn btn-danger btn-small" type="button" id="' . $this->id . '-remove">';
+			$str .= '<i class="icon-delete"></i> ' . Text::_('COM_FABRIK_REMOVE');
+			$str .= '</button>';
 
 			return $str;
 		}
@@ -135,8 +118,7 @@ class JFormFieldSwapList extends JFormFieldList
 		$query->order(StringHelper::safeColName('text'));
 		$db->setQuery($query);
 		$groups = $db->loadObjectList();
-		$style = Worker::j3() ? '' : 'style="width:100%;"';
-		$list = JHTML::_('select.genericlist', $groups, 'jform[groups]', 'class="inputbox input-xxlarge" size="10" ' . $style, 'value', 'text', null,
+		$list = JHTML::_('select.genericlist', $groups, 'jform[groups]', 'class="inputbox input-xxlarge" size="10"', 'value', 'text', null,
 			$this->id . '-from');
 
 		return array($groups, $list);
@@ -159,8 +141,7 @@ class JFormFieldSwapList extends JFormFieldList
 		$query->order('fg.ordering');
 		$db->setQuery($query);
 		$currentGroups = $db->loadObjectList();
-		$style = Worker::j3() ? '' : 'style="width:100%;"';
-		$attribs = 'class="inputbox input-xxlarge" multiple="multiple" ' . $style . ' size="10" ';
+		$attribs = 'class="inputbox input-xxlarge" multiple="multiple" size="10" ';
 		$list = JHTML::_('select.genericlist', $currentGroups, $this->name, $attribs, 'value', 'text', '/', $this->id);
 
 		return array($currentGroups, $list);

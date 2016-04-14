@@ -159,7 +159,6 @@ class Colourpicker extends Element
 		$displayData->name = $this->getHTMLName($repeatCounter);;
 		$displayData->value      = $value;
 		$displayData->editable   = $this->isEditable();
-		$displayData->j3         = Worker::j3();
 		$displayData->showPicker = (bool) $params->get('show_picker', 1);
 
 		return $layout->render($displayData);

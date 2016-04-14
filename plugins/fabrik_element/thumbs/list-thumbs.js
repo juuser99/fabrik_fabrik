@@ -26,73 +26,10 @@ define(['jquery'], function (jQuery) {
 				this.col = document.getElements('.' + id);
 				this.origThumbUp = {};
 				this.origThumbDown = {};
-				if (Fabrik.bootstrapped || this.options.j3) {
-					if (this.options.voteType === 'comment') {
-						this.setUpBootstrappedComments();
-					} else {
-						this.setUpBootstrapped();
-					}
+				if (this.options.voteType === 'comment') {
+					this.setUpBootstrappedComments();
 				} else {
-					this.col.each(function (tr) {
-						var row = tr.getParent('.fabrik_row');
-						if (row) {
-							var rowid = row.id.replace('list_' + this.options.renderContext + '_row_', '');
-							var thumbup = tr.getElements('.thumbup');
-							var thumbdown = tr.getElements('.thumbdown');
-							thumbup.each(function (thumbup) {
-								if (this.options.canUse) {
-									thumbup.addEvent('mouseover', function (e) {
-										thumbup.setStyle('cursor', 'pointer');
-										thumbup.src = this.options.imagepath + "thumb_up_in.gif";
-									}.bind(this));
-									thumbup.addEvent('mouseout', function (e) {
-										thumbup.setStyle('cursor', '');
-										if (this.options.myThumbs[rowid] === 'up') {
-											thumbup.src = this.options.imagepath + "thumb_up_in.gif";
-										} else {
-											thumbup.src = this.options.imagepath + "thumb_up_out.gif";
-										}
-									}.bind(this));
-									thumbup.addEvent('click', function (e) {
-										this.doAjax(thumbup, 'up');
-									}.bind(this));
-								}
-								else {
-									thumbup.addEvent('click', function (e) {
-										e.stop();
-										this.doNoAccess();
-									}.bind(this));
-								}
-							}.bind(this));
-
-							thumbdown.each(function (thumbdown) {
-								if (this.options.canUse) {
-									thumbdown.addEvent('mouseover', function (e) {
-										thumbdown.setStyle('cursor', 'pointer');
-										thumbdown.src = this.options.imagepath + "thumb_down_in.gif";
-									}.bind(this));
-
-									thumbdown.addEvent('mouseout', function (e) {
-										thumbdown.setStyle('cursor', '');
-										if (this.options.myThumbs[rowid] === 'down') {
-											thumbdown.src = this.options.imagepath + "thumb_down_in.gif";
-										} else {
-											thumbdown.src = this.options.imagepath + "thumb_down_out.gif";
-										}
-									}.bind(this));
-									thumbdown.addEvent('click', function (e) {
-										this.doAjax(thumbdown, 'down');
-									}.bind(this));
-								}
-								else {
-									thumbup.addEvent('click', function (e) {
-										e.stop();
-										this.doNoAccess();
-									}.bind(this));
-								}
-							}.bind(this));
-						}
-					}.bind(this));
+					this.setUpBootstrapped();
 				}
 			}
 		},
@@ -111,11 +48,15 @@ define(['jquery'], function (jQuery) {
 							target.removeClass('btn-success');
 						} else {
 							target.addClass('btn-success');
-							var down = document.getElements('button[data-fabrik-thumb-formid=' + formid + '][data-fabrik-thumb-rowid=' + rowid + '][data-fabrik-thumb=down]');
+							var down = document.getElements('button[data-fabrik-thumb-formid=' +
+								formid + '][data-fabrik-thumb-rowid=' + rowid +
+								'][data-fabrik-thumb=down]');
 							down.removeClass('btn-danger');
 						}
 					} else {
-						var up = document.getElements('button[data-fabrik-thumb-formid=' + formid + '][data-fabrik-thumb-rowid=' + rowid + '][data-fabrik-thumb=up]');
+						var up = document.getElements('button[data-fabrik-thumb-formid=' +
+							formid + '][data-fabrik-thumb-rowid=' + rowid +
+							'][data-fabrik-thumb=up]');
 						if (!add) {
 							target.removeClass('btn-danger');
 						} else {

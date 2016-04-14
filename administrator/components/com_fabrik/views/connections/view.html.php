@@ -74,12 +74,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 		FabrikAdminHelper::setViewLayout($this);
 		$this->addToolbar();
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
-
-		if (Worker::j3())
-		{
-			$this->sidebar = JHtmlSidebar::render();
-		}
-
+		$this->sidebar = JHtmlSidebar::render();
 		Html::iniRequireJS();
 		parent::display($tpl);
 	}
@@ -141,26 +136,23 @@ class FabrikAdminViewConnections extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, Text::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
 
-		if (Worker::j3())
-		{
-			JHtmlSidebar::setAction('index.php?option=com_fabrik&view=connections');
+		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=connections');
 
-			$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+		JHtmlSidebar::addFilter(
+		Text::_('JOPTION_SELECT_PUBLISHED'),
+		'filter_published',
+		JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+		);
+
+		if (!empty($this->packageOptions))
+		{
+			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			JHtmlSidebar::addFilter(
 			Text::_('JOPTION_SELECT_PUBLISHED'),
-			'filter_published',
-			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+			'package',
+			JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
-
-			if (!empty($this->packageOptions))
-			{
-				array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
-				JHtmlSidebar::addFilter(
-				Text::_('JOPTION_SELECT_PUBLISHED'),
-				'package',
-				JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
-				);
-			}
 		}
 	}
 }

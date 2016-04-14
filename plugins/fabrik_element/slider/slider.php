@@ -78,7 +78,6 @@ class Slider extends Element
 		$layoutData->name = $this->getHTMLName($repeatCounter);;
 		$layoutData->value = $val;
 		$layoutData->width = $width;
-		$layoutData->j3 = Worker::j3();
 		$layoutData->showNone = $params->get('slider-shownone');
 		$layoutData->outSrc = Html::image('clear_rating_out.png', 'form', $this->tmpl, array(), true);
 		$layoutData->labels = $labels;

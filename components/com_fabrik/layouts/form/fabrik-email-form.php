@@ -36,15 +36,6 @@ $d = $displayData;
 			<td colspan="2">
 				<input type="submit" name="submit" class="button btn btn-primary"
 					value="<?php echo Text::_('COM_FABRIK_SEND_EMAIL'); ?>" />
-				<?php
-
-				if (!$d->j3) :?>
-				<input type="button" name="cancel"
-					value="<?php echo Text::_('COM_FABRIK_CANCEL'); ?>" class="button btn"
-					onclick="window.close();" /></td>
-			<?php
-			endif;
-			?>
 		</tr>
 	</table>
 	<input name="referrer"

@@ -268,9 +268,8 @@ class FabrikViewFormBase extends FabrikView
 		// Force front end templates
 		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
 		$model           = $this->getModel();
-		$jTmplFolder     = Worker::j3() ? 'tmpl' : 'tmpl25';
 		$folder          = $model->isEditable() ? 'form' : 'details';
-		$this->addTemplatePath($this->_basePath . '/' . $folder . '/' . $jTmplFolder . '/' . $tmpl);
+		$this->addTemplatePath($this->_basePath . '/' . $folder . '/tmpl/' . $tmpl);
 
 		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $folder . '/' . $tmpl);
@@ -790,7 +789,7 @@ class FabrikViewFormBase extends FabrikView
 		// 3.0 needed for ajax requests
 		$opts->listid = (int) $this->get('ListModel')->getId();
 
-		$errorIcon       = Worker::j3() ? $fbConfig->get('error_icon', 'exclamation-sign') . '.png' : 'alert.png';
+		$errorIcon       = $fbConfig->get('error_icon', 'exclamation-sign') . '.png';
 		$this->errorIcon = Html::image($errorIcon, 'form', $this->tmpl);
 
 		$imgs               = new stdClass;

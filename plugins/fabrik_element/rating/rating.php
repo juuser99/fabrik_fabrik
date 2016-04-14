@@ -592,15 +592,6 @@ class Rating extends Element
 		}
 
 		$opts = new stdClass;
-
-		if (!Worker::j3())
-		{
-			$opts->insrc = Html::image("star.png", 'form', $this->tmpl, array(), true);
-			$opts->outsrc = Html::image("star-empty.png", 'form', $this->tmpl, array(), true);
-			$opts->clearoutsrc = $clearsrc = Html::image("remove-sign-out.png", 'form', $this->tmpl, array(), true);
-			$opts->clearinsrc = $clearsrc = Html::image("remove-sign.png", 'form', $this->tmpl, array(), true);
-		}
-
 		$opts->row_id = $rowId;
 		$opts->elid = $this->getElement()->id;
 		$opts->userid = (int) $this->user->get('id');
@@ -634,13 +625,6 @@ class Rating extends Element
 		$imagePath = JUri::root() . '/plugins/fabrik_element/rating/images/';
 		$opts->imagepath = $imagePath;
 		$opts->elid = $this->getElement()->id;
-
-		if (!Worker::j3())
-		{
-			$opts->insrc = Html::image("star.png", 'list', $this->tmpl, array(), true);
-			$opts->outsrc = Html::image("star-empty.png", 'list', $this->tmpl, array(), true);
-		}
-
 		$opts->canRate = $params->get('rating-mode') == 'creator-rating' ? true : $this->canRate();
 		$opts->doAjax = $params->get('rating-mode') != 'creator-rating';
 		$opts->ajaxloader = Html::image("ajax-loader.gif", 'list', $this->tmpl, array(), true);

@@ -6,8 +6,8 @@
  */
 
 define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', 'fab/list-keys',
-'fab/list-actions', 'fab/mootools-ext'],
-    function (jQuery, Fabrik, FbListToggle, FbGroupedToggler, FbListKeys, FbListActions) {
+    'fab/mootools-ext'],
+    function (jQuery, Fabrik, FbListToggle, FbGroupedToggler, FbListKeys) {
         var FbList = new Class({
 
             Implements: [Options, Events],
@@ -65,12 +65,6 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 this.result = true; //used with plugins to determine if list actions should be performed
                 this.plugins = [];
                 this.list = document.id('list_' + this.options.listRef);
-                if (this.options.j3 === false) {
-                    this.actionManager = new FbListActions(this, {
-                        'method'  : this.options.actionMethod,
-                        'floatPos': this.options.floatPos
-                    });
-                }
 
                 if (this.options.toggleCols) {
                     this.toggleCols = new FbListToggle(this.form);
@@ -187,7 +181,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                     height     : 240,
                     content    : '',
                     modal      : true,
-                    bootstrap  : this.options.j3
+                    bootstrap  : true
                 };
                 if (this.options.view === 'csv') {
 

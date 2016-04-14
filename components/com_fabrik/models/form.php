@@ -529,8 +529,7 @@ class FabrikFEModelForm extends FabModelForm
 		$params = $this->getParams();
 		$item = $this->getForm();
 		$tmpl = '';
-		$default = Worker::j3() ? 'bootstrap' : 'default';
-		$jTmplFolder = Worker::j3() ? 'tmpl' : 'tmpl25';
+		$default = 'bootstrap';
 		$document = JFactory::getDocument();
 
 		if ($document->getType() === 'pdf')
@@ -567,7 +566,7 @@ class FabrikFEModelForm extends FabModelForm
 		// Test it exists - otherwise revert to baseTmpl tmpl
 		$folder = $this->isEditable() ? 'form' : 'details';
 
-		if (!JFolder::exists(JPATH_SITE . '/components/com_fabrik/views/' . $folder . '/' . $jTmplFolder . '/' . $tmpl))
+		if (!JFolder::exists(JPATH_SITE . '/components/com_fabrik/views/' . $folder . '/tmpl/' . $tmpl))
 		{
 			$tmpl = $baseTmpl;
 		}
@@ -586,7 +585,6 @@ class FabrikFEModelForm extends FabModelForm
 	public function getFormCss()
 	{
 		$input = $this->app->input;
-		$jTmplFolder = Worker::j3() ? 'tmpl' : 'tmpl25';
 		$tmpl = $this->getTmpl();
 		$v = $this->isEditable() ? 'form' : 'details';
 
@@ -616,7 +614,7 @@ class FabrikFEModelForm extends FabModelForm
 
 			if (!Html::stylesheetFromPath($tmplPath))
 			{
-				Html::stylesheetFromPath('components/com_fabrik/views/' . $view . '/' . $jTmplFolder . '/' . $tmpl . '/template_css.php' . $qs);
+				Html::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/template_css.php' . $qs);
 			}
 
 			/* $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
@@ -626,7 +624,7 @@ class FabrikFEModelForm extends FabModelForm
 
 			if (!Html::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom.css' . $qs))
 			{
-				Html::stylesheetFromPath('components/com_fabrik/views/' . $view . '/' . $jTmplFolder . '/' . $tmpl . '/custom.css' . $qs);
+				Html::stylesheetFromPath('components/com_fabrik/views/' . $view . '/tmpl/' . $tmpl . '/custom.css' . $qs);
 			}
 
 			$path = 'templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom_css.php' . $qs;
@@ -637,7 +635,7 @@ class FabrikFEModelForm extends FabModelForm
 				$displayData->view        = $view;
 				$displayData->tmpl        = $tmpl;
 				$displayData->qs          = $qs;
-				$displayData->jTmplFolder = $jTmplFolder;
+				$displayData->jTmplFolder = 'tmpl';
 				$displayData->formModel   = $this;
 				$layout = $this->getLayout('form.fabrik-custom-css-qs');
 				$path = $layout->render($displayData);

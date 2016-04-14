@@ -111,7 +111,6 @@ class Password extends Element
 
 		$layoutData->pw2Attributes     = $bits;
 		$element->name                 = $origName;
-		$layoutData->j3                = Worker::j3();
 		$layoutData->showStrengthMeter = $params->get('strength_meter', 1) == 1;
 
 		return $layout->render($layoutData);
@@ -217,7 +216,7 @@ class Password extends Element
 		$opts                  = $this->getElementJSOptions($repeatCounter);
 		$formParams            = $this->getFormModel()->getParams();
 		$opts->ajax_validation = $formParams->get('ajax_validations') === '1';
-		$opts->progressbar     = Worker::j3() ? true : false;
+		$opts->progressbar     = true;
 
 		Text::script('PLG_ELEMENT_PASSWORD_STRONG');
 		Text::script('PLG_ELEMENT_PASSWORD_MEDIUM');

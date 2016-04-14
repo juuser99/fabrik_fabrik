@@ -41,12 +41,9 @@ class FabrikAdminModelPlugin extends JModelLegacy
 		$plugin                    = $pluginManager->getPlugIn($this->getState('plugin'), $this->getState('type'));
 		$feModel                   = $this->getPluginModel();
 		$plugin->getJForm()->model = $feModel;
-
 		$data = $this->getData();
 		$input->set('view', $this->getState('type'));
-
-		$mode = Worker::j3() ? 'nav-tabs' : '';
-		$str  = $plugin->onRenderAdminSettings($data, $this->getState('c'), $mode);
+		$str  = $plugin->onRenderAdminSettings($data, $this->getState('c'), 'nav-tabs');
 		$input->set('view', 'plugin');
 
 		return $str;
@@ -145,12 +142,9 @@ class FabrikAdminModelPlugin extends JModelLegacy
 	{
 		$data                   = $this->getData();
 		$c                      = $this->getState('c') + 1;
-		$version                = new JVersion;
-		$j3                     = version_compare($version->RELEASE, '3.0') >= 0 ? true : false;
-		$class                  = $j3 ? 'form-horizontal ' : 'adminform ';
 		$str                    = array();
 		$str[]                  = '<div class="pane-slider content pane-down accordion-inner">';
-		$str[]                  = '<fieldset class="' . $class . 'pluginContainer" id="formAction_' . $c . '"><ul>';
+		$str[]                  = '<fieldset class="form-horizontal pluginContainer" id="formAction_' . $c . '"><ul>';
 		$formName               = 'com_fabrik.' . $this->getState('type') . '-plugin';
 		$topForm                = new JForm($formName, array('control' => 'jform'));
 		$topForm->repeatCounter = $c;
@@ -170,31 +164,15 @@ class FabrikAdminModelPlugin extends JModelLegacy
 
 			foreach ($topForm->getFieldset($fieldset->name) as $field)
 			{
-				if (!$j3)
-				{
-					$str[] = '<li>' . $field->label . $field->input . '</li>';
-				}
-				else
-				{
-					$str[] = '<div class="control-group"><div class="control-label">' . $field->label;
-					$str[] = '</div><div class="controls">' . $field->input . '</div></div>';
-				}
+				$str[] = '<div class="control-group"><div class="control-label">' . $field->label;
+				$str[] = '</div><div class="controls">' . $field->input . '</div></div>';
 			}
 		}
 
 		$str[] = '</ul>';
 		$str[] = '<div class="pluginOpts" style="clear:left"></div>';
-
-		if ($j3)
-		{
-			$str[] = '<div class="form-actions"><a href="#" class="btn btn-danger" data-button="removeButton">';
-			$str[] = '<i class="icon-delete"></i> ' . Text::_('COM_FABRIK_DELETE') . '</a></div>';
-		}
-		else
-		{
-			$str[] = '<a href="#" class="delete removeButton">' . Text::_('COM_FABRIK_DELETE') . '</a>';
-		}
-
+		$str[] = '<div class="form-actions"><a href="#" class="btn btn-danger" data-button="removeButton">';
+		$str[] = '<i class="icon-delete"></i> ' . Text::_('COM_FABRIK_DELETE') . '</a></div>';
 		$str[] = '</fieldset>';
 		$str[] = '</div>';
 

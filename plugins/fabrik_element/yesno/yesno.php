@@ -112,19 +112,14 @@ class Yesno extends Radiobutton
 		Html::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/yesno/images/', 'image', 'list', false);
 		$raw = $this->getFullName() . '_raw';
 		$data = $thisRow->$raw;
-		$j3 = Worker::j3();
 
 		if ($data == '1')
 		{
-			$icon = $j3 ? 'checkmark.png' : '1_8bit.png';
-
-			return Html::image($icon, 'list', @$this->tmpl, array('alt' => Text::_('JYES')));
+			return Html::image('checkmark.png', 'list', @$this->tmpl, array('alt' => Text::_('JYES')));
 		}
 		else
 		{
-			$icon = $j3 ? 'remove.png' : '0_8bit.png';
-
-			return Html::image($icon, 'list', @$this->tmpl, array('alt' => Text::_('JNO')));
+			return Html::image('remove.png', 'list', @$this->tmpl, array('alt' => Text::_('JNO')));
 		}
 	}
 
@@ -263,7 +258,7 @@ class Yesno extends Radiobutton
 	protected function buttonGroup()
 	{
 		$params = $this->getParams();
-		$ok = Worker::j3() && $params->get('btnGroup', true);
+		$ok = $params->get('btnGroup', true);
 
 		return $ok;
 	}

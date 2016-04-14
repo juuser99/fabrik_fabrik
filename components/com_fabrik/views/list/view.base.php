@@ -213,7 +213,6 @@ class FabrikViewListBase extends FabrikView
 		$opts->page           = JRoute::_('index.php');
 		$opts->isGrouped      = $this->isGrouped;
 		$opts->toggleCols     = $toggleCols;
-		$opts->j3             = Worker::j3();
 		$opts->singleOrdering = (bool) $model->singleOrdering();
 
 		// Reset data back to original settings
@@ -271,7 +270,7 @@ class FabrikViewListBase extends FabrikView
 		$opts->groupByOpts->isGrouped      = (bool) $this->isGrouped;
 		$opts->groupByOpts->collapseOthers = (bool) $params->get('group_by_collapse_others', false);
 		$opts->groupByOpts->startCollapsed = (bool) $params->get('group_by_start_collapsed', false);
-		$opts->groupByOpts->bootstrap      = Worker::j3();
+		$opts->groupByOpts->bootstrap      = true;
 
 		// If table data starts as empty then we need the html from the row
 		// template otherwise we can't add a row to the table
@@ -385,8 +384,7 @@ class FabrikViewListBase extends FabrikView
 		// Force front end templates
 		$tmpl            = $model->getTmpl();
 		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
-		$jTmplFolder     = Worker::j3() ? 'tmpl' : 'tmpl25';
-		$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/' . $jTmplFolder . '/' . $tmpl);
+		$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
 
 		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);

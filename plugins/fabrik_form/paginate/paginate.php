@@ -70,7 +70,6 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 			return;
 		}
 
-		$j3 = Worker::j3();
 		$input = $this->app->input;
 		$formId = $formModel->getForm()->id;
 		$mode = StringHelper::strtolower($input->get('view', 'form'));
@@ -95,33 +94,8 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$links['next'] = JRoute::_($url . $this->ids->next);
 		$links['last'] = JRoute::_($url . $this->ids->last);
 
-		if ($j3)
-		{
-			$layout = new JLayoutFile('plugins.fabrik_form.paginate.layouts.default_paginate', JPATH_SITE);
-			$this->data = $layout->render($links);
-		}
-		else
-		{
-			$firstLink = ($linkStartPrev) ? '<span>&lt;&lt;</span>' . Text::_('COM_FABRIK_START')
-				: '<a href="' . $links['first'] . '" class="pagenav paginateFirst ' . $linkStartPrev . '"><span>&lt;&lt;</span>'
-					. Text::_('COM_FABRIK_START') . '</a>';
-			$prevLink = ($linkStartPrev) ? '<span>&lt;</span>' . Text::_('COM_FABRIK_PREV')
-				: '<a href="' . $links['prev'] . '" class="pagenav paginatePrevious ' . $linkStartPrev . '"><span>&lt;</span>'
-					. Text::_('COM_FABRIK_PREV') . '</a>';
-
-			$nextLink = ($linkNextEnd) ? Text::_('COM_FABRIK_NEXT') . '<span>&gt;</span>'
-				: '<a href="' . $links['next'] . '" class="pagenav paginateNext' . $linkNextEnd . '">' . Text::_('COM_FABRIK_NEXT')
-					. '<span>&gt;</span></a>';
-			$endLink = ($linkNextEnd) ? Text::_('COM_FABRIK_END') . '<span>&gt;&gt;</span>'
-				: '<a href="' . $links['last'] . '" class="pagenav paginateLast' . $linkNextEnd . '">' . Text::_('COM_FABRIK_END')
-					. '<span>&gt;&gt;</span></a>';
-			$this->data = '<ul id="fabrik-from-pagination" class="pagination">
-					<li>' . $firstLink . '</li>
-					<li>' . $prevLink . '</li>
-					<li>' . $nextLink . '</li>
-					<li>' . $endLink . '</li>
-			</ul>';
-		}
+		$layout = new JLayoutFile('plugins.fabrik_form.paginate.layouts.default_paginate', JPATH_SITE);
+		$this->data = $layout->render($links);
 
 		Html::stylesheet('plugins/fabrik_form/paginate/paginate.css');
 	}

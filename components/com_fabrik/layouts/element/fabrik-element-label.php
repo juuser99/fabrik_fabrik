@@ -6,9 +6,7 @@ use Fabrik\Helpers\Text;
 $d = $displayData;
 $labelText = Text::_($d->label);
 $labelText = $labelText == '' ? '&nbsp;' : $labelText;
-$l = $d->j3 ? '' : $labelText;
-$l .= $d->icons;
-$l .= $d->j3 ? $labelText : '';
+$l = $d->icons . $labelText;
 
 if ($d->view == 'form' && !($d->canUse || $d->canView))
 {

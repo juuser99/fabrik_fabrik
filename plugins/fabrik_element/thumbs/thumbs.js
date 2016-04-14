@@ -13,63 +13,10 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this.parent(element, options);
             this.thumb = thumb;
             this.spinner = new Spinner(this.getContainer());
-
-            if (Fabrik.bootstrapped) {
-                this.setupj3();
-            } else {
-                this.thumbup = document.id('thumbup');
-                this.thumbdown = document.id('thumbdown');
-                if (this.options.canUse) {
-                    this.imagepath = Fabrik.liveSite + 'plugins/fabrik_element/thumbs/images/';
-
-                    this.thumbup.addEvent('mouseover', function (e) {
-                        this.thumbup.setStyle('cursor', 'pointer');
-                        this.thumbup.src = this.imagepath + 'thumb_up_in.gif';
-                    }.bind(this));
-
-                    this.thumbdown.addEvent('mouseover', function (e) {
-                        this.thumbdown.setStyle('cursor', 'pointer');
-                        this.thumbdown.src = this.imagepath + 'thumb_down_in.gif';
-                    }.bind(this));
-
-                    this.thumbup.addEvent('mouseout', function (e) {
-                        this.thumbup.setStyle('cursor', '');
-                        if (this.options.myThumb === 'up') {
-                            this.thumbup.src = this.imagepath + 'thumb_up_in.gif';
-                        } else {
-                            this.thumbup.src = this.imagepath + 'thumb_up_out.gif';
-                        }
-                    }.bind(this));
-                    this.thumbdown.addEvent('mouseout', function (e) {
-                        this.thumbdown.setStyle('cursor', '');
-                        if (this.options.myThumb === 'down') {
-                            this.thumbdown.src = this.imagepath + 'thumb_down_in.gif';
-                        } else {
-                            this.thumbdown.src = this.imagepath + 'thumb_down_out.gif';
-                        }
-                    }.bind(this));
-
-                    this.thumbup.addEvent('click', function (e) {
-                        this.doAjax('up');
-                    }.bind(this));
-                    this.thumbdown.addEvent('click', function (e) {
-                        this.doAjax('down');
-                    }.bind(this));
-                }
-                else {
-                    this.thumbup.addEvent('click', function (e) {
-                        e.stop();
-                        this.doNoAccess();
-                    }.bind(this));
-                    this.thumbdown.addEvent('click', function (e) {
-                        e.stop();
-                        this.doNoAccess();
-                    }.bind(this));
-                }
-            }
+            this.setup();
         },
 
-        setupj3: function () {
+        setup: function () {
             var c = this.getContainer();
             var up = c.getElement('button.thumb-up');
             var down = c.getElement('button.thumb-down');

@@ -510,23 +510,20 @@ class FabrikFEModelGroup extends FabModel
 
 		$widths = explode(',', $widths);
 
-		if (Worker::j3())
+		foreach ($widths as &$w)
 		{
-			foreach ($widths as &$w)
+			if ($w == '')
 			{
-				if ($w == '')
-				{
-					$w = 6;
-				}
-
-				if (strstr($w, '%'))
-				{
-					$w = (int) str_replace('%', '', $w);
-					$w = floor(($w / 100) * 12);
-				}
-
-				$w = ' span' . $w;
+				$w = 6;
 			}
+
+			if (strstr($w, '%'))
+			{
+				$w = (int) str_replace('%', '', $w);
+				$w = floor(($w / 100) * 12);
+			}
+
+			$w = ' span' . $w;
 		}
 
 		return $widths;

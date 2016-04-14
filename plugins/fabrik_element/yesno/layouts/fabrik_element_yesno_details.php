@@ -21,8 +21,6 @@ $data = $d->value;
 $tmpl = $d->tmpl;
 $format = $d->format;
 
-$j3 = Worker::j3();
-
 $opts = array();
 $properties = array();
 
@@ -32,12 +30,12 @@ if ($d->format == 'pdf') :
 endif;
 
 if ($data == '1') :
-	$icon = $j3 && $format != 'pdf' ? 'checkmark.png' : '1.png';
+	$icon = $format != 'pdf' ? 'checkmark.png' : '1.png';
 	$properties['alt'] = Text::_('JYES');
 
 	echo Html::image($icon, 'list', $tmpl, $properties, false, $opts);
 else :
-	$icon = $j3 && $format != 'pdf' ? 'remove.png' : '0.png';
+	$icon = $format != 'pdf' ? 'remove.png' : '0.png';
 	$properties['alt'] = Text::_('JNO');
 
 	echo Html::image($icon, 'list', $tmpl, $properties, false, $opts);

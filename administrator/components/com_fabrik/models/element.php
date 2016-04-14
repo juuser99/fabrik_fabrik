@@ -265,7 +265,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$opts->parentid     = (int) $item->parent_id;
 		$opts->jsevents     = $this->getJsEvents();
 		$opts->id           = (int) $item->id;
-		$opts->deleteButton = Worker::j3() ? '<a class="btn btn-danger"><i class="icon-delete"></i> ' : '<a class="removeButton">';
+		$opts->deleteButton = '<a class="btn btn-danger"><i class="icon-delete"></i> ';
 		$opts->deleteButton .= Text::_('COM_FABRIK_DELETE') . '</a>';
 		$opts = json_encode($opts);
 		Text::script('COM_FABRIK_PLEASE_SELECT');
@@ -317,8 +317,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 			try
 			{
 				$plugin = $this->pluginManager->getPlugIn($plugin, 'Element');
-				$mode   = Worker::j3() ? 'nav-tabs' : '';
-				$str    = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, $mode);
+				$str    = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
 			} catch (RuntimeException $e)
 			{
 				$str = '<div class="alert">' . Text::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';

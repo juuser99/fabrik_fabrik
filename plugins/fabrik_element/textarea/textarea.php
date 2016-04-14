@@ -69,8 +69,7 @@ class Textarea extends Element
 		// $$$ hugh - strip spaces first, account for "foo,bar, baz, foo"
 		$data = array_map('trim', $data);
 		$data = array_unique($data);
-		$img = Worker::j3() ? 'bookmark.png' : 'tag.png';
-		$icon = Html::image($img, 'form', @$this->tmpl, array('alt' => 'tag'));
+		$icon = Html::image('bookmark.png', 'form', @$this->tmpl, array('alt' => 'tag'));
 		$tmplData = new stdClass;
 		$tmplData->tags = array();
 

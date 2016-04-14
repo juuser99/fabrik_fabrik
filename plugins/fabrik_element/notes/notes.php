@@ -46,7 +46,6 @@ class Notes extends Databasejoin
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->rowid = (int) $this->getFormModel()->getRowId();
 		$opts->id = $this->id;
-		$opts->j3 = Worker::j3();
 
 		return array('FbNotes', $id, $opts);
 	}
@@ -63,8 +62,7 @@ class Notes extends Databasejoin
 	{
 		$params = $this->getParams();
 		$tmp = $this->_getOptions($data, $repeatCounter, true);
-		$layoutName = Worker::j3() ? 'form' : 'form-25';
-		$layout = $this->getLayout($layoutName);
+		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->id = $this->getHTMLId($repeatCounter);
 		$layoutData->labels = array();

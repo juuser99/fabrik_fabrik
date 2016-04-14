@@ -268,8 +268,6 @@ class Fileupload extends Element
 		$params = $this->getParams();
 		$id     = $this->getHTMLId($repeatCounter);
 		Html::mcl();
-		$j3 = Worker::j3();
-
 		$element   = $this->getElement();
 		$paramsKey = $this->getFullName(true, false);
 		$paramsKey = StringHelper::rtrimword($paramsKey, $this->getElement()->name);
@@ -445,10 +443,8 @@ class Fileupload extends Element
 		$opts->cropheight    = (int) $params->get('fileupload_crop_height');
 		$opts->ajax_max      = (int) $params->get('ajax_max', 4);
 		$opts->dragdrop      = true;
-		$icon                = $j3 ? 'picture' : 'image.png';
-		$resize              = $j3 ? 'expand-2' : 'resize.png';
-		$opts->previewButton = Html::image($icon, 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
-		$opts->resizeButton  = Html::image($resize, 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
+		$opts->previewButton = Html::image('picture', 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_VIEW')));
+		$opts->resizeButton  = Html::image('expand-2', 'form', @$this->tmpl, array('alt' => Text::_('PLG_ELEMENT_FILEUPLOAD_RESIZE')));
 		$opts->files         = $oFiles;
 
 		$opts->winWidth         = (int) $params->get('win_width', 400);
@@ -2504,7 +2500,6 @@ class Fileupload extends Element
 		$displayData->canvasSupport = Html::canvasSupport();
 		$displayData->dropBoxStyle  = $dropBoxStyle;
 		$displayData->field         = implode("\n", $str);
-		$displayData->j3            = Worker::j3();
 		$str                        = (array) $layout->render($displayData);
 
 		Html::jLayoutJs('fabrik-progress-bar', 'fabrik-progress-bar', (object) array('context' => '', 'animated' => true));

@@ -76,12 +76,7 @@ class FabrikAdminViewGroups extends JViewLegacy
 		FabrikAdminHelper::setViewLayout($this);
 		$this->addToolbar();
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
-
-		if (Worker::j3())
-		{
-			$this->sidebar = JHtmlSidebar::render();
-		}
-
+		$this->sidebar = JHtmlSidebar::render();
 		Html::iniRequireJS();
 		parent::display($tpl);
 	}
@@ -143,32 +138,29 @@ class FabrikAdminViewGroups extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_GROUPS', false, Text::_('JHELP_COMPONENTS_FABRIK_GROUPS'));
 
-		if (Worker::j3())
-		{
-			JHtmlSidebar::setAction('index.php?option=com_fabrik&view=groups');
+		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=groups');
 
-			$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+		JHtmlSidebar::addFilter(
+		Text::_('JOPTION_SELECT_PUBLISHED'),
+		'filter_published',
+		JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+		);
+
+		if (!empty($this->packageOptions))
+		{
+			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			JHtmlSidebar::addFilter(
 			Text::_('JOPTION_SELECT_PUBLISHED'),
-			'filter_published',
-			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
-			);
-
-			if (!empty($this->packageOptions))
-			{
-				array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
-				JHtmlSidebar::addFilter(
-				Text::_('JOPTION_SELECT_PUBLISHED'),
-				'package',
-				JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
-				);
-			}
-
-			JHtmlSidebar::addFilter(
-			Text::_('COM_FABRIK_SELECT_FORM'),
-			'filter_form',
-			JHtml::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
+			'package',
+			JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
 		}
+
+		JHtmlSidebar::addFilter(
+		Text::_('COM_FABRIK_SELECT_FORM'),
+		'filter_form',
+		JHtml::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
+		);
 	}
 }

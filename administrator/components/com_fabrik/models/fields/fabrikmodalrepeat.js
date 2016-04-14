@@ -10,7 +10,6 @@
 var FabrikModalRepeat = new Class({
 
     options: {
-        j3: true
     },
 
     initialize: function (el, names, field, opts) {
@@ -225,9 +224,6 @@ var FabrikModalRepeat = new Class({
     },
 
     resetChosen: function (clone) {
-        if (!this.options.j3) {
-            return;
-        }
         if (jQuery && typeOf(jQuery('select').chosen) !== 'null') {
 
             // Chosen reset

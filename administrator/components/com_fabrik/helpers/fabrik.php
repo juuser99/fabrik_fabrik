@@ -107,29 +107,15 @@ class FabrikAdminHelper
 	{
 		$vizUrl = 'index.php?option=com_fabrik&view=visualizations';
 
-		if (Worker::j3())
-		{
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_HOME'), 'index.php?option=com_fabrik', $vName == 'home');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_LISTS'), 'index.php?option=com_fabrik&view=lists', $vName == 'lists');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_FORMS'), 'index.php?option=com_fabrik&view=forms', $vName == 'forms');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_GROUPS'), 'index.php?option=com_fabrik&view=groups', $vName == 'groups');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_ELEMENTS'), 'index.php?option=com_fabrik&view=elements', $vName == 'elements');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_VISUALIZATIONS'), $vizUrl, $vName == 'visualizations');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_PACKAGES'), 'index.php?option=com_fabrik&view=packages', $vName == 'packages');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CONNECTIONS'), 'index.php?option=com_fabrik&view=connections', $vName == 'connections');
-			JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CRONS'), 'index.php?option=com_fabrik&view=crons', $vName == 'crons');
-		}
-		else
-		{
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_LISTS'), 'index.php?option=com_fabrik&view=lists', $vName == 'lists');
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_FORMS'), 'index.php?option=com_fabrik&view=forms', $vName == 'forms');
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_GROUPS'), 'index.php?option=com_fabrik&view=groups', $vName == 'groups');
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_ELEMENTS'), 'index.php?option=com_fabrik&view=elements', $vName == 'elements');
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_VISUALIZATIONS'), $vizUrl, $vName == 'visualizations');
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_PACKAGES'), 'index.php?option=com_fabrik&view=packages', $vName == 'packages');
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_CONNECTIONS'), 'index.php?option=com_fabrik&view=connections', $vName == 'connections');
-			JSubMenuHelper::addEntry(Text::_('COM_FABRIK_SUBMENU_CRONS'), 'index.php?option=com_fabrik&view=crons', $vName == 'crons');
-		}
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_HOME'), 'index.php?option=com_fabrik', $vName == 'home');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_LISTS'), 'index.php?option=com_fabrik&view=lists', $vName == 'lists');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_FORMS'), 'index.php?option=com_fabrik&view=forms', $vName == 'forms');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_GROUPS'), 'index.php?option=com_fabrik&view=groups', $vName == 'groups');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_ELEMENTS'), 'index.php?option=com_fabrik&view=elements', $vName == 'elements');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_VISUALIZATIONS'), $vizUrl, $vName == 'visualizations');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_PACKAGES'), 'index.php?option=com_fabrik&view=packages', $vName == 'packages');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CONNECTIONS'), 'index.php?option=com_fabrik&view=connections', $vName == 'connections');
+		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CRONS'), 'index.php?option=com_fabrik&view=crons', $vName == 'crons');
 	}
 
 	/**

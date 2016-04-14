@@ -39,7 +39,6 @@ class FabrikViewMedia extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = Worker::j3();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
@@ -74,8 +73,7 @@ class FabrikViewMedia extends JViewLegacy
 		$this->filterFormURL = $model->getFilterFormURL();
 		$this->filters = $this->get('Filters');
 		$this->params = $model->getParams();
-		$tpl = $j3 ? 'bootstrap' : 'default';
-		$tpl = $params->get('media_layout', $tpl);
+		$tpl = $params->get('media_layout', 'bootstrap');
 		$tplpath = JPATH_ROOT . '/plugins/fabrik_visualization/media/views/media/tmpl/' . $tpl;
 		$this->_setPath('template', $tplpath);
 		Html::stylesheetFromPath('plugins/fabrik_visualization/media/views/media/tmpl/' . $tpl . '/template.css');

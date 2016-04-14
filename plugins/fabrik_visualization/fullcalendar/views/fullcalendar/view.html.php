@@ -117,8 +117,7 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$Itemid   = Worker::itemId();
 		$urls     = new stdClass;
 		$calendar = $this->row;
-		$j3       = Worker::j3();
-		$tpl      = $params->get('fullcalendar_layout', $j3);
+		$tpl      = $params->get('fullcalendar_layout', 'bootstrap');
 
 		// Get all list where statements - which are then included in the ajax call to ensure we get the correct data set loaded
 		$urlFilters        = new stdClass;
@@ -164,7 +163,6 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$options->readonly       = (bool) $params->get('calendar-read-only', false);
 		$options->timeFormat     = $params->get('time_format', '%X');
 		$options->readonlyMonth  = (bool) $params->get('readonly_monthview', false);
-		$options->j3             = Worker::j3();
 		$options->calOptions     = $params->get('calOptions', '{}');
 
 		return $options;

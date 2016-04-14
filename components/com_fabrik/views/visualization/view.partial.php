@@ -65,8 +65,7 @@ class FabrikViewVisualization extends FabrikView
 		$tmpl = $plugin->getParams()->get('calendar_layout', $tmpl);
 		$plugin->$pluginTask($this);
 		$this->plugin = $plugin;
-		$jTmplFolder = Worker::j3() ? 'tmpl' : 'tmpl25';
-		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->_name . '/' . $jTmplFolder . '/' . $tmpl);
+		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->_name . '/tmpl/' . $tmpl);
 
 		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/visualization/' . $plugin->_name . '/' . $tmpl);

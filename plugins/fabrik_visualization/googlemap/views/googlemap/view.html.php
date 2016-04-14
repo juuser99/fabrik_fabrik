@@ -39,7 +39,6 @@ class FabrikViewGooglemap extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = Worker::j3();
 		$srcs = Html::framework();
 		Html::slimbox();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
@@ -58,8 +57,7 @@ class FabrikViewGooglemap extends JViewLegacy
 		$this->txt = $model->getText();
 		$params = $model->getParams();
 		$this->params = $params;
-		$tpl = $j3 ? 'bootstrap' : 'default';
-		$tpl = $params->get('fb_gm_layout', $tpl);
+		$tpl = $params->get('fb_gm_layout', 'bootstrap');
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl;
 		$srcs['ListPlugin'] = 'media/com_fabrik/js/list-plugin.js';
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';

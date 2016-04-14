@@ -81,7 +81,6 @@ class Thumbs extends Element
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		$input = $this->app->input;
-		$j3 = Worker::j3();
 		$params = $this->getParams();
 		$imagePath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
 		$data = Worker::JSONtoData($data, true);
@@ -124,31 +123,20 @@ class Thumbs extends Element
 			$downActiveClass = $myThumb === 'down' ? ' btn-danger' : '';
 			$commentData = 'data-fabrik-thumb-rowid="' . $rowId . '"';
 
-			if ($j3)
+			// @todo - JLayout this.
+			$str[] = '<div class="btn-group">';
+			$str[] = '<button ' . $commentData . ' data-fabrik-thumb-formid="' . $formId
+			 . '" data-fabrik-thumb="up" class="btn btn-small thumb-up' . $upActiveClass . '">';
+			$str[] = '<span class="icon-thumbs-up"></span> <span class="thumb-count">' . $countUp . '</span></button>';
+
+			if ($params->get('show_down', 1))
 			{
-				// @todo - JLayout this.
-				$str[] = '<div class="btn-group">';
 				$str[] = '<button ' . $commentData . ' data-fabrik-thumb-formid="' . $formId
-				 . '" data-fabrik-thumb="up" class="btn btn-small thumb-up' . $upActiveClass . '">';
-				$str[] = '<span class="icon-thumbs-up"></span> <span class="thumb-count">' . $countUp . '</span></button>';
-
-				if ($params->get('show_down', 1))
-				{
-					$str[] = '<button ' . $commentData . ' data-fabrik-thumb-formid="' . $formId
-					. '" data-fabrik-thumb="down" class="btn btn-small thumb-down' . $downActiveClass . '">';
-					$str[] = '<span class="icon-thumbs-down"></span> <span class="thumb-count">' . $countDown . '</span></button>';
-				}
-
-				$str[] = '</div>';
+				. '" data-fabrik-thumb="down" class="btn btn-small thumb-down' . $downActiveClass . '">';
+				$str[] = '<span class="icon-thumbs-down"></span> <span class="thumb-count">' . $countDown . '</span></button>';
 			}
-			else
-			{
-				$str[] = '<span style="color:#32d723;" id="count_thumbup' . $rowId . '">' . $countUp . '</span>';
-				$str[] = '<img src="' . $imagePath . $imageFileUp . '" style="padding:0px 5px 0 1px;" alt="UP" class="thumbup" id="thumbup' . $rowId . '"/>';
-				$str[] = '<span style="color:#f82516;" id="count_thumbdown' . $rowId . '">' . $countDown . '</span>';
-				$attributes = '" style="padding:0px 5px 0 1px;" alt="DOWN" class="thumbdown"';
-				$str[] = '<img src="' . $imagePath . $imageFileDown . $attributes . ' id="thumbdown' . $rowId . '"/>';
-			}
+
+			$str[] = '</div>';
 
 			$data[$i] = implode("\n", $str);
 		}
@@ -255,7 +243,6 @@ class Thumbs extends Element
 		$input = $this->app->input;
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
-		$j3 = Worker::j3();
 
 		if ($input->get('view') == 'form' && ((bool) $params->get('rate_in_from', false) === false || $this->getFormModel()->isNewRecord()))
 		{
@@ -300,7 +287,6 @@ class Thumbs extends Element
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
-		$layoutData->j3 = $j3;
 		$layoutData->name = $name;
 		$layoutData->id = $id;
 		$layoutData->commentdata = 'data-fabrik-thumb-rowid="' . $rowId . '"';

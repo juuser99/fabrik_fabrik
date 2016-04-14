@@ -8,7 +8,6 @@ define(['jquery'], function (jQuery) {
         Implements: [Options],
 
         options: {
-            j3: false
         },
 
         initialize: function (el, fields, options) {
@@ -37,28 +36,18 @@ define(['jquery'], function (jQuery) {
             this.counter--;
             var tbl, t;
             e.stop();
-            if (this.options.j3) {
-                var row = e.target.id.replace('filterContainer-del-', '').toInt();
+            var row = e.target.id.replace('filterContainer-del-', '').toInt();
 
-                t = e.target.getParent('tr');
-                tbl = e.target.getParent('table');
-            } else {
-                //t = document.id(element.parentNode.parentNode); //was 3 but that was the tbody
-                t = e.target.getParent('tr');
-                tbl = e.target.getParent('table');
-            }
+            t = e.target.getParent('tr');
+            tbl = e.target.getParent('table');
 
             if (this.counter === 0) {
                 tbl.hide();
             }
 
-            if (this.options.j3) {
-                // in 3.1 we have to hide the rows rather than destroy otherwise the form doesn't submit!!!
-                t.getElements('input, select, textarea').dispose();
-                t.hide();
-            } else {
-                t.dispose();
-            }
+            // in 3.1 we have to hide the rows rather than destroy otherwise the form doesn't submit!!!
+            t.getElements('input, select, textarea').dispose();
+            t.hide();
         },
 
         _makeSel: function (c, name, pairs, sel, showSelect) {
@@ -190,12 +179,10 @@ define(['jquery'], function (jQuery) {
                 .adopt(this._makeSel('inputbox elementtype', 'jform[params][filter-eval][]', evalopts, evaluate, false));
 
             var checked = (selJoin !== '' || selFilter !== '' || selCondition !== '' || selValue !== '') ? true : false;
-            var delId = this.el.id + "-del-" + this.counter;
+            var delId = this.el.id + '-del-' + this.counter;
 
-            var deleteText = this.options.j3 ? '' : Joomla.JText._('COM_FABRIK_DELETE');
-            var bClass = this.options.j3 ? 'btn btn-danger' : 'removeButton';
-            var a = '<button id="' + delId + '" class="' + bClass + '"><i class="icon-minus"></i> ' +
-                deleteText + '</button>';
+            var a = '<button id="' + delId + '" class="btn btn-danger"><i class="icon-minus"></i> ' +
+                 '</button>';
             td5.set('html', a);
             tr.appendChild(td);
 

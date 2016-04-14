@@ -343,36 +343,27 @@ class Date extends ElementList
 	 */
 	protected function timeButton($timeElName, $time, &$str)
 	{
-		$j3         = Worker::j3();
 		$params     = $this->getParams();
 		$timeFormat = $params->get('date_time_format', 'H:i');
 		$class      = 'inputbox fabrikinput timeField input ' . $params->get('bootstrap_time_class', 'input-mini');
 		$readOnly   = $params->get('date_allow_typing_in_field', true) == false ? ' readonly="readonly" ' : '';
 
-		if ($j3)
-		{
-			$str[] = '<div class="input-append">';
-		}
+		$str[] = '<div class="input-append">';
 
 		$timeLength = StringHelper::strlen($timeFormat);
 		Html::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/date/images/', 'image', 'form', false);
 		$str[] = '<input type="text" class="' . $class . '" ' . $readOnly . ' size="' . $timeLength . '" value="' . $time . '" name="'
 			. $timeElName . '" />';
 		$opts  = array('alt' => Text::_('PLG_ELEMENT_DATE_TIME'), 'class' => 'timeButton');
-		$file  = Worker::j3() ? 'clock.png' : 'time.png';
 
 		$btnLayout  = Html::getLayout('fabrik-button');
 		$layoutData = (object) array(
 			'class' => 'timeButton',
-			'label' => Html::image($file, 'form', @$this->tmpl, $opts)
+			'label' => Html::image('clock.png', 'form', @$this->tmpl, $opts)
 		);
 
 		$str[] = $btnLayout->render($layoutData);
-
-		if ($j3)
-		{
-			$str[] = '</div>';
-		}
+		$str[] = '</div>';
 	}
 
 	/**
@@ -759,36 +750,25 @@ class Date extends ElementList
 	 */
 	public function calendar($value, $name, $id, $format = '%Y-%m-%d', $attribs = null, $repeatCounter = 0)
 	{
-		$j3 = Worker::j3();
-
 		if (is_array($attribs))
 		{
 			$attribs = ArrayHelper::toString($attribs);
 		}
 
 		Html::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
-		$opts = $j3 ? array('alt' => 'calendar') : array('alt' => 'calendar', 'class' => 'calendarbutton', 'id' => $id . '_cal_img');
-		$img  = Html::image('calendar.png', 'form', @$this->tmpl, $opts);
+		$img  = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
 		$html = array();
 
-		if ($j3)
-		{
-			$btnLayout  = Html::getLayout('fabrik-button');
-			$layoutData = (object) array(
-				'class' => 'calendarbutton',
-				'id' => $id . '_cal_img',
-				'label' => $img
-			);
-			$img        = $btnLayout->render($layoutData);
-			$html[]     = '<div class="input-append">';
-		}
-
+		$btnLayout  = Html::getLayout('fabrik-button');
+		$layoutData = (object) array(
+			'class' => 'calendarbutton',
+			'id' => $id . '_cal_img',
+			'label' => $img
+		);
+		$img        = $btnLayout->render($layoutData);
+		$html[]     = '<div class="input-append">';
 		$html[] = '<input type="text" name="' . $name . '" id="' . $id . '" value="' . $value . '" ' . $attribs . ' />' . $img;
-
-		if ($j3)
-		{
-			$html[] = '</div>';
-		}
+		$html[] = '</div>';
 
 		return implode("\n", $html);
 	}
@@ -1655,15 +1635,11 @@ class Date extends ElementList
 
 		$layout          = $this->getLayout('list-filter-field');
 		$displayData     = new stdClass;
-		$displayData->j3 = Worker::j3();
 		$from            = new stdClass;
 		$from->id        = $this->getFilterHtmlId(0);
 		$from->value     = $default;
 		$from->name      = $v;
-
-		$imageOpts = $displayData->j3 ? array('alt' => 'calendar') : array('alt' => 'calendar',
-			'class' => 'calendarbutton', 'id' => $from->id . '_cal_img');
-		$from->img = Html::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$from->img = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
 
 		$displayData->from = $from;
 
@@ -1703,14 +1679,12 @@ class Date extends ElementList
 		$displayData         = new stdClass;
 		$displayData->htmlId = $this->getHTMLId();
 		$displayData->class  = $this->filterClass();
-		$displayData->j3     = Worker::j3();
 		$from                = new stdClass;
 		$from->id            = $this->getFilterHtmlId(0);
 		$from->value         = $default[0];
 		$from->name          = $v . '[0]';
 
-		$imageOpts = $displayData->j3 ? array('alt' => 'calendar') : array('alt' => 'calendar', 'class' => 'calendarbutton', 'id' => $from->id . '_cal_img');
-		$from->img = Html::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$from->img = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
 
 		$displayData->from = $from;
 
@@ -1722,8 +1696,7 @@ class Date extends ElementList
 		$to->value = $default[1];
 		$to->name  = $v . '[1]';
 
-		$imageOpts = $displayData->j3 ? array('alt' => 'calendar') : array('alt' => 'calendar', 'class' => 'calendarbutton', 'id' => $to->id . '_cal_img');
-		$to->img   = Html::image('calendar.png', 'form', @$this->tmpl, $imageOpts);
+		$to->img   = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
 
 		$displayData->to         = $to;
 		$displayData->filterType = $this->getFilterType();

@@ -117,7 +117,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 	public function disapprove()
 	{
 		$this->decide(0);
-		echo Worker::j3() ? Html::icon('icon-remove') : Html::image('delete.png', 'list', '');
+		echo Html::icon('icon-remove');
 	}
 
 	/**
@@ -128,7 +128,7 @@ class FabrikModelApprovals extends FabrikFEModelVisualization
 	public function approve()
 	{
 		$this->decide(1);
-		echo Worker::j3() ? Html::icon('icon-ok') : Html::image('ok.png', 'list', '');
+		echo Html::icon('icon-ok');
 	}
 
 	/**

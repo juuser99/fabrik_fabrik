@@ -857,7 +857,7 @@ class ElementList extends Element
 	{
 		$params = $this->getParams();
 
-		return Worker::j3() && $params->get('btnGroup', false);
+		return $params->get('btnGroup', false);
 	}
 
 	/**

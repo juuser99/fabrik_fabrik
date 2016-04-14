@@ -39,7 +39,6 @@ class FabrikViewFusionchart extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$j3 = Worker::j3();
 		$srcs = Html::framework();
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 		$srcs['AdvancedSearch'] = 'media/com_fabrik/js/advanced-search.js';
@@ -75,8 +74,7 @@ class FabrikViewFusionchart extends JViewLegacy
 		$this->filters = $this->get('Filters');
 		$this->showFilters = $model->showFilters();
 		$this->filterFormURL = $this->get('FilterFormURL');
-		$tpl = $j3 ? 'bootstrap' : 'default';
-		$tpl = $params->get('fusionchart_layout', $tpl);
+		$tpl = $params->get('fusionchart_layout', 'bootstrap');
 		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/' . $tpl);
 
 		Html::stylesheetFromPath('plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/' . $tpl . '/template.css');

@@ -41,7 +41,6 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 	{
 		$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$input = $this->app->input;
-		$j3 = Worker::j3();
 
 		// Need to render() with all element ids in case canEditRow plugins etc. use the row data.
 		$elids = $input->get('elementid', array(), 'array');
@@ -56,7 +55,7 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 		// Main trigger element's id
 		$elementId = $input->getInt('elid');
 
-		$html = $j3 ? $this->inlineEditMarkUp() : $this->inlineEditMarkupJ25();
+		$html = $this->inlineEditMarkUp();
 		echo implode("\n", $html);
 
 		$srcs = array();
@@ -145,67 +144,6 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 			$html[] = '</div>';
 		}
 
-		$html[] = '</div>';
-
-		return $html;
-	}
-
-	/**
-	 * Create markup for old school 2.5 inline editor
-	 *
-	 * @since   3.1b
-	 *
-	 * @return  array
-	 */
-	protected function inlineEditMarkupJ25()
-	{
-		$input = $this->app->input;
-
-		$html = array();
-		$html[] = '<div class="floating-tip-wrapper inlineedit" style="position:absolute">';
-		$html[] = '<div class="floating-tip" >';
-		$html[] = '<ul class="fabrikElementContainer">';
-
-		foreach ($this->groups as $group)
-		{
-			foreach ($group->elements as $element)
-			{
-				$html[] = '<li class="' . $element->id . '">' . $element->label . '</li>';
-				$html[] = '<li class="fabrikElement">';
-				$html[] = $element->element;
-				$html[] = '</li>';
-			}
-		}
-
-		$html[] = '</ul>';
-		$thisTmpl = isset($this->tmpl) ? $this->tmpl : '';
-
-		if ($input->getBool('inlinesave') || $input->getBool('inlinecancel'))
-		{
-			$html[] = '<ul class="">';
-
-			if ($input->getBool('inlinecancel') == true)
-			{
-				$html[] = '<li class="ajax-controls inline-cancel">';
-				$html[] = '<a href="#" class="">';
-				$html[] = Html::image('delete.png', 'list', $thisTmpl, array('alt' => Text::_('COM_FABRIK_CANCEL')));
-				$html[] = '<span>' . Text::_('COM_FABRIK_CANCEL') . '</span></a>';
-				$html[] = '</li>';
-			}
-
-			if ($input->getBool('inlinesave') == true)
-			{
-				$html[] = '<li class="ajax-controls inline-save">';
-				$html[] = '<a href="#" class="">';
-				$html[] = Html::image('save.png', 'list', $thisTmpl, array('alt' => Text::_('COM_FABRIK_SAVE')));
-				$html[] = '<span>' . Text::_('COM_FABRIK_SAVE') . '</span></a>';
-				$html[] = '</li>';
-			}
-
-			$html[] = '</ul>';
-		}
-
-		$html[] = '</div>';
 		$html[] = '</div>';
 
 		return $html;

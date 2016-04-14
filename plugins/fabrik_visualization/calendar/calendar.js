@@ -28,7 +28,6 @@ var fabrikCalendar = new Class({
 		},
 		monthday: {'width': 90, 'height': 120},
 		restFilterStart: 'na',
-		j3: false,
 		showFullDetails: false,
 		readonly: false,
 		readonlyMonth: false,
@@ -147,99 +146,66 @@ var fabrikCalendar = new Class({
 		if (opts.view === 'monthView') {
 			style.width -= 1;
 		}
-		if (this.options.j3) {
-			buttons = '';
-			
-			if (entry._canDelete) {
-				buttons += this.options.buttons.del;
-			}
-			
-			if (entry._canEdit && !this.options.readonly) {
-				buttons += this.options.buttons.edit;
-			}
-			
-			if (entry._canView) {
-				buttons += this.options.buttons.view;
-			}
-			
-			replace = {start: Date.parse(entry.startdate_locale).format(this.options.timeFormat), end: Date.parse(entry.enddate_locale).format(this.options.timeFormat)};
-			dataContent = Joomla.JText._('PLG_VISUALIZATION_CALENDAR_EVENT_START_END').substitute(replace);
-			
-			if (buttons !== '') {
-				dataContent += '<hr /><div class=\"btn-group\" style=\"text-align:center;display:block\">' + buttons + '</div>';
-			}
-			
-			eventCont = new Element('a', {
-				'class': 'fabrikEvent label ' + entry.status,
-				'id': id,
-				'styles': style,
-				'rel': 'popover',
-				'data-original-title': label + '<button class="close" data-popover="' + id + '">&times;</button>',
-				'data-content': dataContent,
-				'data-placement': 'top',
-				'data-html': 'true',
-				'data-trigger' : 'click'
-			});
-			
-			if (this.options.showFullDetails) {
-				eventCont.set('data-task', 'viewCalEvent');
-			} else {
-				if (typeof(jQuery) !== 'undefined') {
-					jQuery(eventCont).popover();
-					eventCont.addEvent('click', function (e) {
-						this.popOver = eventCont;
-					}.bind(this));
-					
-					// Ensure new form doesn't open when we double click on the event.
-					eventCont.addEvent('dblclick', function (e) {
-						e.stop();
-					}.bind(this));
-				}
-			}
+		buttons = '';
+
+		if (entry._canDelete) {
+			buttons += this.options.buttons.del;
+		}
+
+		if (entry._canEdit && !this.options.readonly) {
+			buttons += this.options.buttons.edit;
+		}
+
+		if (entry._canView) {
+			buttons += this.options.buttons.view;
+		}
+
+		replace = {start: Date.parse(entry.startdate_locale).format(this.options.timeFormat), end: Date.parse(entry.enddate_locale).format(this.options.timeFormat)};
+		dataContent = Joomla.JText._('PLG_VISUALIZATION_CALENDAR_EVENT_START_END').substitute(replace);
+
+		if (buttons !== '') {
+			dataContent += '<hr /><div class=\"btn-group\" style=\"text-align:center;display:block\">' + buttons + '</div>';
+		}
+
+		eventCont = new Element('a', {
+			'class': 'fabrikEvent label ' + entry.status,
+			'id': id,
+			'styles': style,
+			'rel': 'popover',
+			'data-original-title': label + '<button class="close" data-popover="' + id + '">&times;</button>',
+			'data-content': dataContent,
+			'data-placement': 'top',
+			'data-html': 'true',
+			'data-trigger' : 'click'
+		});
+
+		if (this.options.showFullDetails) {
+			eventCont.set('data-task', 'viewCalEvent');
 		} else {
-			eventCont = new Element('div', {
-				'class': 'fabrikEvent label',
-				'id': id,
-				'styles': style
-			});
-			if (this.options.showFullDetails) {
-				eventCont.set('data-task', 'viewCalEvent');
-			} else {
-				eventCont.addEvent('mouseenter', function (e) {
-					this.doPopupEvent(e, entry, label);
+			if (typeof(jQuery) !== 'undefined') {
+				jQuery(eventCont).popover();
+				eventCont.addEvent('click', function (e) {
+					this.popOver = eventCont;
+				}.bind(this));
+
+				// Ensure new form doesn't open when we double click on the event.
+				eventCont.addEvent('dblclick', function (e) {
+					e.stop();
 				}.bind(this));
 			}
 		}
 
-		if (entry.link !== '' && this.options.readonly === false && this.options.j3 === false) {
-			x = new Element('a', {'href': entry.link, 'class': 'fabrikEditEvent',
+		if (entry.custom) {
+			label = label === '' ? 'click' : label;
+			x = new Element('a', {'href': entry.link,
 				'events': {
-				'click': function (e) {
-						Fabrik.fireEvent('fabrik.viz.calendar.event', [e]);
-						if (!entry.custom) {
-							e.stop();
-							var o = {};
-							var i = e.target.getParent('.fabrikEvent').id.replace('fabrikEvent_', '').split('_');
-							o.rowid = i[1];
-							o.listid = i[0];
-							this.addEvForm(o);
+					'click': function (e) {
+							Fabrik.fireEvent('fabrik.viz.calendar.event', [e]);
 						}
-					}.bind(this)
-			}
+				}
 			}).set('html', label);
 		} else {
-			if (entry.custom) {
-				label = label === '' ? 'click' : label;
-				x = new Element('a', {'href': entry.link,
-					'events': {
-						'click': function (e) {
-								Fabrik.fireEvent('fabrik.viz.calendar.event', [e]);
-							}
-					}
-				}).set('html', label);
-			} else {
-				x = new Element('span').set('html', label);
-			}
+			x = new Element('span').set('html', label);
 		}
 		eventCont.adopt(x);
 		return eventCont;
