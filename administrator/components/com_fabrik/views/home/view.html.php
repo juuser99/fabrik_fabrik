@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 
@@ -57,8 +58,8 @@ class FabrikAdminViewHome extends JViewLegacy
 		$this->logs = $db->loadObjectList();
 		$this->feed = $this->get('RSSFeed');
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu('home');
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::addSubmenu('home');
+		Admin::setViewLayout($this);
 		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
@@ -72,8 +73,7 @@ class FabrikAdminViewHome extends JViewLegacy
 
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo = FabrikAdminHelper::getActions();
+		$canDo = Admin::getActions();
 
 		if ($canDo->get('core.admin'))
 		{

@@ -37,7 +37,6 @@ class FabrikAdminController extends JControllerLegacy
 	public function display($cachable = false, $urlparams = false)
 	{
 		$this->default_view = 'home';
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		parent::display();
 	}
 

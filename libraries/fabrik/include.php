@@ -89,9 +89,8 @@ class FabrikAutoloader
 		}
 
 		$class = str_replace('\\', '/', $class);
-		$file  = explode('/', $class);
-		$file  = strtolower(array_pop($file));
-		$path  = JPATH_SITE . '/components/com_fabrik/helpers/' . $file . '.php';
+		$class = str_replace('Fabrik/Helpers', '', $class);
+		$path  = JPATH_SITE . '/components/com_fabrik/helpers/' . $class . '.php';
 
 		require_once $path;
 	}

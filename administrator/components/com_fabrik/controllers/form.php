@@ -12,8 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Worker;
-use \Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.controllerform');
@@ -99,7 +99,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 			echo preg_replace($search, $replacement, $contents);
 		}
 
-		FabrikAdminHelper::addSubmenu($input->get('view', 'lists', 'word'));
+		Admin::addSubmenu($input->get('view', 'lists', 'word'));
 	}
 
 	/**

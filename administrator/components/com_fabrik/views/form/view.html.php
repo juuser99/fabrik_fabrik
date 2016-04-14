@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 
@@ -76,7 +77,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		}
 
 		$this->addToolbar();
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::setViewLayout($this);
 
 		// Set up the script shim
 		$shim                        = array();
@@ -122,7 +123,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		$userId     = $user->get('id');
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo      = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo      = Admin::getActions($this->state->get('filter.category_id'));
 		$title      = $isNew ? Text::_('COM_FABRIK_MANAGER_FORM_NEW') : Text::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "'
 			. Text::_($this->item->label) . '"';
 		JToolBarHelper::title($title, 'file-2');
@@ -198,7 +199,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		$this->state = $this->get('State');
 		$input       = $app->input;
 		$input->set('hidemainmenu', true);
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Admin::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
 
 		// For new records, check the create permission.

@@ -16,8 +16,8 @@ require_once 'fabmodeladmin.php';
 
 // Tmp fix until https://issues.joomla.org/tracker/joomla-cms/7378 is available (should be Joomla 3.5.0)
 require JPATH_COMPONENT_ADMINISTRATOR . '/models/databaseimporter.php';
-require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/contenttype.php';
 
+use Fabrik\Helpers\Admin\ContentType;
 use Fabrik\Helpers\ArrayHelper;
 use \Joomla\Registry\Registry;
 use Fabrik\Helpers\Html;
@@ -188,9 +188,9 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 		foreach ($groups as $group)
 		{
 			$groupData           = array();
-			$groupData           = FabrikContentTypHelper::domNodeAttributesToArray($group, $groupData);
+			$groupData           = ContentType::domNodeAttributesToArray($group, $groupData);
 			$groupData           = $w->parseMessageForPlaceHolder($groupData, $jForm);
-			$groupData['params'] = FabrikContentTypHelper::nodeParams($group);
+			$groupData['params'] = ContentType::nodeParams($group);
 			$this->mapGroupACL($groupData);
 
 			$isJoin   = ArrayHelper::getValue($groupData, 'is_join', false);
@@ -202,7 +202,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 
 			foreach ($elements as $element)
 			{
-				$elementData = FabrikContentTypHelper::domNodeAttributesToArray($element);
+				$elementData = ContentType::domNodeAttributesToArray($element);
 
 				if (array_key_exists('id', $elementData))
 				{
@@ -210,7 +210,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 					unset($elementData['id']);
 				}
 
-				$elementData['params']   = json_encode(FabrikContentTypHelper::nodeParams($element));
+				$elementData['params']   = json_encode(ContentType::nodeParams($element));
 				$elementData['group_id'] = $groupId;
 				$this->mapElementACL($elementData);
 				$name          = (string) $element->getAttribute('name');
@@ -417,8 +417,8 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 		{
 			$newGroupId = $this->groupMap[(string) $join->getAttribute('group_id')];
 			$join->setAttribute('group_id', $newGroupId);
-			$joinData           = FabrikContentTypHelper::domNodeAttributesToArray($join);
-			$joinData['params'] = json_encode(FabrikContentTypHelper::nodeParams($join));
+			$joinData           = ContentType::domNodeAttributesToArray($join);
+			$joinData['params'] = json_encode(ContentType::nodeParams($join));
 			unset($joinData['list_id']);
 
 			// Internally generated repeat groups should have their join table name updated
@@ -446,8 +446,8 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 			$newGroupId   = $this->groupMap[(string) $join->getAttribute('group_id')];
 			$join->setAttribute('group_id', $newGroupId);
 			$join->setAttribute('element_id', $newId);
-			$joinData           = FabrikContentTypHelper::domNodeAttributesToArray($join);
-			$joinData['params'] = json_encode(FabrikContentTypHelper::nodeParams($join));
+			$joinData           = ContentType::domNodeAttributesToArray($join);
+			$joinData['params'] = json_encode(ContentType::nodeParams($join));
 			$joinTable          = FabTable::getInstance('Join', 'FabrikTable');
 			$joinTable->save($joinData);
 			$this->joinIds[] = $joinTable->get('id');
@@ -581,8 +581,8 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 		foreach ($groups as $group)
 		{
 			$groupData           = array();
-			$groupData           = FabrikContentTypHelper::domNodeAttributesToArray($group, $groupData);
-			$groupData['params'] = FabrikContentTypHelper::nodeParams($group);
+			$groupData           = ContentType::domNodeAttributesToArray($group, $groupData);
+			$groupData['params'] = ContentType::nodeParams($group);
 			$groupModel          = JModelLegacy::getInstance('Group', 'FabrikFEModel');
 			$groupTable          = FabTable::getInstance('Group', 'FabrikTable');
 			$groupTable->bind($groupData);
@@ -593,8 +593,8 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 
 			foreach ($elements as $element)
 			{
-				$elementData                  = FabrikContentTypHelper::domNodeAttributesToArray($element);
-				$elementData['params']        = FabrikContentTypHelper::nodeParams($element);
+				$elementData                  = ContentType::domNodeAttributesToArray($element);
+				$elementData['params']        = ContentType::nodeParams($element);
 				$elementModel                 = clone($pluginManager->loadPlugIn($elementData['plugin'], 'element'));
 				$elementModel->element        = $elementModel->getDefaultProperties($elementData);
 				$elementModel->element->name  = $elementData['name'];
@@ -799,13 +799,13 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 
 		foreach ($importGroups as $importGroup)
 		{
-			$group                           = FabrikContentTypHelper::domNodeAttributesToArray($importGroup);
+			$group                           = ContentType::domNodeAttributesToArray($importGroup);
 			$contentTypeGroups[$group['id']] = $group;
 		}
 
 		foreach ($importViewLevels as $importViewLevel)
 		{
-			$viewLevel = FabrikContentTypHelper::domNodeAttributesToArray($importViewLevel);
+			$viewLevel = ContentType::domNodeAttributesToArray($importViewLevel);
 			$rules     = json_decode($viewLevel['rules']);
 
 			foreach ($rules as &$rule)

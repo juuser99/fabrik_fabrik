@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Html;
-use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
@@ -72,9 +72,9 @@ class FabrikAdminViewCrons extends JViewLegacy
 			throw new RuntimeException(implode("\n", $errors), 500);
 		}
 
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::setViewLayout($this);
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
+		Admin::addSubmenu($input->getWord('view', 'lists'));
 		$this->sidebar = JHtmlSidebar::render();
 
 		Html::iniRequireJS();
@@ -91,8 +91,7 @@ class FabrikAdminViewCrons extends JViewLegacy
 
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Admin::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_CRONS'), 'clock');
 		JToolBarHelper::custom('crons.run', 'upload.png', 'upload_f2.png', 'Run');
 

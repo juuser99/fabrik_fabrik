@@ -16,8 +16,8 @@ require_once 'fabmodeladmin.php';
 
 // Tmp fix until https://issues.joomla.org/tracker/joomla-cms/7378 is merged
 require JPATH_COMPONENT_ADMINISTRATOR . '/models/databaseexporter.php';
-require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/contenttype.php';
 
+use Fabrik\Helpers\Admin\ContentType;
 use Fabrik\Helpers\ArrayHelper;
 use \Joomla\Registry\Registry;
 use Fabrik\Helpers\Worker;
@@ -216,7 +216,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 		$this->listModel = $formModel->getListModel();
 		$mainTable       = $this->listModel->getTable()->get('db_table_name');
 		$contentType     = $this->doc->createElement('contenttype');
-		$tables          = FabrikContentTypHelper::iniTableXML($this->doc, $mainTable);
+		$tables          = ContentType::iniTableXML($this->doc, $mainTable);
 
 		$label = JFile::makeSafe($formModel->getForm()->get('label'));
 		$name  = $this->doc->createElement('name', $label);
@@ -285,7 +285,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 	{
 		$tableParams = array('table_join', 'join_from_table');
 
-		$group = FabrikContentTypHelper::buildExportNode($this->doc, 'group', $data);
+		$group = ContentType::buildExportNode($this->doc, 'group', $data);
 
 		if ($data['is_join'] === '1')
 		{
@@ -300,7 +300,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 				}
 			}
 
-			$groupJoin = FabrikContentTypHelper::buildExportNode($this->doc, 'join', $join->getProperties(), array('id'));
+			$groupJoin = ContentType::buildExportNode($this->doc, 'join', $join->getProperties(), array('id'));
 			$group->appendChild($groupJoin);
 		}
 
@@ -339,7 +339,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 			}
 		};
 
-		$element       = FabrikContentTypHelper::buildExportNode($this->doc, 'element', $data);
+		$element       = ContentType::buildExportNode($this->doc, 'element', $data);
 		$pluginManager = Worker::getPluginManager();
 		$elementModel  = clone($pluginManager->getPlugIn($data['plugin'], 'element'));
 
@@ -347,7 +347,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 		{
 			$join = FabTable::getInstance('Join', 'FabrikTable');
 			$join->load(array('element_id' => $data['id']));
-			$elementJoin = FabrikContentTypHelper::buildExportNode($this->doc, 'join', $join->getProperties(), array('id'));
+			$elementJoin = ContentType::buildExportNode($this->doc, 'join', $join->getProperties(), array('id'));
 			$element->appendChild($elementJoin);
 		}
 
@@ -397,7 +397,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 
 		foreach ($rows as $row)
 		{
-			$viewLevel = FabrikContentTypHelper::buildExportNode($this->doc, 'viewlevel', $row);
+			$viewLevel = ContentType::buildExportNode($this->doc, 'viewlevel', $row);
 			$viewLevels->appendChild($viewLevel);
 		}
 
@@ -516,7 +516,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 	{
 		$contentType = $this->doc->createElement('contenttype');
 		$mainTable   = $this->listModel->getTable()->get('db_table_name');
-		$tables      = FabrikContentTypHelper::iniTableXML($this->doc, $mainTable);
+		$tables      = ContentType::iniTableXML($this->doc, $mainTable);
 		$name        = $this->doc->createElement('name', 'tmp');
 		$contentType->appendChild($name);
 		$contentType->appendChild($this->createFabrikGroupXML($groupData, $elements, $tables));

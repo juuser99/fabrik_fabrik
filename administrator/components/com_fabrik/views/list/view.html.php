@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
@@ -114,7 +115,7 @@ class FabrikAdminViewList extends JViewLegacy
 			$this->group_by = $formModel->getElementList('group_by', $this->item->group_by, true, false, false);
 		}
 
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::setViewLayout($this);
 
 		$srcs                  = Html::framework();
 		$srcs['Fabrik']        = Html::mediaFile('fabrik.js');
@@ -230,7 +231,7 @@ class FabrikAdminViewList extends JViewLegacy
 		$this->state = $this->get('State');
 		$input       = $app->input;
 		$input->set('hidemainmenu', true);
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Admin::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
 
 		// For new records, check the create permission.
@@ -255,7 +256,7 @@ class FabrikAdminViewList extends JViewLegacy
 		$userId     = $user->get('id');
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo      = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo      = Admin::getActions($this->state->get('filter.category_id'));
 		$title      = $isNew ? Text::_('COM_FABRIK_MANAGER_LIST_NEW') : Text::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'list');
 

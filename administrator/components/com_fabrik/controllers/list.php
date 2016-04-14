@@ -12,6 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Text;
 
@@ -154,7 +155,7 @@ class FabrikAdminControllerList extends FabControllerForm
 			$cache->get($view, 'display', $cacheId);
 		}
 
-		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
+		Admin::addSubmenu($input->getWord('view', 'lists'));
 	}
 
 	/**

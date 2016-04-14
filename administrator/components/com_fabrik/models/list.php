@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once 'fabmodeladmin.php';
 
+use Fabrik\Helpers\Admin\Admin;
 use \Joomla\Registry\Registry;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
@@ -743,9 +744,9 @@ class FabrikAdminModelList extends FabModelAdmin
 			}
 		}
 
-		$row->set('publish_down', FabrikAdminHelper::prepareSaveDate($row->get('publish_down')));
-		$row->set('created', FabrikAdminHelper::prepareSaveDate($row->get('created')));
-		$row->set('publish_up', FabrikAdminHelper::prepareSaveDate($row->get('publish_up')));
+		$row->set('publish_down', Admin::prepareSaveDate($row->get('publish_down')));
+		$row->set('created', Admin::prepareSaveDate($row->get('created')));
+		$row->set('publish_up', Admin::prepareSaveDate($row->get('publish_up')));
 		$pk = ArrayHelper::getValue($data, 'db_primary_key');
 
 		if ($pk == '')

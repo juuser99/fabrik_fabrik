@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 
@@ -93,7 +94,7 @@ class FabrikAdminViewElement extends JViewLegacy
 
 		$this->addToolbar();
 		$this->parent = $model->getParent();
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::setViewLayout($this);
 		Text::script('COM_FABRIK_ERR_ELEMENT_JS_ACTION_NOT_DEFINED');
 
 		$srcs = Html::framework();
@@ -172,7 +173,7 @@ class FabrikAdminViewElement extends JViewLegacy
 		$userId = $user->get('id');
 		$isNew = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Admin::getActions($this->state->get('filter.category_id'));
 		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_ELEMENT_NEW') : Text::_('COM_FABRIK_MANAGER_ELEMENT_EDIT') . ' "' . $this->item->name . '"';
 		JToolBarHelper::title($title, 'checkbox-unchecked');
 

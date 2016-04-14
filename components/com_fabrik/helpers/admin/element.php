@@ -9,6 +9,8 @@
  * @since       3.0
  */
 
+namespace Fabrik\Helpers\Admin;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -18,8 +20,7 @@ defined('_JEXEC') or die('Restricted access');
  * @package  Fabrik
  * @since    3.0
  */
-
-class FabrikAdminElementHelper
+class Element
 {
 	/**
 	 * Get html id

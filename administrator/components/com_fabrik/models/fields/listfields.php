@@ -12,6 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Element;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
@@ -370,8 +371,8 @@ class JFormFieldListfields extends JFormFieldList
 
 		$connection        = $this->getAttribute('connection');
 		$repeat            = Worker::toBoolean($this->getAttribute('repeat', false), false);
-		$repeat            = FabrikAdminElementHelper::getRepeat($this) || $repeat;
-		$c                 = (int) FabrikAdminElementHelper::getRepeatCounter($this);
+		$repeat            = Element::getRepeat($this) || $repeat;
+		$c                 = (int) Element::getRepeatCounter($this);
 		$mode              = $this->getAttribute('mode');
 		$connectionDd      = $repeat ? $connection . '-' . $c : $connection;
 		$highlightPk       = Worker::toBoolean($this->getAttribute('highlightpk', false), false);

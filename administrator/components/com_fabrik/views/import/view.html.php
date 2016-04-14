@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
@@ -35,7 +36,7 @@ class FabrikAdminViewImport extends JViewLegacy
 	{
 		$this->form = $this->get('Form');
 		$this->addToolBar();
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::setViewLayout($this);
 		parent::display($tpl);
 	}
 

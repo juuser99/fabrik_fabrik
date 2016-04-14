@@ -80,7 +80,7 @@
 
 			<field name="intro"
 				type="editor"
-				filter="FabrikAdminHelper::filterText"
+				filter="Fabrik\Helpers\Admin\Admin::filterText"
 				rows="6"
 				cols="20"
 				label="COM_FABRIK_FIELD_GROUP_INTRO_LABEL"
@@ -88,7 +88,7 @@
 
 			<field name="outro"
 				type="editor"
-				filter="FabrikAdminHelper::filterText"
+				filter="Fabrik\Helpers\Admin\Admin::filterText"
 				rows="6"
 				cols="20"
 				label="COM_FABRIK_FIELD_GROUP_OUTRO_LABEL"

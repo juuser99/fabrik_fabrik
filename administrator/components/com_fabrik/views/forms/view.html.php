@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Html;
-use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.view');
@@ -75,8 +75,8 @@ class FabrikAdminViewForms extends JViewLegacy
 		}
 
 		$this->addToolbar();
-		FabrikAdminHelper::setViewLayout($this);
-		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
+		Admin::setViewLayout($this);
+		Admin::addSubmenu($input->getWord('view', 'lists'));
 		$this->sidebar = JHtmlSidebar::render();
 
 		Html::iniRequireJS();
@@ -91,8 +91,7 @@ class FabrikAdminViewForms extends JViewLegacy
 
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Admin::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_FORMS'), 'file-2');
 
 		if ($canDo->get('core.create'))

@@ -9,10 +9,13 @@
  * @since       3.5
  */
 
+namespace Fabrik\Helpers\Admin;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use \stdClass;
 
 /**
  * Fabrik Content Type Helper
@@ -21,13 +24,13 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik
  * @since       3.5
  */
-class FabrikContentTypHelper
+class ContentType
 {
 	/**
 	 * Convert a DOM node's properties into an array
 	 *
-	 * @param   DOMElement $node
-	 * @param   array      $data
+	 * @param   \DOMElement $node
+	 * @param   array       $data
 	 *
 	 * @return array
 	 */
@@ -47,7 +50,7 @@ class FabrikContentTypHelper
 	/**
 	 * Create a params object based on a XML dom node.
 	 *
-	 * @param   DOMElement $node
+	 * @param   \DOMElement $node
 	 *
 	 * @return stdClass
 	 */
@@ -90,12 +93,12 @@ class FabrikContentTypHelper
 	 * Create an export node presuming that the array has a params property which should be split into a child
 	 * node
 	 *
-	 * @param   DomDocument $doc
-	 * @param   string      $nodeName
-	 * @param   array       $data
-	 * @param   array       $ignore Array of keys to ignore when creating attributes
+	 * @param   \DomDocument $doc
+	 * @param   string       $nodeName
+	 * @param   array        $data
+	 * @param   array        $ignore Array of keys to ignore when creating attributes
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
 	 */
 	public static function buildExportNode($doc, $nodeName, $data,
 		$ignore = array('created_by', 'created_by_alias', 'group_id', 'modified', 'modified_by',
@@ -148,10 +151,10 @@ class FabrikContentTypHelper
 	 * Add the source list name. Needed on import for mapping join table info from
 	 * source main table to target main table
 	 *
-	 * @param   DomDocument $doc
-	 * @param   string      $mainTable
+	 * @param   \DomDocument $doc
+	 * @param   string       $mainTable
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
 	 */
 	public static function iniTableXML($doc, $mainTable)
 	{

@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 
@@ -75,7 +76,7 @@ class FabrikAdminViewVisualization extends JViewLegacy
 		}
 
 		$this->addToolbar();
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::setViewLayout($this);
 
 		$source                       = Html::framework();
 		$source['Fabrik']             = Html::mediaFile('fabrik.js');
@@ -118,7 +119,7 @@ class FabrikAdminViewVisualization extends JViewLegacy
 		$userId       = $user->get('id');
 		$checkedOutBy = $this->item->get('checked_out');
 		$checkedOut   = !($checkedOutBy == 0 || $checkedOutBy == $user->get('id'));
-		$canDo        = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo        = Admin::getActions($this->state->get('filter.category_id'));
 		$title        = $isNew ? Text::_('COM_FABRIK_MANAGER_VISUALIZATION_NEW') : Text::_('COM_FABRIK_MANAGER_VISUALIZATION_EDIT');
 		$title .= $isNew ? '' : ' "' . $this->item->get('label') . '"';
 		JToolBarHelper::title($title, 'chart');

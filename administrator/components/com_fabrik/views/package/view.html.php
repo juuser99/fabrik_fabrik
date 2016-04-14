@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Admin\Admin;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
@@ -117,7 +118,7 @@ class FabrikAdminViewPackage extends JViewLegacy
 		$this->selFormOpts = $model->getSelFormOpts();
 		$this->selListOpts = $model->getSelListOpts();
 
-		FabrikAdminHelper::setViewLayout($this);
+		Admin::setViewLayout($this);
 		parent::display($tpl);
 	}
 
@@ -137,7 +138,7 @@ class FabrikAdminViewPackage extends JViewLegacy
 		$userId = $user->get('id');
 		$isNew = ($this->item->id == 0);
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = Admin::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title($isNew ? Text::_('COM_FABRIK_MANAGER_PACKAGE_NEW') : Text::_('COM_FABRIK_MANAGER_PACKAGE_EDIT') . ' "' . $this->item->label . '"', 'box-add');
 
 		if ($isNew)

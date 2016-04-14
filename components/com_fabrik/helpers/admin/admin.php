@@ -9,12 +9,21 @@
  * @since       1.6
  */
 
+namespace Fabrik\Helpers\Admin;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
+use Joomla\Registry\Registry;
+use \JVersion;
+use \JFilterInput;
+use \JAccess;
+use \JFactory;
+use \JComponentHelper;
+use \JHtmlSidebar;
 
 /**
  * Fabrik Component Helper
@@ -23,40 +32,39 @@ use Fabrik\Helpers\Text;
  * @subpackage  Fabrik
  * @since       1.5
  */
-class FabrikAdminHelper
+class Admin
 {
 	/**
 	 * Prepare the date for saving
 	 * DATES SHOULD BE SAVED AS UTC
 	 *
-	 * @param   string  $strdate  publish down date
+	 * @param   string  $strDate  publish down date
 	 *
 	 * @return  string
 	 */
-
-	public static function prepareSaveDate($strdate)
+	public static function prepareSaveDate($strDate)
 	{
 		$config = JFactory::getConfig();
-		$tzoffset = $config->get('offset');
+		$tzOffset = $config->get('offset');
 		$db = Worker::getDbo(true);
 
-		// Handle never unpublish date
-		if (trim($strdate) == Text::_('Never') || trim($strdate) == '' || trim($strdate) == $db->getNullDate())
+		// Handle never un-publish date
+		if (trim($strDate) == Text::_('Never') || trim($strDate) == '' || trim($strDate) == $db->getNullDate())
 		{
-			$strdate = $db->getNullDate();
+			$strDate = $db->getNullDate();
 		}
 		else
 		{
-			if (StringHelper::strlen(trim($strdate)) <= 10)
+			if (StringHelper::strlen(trim($strDate)) <= 10)
 			{
-				$strdate .= ' 00:00:00';
+				$strDate .= ' 00:00:00';
 			}
 
-			$date = JFactory::getDate($strdate, $tzoffset);
-			$strdate = $date->toSql();
+			$date = JFactory::getDate($strDate, $tzOffset);
+			$strDate = $date->toSql();
 		}
 
-		return $strdate;
+		return $strDate;
 	}
 
 	/**
@@ -66,13 +74,12 @@ class FabrikAdminHelper
 	 *
 	 * @since	1.6
 	 *
-	 * @return	JObject
+	 * @return	Registry;
 	 */
-
 	public static function getActions($categoryId = 0)
 	{
 		$user = JFactory::getUser();
-		$result = new JObject;
+		$result = new Registry();
 
 		if (empty($categoryId))
 		{
@@ -102,7 +109,6 @@ class FabrikAdminHelper
 	 *
 	 * @return	void
 	 */
-
 	public static function addSubmenu($vName)
 	{
 		$vizUrl = 'index.php?option=com_fabrik&view=visualizations';
@@ -125,7 +131,6 @@ class FabrikAdminHelper
 	 *
 	 * @return  string  The filtered string
 	 */
-
 	public static function filterText($text)
 	{
 		// Filter settings
@@ -174,7 +179,7 @@ class FabrikAdminHelper
 			else
 			{
 				// Black or white list.
-				// Preprocess the tags and attributes.
+				// Pre-process the tags and attributes.
 				$tags = explode(',', $filterData->filter_tags);
 				$attributes = explode(',', $filterData->filter_attributes);
 				$tempTags = array();
@@ -259,11 +264,10 @@ class FabrikAdminHelper
 	 * Set the layout based on Joomla version
 	 * Allows for loading of new bootstrap admin templates in J3.0+
 	 *
-	 * @param   JView  &$view  current view to setLayout for
+	 * @param   \JView  &$view  current view to setLayout for
 	 *
 	 * @return  void
 	 */
-
 	public static function setViewLayout(&$view)
 	{
 		$v = new JVersion;
