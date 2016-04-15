@@ -8,11 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use \JFile;
+use \JFilterInput;
 
 /**
  * A cron task to run PHP code
@@ -21,8 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-
-class PlgFabrik_Cronphp extends PlgFabrik_Cron
+class Php extends Cron
 {
 	/**
 	 * Check if the user can use the active element
@@ -41,13 +42,12 @@ class PlgFabrik_Cronphp extends PlgFabrik_Cron
 	/**
 	 * Do the plugin action
 	 *
-	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
+	 * @param   array               &$data       array data to process
+	 * @param   \FabrikFEModelList  &$listModel  plugin's list model
 	 *
 	 * @return  int  number of records run, you can set this by setting the varaible $processed
 	 * in either your included script in php code.
 	 */
-
 	public function process(&$data, &$listModel)
 	{
 		$params = $this->getParams();

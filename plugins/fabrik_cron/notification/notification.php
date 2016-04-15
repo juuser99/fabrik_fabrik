@@ -8,14 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use \JFactory;
+use \JRoute;
 
 /**
  * A cron task to email records to a give set of users
@@ -24,8 +25,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.notification
  * @since       3.0
  */
-
-class PlgFabrik_Cronnotification extends PlgFabrik_Cron
+class Notification extends Cron
 {
 	/**
 	 * Check if the user can use the active element
@@ -48,7 +48,6 @@ class PlgFabrik_Cronnotification extends PlgFabrik_Cron
 	 *
 	 * @return number of records updated
 	 */
-
 	public function process(&$data)
 	{
 		$db = Worker::getDbo();

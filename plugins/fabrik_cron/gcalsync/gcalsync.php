@@ -9,14 +9,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use \Zend_Gdata_App_HttpException;
+use \Zend_Gdata_App_AuthException;
+use \Zend_Gdata_Calendar;
+use \JFactory;
+use \DateTimeZone;
+use \RuntimeException;
 
 /**
  * Fabrik Cron Job:
@@ -26,8 +31,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.gcalsync
  * @since       3.0
  */
-
-class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
+class Gcalsync extends Cron
 {
 	/**
 	 * Check if the user can use the plugin
@@ -91,7 +95,6 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			$gcal_user = $matches[1];
 			$gcal_visibility = $matches[2];
 			$gcal_projection = $matches[3];
-			$gcal_email = urldecode($gcal_user);
 
 			// Grab the table model and find table name and PK
 			$table = $listModel->getTable();
@@ -170,12 +173,10 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			if (!file_exists(JPATH_SITE . '/libraries/Zend/Loader.php'))
 			{
 				throw new RuntimeException('Please install the Zend gdata from library http://framework.zend.com/download/gdata', 500);
-
-				return;
 			}
 
 			require_once 'Zend/Loader.php';
-			Zend_Loader::loadClass('Zend_Gdata');
+			\Zend_Loader::loadClass('Zend_Gdata');
 			/*
 			require_once JPATH_SITE . '/libraries/Zend/Loader/Autoloader.php';echo 'found';
 			$autoloader = Zend_Loader_Autoloader::getInstance();
@@ -189,22 +190,22 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			 * Zend_Loader::loadClass('Zend_Gdata_AuthSub');
 			 * Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
 			 */
-			Zend_Loader::loadClass('Zend_Gdata_Calendar');
+			\Zend_Loader::loadClass('Zend_Gdata_Calendar');
 
 			// See if they want to sync to gcal, and provided a login
 			$gcal_sync_upload = $params->get('gcal_sync_upload_events', 'from');
 
 			if ($gcal_sync_upload == 'both' || $gcal_sync_upload == 'to')
 			{
-				Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
+				\Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
 				$email = $params->get('gcal_sync_login', '');
 				$passwd = $params->get('gcal_sync_passwd', '');
 
 				try
 				{
-					$client = Zend_Gdata_ClientLogin::getHttpClient($email, $passwd, 'cl');
+					$client = \Zend_Gdata_ClientLogin::getHttpClient($email, $passwd, 'cl');
 				}
-				catch (Zend_Gdata_App_CaptchaRequiredException $cre)
+				catch (\Zend_Gdata_App_CaptchaRequiredException $cre)
 				{
 					/*
 					echo 'URL of CAPTCHA image: ' . $cre->getCaptchaUrl() . "\n";
@@ -236,8 +237,6 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			$eventFeed = $gdataCal->getCalendarEventFeed($query);
 
 			// Build an array of the events from the feed, indexed by the Google ID
-			$event_ids = array();
-
 			foreach ($eventFeed as $key => $event)
 			{
 				$short_id = $this->_getGcalShortId($event->id->text);
@@ -388,11 +387,11 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 	/**
 	 * Format date for google
 	 *
-	 * @param   JDate  $date  Date
+	 * @param   \JDate  $date  Date
 	 *
 	 * @return string
 	 */
-	protected function formatDate(JDate $date)
+	protected function formatDate(\JDate $date)
 	{
 		$tzOffset = $date->format('P');
 

@@ -8,14 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use \RuntimeException;
+use \JFile;
+use \JUserHelper;
+use \JFactory;
 
 /**
  * A cron task to import gmail emails into a specified list
@@ -24,14 +27,13 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.gmail
  * @since       3.0.7
  */
-
-class PlgFabrik_Crongmail extends PlgFabrik_Cron
+class Gmail extends Cron
 {
 	/**
 	 * Do the plugin action
 	 *
-	 * @param   array   &$data       Data
-	 * @param   JModel  &$listModel  List model
+	 * @param   array               &$data       Data
+	 * @param   \FabrikFEModelList  &$listModel  List model
 	 *
 	 * @return  int  number of records updated
 	 */
@@ -49,38 +51,33 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 		}
 
 		$server = $params->get('plugin-options.server', '{imap.gmail.com:993/imap/ssl}');
-		$inboxes = explode(',', $params->get('plugin-options.inboxes', 'INBOX'));
-
+		$inBoxes = explode(',', $params->get('plugin-options.inboxes', 'INBOX'));
 		$deleteMail = false;
-		$p = new stdClass;
 
 		$fromField = $params->get('plugin-options.from');
 		$titleField = $params->get('plugin-options.title');
 		$dateField = $params->get('plugin-options.date');
 		$contentField = $params->get('plugin-options.content');
-
-		$storeData = array();
 		$numProcessed = 0;
 
-		foreach ($inboxes as $inbox)
+		foreach ($inBoxes as $inbox)
 		{
 			$url = $server . $inbox;
-			$mbox = imap_open($url, $email, $pw);
+			$mailBox = imap_open($url, $email, $pw);
 
-			if (!$mbox)
+			if (!$mailBox)
 			{
 				throw new RuntimeException(Text::_("PLG_CRON_GMAIL_ERROR_CONNECT") . imap_last_error());
-				continue;
 			}
 
-			$MC = imap_check($mbox);
-			$mailboxes = imap_list($mbox, $server, '*');
-			$lastid = $params->get('plugin-options.lastid', 0);
+			$MC = imap_check($mailBox);
+			$mailboxes = imap_list($mailBox, $server, '*');
+			$lastId = $params->get('plugin-options.lastid', 0);
 
-			if ($lastid == 0)
+			if ($lastId == 0)
 			{
-				$result = imap_fetch_overview($mbox, "1:$MC->Nmsgs");
-				echo $lastid;
+				$result = imap_fetch_overview($mailBox, "1:$MC->Nmsgs");
+				echo $lastId;
 
 				// Retrieve emails by message number
 				$mode = 0;
@@ -88,7 +85,7 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 			else
 			{
 				// Retrieve emails by message id;
-				$result = imap_fetch_overview($mbox, "$lastid:*", FT_UID);
+				$result = imap_fetch_overview($mailBox, "$lastId:*", FT_UID);
 
 				if (count($result) > 0)
 				{
@@ -96,15 +93,15 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 				}
 			}
 			// Fetch an overview for all messages in INBOX
-			// $result = imap_fetch_overview($mbox, "1:$lastid", $mode);
+			// $result = imap_fetch_overview($mailBox, "1:$lastId", $mode);
 
 			$numProcessed += count($result);
 
 			foreach ($result as $overview)
 			{
-				if ($overview->uid > $lastid)
+				if ($overview->uid > $lastId)
 				{
-					$lastid = $overview->uid;
+					$lastId = $overview->uid;
 				}
 
 				$content = '';
@@ -123,7 +120,7 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 				$date = JFactory::getDate();
 
 				$thisData['processed_date'] = $date->toSql();
-				$struct = imap_fetchstructure($mbox, $overview->msgno);
+				$struct = imap_fetchstructure($mailBox, $overview->msgno);
 				$parts = Create_Part_array($struct);
 
 				foreach ($parts as $part)
@@ -131,17 +128,17 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 					// Type 5 is image - full list here http://algorytmy.pl/doc/php/function.imap-fetchstructure.php
 					if ($part['part_object']->type == 5)
 					{
-						$filecontent = imap_fetchbody($mbox, $overview->msgno, $part['part_number']);
+						imap_fetchbody($mailBox, $overview->msgno, $part['part_number']);
 						$attachmentName = '';
-						$pname = 'parameters';
+						$pName = 'parameters';
 
 						if (is_object($part['part_object']->parameters))
 						{
 							// Can be in dparamenters instead?
-							$pname = 'dparameters';
+							$pName = 'dparameters';
 						}
 
-						$attarray = $part['part_object']->$pname;
+						$attarray = $part['part_object']->$pName;
 
 						if ($attarray[0]->value == "us-ascii" || $attarray[0]->value == "US-ASCII")
 						{
@@ -163,8 +160,8 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 							$name .= '-' . JUserHelper::genRandomPassword(5) . '.' . $ext;
 							$thisData['attachmentName'] = $name;
 							$thisData['imageFound'] = true;
-							$fileContent = imap_fetchbody($mbox, $overview->msgno, 2);
-							$thisData['imageBuffer'] = imap_base64($filecontent);
+							$fileContent = imap_fetchbody($mailBox, $overview->msgno, 2);
+							$thisData['imageBuffer'] = imap_base64($fileContent);
 						}
 					}
 					/*
@@ -178,12 +175,12 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 					 */
 
 					// Html
-					$content = @imap_fetchbody($mbox, $overview->msgno, 1.2);
+					$content = @imap_fetchbody($mailBox, $overview->msgno, 1.2);
 
 					if (strip_tags($content) == '')
 					{
 						// Plain text
-						$content = @imap_fetchbody($mbox, $overview->msgno, 1.1);
+						$content = @imap_fetchbody($mailBox, $overview->msgno, 1.1);
 					}
 
 					/*
@@ -205,7 +202,7 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 						if ($part['part_object']->type == 0)
 						{
 							// Multipart alternative
-							$content = @imap_fetchbody($mbox, $overview->msgno, 1);
+							$content = @imap_fetchbody($mailBox, $overview->msgno, 1);
 						}
 					}
 				}
@@ -221,7 +218,6 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 					$input->set($key, $val);
 				}
 
-				$formModel = $listModel->getForm();
 				unset($listModel->getFormModel()->formData);
 				$listModel->getFormModel()->process();
 
@@ -229,18 +225,21 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 
 				if ($deleteMail)
 				{
-					imap_delete($mbox, $overview->msgno);
+					imap_delete($mailBox, $overview->msgno);
 				}
 			}
 		}
 
-		$params->set('plugin-options.lastid', $lastid);
-		$this->_row->params = $params->toString();
-		$this->_row->store();
+		$params->set('plugin-options.lastid', $lastId);
+		$this->row->params = $params->toString();
+		$this->row->store();
 
-		imap_expunge($mbox);
-		imap_close($mbox);
-
+		if (isset($mailBox))
+		{
+			imap_expunge($mailBox);
+			imap_close($mailBox);
+		}
+		
 		return $numProcessed;
 	}
 
@@ -317,6 +316,7 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 
 function Create_Part_array($structure, $prefix = "")
 {
+	$part_array = array();
 	if (isset($structure->parts) && count($structure->parts) > 0)
 	{
 		// There some sub parts
@@ -374,7 +374,7 @@ function Add_Part_To_array($obj, $partno, &$part_array)
 		else
 		{
 			// Not sure if this is possible
-			$part_array[] = array('part_number' => $prefix . '.1', 'part_object' => $obj);
+			$part_array[] = array('part_number' =>  '.1', 'part_object' => $obj);
 		}
 	}
 	else

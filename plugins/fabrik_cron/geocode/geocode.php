@@ -8,14 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use \GeoCode as GMaps2GeoCode;
 
 require_once JPATH_SITE . '/plugins/fabrik_cron/geocode/libs/gmaps2.php';
 
@@ -26,8 +26,7 @@ require_once JPATH_SITE . '/plugins/fabrik_cron/geocode/libs/gmaps2.php';
  * @subpackage  Fabrik.cron.geocode
  * @since       3.0
  */
-
-class PlgFabrik_CronGeocode extends PlgFabrik_Cron
+class Geocode extends Cron
 {
 	/**
 	 * Check if the user can use the active element
@@ -57,12 +56,11 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 	/**
 	 * Do the plugin action
 	 *
-	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
+	 * @param   array               &$data       array data to process
+	 * @param   \FabrikFEModelList  &$listModel  plugin's list model
 	 *
 	 * @return  int  number of records run
 	 */
-
 	public function process(&$data, &$listModel)
 	{
 		$params = $this->getParams();
@@ -73,7 +71,6 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		// Grab the table model and find table name and PK
 		$table = $listModel->getTable();
 		$table_name = $table->db_table_name;
-		$primary_key = $table->db_primary_key;
 		$primary_key_element = StringHelper::shortColName($table->db_primary_key);
 		$primary_key_element_long = $table_name . '___' . $primary_key_element . '_raw';
 
@@ -114,7 +111,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 		$geocode_country_element = $geocode_country_element_long ? StringHelper::shortColName($geocode_country_element_long) : '';
 		$geocode_when = $params->get('geocode_when', '1');
 
-		$gmap = new GeoCode;
+		$gmap = new GMaps2GeoCode;
 
 		// Run through our table data
 		$total_encoded = 0;

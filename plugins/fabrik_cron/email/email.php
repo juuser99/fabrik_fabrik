@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use \JModelLegacy;
+use \JFactory;
 
 /**
  * A cron task to email records to a give set of users
@@ -25,8 +26,13 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.email
  * @since       3.0
  */
-class PlgFabrik_Cronemail extends PlgFabrik_Cron
+class Email extends Cron
 {
+	/**
+	 * @var string
+	 */
+	protected $log = '';
+
 	/**
 	 * Check if the user can use the plugin
 	 *
@@ -124,7 +130,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		if (!empty($updates) && trim($field) != '')
 		{
 			// Do any update found
-			/** @var FabrikFEModelList $listModel */
+			/** @var \FabrikFEModelList $listModel */
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();

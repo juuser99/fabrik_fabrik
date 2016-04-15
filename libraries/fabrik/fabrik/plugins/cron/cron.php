@@ -8,8 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use \JFactory;
+use \stdClass;
+use \JTable;
+use \FabTable;
 
 jimport('joomla.application.component.model');
 
@@ -21,7 +28,7 @@ jimport('joomla.application.component.model');
  * @since       3.0
  */
 
-class PlgFabrik_Cron extends FabrikPlugin
+class Cron extends \FabrikPlugin
 {
 	/**
 	 * Plugin item
@@ -88,7 +95,7 @@ class PlgFabrik_Cron extends FabrikPlugin
 	 * Only applicable to cron plugins but as there's no sub class for them
 	 * the methods here for now
 	 * Determines if the cron plug-in should be run - if require_qs is true
-	 * then fabrik_cron=1 needs to be in the querystring
+	 * then fabrik_cron=1 needs to be in the query string
 	 *
 	 * @return  bool
 	 */
@@ -108,7 +115,7 @@ class PlgFabrik_Cron extends FabrikPlugin
 
 		if (!$params->get('require_qs', false))
 		{
-			// Querystring not required so plugin should be activated
+			// Query string not required so plugin should be activated
 			return true;
 		}
 
@@ -142,11 +149,10 @@ class PlgFabrik_Cron extends FabrikPlugin
 	/**
 	 * Allow plugin to decide if it wants to be rescheduled
 	 *
-	 * @param   int  $c  plugin render order
+	 * @param   bool  $reschedule  Should we reschedule
 	 *
 	 * @return  bool
 	 */
-
 	public function shouldReschedule($reschedule = true)
 	{
 		if ($reschedule === false)

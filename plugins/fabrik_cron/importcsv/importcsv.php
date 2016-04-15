@@ -8,13 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Cron;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use \JModelLegacy;
+use \JFile;
+use \JFolder;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 require_once COM_FABRIK_FRONTEND . '/models/importcsv.php';
 
 /**
@@ -24,8 +27,7 @@ require_once COM_FABRIK_FRONTEND . '/models/importcsv.php';
  * @subpackage  Fabrik.cron.email
  * @since       3.0
  */
-
-class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
+class Importcsv extends Cron
 {
 	/**
 	 * Check if the user can use the active element
@@ -35,7 +37,6 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 *
 	 * @return  bool can use or not
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -46,7 +47,6 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 *
 	 * @return  bool
 	 */
-
 	public function requiresTableData()
 	{
 		/* We don't need cron to load $data for us */
@@ -63,7 +63,6 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 * @return  int  listid  The id frabrik gives the list that hold information about files named $tablename
 	 * returns an empty() type if no table exists with the same name as $tablename.
 	 */
-
 	protected function getListIdFromFileName($tableName)
 	{
 		// Get site's database
@@ -84,7 +83,6 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 *
 	 * @return  int  number of records run
 	 */
-
 	public function process(&$data, &$listModel)
 	{
 		$input = $this->app->input;
@@ -134,12 +132,12 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 
 		// The csv import class needs to know we are doing a cron import
 		$input->set('cron_csvimport', true);
-		$xfiles = 0;
+		$xFiles = 0;
 
 		foreach ($files as $fullCsvFile)
 		{
 			$fullCsvFile = str_replace('\\', '/', $fullCsvFile);
-			if (++$xfiles > $maxFiles)
+			if (++$xFiles > $maxFiles)
 			{
 				break;
 			}
@@ -235,7 +233,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 			$input->set('text_delimiter', $orig_text_delimiter);
 		}
 
-		if ($xfiles > 0)
+		if ($xFiles > 0)
 		{
 			$updates = $clsImportCSV->addedCount + $clsImportCSV->updatedCount;
 		}
