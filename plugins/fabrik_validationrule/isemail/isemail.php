@@ -22,7 +22,7 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik.validationrule.isemail
  * @since       3.0
  */
-class IsEmail extends Validationrule
+class Isemail extends Validationrule
 {
 	/**
 	 * Plugin name
