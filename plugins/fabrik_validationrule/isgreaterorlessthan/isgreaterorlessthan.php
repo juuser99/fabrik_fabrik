@@ -8,13 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin classes
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Is Greater or Less than Validation Rule
@@ -23,7 +22,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isgreaterorlessthan
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationrule
+class Isgreaterorlessthan extends Validationrule
 {
 	/**
 	 * Plugin name
@@ -50,7 +49,7 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 
 		$params = $this->getParams();
 		$elementModel = $this->elementModel;
-		$formData = $elementModel->getForm()->formData;
+		$formData = $elementModel->getFormModel()->formData;
 		$cond = $params->get('isgreaterorlessthan-greaterthan');
 		$compareValue = $params->get('compare_value', '');
 

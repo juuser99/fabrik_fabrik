@@ -8,14 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
-
 // Require the Open Provider API
 require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.php';
+
+use \OP_API;
+use \OP_Request;
 
 /**
  * Domain name look up against open provider service
@@ -24,7 +26,7 @@ require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.
  * @subpackage  Fabrik.validationrule.openprovider
  * @since       3.0
  */
-class PlgFabrik_ValidationruleOpenprovider extends PlgFabrik_Validationrule
+class Openprovider extends Validationrule
 {
 	/**
 	 * Plugin name

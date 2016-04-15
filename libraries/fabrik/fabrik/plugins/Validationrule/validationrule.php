@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -17,10 +19,8 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
 use Fabrik\Helpers\StringHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
+use \JPluginHelper;
+use \JFilterInput;
 
 /**
  * Fabrik Validation Rule Model
@@ -28,7 +28,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
  * @package  Fabrik
  * @since    3.0
  */
-class PlgFabrik_Validationrule extends FabrikPlugin
+class Validationrule extends \FabrikPlugin
 {
 	/**
 	 * Plugin name
@@ -40,7 +40,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 	/**
 	 * Validation rule's element model
 	 *
-	 * @var Fabrik\Plugins\Element\Element
+	 * @var \Fabrik\Plugins\Element\Element
 	 */
 	public $elementModel = null;
 

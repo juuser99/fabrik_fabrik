@@ -8,15 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Are Unique values Validation Rule
@@ -25,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.areuniquevalues
  * @since       3.0
  */
-class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
+class AreUniqueValues extends Validationrule
 {
 	/**
 	 * Plugin name

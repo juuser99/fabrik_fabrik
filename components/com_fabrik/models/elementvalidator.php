@@ -64,7 +64,7 @@ class FabrikFEModelElementValidator extends FabModel
 	/**
 	 * Loads in element's published validation objects
 	 *
-	 * @return  PlgFabrik_Validationrule[]	Validation objects
+	 * @return  \Fabrik\Plugins\Validationrule\Validationrule[]	Validation objects
 	 */
 	public function findAll()
 	{
@@ -99,12 +99,12 @@ class FabrikFEModelElementValidator extends FabModel
 
 				if ($isPublished)
 				{
-					$class = 'PlgFabrik_Validationrule' . StringHelper::ucfirst($usedPlugin);
+					$class = 'Fabrik\Plugins\Validationrule\\' . StringHelper::ucfirst($usedPlugin);
 					$conf = array();
 					$conf['name'] = StringHelper::strtolower($usedPlugin);
 					$conf['type'] = StringHelper::strtolower('fabrik_Validationrule');
 
-					/** @var PlgFabrik_Validationrule $plugIn */
+					/** @var \Fabrik\Plugins\Validationrule\Validationrule $plugIn */
 					$plugIn = new $class($dispatcher, $conf);
 					JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
 					$plugIn->elementModel = $this->elementModel;

@@ -8,13 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Is Not Validation Rule
@@ -23,7 +22,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isnot
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
+class IsNot extends Validationrule
 {
 	/**
 	 * Plugin name

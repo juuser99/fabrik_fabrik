@@ -8,11 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin classes
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Is Numeric Validation Rule
@@ -21,7 +20,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isnumeric
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
+class IsNumeric extends Validationrule
 {
 	/**
 	 * Plugin name

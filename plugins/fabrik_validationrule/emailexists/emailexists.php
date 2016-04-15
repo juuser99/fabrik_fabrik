@@ -8,15 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
 
 /**
  * Email Already Registered Validation Rule
@@ -25,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.emailexists
  * @since       3.0
  */
-class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
+class EmailExists extends Validationrule
 {
 	/**
 	 * Plugin name
@@ -63,12 +62,13 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 		if ((int) $userField !== 0)
 		{
 			$user_elementModel = Worker::getPluginManager()->getElementPlugin($userField);
-			$user_fullName = $user_elementModel->getFullName(true, false);
 			$userField = $user_elementModel->getFullName(false, false);
 		}
 
 		if (!empty($userField))
 		{
+			$user_fullName = $user_elementModel->getFullName(true, false);
+
 			// $$$ the array thing needs fixing, for now just grab 0
 			$formData = $elementModel->getFormModel()->formData;
 			$userId = ArrayHelper::getValue($formData, $user_fullName . '_raw', ArrayHelper::getValue($formData, $user_fullName, ''));
@@ -134,7 +134,6 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 			}
 		}
 
-		return false;
 	}
 
 	/**

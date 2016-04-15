@@ -1334,7 +1334,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		{
 			if ($usedPlugin !== '')
 			{
-				$class                = 'plgFabrik_Validationrule' . StringHelper::ucfirst($usedPlugin);
+				$class                = 'Fabrik\Plugins\Validationrule\\' . StringHelper::ucfirst($usedPlugin);
 				$conf                 = array();
 				$conf['name']         = StringHelper::strtolower($usedPlugin);
 				$conf['type']         = StringHelper::strtolower('fabrik_Validationrule');

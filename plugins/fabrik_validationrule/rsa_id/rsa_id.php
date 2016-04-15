@@ -8,13 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \JFactory;
+use \stdClass;
+use \JHtml;
 
 /**
  * RSA Id Validation Rule
@@ -23,7 +25,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.akismet
  * @since       3.3.3
  */
-class PlgFabrik_ValidationruleRsa_id extends PlgFabrik_Validationrule
+class Rsa_id extends Validationrule
 {
 	/**
 	 * Plugin name

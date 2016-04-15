@@ -8,14 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use \Joomla\Registry\Registry;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \JPluginHelper;
 
 /**
  * PHP Validation Rule
@@ -24,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.php
  * @since       3.0
  */
-class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
+class Php extends Validationrule
 {
 	/**
 	 * Plugin name

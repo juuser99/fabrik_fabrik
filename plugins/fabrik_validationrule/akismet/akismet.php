@@ -8,11 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Validationrule;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use \RuntimeException;
+use \JUri;
+use \Akismet as AkismetApi;
 
 /**
  * Akismet Validation Rule
@@ -21,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.akismet
  * @since       3.0
  */
-class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
+class Akismet extends Validationrule
 {
 	/**
 	 * Plugin name
@@ -44,10 +47,10 @@ class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
 
 		if ($params->get('akismet-key') != '')
 		{
-			$username = $this->user->get('username') != '' ? $this->user->get('username') : $this->_randomSring();
+			$username = $this->user->get('username') != '' ? $this->user->get('username') : $this->_randomString();
 			require_once JPATH_COMPONENT . '/plugins/validationrule/akismet/libs/akismet.class.php';
-			$akismet_comment = array('author' => $username, 'email' => $this->user->get('email'), 'website' => JURI::base(), 'body' => $data);
-			$akismet = new Akismet(JURI::base(), $params->get('akismet-key'), $akismet_comment);
+			$akismet_comment = array('author' => $username, 'email' => $this->user->get('email'), 'website' => JUri::base(), 'body' => $data);
+			$akismet = new AkismetApi(JUri::base(), $params->get('akismet-key'), $akismet_comment);
 
 			if ($akismet->errorsExist())
 			{
@@ -70,7 +73,7 @@ class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
 	 *
 	 * @return string
 	 */
-	protected function _randomSring()
+	protected function _randomString()
 	{
 		return preg_replace('/([ ])/e', 'chr(rand(97,122))', '     ');
 	}
