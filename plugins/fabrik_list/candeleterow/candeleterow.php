@@ -8,14 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
 /**
  *  Determines if a row is deletable
@@ -24,7 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.candeleterow
  * @since       3.0
  */
-class PlgFabrik_ListCandeleterow extends PlgFabrik_List
+class Candeleterow extends Lizt
 {
 	/**
 	 * Can the plug-in select list rows

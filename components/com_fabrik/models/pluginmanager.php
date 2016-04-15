@@ -341,8 +341,12 @@ class FabrikFEModelPluginmanager extends FabModel
 		}
 		else
 		{
-			// Allow for namespaced plugins
+			if ($group === 'list') {
+				$group = 'Lizt';
+			}
+			// Allow for name-spaced plugins
 			$class = 'Fabrik\\Plugins\\' . StringHelper::ucfirst($group) . '\\' . StringHelper::ucfirst($className);
+
 			$plugIn = new $class($dispatcher, $conf);
 		}
 

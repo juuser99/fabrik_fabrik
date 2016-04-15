@@ -8,14 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \JModelLegacy;
 
 /**
  * Allows drag and drop reordering of rows
@@ -24,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.order
  * @since       3.0
  */
-class PlgFabrik_ListOrder extends PlgFabrik_List
+class Order extends Lizt
 {
 	/**
 	 * Get the parameter name that defines the plugins acl access
@@ -70,10 +70,9 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	{
 		if (!$this->canUse())
 		{
-			return;
+			return true;
 		}
 
-		/** @var FabrikFEModelList $model */
 		$model = $this->getModel();
 		$params = $this->getParams();
 		$orderEl = $model->getFormModel()->getElement($params->get('order_element'), true);
@@ -97,16 +96,6 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	}
 
 	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListOrder';
-	}
-
-	/**
 	 * Called via ajax when dragged row is dropped. Reorders records
 	 *
 	 * @return  void
@@ -114,7 +103,7 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	public function onAjaxReorder()
 	{
 		// Get list model
-		/** @var FabrikFEModelList $model */
+		/** @var \FabrikFEModelList $model */
 		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$input = $this->app->input;
 		$model->setId($input->getInt('listid'));

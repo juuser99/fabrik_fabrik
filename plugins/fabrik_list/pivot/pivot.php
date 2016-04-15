@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -15,9 +17,9 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \stdClass;
+use \JModelLegacy;
+use \UnexpectedValueException;
 
 /**
  * Mutate the list data into a pivot table
@@ -26,7 +28,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.pivot
  * @since       3.1
  */
-class PlgFabrik_ListPivot extends PlgFabrik_List
+class Pivot extends Lizt
 {
 	/**
 	 * Inject the select sum() fields into the list query JDatabaseQuery object
@@ -114,7 +116,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 	{
 		$params = $this->getParams();
 		$sums = explode(',', $params->get('pivot_sum'));
-		$db = $this->model->getDb();
+		$db = $this->getModel()->getDb();
 		$fn = (int) $params->get('pivot_count', '0') == 1 ? 'COUNT' : 'SUM';
 
 		foreach ($sums as &$sum)
@@ -198,10 +200,8 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 	 */
 	public function onPreLoadData()
 	{
-		$params = $this->params;
-
 		// Set the list query to be unconstrained
-		$this->model->setLimits(0, -1);
+		$this->getModel()->setLimits(0, -1);
 
 		// Hide the list nav as we are running an unconstrained query
 		$this->app->input->set('fabrik_show_nav', 0);
@@ -217,16 +217,23 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 			return;
 		}
 
+		$model = $this->getModel();
 		$cache = Worker::getCache();
 		$cache->setCaching(1);
-		$res = $cache->call(array(get_class($this), 'cacheResults'), $this->model->getId());
+		$res = $cache->call(array(get_class($this), 'cacheResults'), $model->getId());
 
-		$this->model->set('data', $res);
-
+		$model->set('data', $res);
 	}
 
+	/**
+	 * Get list data
+	 * @param   int  $listId
+	 *
+	 * @return array
+	 */
 	public static function cacheResults($listId)
 	{
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$listModel->setId($listId);
 		$data = $listModel->getData();
@@ -237,7 +244,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 	/**
 	 * List model has loaded its data, lets pivot it!
 	 *
-	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
+	 * @param   array  &$args  Additional options passed into the method when the plugin is called
 	 *
 	 * @return bool currently ignored
 	 */
@@ -409,7 +416,7 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 	 * Format a number value
 	 *
 	 * @param mixed $data (double/int)
-	 * @param
+	 * @param   \Joomla\Registry\Registry  $params
 	 *
 	 * @return string formatted number
 	 */
@@ -436,7 +443,8 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 	/**
 	 * Strip number format from a number value
 	 *
-	 * @param   mixed  $val  (double/int)
+	 * @param   double|int                 $val  (double/int)
+	 * @param   \Joomla\Registry\Registry  $params
 	 *
 	 * @return  string	formatted number
 	 */
@@ -447,7 +455,6 @@ class PlgFabrik_ListPivot extends PlgFabrik_List
 			return $val;
 		}
 
-		$decimal_length = (int) $params->get('pivot_round_to', 2);
 		$decimal_sep = $params->get('pivot_decimal_sepchar', '.');
 		$thousand_sep = $params->get('pivot_thousand_sepchar', ',');
 

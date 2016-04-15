@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -15,9 +17,9 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \RuntimeException;
+use \stdClass;
+use \JHtml;
 
 /**
  * Add a radius search option to the list filters
@@ -26,7 +28,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.radiussearch
  * @since       3.0
  */
-class PlgFabrik_ListRadius_Search extends PlgFabrik_List
+class Radius_Search extends Lizt
 {
 	/**
 	 * Place coordinates
@@ -34,6 +36,16 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 	 * @var array
 	 */
 	protected $placeCoordinates = null;
+
+	/**
+	 * @var \Fabrik\Plugins\Element\Googlemap
+	 */
+	protected $mapElement;
+
+	/**
+	 * @var \Fabrik\Plugins\Element\Element
+	 */
+	protected $placeElement;
 
 	/**
 	 * Build the select list which enables users to determine how the search is performed
@@ -172,8 +184,6 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 
 		$this->session->set('fabrik.list.radius_search.filtersGot.ignore', true);
 		$input = $this->app->input;
-
-		/** @var  $model FabrikFEModelList */
 		$model = $this->getModel();
 		$mapElement = $this->getMapElement();
 		$mapName = $mapElement->getFullName(true, false);
@@ -311,8 +321,6 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		}
 
 		$params = $this->getParams();
-
-		/** @var  $model FabrikFEModelList */
 		$model = $this->getModel();
 		$active = $this->app->input->get('radius_search_active' . $this->renderOrder, array(0), 'array');
 
@@ -342,6 +350,8 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		$model->filters['sqlCond'][] = $query;
 		$model->filters['origvalue'][] = $v;
 		$model->filters['filter'][] = $v;
+
+		return true;
 	}
 
 	/**
@@ -349,7 +359,6 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 	 *
 	 * @return number
 	 */
-
 	protected function getValue()
 	{
 		$baseContext = $this->getSessionContext();
@@ -357,7 +366,7 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 
 		if ($v == '')
 		{
-			return;
+			return 0;
 		}
 
 		$v = (int) $v;
@@ -436,8 +445,6 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		if (!is_object($mapElement))
 		{
 			throw new RuntimeException('Radius search plug-in active but map element unpublished');
-
-			return;
 		}
 
 		$opts = array();
@@ -512,16 +519,6 @@ class PlgFabrik_ListRadius_Search extends PlgFabrik_List
 		Text::script('PLG_LIST_RADIUS_SEARCH_GEOCODE_ERROR');
 
 		return true;
-	}
-
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListRadiusSearch';
 	}
 
 	/**

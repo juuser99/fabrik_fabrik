@@ -8,13 +8,13 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \JModelLegacy;
 
 /**
  * Add an action button to the list to enable update of content articles
@@ -23,7 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.article
  * @since       3.0
  */
-class PlgFabrik_ListArticle extends PlgFabrik_List
+class Article extends Lizt
 {
 	/**
 	 * Button prefix
@@ -85,7 +85,6 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 */
 	public function process($opts = array())
 	{
-		/** @var FabrikFEModelList $model */
 		$model = $this->getModel();
 		$input = $this->app->input;
 		$ids = $input->get('ids', array(), 'array');
@@ -93,7 +92,7 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 
 		// Abstract version of the form article plugin
-		/** @var PlgFabrik_FormArticle $articlePlugin */
+		/** @var \Fabrik\Plugins\Form\Article $articlePlugin */
 		$articlePlugin = $pluginManager->getPlugin('article', 'form');
 
 		$formModel = $model->getFormModel();
@@ -156,13 +155,4 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 		return true;
 	}
 
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListArticle';
-	}
 }

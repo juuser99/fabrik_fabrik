@@ -8,13 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
 /**
  * Execute PHP Code on any list event
@@ -23,15 +22,13 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.phpevents
  * @since       3.0
  */
-
-class PlgFabrik_ListPhp_Events extends PlgFabrik_List
+class Php_Events extends Lizt
 {
 	/**
 	 * onFiltersGot method - run after the list has created filters
 	 *
 	 * @return bool currently ignored
 	 */
-
 	public function onFiltersGot()
 	{
 		$params = $this->getParams();
@@ -42,9 +39,8 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * Called when the list HTML filters are loaded
 	 *
-	 * @return  void
+	 * @return  bool
 	 */
-
 	public function onMakeFilters()
 	{
 		$params = $this->getParams();
@@ -59,7 +55,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return  bool
 	 */
-
 	public function process($opts = array())
 	{
 		$params = $this->getParams();
@@ -72,7 +67,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return bool currently ignored
 	 */
-
 	public function onPreLoadData()
 	{
 		$params = $this->getParams();
@@ -83,11 +77,10 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * onGetData method
 	 *
-	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
+	 * @param   array &$args  Additional options passed into the method when the plugin is called
 	 *
 	 * @return bool currently ignored
 	 */
-
 	public function onLoadData(&$args)
 	{
 		$params = $this->getParams();
@@ -100,7 +93,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return  bool  false if fail
 	 */
-
 	public function onDeleteRows()
 	{
 		$params = $this->getParams();
@@ -113,7 +105,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return  bool  false if fail
 	 */
-
 	public function onAfterDeleteRows()
 	{
 		$params = $this->getParams();
@@ -128,7 +119,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return  bool;
 	 */
-
 	public function button(&$args)
 	{
 		parent::button($args);
@@ -141,7 +131,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return  string
 	 */
-
 	public function button_result()
 	{
 		return '';
@@ -156,7 +145,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return  bool  true if we should run the plugin otherwise false
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -167,7 +155,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return  bool
 	 */
-
 	public function canSelectRows()
 	{
 		return false;
@@ -180,7 +167,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return bool
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		return true;
@@ -205,7 +191,6 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 *
 	 * @return bool
 	 */
-
 	protected function doEvaluate($code)
 	{
 		$model = $this->getModel();

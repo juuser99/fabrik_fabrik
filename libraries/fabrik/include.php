@@ -31,8 +31,32 @@ class FabrikAutoloader
 		spl_autoload_register(array($this, 'library'));
 		*/
 		spl_autoload_register(array($this, 'formPlugin'));
+		spl_autoload_register(array($this, 'listPlugin'));
 		spl_autoload_register(array($this, 'element'));
 		spl_autoload_register(array($this, 'helper'));
+	}
+
+	/**
+	 * Load list plugin class
+	 *
+	 * @param   string $class Class name
+	 */
+	private function listPlugin($class)
+	{
+		if (!strstr(($class), 'Fabrik\Plugins\Lizt'))
+		{
+			return;
+		}
+echo $class;exit;
+		$class = str_replace('\\', '/', $class);
+		$file  = explode('/', $class);
+		$file  = strtolower(array_pop($file));
+		$path  = JPATH_SITE . '/plugins/fabrik_list/' . $file . '/' . $file . '.php';
+
+		if (file_exists($path))
+		{
+			require_once $path;
+		}
 	}
 
 	/**

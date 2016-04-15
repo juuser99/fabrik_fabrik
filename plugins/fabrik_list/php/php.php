@@ -8,15 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Text;
-use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \JFilterInput;
 
 /**
  *  Add an action button to run PHP
@@ -25,8 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.php
  * @since       3.0
  */
-
-class PlgFabrik_ListPhp extends plgFabrik_List
+class Php extends Lizt
 {
 	protected $buttonPrefix = 'php';
 
@@ -191,13 +189,4 @@ class PlgFabrik_ListPhp extends plgFabrik_List
 		return true;
 	}
 
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListPHP';
-	}
 }

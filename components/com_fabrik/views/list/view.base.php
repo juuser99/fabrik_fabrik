@@ -155,13 +155,6 @@ class FabrikViewListBase extends FabrikView
 		$src['ListPlugin']   = Html::mediaFile('list-plugin.js');
 		$src                 = $model->getPluginJsClasses($src, $shim);
 
-		$pluginManager->runPlugins('loadJavascriptClassName', $model, 'list');
-
-		$pluginManager->data = array_filter($pluginManager->data, function ($v)
-		{
-			return $v !== '';
-		});
-
 		$model->getCustomJsAction($src);
 
 		$tmpl       = $model->getTmpl();

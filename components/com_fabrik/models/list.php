@@ -47,6 +47,10 @@ class FabrikFEModelList extends JModelForm
 	public $packageId = null;
 
 	/**
+	 * @var array
+	 */
+	public $viewfilters;
+	/**
 	 * Lists connection object
 	 *
 	 * @var object

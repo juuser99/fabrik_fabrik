@@ -34,9 +34,16 @@ abstract class FabrikWebService
 	 *
 	 * @var    array
 	 */
-
 	protected static $instances = array();
 
+	/**
+	 * @var int
+	 */
+	public $addedCount = 0;
+	/**
+	 * @var int
+	 */
+	public $updateCount = 0;
 	/**
 	 * Get web service instance
 	 *

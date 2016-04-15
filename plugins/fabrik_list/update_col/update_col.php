@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -15,9 +17,9 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \JFactory;
+use \stdClass;
+use \JMailHelper;
 
 /**
  * Add an action button to the list to update selected columns to a given value
@@ -26,7 +28,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.updatecol
  * @since       3.0
  */
-class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
+class Update_Col extends Lizt
 {
 	/**
 	 * Button prefix
@@ -66,7 +68,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	/**
 	 * Element containing email notification addresses
 	 *
-	 * @var  Fabrik\Plugins\Element\Element
+	 * @var  \Fabrik\Plugins\Element\Element
 	 */
 	protected $emailElement = null;
 
@@ -112,7 +114,6 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	public function canSelectRows()
 	{
 		$access = $this->getParams()->get('updatecol_access');
-		$name = $this->_getButtonName();
 
 		return in_array($access, $this->user->getAuthorisedViewLevels());
 	}
@@ -123,7 +124,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	 * If both are specified, values from user selects override those from plug-in parameters,
 	 * so the plugin parameter pre-sets basically become defaults.
 	 *
-	 * @param   JParameters  $params  Plugin parameters
+	 * @param   \Joomla\Registry\Registry  $params  Plugin parameters
 	 *
 	 * @since   3.0.7
 	 *
@@ -368,7 +369,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		{
 			$elementModel = $this->getEmailElement();
 			$emailElement = $elementModel->getElement(true);
-			$emailWhich = $emailElement->plugin == 'user' ? 'user' : 'field';
+			$emailWhich = $emailElement->get('plugin') === 'user' ? 'user' : 'field';
 		}
 		else
 		{
@@ -412,7 +413,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	/**
 	 * Get Email Element
 	 *
-	 * @return Fabrik\Plugins\Element\Element
+	 * @return \Fabrik\Plugins\Element\Element
 	 */
 	private function getEmailElement()
 	{
@@ -528,8 +529,6 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 	{
 		$params = $this->getParams();
 		$selectElements = json_decode($params->get('update_user_select_elements', "{}"));
-
-		/** @var FabrikFEModelList $model */
 		$model = $this->getModel();
 		Text::script('PLG_LIST_UPDATE_COL_UPDATE');
 		$options[] = '<option value="">' . Text::_('COM_FABRIK_PLEASE_SELECT') . '</option>';
@@ -538,6 +537,7 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 		foreach ($elementModels as $elementModel)
 		{
 			$element = $elementModel->getElement();
+			$plugin = $element->get('plugin');
 
 			/**
 			 * Added "User updateable elements" selection, so admin can specify which elements
@@ -548,10 +548,10 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 				continue;
 			}
 
-			if ($elementModel->canUse($this, 'list') && $element->plugin !== 'internalid')
+			if ($elementModel->canUse($this, 'list') && $plugin !== 'internalid')
 			{
 				$elName = $elementModel->getFilterFullName();
-				$options[] = '<option value="' . $elName . '" data-id="' . $element->id . '" data-plugin="' . $element->plugin . '">'
+				$options[] = '<option value="' . $elName . '" data-id="' . $element->id . '" data-plugin="' . $plugin . '">'
 					. strip_tags($element->label) . '</option>';
 			}
 		}
@@ -585,15 +585,4 @@ class PlgFabrik_ListUpdate_Col extends PlgFabrik_List
 
 		return $col . '-' . $this->renderOrder;
 	}
-
-	/**
-	 * Load the AMD module class name
-	 * 
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListUpdateCol';
-	}
-
 }

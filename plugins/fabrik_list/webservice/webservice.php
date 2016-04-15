@@ -8,15 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \FabrikWebService;
+use \UnexpectedValueException;
+use \JLoader;
 
 /**
  * Add an action button to run web service
@@ -25,7 +27,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.webservice
  * @since       3.0
  */
-class PlgFabrik_ListWebservice extends PlgFabrik_List
+class Webservice extends Lizt
 {
 	/**
 	 * Button prefix
@@ -34,6 +36,10 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 	 */
 	protected $buttonPrefix = 'cogs';
 
+	/**
+	 * @var string
+	 */
+	protected $msg = '';
 	/**
 	 * Does the plugin render a button at the top of the list?
 	 *
@@ -188,7 +194,7 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 	/**
 	 * Get an array of key/value filters to send to the web service
 	 *
-	 * @param   FabrikWebService  $service  The current web service being used
+	 * @param   \FabrikWebService  $service  The current web service being used
 	 *
 	 * @return  array  key/val pairs
 	 */
@@ -264,15 +270,5 @@ class PlgFabrik_ListWebservice extends PlgFabrik_List
 		$this->jsInstance = "new FbListWebservice($opts)";
 
 		return true;
-	}
-
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListWebservice';
 	}
 }

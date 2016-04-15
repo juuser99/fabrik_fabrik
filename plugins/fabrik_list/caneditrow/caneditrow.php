@@ -8,14 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
 /**
  *  Determines if a row is editable
@@ -25,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @since       3.0
  */
 
-class PlgFabrik_ListCaneditrow extends PlgFabrik_List
+class Caneditrow extends Lizt
 {
 	protected $acl = array();
 	/**
@@ -79,27 +78,27 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		$field = str_replace('.', '___', $params->get('caneditrow_field'));
 
 		// If they provided some PHP to eval, we ignore the other settings and just run their code
-		$caneditrow_eval = $params->get('caneditrow_eval', '');
+		$canEditRowEval = $params->get('caneditrow_eval', '');
 
 		// $$$ rob if no can edit field selected in admin return true
-		if (trim($field) == '' && trim($caneditrow_eval) == '')
+		if (trim($field) == '' && trim($canEditRowEval) == '')
 		{
 			$this->acl[$data->__pk_val] = true;
 
 			return true;
 		}
 
-		if (!empty($caneditrow_eval))
+		if (!empty($canEditRowEval))
 		{
 			$w = new Worker;
 			$data = ArrayHelper::fromObject($data);
-			$caneditrow_eval = $w->parseMessageForPlaceHolder($caneditrow_eval, $data);
+			$canEditRowEval = $w->parseMessageForPlaceHolder($canEditRowEval, $data);
 			Worker::clearEval();
-			$caneditrow_eval = @eval($caneditrow_eval);
-			Worker::logEval($caneditrow_eval, 'Caught exception on eval in can edit row : %s');
-			$this->acl[$data['__pk_val']] = $caneditrow_eval;
+			$canEditRowEval = @eval($canEditRowEval);
+			Worker::logEval($canEditRowEval, 'Caught exception on eval in can edit row : %s');
+			$this->acl[$data['__pk_val']] = $canEditRowEval;
 
-			return $caneditrow_eval;
+			return $canEditRowEval;
 		}
 		else
 		{
@@ -162,15 +161,5 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		$this->jsInstance = "new FbListCanEditRow($opts)";
 
 		return true;
-	}
-
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListCanEditRow';
 	}
 }

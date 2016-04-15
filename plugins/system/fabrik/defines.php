@@ -57,8 +57,6 @@ require_once COM_FABRIK_FRONTEND . '/models/fabrik.php';
 require_once COM_FABRIK_FRONTEND . '/helpers/arrayhelper.php';
 require_once COM_FABRIK_FRONTEND . '/models/parent.php';
 require_once COM_FABRIK_FRONTEND . '/models/plugin.php';
-require_once COM_FABRIK_FRONTEND . '/models/element.php';
-require_once COM_FABRIK_FRONTEND . '/models/elementlist.php';
 require_once COM_FABRIK_FRONTEND . '/views/FabrikView.php';
 
 // Legacy requires to ensure old F3.4 helper class names work in 3.5

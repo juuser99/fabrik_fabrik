@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Image;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \JFile;
+use \ZipArchive;
 
 /**
  * Download list plugin
@@ -25,7 +26,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.download
  * @since       3.0
  */
-class PlgFabrik_ListDownload extends PlgFabrik_List
+class Download extends Lizt
 {
 	/**
 	 * Button prefix
@@ -361,7 +362,6 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		$pdfFiles = array();
 		$input    = $this->app->input;
 
-		/** @var FabrikFEModelList $model */
 		$model     = $this->getModel();
 		$formModel = $model->getFormModel();
 		$formId    = $formModel->getId();
@@ -389,15 +389,5 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		}
 
 		return $pdfFiles;
-	}
-
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListDownload';
 	}
 }

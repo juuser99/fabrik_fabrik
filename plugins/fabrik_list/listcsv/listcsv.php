@@ -8,13 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \JFilterInput;
 
 /**
  * Allow processing of CSV import / export on a per row basis
@@ -23,8 +23,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.listcsv
  * @since       3.0
  */
-
-class PlgFabrik_ListListcsv extends PlgFabrik_List
+class ListCsv extends Lizt
 {
 	/*
 	 * for use by user code

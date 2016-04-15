@@ -8,14 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \stdClass;
+use \JModelLegacy;
 
 /**
  * Allows double-clicking in a cell to enable in-line editing
@@ -24,7 +25,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.inlineedit
  * @since       3.0
  */
-class PlgFabrik_ListInlineedit extends PlgFabrik_List
+class Inlineedit extends Lizt
 {
 	/**
 	 * Contains js file, elements to load and require js shim info
@@ -68,7 +69,7 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		$shim['list/' . $this->filterKey . '/' . $this->filterKey] = $deps;
 		$params = $this->getParams();
 		$shim = parent::requireJSShim_result();
-		list($srcs, $els, $addShim) = $this->loadElementJS($params);
+		list(, , $addShim) = $this->loadElementJS();
 
 		foreach ($addShim as $key => $deps)
 		{
@@ -114,6 +115,8 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 
 		$params = $this->getParams();
 		$input = $this->app->input;
+
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$listModel->setId($input->getInt('listid'));
 		$elements = $listModel->getElements('safecolname');
@@ -198,7 +201,7 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		parent::onLoadJavascriptInstance($args);
 		$model = $this->getModel();
 		$params = $this->getParams();
-		list($srcs, $els, $shim) = $this->loadElementJS();
+		list($els,) = $this->loadElementJS();
 		$opts = $this->getElementJSOptions();
 		$opts->elements = $els;
 		$opts->formid = $model->getFormModel()->getId();
@@ -212,15 +215,5 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		$this->jsInstance = "new FbListInlineEdit($opts)";
 
 		return true;
-	}
-
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListInlineEdit';
 	}
 }

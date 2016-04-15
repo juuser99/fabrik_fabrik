@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -16,8 +18,16 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use \JFile;
+use \JFilterInput;
+use \JFactory;
+use \Exception;
+use \JPath;
+use \JClientHelper;
+use \RuntimeException;
+use \JHtml;
+use \stdClass;
+use \JModelLegacy;
 
 /**
  * Email list plugin model
@@ -26,7 +36,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.email
  * @since       3.0
  */
-class PlgFabrik_ListEmail extends PlgFabrik_List
+class Email extends Lizt
 {
 	/**
 	 * Button prefix
@@ -35,6 +45,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 	 */
 	protected $buttonPrefix = 'email';
 
+	protected $filepath = array();
 	/**
 	 * SMS gateway instance
 	 *
@@ -183,11 +194,11 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			if ($toType == 'table_picklist')
 			{
 				$html = '<div class="pull-left" style="margin:0 20px 20px 0">';
-				$html .= JHTML::_('select.genericlist', $results, 'email_to_selectfrom[]', $attribs, 'email', 'name', '', 'email_to_selectfrom');
+				$html .= JHtml::_('select.genericlist', $results, 'email_to_selectfrom[]', $attribs, 'email', 'name', '', 'email_to_selectfrom');
 				$html .= '<br /><a href="#" class="btn btn-small" id="email_add">' . Html::icon('icon-plus') . ' ' . Text::_('COM_FABRIK_ADD') . ' &gt;&gt;</a>';
 				$html .= '</div>';
 				$html .= '<div class="span6">';
-				$html .= JHTML::_('select.genericlist', $empty, 'list_email_to[]', $attribs, 'email', 'name', '', 'list_email_to');
+				$html .= JHtml::_('select.genericlist', $empty, 'list_email_to[]', $attribs, 'email', 'name', '', 'list_email_to');
 				$html .= '<br /><a href="#" class="btn btn-small" id="email_remove">&lt;&lt; '
 					. Text::_('COM_FABRIK_DELETE') . ' ' . Html::icon('icon-delete') . '</a>';
 				$html .= '</div>';
@@ -196,7 +207,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			else
 			{
 				$attribs = 'class="fabrikinput inputbox input-large" multiple="multiple" size="5"';
-				$html    = JHTML::_('select.genericlist', $results, 'list_email_to[]', $attribs, 'email', 'name', '', 'list_email_to');
+				$html    = JHtml::_('select.genericlist', $results, 'list_email_to[]', $attribs, 'email', 'name', '', 'list_email_to');
 			}
 
 			return $html;
@@ -367,7 +378,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 			if (!JFile::upload($file['tmp_name'], $path))
 			{
-				JError::raiseWarning(100, Text::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'));
+				$this->app->enqueueMessage(Text::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'), 'error');
 
 				return false;
 			}
@@ -405,7 +416,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 
 		if ($updateVal === '{$my->id}')
 		{
-			$updateVal = $this->user->get('id', 0, 'int');
+			$updateVal = (int) $this->user->get('id', 0);
 		}
 
 		return $updateVal;
@@ -1067,16 +1078,6 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		}
 
 		return $this->gateway;
-	}
-
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListEmail';
 	}
 
 }

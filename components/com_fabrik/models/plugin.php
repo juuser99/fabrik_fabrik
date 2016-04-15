@@ -145,7 +145,7 @@ class FabrikPlugin extends JPlugin
 	/**
 	 * Set model
 	 *
-	 * @param   JModel &$model Plugin model
+	 * @param   JModel|FabrikFEModelForm &$model Plugin model
 	 *
 	 * @return  void
 	 */

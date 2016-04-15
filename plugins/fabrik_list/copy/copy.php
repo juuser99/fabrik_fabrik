@@ -8,13 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Lizt;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
 
 /**
  * Add an action button to the list to copy rows
@@ -23,7 +22,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.copy
  * @since       3.0
  */
-class PlgFabrik_ListCopy extends PlgFabrik_List
+class Copy extends Lizt
 {
 	/**
 	 * Button prefix
@@ -77,7 +76,6 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	{
 		$model = $this->getModel();
 		$ids = $this->app->input->get('ids', array(), 'array');
-		$formModel = $model->getFormModel();
 
 		return $model->copyRows($ids);
 	}
@@ -111,15 +109,5 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 		$this->jsInstance = "new FbListCopy($opts)";
 
 		return true;
-	}
-
-	/**
-	 * Load the AMD module class name
-	 *
-	 * @return string
-	 */
-	public function loadJavascriptClassName_result()
-	{
-		return 'FbListCopy';
 	}
 }
