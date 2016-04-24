@@ -93,10 +93,10 @@ class Inlineedit extends Lizt
 	 */
 	public function loadJavascriptClass_result()
 	{
-		$ext = Html::isDebug() ? '.js' : '-min.js';
+		$mediaFolder = FabrikHelperHTML::getMediaFolder();
 		$src = parent::loadJavascriptClass_result();
 
-		return array($src, 'media/com_fabrik/js/element' . $ext);
+		return array($src, $mediaFolder . '/element.js');
 	}
 
 	/**
@@ -212,7 +212,7 @@ class Inlineedit extends Lizt
 		$opts->showSave = (bool) $params->get('inline_show_save', true);
 		$opts->loadFirst = (bool) $params->get('inline_load_first', false);
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListInlineEdit($opts)";
+		$this->jsInstance = "new FbListInlineedit($opts)";
 
 		return true;
 	}

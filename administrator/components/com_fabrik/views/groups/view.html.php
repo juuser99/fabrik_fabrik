@@ -135,7 +135,7 @@ class FabrikAdminViewGroups extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_GROUPS', false, Text::_('JHELP_COMPONENTS_FABRIK_GROUPS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_GROUPS', false, FText::_('JHELP_COMPONENTS_FABRIK_GROUPS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=groups');
 

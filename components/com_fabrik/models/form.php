@@ -662,13 +662,19 @@ class FabrikFEModelForm extends FabModelForm
 		// $$$ hugh - added ability to use form_XX, as am adding custom list_XX
 		$view = $this->isEditable() ? 'form' : 'details';
 
+		/**
+		 * $$$ hugh - need to use an assoc key name for the scripts array, as it gets used in the requirejs
+		 * to pass in as a function arg, which then blows up with "unexpected number" if we don't use a key name
+		 */
+		$scriptsKey = $view . '_' . $this->getId();
+
 		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/' . $this->getId() . '.js'))
 		{
-			$scripts[] = 'components/com_fabrik/js/' . $this->getId() . '.js';
+			$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $this->getId() . '.js';
 		}
 		elseif (JFile::exists(COM_FABRIK_FRONTEND . '/js/' . $view . '_' . $this->getId() . '.js'))
 		{
-			$scripts[] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
+			$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
 		}
 	}
 
@@ -3233,13 +3239,7 @@ class FabrikFEModelForm extends FabModelForm
 								if (empty($useKey) && !$this->isMambot && in_array($input->get('view'), array('form', 'details')))
 								{
 									$this->rowId = '';
-									/**
-									 * runtime exception is a little obtuse for people getting here from legitimate links,
-									 * like from an email, but aren't logged in so run afoul of a pre-filter, etc
-									 * So do the 3.0 thing, and raise a warning
-									 */
-									//throw new RuntimeException(Text::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
-									JError::raiseWarning(500, Text::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
+									$this->app->enqueueMessage(Text::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
 								}
 								else
 								{

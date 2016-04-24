@@ -24,7 +24,6 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik.form.alphauserpoints
  * @since       3.0.7
  */
-
 class AlphaUserPoints extends Form
 {
 	/**
@@ -35,7 +34,6 @@ class AlphaUserPoints extends Form
 	 *
 	 * @return	bool
 	 */
-
 	public function onAfterProcess()
 	{
 		$params = $this->getParams();

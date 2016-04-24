@@ -77,7 +77,7 @@ class FabrikAdminViewCrons extends JViewLegacy
 		Admin::addSubmenu($input->getWord('view', 'lists'));
 		$this->sidebar = JHtmlSidebar::render();
 
-		Html::iniRequireJS();
+		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
 
@@ -136,7 +136,7 @@ class FabrikAdminViewCrons extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS', false, Text::_('JHELP_COMPONENTS_FABRIK_CRONS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS', false, FText::_('JHELP_COMPONENTS_FABRIK_CRONS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=crons');
 

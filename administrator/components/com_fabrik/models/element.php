@@ -12,10 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\StringHelper;
-use Fabrik\Helpers\Text;
+use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.modeladmin');
 
@@ -68,7 +65,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 	 */
 	public function __construct($config = array())
 	{
-		$config['dbo'] = Worker::getDbo(true);
+		$config['dbo'] = FabrikWorker::getDbo(true);
 
 		parent::__construct($config);
 	}
@@ -84,7 +81,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 	 */
 	public function getTable($type = 'Element', $prefix = 'FabrikTable', $config = array())
 	{
-		$config['dbo'] = Worker::getDbo(true);
+		$config['dbo'] = FabrikWorker::getDbo(true);
 
 		return FabTable::getInstance($type, $prefix, $config);
 	}
@@ -169,7 +166,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 				{
 					// Prune items that you can't change.
 					unset($pks[$i]);
-					JError::raiseWarning(403, Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+					JError::raiseWarning(403, FText::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
 				}
 			}
 		}
@@ -204,7 +201,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 	 */
 	public function getJsEvents()
 	{
-		$db    = Worker::getDbo(true);
+		$db    = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$id    = (int) $this->getItem()->id;
 		$query->select('*')->from('#__{package}_jsactions')->where('element_id = ' . $id)->order('id');
@@ -228,12 +225,12 @@ class FabrikAdminModelElement extends FabModelAdmin
 	public function getPlugins()
 	{
 		$item          = $this->getItem();
-		$plugins       = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
-		$published     = (array) ArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
-		$icons         = (array) ArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
-		$must_validate = (array) ArrayHelper::getNestedValue($item->params, 'validations.must_validate', array());
-		$in            = (array) ArrayHelper::getNestedValue($item->params, 'validations.validate_in', array());
-		$on            = (array) ArrayHelper::getNestedValue($item->params, 'validations.validation_on', array());
+		$plugins       = (array) FArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
+		$published     = (array) FArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
+		$icons         = (array) FArrayHelper::getNestedValue($item->params, 'validations.show_icon', array());
+		$must_validate = (array) FArrayHelper::getNestedValue($item->params, 'validations.must_validate', array());
+		$in            = (array) FArrayHelper::getNestedValue($item->params, 'validations.validate_in', array());
+		$on            = (array) FArrayHelper::getNestedValue($item->params, 'validations.validation_on', array());
 
 		$return = array();
 
@@ -241,11 +238,11 @@ class FabrikAdminModelElement extends FabModelAdmin
 		{
 			$o                = new stdClass;
 			$o->plugin        = $plugins[$i];
-			$o->published     = ArrayHelper::getValue($published, $i, 1);
-			$o->show_icon     = ArrayHelper::getValue($icons, $i, 1);
-			$o->must_validate = ArrayHelper::getValue($must_validate, $i, 1);
-			$o->validate_in   = ArrayHelper::getValue($in, $i, 'both');
-			$o->validation_on = ArrayHelper::getValue($on, $i, 'both');
+			$o->published     = FArrayHelper::getValue($published, $i, 1);
+			$o->show_icon     = FArrayHelper::getValue($icons, $i, 1);
+			$o->must_validate = FArrayHelper::getValue($must_validate, $i, 1);
+			$o->validate_in   = FArrayHelper::getValue($in, $i, 'both');
+			$o->validation_on = FArrayHelper::getValue($on, $i, 'both');
 			$return[]         = $o;
 		}
 
@@ -268,13 +265,13 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$opts->deleteButton = '<a class="btn btn-danger"><i class="icon-delete"></i> ';
 		$opts->deleteButton .= Text::_('COM_FABRIK_DELETE') . '</a>';
 		$opts = json_encode($opts);
-		Text::script('COM_FABRIK_PLEASE_SELECT');
-		Text::script('COM_FABRIK_JS_SELECT_EVENT');
-		Text::script('COM_FABRIK_JS_INLINE_JS_CODE');
-		Text::script('COM_FABRIK_JS_INLINE_COMMENT_WARNING');
-		Text::script('COM_FABRIK_JS_WHEN_ELEMENT');
-		Text::script('COM_FABRIK_JS_IS');
-		Text::script('COM_FABRIK_JS_NO_ACTION');
+		JText::script('COM_FABRIK_PLEASE_SELECT');
+		JText::script('COM_FABRIK_JS_SELECT_EVENT');
+		JText::script('COM_FABRIK_JS_INLINE_JS_CODE');
+		JText::script('COM_FABRIK_JS_INLINE_COMMENT_WARNING');
+		JText::script('COM_FABRIK_JS_WHEN_ELEMENT');
+		JText::script('COM_FABRIK_JS_IS');
+		JText::script('COM_FABRIK_JS_NO_ACTION');
 		$js[] = "window.addEvent('domready', function () {";
 		$js[] = "\tvar opts = $opts;";
 
@@ -310,7 +307,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 
 		if ($plugin == '')
 		{
-			$str = '<div class="alert">' . Text::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
+			$str = '<div class="alert">' . FText::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
 		}
 		else
 		{
@@ -320,7 +317,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 				$str    = $plugin->onRenderAdminSettings(ArrayHelper::fromObject($item), null, 'nav-tabs');
 			} catch (RuntimeException $e)
 			{
-				$str = '<div class="alert">' . Text::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
+				$str = '<div class="alert">' . FText::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
 			}
 
 		}
@@ -364,7 +361,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 			return false;
 		}
 
-		$db           = Worker::getDbo(true);
+		$db           = FabrikWorker::getDbo(true);
 		$elementModel = $this->getElementPluginModel($data);
 		$nameChanged  = $data['name'] !== $elementModel->getElement()->name;
 		$elementModel->getElement()->bind($data);
@@ -377,24 +374,24 @@ class FabrikAdminModelElement extends FabModelAdmin
 
 			if ($listModel->canAddFields() === false && $listModel->noTable() === false)
 			{
-				$this->setError(Text::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
+				$this->setError(FText::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
 			}
 
-			if (!Worker::validElementName($data['name']))
+			if (!FabrikWorker::validElementName($data['name']))
 			{
-				$this->setError(Text::_('COM_FABRIK_RESERVED_NAME_USED'));
+				$this->setError(FText::_('COM_FABRIK_RESERVED_NAME_USED'));
 			}
 		}
 		else
 		{
 			if ($listModel->canAlterFields() === false && $nameChanged && $listModel->noTable() === false)
 			{
-				$this->setError(Text::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
+				$this->setError(FText::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
 			}
 
-			if ($nameChanged && !Worker::validElementName($data['name'], false))
+			if ($nameChanged && !FabrikWorker::validElementName($data['name'], false))
 			{
-				$this->setError(Text::_('COM_FABRIK_RESERVED_NAME_USED'));
+				$this->setError(FText::_('COM_FABRIK_RESERVED_NAME_USED'));
 			}
 		}
 
@@ -423,7 +420,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 			{
 				if ($listModel->fieldExists($data['name'], $ignore))
 				{
-					$this->setError(Text::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
+					$this->setError(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
 				}
 			}
 			else
@@ -443,12 +440,12 @@ class FabrikAdminModelElement extends FabModelAdmin
 
 				if ($joinListModel->fieldExists($data['name'], $ignore))
 				{
-					$this->setError(Text::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
+					$this->setError(FText::_('COM_FABRIK_ELEMENT_NAME_IN_USE'));
 				}
 			}
 		}
 		// Strip <p> tag from label
-		$data['label'] = StringHelper::str_ireplace(array('<p>', '</p>'), '', $data['label']);
+		$data['label'] = JString::str_ireplace(array('<p>', '</p>'), '', $data['label']);
 
 		return count($this->getErrors()) == 0 ? $data : false;
 	}
@@ -496,9 +493,9 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$input                 = $this->app->input;
 		$new                   = $data['id'] == 0 ? true : false;
 		$params                = $data['params'];
-		$data['name']          = StringHelper::iclean($data['name']);
+		$data['name']          = FabrikString::iclean($data['name']);
 		$name                  = $data['name'];
-		$params['validations'] = ArrayHelper::getValue($data, 'validationrule', array());
+		$params['validations'] = FArrayHelper::getValue($data, 'validationrule', array());
 		$elementModel          = $this->getElementPluginModel($data);
 		$elementModel->getElement()->bind($data);
 		$origId = $input->getInt('id');
@@ -515,7 +512,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 
 		// Are we updating the name of the primary key element?
 
-		if ($row->name === StringHelper::shortColName($item->db_primary_key))
+		if ($row->name === FabrikString::shortColName($item->db_primary_key))
 		{
 			if ($name !== $row->name)
 			{
@@ -594,7 +591,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		 * the fieldsets!  Well, that's the only way I could come up with doing it.  Hopefully Rob can come up with
 		 * a quicker and simpler way of doing this!
 		 */
-		$validations        = ArrayHelper::getValue($params['validations'], 'plugin', array());
+		$validations        = FArrayHelper::getValue($params['validations'], 'plugin', array());
 		$num_validations    = count($validations);
 		$validation_plugins = $this->getValidations($elementModel, $validations);
 
@@ -657,13 +654,13 @@ class FabrikAdminModelElement extends FabModelAdmin
 
 			if (in_array($tableName, $this->core))
 			{
-				$this->app->enqueueMessage(Text::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
+				$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_CORE_TABLE'), 'notice');
 			}
 			else
 			{
 				if ($hasPrefix)
 				{
-					$this->app->enqueueMessage(Text::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
+					$this->app->enqueueMessage(FText::_('COM_FABRIK_WARNING_UPDATE_TABLE_WITH_PREFIX'), 'notice');
 				}
 			}
 
@@ -712,7 +709,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 
 			if (!$elementModel->onSave($data))
 			{
-				$this->setError(Text::_('COM_FABRIK_ERROR_SAVING_ELEMENT_PLUGIN_OPTIONS'));
+				$this->setError(FText::_('COM_FABRIK_ERROR_SAVING_ELEMENT_PLUGIN_OPTIONS'));
 
 				return false;
 			}
@@ -738,7 +735,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 	 */
 	private function addElementToOtherDbTables($elementModel, $row)
 	{
-		$db            = Worker::getDbo(true);
+		$db            = FabrikWorker::getDbo(true);
 		$list          = $elementModel->getListModel()->getTable();
 		$origElid      = $row->id;
 		$tmpgroupModel = $elementModel->getGroup();
@@ -910,7 +907,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$fieldType = $elementModel->getFieldDescription();
 
 		// Int elements can't have a index size attribute
-		$size = StringHelper::stristr($fieldType, 'int') || $fieldType == 'DATETIME' ? '' : '10';
+		$size = JString::stristr($fieldType, 'int') || $fieldType == 'DATETIME' ? '' : '10';
 
 		if ($elementModel->getParams()->get('can_order'))
 		{
@@ -950,18 +947,18 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$this_id = $this->getState($this->getName() . '.id');
 		$ids     = $this->getElementDescendents($this_id);
 		$ids[]   = $this_id;
-		$db      = Worker::getDbo(true);
+		$db      = FabrikWorker::getDbo(true);
 		$query   = $db->getQuery(true);
 		$query->delete('#__{package}_jsactions')->where('element_id IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 		$db->execute();
 		$jForm      = $input->get('jform', array(), 'array');
-		$eEvent     = ArrayHelper::getValue($jForm, 'js_e_event', array());
-		$eTrigger   = ArrayHelper::getValue($jForm, 'js_e_trigger', array());
-		$eCond      = ArrayHelper::getValue($jForm, 'js_e_condition', array());
-		$eVal       = ArrayHelper::getValue($jForm, 'js_e_value', array());
-		$ePublished = ArrayHelper::getValue($jForm, 'js_published', array());
-		$action     = (array) ArrayHelper::getValue($jForm, 'action', array());
+		$eEvent     = FArrayHelper::getValue($jForm, 'js_e_event', array());
+		$eTrigger   = FArrayHelper::getValue($jForm, 'js_e_trigger', array());
+		$eCond      = FArrayHelper::getValue($jForm, 'js_e_condition', array());
+		$eVal       = FArrayHelper::getValue($jForm, 'js_e_value', array());
+		$ePublished = FArrayHelper::getValue($jForm, 'js_published', array());
+		$action     = (array) FArrayHelper::getValue($jForm, 'action', array());
 
 		foreach ($action as $c => $jsAction)
 		{
@@ -1011,7 +1008,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		}
 
 		$ids   = ArrayHelper::toInteger($ids);
-		$db    = Worker::getDbo(true);
+		$db    = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__{package}_elements')->where('group_id IN (' . implode(',', $ids) . ')');
 
@@ -1093,7 +1090,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		foreach ($cid as $id => $groupid)
 		{
 			$rule->load((int) $id);
-			$name         = ArrayHelper::getValue($names, $id, $rule->name);
+			$name         = FArrayHelper::getValue($names, $id, $rule->name);
 			$data         = ArrayHelper::fromObject($rule);
 			$elementModel = $this->getElementPluginModel($data);
 			$elementModel->getElement()->bind($data);
@@ -1150,7 +1147,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		// Remove previous join records if found
 		if ((int) $row->id !== 0)
 		{
-			$jdb   = Worker::getDbo(true);
+			$jdb   = FabrikWorker::getDbo(true);
 			$query = $jdb->getQuery(true);
 			$query->delete('#__{package}_joins')->where('element_id = ' . (int) $row->id);
 			$jdb->setQuery($query);
@@ -1172,7 +1169,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$join->load(array('element_id' => $data['element_id']));
 		$opts           = new stdClass;
 		$opts->type     = 'repeatElement';
-		$opts->pk       = StringHelper::safeQuoteName($tableName . '.id');
+		$opts->pk       = FabrikString::safeQuoteName($tableName . '.id');
 		$data['params'] = json_encode($opts);
 		$join->bind($data);
 		$join->store();
@@ -1181,7 +1178,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$listModel->addIndex($fieldName, 'parent_fk', 'INDEX', '');
 
 		$fields = $listModel->getDBFields($tableName, 'Field');
-		$field  = ArrayHelper::getValue($fields, $row->name, false);
+		$field  = FArrayHelper::getValue($fields, $row->name, false);
 		switch ($field->BaseType)
 		{
 			case 'VARCHAR':
@@ -1244,7 +1241,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		}
 		else
 		{
-			$db    = Worker::getDbo(true);
+			$db    = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('*')->from('#__{package}_elements')->where('id = ' . (int) $item->parent_id);
 			$db->setQuery($query);
@@ -1289,7 +1286,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 			$id = $this->getState($this->getName() . '.id');
 		}
 
-		$db    = Worker::getDbo(true);
+		$db    = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__{package}_elements')->where('parent_id = ' . (int) $id);
 		$db->setQuery($query);
@@ -1323,7 +1320,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 			return $this->_aValidations;
 		}
 
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = FabrikWorker::getPluginManager();
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 
@@ -1336,8 +1333,8 @@ class FabrikAdminModelElement extends FabModelAdmin
 			{
 				$class                = 'Fabrik\Plugins\Validationrule\\' . StringHelper::ucfirst($usedPlugin);
 				$conf                 = array();
-				$conf['name']         = StringHelper::strtolower($usedPlugin);
-				$conf['type']         = StringHelper::strtolower('fabrik_Validationrule');
+				$conf['name']         = JString::strtolower($usedPlugin);
+				$conf['type']         = JString::strtolower('fabrik_Validationrule');
 				$plugIn               = new $class($dispatcher, $conf);
 				$oPlugin              = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
 				$plugIn->elementModel = $elementModel;

@@ -64,7 +64,7 @@ class Webservice extends Lizt
 			$name = $this->_getButtonName();
 			$label = $this->buttonLabel();
 			$imageName = $this->getParams()->get('list_' . $this->buttonPrefix . '_image_name', 'update_col.png');
-			$img = Html::image($imageName, 'list', '', $label);
+			$img = FabrikHelperHTML::image($imageName, 'list', '', $label);
 
 			return '<a data-list="' . $this->context . '" href="#" class="' . $name . ' listplugin" title="' . $label . '">'
 				. $img . '<span>' . $label . '</span></a>';
@@ -81,11 +81,11 @@ class Webservice extends Lizt
 
 	public function button(&$args)
 	{
-		$opts = ArrayHelper::getValue($args, 0, array());
+		$opts = FArrayHelper::getValue($args, 0, array());
 		$model = $this->getModel();
 		$this->buttonAction = $model->actionMethod();
 		$this->context = $model->getRenderContext();
-		$heading = (bool) ArrayHelper::getValue($opts, 'heading', false);
+		$heading = (bool) FArrayHelper::getValue($opts, 'heading', false);
 
 		return $heading;
 	}
@@ -158,7 +158,7 @@ class Webservice extends Lizt
 		$serviceData = $service->get($method, $filters, $startPoint, null);
 		$update = (bool) $params->get('webservice_update_existing', false);
 		$service->storeLocally($model, $serviceData, $fk, $update);
-		$this->msg = Text::sprintf($params->get('webservice_msg'), $service->addedCount, $service->updateCount);
+		$this->msg = JText::sprintf($params->get('webservice_msg'), $service->addedCount, $service->updateCount);
 
 		return true;
 	}

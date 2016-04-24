@@ -75,11 +75,11 @@ class FabrikAdminViewConnection extends JViewLegacy
 		$this->addToolbar();
 		Admin::setViewLayout($this);
 
-		$srcs = Html::framework();
+		$srcs = FabrikHelperHTML::framework();
 		$srcs['Fabrik'] = 'media/com_fabrik/js/fabrik.js';
 
-		Html::iniRequireJS();
-		Html::script($srcs);
+		FabrikHelperHTML::iniRequireJS();
+		FabrikHelperHTML::script($srcs);
 		parent::display($tpl);
 	}
 
@@ -142,6 +142,6 @@ class FabrikAdminViewConnection extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS_EDIT'));
 	}
 }

@@ -53,10 +53,10 @@ class Order extends Lizt
 	 */
 	public function loadJavascriptClass_result()
 	{
-		$ext = Html::isDebug() ? '.js' : '-min.js';
+		$mediaFolder = FabrikHelperHTML::getMediaFolder();
 		$src = parent::loadJavascriptClass_result();
 
-		return array($src, 'media/com_fabrik/js/element' . $ext);
+		return array($src, $mediaFolder . '/element.js');
 	}
 
 	/**

@@ -960,7 +960,7 @@ class FabrikPlugin extends JPlugin
 			// Ignore errors as you could be swapping between connections, with old db table name selected.
 		}
 
-		array_unshift($arr, JHTML::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT'), 'value', 'label'));
+		array_unshift($arr, JHtml::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT'), 'value', 'label'));
 		echo json_encode($arr);
 	}
 

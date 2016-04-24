@@ -513,7 +513,7 @@ class Radius_Search extends Lizt
 		$opts->renderOrder = $this->renderOrder;
 		$opts->offset_y = (int)$params->get('window_offset_y', '0');
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListRadiusSearch($opts)";
+		$this->jsInstance = "new FbListRadius_search($opts)";
 
 		Text::script('PLG_LIST_RADIUS_SEARCH_CLEAR_CONFIRM');
 		Text::script('PLG_LIST_RADIUS_SEARCH_GEOCODE_ERROR');

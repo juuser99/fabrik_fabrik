@@ -84,14 +84,14 @@ class FabrikAdminViewForm extends JViewLegacy
 		$dep                         = new stdClass;
 		$dep->deps                   = array('fab/fabrik');
 		$shim['admin/pluginmanager'] = $dep;
-		Html::iniRequireJS($shim);
+		FabrikHelperHTML::iniRequireJS($shim);
 
-		$srcs                  = Html::framework();
-		$srcs['Fabrik']        = Html::mediaFile('fabrik.js');
+		$srcs                  = FabrikHelperHTML::framework();
+		$srcs['Fabrik']        = FabrikHelperHTML::mediaFile('fabrik.js');
 		$srcs['Namespace']     = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs['PluginManager'] = 'administrator/components/com_fabrik/views/pluginmanager.js';
 
-		Html::script($srcs, $this->js);
+		FabrikHelperHTML::script($srcs, $this->js);
 		parent::display($tpl);
 	}
 
@@ -163,7 +163,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_FORMS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_FORMS_EDIT'));
 	}
 
 	/**
@@ -180,8 +180,8 @@ class FabrikAdminViewForm extends JViewLegacy
 		$input      = JFactory::getApplication()->input;
 		$this->data = $input->post->get('jform', array(), 'array');
 		$this->addSelectSaveToolBar();
-		Html::framework();
-		Html::iniRequireJS();
+		FabrikHelperHTML::framework();
+		FabrikHelperHTML::iniRequireJS();
 
 		parent::display($tpl);
 	}

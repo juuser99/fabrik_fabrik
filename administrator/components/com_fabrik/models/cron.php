@@ -12,10 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\StringHelper;
-use Fabrik\Helpers\Text;
+use Joomla\Utilities\ArrayHelper;
 
 require_once 'fabmodeladmin.php';
 
@@ -46,7 +43,7 @@ class FabrikAdminModelCron extends FabModelAdmin
 	 */
 	public function getTable($type = 'Cron', $prefix = 'FabrikTable', $config = array())
 	{
-		$config['dbo'] = Worker::getDbo(true);
+		$config['dbo'] = FabrikWorker::getDbo(true);
 
 		return FabTable::getInstance($type, $prefix, $config);
 	}
@@ -110,11 +107,11 @@ class FabrikAdminModelCron extends FabModelAdmin
 		JPluginHelper::importPlugin('fabrik_cron');
 
 		// Trim old f2 cron prefix.
-		$plugin = StringHelper::ltrimiword($plugin, 'cron');
+		$plugin = FabrikString::ltrimiword($plugin, 'cron');
 
 		if ($plugin == '')
 		{
-			$str = '<div class="alert">' . Text::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
+			$str = '<div class="alert">' . FText::_('COM_FABRIK_SELECT_A_PLUGIN') . '</div>';
 		}
 		else
 		{
@@ -134,7 +131,7 @@ class FabrikAdminModelCron extends FabModelAdmin
 	 */
 	public function save($data)
 	{
-		if (ArrayHelper::getValue($data, 'lastrun') == '')
+		if (FArrayHelper::getValue($data, 'lastrun') == '')
 		{
 			$date            = JFactory::getDate();
 			$data['lastrun'] = $date->toSql();

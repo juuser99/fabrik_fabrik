@@ -12,9 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\Text;
+use Joomla\Utilities\ArrayHelper;
 
 require_once 'fabmodeladmin.php';
 
@@ -45,7 +43,7 @@ class FabrikAdminModelVisualization extends FabModelAdmin
 	 */
 	public function getTable($type = 'Visualization', $prefix = 'FabrikTable', $config = array())
 	{
-		$config['dbo'] = Worker::getDbo(true);
+		$config['dbo'] = FabrikWorker::getDbo(true);
 
 		return FabTable::getInstance($type, $prefix, $config);
 	}
@@ -118,7 +116,7 @@ class FabrikAdminModelVisualization extends FabModelAdmin
 
 		if ($plugin == '')
 		{
-			$str = Text::_('COM_FABRIK_SELECT_A_PLUGIN');
+			$str = FText::_('COM_FABRIK_SELECT_A_PLUGIN');
 		}
 		else
 		{

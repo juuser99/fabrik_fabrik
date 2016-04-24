@@ -239,7 +239,7 @@ class Gmail extends Cron
 			imap_expunge($mailBox);
 			imap_close($mailBox);
 		}
-		
+
 		return $numProcessed;
 	}
 

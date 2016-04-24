@@ -1535,7 +1535,7 @@ class FabrikFEModelGroup extends FabModel
 			}
 		}
 
-		JError::raiseWarning(E_ERROR, Text::sprintf('COM_FABRIK_JOINED_DATA_BUT_FK_NOT_PUBLISHED', $fullFk));
+		$this->app->enqueueMessage(Text::sprintf('COM_FABRIK_JOINED_DATA_BUT_FK_NOT_PUBLISHED', $fullFk), 'error');
 
 		return false;
 	}

@@ -74,9 +74,9 @@ class JUser extends Form
 	protected $passwordField = '';
 
 	protected $passwordValue = '';
-	
+
 	protected $nameValue = '';
-	
+
 	protected $userIdField;
 
 	protected $emailValue = '';

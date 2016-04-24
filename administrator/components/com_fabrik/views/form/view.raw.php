@@ -58,6 +58,9 @@ class FabrikAdminViewForm extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
+		$input = $app->input;
+		$w = new FabrikWorker;
+		$config = JFactory::getConfig();
 		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$model->render();
 
@@ -65,7 +68,7 @@ class FabrikAdminViewForm extends JViewLegacy
 		{
 			if (!$app->isAdmin())
 			{
-				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
+				echo FText::_('COM_FABRIK_FORM_NOT_PUBLISHED');
 
 				return false;
 			}
@@ -75,7 +78,7 @@ class FabrikAdminViewForm extends JViewLegacy
 
 		if ($this->access == 0)
 		{
-			return JError::raiseWarning(500, Text::_('JERROR_ALERTNOAUTHOR'));
+			return JError::raiseWarning(500, FText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		$model->getJoinGroupIds();

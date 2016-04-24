@@ -21,7 +21,7 @@ defined('_JEXEC') or die('Restricted access');
  * @since       3.0
  */
 
-class Js extends LiZt
+class Js extends Lizt
 {
 	/**
 	 * Button prefix

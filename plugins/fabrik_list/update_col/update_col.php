@@ -515,7 +515,7 @@ class Update_Col extends Lizt
 		$opts->form = $this->userSelectForm();
 		$opts->renderOrder = $this->renderOrder;
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListUpdateCol($opts)";
+		$this->jsInstance = "new FbListUpdate_col($opts)";
 
 		return true;
 	}

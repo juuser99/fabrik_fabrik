@@ -292,8 +292,7 @@ class Radius_Lookup extends Lizt
 		$opts->myloc = $params->get('myloc', 1) == 1 ? true : false;
 		$opts->renderOrder = $this->renderOrder;
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListRadiusLookup($opts)";
-
+		$this->jsInstance = "new FbListRadius_lookup($opts)";
 		return true;
 	}
 
