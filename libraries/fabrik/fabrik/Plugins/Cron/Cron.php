@@ -163,4 +163,15 @@ class Cron extends \FabrikPlugin
 		return $this->reschedule;
 	}
 
+	/**
+	 * Do the plugin action
+	 *
+	 * @param   array &$data data
+	 *
+	 * @return  int  number of records updated
+	 */
+	public function process(&$data)
+	{
+		return 0;
+	}
 }
