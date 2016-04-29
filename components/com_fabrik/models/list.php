@@ -1504,7 +1504,7 @@ class FabrikFEModelList extends JModelForm
 
 						if ($this->canViewDetails())
 						{
-							$row->fabrik_view = $viewLink;
+							$row->fabrik_view = $viewLink; 
 							$row->fabrik_actions['fabrik_view'] = $row->fabrik_view;
 						}
 					}
@@ -1622,7 +1622,7 @@ class FabrikFEModelList extends JModelForm
 				}
 			}
 		}
-
+//echo "<pre>";print_r($row->fabrik_actions);echo "</pre>";
 		$args['data'] = &$data;
 		$pluginButtons = $this->getPluginButtons();
 
@@ -3896,20 +3896,20 @@ class FabrikFEModelList extends JModelForm
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->allow_drop = in_array($this->getParams()->get('allow_drop'), $groups);
 		}
-/*		
-		
-		// Felixkat - Commenting out as this shouldn't have got here. 
-		
+/*
+
+		// Felixkat - Commenting out as this shouldn't have got here.
+
 		// Retrieve session set in plugin-cron
 		$session = JFactory::getSession();
 		$fabrikCron = $session->get('fabrikCron', '');
-			
+
 		// If CSV import is running and Drop Data is set.....
 		if ($this->app->input->getString('cron_csvimport', '') || (is_object($fabrikCron) && $fabrikCron->dropData == 1))
 		{
 			$session = JFactory::getSession();
 			$fabrikCron = $session->get('fabrikCron', '');
-			
+
 			// If Secret is set, (this caters for external Wget), OR no querystring, i.e &fabrik_cron=1, (this caters for automatic cron)
 			if ($fabrikCron->requireJS == 1 && $fabrikCron->secret == 1 || ($this->app->input->getString('fabrik_cron') == ''))
 			{
@@ -3917,7 +3917,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		// Felixkat
 		}
-*/		
+*/
 		return $this->access->allow_drop;
 	}
 
@@ -6183,10 +6183,10 @@ class FabrikFEModelList extends JModelForm
 	 *
 	 * @return  array	of html code for each filter
 	 */
-
 	protected function &makeFilters($container = 'listform_1', $type = 'list', $id = '', $ref = '')
 	{
 		$aFilters = array();
+		$fScript  = array();
 		$opts = new stdClass;
 		$opts->container = $container;
 		$opts->type = $type;
@@ -6215,14 +6215,14 @@ class FabrikFEModelList extends JModelForm
 
 			if ($params->get('search-mode-advanced') == 1)
 			{
-				$opts = array();
-				$opts[] = JHTML::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
-				$opts[] = JHTML::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
-				$opts[] = JHTML::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
-				$opts[] = JHTML::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
+				$searchOpts = array();
+				$searchOpts[] = JHtml::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
+				$searchOpts[] = JHtml::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
+				$searchOpts[] = JHtml::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
+				$searchOpts[] = JHtml::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
 				$mode = $this->app->getUserStateFromRequest('com_' . $package . '.list' . $this->getRenderContext() . '.searchallmode', 'search-mode-advanced');
 				$o->filter .= '&nbsp;'
-						. JHTML::_('select.genericList', $opts, 'search-mode-advanced', "class='fabrik_filter'", 'value', 'text', $mode);
+						. JHtml::_('select.genericList', $searchOpts, 'search-mode-advanced', "class='fabrik_filter'", 'value', 'text', $mode);
 			}
 
 			$o->name = 'all';
@@ -8695,7 +8695,7 @@ class FabrikFEModelList extends JModelForm
 
 		if ($incSelect != '')
 		{
-			$fieldNames[] = JHTML::_('select.option', '', $incSelect);
+			$fieldNames[] = JHtml::_('select.option', '', $incSelect);
 		}
 
 		if (is_array($aFields))
@@ -8704,11 +8704,11 @@ class FabrikFEModelList extends JModelForm
 			{
 				if ($incTableName)
 				{
-					$fieldNames[] = JHTML::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
+					$fieldNames[] = JHtml::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
 				}
 				else
 				{
-					$fieldNames[] = JHTML::_('select.option', $oField->Field);
+					$fieldNames[] = JHtml::_('select.option', $oField->Field);
 				}
 			}
 		}

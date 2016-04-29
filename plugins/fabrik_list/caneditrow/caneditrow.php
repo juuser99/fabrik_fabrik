@@ -158,7 +158,7 @@ class Caneditrow extends Lizt
 		$opts = $this->getElementJSOptions();
 		$opts->acl = $this->acl;
 		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListCanEditRow($opts)";
+		$this->jsInstance = "new FbListCaneditrow($opts)";
 
 		return true;
 	}
