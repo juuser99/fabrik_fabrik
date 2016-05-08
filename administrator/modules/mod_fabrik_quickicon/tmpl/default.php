@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \Fabrik\Helpers\Html;
+
 ?>
 <?php if (!empty($buttons) && $menuLinks): ?>
 	<div class="cpanel">
@@ -47,4 +49,4 @@ foreach ($lists as $list) :
 	</p>';
 endforeach;
 
-echo FabrikHelperHTML::bootstrapGrid($items, 2, '', true);
+echo Html::bootstrapGrid($items, 2, '', true);

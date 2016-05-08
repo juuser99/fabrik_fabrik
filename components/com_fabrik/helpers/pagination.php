@@ -357,7 +357,7 @@ class Pagination extends \JPagination
 		$displayData->list = $list;
 		$paths[]           = JPATH_THEMES . '/' . JFactory::getApplication()->getTemplate() . '/html/layouts/com_fabrik/list_' . $this->id;
 
-		$layout = FabrikHelperHTML::getLayout('pagination.fabrik-pagination-links', $paths);
+		$layout = Html::getLayout('pagination.fabrik-pagination-links', $paths);
 
 		return $layout->render($displayData);
 	}

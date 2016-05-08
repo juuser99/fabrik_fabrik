@@ -11,9 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
-
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\StringHelper;
+use Fabrik\Helpers\Text;
 
 /**
  * Renders widget for (de)selecting available groups when editing a from
@@ -47,9 +49,9 @@ class JFormFieldSwapList extends JFormFieldList
 		$script[] = "\tswaplist = new SwapList('$from', '$this->id','$add', '$remove', '$up', '$down');";
 		$script[] = "});";
 
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
-		FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/swaplist.js', implode("\n", $script));
+		Html::framework();
+		Html::iniRequireJS();
+		Html::script('administrator/components/com_fabrik/models/fields/swaplist.js', implode("\n", $script));
 
 		list($this->currentGroups, $this->currentGroupList) = $this->getCurrentGroupList();
 		list($this->groups, $this->groupList) = $this->getGroupList();
@@ -59,7 +61,7 @@ class JFormFieldSwapList extends JFormFieldList
 
 		if (empty($this->groups) && empty($this->currentGroups))
 		{
-			return FText::_('COM_FABRIK_NO_GROUPS_AVAILABLE');
+			return Text::_('COM_FABRIK_NO_GROUPS_AVAILABLE');
 		}
 		else
 		{
@@ -98,7 +100,7 @@ class JFormFieldSwapList extends JFormFieldList
 	 */
 	public function getGroupList()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('DISTINCT(group_id)')->from('#__{package}_formgroup');
 		$db->setQuery($query);
@@ -113,7 +115,7 @@ class JFormFieldSwapList extends JFormFieldList
 		}
 
 		$query->where('published <> -2');
-		$query->order(FabrikString::safeColName('text'));
+		$query->order(StringHelper::safeColName('text'));
 		$db->setQuery($query);
 		$groups = $db->loadObjectList();
 		$list = JHTML::_('select.genericlist', $groups, 'jform[groups]', 'class="inputbox input-xxlarge" size="10"', 'value', 'text', null,
@@ -129,7 +131,7 @@ class JFormFieldSwapList extends JFormFieldList
 	 */
 	public function getCurrentGroupList()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('fg.group_id AS value, g.name AS text');
 		$query->from('#__{package}_formgroup AS fg');

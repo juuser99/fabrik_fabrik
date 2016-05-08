@@ -56,7 +56,7 @@ class FabrikAdminControllerDetails extends JControllerForm
 		$view->setLayout($viewLayout);
 
 		// @TODO check for cached version
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_FORMS'), 'file-2');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_FORMS'), 'file-2');
 
 		$view->display();
 		Admin::addSubmenu($input->getWord('view', 'lists'));

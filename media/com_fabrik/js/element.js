@@ -773,24 +773,15 @@ define(['jquery'], function (jQuery) {
         },
 
         hide: function () {
-            var c = this.getContainer();
-            if (c) {
-                c.hide();
-            }
+            jQuery(this.getContainer()).hide()
         },
 
         show: function () {
-            var c = this.getContainer();
-            if (c) {
-                c.show();
-            }
+            jQuery(this.getContainer()).show();
         },
 
         toggle: function () {
-            var c = this.getContainer();
-            if (c) {
-                c.toggle();
-            }
+            jQuery(this.getContainer()).toggle();
         },
 
         /**

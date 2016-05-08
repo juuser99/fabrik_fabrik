@@ -21,8 +21,6 @@ jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
 
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
-
 /**
  * Renders a list of tables, either fabrik lists, or db tables
  *
@@ -52,7 +50,7 @@ class JFormFieldTables extends JFormFieldList
 		$connectionName = 'connection_id';
 		$connId         = (int) $this->form->getValue($connectionName);
 		$options        = array();
-		$db             = FabrikWorker::getDbo(true);
+		$db             = Worker::getDbo(true);
 
 		// DB join element observes 'params___join_conn_id'
 		if (strstr($connectionDd, 'params_') && $connId === 0)
@@ -116,16 +114,16 @@ class JFormFieldTables extends JFormFieldList
 				'Namespace' => 'administrator/components/com_fabrik/views/namespace.js',
 				'Tables' => 'administrator/components/com_fabrik/models/fields/tables.js'
 			);
-			FabrikHelperHTML::script($src, implode("\n", $script));
+			Html::script($src, implode("\n", $script));
 
 			$this->value = '';
 		}
 
 		$html = parent::getInput();
 		$html .= "<img style='margin-left:10px;display:none' id='" . $this->id . "_loader' src='components/com_fabrik/images/ajax-loader.gif' alt='"
-			. FText::_('LOADING') . "' />";
-		FabrikHelperHTML::framework();
-		FabrikHelperHTML::iniRequireJS();
+			. Text::_('LOADING') . "' />";
+		Html::framework();
+		Html::iniRequireJS();
 
 		return $html;
 	}
