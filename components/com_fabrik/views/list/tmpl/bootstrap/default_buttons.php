@@ -122,27 +122,10 @@ if ($this->emptyLink) :?>
 endif;
 ?>
 </ul>
-<?php if (array_key_exists('all', $this->filters) || $this->filter_action != 'onchange') {
-?>
-<ul class="nav pull-right">
-	<li>
-	<div <?php echo $this->filter_action != 'onchange' ? 'class="input-append"' : ''; ?>>
-	<?php if (array_key_exists('all', $this->filters)) {
-		echo $this->filters['all']->element;
-
-	if ($this->filter_action != 'onchange') {?>
-
-		<input type="button" class="btn fabrik_filter_submit button" value="<?php echo Text::_('COM_FABRIK_GO');?>" name="filter" >
-
-	<?php
-	};?>
-
-	<?php };
-	?>
-	</div>
-	</li>
-</ul>
 <?php
-}
+echo Html::getLayout('list.filter.search-all')->render((object) array(
+	'filters' => $this->filters,
+	'action' => $this->filter_action
+));
 ?>
 </div>

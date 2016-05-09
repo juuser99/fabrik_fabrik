@@ -6184,7 +6184,6 @@ class FabrikFEModelList extends JModelForm
 	 *
 	 * @return  array	of html code for each filter
 	 */
-
 	protected function &makeFilters($container = 'listform_1', $type = 'list', $id = '', $ref = '')
 	{
 		$aFilters = array();
@@ -6204,26 +6203,29 @@ class FabrikFEModelList extends JModelForm
 			|| ($params->get('search-mode', '0') == 'OR'))
 		{
 			// One field to search them all (and in the darkness bind them)
-			$requestKey = $this->getFilterModel()->getSearchAllRequestKey();
-			$v = $this->getFilterModel()->getSearchAllValue('html');
 			$o = new stdClass;
 			$searchLabel = $params->get('search-all-label', Text::_('COM_FABRIK_SEARCH'));
-			$class = 'fabrik_filter search-query input-medium';
 			$o->id = 'searchall_' . $this->getRenderContext();
 			$o->displayValue = '';
-			$o->filter = '<input type="search" size="20" placeholder="' . $searchLabel . '" value="' . $v
-			. '" class="' . $class . '" name="' . $requestKey . '" id="' . $id . '" />';
+
+			$o->filter = Html::getLayout('list.filter.search-all-input')->render((object) array(
+				'placeholder' => $searchLabel,
+				'value' => $this->getFilterModel()->getSearchAllValue('html'),
+				'class' => 'fabrik_filter search-query input-medium',
+				'name' => $this->getFilterModel()->getSearchAllRequestKey(),
+				'id' => $id
+			));
 
 			if ($params->get('search-mode-advanced') == 1)
 			{
 				$opts = array();
-				$opts[] = JHTML::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
-				$opts[] = JHTML::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
-				$opts[] = JHTML::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
-				$opts[] = JHTML::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
+				$opts[] = JHtml::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
+				$opts[] = JHtml::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
+				$opts[] = JHtml::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
+				$opts[] = JHtml::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
 				$mode = $this->app->getUserStateFromRequest('com_' . $package . '.list' . $this->getRenderContext() . '.searchallmode', 'search-mode-advanced');
 				$o->filter .= '&nbsp;'
-						. JHTML::_('select.genericList', $opts, 'search-mode-advanced', "class='fabrik_filter'", 'value', 'text', $mode);
+						. JHtml::_('select.genericList', $opts, 'search-mode-advanced', "class='fabrik_filter'", 'value', 'text', $mode);
 			}
 
 			$o->name = 'all';
@@ -8686,7 +8688,7 @@ class FabrikFEModelList extends JModelForm
 
 		if ($incSelect != '')
 		{
-			$fieldNames[] = JHTML::_('select.option', '', $incSelect);
+			$fieldNames[] = JHtml::_('select.option', '', $incSelect);
 		}
 
 		if (is_array($aFields))
@@ -8695,17 +8697,17 @@ class FabrikFEModelList extends JModelForm
 			{
 				if ($incTableName)
 				{
-					$fieldNames[] = JHTML::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
+					$fieldNames[] = JHtml::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
 				}
 				else
 				{
-					$fieldNames[] = JHTML::_('select.option', $oField->Field);
+					$fieldNames[] = JHtml::_('select.option', $oField->Field);
 				}
 			}
 		}
 
 		$opts = 'class="' . $className . '" size="1" ';
-		$fieldDropDown = JHTML::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
+		$fieldDropDown = JHtml::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
 
 		return str_replace("\n", "", $fieldDropDown);
 	}
