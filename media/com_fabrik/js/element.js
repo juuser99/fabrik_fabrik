@@ -318,6 +318,10 @@ define(['jquery'], function (jQuery) {
             this.update(val);
         },
 
+        /**
+         * Get the fields value
+         * @returns {string|array}
+         */
         getValue: function () {
             if (this.element) {
                 if (this.options.editable) {
@@ -397,6 +401,8 @@ define(['jquery'], function (jQuery) {
 
         /**
          * get the wrapper dom element that contains all of the elements dom objects
+         *
+         * @return {DomNode|Boolean}
          */
         getContainer: function () {
             var c = jQuery(this.element).closest('.fabrikElementContainer');
@@ -435,7 +441,7 @@ define(['jquery'], function (jQuery) {
         /**
          * Get all tips attached to the element
          *
-         * @return array of tips
+         * @return {array} of tips
          */
         tips: function () {
             return jQuery(Fabrik.tips.elements).filter(function (index, t) {

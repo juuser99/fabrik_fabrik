@@ -16,7 +16,17 @@ use Fabrik\Helpers\Html;
 
 $d = $displayData;
 
+$btnClass = $d->action !== 'dropdown' ? 'btn btn-default' : '';
+$class    = $btnClass . 'fabrik_view fabrik__rowlink';
+$viewText = $d->action === 'dropdown' ? $d->viewLabel : '<span class="hidden">' . $d->viewLabel . '</span>';
+
 ?>
-<a data-loadmethod="<?php echo $d->loadMethod;?>" class="<?php echo $d->class;?> btn-default" <?php echo $d->detailsAttributes; ?>
-	data-list="<?php echo $d->dataList; ?>" href="<?php echo $d->link; ?>" title="<?php echo $d->viewLabel;?>" target="<?php echo $d->viewLinkTarget; ?>">
-<?php echo Html::image($d->list_detail_link_icon, 'list', '', array('alt' => $d->viewLabel));?> <?php echo $d->viewText; ?></a>
+<a data-loadmethod="<?php echo $d->loadMethod; ?>"
+	class="<?php echo $class; ?>" <?php echo $d->detailsAttributes; ?>
+	data-list="<?php echo $d->dataList; ?>"
+	href="<?php echo $d->link; ?>"
+	title="<?php echo $d->viewLabel; ?>"
+	target="<?php echo $d->viewLinkTarget; ?>">
+	<?php echo Html::image($d->list_detail_link_icon, 'list', '', array('alt' => $d->viewLabel)); ?>
+	<?php echo $viewText; ?>
+</a>

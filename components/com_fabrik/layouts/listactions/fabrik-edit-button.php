@@ -14,9 +14,16 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 
-$d = $displayData;
+$d        = $displayData;
+$btnClass = $d->action !== 'dropdown' ? 'btn btn-default' : '';
+$class    = $btnClass . 'fabrik_edit fabrik__rowlink';
+$editText = $d->action == 'dropdown' ? $d->editLabel : '<span class="hidden">' . $d->editLabel . '</span>';
 
 ?>
-<a data-loadmethod="<?php echo $d->loadMethod; ?>" class="<?php echo $d->class;?> btn-default" <?php echo $d->editAttributes;?>
- data-list="<?php echo $d->dataList;?>" href="<?php echo $d->editLink;?>" title="<?php echo $d->editLabel;?>">
-	<?php echo Html::image('edit.png', 'list', '', array('alt' => $d->editLabel));?> <?php echo $d->editText; ?></a>
+<a data-loadmethod="<?php echo $d->loadMethod; ?>" 
+	class="<?php echo $class; ?> " <?php echo $d->editAttributes; ?>
+	data-list="<?php echo $d->dataList; ?>" 
+	href="<?php echo $d->editLink; ?>"
+	title="<?php echo $d->editLabel; ?>">
+	<?php echo Html::image('edit.png', 'list', '', array('alt' => $d->editLabel)); ?><?php echo $editText; ?>
+</a>
