@@ -6238,6 +6238,7 @@ class FabrikFEModelList extends JModelForm
 		* $groups = $this->getFormGroupElementData();
 		*/
 		$groups = $this->getFormGroupElementData();
+		$fScript= array();
 
 		foreach ($groups as $groupModel)
 		{

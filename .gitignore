@@ -13,6 +13,7 @@ administrator/*
 !administrator/components/com_fabrik/
 administrator/components/com_fabrik/update/
 components/*
+!components/com_comprofiler
 !components/com_fabrik
 components/com_fabrik/js/*
 components/com_fabrik/user_ajax.php
@@ -41,7 +42,12 @@ node_modules/*
 plugins/*
 plugins/search/*
 !plugins/search/fabrik
+!plugins/search/fabrik/*
 plugins/system/*
+!plugins/system/fabrik/*
+!plugins/system/fabrikcron/
+!plugins/system/fabrikcron/*
+!plugins/system/fabrikj2store/*
 plugins/fabrik_list/sphera_php_events
 plugins/fabrik_list/download/libs
 !plugins/system/fabrik/
@@ -59,7 +65,7 @@ plugins/fabrik_list/php/scripts/
 plugins/community/*
 !plugins/community/fabrik/
 premium/*
-!tttplugins/system/fabrikcron/
+
 robots.txt
 sql/*
 tests/*

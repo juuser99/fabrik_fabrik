@@ -3231,7 +3231,7 @@ class Element extends Plugin
 
 			if (!in_array($element->filter_type, array('checkbox', 'multiselect')))
 			{
-				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
+				array_unshift($rows, JHtml::_('select.option', '', $this->filterSelectLabel()));
 			}
 
 			$this->getFilterDisplayValues($default, $rows);
@@ -3302,9 +3302,19 @@ class Element extends Plugin
 		$max  = count($rows) < 7 ? count($rows) : 7;
 		$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
 		$v    = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
-		$data = 'data-filter-name="' . $this->getFullName(true, false) . '"';
 
-		return JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" ' . $size . ' ' . $data, 'value', 'text', $default, $id);
+		$layout = Html::getLayout('element.list-filter-dropdown');
+		$displayData = (object) array(
+			'rows' => $rows,
+			'name' => $v,
+			'class' => $class,
+			'filterName' => $this->getFullName(true, false),
+			'size' => $size,
+			'default' => (array) $default,
+			'htmlId' => $id
+		);
+
+		return $layout->render($displayData);
 	}
 
 	/**
@@ -3425,10 +3435,10 @@ class Element extends Plugin
 		if ($type === 'list')
 		{
 			$return[] = '<span class="fabrikFilterRangeLabel">' . Text::_('COM_FABRIK_BETWEEN') . '</span>';
-			$return[] = JHTML::_('select.genericlist', $rows, $v . '[0]', $attributes, 'value', 'text', $def0, $element->name . '_filter_range_0');
+			$return[] = JHtml::_('select.genericlist', $rows, $v . '[0]', $attributes, 'value', 'text', $def0, $element->name . '_filter_range_0');
 			$return[] = '<br />';
 			$return[] = '<span class="fabrikFilterRangeLabel">' . Text::_('COM_FABRIK_AND') . '</span>';
-			$return[] = JHTML::_('select.genericlist', $rows, $v . '[1]', $attributes, 'value', 'text', $def1, $element->name . '_filter_range_1');
+			$return[] = JHtml::_('select.genericlist', $rows, $v . '[1]', $attributes, 'value', 'text', $def1, $element->name . '_filter_range_1');
 		}
 		else
 		{
@@ -3584,7 +3594,7 @@ class Element extends Plugin
 						if (!in_array($vals2[$jj], $allValues))
 						{
 							$allValues[] = $vals2[$jj];
-							$rows[]      = JHTML::_('select.option', $vals2[$jj], $txt2[$jj]);
+							$rows[]      = JHtml::_('select.option', $vals2[$jj], $txt2[$jj]);
 						}
 					}
 				}
@@ -3696,7 +3706,7 @@ class Element extends Plugin
 		else
 		{
 			/**
-			 * Paul - According to tooltip, $phpOpts should be of form "array(JHTML::_('select.option', '1', 'one'))"
+			 * Paul - According to tooltip, $phpOpts should be of form "array(JHtml::_('select.option', '1', 'one'))"
 			 * This is an array of objects with properties text and value.
 			 * If user has mis-specified this we should tell them.
 			 *
@@ -3755,7 +3765,7 @@ class Element extends Plugin
 	 *
 	 * @since  3.0.7
 	 *
-	 * @return mixed  false if no, otherwise needs to return array of JHTML::options
+	 * @return mixed  false if no, otherwise needs to return array of JHtml::options
 	 */
 	protected function getPhpOptions($data = array())
 	{
@@ -4079,7 +4089,7 @@ class Element extends Plugin
 
 		for ($i = 0; $i < count($values); $i++)
 		{
-			$return[] = JHTML::_('select.option', $values[$i], $labels[$i]);
+			$return[] = JHtml::_('select.option', $values[$i], $labels[$i]);
 		}
 
 		return $return;
@@ -7611,8 +7621,9 @@ class Element extends Plugin
 	 * Its actually an instance of LayoutFile which inverses the ordering added include paths.
 	 * In LayoutFile the addedPath takes precedence over the default paths, which makes more sense!
 	 *
-	 * @param   string $type  form/details/list
-	 * @param   array  $paths Optional paths to add as includes
+	 * @param   string $type    form/details/list
+	 * @param   array  $paths   Optional paths to add as includes
+	 * @param   array  $options Layout options
 	 *
 	 * @return LayoutFile
 	 */

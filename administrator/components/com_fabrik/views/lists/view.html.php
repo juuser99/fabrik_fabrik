@@ -144,7 +144,6 @@ class FabrikAdminViewLists extends JViewLegacy
 
 		JToolBarHelper::divider();
 
-		echo "state = " . $this->state->get('filter.published');
 		if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete'))
 		{
 			JToolBarHelper::deleteList('', 'lists.delete', 'JTOOLBAR_EMPTY_TRASH');
