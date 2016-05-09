@@ -3464,12 +3464,11 @@ class Element extends Plugin
 		$default = (string) $default;
 		$default = stripslashes($default);
 		$default = htmlspecialchars($default);
-		$size    = (int) $this->getParams()->get('filter_length', 20);
 		$class   = $this->filterClass();
 		$id      = $this->getHTMLId() . 'value';
 
 		return '<input type="' . $type . '" data-filter-name="' . $this->getFullName(true, false) .
-		'" name="' . $v . '" class="' . $class . '" size="' . $size . '" value="' . $default . '" id="'
+		'" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="'
 		. $id . '" />';
 	}
 
@@ -3497,7 +3496,6 @@ class Element extends Plugin
 		$default   = htmlspecialchars($default);
 		$id        = $this->getHTMLId() . 'value';
 		$class     = $this->filterClass();
-		$size      = (int) $this->getParams()->get('filter_length', 20);
 		/**
 		 * $$$ rob 28/10/2011 using selector rather than element id so we can have n modules with the same filters
 		 * showing and not produce invalid html & duplicate js calls
@@ -3506,7 +3504,7 @@ class Element extends Plugin
 		$return[] = '<input type="hidden" " data-filter-name="' . $this->getFullName(true, false) .
 			'" name="' . $v . '" class="' . $class . ' ' . $id . '" value="' . $default . '" />';
 		$return[] = '<input type="text" name="auto-complete' . $this->getElement()->id . '" class="' . $class . ' autocomplete-trigger '
-			. $id . '-auto-complete" size="' . $size . '" value="' . $labelValue . '" />';
+			. $id . '-auto-complete" value="' . $labelValue . '" />';
 		$opts     = array();
 
 		if ($normal)
