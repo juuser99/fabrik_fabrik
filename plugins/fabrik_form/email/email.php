@@ -344,7 +344,7 @@ class Email extends Form
 					}
 				}
 
-				$res = FabrikWorker::sendMail(
+				$res = Worker::sendMail(
 					$emailFrom, $emailFromName, $email, $thisSubject, $thisMessage,
 					$htmlEmail, $cc, $bcc, $thisAttachments, $returnPath, $returnPathName
 				);
@@ -365,7 +365,7 @@ class Email extends Form
 			}
 			else
 			{
-				$this->app->enqueueMessage(JText::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email), 'notice');
+				$this->app->enqueueMessage(Text::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL_INVALID_ADDRESS', $email), 'notice');
 			}
 		}
 

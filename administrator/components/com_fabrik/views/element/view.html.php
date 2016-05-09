@@ -148,7 +148,7 @@ class FabrikAdminViewElement extends JViewLegacy
 
 	protected function addConfirmToolbar()
 	{
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_EDIT'), 'checkbox-unchecked');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_ELEMENT_EDIT'), 'checkbox-unchecked');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
@@ -217,6 +217,6 @@ class FabrikAdminViewElement extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT'));
 	}
 }

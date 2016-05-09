@@ -134,7 +134,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, FText::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, Text::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=connections');
 

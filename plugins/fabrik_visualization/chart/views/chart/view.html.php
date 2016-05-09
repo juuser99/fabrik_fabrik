@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Text;
+
 jimport('joomla.application.component.view');
 
 /**
@@ -35,7 +38,7 @@ class FabrikViewChart extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$srcs = FabrikHelperHTML::framework();
+		$srcs = Html::framework();
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 		$srcs['AdvancedSearch'] = 'media/com_fabrik/js/advanced-search.js';
 		$model = $this->getModel();
@@ -45,14 +48,14 @@ class FabrikViewChart extends JViewLegacy
 
 		if (!$model->canView())
 		{
-			echo FText::_('JERROR_ALERTNOAUTHOR');
+			echo Text::_('JERROR_ALERTNOAUTHOR');
 
 			return false;
 		}
 
 		if ($this->row->published == 0)
 		{
-			JError::raiseWarning(500, FText::_('JERROR_ALERTNOAUTHOR'));
+			JError::raiseWarning(500, Text::_('JERROR_ALERTNOAUTHOR'));
 
 			return '';
 		}
@@ -71,7 +74,7 @@ class FabrikViewChart extends JViewLegacy
 		$params = $model->getParams();
 		$this->params = $params;
 		$viewName = $this->getName();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$plugin = $pluginManager->getPlugIn('chart', 'visualization');
 		$this->containerId = $this->get('ContainerId');
 		$this->filters = $this->get('Filters');
@@ -81,7 +84,7 @@ class FabrikViewChart extends JViewLegacy
 		$tpl = $params->get('chart_layout', $tpl);
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/chart/views/chart/tmpl/' . $tpl;
 		$this->_setPath('template', $tmplpath);
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/chart/views/chart/tmpl/' . $tpl . '/template.css');
+		Html::stylesheetFromPath('plugins/fabrik_visualization/chart/views/chart/tmpl/' . $tpl . '/template.css');
 
 		// Assign something to Fabrik.blocks to ensure we can clear filters
 		$ref = $model->getJSRenderContext();
@@ -89,8 +92,8 @@ class FabrikViewChart extends JViewLegacy
 		$js .= "\n" . "Fabrik.addBlock('$ref', $ref);";
 		$js .= $model->getFilterJs();
 
-		FabrikHelperHTML::iniRequireJs($model->getShim());
-		FabrikHelperHTML::script($srcs, $js);
+		Html::iniRequireJs($model->getShim());
+		Html::script($srcs, $js);
 		echo parent::display();
 	}
 }

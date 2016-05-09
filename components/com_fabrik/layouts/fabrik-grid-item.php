@@ -9,7 +9,7 @@ use Fabrik\Helpers\StringHelper;
 
 $d = $displayData;
 
-$thisName = $d->type === 'checkbox' ? FabrikString::rtrimword($d->name, '[]') . '[' . $d->i . ']' : $d->name;
+$thisName = $d->type === 'checkbox' ? StringHelper::rtrimword($d->name, '[]') . '[' . $d->i . ']' : $d->name;
 $label    = '<span>' . $d->label . '</span>';
 
 $inputClass = '';

@@ -76,7 +76,7 @@ class ContentType
 					$name  = $attr->nodeName;
 					$value = (string) $attr->nodeValue;
 
-					if (FabrikWorker::isJSON($value))
+					if (Worker::isJSON($value))
 					{
 						$value = json_decode($value);
 					}
@@ -118,7 +118,7 @@ class ContentType
 			}
 			if ($key === 'params')
 			{
-				$params = FabrikWorker::JSONtoData($value);
+				$params = Worker::JSONtoData($value);
 				$p      = $doc->createElement('params');
 				foreach ($params as $pKey => $pValue)
 				{

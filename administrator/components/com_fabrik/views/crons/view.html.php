@@ -50,7 +50,7 @@ class FabrikAdminViewCrons extends JViewLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   string $tpl Template
+	 * @param   string  $tpl  Template
 	 *
 	 * @return  void
 	 */
@@ -136,7 +136,7 @@ class FabrikAdminViewCrons extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS', false, FText::_('JHELP_COMPONENTS_FABRIK_CRONS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS', false, Text::_('JHELP_COMPONENTS_FABRIK_CRONS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=crons');
 

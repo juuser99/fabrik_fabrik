@@ -13,7 +13,8 @@ namespace Fabrik\Plugins\Lizt;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  *  Determines if a row is deletable
@@ -74,12 +75,12 @@ class Candeleterow extends Lizt
 
 		if (!empty($canDeleteRowEval))
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$data = ArrayHelper::fromObject($data);
 			$canDeleteRowEval = $w->parseMessageForPlaceHolder($canDeleteRowEval, $data);
-			FabrikWorker::clearEval();
+			Worker::clearEval();
 			$canDeleteRowEval = @eval($canDeleteRowEval);
-			FabrikWorker::logEval($canDeleteRowEval, 'Caught exception on eval in can delete row : %s');
+			Worker::logEval($canDeleteRowEval, 'Caught exception on eval in can delete row : %s');
 
 			return $canDeleteRowEval;
 		}

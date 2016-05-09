@@ -12,6 +12,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
+
 /**
  * Fabrik Admin Plugin Model
  * Used for loading via ajax form plugins
@@ -74,7 +78,7 @@ class FabrikAdminModelPlugin extends JModelLegacy
 
 		$data                      = $data + (array) json_decode($item->params);
 		$data['plugin']            = $this->getState('plugin');
-		$data['params']            = (array) FArrayHelper::getValue($data, 'params', array());
+		$data['params']            = (array) ArrayHelper::getValue($data, 'params', array());
 		$data['params']['plugins'] = $this->getState('plugin');
 
 		$data['validationrule']['plugin']           = $this->getState('plugin');
@@ -87,18 +91,18 @@ class FabrikAdminModelPlugin extends JModelLegacy
 		$c = $this->getState('c') + 1;
 
 		// Add plugin published state, locations, descriptions and events
-		$state        = (array) FArrayHelper::getValue($data, 'plugin_state');
-		$locations    = (array) FArrayHelper::getValue($data, 'plugin_locations');
-		$events       = (array) FArrayHelper::getValue($data, 'plugin_events');
-		$descriptions = (array) FArrayHelper::getValue($data, 'plugin_description');
+		$state        = (array) ArrayHelper::getValue($data, 'plugin_state');
+		$locations    = (array) ArrayHelper::getValue($data, 'plugin_locations');
+		$events       = (array) ArrayHelper::getValue($data, 'plugin_events');
+		$descriptions = (array) ArrayHelper::getValue($data, 'plugin_description');
 
-		$data['params']['plugin_state'] = FArrayHelper::getValue($state, $c, 1);
-		$data['plugin_locations']       = FArrayHelper::getValue($locations, $c);
-		$data['plugin_events']          = FArrayHelper::getValue($events, $c);
-		$data['plugin_description']     = FArrayHelper::getValue($descriptions, $c);
+		$data['params']['plugin_state'] = ArrayHelper::getValue($state, $c, 1);
+		$data['plugin_locations']       = ArrayHelper::getValue($locations, $c);
+		$data['plugin_events']          = ArrayHelper::getValue($events, $c);
+		$data['plugin_description']     = ArrayHelper::getValue($descriptions, $c);
 
 		// For list plugins view
-		$data['params']['plugin_description'] = FArrayHelper::getValue($descriptions, $c);
+		$data['params']['plugin_description'] = ArrayHelper::getValue($descriptions, $c);
 
 		return $data;
 	}
