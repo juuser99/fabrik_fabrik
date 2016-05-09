@@ -53,7 +53,7 @@ class Order extends Lizt
 	 */
 	public function loadJavascriptClass_result()
 	{
-		$mediaFolder = FabrikHelperHTML::getMediaFolder();
+		$mediaFolder = Html::getMediaFolder();
 		$src = parent::loadJavascriptClass_result();
 
 		return array($src, $mediaFolder . '/element.js');

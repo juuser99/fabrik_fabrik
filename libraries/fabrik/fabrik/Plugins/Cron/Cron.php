@@ -13,6 +13,8 @@ namespace Fabrik\Plugins\Cron;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Plugins\Plugin;
+
 use \JFactory;
 use \stdClass;
 use \JTable;
@@ -28,7 +30,7 @@ jimport('joomla.application.component.model');
  * @since       3.0
  */
 
-class Cron extends \FabrikPlugin
+class Cron extends Plugin
 {
 	/**
 	 * Plugin item
@@ -102,7 +104,7 @@ class Cron extends \FabrikPlugin
 	public function queryStringActivated()
 	{
 		$params = $this->getParams();
-		
+
 		// Felixkat
 		$session = JFactory::getSession();
 		$fabrikCron = new stdClass();

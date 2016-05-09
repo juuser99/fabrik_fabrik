@@ -91,7 +91,7 @@ class FabrikAdminViewCrons extends JViewLegacy
 
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_CRONS'), 'clock');
 		JToolBarHelper::custom('crons.run', 'upload.png', 'upload_f2.png', 'Run');
 

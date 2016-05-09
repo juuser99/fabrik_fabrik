@@ -289,7 +289,7 @@ class FabrikFEModelPluginmanager extends FabModel
 	 *
 	 * @throws RuntimeException
 	 *
-	 * @return  FabrikPlugin Plugin object
+	 * @return  Fabrik\Plugins\Plugin Plugin object
 	 */
 	public function loadPlugIn($className = '', $group = '')
 	{

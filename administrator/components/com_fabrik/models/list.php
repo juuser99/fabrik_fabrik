@@ -2326,7 +2326,7 @@ class FabrikAdminModelList extends FabModelAdmin
 			}
 		}
 
-		$func = create_function('$value', '$db = Worker::getDbo(true);;return $db->qn($value);');
+		$func = create_function('$value', '$db = \Fabrik\Helpers\Worker::getDbo(true);;return $db->qn($value);');
 		$sql .= implode(', ', $lines);
 
 		if (!empty($keys))

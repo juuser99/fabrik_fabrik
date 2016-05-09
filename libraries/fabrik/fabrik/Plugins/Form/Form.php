@@ -17,6 +17,7 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
+use Fabrik\Plugins\Plugin;
 use \JProfiler;
 
 jimport('joomla.application.component.model');
@@ -28,7 +29,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class Form extends \FabrikPlugin
+class Form extends Plugin
 {
 	/**
 	 * Formatted email data

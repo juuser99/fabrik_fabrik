@@ -1,6 +1,8 @@
 <?php
 defined('JPATH_BASE') or die;
 
+use Fabrik\Helpers\Html;
+
 $d = $displayData;
 
 $image = '<img src="' . $d->defaultImage . '" alt="' . $d->value . '" ' . $d->float . ' class="imagedisplayor"/>';
@@ -11,8 +13,8 @@ $image = '<img src="' . $d->defaultImage . '" alt="' . $d->value . '" ' . $d->fl
 		?>
 		<img src="<?php echo $d->defaultImage; ?>" alt="<?php echo $d->value; ?>" <?php echo $d->float; ?> class="imagedisplayor" />
 		<br />
-		<?php echo JHTML::_('select.genericlist', $d->images, $d->imageName, 'class="inputbox imageselector" ', 'value', 'text', $d->image);
-		echo FabrikHelperHTML::folderAjaxSelect($d->folders);
+		<?php echo JHtml::_('select.genericlist', $d->images, $d->imageName, 'class="inputbox imageselector" ', 'value', 'text', $d->image);
+		echo Html::folderAjaxSelect($d->folders);
 		?>
 		<input type="hidden" name="<?php echo $d->name; ?>" value="<?php echo $d->value; ?>" class="fabrikinput hiddenimagepath folderpath" />
 	<?php

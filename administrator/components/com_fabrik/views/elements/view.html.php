@@ -108,7 +108,7 @@ class FabrikAdminViewElements extends JViewLegacy
 
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_ELEMENTS'), 'checkbox-unchecked');
 
 		if ($canDo->get('core.create'))

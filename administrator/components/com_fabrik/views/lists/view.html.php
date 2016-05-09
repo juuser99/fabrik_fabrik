@@ -101,10 +101,9 @@ class FabrikAdminViewLists extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_LISTS'), 'list');
 
 		if ($canDo->get('core.create'))
@@ -145,11 +144,12 @@ class FabrikAdminViewLists extends JViewLegacy
 
 		JToolBarHelper::divider();
 
+		echo "state = " . $this->state->get('filter.published');
 		if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete'))
 		{
 			JToolBarHelper::deleteList('', 'lists.delete', 'JTOOLBAR_EMPTY_TRASH');
 		}
-		elseif ($canDo->get('core.edit.state'))
+		elseif ($canDo->get('core.edit'))
 		{
 			JToolBarHelper::trash('lists.trash', 'JTOOLBAR_TRASH');
 		}

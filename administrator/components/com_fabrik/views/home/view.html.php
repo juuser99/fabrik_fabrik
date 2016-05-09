@@ -24,7 +24,6 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik
  * @since       3.0
  */
-
 class FabrikAdminViewHome extends JViewLegacy
 {
 	/**
@@ -46,7 +45,6 @@ class FabrikAdminViewHome extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	public function display($tpl = null)
 	{
 		$srcs = Html::framework();
@@ -70,10 +68,9 @@ class FabrikAdminViewHome extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions();
+		$canDo = JHelperContent::getActions('com_fabrik');
 
 		if ($canDo->get('core.admin'))
 		{

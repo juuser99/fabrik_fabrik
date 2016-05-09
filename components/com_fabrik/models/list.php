@@ -1488,17 +1488,18 @@ class FabrikFEModelList extends JModelForm
 
 				// 3.0 actions now in list in one cell
 				$row->fabrik_actions = array();
-				$actionMethod = $this->actionMethod();
+				//$actionMethod = $this->actionMethod();
 
 				if ($canView || $canEdit)
 				{
 					if ($canEdit == 1)
 					{
-						if ($params->get('editlink') || ($actionMethod == 'floating'))
-						{
+						//echo "action method = $actionMethod, edit link = " . $params->get('editlink');
+						/*if ($params->get('editlink') || ($actionMethod == 'floating'))
+						{*/
 							$row->fabrik_edit = $editLink;
 							$row->fabrik_actions['fabrik_edit'] = $row->fabrik_edit;
-						}
+						//}
 
 						$row->fabrik_edit_url = $edit_link;
 
@@ -3896,20 +3897,20 @@ class FabrikFEModelList extends JModelForm
 			$groups = $this->user->getAuthorisedViewLevels();
 			$this->access->allow_drop = in_array($this->getParams()->get('allow_drop'), $groups);
 		}
-/*		
-		
-		// Felixkat - Commenting out as this shouldn't have got here. 
-		
+/*
+
+		// Felixkat - Commenting out as this shouldn't have got here.
+
 		// Retrieve session set in plugin-cron
 		$session = JFactory::getSession();
 		$fabrikCron = $session->get('fabrikCron', '');
-			
+
 		// If CSV import is running and Drop Data is set.....
 		if ($this->app->input->getString('cron_csvimport', '') || (is_object($fabrikCron) && $fabrikCron->dropData == 1))
 		{
 			$session = JFactory::getSession();
 			$fabrikCron = $session->get('fabrikCron', '');
-			
+
 			// If Secret is set, (this caters for external Wget), OR no querystring, i.e &fabrik_cron=1, (this caters for automatic cron)
 			if ($fabrikCron->requireJS == 1 && $fabrikCron->secret == 1 || ($this->app->input->getString('fabrik_cron') == ''))
 			{
@@ -3917,7 +3918,7 @@ class FabrikFEModelList extends JModelForm
 			}
 		// Felixkat
 		}
-*/		
+*/
 		return $this->access->allow_drop;
 	}
 
@@ -6721,18 +6722,7 @@ class FabrikFEModelList extends JModelForm
 
 		// Check for conditions in https://github.com/Fabrik/fabrik/issues/621
 		$details = $this->canViewDetails();
-
-		if ($params->get('detaillink', 1) == 0)
-		{
-			$details = false;
-		}
-
 		$edit = $this->canEdit();
-
-		if ($params->get('editlink', 1) == 0)
-		{
-			$edit = false;
-		}
 
 		if ($this->canSelectRows() || $this->canEditARow() || $details || $edit || $filtersUnderHeadingsAndGo)
 		{

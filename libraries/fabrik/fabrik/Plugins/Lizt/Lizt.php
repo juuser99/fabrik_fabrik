@@ -18,6 +18,7 @@ use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\Text;
+use Fabrik\Plugins\Plugin;
 use \stdClass;
 use \JFile;
 
@@ -30,7 +31,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class Lizt extends \FabrikPlugin
+class Lizt extends Plugin
 {
 	/**
 	 * Button prefix

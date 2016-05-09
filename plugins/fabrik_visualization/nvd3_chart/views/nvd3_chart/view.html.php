@@ -51,8 +51,8 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 			return false;
 		}
 
-		$srcs = FabrikHelperHTML::framework();
-		FabrikHelperHTML::styleSheet('plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/src/nv.d3.css');
+		$srcs = Html::framework();
+		Html::styleSheet('plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/src/nv.d3.css');
 
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 		$srcs['AdvancedSearch'] = 'media/com_fabrik/js/advanced-search.js';

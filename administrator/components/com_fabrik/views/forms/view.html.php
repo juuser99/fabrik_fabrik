@@ -88,10 +88,9 @@ class FabrikAdminViewForms extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_FORMS'), 'file-2');
 
 		if ($canDo->get('core.create'))

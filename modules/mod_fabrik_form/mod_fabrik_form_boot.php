@@ -9,6 +9,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 
 jimport('joomla.filesystem.file');
@@ -25,7 +26,7 @@ if (!defined('COM_FABRIK_FRONTEND'))
 $app = JFactory::getApplication();
 $input = $app->input;
 
-FabrikHelperHTML::framework();
+Html::framework();
 require_once COM_FABRIK_FRONTEND . '/controllers/form.php';
 
 // $$$rob looks like including the view does something to the layout variable

@@ -17,6 +17,7 @@ use \Joomla\Registry\Registry;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
+use Fabrik\Plugins\Plugin;
 use \JHtml;
 use \stdClass;
 use \JPluginHelper;
@@ -45,7 +46,7 @@ jimport('joomla.filesystem.file');
  * @package  Fabrik
  * @since    3.0
  */
-class Element extends \FabrikPlugin
+class Element extends Plugin
 {
 	/**
 	 * Element id
