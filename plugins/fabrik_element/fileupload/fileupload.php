@@ -300,7 +300,7 @@ class Fileupload extends Element
 			 * $$$ hugh - nasty hack for now, if repeat group with simple
 			 * uploads, all raw values are in an array in $rawValues[0]
 			 */
-			if (is_array(ArrayHelper::getValue($rawValues, 0)))
+			if (array_key_exists(0, $rawValues) && is_array(ArrayHelper::getValue($rawValues, 0)))
 			{
 				$rawValues = $rawValues[0];
 			}
@@ -319,7 +319,17 @@ class Fileupload extends Element
 		{
 			$imgParams = array_values($value['crop']);
 			$value     = array_keys($value['id']);
-			$rawValues = $value;
+
+			/**
+			 * Another nasty hack for failed validations, need to massage $rawValues back into expected shape,
+			 * as they will be keyed by filename instead of parent ID after validation fail.
+			 */
+			$newRawValues = array();
+			foreach ($value as $k => $v)
+			{
+				$newRawValues[$k] = $rawValues['id'][$v];
+			}
+			$rawValues = $newRawValues;
 		}
 
 		for ($x = 0; $x < count($value); $x++)
@@ -1668,8 +1678,8 @@ class Fileupload extends Element
 
 		$storage = $this->getStorage();
 		$file    = $storage->clean(JPATH_SITE . '/' . $filename);
-		$thumb   = $storage->clean($storage->_getThumb($filename));
-		$cropped = $storage->clean($storage->_getCropped($filename));
+		$thumb   = $storage->clean(JPATH_SITE . '/' . $storage->_getThumb($filename));
+		$cropped = $storage->clean(JPATH_SITE . '/' . $storage->_getCropped($filename));
 
 		$logMsg = 'Delete files: ' . $file . ' , ' . $thumb . ', ' . $cropped . '; user = ' . $this->user->get('id');
 		JLog::add($logMsg, JLog::WARNING, 'com_fabrik.element.fileupload');
@@ -2125,6 +2135,7 @@ class Fileupload extends Element
 		$groupModel                = $this->getGroup();
 		$element                   = $this->getElement();
 		$params                    = $this->getParams();
+		$isAjax                    = $params->get('ajax_upload', '0') === '1';
 
 		$use_wip        = $params->get('upload_use_wip', '0') == '1';
 		$device_capture = $params->get('ul_device_capture', '0');
@@ -2139,7 +2150,7 @@ class Fileupload extends Element
 		$value = is_array($value) ? $value : Worker::JSONtoData($value, true);
 		$value = $this->checkForSingleCropValue($value);
 
-		if ($params->get('ajax_upload'))
+		if ($isAjax)
 		{
 			if (isset($value->file))
 			{
@@ -2165,7 +2176,14 @@ class Fileupload extends Element
 
 			foreach ($values as $k => $v)
 			{
-				$links[] = $this->downloadLink($v, $data, $repeatCounter, $k);
+				if ($isAjax)
+				{
+					$links[] = $this->downloadLink($v, $data, $repeatCounter, $k);
+				}
+				else
+				{
+					$links[] = $this->downloadLink($v, $data, $repeatCounter, '');
+				}
 			}
 
 			return count($links) < 2 ? implode("\n", $links) : '<ul class="fabrikRepeatData"><li>' . implode('</li><li>', $links) . '</li></ul>';
@@ -3014,7 +3032,7 @@ class Fileupload extends Element
 		$this->lang->load('com_fabrik.plg.element.fabrikfileupload', JPATH_ADMINISTRATOR);
 		$rowId       = $input->get('rowid', '', 'string');
 		$repeatCount = $input->getInt('repeatcount', 0);
-		$ajaxIndex   = $input->getInt('ajaxIndex', 0);
+		$ajaxIndex   = $input->getStr('ajaxIndex', '');
 		$listModel   = $this->getListModel();
 		$row         = $listModel->getRow($rowId, false, true);
 
@@ -3070,7 +3088,11 @@ class Fileupload extends Element
 			$filePath = ArrayHelper::getValue($filePath, $repeatCount);
 		}
 
-		$filePath    = ArrayHelper::getValue($filePath, $ajaxIndex);
+		if ($ajaxIndex !== '')
+		{
+			$filePath = ArrayHelper::getValue($filePath, $ajaxIndex);
+		}
+
 		$filePath    = $storage->getFullPath($filePath);
 		$fileContent = $storage->read($filePath);
 

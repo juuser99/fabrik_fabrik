@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
+use Joomla\Utilities\ArrayHelper;
 use \JModelLegacy;
 
 /**
@@ -77,7 +78,8 @@ class Order extends Lizt
 		$params = $this->getParams();
 		$orderEl = $model->getFormModel()->getElement($params->get('order_element'), true);
 		$opts = $this->getElementJSOptions();
-		$opts->enabled = (StringHelper::safeColNameToArrayKey($model->orderEls[0]) == StringHelper::safeColNameToArrayKey($orderEl->getOrderByName())) ? true
+		$orderElName = StringHelper::safeColNameToArrayKey(ArrayHelper::getValue($model->orderEls, 0, ''));
+		$opts->enabled = $orderElName == StringHelper::safeColNameToArrayKey($orderEl->getOrderByName()) ? true
 			: false;
 		$opts->listid = $model->getId();
 		$opts->orderElementId = $params->get('order_element');

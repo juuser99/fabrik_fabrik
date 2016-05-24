@@ -169,10 +169,11 @@ class Cron extends Plugin
 	 * Do the plugin action
 	 *
 	 * @param   array &$data data
+	 * @param   object  &$listModel  List model
 	 *
 	 * @return  int  number of records updated
 	 */
-	public function process(&$data)
+	public function process(&$data, &$listModel)
 	{
 		return 0;
 	}

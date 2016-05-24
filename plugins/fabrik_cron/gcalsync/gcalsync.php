@@ -83,6 +83,7 @@ class Gcalsync extends Cron
 		$params = $this->getParams();
 		$gcal_url = $params->get('gcal_sync_gcal_url');
 		$matches = array();
+		$listModel = $this->getModel();
 
 		/* This matches a standard GCal URL, found under the Google "Calender Details" tab, using the XML button.
 		 * It should match any form, for public or private ...

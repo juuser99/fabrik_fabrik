@@ -131,23 +131,8 @@ class FabrikViewFormBase extends FabrikView
 		list($this->plugintop, $this->pluginbottom, $this->pluginend) = $model->getFormPluginHTML();
 		$listModel = $model->getlistModel();
 
-		if (!$model->canPublish())
+		if (!$this->canAccess())
 		{
-			if (!$this->app->isAdmin())
-			{
-				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
-
-				return false;
-			}
-		}
-
-		$this->rowid  = $model->getRowId();
-		$this->access = $model->checkAccessFromListSettings();
-
-		if ($this->access == 0)
-		{
-			$this->app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
-
 			return false;
 		}
 
@@ -161,7 +146,7 @@ class FabrikViewFormBase extends FabrikView
 
 		$params = $model->getParams();
 		$this->setTitle($w, $params);
-		$this->setCanonicalLink($model);
+
 		Html::debug($params->get('note'), 'note');
 		$params->def('icons', $this->app->get('icons'));
 		$params->set('popup', ($input->get('tmpl') == 'component') ? 1 : 0);
@@ -219,6 +204,41 @@ class FabrikViewFormBase extends FabrikView
 		}
 
 		JDEBUG ? $profiler->mark('form view before template load') : null;
+	}
+
+	/**
+	 * Test the form exists and can be accessed
+	 * @return bool
+	 */
+	protected function canAccess()
+	{
+		$model = $this->getModel();
+
+		if ($model->getForm()->get('id', '') === '')
+		{
+			throw new UnexpectedValueException('Form does not exists');
+		}
+		if (!$model->canPublish())
+		{
+			if (!$this->app->isAdmin())
+			{
+				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
+
+				return false;
+			}
+		}
+
+		$this->rowid  = $model->getRowId();
+		$this->access = $model->checkAccessFromListSettings();
+
+		if ($this->access == 0)
+		{
+			$this->app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -321,6 +341,7 @@ class FabrikViewFormBase extends FabrikView
 
 			// See http://fabrikar.com/forums/showpost.php?p=73833&postcount=14
 			// if ($model->sessionModel->statusid == _FABRIKFORMSESSION_LOADED_FROM_COOKIE) {
+
 			if ($model->sessionModel->last_page > 0)
 			{
 				$message .= ' <a href="#" class="clearSession">' . Text::_('COM_FABRIK_CLEAR') . '</a>';
@@ -328,55 +349,6 @@ class FabrikViewFormBase extends FabrikView
 		}
 
 		$this->message = $message;
-	}
-
-	/**
-	 * Set the canonical link - this is the definitive URL that Google et all, will use
-	 * to determine if duplicate URLs are the same content
-	 *
-	 * @return  string
-	 */
-	public function getCanonicalLink()
-	{
-		$url = '';
-		if (!$this->app->isAdmin() && !$this->isMambot)
-		{
-			/** @var FabrikFEModelForm $model */
-			$model  = $this->getModel();
-			$data   = $model->getData();
-			$formId = $model->getId();
-			$slug   = $model->getListModel()->getSlug(ArrayHelper::toObject($data));
-			$rowId  = $slug === '' ? $model->getRowId() : $slug;
-			$view   = $model->isEditable() ? 'form' : 'details';
-			$url    = JRoute::_('index.php?option=com_' . $this->package . '&view=' . $view . '&formid=' . $formId . '&rowid=' . $rowId);
-		}
-
-		return $url;
-	}
-
-	/**
-	 * Set the canonical link - this is the definitive URL that Google et all, will use
-	 * to determine if duplicate URLs are the same content
-	 *
-	 * @throws Exception
-	 */
-	public function setCanonicalLink()
-	{
-		if (!$this->app->isAdmin() && !$this->isMambot)
-		{
-			$url = $this->getCanonicalLink();
-
-			// Set a flag so that the system plugin can clear out any other canonical links.
-			$this->session->set('fabrik.clearCanonical', true);
-			try
-			{
-				$this->doc->addCustomTag('<link rel="canonical" href="' . htmlspecialchars($url) . '" />');
-			} catch (Exception $err)
-			{
-
-			}
-
-		}
 	}
 
 	/**
@@ -1062,6 +1034,17 @@ class FabrikViewFormBase extends FabrikView
 			$goBackLabel = $before ? $goBackIcon . '&nbsp;' . $goBackLabel : $goBackLabel . '&nbsp;' . $goBackIcon;
 		}
 
+
+		$layoutData = (object) array(
+			'type' => 'button',
+			'class' => 'clearSession',
+			'name' => '',
+			'label' => FText::_('COM_FABRIK_CLEAR_MULTI_PAGE_SESSION')
+		);
+
+		$multiPageSession = $model->sessionModel && $model->sessionModel->last_page > 0;
+		$form->clearMultipageSessionButton = $multiPageSession ? $btnLayout->render($layoutData) : '';
+
 		$layoutData = (object) array(
 			'type' => 'button',
 			'class' => 'button',
@@ -1126,7 +1109,8 @@ class FabrikViewFormBase extends FabrikView
 
 		// $$$ hugh - hide actions section is we're printing, or if not actions selected
 		$noButtons = (empty($form->nextButton) && empty($form->prevButton) && empty($form->submitButton) && empty($form->gobackButton)
-			&& empty($form->deleteButton) && empty($form->applyButton) && empty($form->copyButton) && empty($form->resetButton));
+			&& empty($form->deleteButton) && empty($form->applyButton) && empty($form->copyButton)
+			&& empty($form->resetButton) && empty($form->clearMultipageSessionButton));
 
 		$this->hasActions = ($input->get('print', '0') == '1' || $noButtons) ? false : true;
 

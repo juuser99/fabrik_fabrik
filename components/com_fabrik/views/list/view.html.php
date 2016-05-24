@@ -43,7 +43,8 @@ class FabrikViewList extends FabrikViewListBase
 		if (parent::display($tpl) !== false)
 		{
 			/** @var FabrikFEModelList $model */
-			$model      = $this->getModel();
+			$model = $this->getModel();
+			$this->setCanonicalLink();
 			$this->tabs = $model->loadTabs();
 
 			if (!$this->app->isAdmin() && isset($this->params))
@@ -88,7 +89,7 @@ class FabrikViewList extends FabrikViewListBase
 		$displayData->title               = $this->grouptemplates[$groupedBy];
 		$displayData->count               = count($group);
 		$displayData->group_by_show_count = $this->params->get('group_by_show_count', '1');
-		$layout                           = Html::getLayout('list.fabrik-group-by-heading');
+		$layout                           = $this->getModel()->getLayout('list.fabrik-group-by-heading');
 
 		return $layout->render($displayData);
 	}
@@ -109,8 +110,26 @@ class FabrikViewList extends FabrikViewListBase
 			'filter_action' => $this->filter_action
 		);
 		$layoutFile  = $this->filterMode === 5 ? 'fabrik-filters-modal' : 'fabrik-filters';
-		$layout      = Html::getLayout('list.' . $layoutFile);
+		$layout      = $this->getModel()->getLayout('list.' . $layoutFile);
 
 		return $layout->render($displayData);
+	}
+
+	/**
+	 * Set the canonical link - this is the definitive URL that Google et all, will use
+	 * to determine if duplicate URLs are the same content
+	 *
+	 * @throws Exception
+	 */
+	public function setCanonicalLink()
+	{
+		if (!$this->app->isAdmin() && !$this->isMambot)
+		{
+			$url = $this->getCanonicalLink();
+
+			// Set a flag so that the system plugin can clear out any other canonical links.
+			$this->session->set('fabrik.clearCanonical', true);
+			$this->doc->addCustomTag('<link rel="canonical" href="' . htmlspecialchars($url) . '" />');
+		}
 	}
 }

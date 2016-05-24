@@ -131,7 +131,7 @@ class Textarea extends Element
 		}
 		else
 		{
-			if (!$this->useWysiwyg())
+			if (!$this->useWysiwyg(false))
 			{
 				if (is_array($data))
 				{
@@ -229,21 +229,23 @@ class Textarea extends Element
 	/**
 	 * Should the element use the WYSIWYG editor
 	 *
+	 * @bool  checkFormat  check the formats (ajax, format=raw), or only check param setting
+	 *
 	 * @since   3.0.6.2
 	 *
 	 * @return  bool
 	 */
-	protected function useWysiwyg()
+	protected function useWysiwyg($checkFormat = true)
 	{
 		$params = $this->getParams();
 		$input = $this->app->input;
 
-		if ($input->get('format') == 'raw')
+		if ($checkFormat && $input->get('format') == 'raw')
 		{
 			return false;
 		}
 
-		if ($input->get('ajax') == '1')
+		if ($checkFormat && $input->get('ajax') == '1')
 		{
 			return false;
 		}
@@ -286,7 +288,7 @@ class Textarea extends Element
 			}
 			else
 			{
-				if (!$wysiwyg)
+				if (!$this->useWysiwyg(false))
 				{
 					$value = nl2br($value);
 				}

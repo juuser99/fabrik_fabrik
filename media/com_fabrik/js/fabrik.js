@@ -9,6 +9,9 @@
  * Create the Fabrik name space
  */
 define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, RequestQueue) {
+
+    var doc = jQuery(document);
+
     document.addEvent('click:relay(.popover button.close)', function (event, target) {
         var popover = '#' + target.get('data-popover'),
             pEl = document.getElement(popover);
@@ -18,8 +21,9 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
             pEl.checked = false;
         }
     });
-    var Fabrik = {};
-    Fabrik.events = {};
+    var Fabrik = {
+        events: {}
+    };
 
     /**
      * Get the bootstrap version. Returns either 2.x of 3.x
@@ -107,23 +111,23 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
         return Fabrik.blocks[foundBlockId];
     };
 
-    document.addEvent('click:relay(.fabrik_delete a, .fabrik_action a.delete, .btn.delete)', function (e, target) {
+    doc.on('click', '.fabrik_delete a, .fabrik_action a.delete, .btn.delete', function (e) {
         if (e.rightClick) {
             return;
         }
-        Fabrik.watchDelete(e, target);
+        Fabrik.watchDelete(e, this);
     });
-    document.addEvent('click:relay(.fabrik_edit a, a.fabrik_edit)', function (e, target) {
+    doc.on('click', '.fabrik_edit a, a.fabrik_edit', function (e) {
         if (e.rightClick) {
             return;
         }
-        Fabrik.watchEdit(e, target);
+        Fabrik.watchEdit(e, this);
     });
-    document.addEvent('click:relay(.fabrik_view a, a.fabrik_view)', function (e, target) {
+    doc.on('click', '.fabrik_view a, a.fabrik_view', function (e) {
         if (e.rightClick) {
             return;
         }
-        Fabrik.watchView(e, target);
+        Fabrik.watchView(e, this);
     });
 
     // Related data links
@@ -358,7 +362,6 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
      *
      * @since 3.0.7
      */
-
     Fabrik.watchView = function (e, target) {
         Fabrik.openSingleView('details', e, target);
     };
@@ -370,7 +373,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
      * @param {Node} target <a> link
      */
     Fabrik.openSingleView = function (view, e, target) {
-        var url, loadMethod, a, title,
+        var url, loadMethod, a, title, rowId, row, winOpts,
             listRef = jQuery(target).data('list'),
             list = Fabrik.blocks[listRef];
 
@@ -378,12 +381,12 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
             return;
         }
         e.preventDefault();
-        var row = list.getActiveRow(e);
-        if (!row) {
+        row = list.getActiveRow(e);
+        if (!row || row.length === 0) {
             return;
         }
         list.setActive(row);
-        var rowid = row.id.split('_').pop();
+        rowId = row.prop('id').split('_').pop();
 
         if (jQuery(e.target).prop('tagName') === 'A') {
             a = jQuery(e.target);
@@ -392,6 +395,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
         }
         url = a.prop('href');
         url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
+        url += '&format=partial';
         title = a.prop('title');
         loadMethod = a.data('loadmethod');
         if (loadMethod === undefined) {
@@ -403,21 +407,21 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
             win.close();
         });
 
-        var winOpts = {
+        winOpts = {
             modalId   : 'ajax_links',
-            id        : listRef + '.' + rowid,
+            id        : listRef + '.' + rowId,
             title     : title,
             loadMethod: loadMethod,
             contentURL: url,
             onClose   : function () {
-                var k = view + '_' + list.options.formid + '_' + rowid;
+                var k = view + '_' + list.options.formid + '_' + rowId;
                 try {
                     Fabrik.blocks[k].destroyElements();
                     Fabrik.blocks[k].formElements = null;
                     Fabrik.blocks[k] = null;
                     delete (Fabrik.blocks[k]);
                     var evnt = (view === 'details') ? 'fabrik.list.row.view.close' : 'fabrik.list.row.edit.close';
-                    Fabrik.fireEvent(evnt, [listRef, rowid, k]);
+                    Fabrik.fireEvent(evnt, [listRef, rowId, k]);
                 } catch (e) {
                     console.log(e);
                 }
@@ -429,7 +433,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
             winOpts.width = list.options.popup_width;
         }
         if (list.options.popup_height !== '') {
-            winOpts.width = list.options.popup_height;
+            winOpts.height = list.options.popup_height;
         }
         winOpts.id = view === 'details' ? 'view.' + winOpts.id : 'add.' + winOpts.id;
         if (list.options.popup_offset_x !== null) {

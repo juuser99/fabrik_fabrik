@@ -52,6 +52,8 @@ class FabrikViewListBase extends FabrikView
 		$csvOpts->inccalcs     = (int) $params->get('csv_include_calculations');
 		$csvOpts->custom_qs    = $params->get('csv_custom_qs', '');
 		$csvOpts->incfilters   = (int) $params->get('incfilters');
+		$csvOpts->popupwidth   = Worker::getMenuOrRequestVar('popup_width','340',false,'menu');
+		$csvOpts->optswidth    = Worker::getMenuOrRequestVar('popup_opts_width','200',false,'menu');
 		$opts->csvOpts         = $csvOpts;
 
 		$opts->csvFields = $model->getCsvFields();
@@ -66,7 +68,7 @@ class FabrikViewListBase extends FabrikView
 		if ($opts->csvChoose)
 		{
 			$modalOpts['footer'] = 'export';
-			$layout              = Html::getLayout('fabrik-button');
+			$layout              = $model->getLayout('fabrik-button');
 			$layoutData          = (object) array(
 				'name' => 'submit',
 				'class' => 'exportCSVButton btn-primary',
@@ -395,7 +397,6 @@ class FabrikViewListBase extends FabrikView
 		$c    = 0;
 		$form = $model->getFormModel();
 		$nav  = $model->getPagination();
-		$this->setCanonicalLink();
 
 		foreach ($data as $groupk => $group)
 		{
@@ -1001,23 +1002,5 @@ class FabrikViewListBase extends FabrikView
 		}
 
 		return $url;
-	}
-
-	/**
-	 * Set the canonical link - this is the definitive URL that Google et all, will use
-	 * to determine if duplicate URLs are the same content
-	 *
-	 * @throws Exception
-	 */
-	public function setCanonicalLink()
-	{
-		if (!$this->app->isAdmin() && !$this->isMambot)
-		{
-			$url = $this->getCanonicalLink();
-
-			// Set a flag so that the system plugin can clear out any other canonical links.
-			$this->session->set('fabrik.clearCanonical', true);
-			$this->doc->addCustomTag('<link rel="canonical" href="' . htmlspecialchars($url) . '" />');
-		}
 	}
 }

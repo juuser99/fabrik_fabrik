@@ -103,6 +103,7 @@ class Receipt extends Form
 		$message = $w->parseMessageForPlaceHolder($message, $data, false);
 
 		$to = $w->parseMessageForPlaceHolder($params->get('receipt_to'), $data, false);
+		$to = FabrikString::stripSpace($to);
 
 		if (empty($to))
 		{
@@ -112,6 +113,8 @@ class Receipt extends Form
 			 */
 			return;
 		}
+
+		$to = explode(',', $to);
 
 		$subject = html_entity_decode($params->get('receipt_subject', ''));
 		$subject = Text::_($w->parseMessageForPlaceHolder($subject, $data, false));
@@ -132,8 +135,7 @@ class Receipt extends Form
 		}
 
 		$from = $params->get('from_email', $from);
-		$mail = JFactory::getMailer();
-		$res = $mail->sendMail($from, $fromName, $to, $subject, $message, true);
+		$res = FabrikWorker::sendMail($from, $fromName, $to, $subject, $message, true);
 
 		if (!$res)
 		{

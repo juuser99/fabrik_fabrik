@@ -57,31 +57,18 @@ class FabrikAdminViewForm extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
 		$model = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 		$model->render();
 
-		if (!$model->canPublish())
+		if (!$this->canAccess())
 		{
-			if (!$app->isAdmin())
-			{
-				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
-
-				return false;
-			}
-		}
-
-		$this->access = $model->checkAccessFromListSettings();
-
-		if ($this->access == 0)
-		{
-			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'));
+			return false;
 		}
 
 		$model->getJoinGroupIds();
 		$groups = $model->getGroupsHiarachy();
 		$gkeys = array_keys($groups);
-		$JSONarray = array();
+		$JsonArray = array();
 		$JSONHtml = array();
 
 		for ($i = 0; $i < count($gkeys); $i++)
@@ -139,11 +126,11 @@ class FabrikAdminViewForm extends JViewLegacy
 
 					if (!$model->isEditable())
 					{
-						$JSONarray[$elementHTMLId] = $elementModel->getROValue($model->data, $c);
+						$JsonArray[$elementHTMLId] = $elementModel->getROValue($model->data, $c);
 					}
 					else
 					{
-						$JSONarray[$elementHTMLId] = $elementModel->getValue($model->data, $c);
+						$JsonArray[$elementHTMLId] = $elementModel->getValue($model->data, $c);
 					}
 					// Test for paginate plugin
 					if (!$model->isEditable())
@@ -157,7 +144,7 @@ class FabrikAdminViewForm extends JViewLegacy
 			}
 		}
 
-		$data = array("id" => $model->getId(), 'model' => 'table', "errors" => $model->errors, "data" => $JSONarray, 'html' => $JSONHtml,
+		$data = array("id" => $model->getId(), 'model' => 'table', "errors" => $model->errors, "data" => $JsonArray, 'html' => $JSONHtml,
 			'post' => $_REQUEST);
 		echo json_encode($data);
 	}
@@ -172,5 +159,66 @@ class FabrikAdminViewForm extends JViewLegacy
 	public function form($tpl = null)
 	{
 		parent::display($tpl);
+	}
+
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @return  void
+	 */
+	protected function addToolbar()
+	{
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$input->set('hidemainmenu', true);
+		$user = JFactory::getUser();
+		$userId = $user->get('id');
+		$isNew = ($this->item->id == 0);
+		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
+		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$title = $isNew ? FText::_('COM_FABRIK_MANAGER_FORM_NEW') : FText::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "' . $this->item->label . '"';
+		JToolBarHelper::title($title, 'file-2');
+
+		if ($isNew)
+		{
+			// For new records, check the create permission.
+			if ($canDo->get('core.create'))
+			{
+				JToolBarHelper::apply('form.apply', 'JTOOLBAR_APPLY');
+				JToolBarHelper::save('form.save', 'JTOOLBAR_SAVE');
+				JToolBarHelper::addNew('form.save2new', 'JTOOLBAR_SAVE_AND_NEW');
+			}
+
+			JToolBarHelper::cancel('form.cancel', 'JTOOLBAR_CANCEL');
+		}
+		else
+		{
+			// Can't save the record if it's checked out.
+			if (!$checkedOut)
+			{
+				// Since it's an existing record, check the edit permission, or fall back to edit own if the owner.
+				if ($canDo->get('core.edit') || ($canDo->get('core.edit.own') && $this->item->created_by == $userId))
+				{
+					JToolBarHelper::apply('form.apply', 'JTOOLBAR_APPLY');
+					JToolBarHelper::save('form.save', 'JTOOLBAR_SAVE');
+
+					// We can save this record, but check the create permission to see if we can return to make a new one.
+					if ($canDo->get('core.create'))
+					{
+						JToolBarHelper::addNew('form.save2new', 'JTOOLBAR_SAVE_AND_NEW');
+					}
+				}
+			}
+
+			if ($canDo->get('core.create'))
+			{
+				JToolBarHelper::custom('form.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
+			}
+
+			JToolBarHelper::cancel('form.cancel', 'JTOOLBAR_CLOSE');
+		}
+
+		JToolBarHelper::divider();
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS_EDIT');
 	}
 }

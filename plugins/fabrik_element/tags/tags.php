@@ -91,9 +91,6 @@ class Tags extends Databasejoin
 		{
 			$tmp = $this->_getOptions($data, $repeatCounter, true);
 
-			// Include jQuery
-			JHtml::_('jquery.framework');
-
 			// Requires chosen to work
 			Text::script('JGLOBAL_KEEP_TYPING');
 			Text::script('JGLOBAL_LOOKING_FOR');
@@ -101,10 +98,8 @@ class Tags extends Databasejoin
 			Text::script('JGLOBAL_SELECT_AN_OPTION');
 			Text::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
 
-			$ext = Html::isDebug() ? '.min.js' : '.js';
-			JHtml::_('script', 'jui/chosen.jquery' . $ext, false, true, false, false);
+			// Note: the Chosen js should be loaded via require statement
 			JHtml::_('stylesheet', 'jui/chosen.css', false, true);
-			JHtml::_('script', 'jui/ajax-chosen' . $ext, false, true, false, false);
 
 			$bootstrapClass = $params->get('bootstrap_class', 'span12');
 			$attr = 'multiple="multiple" class="inputbox ' . $bootstrapClass. ' small"';

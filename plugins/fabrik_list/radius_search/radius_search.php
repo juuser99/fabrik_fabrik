@@ -161,7 +161,8 @@ class Radius_Search extends Lizt
 		Text::script('PLG_VIEW_RADIUS_NO_GEOLOCATION_AVAILABLE');
 		Text::script('COM_FABRIK_SEARCH');
 		Text::script('PLG_LIST_RADIUS_SEARCH');
-
+		Text::script('PLG_LIST_RADIUS_SEARCH_BUTTON');
+		
 		$mapElement = $this->getMapElement();
 		$mapName = $mapElement->getFullName(true, false);
 		$model->viewfilters[$mapName] = $f;

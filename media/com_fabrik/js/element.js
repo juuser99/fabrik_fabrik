@@ -37,7 +37,7 @@ define(['jquery'], function (jQuery) {
             this.events = $H({}); // was changeEvents
             this.setOptions(options);
             // If this element is a 'chosen' select, we need to relay the jQuery change event to Moo
-            if (document.id(this.options.element + '_chzn')) {
+            if (this.options.advanced) {
                 var changeEvent = this.getChangeEvent();
                 jQuery('#' + this.options.element).on('change', {changeEvent: changeEvent}, function (event) {
                     document.id(this.id).fireEvent(event.data.changeEvent, new Event.Mock(document.id(this.id),
@@ -279,7 +279,9 @@ define(['jquery'], function (jQuery) {
         },
 
         /**
-         * set the label (uses textContent attribute, prolly won't work on IE < 9)
+         * Set the label (uses textContent attribute, prolly won't work on IE < 9)
+         *
+         * @param {string} label
          */
         setLabel: function (label) {
             this.options.label = label;
@@ -472,7 +474,11 @@ define(['jquery'], function (jQuery) {
                 li = jQuery('<li>').addClass(klass);
                 li.html(msg);
                 jQuery('<i>').addClass(this.form.options.images.alert).prependTo(li);
-                d.find('ul').append(li);
+
+                // Only append the message once (was duplicating on multi-page forms)
+                if (d.find('li:contains("' + jQuery(msg).text() + '")').length === 0) {
+                    d.find('ul').append(li);
+                }
                 html = unescape(d.html());
 
                 if (t.data('fabrik-tip-orig') === undefined) {

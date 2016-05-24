@@ -49,21 +49,9 @@ class FabrikViewForm extends FabrikViewFormBase
 
 		$listModel = $model->getListModel();
 
-		if (!$model->canPublish())
+		if (!$this->canAccess())
 		{
-			if (!$this->app->isAdmin())
-			{
-				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
-
-				return false;
-			}
-		}
-
-		$this->access = $model->checkAccessFromListSettings();
-
-		if ($this->access == 0)
-		{
-			$this->app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
+			return false; 
 		}
 
 		if (is_object($listModel))

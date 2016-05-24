@@ -1022,16 +1022,17 @@ EOD;
 	 * Stores the shim and config to the session, which Fabrik system plugin
 	 * then uses to inject scripts into document.
 	 *
-	 * @param   array $shim Shim js files
+	 * @param   array $shim  Shim js files
+	 * @param   array $paths Additional require js paths
 	 *
 	 * @since   3.1
 	 *
 	 * @return  void
 	 */
-	public static function iniRequireJs($shim = array())
+	public static function iniRequireJs($shim = array(), $paths = array())
 	{
 		$session      = JFactory::getSession();
-		$requirePaths = self::requirePaths();
+		$requirePaths = (object) array_merge((array) self::requirePaths(), $paths);
 		$framework    = array();
 		$deps         = array();
 
@@ -1152,6 +1153,8 @@ EOD;
 		$r->adminfields = 'administrator/components/com_fabrik/models/fields';
 
 		$r->jQueryUI = 'media/com_fabrik/js/lib/jquery-ui/jquery-ui';
+		$r->chosen   = 'media/jui/js/chosen.jquery.min';
+		$r->ajaxChosen   = 'media/jui/js/ajax-chosen.min';
 
 		// We are now loading compressed js fabrik files from the media/com_fabrik/js/dist folder
 		// This avoids AMD issues where we were loading fab/form or fab/form-min.
@@ -1266,7 +1269,6 @@ EOD;
 	 *
 	 * @return  bool
 	 */
-
 	public static function inAjaxLoadedPage()
 	{
 		$app     = JFactory::getApplication();

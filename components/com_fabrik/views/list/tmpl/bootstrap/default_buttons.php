@@ -41,7 +41,7 @@ if ($this->canGroupBy) :
 		$displayData->links[] = '<a data-groupby="' . $obj->group_by . '" href="' . $url . '">' . $obj->label . '</a>';
 	endforeach;
 
-	$layout = Html::getLayout('fabrik-nav-dropdown');
+	$layout = $this->getModel()->getLayout('fabrik-nav-dropdown');
 	echo $layout->render($displayData);
 	?>
 
@@ -92,7 +92,7 @@ if ($this->showCSVImport || $this->showCSV) :?>
 	if ($this->showCSV) :
 		$displayData->links[] = '<a href="#" class="csvExportButton">' . Html::icon('icon-upload', Text::_('COM_FABRIK_EXPORT_TO_CSV')) . '</a>';
 	endif;
-	$layout = Html::getLayout('fabrik-nav-dropdown');
+	$layout = $this->getModel()->getLayout('fabrik-nav-dropdown');
 	echo $layout->render($displayData);
 	?>
 

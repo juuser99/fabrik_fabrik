@@ -124,7 +124,13 @@ class FabrikFEModelCSVExport extends FabModel
 		if ($this->delimiter === '\t') {
 			$this->delimiter = "\t";
 		}
-
+		$end_of_line		= $this->model->getParams()->get('csv_end_of_line');
+		if ($end_of_line == 'r') {
+			$end_of_line = "\r";
+		}
+		else {
+			$end_of_line = "\n";
+		}
 		if ($start === 0)
 		{
 			$headings = $this->getHeadings();
@@ -138,7 +144,7 @@ class FabrikFEModelCSVExport extends FabModel
 				return;
 			}
 
-			$str .= implode($headings, $this->delimiter) . "\n";
+			$str .= implode($headings, $this->delimiter) . $end_of_line;
 		}
 
 		$incRaw       = $input->get('incraw', true);
@@ -207,11 +213,11 @@ class FabrikFEModelCSVExport extends FabModel
 
 				if ($params->get('csv_format_json', '1') === '1')
 				{
-					array_walk($a, array($this, 'implodeJSON'), "\n");
+					array_walk($a, array($this, 'implodeJSON'), $end_of_line);
 				}
 
 				$str .= implode($this->delimiter, array_map(array($this, 'quote'), array_values($a)));
-				$str .= "\n";
+				$str .= $end_of_line;
 			}
 		}
 
@@ -397,27 +403,32 @@ class FabrikFEModelCSVExport extends FabModel
 		jimport('joomla.filesystem.file');
 		$filename = $this->getFileName();
 		$filePath = $this->getFilePath();
-		$document = JFactory::getDocument();
-		$document->setMimeEncoding('application/zip');
-		$str = $this->getCSVContent();
-		$this->app->clearHeaders();
-		$encoding = $this->getEncoding();
+		// Do additional processing if post-processing php file exists
+		$listid = $this->app->input->getInt('listid');
+		if(file_exists(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php')){	
+			require(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php');
+		}else{		
+			$document = JFactory::getDocument();
+			$document->setMimeEncoding('application/zip');
+			$str = $this->getCSVContent();
+			$this->app->clearHeaders();
+			$encoding = $this->getEncoding();
 
-		// Set the response to indicate a file download
-		$this->app->setHeader('Content-Type', 'application/zip');
-		$this->app->setHeader('Content-Disposition', "attachment;filename=\"" . $filename . "\"");
+			// Set the response to indicate a file download
+			$this->app->setHeader('Content-Type', 'application/zip');
+			$this->app->setHeader('Content-Disposition', "attachment;filename=\"" . $filename . "\"");
 
-		// Xls formatting for accents
-		if ($this->outPutFormat == 'excel')
-		{
-			$this->app->setHeader('Content-Type', 'application/vnd.ms-excel');
+			// Xls formatting for accents
+			if ($this->outPutFormat == 'excel')
+			{
+				$this->app->setHeader('Content-Type', 'application/vnd.ms-excel');
+			}
+
+			$this->app->setHeader('charset', $encoding);
+			$this->app->setBody($str);
+			echo $this->app->toString(false);
+			JFile::delete($filePath);
 		}
-
-		$this->app->setHeader('charset', $encoding);
-		$this->app->setBody($str);
-		echo $this->app->toString(false);
-		JFile::delete($filePath);
-
 		// $$$ rob 21/02/2012 - need to exit otherwise Chrome give 349 download error
 		exit;
 	}
@@ -522,6 +533,27 @@ class FabrikFEModelCSVExport extends FabModel
 	 */
 	protected function quote($n)
 	{
+		$cleanhtml = $this->model->getParams()->get('csv_clean_html', 'leave');
+		
+		switch ($cleanhtml)
+		{
+			default:
+			case 'leave':
+				break;
+			
+			case 'remove':
+				$n = strip_tags($n);
+				$n =  html_entity_decode($n);
+				break;
+				
+			case 'replaceli':
+				$n = str_replace ('<li>', '', $n);
+				$n = str_replace ('</li>', "\n", $n);
+				$n = strip_tags($n);
+				$n =  html_entity_decode($n);
+				break;
+		}
+		
 		$doubleQuote  = $this->model->getParams()->get('csv_double_quote', '1') === '1';
 		if ($doubleQuote == true)
 		{

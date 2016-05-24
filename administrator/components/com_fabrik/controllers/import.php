@@ -45,9 +45,9 @@ class FabrikAdminControllerImport extends FabControllerForm
 		$c           = 0;
 
 		/** @var FabrikFEModelList $listModel */
-		$listModel   = $this->getModel('List', 'FabrikFEModel');
+		$listModel = $this->getModel('List', 'FabrikFEModel');
 		$listModel->setId($input->getInt('listid'));
-		$item           = $listModel->getTable();
+		$item = $listModel->getTable();
 
 		/** @var FabrikAdminModelList $adminListModel */
 		$adminListModel = $this->getModel('List', 'FabrikAdminModel');
@@ -149,13 +149,13 @@ class FabrikAdminControllerImport extends FabControllerForm
 		$session = JFactory::getSession();
 		$app     = JFactory::getApplication();
 		$input   = $app->input;
+		$jform   = $input->get('jform', null, 'array');
 
 		/** @var FabrikFEModelImportcsv $model */
-		$model   = $this->getModel('Importcsv', 'FabrikFEModel');
-		// $model->import();
-		$listId = $input->getInt('fabrik_list', $input->get('listid'));
+		$model  = $this->getModel('Importcsv', 'FabrikFEModel');
+		$listId = (int) $input->getInt('fabrik_list', $input->get('listid'));
 
-		if ($listId == 0)
+		if ($listId === 0)
 		{
 			$plugins                = $input->get('plugin', array(), 'array');
 			$createElements         = $input->get('createElements', array(), 'array');
@@ -189,7 +189,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 			 * @TODO should probably add an ACL option to the import options, as we now have to set 'access'
 			 * to something for the elementtype import.  Defaulting to 1 for now.
 			 */
-			$data      = array(
+			$data = array(
 				'id' => 0,
 				'_database_name' => $dbName,
 				'connection_id' => $input->getInt('connection_id'),
@@ -205,10 +205,14 @@ class FabrikAdminControllerImport extends FabControllerForm
 					'contenttype' => null
 				)
 			);
+
 			$input->set('jform', $data['jform']);
 			$listModel->save($data);
 			$model->listModel = null;
 			$input->set('listid', $listModel->getItem()->id);
+
+			// Reset back to import CSV jForm data.
+			$input->set('jform', $jform);
 		}
 		else
 		{
@@ -258,6 +262,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 	 */
 	public function doimport()
 	{
+		/** @var FabrikFEModelImportcsv $model */
 		$model = $this->getModel('Importcsv', 'FabrikFEModel');
 		$app   = JFactory::getApplication();
 		$input = $app->input;
