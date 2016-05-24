@@ -11,9 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Text;
+
 if (!defined('COM_FABRIK_FRONTEND'))
 {
-	JError::raiseError(400, JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
+	JError::raiseError(400, Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
 }
 
 jimport('joomla.filesystem.file');
@@ -49,7 +52,7 @@ $document = JFactory::getDocument();
 $prevUserState = $app->getUserState('com_fabrik.package');
 $app->setUserState('com_fabrik.package', 'fabrik');
 
-FabrikHelperHTML::framework();
+Html::framework();
 
 // $$$rob looks like including the view does something to the layout variable
 $origLayout = $input->get('layout');

@@ -97,8 +97,8 @@ class FabrikAdminViewElement extends JViewLegacy
 		Admin::setViewLayout($this);
 		Text::script('COM_FABRIK_ERR_ELEMENT_JS_ACTION_NOT_DEFINED');
 
-		$srcs = FabrikHelperHTML::framework();
-		$srcs['Fabrik'] = FabrikHelperHTML::mediaFile('fabrik.js');
+		$srcs = Html::framework();
+		$srcs['Fabrik'] = Html::mediaFile('fabrik.js');
 		$srcs['NameSpace'] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs['fabrikAdminElement'] = 'administrator/components/com_fabrik/views/element/tmpl/adminelement.js';
 
@@ -111,8 +111,8 @@ class FabrikAdminViewElement extends JViewLegacy
 		$plugManagerDeps = new stdClass;
 		$plugManagerDeps->deps = array('admin/namespace');
 		$shim['admin/pluginmanager'] = $plugManagerDeps;
-		FabrikHelperHTML::iniRequireJS($shim);
-		FabrikHelperHTML::script($srcs, $this->js);
+		Html::iniRequireJS($shim);
+		Html::script($srcs, $this->js);
 		parent::display($tpl);
 	}
 
@@ -148,7 +148,7 @@ class FabrikAdminViewElement extends JViewLegacy
 
 	protected function addConfirmToolbar()
 	{
-		JToolBarHelper::title(FText::_('COM_FABRIK_MANAGER_ELEMENT_EDIT'), 'checkbox-unchecked');
+		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_ELEMENT_EDIT'), 'checkbox-unchecked');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$input->set('hidemainmenu', true);
@@ -173,7 +173,7 @@ class FabrikAdminViewElement extends JViewLegacy
 		$userId = $user->get('id');
 		$isNew = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_ELEMENT_NEW') : Text::_('COM_FABRIK_MANAGER_ELEMENT_EDIT') . ' "' . $this->item->name . '"';
 		JToolBarHelper::title($title, 'checkbox-unchecked');
 
@@ -217,6 +217,6 @@ class FabrikAdminViewElement extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_ELEMENTS_EDIT'));
 	}
 }

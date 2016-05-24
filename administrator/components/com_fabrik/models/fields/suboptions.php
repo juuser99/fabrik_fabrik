@@ -11,9 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Utilities\ArrayHelper;
-
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Text;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -45,7 +46,7 @@ class JFormFieldSuboptions extends JFormField
 
 	protected function getInput()
 	{
-		JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
+		Text::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 
 		$default = new stdClass;
 		$default->sub_values = array();
@@ -73,7 +74,7 @@ class JFormFieldSuboptions extends JFormField
 		$script[] = "window.addEvent('domready', function () {";
 		$script[] = "\tnew Suboptions('$this->name', $opts);";
 		$script[] = "});";
-		FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/suboptions.js', implode("\n", $script));
+		Html::script('administrator/components/com_fabrik/models/fields/suboptions.js', implode("\n", $script));
 		$html = array();
 
 		$html[] = '<table class="table table-striped" style="width: 100%" id="' . $this->id . '">';

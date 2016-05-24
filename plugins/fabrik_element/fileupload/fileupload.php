@@ -34,8 +34,6 @@ use Fabrik\Helpers\Html;
 use \JPath;
 use \JTable;
 
-require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
-
 define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
 define("FU_DOWNLOAD_SCRIPT_DETAIL", '2');

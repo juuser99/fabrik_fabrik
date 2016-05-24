@@ -17,6 +17,7 @@ use \Joomla\Registry\Registry;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
+use Fabrik\Plugins\Plugin;
 use \JHtml;
 use \stdClass;
 use \JPluginHelper;
@@ -45,7 +46,7 @@ jimport('joomla.filesystem.file');
  * @package  Fabrik
  * @since    3.0
  */
-class Element extends \FabrikPlugin
+class Element extends Plugin
 {
 	/**
 	 * Element id
@@ -3230,7 +3231,7 @@ class Element extends \FabrikPlugin
 
 			if (!in_array($element->filter_type, array('checkbox', 'multiselect')))
 			{
-				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
+				array_unshift($rows, JHtml::_('select.option', '', $this->filterSelectLabel()));
 			}
 
 			$this->getFilterDisplayValues($default, $rows);
@@ -3301,9 +3302,19 @@ class Element extends \FabrikPlugin
 		$max  = count($rows) < 7 ? count($rows) : 7;
 		$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
 		$v    = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
-		$data = 'data-filter-name="' . $this->getFullName(true, false) . '"';
 
-		return JHTML::_('select.genericlist', $rows, $v, 'class="' . $class . '" ' . $size . ' ' . $data, 'value', 'text', $default, $id);
+		$layout = Html::getLayout('element.list-filter-dropdown');
+		$displayData = (object) array(
+			'rows' => $rows,
+			'name' => $v,
+			'class' => $class,
+			'filterName' => $this->getFullName(true, false),
+			'size' => $size,
+			'default' => (array) $default,
+			'htmlId' => $id
+		);
+
+		return $layout->render($displayData);
 	}
 
 	/**
@@ -3424,10 +3435,10 @@ class Element extends \FabrikPlugin
 		if ($type === 'list')
 		{
 			$return[] = '<span class="fabrikFilterRangeLabel">' . Text::_('COM_FABRIK_BETWEEN') . '</span>';
-			$return[] = JHTML::_('select.genericlist', $rows, $v . '[0]', $attributes, 'value', 'text', $def0, $element->name . '_filter_range_0');
+			$return[] = JHtml::_('select.genericlist', $rows, $v . '[0]', $attributes, 'value', 'text', $def0, $element->name . '_filter_range_0');
 			$return[] = '<br />';
 			$return[] = '<span class="fabrikFilterRangeLabel">' . Text::_('COM_FABRIK_AND') . '</span>';
-			$return[] = JHTML::_('select.genericlist', $rows, $v . '[1]', $attributes, 'value', 'text', $def1, $element->name . '_filter_range_1');
+			$return[] = JHtml::_('select.genericlist', $rows, $v . '[1]', $attributes, 'value', 'text', $def1, $element->name . '_filter_range_1');
 		}
 		else
 		{
@@ -3453,12 +3464,11 @@ class Element extends \FabrikPlugin
 		$default = (string) $default;
 		$default = stripslashes($default);
 		$default = htmlspecialchars($default);
-		$size    = (int) $this->getParams()->get('filter_length', 20);
 		$class   = $this->filterClass();
 		$id      = $this->getHTMLId() . 'value';
 
 		return '<input type="' . $type . '" data-filter-name="' . $this->getFullName(true, false) .
-		'" name="' . $v . '" class="' . $class . '" size="' . $size . '" value="' . $default . '" id="'
+		'" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="'
 		. $id . '" />';
 	}
 
@@ -3486,7 +3496,6 @@ class Element extends \FabrikPlugin
 		$default   = htmlspecialchars($default);
 		$id        = $this->getHTMLId() . 'value';
 		$class     = $this->filterClass();
-		$size      = (int) $this->getParams()->get('filter_length', 20);
 		/**
 		 * $$$ rob 28/10/2011 using selector rather than element id so we can have n modules with the same filters
 		 * showing and not produce invalid html & duplicate js calls
@@ -3495,7 +3504,7 @@ class Element extends \FabrikPlugin
 		$return[] = '<input type="hidden" " data-filter-name="' . $this->getFullName(true, false) .
 			'" name="' . $v . '" class="' . $class . ' ' . $id . '" value="' . $default . '" />';
 		$return[] = '<input type="text" name="auto-complete' . $this->getElement()->id . '" class="' . $class . ' autocomplete-trigger '
-			. $id . '-auto-complete" size="' . $size . '" value="' . $labelValue . '" />';
+			. $id . '-auto-complete" value="' . $labelValue . '" />';
 		$opts     = array();
 
 		if ($normal)
@@ -3583,7 +3592,7 @@ class Element extends \FabrikPlugin
 						if (!in_array($vals2[$jj], $allValues))
 						{
 							$allValues[] = $vals2[$jj];
-							$rows[]      = JHTML::_('select.option', $vals2[$jj], $txt2[$jj]);
+							$rows[]      = JHtml::_('select.option', $vals2[$jj], $txt2[$jj]);
 						}
 					}
 				}
@@ -3695,7 +3704,7 @@ class Element extends \FabrikPlugin
 		else
 		{
 			/**
-			 * Paul - According to tooltip, $phpOpts should be of form "array(JHTML::_('select.option', '1', 'one'))"
+			 * Paul - According to tooltip, $phpOpts should be of form "array(JHtml::_('select.option', '1', 'one'))"
 			 * This is an array of objects with properties text and value.
 			 * If user has mis-specified this we should tell them.
 			 *
@@ -3754,7 +3763,7 @@ class Element extends \FabrikPlugin
 	 *
 	 * @since  3.0.7
 	 *
-	 * @return mixed  false if no, otherwise needs to return array of JHTML::options
+	 * @return mixed  false if no, otherwise needs to return array of JHtml::options
 	 */
 	protected function getPhpOptions($data = array())
 	{
@@ -4078,7 +4087,7 @@ class Element extends \FabrikPlugin
 
 		for ($i = 0; $i < count($values); $i++)
 		{
-			$return[] = JHTML::_('select.option', $values[$i], $labels[$i]);
+			$return[] = JHtml::_('select.option', $values[$i], $labels[$i]);
 		}
 
 		return $return;
@@ -7612,8 +7621,9 @@ class Element extends \FabrikPlugin
 	 * Its actually an instance of LayoutFile which inverses the ordering added include paths.
 	 * In LayoutFile the addedPath takes precedence over the default paths, which makes more sense!
 	 *
-	 * @param   string $type  form/details/list
-	 * @param   array  $paths Optional paths to add as includes
+	 * @param   string $type    form/details/list
+	 * @param   array  $paths   Optional paths to add as includes
+	 * @param   array  $options Layout options
 	 *
 	 * @return LayoutFile
 	 */

@@ -38,15 +38,15 @@ class Admin
 	 * Prepare the date for saving
 	 * DATES SHOULD BE SAVED AS UTC
 	 *
-	 * @param   string  $strDate  publish down date
+	 * @param   string $strDate publish down date
 	 *
 	 * @return  string
 	 */
 	public static function prepareSaveDate($strDate)
 	{
-		$config = JFactory::getConfig();
+		$config   = JFactory::getConfig();
 		$tzOffset = $config->get('offset');
-		$db = Worker::getDbo(true);
+		$db       = Worker::getDbo(true);
 
 		// Handle never un-publish date
 		if (trim($strDate) == Text::_('Never') || trim($strDate) == '' || trim($strDate) == $db->getNullDate())
@@ -60,7 +60,7 @@ class Admin
 				$strDate .= ' 00:00:00';
 			}
 
-			$date = JFactory::getDate($strDate, $tzOffset);
+			$date    = JFactory::getDate($strDate, $tzOffset);
 			$strDate = $date->toSql();
 		}
 
@@ -68,46 +68,13 @@ class Admin
 	}
 
 	/**
-	 * Gets a list of the actions that can be performed.
+	 * Configure the Link bar.
 	 *
-	 * @param   int  $categoryId  The category ID.
+	 * @param   string $vName The name of the active view.
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 *
-	 * @return	Registry;
-	 */
-	public static function getActions($categoryId = 0)
-	{
-		$user = JFactory::getUser();
-		$result = new Registry();
-
-		if (empty($categoryId))
-		{
-			$assetName = 'com_fabrik';
-		}
-		else
-		{
-			$assetName = 'com_fabrik.category.' . (int) $categoryId;
-		}
-
-		$actions = array('core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.state', 'core.delete');
-
-		foreach ($actions as $action)
-		{
-			$result->set($action, $user->authorise($action, $assetName));
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Configure the Linkbar.
-	 *
-	 * @param   string  $vName  The name of the active view.
-	 *
-	 * @since	1.6
-	 *
-	 * @return	void
+	 * @return    void
 	 */
 	public static function addSubmenu($vName)
 	{
@@ -127,7 +94,7 @@ class Admin
 	/**
 	 * Applies the content tag filters to arbitrary text as per settings for current user group
 	 *
-	 * @param   string  $text  The string to filter
+	 * @param   string $text The string to filter
 	 *
 	 * @return  string  The filtered string
 	 */
@@ -135,21 +102,21 @@ class Admin
 	{
 		// Filter settings
 		jimport('joomla.application.component.helper');
-		$config = JComponentHelper::getParams('com_config');
-		$user = JFactory::getUser();
+		$config     = JComponentHelper::getParams('com_config');
+		$user       = JFactory::getUser();
 		$userGroups = JAccess::getGroupsByUser($user->get('id'));
 
 		$filters = $config->get('filters');
 
-		$blackListTags = array();
+		$blackListTags       = array();
 		$blackListAttributes = array();
 
-		$whiteListTags = array();
+		$whiteListTags       = array();
 		$whiteListAttributes = array();
 
-		$noHtml = false;
-		$whiteList = false;
-		$blackList = false;
+		$noHtml     = false;
+		$whiteList  = false;
+		$blackList  = false;
 		$unfiltered = false;
 
 		// Cycle through each of the user groups the user is in.
@@ -180,9 +147,9 @@ class Admin
 			{
 				// Black or white list.
 				// Pre-process the tags and attributes.
-				$tags = explode(',', $filterData->filter_tags);
-				$attributes = explode(',', $filterData->filter_attributes);
-				$tempTags = array();
+				$tags           = explode(',', $filterData->filter_tags);
+				$attributes     = explode(',', $filterData->filter_attributes);
+				$tempTags       = array();
 				$tempAttributes = array();
 
 				foreach ($tags as $tag)
@@ -209,23 +176,23 @@ class Admin
 				// Each list is cumulative.
 				if ($filterType == 'BL')
 				{
-					$blackList = true;
-					$blackListTags = array_merge($blackListTags, $tempTags);
+					$blackList           = true;
+					$blackListTags       = array_merge($blackListTags, $tempTags);
 					$blackListAttributes = array_merge($blackListAttributes, $tempAttributes);
 				}
 				elseif ($filterType == 'WL')
 				{
-					$whiteList = true;
-					$whiteListTags = array_merge($whiteListTags, $tempTags);
+					$whiteList           = true;
+					$whiteListTags       = array_merge($whiteListTags, $tempTags);
 					$whiteListAttributes = array_merge($whiteListAttributes, $tempAttributes);
 				}
 			}
 		}
 
 		// Remove duplicates before processing (because the black list uses both sets of arrays).
-		$blackListTags = array_unique($blackListTags);
+		$blackListTags       = array_unique($blackListTags);
 		$blackListAttributes = array_unique($blackListAttributes);
-		$whiteListTags = array_unique($whiteListTags);
+		$whiteListTags       = array_unique($whiteListTags);
 		$whiteListAttributes = array_unique($whiteListAttributes);
 
 		// Unfiltered assumes first priority.
@@ -239,8 +206,8 @@ class Admin
 			if ($blackList)
 			{
 				// Remove the white-listed attributes from the black-list.
-				$tags = array_diff($blackListTags, $whiteListTags);
-				$attrs = array_diff($blackListAttributes, $whiteListAttributes);
+				$tags   = array_diff($blackListTags, $whiteListTags);
+				$attrs  = array_diff($blackListAttributes, $whiteListAttributes);
 				$filter = JFilterInput::getInstance($tags, $attrs, 1, 1);
 			}
 			// White lists take third precedence.
@@ -264,19 +231,14 @@ class Admin
 	 * Set the layout based on Joomla version
 	 * Allows for loading of new bootstrap admin templates in J3.0+
 	 *
-	 * @param   \JView  &$view  current view to setLayout for
+	 * @param   \JView &$view current view to setLayout for
 	 *
 	 * @return  void
 	 */
 	public static function setViewLayout(&$view)
 	{
-		$v = new JVersion;
-
-		if ($v->RELEASE > 2.5)
-		{
-			// If rendering a list inside a form and viewing in admin - there were layout name conflicts (so renamed bootstrap to admin_bootstrap)
-			$layout = $view->getName() === 'list' ? 'admin_bootstrap' : 'bootstrap';
-			$view->setLayout($layout);
-		}
+		// If rendering a list inside a form and viewing in admin - there were layout name conflicts (so renamed bootstrap to admin_bootstrap)
+		$layout = $view->getName() === 'list' ? 'admin_bootstrap' : 'bootstrap';
+		$view->setLayout($layout);
 	}
 }

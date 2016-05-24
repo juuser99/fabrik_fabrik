@@ -259,16 +259,6 @@ function fabrikParseRoute($segments)
 		$view = array_shift($view);
 	}
 
-	/**
-	 * View (controller not passed into segments)
-	 *
-	 * $$$ hugh - don't use FArrayHelper::getValue() here, use original ArrayHelper.  Don't ask.
-	 * Well, since you asked, some users are reporting issues with the helper not having been
-	 * loaded (some bizarre 3rd party system plugin doing funky things), and since we don't need
-	 * what our wrapper does for this simple usage ... yes, we could specifically load our helper here,
-	 * and (dear reader) if you wanna do that be my guest.
-	 */
-
 	switch ($view)
 	{
 		case 'form':

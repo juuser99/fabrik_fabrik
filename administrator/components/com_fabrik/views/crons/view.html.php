@@ -58,12 +58,12 @@ class FabrikAdminViewCrons extends JViewLegacy
 	public function display($tpl = null)
 	{
 		// Initialise variables.
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$this->categories = $this->get('CategoryOrders');
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state = $this->get('State');
+		$app                  = JFactory::getApplication();
+		$input                = $app->input;
+		$this->categories     = $this->get('CategoryOrders');
+		$this->items          = $this->get('Items');
+		$this->pagination     = $this->get('Pagination');
+		$this->state          = $this->get('State');
 		$this->packageOptions = $this->get('PackageOptions');
 
 		// Check for errors.
@@ -77,21 +77,21 @@ class FabrikAdminViewCrons extends JViewLegacy
 		Admin::addSubmenu($input->getWord('view', 'lists'));
 		$this->sidebar = JHtmlSidebar::render();
 
-		FabrikHelperHTML::iniRequireJS();
+		Html::iniRequireJS();
 		parent::display($tpl);
 	}
 
 	/**
 	 * Add the page title and toolbar.
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 *
 	 * @return  void
 	 */
 
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_CRONS'), 'clock');
 		JToolBarHelper::custom('crons.run', 'upload.png', 'upload_f2.png', 'Run');
 
@@ -136,24 +136,24 @@ class FabrikAdminViewCrons extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS', false, FText::_('JHELP_COMPONENTS_FABRIK_CRONS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS', false, Text::_('JHELP_COMPONENTS_FABRIK_CRONS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=crons');
 
 		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
 		JHtmlSidebar::addFilter(
-		Text::_('JOPTION_SELECT_PUBLISHED'),
-		'filter_published',
-		JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+			Text::_('JOPTION_SELECT_PUBLISHED'),
+			'filter_published',
+			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
 		);
 
 		if (!empty($this->packageOptions))
 		{
 			array_unshift($this->packageOptions, JHtml::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			JHtmlSidebar::addFilter(
-			Text::_('JOPTION_SELECT_PUBLISHED'),
-			'package',
-			JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
+				Text::_('JOPTION_SELECT_PUBLISHED'),
+				'package',
+				JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
 		}
 	}

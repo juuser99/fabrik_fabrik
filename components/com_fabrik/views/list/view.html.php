@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
 /**
@@ -32,7 +34,7 @@ class FabrikViewList extends FabrikViewListBase
 	/**
 	 * Display the template
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return void
 	 */
@@ -41,13 +43,13 @@ class FabrikViewList extends FabrikViewListBase
 		if (parent::display($tpl) !== false)
 		{
 			/** @var FabrikFEModelList $model */
-			$model = $this->getModel();
+			$model      = $this->getModel();
 			$this->tabs = $model->loadTabs();
 
 			if (!$this->app->isAdmin() && isset($this->params))
 			{
 				/** @var JObject $state */
-				$state = $model->getState();
+				$state       = $model->getState();
 				$stateParams = $state->get('params');
 
 				if ($stateParams->get('menu-meta_description'))
@@ -73,20 +75,20 @@ class FabrikViewList extends FabrikViewListBase
 	/**
 	 * Render the group by heading as a JLayout list.fabrik-group-by-heading
 	 *
-	 * @param   string  $groupedBy  Group by key for $this->grouptemplates
-	 * @param   array   $group      Group data
+	 * @param   string $groupedBy Group by key for $this->grouptemplates
+	 * @param   array  $group     Group data
 	 *
 	 * @return string
 	 */
 	public function layoutGroupHeading($groupedBy, $group)
 	{
-		$displayData = new stdClass;
-		$displayData->emptyDataMessage = $this->emptyDataMessage;
-		$displayData->tmpl = $this->tmpl;
-		$displayData->title = $this->grouptemplates[$groupedBy];
-		$displayData->count = count($group);
-		$displayData->group_by_show_count = $this->params->get('group_by_show_count','1');		
-		$layout = FabrikHelperHTML::getLayout('list.fabrik-group-by-heading');
+		$displayData                      = new stdClass;
+		$displayData->emptyDataMessage    = $this->emptyDataMessage;
+		$displayData->tmpl                = $this->tmpl;
+		$displayData->title               = $this->grouptemplates[$groupedBy];
+		$displayData->count               = count($group);
+		$displayData->group_by_show_count = $this->params->get('group_by_show_count', '1');
+		$layout                           = Html::getLayout('list.fabrik-group-by-heading');
 
 		return $layout->render($displayData);
 	}
@@ -98,15 +100,16 @@ class FabrikViewList extends FabrikViewListBase
 	 */
 	public function layoutFilters()
 	{
-		$displayData = new stdClass;
-		$displayData->filterMode = $this->filterMode;
-		$displayData->toggleFilters = $this->toggleFilters;
-		$displayData->filterCols = $this->filterCols;
-		$displayData->showClearFilters = $this->showClearFilters;
-		$displayData->filters = $this->filters;
-		$displayData->filter_action = $this->filter_action;
-		$layoutFile =  $this->filterMode === 5 ? 'fabrik-filters-modal' : 'fabrik-filters';
-		$layout = FabrikHelperHTML::getLayout('list.' . $layoutFile);
+		$displayData = (object) array(
+			'filterMode' => $this->filterMode,
+			'toggleFilters' => $this->toggleFilters,
+			'filterCols' => $this->filterCols,
+			'showClearFilters' => $this->showClearFilters,
+			'filters' => $this->filters,
+			'filter_action' => $this->filter_action
+		);
+		$layoutFile  = $this->filterMode === 5 ? 'fabrik-filters-modal' : 'fabrik-filters';
+		$layout      = Html::getLayout('list.' . $layoutFile);
 
 		return $layout->render($displayData);
 	}

@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
+
 jimport('joomla.plugin.plugin');
 jimport('joomla.filesystem.file');
 
@@ -24,7 +27,6 @@ jimport('joomla.filesystem.file');
 
 class PlgSystemFabrikcron extends JPlugin
 {
-
 	/**
 	 * Row for the currently running plugin, used by the shutdown handler
 	 *
@@ -159,7 +161,7 @@ class PlgSystemFabrikcron extends JPlugin
 		}
 
 		// Get all active tasks
-		$this->db = FabrikWorker::getDbo(true);
+		$this->db = Worker::getDbo(true);
 		$this->query = $this->db->getQuery(true);
 
 		$now = $input->get('fabrikcron_run', false);
@@ -278,7 +280,8 @@ class PlgSystemFabrikcron extends JPlugin
 
 			// Email log message
 			$recipient = explode(',', $params->get('log_email', ''));
-			if (!FArrayHelper::emptyish($recipient))
+
+			if (!ArrayHelper::emptyish($recipient))
 			{
 				$subject = $config->get('sitename') . ': ' . $this->row->plugin . ' scheduled task';
 				$mailer->sendMail($config->get('mailfrom'), $config->get('fromname'), $recipient, $subject, $this->log->message, true);

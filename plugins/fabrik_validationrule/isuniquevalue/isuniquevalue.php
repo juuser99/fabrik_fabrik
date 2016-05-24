@@ -71,7 +71,7 @@ class IsUniqueValue extends Validationrule
 		 * true if we use:
 		 * $rowId = $input->get('rowid','');    or
 		 * $rowId = $input->get($pk,'');
-			$pk = FabrikString::safeColNameToArrayKey($table->db_primary_key);
+			$pk = StringHelper::safeColNameToArrayKey($table->db_primary_key);
 		 */
 		$rowId = $input->get('rowid', '');
 

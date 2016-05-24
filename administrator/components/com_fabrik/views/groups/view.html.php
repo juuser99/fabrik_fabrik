@@ -24,7 +24,6 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik
  * @since       1.6
  */
-
 class FabrikAdminViewGroups extends JViewLegacy
 {
 	/**
@@ -55,7 +54,6 @@ class FabrikAdminViewGroups extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	public function display($tpl = null)
 	{
 		// Initialise variables.
@@ -88,10 +86,9 @@ class FabrikAdminViewGroups extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_GROUPS'), 'stack');
 
 		if ($canDo->get('core.create'))
@@ -135,7 +132,7 @@ class FabrikAdminViewGroups extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_GROUPS', false, FText::_('JHELP_COMPONENTS_FABRIK_GROUPS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_GROUPS', false, Text::_('JHELP_COMPONENTS_FABRIK_GROUPS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=groups');
 

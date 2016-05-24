@@ -39,28 +39,13 @@ define("GROUPSPLITTER", "//..*..//");
 $app = JFactory::getApplication();
 $input = $app->input;
 
-// Override JHTML -needed for framework override
-$version = new JVersion;
-JHTML::addIncludePath(JPATH_SITE . '/components/com_fabrik/jhelpers/' . $version->RELEASE . '/');
-
 // Register the element class with the loader
 JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik/element.php');
 
-/**
- * Moved these to the plugin constructor, fixing a compat issue with Kunena, see comments there.
- */
-// JLoader::import('components.com_fabrik.classes.field', JPATH_SITE . '/administrator', 'administrator.');
-// JLoader::import('components.com_fabrik.classes.form', JPATH_SITE . '/administrator', 'administrator.');
-
+require_once COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 require_once COM_FABRIK_FRONTEND . '/models/fabrik.php';
-require_once COM_FABRIK_FRONTEND . '/helpers/arrayhelper.php';
-require_once COM_FABRIK_FRONTEND . '/helpers/html.php';
 require_once COM_FABRIK_FRONTEND . '/models/parent.php';
-
-require_once COM_FABRIK_FRONTEND . '/helpers/parent.php';
-require_once COM_FABRIK_FRONTEND . '/helpers/string.php';
-require_once COM_FABRIK_FRONTEND . '/models/plugin.php';
 require_once COM_FABRIK_FRONTEND . '/views/FabrikView.php';
 
 if ($app->isAdmin())

@@ -119,7 +119,7 @@ class FabrikAdminViewVisualization extends JViewLegacy
 		$userId       = $user->get('id');
 		$checkedOutBy = $this->item->get('checked_out');
 		$checkedOut   = !($checkedOutBy == 0 || $checkedOutBy == $user->get('id'));
-		$canDo        = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo        = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		$title        = $isNew ? Text::_('COM_FABRIK_MANAGER_VISUALIZATION_NEW') : Text::_('COM_FABRIK_MANAGER_VISUALIZATION_EDIT');
 		$title .= $isNew ? '' : ' "' . $this->item->get('label') . '"';
 		JToolBarHelper::title($title, 'chart');

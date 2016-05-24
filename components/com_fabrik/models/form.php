@@ -5171,7 +5171,7 @@ class FabrikFEModelForm extends FabModelForm
 			return;
 		}
 
-		// Proceed, isMambot set in PlgFabrik_FormRedirect::buildJumpPage()
+		// Proceed, isMambot set in Form::buildJumpPage()
 		$context = $this->getRedirectContext();
 		$msg = $this->session->get($context . 'msg', array());
 

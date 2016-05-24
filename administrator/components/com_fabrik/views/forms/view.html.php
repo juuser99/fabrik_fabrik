@@ -79,7 +79,7 @@ class FabrikAdminViewForms extends JViewLegacy
 		Admin::addSubmenu($input->getWord('view', 'lists'));
 		$this->sidebar = JHtmlSidebar::render();
 
-		FabrikHelperHTML::iniRequireJS();
+		Html::iniRequireJS();
 		parent::display($tpl);
 	}
 
@@ -88,10 +88,9 @@ class FabrikAdminViewForms extends JViewLegacy
 	 *
 	 * @return  void
 	 */
-
 	protected function addToolbar()
 	{
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_FORMS'), 'file-2');
 
 		if ($canDo->get('core.create'))
@@ -135,7 +134,7 @@ class FabrikAdminViewForms extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS', false, FText::_('JHELP_COMPONENTS_FABRIK_FORMS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS', false, Text::_('JHELP_COMPONENTS_FABRIK_FORMS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=forms');
 		$opts = JHtml::_('jgrid.publishedOptions', array('archived' => false));

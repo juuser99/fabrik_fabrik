@@ -848,7 +848,7 @@ EOD;
 
 			//$ext = self::isDebug() ? '.js' : '-min.js';
 			$mediaFolder = self::getMediaFolder();
-			$src = array();
+			$src         = array();
 			JHtml::_('behavior.framework', true);
 
 			// Ensure bootstrap js is loaded - as J template may not load it.
@@ -1071,7 +1071,7 @@ EOD;
 			return moment;
 		});";
 
-		$opts     = array(
+		$opts = array(
 			'baseUrl' => $requirejsBaseURI,
 			'paths' => $requirePaths,
 			'shim' => $newShim,
@@ -1204,18 +1204,7 @@ EOD;
 	 */
 	public static function tipOpts()
 	{
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$opts        = new stdClass;
-		$opts->tipfx = 'Fx.Transitions.' . $usersConfig->get('tipfx', 'Linear');
-
-		if ($usersConfig->get('tipfx', 'Linear') !== 'Linear')
-		{
-			$opts->tipfx .= '.' . $usersConfig->get('tipfx_ease', 'easeIn');
-		}
-
-		$opts->duration = $usersConfig->get('tipfx_duration', '500');
-		$opts->distance = (int) $usersConfig->get('tipfx_distance', '20');
-		$opts->fadein   = (bool) $usersConfig->get('tipfx_fadein', false);
 
 		return $opts;
 	}
@@ -1427,7 +1416,7 @@ EOD;
 			}
 		}
 
-		$files     = array_unique($files);
+		$files = array_unique($files);
 
 		// Set names from $files keys if assoc array. In general it is for require js files
 		$names = array_keys($files) !== range(0, count($files) - 1) ? array_keys($files) : array();
@@ -1750,7 +1739,7 @@ EOD;
 		$jsFile = $plugin === 'cascadingdropdown' ? 'autocomplete-bootstrap-cdd' : 'autocomplete-bootstrap';
 
 		$needed   = array();
-		$needed[] = 'fab/' . $jsFile ;
+		$needed[] = 'fab/' . $jsFile;
 		$needed[] = 'lib/Event.mock';
 		$needed   = implode("', '", $needed);
 		self::addScriptDeclaration(
@@ -2202,18 +2191,20 @@ EOD;
 	 * @param   int    $columns   Number of columns in the grid
 	 * @param   string $spanClass Additional class to add to cells
 	 * @param   bool   $explode   Should the results be exploded to a string or returned as an array
+	 * @param   string $spanId    Span id
 	 *
 	 * @return mixed  string/array based on $explode parameter
 	 */
 	public static function bootstrapGrid($items, $columns, $spanClass = '', $explode = false, $spanId = null)
 	{
-		$layout                 = self::getLayout('fabrik-bootstrap-grid');
-		$displayData            = new stdClass;
-		$displayData->items     = $items;
-		$displayData->columns   = $columns;
-		$displayData->spanClass = $spanClass;
-		$displayData->spanId    = $spanId;
-		$displayData->explode   = $explode;
+		$layout      = self::getLayout('fabrik-bootstrap-grid');
+		$displayData = (object) array(
+			'items' => $items,
+			'columns' => $columns,
+			'spanClass' => $spanClass,
+			'spanId' => $spanId,
+			'explode' => $explode
+		);
 
 		$grid = $layout->render($displayData);
 
@@ -2245,7 +2236,7 @@ EOD;
 	 */
 	public static function runContentPlugins(&$text)
 	{
-		$app   = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$input  = $app->input;
 		$opt    = $input->get('option');
 		$view   = $input->get('view');

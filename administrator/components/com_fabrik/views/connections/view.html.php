@@ -90,7 +90,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 
 	protected function addToolbar()
 	{
-		$canDo	= Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_CONNECTIONS'), 'tree-2');
 
 		if ($canDo->get('core.create'))
@@ -134,7 +134,7 @@ class FabrikAdminViewConnections extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, FText::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CONNECTIONS', false, Text::_('JHELP_COMPONENTS_FABRIK_CONNECTIONS'));
 
 		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=connections');
 

@@ -19,6 +19,7 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
 use Fabrik\Helpers\StringHelper;
+use Fabrik\Plugins\Plugin;
 use \JPluginHelper;
 use \JFilterInput;
 
@@ -28,7 +29,7 @@ use \JFilterInput;
  * @package  Fabrik
  * @since    3.0
  */
-class Validationrule extends \FabrikPlugin
+class Validationrule extends Plugin
 {
 	/**
 	 * Plugin name

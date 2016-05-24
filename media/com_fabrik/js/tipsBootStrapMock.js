@@ -13,15 +13,10 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
         Implements: [Events],
 
         options: {
-            fxProperties: {transition: Fx.Transitions.linear, duration: 500},
             'position'  : 'top',
             'trigger'   : 'hover',
             'content'   : 'title',
-            'distance'  : 50,
-            'tipfx'     : 'Fx.Transitions.linear',
             'heading'   : '',
-            'duration'  : 500,
-            'fadein'    : false,
             'notice'    : false,
             'html'      : true,
             showFn      : function (e) {
@@ -52,7 +47,6 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                 return;
             }
             this.options = jQuery.extend(this.options, options);
-            this.options.fxProperties = {transition: eval(this.options.tipfx), duration: this.options.duration};
 
             // Any tip (not necessarily in this instance has asked for all other tips to be hidden.
             window.addEvent('tips.hideall', function (e, trigger) {
@@ -112,11 +106,8 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                         // Issues loading tips in pop up wins
                         console.log('failed to apply popoverex tips');
                     }
-
                 }
-
             });
-
         },
 
         addStartEvent: function (trigger, evnt) {

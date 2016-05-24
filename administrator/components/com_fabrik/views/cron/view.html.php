@@ -78,8 +78,8 @@ class FabrikAdminViewCron extends JViewLegacy
 		$this->addToolbar();
 		Admin::setViewLayout($this);
 
-		$srcs = FabrikHelperHTML::framework();
-		$srcs['Fabrik'] = FabrikHelperHTML::mediaFile('fabrik.js');
+		$srcs = Html::framework();
+		$srcs['Fabrik'] = Html::mediaFile('fabrik.js');
 		$srcs['Namespace'] = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs['PluginManager'] = 'administrator/components/com_fabrik/views/pluginmanager.js';
 		$srcs['CronAdmin'] = 'administrator/components/com_fabrik/views/cron/admincron.js';
@@ -96,8 +96,8 @@ class FabrikAdminViewCron extends JViewLegacy
 		$js[] = "\twindow.addEvent('domready', function () {";
 		$js[] = "\t\tFabrik.controller = new CronAdmin(" . json_encode($opts) . ");";
 		$js[] = "\t})";
-		FabrikHelperHTML::iniRequireJS($shim);
-		FabrikHelperHTML::script($srcs, implode("\n", $js));
+		Html::iniRequireJS($shim);
+		Html::script($srcs, implode("\n", $js));
 
 		parent::display($tpl);
 	}
@@ -117,7 +117,7 @@ class FabrikAdminViewCron extends JViewLegacy
 		$userId = $user->get('id');
 		$isNew = ($this->item->id == 0);
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo = Admin::getActions($this->state->get('filter.category_id'));
+		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_CRON_NEW') : Text::_('COM_FABRIK_MANAGER_CRON_EDIT') . ' "' . $this->item->label . '"';
 		JToolBarHelper::title($title, 'clock');
 
@@ -161,6 +161,6 @@ class FabrikAdminViewCron extends JViewLegacy
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS_EDIT', false, FText::_('JHELP_COMPONENTS_FABRIK_CRONS_EDIT'));
+		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_CRONS_EDIT', false, Text::_('JHELP_COMPONENTS_FABRIK_CRONS_EDIT'));
 	}
 }

@@ -25,8 +25,11 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             }
         },
 
-        // Get the sub element which are the checkboxes themselves
-
+        /**
+         * Get the sub element which are the checkboxes themselves
+         *
+         * @return {[Node]}
+         */
         _getSubElements: function () {
             var element = this.getElement();
             if (!element) {

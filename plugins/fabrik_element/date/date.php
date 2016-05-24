@@ -767,8 +767,8 @@ class Date extends ElementList
 		);
 		$img        = $btnLayout->render($layoutData);
 		$html[]     = '<div class="input-append">';
-		$html[] = '<input type="text" name="' . $name . '" id="' . $id . '" value="' . $value . '" ' . $attribs . ' />' . $img;
-		$html[] = '</div>';
+		$html[]     = '<input type="text" name="' . $name . '" id="' . $id . '" value="' . $value . '" ' . $attribs . ' />' . $img;
+		$html[]     = '</div>';
 
 		return implode("\n", $html);
 	}
@@ -1596,14 +1596,15 @@ class Date extends ElementList
 		}
 
 		array_unshift($ddData, JHtml::_('select.option', '', $this->filterSelectLabel()));
-		$layout               = $this->getLayout('list-filter-dropdown');
-		$displayData          = new stdClass;
-		$displayData->rows    = $ddData;
-		$displayData->name    = $v;
-		$displayData->class   = $this->filterClass();
-		$displayData->size    = $size;
-		$displayData->default = $default;
-		$displayData->htmlId  = $this->getHTMLId();
+		$layout      = $this->getLayout('list-filter-dropdown');
+		$displayData = (object) array(
+			'rows' => $ddData,
+			'name' => $v,
+			'class' => $this->filterClass(),
+			'size' => $size,
+			'default' => $default,
+			'htmlId' => $this->getHTMLId()
+		);
 
 		return $layout->render($displayData);
 	}
@@ -1633,13 +1634,13 @@ class Date extends ElementList
 			$default = $d->format($format);
 		}
 
-		$layout          = $this->getLayout('list-filter-field');
-		$displayData     = new stdClass;
-		$from            = new stdClass;
-		$from->id        = $this->getFilterHtmlId(0);
-		$from->value     = $default;
-		$from->name      = $v;
-		$from->img = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
+		$layout      = $this->getLayout('list-filter-field');
+		$displayData = new stdClass;
+		$from        = new stdClass;
+		$from->id    = $this->getFilterHtmlId(0);
+		$from->value = $default;
+		$from->name  = $v;
+		$from->img   = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
 
 		$displayData->from = $from;
 
@@ -1696,7 +1697,7 @@ class Date extends ElementList
 		$to->value = $default[1];
 		$to->name  = $v . '[1]';
 
-		$to->img   = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
+		$to->img = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
 
 		$displayData->to         = $to;
 		$displayData->filterType = $this->getFilterType();

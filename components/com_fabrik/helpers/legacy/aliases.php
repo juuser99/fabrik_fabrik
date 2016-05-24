@@ -23,3 +23,5 @@ class_alias('Fabrik\Helpers\Uploader', 'FabrikUploader');
 class_alias('Fabrik\Helpers\Pagination', 'FPagination');
 class_alias('Fabrik\Helpers\LayoutFile', 'FabrikLayoutFile');
 class_alias('Fabrik\Helpers\Image', 'FabimageHelper');
+
+class_alias('Fabrik\Plugins\Form\Form', 'PlgFabrik_Form');

@@ -20,6 +20,8 @@ require JPATH_COMPONENT_ADMINISTRATOR . '/models/databaseimporter.php';
 use Fabrik\Helpers\Admin\ContentType;
 use Fabrik\Helpers\ArrayHelper;
 use \Joomla\Registry\Registry;
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Admin Content Type Import Model
@@ -180,7 +182,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 		$groups     = $xpath->query('/contenttype/group');
 		$i          = 1;
 		$elementMap = array();
-		$w          = new FabrikWorker;
+		$w          = new Worker;
 		$jForm      = $this->app->input->get('jform', array(), 'array');
 
 		foreach ($groups as $group)
@@ -298,7 +300,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 	{
 		$return        = true;
 		$formModel     = $this->listModel->getFormModel();
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 
 		foreach ($elementMap as $origId => $newId)
 		{
@@ -570,7 +572,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 	 */
 	public function preview()
 	{
-		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager = Worker::getPluginManager();
 		$xpath         = new DOMXpath($this->doc);
 		$groups        = $xpath->query('/contenttype/group');
 		$return        = array();
@@ -868,7 +870,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 		}
 
 		$this->checkVersion($xpath, $layoutData);
-		$layout = FabrikHelperHTML::getLayout('fabrik-content-type-compare');
+		$layout = Html::getLayout('fabrik-content-type-compare');
 
 		return $layout->render($layoutData);
 	}
