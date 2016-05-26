@@ -3465,7 +3465,7 @@ class Element extends Plugin
 		{
 			$default = array_shift($default);
 		}
-		
+
 		// $$$ rob - if searching on "O'Fallon" from querystring filter the string has slashes added regardless
 		$default = (string) $default;
 		$default = stripslashes($default);

@@ -41,7 +41,7 @@ class PlgSystemFabrik extends JPlugin
 	public function __construct(&$subject, $config)
 	{
 		// Could be component was uninstalled but not the plugin
-		if (!JFile::exists(JPATH_SITE . '/components/com_fabrik/helpers/html.php'))
+		if (!JFile::exists(JPATH_SITE . '/components/com_fabrik/fabrik.php'))
 		{
 			return;
 		}
