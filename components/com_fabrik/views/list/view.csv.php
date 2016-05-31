@@ -33,7 +33,6 @@ class FabrikViewList extends FabrikViewListBase
 	 */
 	public function display($tpl = null)
 	{
-		echo "display";exit;
 		$input = $this->app->input;
 
 		/** @var FabrikFEModelCSVExport $exporter */

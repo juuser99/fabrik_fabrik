@@ -77,7 +77,7 @@ class FabrikFEModelCSVExport extends FabModel
 		$input = $this->app->input;
 
 		// F3 turn off error reporting as this is an ajax call
-		error_reporting(0);
+		//error_reporting(0);
 		jimport('joomla.filesystem.file');
 		$start    = $input->getInt('start', 0);
 		$filePath = $this->getFilePath();
@@ -252,13 +252,24 @@ class FabrikFEModelCSVExport extends FabModel
 
 	/**
 	 * Format JSON data
+	 * @param mixed $v
+	 * @param string $k
+	 * $param string $separator
 	 */
-	protected function implodeJSON(&$v, $k, $sepchar)
+	protected function implodeJSON(&$v, $k, $separator)
 	{
 		if (!StringHelper::isRawName($k) && Worker::isJSON($v))
 		{
 			$v = Worker::JSONtoData($v, true);
-			$v = implode($sepchar, $v);
+
+			if (count($v) !== count($v, COUNT_RECURSIVE) )
+			{
+				$v = json_encode($v);
+			}
+			else
+			{
+				$v = implode($separator, $v);
+			}
 		}
 	}
 
@@ -405,9 +416,9 @@ class FabrikFEModelCSVExport extends FabModel
 		$filePath = $this->getFilePath();
 		// Do additional processing if post-processing php file exists
 		$listid = $this->app->input->getInt('listid');
-		if(file_exists(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php')){	
+		if(file_exists(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php')){
 			require(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php');
-		}else{		
+		}else{
 			$document = JFactory::getDocument();
 			$document->setMimeEncoding('application/zip');
 			$str = $this->getCSVContent();
@@ -534,18 +545,18 @@ class FabrikFEModelCSVExport extends FabModel
 	protected function quote($n)
 	{
 		$cleanhtml = $this->model->getParams()->get('csv_clean_html', 'leave');
-		
+
 		switch ($cleanhtml)
 		{
 			default:
 			case 'leave':
 				break;
-			
+
 			case 'remove':
 				$n = strip_tags($n);
 				$n =  html_entity_decode($n);
 				break;
-				
+
 			case 'replaceli':
 				$n = str_replace ('<li>', '', $n);
 				$n = str_replace ('</li>', "\n", $n);
@@ -553,7 +564,7 @@ class FabrikFEModelCSVExport extends FabModel
 				$n =  html_entity_decode($n);
 				break;
 		}
-		
+
 		$doubleQuote  = $this->model->getParams()->get('csv_double_quote', '1') === '1';
 		if ($doubleQuote == true)
 		{
