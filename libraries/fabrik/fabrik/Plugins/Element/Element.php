@@ -4009,7 +4009,7 @@ class Element extends Plugin
 			// $elementWhere = StringHelper::str_ireplace('WHERE ', 'AND ', $elementWhere);
 			$elementWhere = preg_replace("#^(\s*)(WHERE)(.*)#i", "$1AND$3", $elementWhere);
 		}
-		else if (JString::stristr($sql, 'WHERE ') && !empty($elementWhere) && !JString::stristr($elementWhere, 'WHERE '))
+		else if (StringHelper::stristr($sql, 'WHERE ') && !empty($elementWhere) && !StringHelper::stristr($elementWhere, 'WHERE '))
 		{
 			// if we have a WHERE in the main query, and the element clause isn't empty but doesn't start with WHERE ...
 			$elementWhere = 'AND ' . $elementWhere;
