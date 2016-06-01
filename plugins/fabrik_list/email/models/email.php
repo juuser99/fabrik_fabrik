@@ -1038,7 +1038,6 @@ class Email extends Lizt
 	 *
 	 * @return    bool
 	 */
-
 	protected function sendSMS($to, $message, $data)
 	{
 		$params               = $this->getParams();
@@ -1061,7 +1060,6 @@ class Email extends Lizt
 	 *
 	 * @return  object  gateway
 	 */
-
 	private function getSMSInstance()
 	{
 		if (!isset($this->gateway))
@@ -1070,7 +1068,7 @@ class Email extends Lizt
 			$gateway = $params->get('emailtable_sms_gateway', 'kapow.php');
 			$input   = new JFilterInput;
 			$gateway = $input->clean($gateway, 'CMD');
-			require_once JPATH_ROOT . '/components/com_fabrik/helpers/sms_gateways/'
+			require_once JPATH_ROOT . '/libraries/fabrik/fabrik/Helpers/sms_gateways/'
 				. StringHelper::strtolower($gateway);
 			$gateway               = JFile::stripExt($gateway);
 			$this->gateway         = new $gateway;
