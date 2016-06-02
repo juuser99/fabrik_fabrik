@@ -2613,8 +2613,6 @@ class Fileupload extends Element
 			return;
 		}
 
-		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
-
 		// @TODO test in join
 		if (array_key_exists('file', $_FILES) || array_key_exists('join', $_FILES))
 		{
@@ -2813,7 +2811,6 @@ class Fileupload extends Element
 		}
 
 		$db = $this->getListModel()->getDb();
-		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
 		$params = $this->getParams();
 
 		if ($params->get('upload_delete_image', false))

@@ -2520,7 +2520,6 @@ class FabrikAdminModelList extends FabModelAdmin
 		if ($amend)
 		{
 			$sql .= implode(', ', $sqlAdd);
-			echo $sql;exit;
 			$fabrikDb->setQuery($sql);
 			$fabrikDb->execute();
 		}

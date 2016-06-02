@@ -1182,7 +1182,6 @@ class FabrikFEModelForm extends FabModelForm
 
 		error_reporting(error_reporting() ^ (E_WARNING | E_NOTICE));
 		@set_time_limit(300);
-		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
 		$form = $this->getForm();
 		$pluginManager = Worker::getPluginManager();
 
@@ -2129,7 +2128,6 @@ class FabrikFEModelForm extends FabModelForm
 			return true;
 		}
 
-		require_once COM_FABRIK_FRONTEND . '/helpers/uploader.php';
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$pluginManager->getPlugInGroup('validationrule');
 
@@ -2341,7 +2339,7 @@ class FabrikFEModelForm extends FabModelForm
 		}
 
 		Html::debug($this->errors, 'form:errors');
-		//echo "<pre>";print_r($this->errors);exit;
+
 		$this->setErrors($this->errors);
 
 		return $ok;
