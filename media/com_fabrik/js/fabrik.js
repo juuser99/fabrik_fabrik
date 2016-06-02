@@ -111,7 +111,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
         return Fabrik.blocks[foundBlockId];
     };
 
-    doc.on('click', '.fabrik_delete a, .fabrik_action a.delete, .btn.delete', function (e) {
+    doc.on('click', '.fabrik_delete a, .fabrik_action a.delete, .btn.delete, *[data-action="delete"]', function (e) {
         if (e.rightClick) {
             return;
         }
@@ -338,7 +338,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
         }
         // Get correct list block
         if (!l.submit('list.delete')) {
-            e.stop();
+            e.preventDefault();
         }
     };
 

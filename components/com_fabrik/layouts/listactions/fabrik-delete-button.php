@@ -17,6 +17,6 @@ use Fabrik\Helpers\Text;
 
 $d = $displayData;
 ?>
-<a href="#" class="<?php echo $d->btnClass;?>delete" data-listRef="list_<?php echo $d->renderContext;?>"
+<a href="del" data-action="delete" class="<?php echo $d->btnClass;?>delete" data-listRef="list_<?php echo $d->renderContext;?>"
 	title="<?php echo Text::_('COM_FABRIK_DELETE'); ?>">
 	<?php echo Html::image('delete.png', 'list', $d->tpl, array('alt' => $d->label, 'icon-class' => $d->iconClass))?> <?php echo $d->text;?></a>
