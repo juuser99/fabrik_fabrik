@@ -90,6 +90,7 @@ class Date extends ElementList
 		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$params   = $this->getParams();
 		$data     = Worker::JSONtoData($data, true);
+		echo "date = <br>";print_r($data);
 		$f        = $params->get('date_table_format', 'Y-m-d');
 		$format   = array();
 
@@ -125,7 +126,7 @@ class Date extends ElementList
 		}
 
 		$data = json_encode($format);
-
+echo $data;
 		return parent::renderListData($data, $thisRow, $opts);
 	}
 

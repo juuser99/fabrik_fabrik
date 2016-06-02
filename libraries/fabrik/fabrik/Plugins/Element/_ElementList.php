@@ -593,6 +593,7 @@ class ElementList extends Element
 	 */
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
+		echo "elemetn list renderlist $data<br>";
 		$params = $this->getParams();
 		$listModel = $this->getListModel();
 		$multiple = $this->isMultiple();
@@ -697,6 +698,7 @@ class ElementList extends Element
 			'condense' => $condense,
 			'addHtml' => $addHtml
 		);
+		echo "<pre>";print_r($displayData);echo "</pre>";
 
 		return $layout->render((object) $displayData);
 	}
