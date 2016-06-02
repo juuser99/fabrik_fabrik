@@ -43,30 +43,11 @@ interface AdapterInterface
     public function shipFrom(array $shipFrom);
 
     /**
-     * Set dimensions
-     *
-     * @param  array  $dimensions
-     * @param  string $unit
-     * @return mixed
-     */
-    public function setDimensions(array $dimensions, $unit = null);
-
-    /**
-     * Set dimensions
-     *
-     * @param  string $weight
-     * @param  string $unit
-     * @return mixed
-     */
-    public function setWeight($weight, $unit = null);
-
-    /**
      * Send transaction
      *
-     * @param  boolean $verifyPeer
      * @return void
      */
-    public function send($verifyPeer = true);
+    public function send();
 
     /**
      * Return whether the transaction is a success
@@ -110,4 +91,41 @@ interface AdapterInterface
      */
     public function getRates();
 
+    /**
+     * Get service extended rates
+     *
+     * @return array
+     */
+    public function getExtendedRates();
+
+    /**
+     * Set whether the package contains alcohol
+     *
+     * @param   string $alcohol
+     * @param   string $recipientType LICENSEE|CONSUMER
+     */
+    public function setAlcohol($alcohol, $recipientType = 'LICENSEE');
+
+    /**
+     * Set the shipping info
+     * @param $info
+     *
+     * @return mixed
+     */
+    public function shipmentInfo($info);
+
+    /**
+     * Set the shipping insurance value
+     *
+     * @param float $value
+     *
+     * @return mixed
+     */
+    public function setInsurance($value);
+
+    /**
+     * Get package
+     * @return \Pop\Shipping\PackageAdapter\AbstractAdapter
+     */
+    public function getPackage();
 }

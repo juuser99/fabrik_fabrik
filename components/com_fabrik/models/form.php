@@ -2339,7 +2339,7 @@ class FabrikFEModelForm extends FabModelForm
 		}
 
 		Html::debug($this->errors, 'form:errors');
-
+		//echo "<pre>";print_r($this->errors);exit;
 		$this->setErrors($this->errors);
 
 		return $ok;
