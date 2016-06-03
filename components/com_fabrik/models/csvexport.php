@@ -25,7 +25,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikFEModelCSVExport extends FabModel
+class FabrikFEModelCSVExport extends \Fabrik\Models\Model
 {
 	/**
 	 * Number of records to output at a time

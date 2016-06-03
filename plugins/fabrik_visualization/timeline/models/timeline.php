@@ -8,16 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Timeline;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \DateTimeZone;
+use \JFactory;
+use \JModelLegacy;
+use \Joomla\String\Normalise;
+use \JUri;
+use \RuntimeException;
+use \stdClass;
 
 /**
  * Renders timeline visualization
@@ -26,7 +31,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.timeline
  * @since       3.0
  */
-class FabrikModelTimeline extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
 	/**
 	 * Number of ajax records to return each time
@@ -42,10 +47,10 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 */
 	public function onAjax_getEvents()
 	{
-		$input = $this->app->input;
+		$input  = $this->app->input;
 		$params = $this->getParams();
-		$lists = $params->get('timeline_table', array());
-		$key = 'com_fabrik.timeline.total.' . $input->getInt('visualizationid');
+		$lists  = $params->get('timeline_table', array());
+		$key    = 'com_fabrik.timeline.total.' . $input->getInt('visualizationid');
 
 		if (!$this->session->has($key))
 		{
@@ -58,28 +63,27 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		}
 
 		$currentList = $input->getInt('currentList', 0);
-		$start = $input->getInt('start', 0);
+		$start       = $input->getInt('start', 0);
 
-		$res = new stdClass;
-		$fabrik = new stdClass;
-		$json_data = array ();
-		$res->events = array();
+		$res           = new stdClass;
+		$fabrik        = new stdClass;
+		$res->events   = array();
 		$fabrik->total = array_sum($totals);
-		$fabrik->done = 0;
-		$c = 0;
+		$fabrik->done  = 0;
+		$c             = 0;
 
 		if ($start <= $totals[$currentList])
 		{
-			$fabrik->next = $start + $this->step;
+			$fabrik->next        = $start + $this->step;
 			$fabrik->currentList = $currentList;
 
-			$c = array_search($currentList, $lists);
+			$c           = array_search($currentList, $lists);
 			$res->events = $this->jsonEvents($currentList, $totals[$currentList], $start, $c);
 
 			if ($start + $this->step > $totals[$currentList])
 			{
 				// Move onto next list?
-				$nextListId = ArrayHelper::getValue($lists, $c + 1, null);
+				$nextListId         = ArrayHelper::getValue($lists, $c + 1, null);
 				$fabrik->nextListId = $nextListId;
 
 				if (is_null($nextListId))
@@ -89,7 +93,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 				}
 				else
 				{
-					$c = array_search($nextListId, $lists);
+					$c           = array_search($nextListId, $lists);
 					$res->events = array_merge($res->events, $this->jsonEvents($nextListId, $totals[$nextListId], 0, $c));
 				}
 			}
@@ -97,7 +101,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		else
 		{
 			// Move onto next list?
-			$nextListId = ArrayHelper::getValue($lists, $c + 1, null);
+			$nextListId         = ArrayHelper::getValue($lists, $c + 1, null);
 			$fabrik->nextListId = $nextListId;
 
 			if (is_null($nextListId))
@@ -107,29 +111,29 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 			}
 			else
 			{
-				$fabrik->next = 0;
+				$fabrik->next        = 0;
 				$fabrik->currentList = $nextListId;
-				$c = array_search($nextListId, $lists);
-				$fabrik->nextC = $c;
-				$res->events = array_merge($res->events, $this->jsonEvents($nextListId, $totals[$nextListId], 0, $c));
+				$c                   = array_search($nextListId, $lists);
+				$fabrik->nextC       = $c;
+				$res->events         = array_merge($res->events, $this->jsonEvents($nextListId, $totals[$nextListId], 0, $c));
 			}
 		}
 
 		$res->dateTimeFormat = 'ISO8601';
 
-		$json_data = array (
-				/*
-				 * Timeline attributes
-				 * 'wiki-url'=>'http://simile.mit.edu/shelf',
-				 * 'wiki-section'=>'Simile Cubism Timeline',
-				 * 'dateTimeFormat'=>'Gregorian', //JSON!
-				 * Event attributes
-				 */
-				'events' => $res
+		$json_data        = array(
+			/*
+			 * Timeline attributes
+			 * 'wiki-url'=>'http://simile.mit.edu/shelf',
+			 * 'wiki-section'=>'Simile Cubism Timeline',
+			 * 'dateTimeFormat'=>'Gregorian', //JSON!
+			 * Event attributes
+			 */
+			'events' => $res
 		);
-		$return = new stdClass;
+		$return           = new stdClass;
 		$return->timeline = $json_data;
-		$return->fabrik = $fabrik;
+		$return->fabrik   = $fabrik;
 
 		echo json_encode($return);
 	}
@@ -137,7 +141,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	/**
 	 * End the ajax get events
 	 *
-	 * @param   object  &$res  return object
+	 * @param   object &$res return object
 	 *
 	 * @return  void
 	 */
@@ -150,42 +154,43 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	/**
 	 * Get JSON events
 	 *
-	 * @param   int  $listId  list id
-	 * @param   int  $total   total list record count
-	 * @param   int  $start   where to start from
-	 * @param   int  $c       list order in timeline params
+	 * @param   int $listId list id
+	 * @param   int $total  total list record count
+	 * @param   int $start  where to start from
+	 * @param   int $c      list order in timeline params
 	 *
 	 * @return  array of events
 	 */
 	protected function jsonEvents($listId, $total, $start, $c)
 	{
-		$input = $this->app->input;
-		$params = $this->getParams();
+		$input    = $this->app->input;
+		$params   = $this->getParams();
 		$timeZone = new DateTimeZone($this->config->get('offset'));
-		$w = new Worker;
+		$w        = new Worker;
 		jimport('string.normalise');
-		$templates = (array) $params->get('timeline_detailtemplate', array());
-		$startdates = (array) $params->get('timeline_startdate', array());
-		$enddates = (array) $params->get('timeline_enddate', array());
-		$labels = (array) $params->get('timeline_label', array());
-		$colours = (array) $params->get('timeline_colour', array());
+		$templates   = (array) $params->get('timeline_detailtemplate', array());
+		$startdates  = (array) $params->get('timeline_startdate', array());
+		$enddates    = (array) $params->get('timeline_enddate', array());
+		$labels      = (array) $params->get('timeline_label', array());
+		$colours     = (array) $params->get('timeline_colour', array());
 		$textColours = (array) $params->get('timeline_text_color', array());
-		$classNames = (array) $params->get('timeline_class', array());
-		$evals = (array) $params->get('eval_template', array());
+		$classNames  = (array) $params->get('timeline_class', array());
+		$evals       = (array) $params->get('eval_template', array());
 
-		$template = ArrayHelper::getValue($templates, $c);
-		$colour = ArrayHelper::getValue($colours, $c);
-		$startdate = ArrayHelper::getValue($startdates, $c);
-		$enddate = ArrayHelper::getValue($enddates, $c);
-		$title = ArrayHelper::getValue($labels, $c);
+		$template   = ArrayHelper::getValue($templates, $c);
+		$colour     = ArrayHelper::getValue($colours, $c);
+		$startdate  = ArrayHelper::getValue($startdates, $c);
+		$enddate    = ArrayHelper::getValue($enddates, $c);
+		$title      = ArrayHelper::getValue($labels, $c);
 		$textColour = ArrayHelper::getValue($textColours, $c);
-		$className = ArrayHelper::getValue($classNames, $c);
-		$eval = ArrayHelper::getValue($evals, $c);
+		$className  = ArrayHelper::getValue($classNames, $c);
+		$eval       = ArrayHelper::getValue($evals, $c);
 
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$listModel->setId($listId);
 
-		$eventdata = array();
+		$eventData = array();
 		$input->set('limit' . $listId, $this->step);
 		$input->set('limitstart' . $listId, $start);
 		$listModel->setLimits($start, $this->step);
@@ -196,29 +201,15 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		{
 			$where = ArrayHelper::getValue($where, $listId, '');
 			$listModel->setPluginQueryWhere('timeline', $where);
-			$data = $listModel->getData();
-			$elements = $listModel->getElements();
-			$enddate2 = $enddate;
+			$data       = $listModel->getData();
+			$elements   = $listModel->getElements();
 			$startdate2 = $startdate;
-			$endKey = StringHelper::safeColName($enddate2);
-			$startKey = StringHelper::safeColName($startdate2);
-
-			if (!array_key_exists($endKey, $elements))
-			{
-				$endKey = $startKey;
-				$enddate2 = $startdate2;
-			}
-
-			$endElement = $elements[$endKey];
+			$startKey   = StringHelper::safeColName($startdate2);
 
 			if (!array_key_exists($startKey, $elements))
 			{
 				throw new RuntimeException($startdate2 . " not found in the list, is it published?", 500);
 			}
-
-			$startElement = $elements[$startKey];
-			$endParams = $endElement->getParams();
-			$startParams = $startElement->getParams();
 
 			foreach ($data as $group)
 			{
@@ -227,7 +218,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 					foreach ($group as $row)
 					{
 						$event = new stdClass;
-						$html = $w->parseMessageForPlaceHolder($template, ArrayHelper::fromObject($row), false, true);
+						$html  = $w->parseMessageForPlaceHolder($template, ArrayHelper::fromObject($row), false, true);
 
 						if ($eval)
 						{
@@ -235,25 +226,25 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 						}
 
 						$event->description = $html;
-						$event->start = array_key_exists($startdate . '_raw', $row) ? $row->{$startdate . '_raw'} : $row->$startdate;
-						$event->end = $event->start;
+						$event->start       = array_key_exists($startdate . '_raw', $row) ? $row->{$startdate . '_raw'} : $row->$startdate;
+						$event->end         = $event->start;
 
 						if (trim($enddate) !== '')
 						{
-							$end = array_key_exists($enddate . '_raw', $row) ? $row->{$enddate . '_raw'} : @$row->$enddate;
+							$end        = array_key_exists($enddate . '_raw', $row) ? $row->{$enddate . '_raw'} : @$row->$enddate;
 							$event->end = ($end >= $event->start) ? $end : '';
 
 							$sDate = JFactory::getDate($event->end);
 							$sDate->setTimezone($timeZone);
 							$event->end = $sDate->toISO8601(true);
-							$bits = explode('+', $event->end);
+							$bits       = explode('+', $event->end);
 							$event->end = $bits[0] . '+00:00';
 						}
 
 						$sDate = JFactory::getDate($event->start);
 						$sDate->setTimezone($timeZone);
 						$event->start = $sDate->toISO8601(true);
-						$bits = explode('+', $event->start);
+						$bits         = explode('+', $event->start);
 						$event->start = $bits[0] . '+00:00';
 
 						if (isset($row->$title))
@@ -265,11 +256,11 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 							$event->title = $w->parseMessageForPlaceHolder($title, $row);
 						}
 
-						$event->title = strip_tags($event->title);
-						$url = $this->getLinkURL($listModel, $row, $c);
-						$event->link = ($listModel->getOutPutFormat() == 'json') ? '#' : $url;
-						$event->image = '';
-						$event->color = $colour;
+						$event->title     = strip_tags($event->title);
+						$url              = $this->getLinkURL($listModel, $row, $c);
+						$event->link      = ($listModel->getOutPutFormat() == 'json') ? '#' : $url;
+						$event->image     = '';
+						$event->color     = $colour;
 						$event->textColor = $textColour;
 						$event->classname = isset($row->$className) ? $row->$className : '';
 						$event->classname = strip_tags($event->classname);
@@ -282,7 +273,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 								$event->end = '';
 							}
 
-							$eventdata[] = $event;
+							$eventData[] = $event;
 						}
 					}
 				}
@@ -290,10 +281,10 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		}
 		else
 		{
-			throw new RuntimeException('Timeline: no access to list', 500);
+			throw new \RuntimeException('Timeline: no access to list', 500);
 		}
 
-		return $eventdata;
+		return $eventData;
 	}
 
 	/**
@@ -304,13 +295,13 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	protected function getTotal()
 	{
 		$params = $this->getParams();
-		$lists = $params->get('timeline_table', array());
+		$lists  = $params->get('timeline_table', array());
 		$totals = array();
-		$where = $this->app->input->get('where', array(), 'array');
+		$where  = $this->app->input->get('where', array(), 'array');
 
 		foreach ($lists as $listId)
 		{
-			$where = ArrayHelper::getValue($where, $listId, '');
+			$where     = ArrayHelper::getValue($where, $listId, '');
 			$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 			$listModel->setId($listId);
 			$listModel->setPluginQueryWhere('timeline', $where);
@@ -328,7 +319,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	protected function clearSession()
 	{
 		$input = $this->app->input;
-		$key = 'com_fabrik.timeline.total.' . $input->getInt('visualizationid');
+		$key   = 'com_fabrik.timeline.total.' . $input->getInt('visualizationid');
 		$this->session->clear($key);
 	}
 
@@ -340,7 +331,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 */
 	public function render()
 	{
-		$params = $this->getParams();
+		$params   = $this->getParams();
 		$document = JFactory::getDocument();
 		$this->clearSession();
 		jimport('string.normalise');
@@ -349,40 +340,29 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$parsedUrl = parse_url(JUri::root());
 		$document->addScript($parsedUrl['scheme'] . '://code.jquery.com/jquery-1.9.1.min.js');
 		$document->addScript($parsedUrl['scheme'] . '://api.simile-widgets.org/timeline/2.3.1/timeline-api.js?bundle=true');
-		$c = 0;
-		$templates = (array) $params->get('timeline_detailtemplate', array());
-		$startdates = (array) $params->get('timeline_startdate', array());
-		$enddates = (array) $params->get('timeline_enddate', array());
-		$labels = (array) $params->get('timeline_label', array());
-		$colours = (array) $params->get('timeline_colour', array());
-		$textColours = (array) $params->get('timeline_text_color', array());
-		$classNames = (array) $params->get('timeline_class', array());
 
-		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
-
-		$lists = $params->get('timeline_table', array());
-		$eventdata = array();
-		$json = new StdClass;
+		$lists                = $params->get('timeline_table', array());
+		$json                 = new stdClass;
 		$json->dateTimeFormat = 'ISO8601';
-		$json->events = array();
-		$json->bands = $this->getBandInfo();
-		$json = json_encode($json);
-		$options = new stdClass;
-		$options->id = $this->getId();
-		$options->listRef = 'list' . $lists[0] . '_' . $this->app->scope . '_' . $lists[0];
-		$options->step = $this->step;
-		$options->admin = (bool) $this->app->isAdmin();
-		$options->dateFormat = $params->get('timeline_date_format', '%c');
+		$json->events         = array();
+		$json->bands          = $this->getBandInfo();
+		$json                 = json_encode($json);
+		$options              = new stdClass;
+		$options->id          = $this->getId();
+		$options->listRef     = 'list' . $lists[0] . '_' . $this->app->scope . '_' . $lists[0];
+		$options->step        = $this->step;
+		$options->admin       = (bool) $this->app->isAdmin();
+		$options->dateFormat  = $params->get('timeline_date_format', '%c');
 		$options->orientation = $params->get('timeline_orientation', 'horizontal');
 		$options->currentList = $lists[0];
 
-		$urlFilters = new stdClass;
-		$urlFilters->where = $this->buildQueryWhere();
+		$urlFilters          = new stdClass;
+		$urlFilters->where   = $this->buildQueryWhere();
 		$options->urlfilters = $urlFilters;
 
 		$options = json_encode($options);
-		$ref = $this->getJSRenderContext();
-		$str = "var " . $ref . " = new FbVisTimeline($json, $options);";
+		$ref     = $this->getJSRenderContext();
+		$str     = "var " . $ref . " = new FbVisTimeline($json, $options);";
 		$str .= "\n" . "Fabrik.addBlock('" . $ref . "', " . $ref . ");";
 
 		return $str;
@@ -391,7 +371,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	/**
 	 * Convert string into css class name
 	 *
-	 * @param   string  $input  string
+	 * @param   string $input string
 	 *
 	 * @return  string
 	 */
@@ -404,8 +384,8 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$input = trim($input);
 
 		// Remove dashes and underscores, then convert to camel case.
-		$input = JStringNormalise::toSpaceSeparated($input);
-		$input = JStringNormalise::toCamelCase($input);
+		$input = Normalise::toSpaceSeparated($input);
+		$input = Normalise::toCamelCase($input);
 
 		// Remove leading digits.
 		$input = preg_replace('#^[\d\.]*#', '', $input);
@@ -423,16 +403,16 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	/**
 	 * Build the item link
 	 *
-	 * @param   object  $listModel  list model
-	 * @param   object  $row        current row
-	 * @param   int     $c          which data set are we in (needed for getting correct params data)
+	 * @param   object $listModel list model
+	 * @param   object $row       current row
+	 * @param   int    $c         which data set are we in (needed for getting correct params data)
 	 *
 	 * @return  string  url
 	 */
 	protected function getLinkURL($listModel, $row, $c)
 	{
-		$w = new Worker;
-		$params = $this->getParams();
+		$w          = new Worker;
+		$params     = $this->getParams();
 		$customLink = (array) $params->get('timeline_customlink');
 		$customLink = ArrayHelper::getValue($customLink, $c, '');
 
@@ -444,7 +424,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		else
 		{
 			$nextView = $listModel->canEdit() ? "form" : "details";
-			$table = $listModel->getTable();
+			$table    = $listModel->getTable();
 
 			if ($this->app->isAdmin())
 			{
@@ -453,7 +433,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 			else
 			{
 				$url = 'index.php?option=com_' . $this->package . '&view=' . $nextView . '&formid=' . $table->form_id . '&rowid=' . $row->__pk_val
-				. '&listid=' . $listModel->getId();
+					. '&listid=' . $listModel->getId();
 			}
 		}
 
@@ -467,26 +447,26 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	 */
 	protected function getBandInfo()
 	{
-		$params = $this->getParams();
-		$bands = $params->get('timeline_bands');
-		$bands = Worker::JSONtoData($bands, true);
+		$params    = $this->getParams();
+		$bands     = $params->get('timeline_bands');
+		$bands     = Worker::JSONtoData($bands, true);
 		$intervals = ArrayHelper::getValue($bands, 'timelne_band_interval_unit', array());
-		$widths = ArrayHelper::getValue($bands, 'timeline_band_width', array());
+		$widths    = ArrayHelper::getValue($bands, 'timeline_band_width', array());
 		$overviews = ArrayHelper::getValue($bands, 'timeline_band_as_overview', array());
-		$bgs = ArrayHelper::getValue($bands, 'timeline_band_background_colour', array());
-		$data = array();
-		$length = count($intervals);
-		$css = array();
+		$bgs       = ArrayHelper::getValue($bands, 'timeline_band_background_colour', array());
+		$data      = array();
+		$length    = count($intervals);
+		$css       = array();
 
 		// When $i is 0 this is the top band
 		for ($i = 0; $i < $length; $i++)
 		{
-			$o = new stdClass;
-			$o->width = strstr($widths[$i], '%') ? $widths[$i] : $widths[$i] . '%';
+			$o               = new stdClass;
+			$o->width        = strstr($widths[$i], '%') ? $widths[$i] : $widths[$i] . '%';
 			$o->intervalUnit = (int) $intervals[$i];
 			$defaultOverview = $i === $length - 1 ? true : false;
-			$o->overview = (bool) ArrayHelper::getValue($overviews, $i, $defaultOverview);
-			$bg = ArrayHelper::getValue($bgs, $i, '');
+			$o->overview     = (bool) ArrayHelper::getValue($overviews, $i, $defaultOverview);
+			$bg              = ArrayHelper::getValue($bgs, $i, '');
 
 			if ($bg !== '')
 			{
@@ -498,7 +478,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		}
 
 		$document = JFactory::getDocument();
-		$css = implode("\n", $css);
+		$css      = implode("\n", $css);
 		$document->addStyleDeclaration($css);
 
 		return $data;
@@ -513,7 +493,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 	{
 		if (!isset($this->listids))
 		{
-			$params = $this->getParams();
+			$params        = $this->getParams();
 			$this->listids = (array) $params->get('timeline_table', array());
 		}
 	}

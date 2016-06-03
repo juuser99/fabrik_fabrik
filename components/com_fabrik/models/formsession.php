@@ -24,7 +24,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikFEModelFormsession extends FabModel
+class FabrikFEModelFormsession extends \Fabrik\Models\Model
 {
 	/**
 	 * User id

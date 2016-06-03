@@ -26,7 +26,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.3.4
  */
-class FabrikFEModelAdvancedSearch extends FabModel
+class FabrikFEModelAdvancedSearch extends \Fabrik\Models\Model
 {
 	/**
 	 * @var FabrikFEModelList

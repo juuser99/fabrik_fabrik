@@ -8,16 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Coverflow;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \JFactory;
+use \JModelLegacy;
+use \stdClass;
 
 /**
  * Fabrik Coverflow Plug-in Model
@@ -26,7 +26,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.coverflow
  * @since       3.0
  */
-class FabrikModelCoverflow extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
 	/**
 	 * Internally render the plugin, and add required script declarations

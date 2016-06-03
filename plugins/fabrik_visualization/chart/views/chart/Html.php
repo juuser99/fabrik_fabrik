@@ -8,13 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Chart\Views;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Html as HtmlHelper;
 use Fabrik\Helpers\Text;
 
-jimport('joomla.application.component.view');
+use \JFactory;
+use \JHtml;
+use \JViewLegacy;
+use \JComponentHelper;
+use \JError;
 
 /**
  * Fabrik Google Chart HTML View
@@ -23,8 +29,7 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik.visualization.chart
  * @since       3.0
  */
-
-class FabrikViewChart extends JViewLegacy
+class Html extends JViewLegacy
 {
 	/**
 	 * Execute and display a template script.
@@ -38,7 +43,7 @@ class FabrikViewChart extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$srcs = Html::framework();
+		$srcs = HtmlHelper::framework();
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 		$srcs['AdvancedSearch'] = 'media/com_fabrik/js/advanced-search.js';
 		$model = $this->getModel();
@@ -82,9 +87,8 @@ class FabrikViewChart extends JViewLegacy
 		$this->filterFormURL = $this->get('FilterFormURL');
 
 		$tpl = $params->get('chart_layout', $tpl);
-		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/chart/views/chart/tmpl/' . $tpl;
-		$this->_setPath('template', $tmplpath);
-		Html::stylesheetFromPath('plugins/fabrik_visualization/chart/views/chart/tmpl/' . $tpl . '/template.css');
+		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/Chart/Views/Chart/tmpl/' . $tpl);
+		HtmlHelper::stylesheetFromPath('plugins/fabrik_visualization/Chart/Views/Chart/tmpl/' . $tpl . '/template.css');
 
 		// Assign something to Fabrik.blocks to ensure we can clear filters
 		$ref = $model->getJSRenderContext();
@@ -92,8 +96,8 @@ class FabrikViewChart extends JViewLegacy
 		$js .= "\n" . "Fabrik.addBlock('$ref', $ref);";
 		$js .= $model->getFilterJs();
 
-		Html::iniRequireJs($model->getShim());
-		Html::script($srcs, $js);
+		HtmlHelper::iniRequireJs($model->getShim());
+		HtmlHelper::script($srcs, $js);
 		echo parent::display();
 	}
 }

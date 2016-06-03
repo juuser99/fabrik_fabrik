@@ -8,10 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Fusion_gantt_chart;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use \Fabrik\Controllers\Visualization as VizController;
 
 /**
  * Fusion gantt chart viz Controller
@@ -21,6 +23,6 @@ jimport('joomla.application.component.controller');
  * @since       3.0
  */
 
-class FabrikControllerVisualizationfusion_Gantt_Chart extends FabrikControllerVisualization
+class Controller extends VizController
 {
 }

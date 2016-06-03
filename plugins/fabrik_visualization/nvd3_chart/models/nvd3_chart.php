@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Nvd3_chart;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \JFile;
+use \Joomla\String\Normalise;
+use \stdClass;
 
 /**
  * data_mode parameter defines 2 states for the data
@@ -56,7 +57,7 @@ define('LABELS_IN_COLUMNS', 1);
  * @subpackage  Fabrik.visualization.nvd3_chart
  * @since       3.0.7
  */
-class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
 	/**
 	 * Chart data
@@ -77,7 +78,6 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	 *
 	 * @return  array
 	 */
-
 	public function getData()
 	{
 		if (isset($this->data))
@@ -110,7 +110,7 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 			if (JFile::exists($chartFile))
 			{
 				require_once $chartFile;
-				$cls    = JStringNormalise::toCamelCase($chartType);
+				$cls    = Normalise::toCamelCase($chartType);
 				$render = new $cls($params);
 
 				return $render->render($params);
@@ -174,9 +174,7 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 		$opts['filterLimit'] = false;
 		$rows                = $listModel->getColumnData($elementId, false, $opts);
 
-		$total = count($rows);
-
-		switch ($element->plugin)
+		switch ($element->get('plugin'))
 		{
 			case 'checkbox':
 				$data = $this->checkbox($rows, $labels);
@@ -194,9 +192,8 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	 *
 	 * @param   array $data Data
 	 *
-	 * @return multitype:
+	 * @return array
 	 */
-
 	public function elementDataToNvs3($data)
 	{
 		$this->data         = new stdClass;
@@ -219,9 +216,8 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	 * @param   array $rows   Element data
 	 * @param   array $labels Element sub option labels keyed on sub option values
 	 *
-	 * @return  multitype:stdClass
+	 * @return  stdClass
 	 */
-
 	protected function checkbox($rows, $labels)
 	{
 		$data = array();
@@ -252,7 +248,10 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 		return $data;
 	}
 
-	protected function getLabelColums()
+	/**
+	 * @return array
+	 */
+	protected function getLabelColumns()
 	{
 		$params = $this->getParams();
 
@@ -262,7 +261,7 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 
 			if ($valueField === '')
 			{
-				throw new UnexpectedValueException('Chart has Data mode set to "Labels in data" but no element selected for the "Value field" option');
+				throw new \UnexpectedValueException('Chart has Data mode set to "Labels in data" but no element selected for the "Value field" option');
 			}
 
 			$labelColumns = $valueField;
@@ -279,7 +278,7 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	 * Single line
 	 * Uses its own fieldset jform options
 	 *
-	 * @return multitype:stdClass
+	 * @return stdClass
 	 */
 	protected function singleLineData()
 	{
@@ -295,12 +294,12 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 
 		if ($xCol === '')
 		{
-			throw new UnexpectedValueException('Single line chart must specify an x column');
+			throw new \UnexpectedValueException('Single line chart must specify an x column');
 		}
 
 		if ($yCol === '')
 		{
-			throw new UnexpectedValueException('Single line chart must specify an y column');
+			throw new \UnexpectedValueException('Single line chart must specify an y column');
 		}
 
 		$query->select(array($db->qn($xCol) . ' AS x ', $db->qn($yCol) . ' AS y'))->from($table);
@@ -360,12 +359,11 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	/**
 	 * Scatter chart
 	 *
-	 * @return multitype:
+	 * @return array
 	 */
 	protected function scatterChartData()
 	{
 		$rows         = $this->mulitLines();
-		$labelColumns = $this->getLabelColums();
 		$data         = array();
 		$o            = new stdClass;
 		$o->values    = array();
@@ -394,14 +392,14 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	/**
 	 * Multi line
 	 *
-	 * @throws RuntimeException
+	 * @throws \RuntimeException
 	 *
 	 * @return array
 	 */
 	protected function mulitLines()
 	{
 		$params       = $this->getParams();
-		$labelColumns = $this->getLabelColums();
+		$labelColumns = $this->getLabelColumns();
 		$table        = $params->get('tbl');
 		$split        = $params->get('split', '');
 
@@ -425,7 +423,7 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 
 		if (!$rows = $db->loadObjectList())
 		{
-			throw new RuntimeException('Fabrik: nv3d viz data load error: ' . $db->getErrorMsg());
+			throw new \RuntimeException('Fabrik: nv3d viz data load error: ' . $db->getErrorMsg());
 		}
 
 		return $rows;
@@ -583,7 +581,7 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	 * @param   array $rows   Element data
 	 * @param   array $labels Element sub option labels keyed on sub option values
 	 *
-	 * @return  multitype:stdClass
+	 * @return  stdClass
 	 */
 
 	protected function radio($rows, $labels)
@@ -729,10 +727,8 @@ class FabrikModelNvd3_Chart extends FabrikFEModelVisualization
 	 *
 	 * @return string
 	 */
-
 	public function js()
 	{
-		$id      = $this->getContainerId();
 		$rawData = $this->getData();
 		$data    = json_encode($rawData);
 		$params  = $this->getParams();

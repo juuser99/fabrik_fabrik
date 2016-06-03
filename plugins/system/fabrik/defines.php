@@ -44,7 +44,6 @@ JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik
 
 require_once COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
-require_once COM_FABRIK_FRONTEND . '/models/fabrik.php';
 require_once COM_FABRIK_FRONTEND . '/models/parent.php';
 require_once COM_FABRIK_FRONTEND . '/views/FabrikView.php';
 

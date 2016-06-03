@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -17,10 +19,12 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
+use \FabTable;
+use \JModelLegacy;
+use \JRoute;
+use \JSession;
 
 jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
 
 /**
  * Fabrik Visualization Model
@@ -28,7 +32,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/plugin.php';
  * @package  Fabrik
  * @since    3.0
  */
-class FabrikFEModelVisualization extends FabModel
+class Visualization extends Model
 {
 	protected $pluginParams = null;
 
@@ -37,6 +41,15 @@ class FabrikFEModelVisualization extends FabModel
 	/** @var object params*/
 	protected $params = null;
 
+	/**
+	 * @var array
+	 */
+	protected $listids = array();
+
+	/**
+	 * @var \FabTable
+	 */
+	protected $_row;
 	/**
 	 * Url for filter form
 	 *
@@ -116,7 +129,7 @@ class FabrikFEModelVisualization extends FabModel
 	 *
 	 * @since	3.0.6
 	 *
-	 * @return  FabTable viz
+	 * @return  \FabTable viz
 	 */
 	public function getRow()
 	{
@@ -126,7 +139,7 @@ class FabrikFEModelVisualization extends FabModel
 	/**
 	 * Get the item
 	 *
-	 * @return  FabrikTableVisualization
+	 * @return  \FabrikTableVisualization
 	 */
 	public function getVisualization()
 	{
@@ -138,7 +151,7 @@ class FabrikFEModelVisualization extends FabModel
 
 			// Needed to load the language file!
 			$pluginManager = Worker::getPluginManager();
-			$pluginManager->getPlugIn($this->_row->plugin, 'visualization');
+			$pluginManager->getPlugIn($this->_row->get('plugin'), 'visualization');
 		}
 
 		return $this->row;
@@ -157,9 +170,9 @@ class FabrikFEModelVisualization extends FabModel
 	/**
 	 * Get the visualizations list models
 	 *
-	 * @return FabrikFEModelList[] List models
+	 * @return \FabrikFEModelList[] List models
 	 */
-	public function getlistModels()
+	public function getListModels()
 	{
 		if (!isset($this->tables))
 		{
@@ -170,6 +183,7 @@ class FabrikFEModelVisualization extends FabModel
 		{
 			if (!array_key_exists($id, $this->tables))
 			{
+				/** @var \FabrikFEModelList $listModel */
 				$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 				$listModel->setId($id);
 				$listModel->getTable();
@@ -185,11 +199,11 @@ class FabrikFEModelVisualization extends FabModel
 	 *
 	 * @param   int  $id  list model id
 	 *
-	 * @return  FabrikFEModelList	fabrik list model
+	 * @return  \FabrikFEModelList	fabrik list model
 	 */
 	protected function &getlistModel($id)
 	{
-		$lists = $this->getlistModels();
+		$lists = $this->getListModels();
 
 		return $lists[$id];
 	}
@@ -215,7 +229,7 @@ class FabrikFEModelVisualization extends FabModel
 		$name = StringHelper::strtolower(str_replace('fabrikModel', '', get_class($this)));
 		$filters = array();
 		$showFilters = $params->get($name . '_show_filters', array());
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 		$js = array();
 		$i = 0;
 
@@ -249,7 +263,7 @@ class FabrikFEModelVisualization extends FabModel
 	public function buildQueryWhere()
 	{
 		$filters = array();
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $listModel)
 		{
@@ -286,7 +300,7 @@ class FabrikFEModelVisualization extends FabModel
 	public function getAdvancedSearchLink()
 	{
 		$links = array();
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $listModel)
 		{
@@ -390,6 +404,7 @@ class FabrikFEModelVisualization extends FabModel
 
 		$queryVars = $router->getVars();
 		$page = 'index.php?';
+		$qs = array();
 
 		foreach ($queryVars as $k => $v)
 		{
@@ -398,7 +413,7 @@ class FabrikFEModelVisualization extends FabModel
 
 		$action = $page . implode("&amp;", $qs);
 
-		// Limitstart gets added in the pagination model
+		// Limit start gets added in the pagination model
 		$action = preg_replace("/limitstart" . $this->getState('id') . "}=(.*)?(&|)/", '', $action);
 		$action = StringHelper::rtrimword($action, "&");
 		$this->getFilterFormURL = JRoute::_($action);
@@ -413,7 +428,7 @@ class FabrikFEModelVisualization extends FabModel
 	 */
 	protected function getRequireFilterMsg()
 	{
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $model)
 		{
@@ -572,7 +587,7 @@ class FabrikFEModelVisualization extends FabModel
 		{
 			$v = $this->getVisualization();
 			$input = $this->app->input;
-			$this->params = new Registry($v->params);
+			$this->params = new Registry($v->get('params'));
 			$this->params->set('show-title', $input->getInt('show-title', $this->params->get('show-title', 1)));
 		}
 
@@ -599,11 +614,11 @@ class FabrikFEModelVisualization extends FabModel
 		$groups = $this->user->getAuthorisedViewLevels();
 		$row = $this->getRow();
 
-		if ($row->published == 0)
+		if ($row->get('published') == 0)
 		{
 			return false;
 		}
 
-		return in_array($row->access, $groups);
+		return in_array($row->get('access'), $groups);
 	}
 }

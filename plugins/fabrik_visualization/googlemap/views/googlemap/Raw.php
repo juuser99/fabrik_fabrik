@@ -1,46 +1,49 @@
 <?php
 /**
- * Fabrik Calendar Raw View
+ * Fabrik Google Map Raw View
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.calendar
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @subpackage  Fabrik.visualization.googlemap
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
+
+namespace Fabrik\Plugins\Visualization\Googlemap\Views;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
+use \JFactory;
+use \JViewLegacy;
+use \JComponentHelper;
 
 jimport('joomla.application.component.view');
 
 /**
- * Fabrik Calendar Raw View
+ * Fabrik Google Map Raw View
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.calendar
+ * @subpackage  Fabrik.visualization.googlemap
  * @since       3.0
  */
-
-class FabrikViewFullcalendar extends JViewLegacy
+class Raw extends JViewLegacy
 {
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tmpl  Template
+	 * @param   string $tmpl template
 	 *
-	 * @return  void
+	 * @return void
 	 */
-
 	public function display($tmpl = 'default')
 	{
-		$model = $this->getModel();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$listid = $input->get('listid', '');
+		$app         = JFactory::getApplication();
+		$input       = $app->input;
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
+		$model       = $this->getModel();
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
+		$this->row = $model->getVisualization();
 
 		if (!$model->canView())
 		{
@@ -49,6 +52,6 @@ class FabrikViewFullcalendar extends JViewLegacy
 			return false;
 		}
 
-		echo $model->getEvents($listid);
+		echo $model->getJSIcons();
 	}
 }

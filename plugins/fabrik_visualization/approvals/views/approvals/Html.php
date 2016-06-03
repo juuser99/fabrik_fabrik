@@ -8,14 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Approvals\Views;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Html as HtmlHelper;
 use Fabrik\Helpers\Text;
-use Fabrik\Helpers\Worker;
 
-jimport('joomla.application.component.view');
+use \JComponentHelper;
+use \JFactory;
+use \JViewLegacy;
 
 /**
  * Approval HTML View
@@ -25,14 +28,14 @@ jimport('joomla.application.component.view');
  * @since       3.0.6
  */
 
-class FabrikViewApprovals extends JViewLegacy
+class Html extends JViewLegacy
 {
 	/**
 	 * Execute and display a template script.
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed  A string if successful, otherwise a JError object.
+	 * @return  void|mixed  A string if successful, otherwise a JError object.
 	 */
 
 	public function display($tpl = 'default')
@@ -58,24 +61,24 @@ class FabrikViewApprovals extends JViewLegacy
 		$this->calName = $this->get('VizName');
 		$this->params = $model->getParams();
 		$tpl = 'bootstrap';
-		$this->_setPath('template', JPATH_SITE . '/plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tpl);
+		$this->_setPath('template', JPATH_SITE . '/plugins/fabrik_visualization/Approvals/Views/Approvals/tmpl/' . $tpl);
 
-		Html::stylesheetFromPath('plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tpl . '/template.css');
+		HtmlHelper::stylesheetFromPath('plugins/fabrik_visualization/Approvals/Views/Approvals/tmpl/' . $tpl . '/template.css');
 
 		$ref = $model->getJSRenderContext();
 		$js = "var $ref = new fbVisApprovals('approvals_" . $id . "');\n";
 		$js .= "Fabrik.addBlock('" . $ref . "', $ref);\n";
 		$js .= $model->getFilterJs();
 
-		$srcs = Html::framework();
+		$srcs = HtmlHelper::framework();
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 		$srcs['Approvals'] = 'plugins/fabrik_visualization/approvals/approvals.js';
 
-		Html::iniRequireJs($model->getShim());
-		Html::script($srcs, $js);
+		HtmlHelper::iniRequireJs($model->getShim());
+		HtmlHelper::script($srcs, $js);
 
 		$text = $this->loadTemplate();
-		Html::runContentPlugins($text);
+		HtmlHelper::runContentPlugins($text);
 		echo $text;
 	}
 }

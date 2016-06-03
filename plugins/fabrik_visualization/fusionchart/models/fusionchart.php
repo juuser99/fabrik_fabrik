@@ -8,6 +8,8 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Fusionchart;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -15,9 +17,12 @@ use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Worker;
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \JError;
+use \JFactory;
+use \JFile;
+use \JFilterInput;
+use \JModelLegacy;
+use \FusionCharts;
 
 /**
  * Fabrik Fusion Chart Plug-in Model
@@ -26,8 +31,22 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.fusionchart
  * @since       3.0
  */
-class FabrikModelFusionchart extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
+	/**
+	 * @var FusionCharts
+	 */
+	protected $FC;
+
+	protected $c;
+
+	protected $axisLabels;
+
+	protected $gcumulatives;
+
+	protected $max = array();
+
+	protected $min = array();
 	/**
 	 * Get the chart parameters
 	 *
@@ -422,7 +441,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 
 		foreach ($this->axisLabels as $axis_key => $axis_val)
 		{
-			$this->axisLabels[$axis_key] = $worker->parseMessageForPlaceholder($axis_val, null, false);
+			$this->axisLabels[$axis_key] = $worker->parseMessageForPlaceHolder($axis_val, null, false);
 		}
 	}
 
@@ -469,7 +488,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 
 		if ($chartType == '')
 		{
-			throw new InvalidArgumentException('Not chart type selected');
+			throw new \InvalidArgumentException('Not chart type selected');
 		}
 
 		// Create new chart
@@ -505,7 +524,6 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 		$gdata = array();
 		$glabels = array();
 		$gcolours = array();
-		$gfills = array();
 		$this->max = array();
 		$this->min = array();
 		$calculationLabels = array();
@@ -522,6 +540,8 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 			if (!array_key_exists($tid, $tmodels))
 			{
 				$listModel = null;
+
+				/** @var \FabrikFEModelList $listModel */
 				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 				$listModel->setId($tid);
 				$tmodels[$tid] = $listModel;
@@ -554,7 +574,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 			*/
 			$limit = (int) ArrayHelper::getValue($limits, $this->c, 0);
 			$listModel->setLimits(0, $limit);
-			$nav = $listModel->getPagination(0, 0, $limit);
+			$listModel->getPagination(0, 0, $limit);
 			$listModel->render();
 			$alldata = $listModel->getData();
 			$cals = $listModel->getCalculations();
@@ -729,8 +749,6 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 					$gsums = ArrayHelper::getValue($chartCumulatives, 0, '0') == '0' ? explode(',', $gdata[0]) : $this->gcumulatives[0];
 
 					// Scale to percentages
-					$tot_sum = array_sum($gsums);
-					$arrData = array();
 					$labelStep = 0;
 					$label_step_ratio = (int) ArrayHelper::getValue($label_step_ratios, 0, 1);
 
@@ -913,7 +931,6 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 		}
 
 		$this->c > 1 ? $this->trendLine($gdata) : $this->trendLine();
-		$colours = implode(($calcfound ? '|' : ','), $gcolours);
 
 		// Set chart attributes
 		if ($params->get('fusionchart_custom_attributes', ''))
@@ -964,7 +981,6 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 	protected function trendLine(&$gdata = null)
 	{
 		$params = $this->getParams();
-		$chartType = $params->get('fusionchart_type');
 		$eltype = $params->get('fusionchart_element_type', 'dataset');
 		$trendtypes = (array) $params->get('fusionchart_trend_type');
 		$cumulatives = (array) $params->get('fusionchart_cumulative');

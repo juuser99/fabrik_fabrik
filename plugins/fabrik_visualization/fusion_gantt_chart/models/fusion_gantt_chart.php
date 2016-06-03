@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Fusion_gantt_chart;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \JFactory;
+use \JModelLegacy;
 
 /**
  * Fabrik Gantt Chart Plug-in Model
@@ -25,8 +26,13 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.fusionganttchart
  * @since       3.0
  */
-class FabrikModelFusion_Gantt_Chart extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
+	/**
+	 * @var \FusionCharts
+	 */
+	protected $fc;
+	
 	/**
 	 * Create the Gantt chart
 	 *
@@ -63,10 +69,12 @@ class FabrikModelFusion_Gantt_Chart extends FabrikFEModelVisualization
 
 		// Setting Param string
 		$listId = $params->get('fusion_gantt_chart_table');
+		
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
-		$db = $listModel->getDB();
+		$db = $listModel->getDb();
 		$process = (string) $params->get('fusion_gantt_chart_process');
 		$process = StringHelper::safeColNameToArrayKey($process);
 		$processRaw = $process . '_raw';

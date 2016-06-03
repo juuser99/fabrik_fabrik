@@ -42,7 +42,6 @@ class Access extends Element
 	 *
 	 * @return  mixed
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		// $$$ hugh - nope!

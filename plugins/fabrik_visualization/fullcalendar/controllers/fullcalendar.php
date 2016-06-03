@@ -8,10 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Fullcalendar;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \DateTimeZone;
+use \DateTime;
 use Fabrik\Helpers\StringHelper;
+use \Fabrik\Controllers\Visualization as VizController;
+use \JComponentHelper;
+use \JFactory;
+use \JModelLegacy;
 
 jimport('joomla.application.component.controller');
 
@@ -22,39 +29,13 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.calendar
  * @since       3.0
  */
-
-class FabrikControllerVisualizationfullcalendar extends FabrikControllerVisualization
+class Controller extends VizController
 {
-	/**
-	 * Display the view
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached - NOTE does not actually control caching !!!
-	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return  JController  A JController object to support chaining.
-	 *
-	 * @since   11.1
-	 */
-	public function display($cachable = false, $urlparams = false)
-	{
-		$document = JFactory::getDocument();
-		$viewName = 'fullcalendar';
-		$viewType = $document->getType();
-
-		// Set the default view name from the Request
-		$view = $this->getView($viewName, $viewType);
-		$formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-		parent::display();
-
-		return $this;
-	}
-
 	/**
 	 * Delete an event
 	 *
 	 * @return  void
 	 */
-
 	public function deleteEvent()
 	{
 		$model = $this->getModel('fullcalendar');
@@ -74,7 +55,7 @@ class FabrikControllerVisualizationfullcalendar extends FabrikControllerVisualiz
 		$input = $app->input;
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = &$this->getModel($viewName);
-		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)), 'get');
+		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)));
 		$model->setId($id);
 		echo $model->getEvents();
 	}
@@ -137,7 +118,9 @@ class FabrikControllerVisualizationfullcalendar extends FabrikControllerVisualiz
 
 		$startDateField = StringHelper::safeColNameToArrayKey($startDateField);
 		$endDateField = StringHelper::safeColNameToArrayKey($endDateField);
-		$rowid = $input->getString('rowid', '', 'string');
+		$rowid = $input->getString('rowid', '');
+
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$listModel->setId($listid);
 		$table = $listModel->getTable();
@@ -165,7 +148,7 @@ class FabrikControllerVisualizationfullcalendar extends FabrikControllerVisualiz
 				{
 					$localTimeZone = new DateTimeZone($config->get('offset'));
 					$start_date = new DateTime($start_date, $localTimeZone);
-					$start_date->setTimeZone(new DateTimeZone('UTC'));
+					$start_date->setTimezone(new DateTimeZone('UTC'));
 					$start_date = $start_date->format('Y-m-d H:i:s');
 				}
 			}
@@ -184,7 +167,7 @@ class FabrikControllerVisualizationfullcalendar extends FabrikControllerVisualiz
 				{
 					$localTimeZone = new DateTimeZone($config->get('offset'));
 					$end_date = new DateTime($end_date, $localTimeZone);
-					$end_date->setTimeZone(new DateTimeZone('UTC'));
+					$end_date->setTimezone(new DateTimeZone('UTC'));
 					$end_date = $end_date->format('Y-m-d H:i:s');
 				}
 			}

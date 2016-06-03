@@ -27,7 +27,7 @@ jimport('joomla.filesystem.file');
  * @since    3.0
  */
 
-class FabrikFEModelPluginmanager extends FabModel
+class FabrikFEModelPluginmanager extends \Fabrik\Models\Model
 {
 	/**
 	 * plugins

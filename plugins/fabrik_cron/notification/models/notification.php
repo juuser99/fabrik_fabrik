@@ -23,7 +23,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik.cron.notification
  * @since       3.0
  */
-class FabrikModelNotification extends FabModel
+class FabrikModelNotification extends \Fabrik\Models\Model
 {
 	/**
 	 * Get the current logged in users notifications

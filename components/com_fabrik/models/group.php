@@ -25,7 +25,7 @@ jimport('joomla.application.component.model');
  * @package  Fabrik
  * @since    3.0
  */
-class FabrikFEModelGroup extends FabModel
+class FabrikFEModelGroup extends \Fabrik\Models\Model
 {
 	/**
 	 * Parameters

@@ -8,17 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Calendar;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \DateTime;
+use \DateTimeZone;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \JFactory;
+use \JFilterInput;
+use \JModelLegacy;
+use \stdClass;
 
 /**
  * Fabrik Calendar Plug-in Model
@@ -27,8 +31,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.calendar
  * @since       3.0
  */
-
-class FabrikModelCalendar extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
 	/**
 	 * Array of Fabrik lists containing events
@@ -215,6 +218,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 			for ($i = 0; $i < count($tables); $i++)
 			{
+				/** @var \FabrikFEModelList $listModel */
 				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 
 				if ($tables[$i] != 'undefined')
@@ -278,7 +282,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 	 */
 	public function getLinkedFormIds()
 	{
-		$this->setUpEvents();
+		$this->setupEvents();
 		$return = array();
 
 		foreach ($this->events as $arr)
@@ -306,7 +310,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$filter = JFilterInput::getInstance();
 		$request = $filter->clean($_REQUEST, 'array');
 
-		/** @var FabrikFEModelList $listModel */
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 
 		foreach ($this->events as $listId => $record)
@@ -341,7 +345,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 			foreach ($lists as $id)
 			{
-				/** @var FabrikFeModelList $listModel */
+				/** @var \FabrikFeModelList $listModel */
 				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 				$listModel->setId($id);
 
@@ -372,7 +376,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 		foreach ($lists as $id)
 		{
-			/** @var FabrikFEModelList $listModel */
+			/** @var \FabrikFEModelList $listModel */
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($id);
 
@@ -390,7 +394,6 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 	 *
 	 * @return  string	javascript array containing json objects
 	 */
-
 	public function getEvents()
 	{
 		$itemId = Worker::itemId();
@@ -407,7 +410,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 			$this_where = ArrayHelper::getValue($where, $listId, '');
 			$this_where = html_entity_decode($this_where, ENT_QUOTES);
 
-			/** @var FabrikFEModelList $listModel */
+			/** @var \FabrikFEModelList $listModel */
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($listId);
 
@@ -427,9 +430,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 
 				if ($data['startdate'] == '')
 				{
-					throw new RuntimeException('No start date selected ', 500);
-
-					return;
+					throw new \RuntimeException('No start date selected ', 500);
 				}
 
 				$startElement = $formModel->getElement($data['startdate']);
@@ -598,7 +599,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		if (is_null($this->calName))
 		{
 			$calendar = $this->getRow();
-			$this->calName = 'oCalendar' . $calendar->id;
+			$this->calName = 'oCalendar' . $calendar->get('id');
 		}
 
 		return $this->calName;
@@ -614,7 +615,7 @@ class FabrikModelCalendar extends FabrikFEModelVisualization
 		$input = $this->app->input;
 		$id = $input->getInt('id');
 		$listId = $input->getInt('listid');
-		/** @var FabrikFEModelList $listModel */
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$listModel->setId($listId);
 		$list = $listModel->getTable();

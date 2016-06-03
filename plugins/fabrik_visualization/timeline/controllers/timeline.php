@@ -8,35 +8,35 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Timeline;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use \Fabrik\Controllers\Visualization as VizController;
+use \JFactory;
 
 /**
- * Fabrik Timeline Viz Controller
+ * Fabrik Time-line Viz Controller
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.timeline
  * @since       3.0
  */
-
-class FabrikControllerVisualizationtimeline extends FabrikControllerVisualization
+class Controller extends VizController
 {
 	/**
-	 * Get a series of timeline events
+	 * Get a series of time-line events
 	 *
 	 * @return  void
 	 */
-
 	public function ajax_getEvents()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$app      = JFactory::getApplication();
+		$input    = $app->input;
 		$viewName = 'timeline';
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$model = $this->getModel($viewName);
-		$id = $input->getInt('visualizationid', 0);
+		$model    = $this->getModel($viewName);
+		$id       = $input->getInt('visualizationid', 0);
 		$model->setId($id);
 		$model->onAjax_getEvents();
 	}

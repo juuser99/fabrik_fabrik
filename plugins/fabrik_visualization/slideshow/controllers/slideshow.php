@@ -8,19 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Slideshow;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
-
 /**
- * Slideshow viz Controller
+ * Slide-show viz Controller
  *
  * @static
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.slideshow
  * @since       3.0
  */
-class FabrikControllerVisualizationslideshow extends FabrikControllerVisualization
+class Controller extends VizController
 {
 }

@@ -4,14 +4,16 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.chart
- * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @copyright   Copyright (C) 2005-2016 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
+
+namespace Fabrik\Plugins\Visualization\Chart;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use \Fabrik\Controllers\Visualization as VizController;
 
 /**
  * Google Chart Viz Controller
@@ -20,6 +22,6 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.chart
  * @since       3.0
  */
-class FabrikControllerVisualizationchart extends FabrikControllerVisualization
+class Controller extends VizController
 {
 }

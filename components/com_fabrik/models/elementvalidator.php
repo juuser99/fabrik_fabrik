@@ -26,7 +26,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.1b2
  */
-class FabrikFEModelElementValidator extends FabModel
+class FabrikFEModelElementValidator extends \Fabrik\Models\Model
 {
 	/**
 	 * Validation objects associated with the element

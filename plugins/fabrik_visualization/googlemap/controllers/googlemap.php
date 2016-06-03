@@ -8,10 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Googlemap;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use \Fabrik\Controllers\Visualization as VizController;
+use \JFactory;
 
 /**
  * Fabrik Google Map Viz Controller
@@ -20,25 +23,22 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.googlemap
  * @since       3.0
  */
-
-class FabrikControllerVisualizationgooglemap extends FabrikControllerVisualization
+class Controller extends VizController
 {
 	/**
 	 * Ajax markers
 	 *
-	 * @param   string  $tmpl  Template
+	 * @param   string $tmpl Template
 	 *
 	 * @return  void
 	 */
-
 	public function ajax_getMarkers($tmpl = 'default')
 	{
 		$viewName = 'googlemap';
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$model = $this->getModel($viewName);
-		$id = $input->getInt('visualizationid', 0);
+		$app      = JFactory::getApplication();
+		$input    = $app->input;
+		$model    = $this->getModel($viewName);
+		$id       = $input->getInt('visualizationid', 0);
 		$model->setId($id);
 		$model->onAjax_getMarkers();
 	}

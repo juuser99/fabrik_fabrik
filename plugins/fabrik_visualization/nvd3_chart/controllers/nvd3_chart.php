@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Nvd3_chart;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.controller');
 
 /**
  * nvd3_chart chart viz Controller
@@ -20,7 +20,6 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.nvd3_chart
  * @since       3.0
  */
-
-class FabrikControllerVisualizationNvd3_Chart extends FabrikControllerVisualization
+class Controller extends VizController
 {
 }

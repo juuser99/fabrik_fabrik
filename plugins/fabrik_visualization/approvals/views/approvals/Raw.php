@@ -8,12 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Approvals\Views;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
-
-jimport('joomla.application.component.view');
+use \JComponentHelper;
+use \JFactory;
+use \JViewLegacy;
 
 /**
  * Approval Raw View
@@ -23,14 +26,14 @@ jimport('joomla.application.component.view');
  * @since       3.0.6
  */
 
-class FabrikViewApprovals extends JViewLegacy
+class Raw extends JViewLegacy
 {
 	/**
 	 * Display view
 	 *
 	 * @param   string  $tmpl  Template
 	 *
-	 * @return  void
+	 * @return  void|boolean
 	 */
 	public function display($tmpl = 'default')
 	{

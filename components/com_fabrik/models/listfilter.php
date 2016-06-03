@@ -23,7 +23,7 @@ use Fabrik\Helpers\Text;
  * @package  Fabrik
  * @since    3.0
  */
-class FabrikFEModelListfilter extends FabModel
+class FabrikFEModelListfilter extends \Fabrik\Models\Model
 {
 	/**
 	 * Request

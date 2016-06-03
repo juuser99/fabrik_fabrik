@@ -870,7 +870,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 			$vrow->load($vid);
 			$visModel = JModelLegacy::getInstance($vrow->plugin, 'fabrikModel');
 			$visModel->setId($vid);
-			$listModels = $visModel->getlistModels();
+			$listModels = $visModel->getListModels();
 
 			foreach ($listModels as $lmodel)
 			{
@@ -878,7 +878,7 @@ class FabrikAdminModelPackage extends FabModelAdmin
 				$vrow->load($vid);
 				$visModel = JModelLegacy::getInstance($vrow->plugin, 'fabrikModel');
 				$visModel->setId($vid);
-				$listModels = $visModel->getlistModels();
+				$listModels = $visModel->getListModels();
 
 				foreach ($listModels as $lmodel)
 				{

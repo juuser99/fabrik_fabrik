@@ -23,9 +23,8 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.4
  */
-class FabrikFEModelOai extends FabModel
+class FabrikFEModelOai extends \Fabrik\Models\Model
 {
-
 	/**
 	 * Delimiter used in unique resource identifier
 	 *

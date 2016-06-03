@@ -24,7 +24,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikFEModelConnection extends FabModel
+class FabrikFEModelConnection extends \Fabrik\Models\Model
 {
 	/**
 	 * Current connection

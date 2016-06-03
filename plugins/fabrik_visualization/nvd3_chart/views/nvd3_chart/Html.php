@@ -8,13 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Nvd3_chart\Views;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Html as HtmlHelper;
 use Fabrik\Helpers\Text;
-
-jimport('joomla.application.component.view');
+use \JFactory;
+use \JHtml;
+use \JViewLegacy;
+use \JComponentHelper;
 
 /**
  * Fabrik nvd3_chart Chart HTML View
@@ -23,8 +27,7 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik.visualization.nvd3_chart
  * @since       3.1
  */
-
-class FabrikViewNvd3_Chart extends JViewLegacy
+class Html extends JViewLegacy
 {
 	/**
 	 * Execute and display a template script.
@@ -51,8 +54,8 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 			return false;
 		}
 
-		$srcs = Html::framework();
-		Html::styleSheet('plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/src/nv.d3.css');
+		$srcs = HtmlHelper::framework();
+		HtmlHelper::stylesheet('plugins/fabrik_visualization/nvd3_chart/lib/novus-nvd3/src/nv.d3.css');
 
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 		$srcs['AdvancedSearch'] = 'media/com_fabrik/js/advanced-search.js';
@@ -75,23 +78,18 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		$this->requiredFiltersFound = $model->getRequiredFiltersFound();
 		$params = $model->getParams();
 		$js = $model->js();
-		Html::addScriptDeclaration($js);
+		HtmlHelper::addScriptDeclaration($js);
 
 		$this->params = $params;
-		$viewName = $this->getName();
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$plugin = $pluginManager->getPlugIn('calendar', 'visualization');
-		$this->params = $params;
-
 		$this->postText = $model->postText;
-		$this->assign('containerId', $this->get('ContainerId'));
-		$this->assign('filters', $this->get('Filters'));
+		$this->containerId = $this->get('ContainerId');
+		$this->filters = $this->get('Filters');
 		$this->showFilters = $model->showFilters();
-		$this->assign('filterFormURL', $this->get('FilterFormURL'));
+		$this->filterFormURL = $this->get('FilterFormURL');
 		$tpl = $params->get('nvd3_chart_layout', $tpl);
-		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/nvd3_chart/views/nvd3_chart/tmpl/' . $tpl);
+		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/Nvd3_chart/Views/Nvd3_chart/tmpl/' . $tpl);
 
-		Html::stylesheetFromPath(
+		HtmlHelper::stylesheetFromPath(
 			'plugins/fabrik_visualization/nvd3_chart/views/nvd3_chart/tmpl/' . $tpl . '/template.css');
 
 		// Assign something to Fabrik.blocks to ensure we can clear filters
@@ -100,11 +98,11 @@ class FabrikViewNvd3_Chart extends JViewLegacy
 		$js .= "\n" . "Fabrik.addBlock('$ref', $ref);";
 		$js .= $model->getFilterJs();
 
-		Html::iniRequireJs($model->getShim());
-		Html::script($srcs, $js);
+		HtmlHelper::iniRequireJs($model->getShim());
+		HtmlHelper::script($srcs, $js);
 
 		$text = $this->loadTemplate();
-		Html::runContentPlugins($text);
+		HtmlHelper::runContentPlugins($text);
 		echo $text;
 	}
 }

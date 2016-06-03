@@ -8,13 +8,18 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Fullcalendar\Views;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 
-jimport('joomla.application.component.view');
+use \JComponentHelper;
+use \JFactory;
+use \JViewLegacy;
+use \JHtml;
 
 /**
  * Fabrik Calendar HTML View
@@ -23,7 +28,7 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik.visualization.calendar
  * @since       3.0
  */
-class FabrikViewFullcalendar extends JViewLegacy
+class Partial extends JViewLegacy
 {
 	/**
 	 * Choose which list to add an event to
@@ -41,12 +46,12 @@ class FabrikViewFullcalendar extends JViewLegacy
 		$rows = $model->getEventLists();
 		$model->getVisualization();
 		$options   = array();
-		$options[] = JHTML::_('select.option', '', Text::_('PLG_VISUALIZATION_FULLCALENDAR_PLEASE_SELECT'));
+		$options[] = JHtml::_('select.option', '', Text::_('PLG_VISUALIZATION_FULLCALENDAR_PLEASE_SELECT'));
 
 		$model->getEvents();
 		$attribs            = 'class="inputbox" size="1" ';
 		$options            = array_merge($options, $rows);
-		$this->_eventTypeDd = JHTML::_('select.genericlist', $options, 'event_type', $attribs, 'value', 'text', '', 'fabrik_event_type');
+		$this->_eventTypeDd = JHtml::_('select.genericlist', $options, 'event_type', $attribs, 'value', 'text', '', 'fabrik_event_type');
 
 		/*
 		 * Tried loading in iframe and as an ajax request directly - however

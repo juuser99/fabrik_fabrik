@@ -8,11 +8,20 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Models;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Text;
+use \FabTable;
+
+use Joomla\Registry\Registry;
+use \JFactory;
+use \JModelLegacy;
+
+use \RuntimeException;
 
 jimport('joomla.application.component.model');
 
@@ -23,20 +32,20 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabModel extends JModelLegacy
+class Model extends JModelLegacy
 {
 	/**
-	 * @var JApplicationCms
+	 * @var \JApplicationCms
 	 */
 	protected $app;
 
 	/**
-	 * @var JUser
+	 * @var \JUser
 	 */
 	protected $user;
 
 	/**
-	 * @var JDate
+	 * @var \JDate
 	 */
 	protected $date;
 
@@ -53,9 +62,14 @@ class FabModel extends JModelLegacy
 	protected $config;
 
 	/**
-	 * @var JLanguage
+	 * @var \JLanguage
 	 */
 	protected $lang;
+
+	/**
+	 * @var \JSession
+	 */
+	protected $session;
 
 	/**
 	 * Constructor
@@ -63,7 +77,7 @@ class FabModel extends JModelLegacy
 	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
 	 *
 	 * @since   3.3.4
-	 * @throws  Exception
+	 * @throws  \Exception
 	 */
 	public function __construct($config = array())
 	{
@@ -109,7 +123,7 @@ class FabModel extends JModelLegacy
 	 * @param   string  $prefix   The class prefix. Optional.
 	 * @param   array   $options  Configuration array for model. Optional.
 	 *
-	 * @return	JTable	The table
+	 * @return	\JTable	The table
 	 */
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
@@ -124,7 +138,5 @@ class FabModel extends JModelLegacy
 		}
 
 		throw new RuntimeException(Text::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name));
-
-		return null;
 	}
 }

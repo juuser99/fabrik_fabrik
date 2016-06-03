@@ -8,14 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Coverflow\Views;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Html as HtmlHelper;
 use Fabrik\Helpers\Text;
-use Fabrik\Helpers\Worker;
 
-jimport('joomla.application.component.view');
+use \JComponentHelper;
+use \JFactory;
+use \JViewLegacy;
 
 /**
  * Fabrik Coverflow HTML View
@@ -24,8 +27,7 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik.visualization.coverflow
  * @since       3.0
  */
-
-class FabrikViewCoverflow extends JViewLegacy
+class Html extends JViewLegacy
 {
 	/**
 	 * Execute and display a template script.
@@ -39,7 +41,7 @@ class FabrikViewCoverflow extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
-		$srcs = Html::framework();
+		$srcs = HtmlHelper::framework();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel();
 		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)));
@@ -65,8 +67,7 @@ class FabrikViewCoverflow extends JViewLegacy
 		$this->showFilters = $model->showFilters();
 		$this->filters = $this->get('Filters');
 		$this->filterFormURL = $this->get('FilterFormURL');
-		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/coverflow/views/coverflow/tmpl/bootstrap';
-		$this->_setPath('template', $tmplpath);
+		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/Coverflow/Views/Coverflow/tmpl/bootstrap');
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 
 		// Assign something to Fabrik.blocks to ensure we can clear filters
@@ -74,8 +75,8 @@ class FabrikViewCoverflow extends JViewLegacy
 		$js = "$ref = {};";
 		$js .= "\n" . "Fabrik.addBlock('$ref', $ref);";
 		$js .= $model->getFilterJs();
-		Html::iniRequireJs($model->getShim());
-		Html::script($srcs, $js);
+		HtmlHelper::iniRequireJs($model->getShim());
+		HtmlHelper::script($srcs, $js);
 		echo parent::display();
 	}
 }

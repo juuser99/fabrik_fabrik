@@ -20,7 +20,6 @@ use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Uploader;
 
 jimport('joomla.application.component.model');
-require_once 'fabrikmodelform.php';
 
 /**
  * Fabrik Form Model
@@ -29,7 +28,7 @@ require_once 'fabrikmodelform.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikFEModelForm extends FabModelForm
+class FabrikFEModelForm extends \Fabrik\Models\Model
 {
 	/**
 	 * id
@@ -2341,7 +2340,6 @@ class FabrikFEModelForm extends FabModelForm
 		}
 
 		Html::debug($this->errors, 'form:errors');
-		//echo "<pre>";print_r($this->errors);exit;
 		$this->setErrors($this->errors);
 
 		return $ok;

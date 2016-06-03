@@ -1,48 +1,50 @@
 <?php
 /**
- * Fabrik Google Map JSON View
- *
- * #### Needed for Joomla's smart search indexer ####
+ * Fabrik Calendar Raw View
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.googlemap
+ * @subpackage  Fabrik.visualization.calendar
  * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
+
+namespace Fabrik\Plugins\Visualization\Calendar\Views;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
 
+use \JComponentHelper;
+use \JViewLegacy;
+use \JFactory;
+
 jimport('joomla.application.component.view');
 
 /**
- * Fabrik Google Map JSON View
+ * Fabrik Calendar Raw View
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.googlemap
+ * @subpackage  Fabrik.visualization.calendar
  * @since       3.0
  */
-
-class FabrikViewGooglemap extends JViewLegacy
+class Raw extends JViewLegacy
 {
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tmpl  template
+	 * @param   string $tmpl Template
 	 *
-	 * @return void
+	 * @return  boolean|void
 	 */
 
 	public function display($tmpl = 'default')
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$model       = $this->getModel();
+		$app         = JFactory::getApplication();
+		$input       = $app->input;
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$model = $this->getModel();
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
-		$this->row = $model->getVisualization();
 
 		if (!$model->canView())
 		{
@@ -51,7 +53,6 @@ class FabrikViewGooglemap extends JViewLegacy
 			return false;
 		}
 
-		echo $model->getJSIcons();
+		echo $model->getEvents();
 	}
 }
-

@@ -1,9 +1,9 @@
 <?php
 /**
- * Fabrik Cover-flow Plug-in
+ * Fabrik Visualization Plugin
  *
- * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.coverflow
+ * @package     Joomla
+ * @subpackage  Fabrik
  * @copyright   Copyright (C) 2005-2016 fabrikar.com - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
@@ -13,13 +13,14 @@ namespace Fabrik\Plugins\Visualization;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Plugins\Plugin;
+
 /**
- * Fabrik Cover-flow Plug-in
+ * Fabrik Visualization Plugin
  *
- * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.coverflow
- * @since       3.5
+ * @package  Fabrik
+ * @since    3.5
  */
-class Coverflow extends Visualization
+class Visualization extends Plugin
 {
 }

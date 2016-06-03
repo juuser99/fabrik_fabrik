@@ -69,7 +69,7 @@ $controllerName = $input->getCmd('view');
 // &controller=visualization.calendar
 
 $isPlugin = false;
-$cName = $input->getCmd('controller');
+$cName    = $input->getCmd('controller');
 
 if (StringHelper::strpos($cName, '.') != false)
 {
@@ -77,21 +77,21 @@ if (StringHelper::strpos($cName, '.') != false)
 
 	if ($type == 'visualization')
 	{
-		require_once JPATH_COMPONENT . '/controllers/visualization.php';
+		//require_once JPATH_COMPONENT . '/controllers/visualization.php';
 	}
-
-	$path = JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/controllers/' . $name . '.php';
+	$controller = StringHelper::ucfirst($name);
+	/*$path = JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/controllers/' . $name . '.php';
 
 	if (JFile::exists($path))
 	{
 		require_once $path;
-		$isPlugin = true;
+		$isPlugin   = true;
 		$controller = $type . $name;
 	}
 	else
 	{
 		$controller = '';
-	}
+	}*/
 }
 else
 {
@@ -114,16 +114,24 @@ else
 		$controller = $cName === 'oai' ? $cName : $controllerName;
 	}
 
-	$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
-
-	if (JFile::exists($path))
+	if ($controller === 'visualization')
 	{
-		require_once $path;
+		$controller = StringHelper::ucfirst($controller);
 	}
 	else
 	{
-		$controller = '';
+		$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
+
+		if (JFile::exists($path))
+		{
+			require_once $path;
+		}
+		else
+		{
+			$controller = '';
+		}
 	}
+
 }
 
 /**
@@ -134,9 +142,9 @@ else
 if (strpos($input->getCmd('task'), '.') !== false)
 {
 	$controllerTask = explode('.', $input->getCmd('task'));
-	$controller = array_shift($controllerTask);
-	$className = 'FabrikController' . StringHelper::ucfirst($controller);
-	$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
+	$controller     = array_shift($controllerTask);
+	$className      = 'FabrikController' . StringHelper::ucfirst($controller);
+	$path           = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
 
 	if (JFile::exists($path))
 	{
@@ -144,7 +152,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 
 		// Needed to process J content plugin (form)
 		$input->set('view', $controller);
-		$task = array_pop($controllerTask);
+		$task       = array_pop($controllerTask);
 		$controller = new $className;
 	}
 	else
@@ -154,8 +162,23 @@ if (strpos($input->getCmd('task'), '.') !== false)
 }
 else
 {
-	$className = 'FabrikController' . StringHelper::ucfirst($controller);
-	$controller = new $className;
+	if ($type === 'visualization')
+	{
+		//namespace Fabrik\Plugins\Visualization\Calendar;
+		$className  = '\Fabrik\Plugins\Visualization\\' . $controller . '\Controller';
+		$controller = new $className;
+	}
+	elseif ($controller === 'Visualization')
+	{
+		$controller = new \Fabrik\Controllers\Visualization;
+	}
+	else
+	{
+		$className  = 'FabrikController' . StringHelper::ucfirst($controller);
+		$controller = new $className;
+
+	}
+
 	$task = $input->getCmd('task');
 }
 
@@ -165,23 +188,13 @@ if ($isPlugin)
 	$controller->addViewPath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/views');
 
 	// Add the model path
-	$modelpaths = JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
+	JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/models');
 }
 
 $package = $input->get('package', 'fabrik');
 $app->setUserState('com_fabrik.package', $package);
 
-if ($input->get('yql') == 1)
-{
-	$opts = array('driver' => 'yql', 'endpoint' => 'https://query.yahooapis.com/v1/public/yql');
-
-	$service = FabrikWebService::getInstance($opts);
-	$query = "select * from upcoming.events where location='London'";
-	$program = $service->get($query, array(), 'event', null);
-}
-// End web service testing
-
-$controller->execute($task);
+$controller->execute(addEvForm);
 
 // Redirect if set by the controller
 $controller->redirect();

@@ -8,14 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Slideshow\Views;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Html as HtmlHelper;
 use Fabrik\Helpers\Text;
-use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.view');
+use \JFactory;
+use \JHtml;
+use \JViewLegacy;
+use \JComponentHelper;
 
 /**
  * Fabrik Slideshow Viz HTML View
@@ -24,23 +27,22 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik.visualization.timeline
  * @since       3.0
  */
-
-class FabrikViewSlideshow extends JViewLegacy
+class Html extends JViewLegacy
 {
 	/**
 	 * Execute and display a template script.
 	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 * @param   string $tpl The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed  A string if successful, otherwise a JError object.
 	 */
 
 	public function display($tpl = 'default')
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$srcs = Html::framework();
-		$model = $this->getModel();
+		$app         = JFactory::getApplication();
+		$input       = $app->input;
+		$srcs        = HtmlHelper::framework();
+		$model       = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
 		$this->row = $model->getVisualization();
@@ -52,23 +54,20 @@ class FabrikViewSlideshow extends JViewLegacy
 			return false;
 		}
 
-		$this->js = $this->get('JS');
-		$viewName = $this->getName();
-		$params = $model->getParams();
-		$this->params = $params;
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$plugin = $pluginManager->getPlugIn('slideshow', 'visualization');
-		$this->showFilters = $model->showFilters();
-		$this->filters = $this->get('Filters');
-		$this->filterFormURL = $this->get('FilterFormURL');
-		$this->params = $model->getParams();
-		$this->containerId = $this->get('ContainerId');
+		$this->js             = $this->get('JS');
+		$params               = $model->getParams();
+		$this->params         = $params;
+		$this->showFilters    = $model->showFilters();
+		$this->filters        = $this->get('Filters');
+		$this->filterFormURL  = $this->get('FilterFormURL');
+		$this->params         = $model->getParams();
+		$this->containerId    = $this->get('ContainerId');
 		$srcs['FbListFilter'] = 'media/com_fabrik/js/listfilter.js';
 
 		if ($this->get('RequiredFiltersFound'))
 		{
 			$srcs['Slideshow2'] = 'components/com_fabrik/libs/slideshow2/js/slideshow.js';
-			$mode = $params->get('slideshow_viz_type', 1);
+			$mode               = $params->get('slideshow_viz_type', 1);
 
 			switch ($mode)
 			{
@@ -87,19 +86,19 @@ class FabrikViewSlideshow extends JViewLegacy
 					break;
 			}
 
-			JHTML::stylesheet('components/com_fabrik/libs/slideshow2/css/slideshow.css');
-			$srcs['SlideShow'] = 'plugins/fabrik_visualization/slideshow/slideshow.js';
+			JHtml::stylesheet('components/com_fabrik/libs/slideshow2/css/slideshow.css');
+			$srcs['SlideShow'] = 'plugins/fabrik_visualization/Slideshow/slideshow.js';
 		}
 
-		Html::slimbox();
-		Html::iniRequireJs($model->getShim());
-		Html::script($srcs, $this->js);
+		HtmlHelper::slimbox();
+		HtmlHelper::iniRequireJs($model->getShim());
+		HtmlHelper::script($srcs, $this->js);
 
-		$tpl = $params->get('slideshow_viz_layout', 'bootstrap');
-		$tmplpath = $model->pathBase . 'slideshow/views/slideshow/tmpl/' . $tpl;
-		$this->_setPath('template', $tmplpath);
-		Html::stylesheetFromPath('plugins/fabrik_visualization/slideshow/views/slideshow/tmpl/' . $tpl . '/template.css');
-		Html::stylesheetFromPath('plugins/fabrik_visualization/slideshow/views/slideshow/tmpl/' . $tpl . '/custom.css');
+		$tpl      = $params->get('slideshow_viz_layout', 'bootstrap');
+		$tmplPath = $model->pathBase . 'Slideshow/Views/Slideshow/tmpl/' . $tpl;
+		$this->_setPath('template', $tmplPath);
+		HtHtmlHelperml::stylesheetFromPath('plugins/fabrik_visualization/Slideshow/Views/Slideshow/tmpl/' . $tpl . '/template.css');
+		HtmlHelper::stylesheetFromPath('plugins/fabrik_visualization/Slideshow/Views/Slideshow/tmpl/' . $tpl . '/custom.css');
 		echo parent::display();
 	}
 }

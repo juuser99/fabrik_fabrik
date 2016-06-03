@@ -8,10 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Fusionchart;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use \Fabrik\Controllers\Visualization as VizController;
 
 /**
  * Fusion chart viz Controller
@@ -20,7 +22,6 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik.visualization.fusionchart
  * @since       3.0
  */
-
-class FabrikControllerVisualizationfusionchart extends FabrikControllerVisualization
+class Controller extends VizController
 {
 }

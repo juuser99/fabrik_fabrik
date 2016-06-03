@@ -8,14 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Slideshow;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\StringHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \JFactory;
+use \JModelLegacy;
+use \JRoute;
+use \stdClass;
 
 /**
  * Slideshow viz Model
@@ -24,18 +26,16 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.slideshow
  * @since       3.0
  */
-
-class FabrikModelSlideshow extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
 	/**
 	 * Get slideshow HTML container markup
 	 *
 	 * @return string
 	 */
-
 	public function getSlideshow()
 	{
-		$id = 'foo_for_now_fix_this';
+		$id     = 'foo_for_now_fix_this';
 		$return = "
 			<div id=\"$id\" class=\"slideshow\">
 				<div class=\"slideshow-images\">
@@ -56,10 +56,9 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 	 *
 	 * @return string
 	 */
-
 	public function getPlaylist()
 	{
-		$params = $this->getParams();
+		$params       = $this->getParams();
 		$mediaElement = $params->get('media_media_elementList');
 		$mediaElement .= '_raw';
 		$titleElement = $params->get('media_title_elementList', '');
@@ -73,10 +72,11 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		$infoElement = $params->get('media_info_elementList', '');
 		$noteElement = $params->get('media_note_elementList', '');
 
-		$listid = $params->get('media_table');
+		$listId = $params->get('media_table');
 
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listModel->setId($listId);
 		$list = $listModel->getTable();
 		$form = $listModel->getFormModel();
 		/* remove filters?
@@ -85,16 +85,16 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 		 * object if we call getPagination after render().  So call it first, then render() will
 		 * get our cached pagination, rather than vice versa.
 		 */
-		$nav = $listModel->getPagination(0, 0, 0);
+		$listModel->getPagination(0, 0, 0);
 		$listModel->render();
-		$alldata = $listModel->getData();
+		$allData  = $listModel->getData();
 		$document = JFactory::getDocument();
-		$str = "<?xml version=\"1.0\" encoding=\"" . $document->_charset . "\"?>\n";
+		$str      = "<?xml version=\"1.0\" encoding=\"" . $document->_charset . "\"?>\n";
 		$str .= "<playlist version=\"1\" xmlns = \"http://xspf.org/ns/0/\">\n";
 		$str .= "	<title>" . $list->label . "</title>\n";
 		$str .= "	<trackList>\n";
 
-		foreach ($alldata as $data)
+		foreach ($allData as $data)
 		{
 			foreach ($data as $row)
 			{
@@ -170,12 +170,10 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 
 	public function getImageJSData()
 	{
-		$params = $this->getParams();
+		$params    = $this->getParams();
 		$listModel = $this->getSlideListModel();
-		$table = $listModel->getTable();
 		$listModel->getPagination(0, 0, 0);
-		//$listModel->render();
-		$alldata = $listModel->getData();
+		$allData = $listModel->getData();
 
 		$slideElement = $this->getSlideElement();
 
@@ -193,7 +191,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 
 		$js_opts = new stdClass;
 
-		foreach ($alldata as $data)
+		foreach ($allData as $data)
 		{
 			foreach ($data as $pic)
 			{
@@ -202,8 +200,6 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 					//throw new InvalidArgumentException($params->get('slideshow_viz_file', '') . ' not found - is it set to show in the list view?');
 					continue;
 				}
-
-				$picData = '';
 
 				if (!$slideElement->isJoin())
 				{
@@ -214,7 +210,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 					$picData = $pic->$slideshow_viz_file;
 				}
 
-				$picData = str_replace("\\", "/", $picData);
+				$picData  = str_replace("\\", "/", $picData);
 				$pic_opts = array();
 
 				if (!empty($slideshow_viz_caption) && isset($pic->$slideshow_viz_caption))
@@ -223,15 +219,14 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 					$pic_opts['caption'] = $pic->$slideshow_viz_caption . ' ';
 				}
 
-
 				/**
 				 * AJAX uploads will (hopefully!) have been CONCAT'ed into the parent element
 				 * with the //..*..// group splitter.
 				 */
 				foreach (explode(GROUPSPLITTER, $picData) as $path)
 				{
-					$tmp = json_decode($path);
-					$k = $tmp == false ? $path : $tmp[0];
+					$tmp              = json_decode($path);
+					$k                = $tmp == false ? $path : $tmp[0];
 					$pic_opts['href'] = $slideElement->getStorage()->getFileUrl($k, 0);
 					$this->addThumbOpts($pic_opts);
 
@@ -253,17 +248,16 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 	 *
 	 * @since   3.0.6
 	 *
-	 * @return  object  list model
+	 * @return  \FabrikFEModelList  list model
 	 */
-
 	protected function getSlideListModel()
 	{
 		if (!isset($this->listModel))
 		{
-			$params = $this->getParams();
-			$listid = $params->get('slideshow_viz_table');
+			$params          = $this->getParams();
+			$listId          = $params->get('slideshow_viz_table');
 			$this->listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
-			$this->listModel->setId($listid);
+			$this->listModel->setId($listId);
 		}
 
 		return $this->listModel;
@@ -281,9 +275,9 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 	{
 		if (!isset($this->slideElement))
 		{
-			$params = $this->getParams();
-			$listModel = $this->getSlideListModel();
-			$form = $listModel->getFormModel();
+			$params             = $this->getParams();
+			$listModel          = $this->getSlideListModel();
+			$form               = $listModel->getFormModel();
 			$this->slideElement = $form->getElement($params->get('slideshow_viz_file', ''));
 		}
 
@@ -293,7 +287,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 	/**
 	 * Add in the thumb src
 	 *
-	 * @param   array  &$pic_opts  picture options
+	 * @param   array &$pic_opts picture options
 	 *
 	 * @since   3.0.6
 	 *
@@ -306,7 +300,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 
 		if ($params->get('slideshow_viz_thumbnails', false))
 		{
-			$slideElement = $this->getSlideElement();
+			$slideElement          = $this->getSlideElement();
 			$pic_opts['thumbnail'] = $slideElement->getStorage()->_getThumb(str_replace(COM_FABRIK_LIVESITE, '', $pic_opts['href']));
 		}
 	}
@@ -320,31 +314,31 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 	public function getJS()
 	{
 		$params = $this->getParams();
-		$viz = $this->getVisualization();
+		$viz    = $this->getVisualization();
 
-		$use_thumbs = $params->get('slideshow_viz_thumbnails', 0);
-		$use_captions = $params->get('slideshow_viz_caption', '') == '' ? false : true;
-		$opts = new stdClass;
-		$opts->slideshow_data = $slideshow_data = $this->getImageJSData();
-		$opts->id = $viz->id;
-		$opts->html_id = $html_id = 'slideshow_viz_' . $viz->id;
-		$opts->slideshow_type = (int) $params->get('slideshow_viz_type', 1);
-		$opts->slideshow_width = (int) $params->get('slideshow_viz_width', 400);
-		$opts->slideshow_height = (int) $params->get('slideshow_viz_height', 300);
-		$opts->slideshow_delay = (int) $params->get('slideshow_viz_delay', 5000);
-		$opts->slideshow_duration = (int) $params->get('slideshow_viz_duration', 2000);
-		$opts->slideshow_zoom = (int) $params->get('slideshow_viz_zoom', 50);
-		$opts->slideshow_pan = (int) $params->get('slideshow_viz_pan', 20);
+		$use_thumbs                 = $params->get('slideshow_viz_thumbnails', 0);
+		$use_captions               = $params->get('slideshow_viz_caption', '') == '' ? false : true;
+		$opts                       = new stdClass;
+		$opts->slideshow_data       = $slideshow_data = $this->getImageJSData();
+		$opts->id                   = $viz->get('id');
+		$opts->html_id              = $html_id = 'slideshow_viz_' . $viz->get('id');
+		$opts->slideshow_type       = (int) $params->get('slideshow_viz_type', 1);
+		$opts->slideshow_width      = (int) $params->get('slideshow_viz_width', 400);
+		$opts->slideshow_height     = (int) $params->get('slideshow_viz_height', 300);
+		$opts->slideshow_delay      = (int) $params->get('slideshow_viz_delay', 5000);
+		$opts->slideshow_duration   = (int) $params->get('slideshow_viz_duration', 2000);
+		$opts->slideshow_zoom       = (int) $params->get('slideshow_viz_zoom', 50);
+		$opts->slideshow_pan        = (int) $params->get('slideshow_viz_pan', 20);
 		$opts->slideshow_thumbnails = $use_thumbs ? true : false;
-		$opts->slideshow_captions = $use_captions ? true : false;
-		$opts->container = "slideshow_viz_" . $this->getVisualization()->id;
-		$opts->liveSite = COM_FABRIK_LIVESITE;
-		$opts = json_encode($opts);
-		$ref = $this->getJSRenderContext();
-		$html = array();
-		$html[] = "$ref = new FbSlideshowViz('" . $html_id . "', $opts)\n";
-		$html[] = "\n" . "Fabrik.addBlock('$ref', $ref);";
-		$html[] = $this->getFilterJs();
+		$opts->slideshow_captions   = $use_captions ? true : false;
+		$opts->container            = "slideshow_viz_" . $this->getVisualization()->get('id');
+		$opts->liveSite             = COM_FABRIK_LIVESITE;
+		$opts                       = json_encode($opts);
+		$ref                        = $this->getJSRenderContext();
+		$html                       = array();
+		$html[]                     = "$ref = new FbSlideshowViz('" . $html_id . "', $opts)\n";
+		$html[]                     = "\n" . "Fabrik.addBlock('$ref', $ref);";
+		$html[]                     = $this->getFilterJs();
 
 		return implode("\n", $html);
 	}
@@ -359,7 +353,7 @@ class FabrikModelSlideshow extends FabrikFEModelVisualization
 	{
 		if (!isset($this->listids))
 		{
-			$params = $this->getParams();
+			$params        = $this->getParams();
 			$this->listids = (array) $params->get('slideshow_viz_table');
 		}
 	}

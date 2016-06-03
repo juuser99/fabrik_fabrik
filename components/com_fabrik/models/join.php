@@ -23,7 +23,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikFEModelJoin extends FabModel
+class FabrikFEModelJoin extends \Fabrik\Models\Model
 {
 	/**
 	 * Join table

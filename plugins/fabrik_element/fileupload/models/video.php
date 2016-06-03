@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.fileupload
  * @since       3.0
  */
-class VideoRenderModel extends FabModel
+class VideoRenderModel extends \Fabrik\Models\Model
 {
 	/**
 	 * Render output

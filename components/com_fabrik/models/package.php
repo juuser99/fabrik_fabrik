@@ -24,7 +24,7 @@ jimport('joomla.application.component.modelitem');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikFEModelPackage extends FabModel
+class FabrikFEModelPackage extends \Fabrik\Models\Model
 {
 	/**
 	 * table objects

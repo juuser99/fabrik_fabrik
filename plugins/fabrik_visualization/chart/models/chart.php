@@ -8,15 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Chart;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\StringHelper;
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+use \JModelLegacy;
+use \JError;
 
 /**
  * Fabrik Chart Plug-in Model
@@ -25,8 +26,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.chart
  * @since       3.0
  */
-
-class FabrikModelChart extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
 	/**
 	 * Google charts api url
@@ -124,6 +124,8 @@ class FabrikModelChart extends FabrikFEModelVisualization
 			$alldata = $tableData['data'];
 			$cals = $tableData['cals'];
 			$column = $chartElements[$c];
+			
+			/** @var \FabrikFEModelList $listModel */
 			$listModel = $tableData['model'];
 			$pref = substr($column, 0, 6);
 
@@ -444,6 +446,8 @@ class FabrikModelChart extends FabrikFEModelVisualization
 				if (!array_key_exists($lid, $tmodels))
 				{
 					$listModel = null;
+					
+					/** @var \FabrikFEModelList $listModel */
 					$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
 					$listModel->setId($lid);
 					$tmodels[$lid] = $listModel;

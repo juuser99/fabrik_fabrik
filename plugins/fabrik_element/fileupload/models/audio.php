@@ -20,7 +20,7 @@ use Fabrik\Helpers\Html;
  * @subpackage  Fabrik.element.fileupload
  * @since       3.0
  */
-class AudioRenderModel extends FabModel
+class AudioRenderModel extends \Fabrik\Models\Model
 {
 	/**
 	 * Render output

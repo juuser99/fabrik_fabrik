@@ -8,17 +8,22 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugins\Visualization\Fullcalendar;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use \DateTimeZone;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
+use \JError;
+use \JFactory;
+use \JFilterInput;
+use \JModelLegacy;
+use \stdClass;
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
 
 /**
  * Fabrik Calendar Plug-in Model
@@ -27,8 +32,7 @@ require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
  * @subpackage  Fabrik.visualization.calendar
  * @since       3.0
  */
-
-class FabrikModelFullcalendar extends FabrikFEModelVisualization
+class Model extends \Fabrik\Models\Visualization
 {
 	/**
 	 * Array of Fabrik lists containing events
@@ -70,7 +74,6 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 	 *
 	 * @return  void
 	 */
-
 	protected function setListIds()
 	{
 		if (!isset($this->listids))
@@ -85,7 +88,6 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 	 *
 	 * @return array
 	 */
-
 	public function &getEventLists()
 	{
 		if (is_null($this->eventLists))
@@ -136,7 +138,6 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 	 *
 	 * @return  boolean False if not saved, otherwise id of saved calendar
 	 */
-
 	public function save()
 	{
 		$user = JFactory::getUser();
@@ -192,8 +193,8 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 			$params = $this->getParams();
 			$tables = (array) $params->get('fullcalendar_table');
 			$table_label = (array) $params->get('fullcalendar_label_element');
-			$table_startdate = (array) $params->get('fullcalendar_startdate_element');
-			$table_enddate = (array) $params->get('fullcalendar_enddate_element');
+			$tableStartDate = (array) $params->get('fullcalendar_startdate_element');
+			$tableEndDate = (array) $params->get('fullcalendar_enddate_element');
 			$customUrls = (array) $params->get('custom_url');
 			$colour = (array) $params->get('colour');
 			$legend = (array) $params->get('legendtext');
@@ -204,14 +205,15 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 
 			for ($i = 0; $i < count($tables); $i++)
 			{
+				/** @var \FabrikFEModelList $listModel */
 				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 
 				if ($tables[$i] != 'undefined')
 				{
 					$listModel->setId($tables[$i]);
 					$table = $listModel->getTable();
-					$endDate = ArrayHelper::getValue($table_enddate, $i, '');
-					$startDate = ArrayHelper::getValue($table_startdate, $i, '');
+					$endDate = ArrayHelper::getValue($tableEndDate, $i, '');
+					$startDate = ArrayHelper::getValue($tableStartDate, $i, '');
 
 					$startShowTime = true;
 					$startDateEl = $listModel->getFormModel()->getElement($startDate);
@@ -250,7 +252,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 
 					$customUrl = ArrayHelper::getValue($customUrls, $i, '');
 					$status = ArrayHelper::getValue($stati, $i, '');
-					$allday = ArrayHelper::getValue($allDayEl, $i, '');
+					$allDay = ArrayHelper::getValue($allDayEl, $i, '');
 					$this->events[$tables[$i]][] = array(
 						'startdate' => $startDate,
 						'enddate' => $endDate,
@@ -263,7 +265,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 						'listid' => $tables[$i],
 						'customUrl' => $customUrl,
 						'status' => $status,
-						'allday' => $allday
+						'allday' => $allDay
 					);
 				}
 			}
@@ -280,7 +282,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 
 	public function getLinkedFormIds()
 	{
-		$this->setUpEvents();
+		$this->setupEvents();
 		$return = array();
 
 		foreach ($this->events as $arr)
@@ -308,11 +310,13 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 		$this->setupEvents();
 		$filter = JFilterInput::getInstance();
 		$request = $filter->clean($_REQUEST, 'array');
+
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 
-		foreach ($this->events as $listid => $record)
+		foreach ($this->events as $listId => $record)
 		{
-			$listModel->setId($listid);
+			$listModel->setId($listId);
 			$table = $listModel->getTable();
 			$formModel = $listModel->getFormModel();
 
@@ -390,36 +394,37 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 	/**
 	 * Query one or all tables linked to the calendar and return them
 	 *
-	 * @param  string  $listid  list id
+	 * @param  string  $listId  list id
 	 *
 	 * @return  string	javascript array containing json objects
 	 */
 
-	public function getEvents($listid = '')
+	public function getEvents($listId = '')
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$Itemid = Worker::itemId();
+		$itemId = Worker::itemId();
 		$config = JFactory::getConfig();
-		$tzoffset = $config->get('offset');
-		$tz = new DateTimeZone($tzoffset);
+		$tzOffset = $config->get('offset');
+		$tz = new DateTimeZone($tzOffset);
 		$w = new Worker;
 		$this->setupEvents();
 		$calendar = $this->getRow();
-		$aLegend = "$this->calName.addLegend([";
-		$jsevents = array();
+		$jsEvents = array();
 		$input = $app->input;
 		$where = $input->get('where', array(), 'array');
 
 		foreach ($this->events as $this_listid => $record)
 		{
-			if (!empty($listid) && $this_listid != $listid)
+			if (!empty($listId) && $this_listid != $listId)
 			{
 				continue;
 			}
 
 			$this_where = ArrayHelper::getValue($where, $this_listid, '');
 			$this_where = html_entity_decode($this_where, ENT_QUOTES);
+
+			/** @var \FabrikFEModelList $listModel */
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($this_listid);
 
@@ -435,17 +440,15 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 			foreach ($record as $data)
 			{
 				$db = $listModel->getDb();
-				$startdate = trim($data['startdate']) !== '' ? StringHelper::safeColName($data['startdate']) : '\'\'';
+				$startDate = trim($data['startdate']) !== '' ? StringHelper::safeColName($data['startdate']) : '\'\'';
 
 				if ($data['startdate'] == '')
 				{
-					throw new RuntimeException('No start date selected ', 500);
-
-					return;
+					throw new \RuntimeException('No start date selected ', 500);
 				}
 
 				$startElement = $formModel->getElement($data['startdate']);
-				$enddate = trim($data['enddate']) !== '' ? StringHelper::safeColName($data['enddate']) : "''";
+				$endDate = trim($data['enddate']) !== '' ? StringHelper::safeColName($data['enddate']) : "''";
 				$endElement = trim($data['enddate']) !== '' ? $formModel->getElement($data['enddate']) : $startElement;
 
 				$startLocal = $store_as_local = (bool) $startElement->getParams()->get('date_store_as_local', false);
@@ -453,53 +456,49 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 
 				$label = trim($data['label']) !== '' ? StringHelper::safeColName($data['label']) : "''";
 				$customUrl = $data['customUrl'];
-				$qlabel = $label;
+				$qLabel = $label;
 
-				if (array_key_exists($qlabel, $els))
+				if (array_key_exists($qLabel, $els))
 				{
 					// If db join selected for the label we need to get the label element and not the value
-					$label = StringHelper::safeColName($els[$qlabel]->getOrderByName());
-
-					if (method_exists($els[$qlabel], 'getJoinLabelColumn'))
+					if (method_exists($els[$qLabel], 'getJoinLabelColumn'))
 					{
-						$label = $els[$qlabel]->getJoinLabelColumn();
+						$label = $els[$qLabel]->getJoinLabelColumn();
 					}
 					else
 					{
-						$label = StringHelper::safeColName($els[$qlabel]->getOrderByName());
+						$label = StringHelper::safeColName($els[$qLabel]->getOrderByName());
 					}
 				}
 
 				$pk = $listModel->getTable()->db_primary_key;
-				$status = empty($data['status']) ? '""' : $data['status'];
 				$query = $db->getQuery(true);
 				$query = $listModel->buildQuerySelect('list', $query);
 				$status = trim($data['status']) !== '' ? StringHelper::safeColName($data['status']) : "''";
-				$allday = trim($data['allday']) !== '' ? StringHelper::safeColName($data['allday']) : "''";
-				$query->select($pk . ' AS id, ' . $pk . ' AS rowid, ' . $startdate . ' AS startdate, ' . $enddate . ' AS enddate')
+				$allDay = trim($data['allday']) !== '' ? StringHelper::safeColName($data['allday']) : "''";
+				$query->select($pk . ' AS id, ' . $pk . ' AS rowid, ' . $startDate . ' AS startdate, ' . $endDate . ' AS enddate')
 					->select('"" AS link, ' . $label . ' AS label, ' . $db->quote($data['colour']) . ' AS colour, 0 AS formid')
 				->select($status . ' AS status')
-				->select($allday . ' AS allday')
-				->order($startdate . ' ASC');
+				->select($allDay . ' AS allday')
+				->order($startDate . ' ASC');
 				$query = $listModel->buildQueryJoin($query);
 				//$this_where = trim(str_replace('WHERE', '', $this_where));
 				$this_where = StringHelper::ltrimiword($this_where, 'WHERE');
 				$query = $this_where === '' ? $listModel->buildQueryWhere(true, $query) : $query->where($this_where);
 				$db->setQuery($query);
-				$sql = (string)$query;
-				$formdata = $db->loadObjectList();
+				$formData = $db->loadObjectList();
 
-				if (is_array($formdata))
+				if (is_array($formData))
 				{
-					foreach ($formdata as $row)
+					foreach ($formData as $row)
 					{
 						if ($row->startdate != '')
 						{
-							$defaultURL = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid . '&view=form&formid='
+							$defaultURL = 'index.php?option=com_' . $package . '&Itemid=' . $itemId . '&view=form&formid='
 								. $table->form_id . '&rowid=' . $row->id . '&tmpl=component';
 							$thisCustomUrl = $w->parseMessageForPlaceHolder($customUrl, $row);
 							$row->link = $thisCustomUrl !== '' ? $thisCustomUrl : $defaultURL;
-							$row->details = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid . '&view=details&formid='
+							$row->details = 'index.php?option=com_' . $package . '&Itemid=' . $itemId . '&view=details&formid='
 								. $table->form_id . '&rowid=' . $row->id . '&tmpl=component';
 							$row->custom = $customUrl != '';
 							$row->_listid = $table->id;
@@ -579,15 +578,14 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 							}
 
 */
-							$jsevents[$table->id . '_' . $row->id . '_' . $row->startdate] = clone ($row);
+							$jsEvents[$table->id . '_' . $row->id . '_' . $row->startdate] = clone ($row);
 						}
 					}
 				}
 			}
 		}
 
-		$params = $this->getParams();
-		$addEvent = json_encode($jsevents);
+		$addEvent = json_encode($jsEvents);
 
 		return $addEvent;
 	}
@@ -600,22 +598,15 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 
 	public function getLegend()
 	{
-		$db = Worker::getDbo();
-		$params = $this->getParams();
 		$this->setupEvents();
-		$tables = (array) $params->get('fullcalendar_table');
-		$colour = (array) $params->get('colour');
-		$legend = (array) $params->get('legendtext');
 
 		// @TODO: json encode the returned value and move to the view
-		$calendar = $this->getRow();
 		$aLegend = array();
-		$jsevents = array();
 
-		foreach ($this->events as $listid => $record)
+		foreach ($this->events as $listId => $record)
 		{
 			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-			$listModel->setId($listid);
+			$listModel->setId($listId);
 			$table = $listModel->getTable();
 
 			foreach ($record as $data)
@@ -645,7 +636,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 		if (is_null($this->calName))
 		{
 			$calendar = $this->getRow();
-			$this->calName = 'oCalendar' . $calendar->id;
+			$this->calName = 'oCalendar' . $calendar->get('id');
 		}
 
 		return $this->calName;
@@ -673,18 +664,20 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$id = $input->getInt('id');
-		$listid = $input->getInt('listid');
+		$listId = $input->getInt('listid');
+
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$listModel->setId($listid);
+		$listModel->setId($listId);
 		$list = $listModel->getTable();
 		$tableDb = $listModel->getDb();
 		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . $listid);
+		$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . $listId);
 		$db->setQuery($query);
-		$tablename = $db->loadResult();
+		$tableName = $db->loadResult();
 		$query = $tableDb->getQuery(true);
-		$query->delete(StringHelper::safeColName($tablename))->where($list->db_primary_key . ' = ' . $id);
+		$query->delete(StringHelper::safeColName($tableName))->where($list->db_primary_key . ' = ' . $id);
 		$tableDb->setQuery($query);
 		$tableDb->execute();
 	}

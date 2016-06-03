@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstract Visualization Controller
+ * Visualization Controller
  *
  * @package     Joomla
  * @subpackage  Fabrik
@@ -8,12 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use Fabrik\Helpers\StringHelper;
+use \FabTable;
 
-require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
+use \JFactory;
+use \JUri;
+use \JModelLegacy;
 
 /**
  * Abstract Visualization Controller
@@ -23,7 +28,7 @@ require_once COM_FABRIK_FRONTEND . '/helpers/params.php';
  * @subpackage  Fabrik
  * @since       1.5
  */
-class FabrikControllerVisualization extends JControllerLegacy
+class Visualization extends Controller
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -35,8 +40,10 @@ class FabrikControllerVisualization extends JControllerLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached - NOTE not actually used to control caching!!
-	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+	 * @param   boolean $cachable  If true, the view output will be cached - NOTE not actually used to control
+	 *                             caching!!
+	 * @param   array   $urlparams An array of safe url parameters and their variable types, for valid values see
+	 *                             {@link JFilterInput::clean()}.
 	 *
 	 * @return  JControllerLegacy  A JControllerLegacy object to support chaining.
 	 *
@@ -45,9 +52,9 @@ class FabrikControllerVisualization extends JControllerLegacy
 	public function display($cachable = false, $urlparams = array())
 	{
 		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$viewName = str_replace('FabrikControllerVisualization', '', get_class($this));
+		$app      = JFactory::getApplication();
+		$input    = $app->input;
+		$viewName = $this->vName();
 
 		if ($viewName == '')
 		{
@@ -55,7 +62,7 @@ class FabrikControllerVisualization extends JControllerLegacy
 			 * if we are using a url like http://localhost/fabrik3.0.x/index.php?option=com_fabrik&view=visualization&id=6
 			 * then we need to ascertain which viz to use
 			 */
-			$viewName = $this->getViewName();
+			$viewName = StringHelper::ucfirst($this->getViewName());
 		}
 
 		$viewType = $document->getType();
@@ -79,15 +86,36 @@ class FabrikControllerVisualization extends JControllerLegacy
 		else
 		{
 			// Build unique cache id on url, post and user id
-			$user = JFactory::getUser();
-			$uri = JURI::getInstance();
-			$uri = $uri->toString(array('path', 'query'));
+			$user    = JFactory::getUser();
+			$uri     = JUri::getInstance();
+			$uri     = $uri->toString(array('path', 'query'));
 			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
-			$cache = JFactory::getCache('com_fabrik', 'view');
+			$cache   = JFactory::getCache('com_fabrik', 'view');
 			$cache->get($view, 'display', $cacheId);
 		}
 
 		return $this;
+	}
+
+	protected function vName()
+	{
+		$viewName = str_replace('Fabrik\Controllers\Visualization', '', get_class($this));
+
+		if ($viewName === '')
+		{
+			// Loading from view=visualization&id=X
+			$viewName = StringHelper::ucfirst($this->getViewName());
+		}
+		else
+		{
+			preg_match('/Fabrik\\\Plugins\\\Visualization\\\(.*)\\\Controller/', get_class($this), $matches);
+			if (count($matches) > 1)
+			{
+				$viewName = $matches[1];
+			}
+		}
+
+		return $viewName;
 	}
 
 	/**
@@ -101,8 +129,8 @@ class FabrikControllerVisualization extends JControllerLegacy
 		$app = JFactory::getApplication();
 		$viz->load($app->input->getInt('id'));
 		$viewName = $viz->plugin;
-		$this->addViewPath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/views');
-		JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/models');
+		//$this->addViewPath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/views');
+		//JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/models');
 
 		return $viewName;
 	}
@@ -112,18 +140,21 @@ class FabrikControllerVisualization extends JControllerLegacy
 	 *
 	 * Method to get a reference to the current view and load it if necessary.
 	 *
-	 * @param   string  $name    The view name. Optional, defaults to the controller name.
-	 * @param   string  $type    The view type. Optional.
-	 * @param   string  $prefix  The class prefix. Optional.
-	 * @param   array   $config  Configuration array for view. Optional.
+	 * @param   string $name   The view name. Optional, defaults to the controller name.
+	 * @param   string $type   The view type. Optional.
+	 * @param   string $prefix The class prefix. Optional.
+	 * @param   array  $config Configuration array for view. Optional.
 	 *
 	 * @return  object  Reference to the view or an error.
 	 */
 	public function getView($name = '', $type = '', $prefix = '', $config = array())
 	{
-		$viewName = str_replace('FabrikControllerVisualization', '', get_class($this));
-		$viewName = $viewName == '' ? $this->getViewName() : $name;
+		$viewName  = $this->vName();
+		$className = 'Fabrik\Plugins\Visualization\\' . $viewName . '\Views\\' . StringHelper::ucfirst($type);
 
-		return parent::getView($viewName, $type, $prefix, $config);
+		return new $className;
+		/*	echo "classname = $className ";exit;
+			$viewName = $viewName == '' ? $this->getViewName() : $name;
+			return parent::getView($viewName, $type, $prefix, $config);*/
 	}
 }

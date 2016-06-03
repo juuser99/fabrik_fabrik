@@ -16,7 +16,6 @@ use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
 
 jimport('joomla.application.component.model');
-require_once 'fabrikmodelform.php';
 
 /**
  * Fabrik Form Model
@@ -25,7 +24,7 @@ require_once 'fabrikmodelform.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikFEModelFormInlineEdit extends FabModelForm
+class FabrikFEModelFormInlineEdit extends \Fabrik\Models\Model
 {
 	/**
 	 * @var FabrikFEModelForm
