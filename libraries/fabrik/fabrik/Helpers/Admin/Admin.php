@@ -86,7 +86,6 @@ class Admin
 		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_GROUPS'), 'index.php?option=com_fabrik&view=groups', $vName == 'groups');
 		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_ELEMENTS'), 'index.php?option=com_fabrik&view=elements', $vName == 'elements');
 		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_VISUALIZATIONS'), $vizUrl, $vName == 'visualizations');
-		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_PACKAGES'), 'index.php?option=com_fabrik&view=packages', $vName == 'packages');
 		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CONNECTIONS'), 'index.php?option=com_fabrik&view=connections', $vName == 'connections');
 		JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CRONS'), 'index.php?option=com_fabrik&view=crons', $vName == 'crons');
 	}

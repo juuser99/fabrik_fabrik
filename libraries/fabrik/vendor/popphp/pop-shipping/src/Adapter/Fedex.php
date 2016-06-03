@@ -45,6 +45,12 @@ class Fedex extends AbstractAdapter
     protected $request = null;
 
     /**
+     * Request header - common header to apply to all API requests
+     * @var array
+     */
+    protected $requestHeader = [];
+
+    /**
      * Ship to fields
      * @var array
      */
@@ -83,6 +89,16 @@ class Fedex extends AbstractAdapter
         ]
     ];
 
+	/**
+	 * Drop of types
+	 * @var array
+	 */
+	protected $dropOfTypes = [
+		'REGULAR_PICKUP', 'REQUEST_COURIER', 'DROP_BOX', 'BUSINESS_SERVICE_CENTER', 'STATION'
+	];
+
+	protected $dropOfType = 'REGULAR_PICKUP';
+
     /**
      * Package dimensions
      * @var array
@@ -118,6 +134,17 @@ class Fedex extends AbstractAdapter
     ];
 
     /**
+     * Shipping options
+     * @var array
+     */
+    protected $shippingOptions = [
+        'alcohol' => true,
+        'alcoholRecipientType' => 'LICENSEE'
+    ];
+
+    protected $accountNumber;
+
+    /**
      * Constructor
      *
      * Method to instantiate an FedEx shipping adapter object
@@ -131,37 +158,29 @@ class Fedex extends AbstractAdapter
      */
     public function __construct($key, $password, $account, $meter, $wsdl)
     {
+        if (!is_array($wsdl))
+        {
+            $wsdl = ['rates' => $wsdl];
+        }
         $this->wsdl = $wsdl;
+        $this->accountNumber = $account;
         ini_set('soap.wsdl_cache_enabled', '0');
 
-        $this->client = new \SoapClient($this->wsdl, ['trace' => 1]);
-
-        $this->request['WebAuthenticationDetail'] = [
+        $this->requestHeader['WebAuthenticationDetail'] = [
             'UserCredential' =>[
                 'Key'      => $key,
                 'Password' => $password
             ]
         ];
 
-        $this->request['ClientDetail'] = [
+        $this->requestHeader['ClientDetail'] = [
             'AccountNumber' => $account,
             'MeterNumber'   => $meter
         ];
 
-        $this->request['TransactionDetail'] = [
-            'CustomerTransactionId' => ' *** Rate Request v14 using PHP ***'
+        $this->requestHeader['TransactionDetail'] = [
+            'CustomerTransactionId' => ' *** Rate Request v18 using PHP ***'
         ];
-
-        $this->request['Version'] = [
-            'ServiceId'    => 'crs',
-            'Major'        => '14',
-            'Intermediate' => '0',
-            'Minor'        => '0'
-        ];
-
-        $this->request['RequestedShipment']['RateRequestTypes'] = 'ACCOUNT';
-        $this->request['RequestedShipment']['RateRequestTypes'] = 'LIST';
-        $this->request['RequestedShipment']['PackageCount']     = '1';
     }
 
     /**
@@ -204,7 +223,7 @@ class Fedex extends AbstractAdapter
             }
         }
 
-        $this->request['RequestedShipment']['Recipient'] = $this->shipTo;
+        return $this->shipTo;
     }
 
     /**
@@ -237,75 +256,230 @@ class Fedex extends AbstractAdapter
             }
         }
 
-        $this->request['RequestedShipment']['Shipper'] = $this->shipFrom;
+        return $this->shipFrom;
     }
 
     /**
-     * Set dimensions
+     * Add Info on who pays the shipping charges.
      *
-     * @param  array  $dimensions
-     * @param  string $unit
-     * @return mixed
+     * @return array
      */
-    public function setDimensions(array $dimensions, $unit = null)
+    protected function addShippingChargesPayment()
     {
-        if ((null !== $unit) && (($unit == 'IN') || ($unit == 'CM'))) {
-            $this->dimensions['Units'] = $unit;
+        $shippingChargesPayment = array('PaymentType' => 'SENDER',
+            'Payor' => array(
+                'ResponsibleParty' => array(
+                    'AccountNumber' => $this->accountNumber,
+                    'Contact' => null,
+                    'Address' => array(
+                        'CountryCode' => 'US'
+                    )
+                )
+            )
+        );
+        return $shippingChargesPayment;
+    }
+
+    /**
+     * Add label specification to shipping.
+     * @return array
+     */
+    protected function addLabelSpecification()
+    {
+        $labelSpecification = array(
+            'LabelFormatType' => 'COMMON2D', // valid values COMMON2D, LABEL_DATA_ONLY
+            'ImageType' => 'PNG',  // valid values DPL, EPL2, PDF, ZPLII and PNG
+            'LabelStockType' => 'PAPER_7X4.75'
+        );
+
+        if ($this->shippingOptions['alcohol'])
+        {
+            $labelSpecification['CustomerSpecifiedDetail']['RegulatoryLabels'] = ['Type' => 'ALCOHOL_SHIPMENT_LABEL'];
         }
 
-        foreach ($dimensions as $key => $value) {
-            if (strtolower($key) == 'length') {
-                $this->dimensions['Length'] = $value;
-            } else if (strtolower($key) == 'width') {
-                $this->dimensions['Width'] = $value;
-            } else if (strtolower($key) == 'height') {
-                $this->dimensions['Height'] = $value;
+        return $labelSpecification;
+    }
+
+    /**
+     * Add a shipping package line item
+     * @return array
+     */
+    protected function addPackageLineItem1()
+    {
+        // @TODO - insured value & amount & customer reference
+        $packageLineItem = array(
+            'SequenceNumber'=> 1,
+            'GroupPackageCount'=> 1,
+            'InsuredValue' => array(
+                'Amount' => floatval($this->insuranceValue),
+                'Currency' => 'USD'
+            ),
+            'Weight' => $this->weight,
+            'Dimensions' => $this->dimensions,
+            'CustomerReferences' => array(
+                '0' => array(
+                    'CustomerReferenceType' => 'CUSTOMER_REFERENCE', // valid values CUSTOMER_REFERENCE, INVOICE_NUMBER, P_O_NUMBER and SHIPMENT_INTEGRITY
+                    'Value' => 'GR4567892'
+                ),
+                '1' => array(
+                    'CustomerReferenceType' => 'INVOICE_NUMBER',
+                    'Value' => 'INV4567892'
+                ),
+                '2' => array(
+                    'CustomerReferenceType' => 'P_O_NUMBER',
+                    'Value' => 'PO4567892'
+                )
+            )
+        );
+
+        if ($this->shippingOptions['alcohol'])
+        {
+            $packageLineItem['SpecialServicesRequested'] = [
+                'SpecialServiceTypes' => 'ALCOHOL',
+                'AlcoholDetail' => [
+                    'RecipientType' => $this->shippingOptions['alcoholRecipientType']
+                ]
+            ];
+        }
+
+        return $packageLineItem;
+    }
+
+    /**
+     * Set the drop off type
+     * @param $type
+     */
+	protected function setDropOfType($type)
+	{
+		if (in_array($this->dropOfTypes, $type))
+		{
+			$this->dropOfType = $type;
+		}
+		else
+		{
+			$this->dropOfType = 'REGULAR_PICKUP';
+		}
+	}
+
+    /**
+     * Confirm a shipment
+     *
+     * @param bool $verifyPeer
+     *
+     * @throws \Exception
+     *
+     * @return array [String:filetype, String:Label image data]
+     */
+    public function ship($verifyPeer = true)
+    {
+        $request = [];
+
+        $request['Version'] = array(
+            'ServiceId' => 'ship',
+            'Major' => '17',
+            'Intermediate' => '0',
+            'Minor' => '0'
+        );
+
+        $serviceType = isset($this->shippingInfo->serviceType) ? $this->shippingInfo->serviceType : 'STANDARD_OVERNIGHT';
+        $packageType = isset($this->shippingInfo->PackagingType) ? $this->shippingInfo->PackagingType : 'YOUR_PACKAGING';
+
+        $request['RequestedShipment'] = array(
+            'ShipTimestamp' => date('c'),
+            'DropoffType' => $this->dropOfType,
+            'ServiceType' => $serviceType, // valid values STANDARD_OVERNIGHT, PRIORITY_OVERNIGHT, FEDEX_GROUND, ...
+            'PackagingType' => $packageType, // valid values FEDEX_BOX, FEDEX_PAK, FEDEX_TUBE, YOUR_PACKAGING, ...
+            'Shipper' => $this->shipFrom,
+            'Recipient' => $this->shipTo,
+            'ShippingChargesPayment' => $this->addShippingChargesPayment(),
+            'LabelSpecification' => $this->addLabelSpecification(),
+
+            'CustomerSpecifiedDetail' => array('MaskedData'=> 'SHIPPER_ACCOUNT_NUMBER'),
+            'PackageCount' => 1,
+            'RequestedPackageLineItems' => array(
+                '0' => $this->addPackageLineItem1()
+            )
+        );
+
+        $request = array_merge($this->requestHeader, $request);
+        $this->client = new \SoapClient($this->wsdl['shipping'], ['trace' => 1]);
+        $this->response = $this->client->processShipment($request);
+
+        if ($this->response->HighestSeverity === 'ERROR')
+        {
+            $errors = $this->response->Notifications;
+
+            if (is_object($errors))
+            {
+                $errors = [$errors];
             }
+            foreach ($errors as $error)
+            {
+                if ($error->Severity === 'ERROR')
+                {
+                    $errorMsg[] = $error->Message;
+                }
+
+            }
+
+            throw new \Exception(implode("\n", $errorMsg), $errors[0]->Code);
         }
+
+        $label = $this->response->CompletedShipmentDetail->CompletedPackageDetails->Label->Parts->Image;
+
+       return ['png', $label];
     }
 
     /**
-     * Set dimensions
-     *
-     * @param  string $weight
-     * @param  string $unit
-     * @return mixed
-     */
-    public function setWeight($weight, $unit = null)
-    {
-        if ((null !== $unit) && (($unit == 'LB') || ($unit == 'KG'))) {
-            $this->weight['Units'] = $unit;
-        }
-
-        $this->weight['Value'] = $weight;
-    }
-
-    /**
-     * Send transaction
+     * Request shipping rates
      *
      * @return void
      */
     public function send()
     {
-        $this->request['RequestedShipment']['RequestedPackageLineItems'] = [
-            'SequenceNumber'    => 1,
-            'GroupPackageCount' => 1,
-            'Weight'            => $this->weight
+        $this->requestHeader['Version'] = [
+            'ServiceId'    => 'crs',
+            'Major'        => '18',
+            'Intermediate' => '0',
+            'Minor'        => '0'
         ];
 
-        if ((null !== $this->dimensions['Length']) &&
-            (null !== $this->dimensions['Width']) &&
-            (null !== $this->dimensions['Height'])) {
-            $this->request['RequestedShipment']['RequestedPackageLineItems']['Dimensions'] = $this->dimensions;
+	    $request['RequestedShipment'] = [
+		    'RateRequestTypes' => 'ACCOUNT',
+		    'RateRequestTypes' => 'LIST',
+		    'PackageCount' => count($this->packages),
+		    'Shipper' => $this->shipFrom,
+		    'Recipient' => $this->shipTo,
+		    'RequestedPackageLineItems' => []
+	    ];
+
+        foreach ($this->packages as $package)
+        {
+            $request['RequestedShipment']['RequestedPackageLineItems'][] = $package->rateRequest();
         }
 
-        $this->response = $this->client->getRates($this->request);
-        $this->responseCode = (int)$this->response->Notifications->Code;
-        $this->responseMessage = (string)$this->response->Notifications->Message;
+        $request = array_merge($this->requestHeader, $request);
+        $this->client = new \SoapClient($this->wsdl['rates'], ['trace' => 1]);
+        $this->response = $this->client->getRates($request);
+        $this->responseCode = (int) $this->response->Notifications->Code;
+        $this->responseMessage = (string) $this->response->Notifications->Message;
+	    $this->ratesExtended = [];
 
         if ($this->responseCode == 0) {
             foreach ($this->response->RateReplyDetails as $rate) {
-                $this->rates[self::$services[(string)$rate->ServiceType]] = number_format((string)$rate->RatedShipmentDetails[0]->ShipmentRateDetail->TotalNetCharge->Amount, 2);
+	            $serviceType = (string) $rate->ServiceType;
+	            $total = number_format((string) $rate->RatedShipmentDetails[0]->ShipmentRateDetail->TotalNetCharge->Amount, 2);
+
+	            $this->ratesExtended[$serviceType] = (object) [
+                    'shipper' => 'fedex',
+		            'total' => $total,
+		            'PackagingType' => (string) $rate->PackagingType,
+		            'SignatureOption' => (string) $rate->SignatureOption,
+		            'ActualRateType' => (string) $rate->ActualRateType,
+		            'serviceType' => $serviceType,
+		            'title' => self::$services[$serviceType]
+	            ];
+                $this->rates[self::$services[$serviceType]] = $total;
             }
             $this->rates = array_reverse($this->rates, true);
         }
@@ -329,6 +503,15 @@ class Fedex extends AbstractAdapter
     public function isError()
     {
         return ($this->responseCode != 0);
+    }
+
+    /**
+     * Get Package
+     * @return \Pop\Shipping\PackageAdapter\Fedex
+     */
+    public function getPackage()
+    {
+        return new \Pop\Shipping\PackageAdapter\Fedex();
     }
 
 }

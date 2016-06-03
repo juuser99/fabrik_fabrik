@@ -47,7 +47,7 @@ class FabrikViewList extends FabrikViewListBase
 			exit;
 		}
 
-		$model->setOutPutFormat('csv');
+		$model->setOutputFormat('csv');
 		$exporter->model = $model;
 		$input->set('limitstart' . $model->getId(), $input->getInt('start', 0));
 		$limit = $exporter->getStep();

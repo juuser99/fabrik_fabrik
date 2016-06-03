@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-	
+
 		<fieldset name="plg-list-email" label="COM_FABRIK_OPTIONS">
-			
+
 			<field type="helplink"
 				url="PLG_LIST_EMAIL_HELP_SERVER" />
 
@@ -28,23 +28,23 @@
 				label="PLG_LIST_EMAIL_IMAGE_LABEL"
 				repeat="true" size="20"
 			/>
-							
+
 			<field name="emailtable_condition"
 				type="fabrikeditor"
 				description="PLG_LIST_EMAIL_CONDITION_DESC"
 				label="PLG_LIST_EMAIL_CONDITION_LABEL"
 				repeat="true"
 				mode="mysql" />
-				
+
 			<field name="wysiwyg"
 				type="radio"
 				class="btn-group"
 				default="1"
 				label="PLG_LIST_EMAIL_WYSIWYG_LABEL">
 					<option value="0">JNO</option>
-					<option value="1">JYES</option>	
+					<option value="1">JYES</option>
 			</field>
-			
+
 			<field name="checkall"
 				type="radio"
 				class="btn-group"
@@ -52,9 +52,9 @@
 				label="PLG_LIST_EMAIL_CHECKALL_LABEL"
 				description="PLG_LIST_EMAIL_CHECKALL_DESC">
 					<option value="0">JNO</option>
-					<option value="1">JYES</option>	
+					<option value="1">JYES</option>
 			</field>
-			
+
 		</fieldset>
 
 		<fieldset name="plg-list-email-sending" label="PLG_LIST_EMAIL_SENDING">
@@ -94,7 +94,7 @@
 				<option value="email">PLG_LIST_EMAIL_SMS_OR_EMAIL_EMAIL</option>
 				<option value="sms">PLG_LIST_EMAIL_SMS_OR_EMAIL_SMS</option>
 			</field>
-			
+
 			<field name="emailtable_to_how"
 				type="list"
 				default="multi"
@@ -104,7 +104,7 @@
 					<option value="multi">PLG_LIST_EMAIL_TO_HOW_MULTI</option>
 					<option value="single">PLG_LIST_EMAIL_TO_HOW_SINGLE</option>
 			</field>
-					
+
 			<field name="emailtable_to_type"
 				default="list"
 				description="PLG_LIST_EMAIL_TO_TYPE_DESC"
@@ -116,7 +116,7 @@
 					<option value="table">PLG_LIST_EMAIL_TO_TYPE_TABLE</option>
 					<option value="table_picklist">PLG_LIST_EMAIL_TO_TYPE_TABLE_PICKLIST</option>
 			</field>
-			
+
 			<field
 				description="PLG_LIST_EMAIL_TO_DESC"
 				label="PLG_LIST_EMAIL_TO_LABEL"
@@ -128,15 +128,15 @@
 
 			<field name="emailtable_email_to_field_how"
 				type="list"
-				default="readonly" 
+				default="readonly"
 				repeat="true"
-				label="PLG_LIST_EMAIL_TO_FIELD_HOW_LABEL" 
+				label="PLG_LIST_EMAIL_TO_FIELD_HOW_LABEL"
 				description="PLG_LIST_EMAIL_TO_FIELD_HOW_DESC">
 					<option value="hidden">PLG_LIST_EMAIL_TO_FIELD_HOW_HIDDEN</option>
 					<option value="readonly">PLG_LIST_EMAIL_TO_FIELD_HOW_READONLY</option>
 					<option value="editable">PLG_LIST_EMAIL_TO_FIELD_HOW_EDITABLE</option>
 			</field>
-			
+
 			<field name="email_subject"
 				type="text"
 				class="input-xxlarge"
@@ -145,18 +145,18 @@
 				repeat="true"
 				size="30"
 			/>
-			
+
 			<field name="emailtable_hide_subject"
 				type="radio"
 				class="btn-group"
 				default="0"
 				repeat="true"
-				label="PLG_LIST_EMAIL_HIDE_SUBJECT_LABEL" 
+				label="PLG_LIST_EMAIL_HIDE_SUBJECT_LABEL"
 				description="PLG_LIST_EMAIL_HIDE_SUBJECT_DESC">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
-			</field>	
-			
+			</field>
+
 			<field name="email_message"
 				cols="60"
 				description="PLG_LIST_MESSAGE_DESC"
@@ -174,7 +174,7 @@
 				label="PLG_LIST_EMAIL_TEMPLATE_LABEL"
 				description="PLG_LIST_EMAIL_TEMPLATE_DESC"
 			/>
-			
+
 			<field name="emailtable_template_content"
 				add_select="true"
 				default=""
@@ -184,7 +184,7 @@
 				label="PLG_LIST_EMAIL_CONTENT_TEMPLATE_LABEL"
 				description="PLG_LIST_EMAIL_CONTENT_TEMPLATE_DESC"
 			/>
-							
+
 			<field name="emailtable_allow_attachment"
 				default="1"
 				class="btn-group"
@@ -193,20 +193,20 @@
 				repeat="true"
 				type="radio">
 					<option value="0">JNO</option>
-					<option value="1">JYES</option>	
+					<option value="1">JYES</option>
 			</field>
 
 		</fieldset>
-		
+
 		<fieldset label="PLG_LIST_EMAIL_ADDRESS_BOOK" name="plg-list-email-address-book">
-		
+
 			<field name="emailtable_to_table_connection"
 				type="connections"
 				repeat="true"
 				label="PLG_LIST_EMAIL_TO_TABLE_CONNECTION_LABEL"
 				description="PLG_LIST_EMAIL_TO_TABLE_CONNECTION_DESC"
 			/>
-			
+
 			<field name="emailtable_to_table_table"
 				observe="params_emailtable_to_table_connection"
 				repeat="true"
@@ -214,7 +214,7 @@
 				label="PLG_LIST_EMAIL_TO_TABLE_TABLE_LABEL"
 				description="PLG_LIST_EMAIL_TO_TABLE_TABLE_DESC"
 			/>
-			
+
 			<field name="emailtable_to_table_email"
 				type="element"
 				repeat="true"
@@ -223,7 +223,7 @@
 				label="PLG_LIST_EMAIL_TO_TABLE_EMAIL_LABEL"
 				description="PLG_LIST_EMAIL_TO_TABLE_EMAIL_DESC"
 			/>
-			
+
 			<field name="emailtable_to_table_name"
 				type="element"
 				repeat="true"
@@ -232,12 +232,12 @@
 				label="PLG_LIST_EMAIL_TO_TABLE_NAME_LABEL"
 				description="PLG_LIST_EMAIL_TO_TABLE_NAME_DESC"
 			/>
-			
+
 		</fieldset>
-		
+
 		<fieldset label="PLG_LIST_EMAIL_MERGE_MAIL" name="plg-list-email-merge">
-		
-			<field name="emailtable_mergemessages" 
+
+			<field name="emailtable_mergemessages"
 				type="radio"
 				default="0"
 				repeat="true"
@@ -247,7 +247,7 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 			</field>
-		
+
 			<field name="emailtable_message_preamble"
 				type="textarea"
 				default=""
@@ -257,7 +257,7 @@
 				label="PLG_LIST_EMAIL_MESSAGE_PREAMBLE_LABEL"
 				description="PLG_LIST_EMAIL_MESSAGE_PREAMBLE_DESC"
 			/>
-			
+
 			<field name="emailtable_message_postamble"
 				type="textarea"
 				default=""
@@ -267,11 +267,11 @@
 				label="PLG_LIST_EMAIL_MESSAGE_POSTAMBLE_LABEL"
 				description="PLG_LIST_EMAIL_MESSAGE_POSTAMBLE_DESC"
 			/>
-			
+
 		</fieldset>
-		
+
 		<fieldset label="PLG_LIST_EMAIL_UPDATE" name="plg-list-email-update">
-		
+
 			<field name="emailtable_update_field"
 					description="PLG_LIST_EMAIL_UPDATE_FIELD_DESC"
 					label="PLG_LIST_EMAIL_UPDATE_FIELD_LABEL"
@@ -279,14 +279,14 @@
 					type="listfields"
 					valueformat="tableelement"
 				/>
-				
+
 				<field name="emailtable_update_value"
 					description="PLG_LIST_EMAIL_UPDATE_VALUE_DESC"
 					label="PLG_LIST_EMAIL_UPDATE_VALUE_LABEL"
 					repeat="true"
 					type="text"
 				/>
-				
+
 				<field name="emailtable_update_field2"
 					description="PLG_LIST_EMAIL_UPDATE_FIELD_DESC"
 					label="PLG_LIST_EMAIL_UPDATE_FIELD_LABEL"
@@ -294,7 +294,7 @@
 					type="listfields"
 					valueformat="tableelement"
 				/>
-				
+
 				<field name="emailtable_update_value2"
 					description="PLG_LIST_EMAIL_UPDATE_VALUE_DESC"
 					label="PLG_LIST_EMAIL_UPDATE_VALUE_LABEL"
@@ -302,11 +302,11 @@
 					type="text"
 				/>
 		</fieldset>
-		
+
 		<fieldset name="plg-list-email-sms"  label="PLG_FABRIK_LIST_EMAIL_SMS">
-		
+
 			<field description="PLG_LIST_EMAIL_SMS_GATEWAY_DESC"
-			       directory="components/com_fabrik/helpers/sms_gateways"
+			       directory="libraries/fabrik/fabrik/Helpers/sms_gateways"
 			       hide_default="true"
 			       hide_none="true"
 			       label="PLG_LIST_EMAIL_SMS_GATEWAY_LABEL"
@@ -339,6 +339,6 @@
 			       type="text"/>
 
 		</fieldset>
-		
+
 	</fields>
 </form>

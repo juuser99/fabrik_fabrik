@@ -138,8 +138,6 @@ class FabrikAdminViewPackages extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_PACKAGES', false, Text::_('JHELP_COMPONENTS_FABRIK_PACKAGES'));
 
-		JHtmlSidebar::setAction('index.php?option=com_fabrik&view=packages');
-
 		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
 		JHtmlSidebar::addFilter(
 		Text::_('JOPTION_SELECT_PUBLISHED'),

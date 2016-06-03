@@ -1761,13 +1761,14 @@ class Element extends Plugin
 
 		//return $title !== '' ? 'title="' . $title . '" opts=\'' . $opts . '\'' : '';
 
-		$layout                  = Html::getLayout('element.fabrik-element-tip');
-		$displayData             = new stdClass;
-		$displayData->tipTitle   = $this->tipTextAndValidations($mode, $data);
-		$displayData->tipText    = $txt;
-		$displayData->rollOver   = $this->isTipped();
-		$displayData->isEditable = $this->isEditable();
-		$displayData->tipOpts    = $this->tipOpts();
+		$layout      = Html::getLayout('element.fabrik-element-tip');
+		$displayData = (object) array(
+			'tipTitle'   => $this->tipTextAndValidations($mode, $data),
+			'tipText'    => $txt,
+			'rollOver'   => $this->isTipped(),
+			'isEditable' => $this->isEditable(),
+			'tipOpts'    => $this->tipOpts()
+		);
 
 		$rollOver = $layout->render($displayData);
 
@@ -3303,15 +3304,15 @@ class Element extends Plugin
 		$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
 		$v    = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
 
-		$layout = Html::getLayout('element.list-filter-dropdown');
+		$layout      = Html::getLayout('element.list-filter-dropdown');
 		$displayData = (object) array(
-			'rows' => $rows,
-			'name' => $v,
-			'class' => $class,
+			'rows'       => $rows,
+			'name'       => $v,
+			'class'      => $class,
 			'filterName' => $this->getFullName(true, false),
-			'size' => $size,
-			'default' => (array) $default,
-			'htmlId' => $id
+			'size'       => $size,
+			'default'    => (array) $default,
+			'htmlId'     => $id
 		);
 
 		return $layout->render($displayData);
@@ -4009,10 +4010,13 @@ class Element extends Plugin
 			// $elementWhere = StringHelper::str_ireplace('WHERE ', 'AND ', $elementWhere);
 			$elementWhere = preg_replace("#^(\s*)(WHERE)(.*)#i", "$1AND$3", $elementWhere);
 		}
-		else if (JString::stristr($sql, 'WHERE ') && !empty($elementWhere) && !JString::stristr($elementWhere, 'WHERE '))
+		else
 		{
-			// if we have a WHERE in the main query, and the element clause isn't empty but doesn't start with WHERE ...
-			$elementWhere = 'AND ' . $elementWhere;
+			if (StringHelper::stristr($sql, 'WHERE ') && !empty($elementWhere) && !StringHelper::stristr($elementWhere, 'WHERE '))
+			{
+				// if we have a WHERE in the main query, and the element clause isn't empty but doesn't start with WHERE ...
+				$elementWhere = 'AND ' . $elementWhere;
+			}
 		}
 
 		$sql .= ' ' . $elementWhere;
@@ -4024,7 +4028,8 @@ class Element extends Plugin
 		try
 		{
 			$rows = $fabrikDb->loadObjectList();
-		} catch (RuntimeException $e)
+		}
+		catch (RuntimeException $e)
 		{
 			throw new ErrorException('filter query error: ' . $this->getElement()->name . ' ' . $fabrikDb->getErrorMsg(), 500);
 		}
@@ -4640,7 +4645,8 @@ class Element extends Plugin
 		try
 		{
 			$db->execute();
-		} catch (Exception $e)
+		}
+		catch (Exception $e)
 		{
 			throw new RuntimeException('Didn\'t delete js actions for element ' . $id);
 		}
@@ -5257,12 +5263,12 @@ class Element extends Plugin
 				$uberTotal += $pair->value;
 			}
 
-			$uberObject                            = new stdClass;
-			$uberObject->value                     = count($results2) == 0 ? 0 : $uberTotal;
-			$uberObject->label                     = Text::_('COM_FABRIK_TOTAL');
-			$uberObject->class                     = 'splittotal';
-			$uberObject->special                   = true;
-			$results                               = $this->formatCalcSplitLabels($results2, $plugin, 'count');
+			$uberObject                           = new stdClass;
+			$uberObject->value                    = count($results2) == 0 ? 0 : $uberTotal;
+			$uberObject->label                    = Text::_('COM_FABRIK_TOTAL');
+			$uberObject->class                    = 'splittotal';
+			$uberObject->special                  = true;
+			$results                              = $this->formatCalcSplitLabels($results2, $plugin, 'count');
 			$results[Text::_('COM_FABRIK_TOTAL')] = $uberObject;
 		}
 		else
@@ -5686,7 +5692,7 @@ class Element extends Plugin
 
 		if (JFile::exists(JPATH_SITE . '/' . $src))
 		{
-			$className = 'Fb' . ucfirst($p) .'List';
+			$className        = 'Fb' . ucfirst($p) . 'List';
 			$srcs[$className] = $src;
 		}
 	}
@@ -6007,6 +6013,11 @@ class Element extends Plugin
 
 			if (ArrayHelper::getValue($opts, 'rollover', 1))
 			{
+				if (is_object($d))
+				{
+					$d = json_encode($d);
+				}
+				
 				$d = $this->rollover($d, $thisRow, 'list');
 			}
 
@@ -6572,8 +6583,8 @@ class Element extends Plugin
 	 * Cache method to populate auto-complete options
 	 *
 	 * @param   \Fabrik\Plugins\Element\Element $elementModel element model
-	 * @param   string            $search       search string
-	 * @param   array             $opts         options, 'label' => field to use for label (db join)
+	 * @param   string                          $search       search string
+	 * @param   array                           $opts         options, 'label' => field to use for label (db join)
 	 *
 	 * @since   3.0.7
 	 *
