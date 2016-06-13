@@ -352,7 +352,6 @@ class Field extends Element
 		$geoComplete = $params->get('autocomplete', '0') === '3';
 
 		$s = new stdClass;
-
 		// Even though fab/element is now an AMD defined module we should still keep it in here
 		// otherwise (not sure of the reason) jQuery.mask is not defined in field.js
 
