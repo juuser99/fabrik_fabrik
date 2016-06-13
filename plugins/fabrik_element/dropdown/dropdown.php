@@ -413,10 +413,11 @@ class Dropdown extends ElementList
 	 * @param   string  $value          Search string - already quoted if specified in filter array options
 	 * @param   string  $originalValue  Original filter value without quotes or %'s applied
 	 * @param   string  $type           Filter type advanced/normal/prefilter/search/querystring/searchall
+	 * @param   string  $evalFilter     evaled
 	 *
 	 * @return  string	sql query part e,g, "key = value"
 	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
 	{
 		$params = $this->getParams();
 		$condition = StringHelper::strtoupper($condition);
@@ -426,11 +427,11 @@ class Dropdown extends ElementList
 		{
 			// Multiple select options need to be treated specially (regardless of filter type?)
 			// see http://fabrikar.com/forums/index.php?threads/how-filter-a-dropdown-element-in-the-plug-fabrik-content.42089/
-			$str = $this->filterQueryMultiValues($key, $condition, $originalValue);
+			$str = $this->filterQueryMultiValues($key, $condition, $originalValue, $evalFilter);
 		}
 		else
 		{
-			$str = parent::getFilterQuery($key, $condition, $value, $originalValue, $type);
+			$str = parent::getFilterQuery($key, $condition, $value, $originalValue, $type, $evalFilter);
 		}
 
 		return $str;

@@ -639,7 +639,8 @@ class Date extends ElementList
 		}
 
 		// $$$ hugh - need to convert to database format so we GMT-ified date
-		return $this->renderListData($value, new stdClass);
+		$dummy = new stdClass;
+		return $this->renderListData($value, $dummy);
 		/* $$$ rob - no need to covert to db format now as its posted as db format already.
 		 *return $this->renderListData($this->storeDatabaseFormat($value, $data), new stdClass);
 		 */
@@ -756,13 +757,13 @@ class Date extends ElementList
 		}
 
 		Html::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
-		$img  = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
+		$img  = Html::image('calendar.png', 'form', $this->tmpl, array('alt' => 'calendar'));
 		$html = array();
 
 		$btnLayout  = Html::getLayout('fabrik-button');
 		$layoutData = (object) array(
 			'class' => 'calendarbutton',
-			'id' => $id . '_cal_img',
+			'id'    => $id . '_cal_img',
 			'label' => $img
 		);
 		$img        = $btnLayout->render($layoutData);
@@ -1043,6 +1044,22 @@ class Date extends ElementList
 
 		$timeZone = new DateTimeZone($this->config->get('offset'));
 		$date     = JFactory::getDate($value, $timeZone);
+
+		// Querystring value passed into new record
+		if ($formModel->isNewRecord() && $value !== '')
+		{
+			// OK for : Default to current  = no Local time = yes
+			if (!$defaultToday)
+			{
+				$date = new DateTime($date, $timeZone);
+				return $date->format('Y-m-d H:i:s');
+			}
+
+			// Ok for : Default to current = yes, Local time = yes OR no
+			$date = new DateTime($date, $timeZone);
+			$date->setTimeZone(new DateTimeZone('UTC'));
+			return $date->format('Y-m-d H:i:s');
+		}
 
 		// If value = '' don't offset it (not sure what the logic is but testing seems to indicate this to be true)
 		$local = $formModel->hasErrors() || $value == '' || $params->get('date_store_as_local', 0) == 1 ? false : true;
@@ -1801,7 +1818,8 @@ class Date extends ElementList
 				{
 					$data[$j][$key] = $orig_data;
 				}
-			} catch (Exception $e)
+			}
+			catch (Exception $e)
 			{
 				// Suppress date time format error
 			}
@@ -2066,10 +2084,11 @@ class Date extends ElementList
 	 * @param   string $value         Search string - already quoted if specified in filter array options
 	 * @param   string $originalValue Original filter value without quotes or %'s applied
 	 * @param   string $type          Filter type advanced/normal/prefilter/search/querystring/searchall
-	 *
+	 * @param   string  $evalFilter     evaled
+	 *                                  
 	 * @return  string    sql query part e,g, "key = value"
 	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
 	{
 		$this->encryptFieldName($key);
 
@@ -2506,3 +2525,4 @@ class Date extends ElementList
 	}
 }
 
+		catch (Exception $e)

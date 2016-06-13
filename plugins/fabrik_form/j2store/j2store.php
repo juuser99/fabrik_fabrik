@@ -107,6 +107,11 @@ class J2Store extends Form
 
 		$productModel->save($data);
 
+		if (empty($productId))
+		{
+			$productId = $productModel->getId();
+		}
+
 		$this->storeImages($data, $productTable->get('j2store_productimage_id'));
 		$this->storeVariant($data, $productId);
 		$this->storeFiles($formData, $productId);

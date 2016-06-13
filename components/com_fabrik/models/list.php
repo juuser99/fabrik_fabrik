@@ -908,7 +908,8 @@ class FabrikFEModelList extends JModelForm
 		try
 		{
 			$this->finesseData();
-		} catch (Exception $e)
+		}
+		catch (Exception $e)
 		{
 			$item = $this->getTable();
 			$msg  = 'Fabrik has generated an incorrect query for the list ' . $item->label . ': <br /><br /><pre>' . $e->getMessage() . '</pre>';
@@ -1448,6 +1449,9 @@ class FabrikFEModelList extends JModelForm
 				$row->fabrik_view = '';
 				$row->fabrik_edit = '';
 
+				$rowId  = $this->getSlug($row);
+				$isAjax = $this->isAjaxLinks() ? '1' : '0';
+
 				$editLabel = $this->editLabel($data[$groupKey][$i]);
 
 				//$class = $btnClass . 'fabrik_edit fabrik__rowlink';
@@ -1455,33 +1459,37 @@ class FabrikFEModelList extends JModelForm
 				$loadMethod = $this->getLoadMethod('editurl');
 
 				$displayData = (object) array(
-					'loadMethod' => $loadMethod,
-					'action' => $buttonAction,
+					'loadMethod'     => $loadMethod,
+					'action'         => $buttonAction,
 					'editAttributes' => $editAttribs,
-					'dataList' => $dataList,
-					'editLink' => $edit_link,
-					'editLabel' => $editLabel,
-					'rowData' => $row
+					'dataList'       => $dataList,
+					'editLink'       => $edit_link,
+					'editLabel'      => $editLabel,
+					'rowData'        => $row
 				);
 
-				$layout     = $this->getLayout('listactions.fabrik-edit-button');
-				$editLink   = $layout->render($displayData);
-				$viewLabel  = $this->viewLabel($data[$groupKey][$i]);
-				$loadMethod = $this->getLoadMethod('detailurl');
+				$displayData->rowId  = $rowId;
+				$displayData->isAjax = $isAjax;
+				$layout              = $this->getLayout('listactions.fabrik-edit-button');
+				$editLink            = $layout->render($displayData);
+				$viewLabel           = $this->viewLabel($data[$groupKey][$i]);
+				$loadMethod          = $this->getLoadMethod('detailurl');
 
-				$displayData = (object) array(
-					'loadMethod' => $loadMethod,
-					'action' => $buttonAction,
-					'detailsAttributes' => $detailsAttribs,
-					'link' => $link,
-					'viewLabel' => $viewLabel,
-					'viewLinkTarget' => $viewLinkTarget,
-					'dataList' => $dataList,
-					'rowData' => $row,
+				$displayData         = (object) array(
+					'loadMethod'            => $loadMethod,
+					'action'                => $buttonAction,
+					'detailsAttributes'     => $detailsAttribs,
+					'link'                  => $link,
+					'viewLabel'             => $viewLabel,
+					'viewLinkTarget'        => $viewLinkTarget,
+					'dataList'              => $dataList,
+					'rowData'               => $row,
 					'list_detail_link_icon' => $params->get('list_detail_link_icon', 'search.png')
 				);
-				$layout      = $this->getLayout('listactions.fabrik-view-button');
-				$viewLink    = $layout->render($displayData);
+				$displayData->rowId  = $rowId;
+				$displayData->isAjax = $isAjax;
+				$layout              = $this->getLayout('listactions.fabrik-view-button');
+				$viewLink            = $layout->render($displayData);
 
 				$row->fabrik_actions = array();
 
@@ -2168,11 +2176,20 @@ class FabrikFEModelList extends JModelForm
 		$loadMethod = $this->getLoadMethod('custom_link');
 		$class      = 'fabrik___rowlink ' . $class;
 		$dataList   = 'list_' . $this->getRenderContext();
+		$rowId      = $this->getSlug($row);
+		$isAjax     = $this->isAjaxLinks() ? '1' : '0';
+		
 		if ($target !== '')
 		{
 			$target = 'target="' . $target . '"';
 		}
-		$data = '<a data-loadmethod="' . $loadMethod . '" data-list="' . $dataList . '" class="' . $class . '" href="' . $link . '"' . $target . '>' . $data
+		$data = '<a data-loadmethod="' . $loadMethod
+			. '" data-list="' . $dataList
+			. '" data-rowid="' . $rowId
+			. '" data-isajax="' . $isAjax
+			. '" class="' . $class
+			. '" href="' . $link
+			. '"' . $target . '>' . $data
 			. '</a>';
 
 		return $data;
@@ -2609,7 +2626,7 @@ class FabrikFEModelList extends JModelForm
 		$distinct = $params->get('distinct', true) ? 'DISTINCT' : '';
 
 		// $$$rob added raw as an option to fix issue in saving calendar data
-		if (trim($table->db_primary_key) != '' && (in_array($this->outputFormat, array('raw', 'html', 'feed', 'pdf', 'phocapdf', 'csv', 'word', 'yql', 'oai'))))
+		if (trim($table->db_primary_key) != '' && (in_array($this->outputFormat, array('partial', 'raw', 'html', 'feed', 'pdf', 'phocapdf', 'csv', 'word', 'yql', 'oai'))))
 		{
 			$sFields .= ', ';
 			$strPKey = $pk . ' AS ' . $db->qn('__pk_val') . "\n";
@@ -4299,7 +4316,8 @@ class FabrikFEModelList extends JModelForm
 			try
 			{
 				$db->execute();
-			} catch (RuntimeException $e)
+			}
+			catch (RuntimeException $e)
 			{
 			}
 
@@ -4471,7 +4489,8 @@ class FabrikFEModelList extends JModelForm
 			try
 			{
 				$this->dbFields[$sig] = $db->loadObjectList($key);
-			} catch (RuntimeException $e)
+			}
+			catch (RuntimeException $e)
 			{
 				// List may be in second connection but we might try to get #__user fields for join
 				$this->dbFields[$sig] = array();
@@ -4594,7 +4613,8 @@ class FabrikFEModelList extends JModelForm
 					{
 						$fabrikDb->execute();
 						$altered = true;
-					} catch (Exception $e)
+					}
+					catch (Exception $e)
 					{
 						throw new ErrorException('alter structure: ' . $fabrikDb->getErrorMsg(), 500);
 					}
@@ -4679,7 +4699,8 @@ class FabrikFEModelList extends JModelForm
 					try
 					{
 						$fabrikDb->execute();
-					} catch (RuntimeException $e)
+					}
+					catch (RuntimeException $e)
 					{
 						// Don't throw error for attempting to re-add an existing db column
 						if (!array_key_exists($element->name, $dbDescriptions))
@@ -4791,7 +4812,8 @@ class FabrikFEModelList extends JModelForm
 				try
 				{
 					$fabrikDb->execute();
-				} catch (Exception $e)
+				}
+				catch (Exception $e)
 				{
 					throw new RuntimeException('alter structure: ' . $e->getMessage());
 				}
@@ -4811,7 +4833,8 @@ class FabrikFEModelList extends JModelForm
 					try
 					{
 						$fabrikDb->execute();
-					} catch (Exception $e)
+					}
+					catch (Exception $e)
 					{
 						throw new RuntimeException('alter structure: ' . $e->getMessage());
 					}
@@ -5231,7 +5254,7 @@ class FabrikFEModelList extends JModelForm
 				}
 				else
 				{
-					$query = $elementModel->getFilterQuery($key, $condition, $value, $originalValue, $this->filters['search_type'][$i]);
+					$query = $elementModel->getFilterQuery($key, $condition, $value, $originalValue, $this->filters['search_type'][$i], $filterEval);
 				}
 
 				$this->filters['sqlCond'][$i] = $query;
@@ -5366,7 +5389,7 @@ class FabrikFEModelList extends JModelForm
 		if (!strstr($this->getRenderContext(), 'mod_fabrik_list') && $moduleId === 0)
 		{
 			$spoof_check = array(
-				'view' => 'list',
+				'view'   => 'list',
 				'listid' => $this->getId()
 			);
 			$properties  = Worker::getMenuOrRequestVar('prefilters', '', $this->isMambot, 'menu', $spoof_check);
@@ -5873,7 +5896,8 @@ class FabrikFEModelList extends JModelForm
 						$element_params        = json_decode($join->element_params);
 						$join->join_key_column = $element_params->join_key_column;
 					}
-				} catch (RuntimeException $e)
+				}
+				catch (RuntimeException $e)
 				{
 					throw new ErrorException('getJoinsToThisKey: ' . $e->getMessage(), 500);
 				}
@@ -6201,10 +6225,10 @@ class FabrikFEModelList extends JModelForm
 
 			$o->filter = Html::getLayout('list.filter.search-all-input')->render((object) array(
 				'placeholder' => $searchLabel,
-				'value' => $this->getFilterModel()->getSearchAllValue('html'),
-				'class' => 'fabrik_filter search-query input-medium',
-				'name' => $this->getFilterModel()->getSearchAllRequestKey(),
-				'id' => $id
+				'value'       => $this->getFilterModel()->getSearchAllValue('html'),
+				'class'       => 'fabrik_filter search-query input-medium',
+				'name'        => $this->getFilterModel()->getSearchAllRequestKey(),
+				'id'          => $id
 			));
 
 			if ($params->get('search-mode-advanced') == 1)
@@ -6230,7 +6254,7 @@ class FabrikFEModelList extends JModelForm
 		 * will sometimes skip a group
 		* $groups = $this->getFormGroupElementData();
 		*/
-		$groups  = $this->getFormGroupElementData();
+		$groups = $this->getFormGroupElementData();
 
 		foreach ($groups as $groupModel)
 		{
@@ -6549,7 +6573,7 @@ class FabrikFEModelList extends JModelForm
 				}
 
 				$headingClass[$compositeKey] = array('class' => $responsiveClass . $elementModel->getHeadingClass(),
-					'style' => $elementParams->get('tablecss_header'));
+				                                     'style' => $elementParams->get('tablecss_header'));
 				$cellClass[$compositeKey]    = array('class' => $responsiveClass . $elementModel->getCellClass(), 'style' => $elementParams->get('tablecss_cell'));
 
 				// Add in classes for repeat/merge data
@@ -6628,7 +6652,7 @@ class FabrikFEModelList extends JModelForm
 						$prefix                  = $join->element_id . '___' . $linkedTable . '_list_heading';
 						$aTableHeadings[$prefix] = empty($heading) ? $join->listlabel . ' ' . Text::_('COM_FABRIK_LIST') : Text::_($heading);
 						$headingClass[$prefix]   = array('class' => 'fabrik_ordercell related ' . $prefix,
-							'style' => '');
+						                                 'style' => '');
 						$cellClass[$prefix]      = array('class' => $prefix . ' fabrik_element related');
 					}
 				}
@@ -6651,7 +6675,7 @@ class FabrikFEModelList extends JModelForm
 					$prefix                  = $join->db_table_name . '___' . $join->name . '_form_heading';
 					$aTableHeadings[$prefix] = empty($heading) ? $join->listlabel . ' ' . Text::_('COM_FABRIK_FORM') : Text::_($heading);
 					$headingClass[$prefix]   = array('class' => 'fabrik_ordercell related ' . $prefix,
-						'style' => '');
+					                                 'style' => '');
 					$cellClass[$prefix]      = array('class' => $prefix . ' fabrik_element related');
 				}
 			}
@@ -6769,13 +6793,13 @@ class FabrikFEModelList extends JModelForm
 	 */
 	protected function addCheckBox(&$aTableHeadings, &$headingClass, &$cellClass)
 	{
-		$params = $this->getParams();
-		$hidecheckbox = $params->get('hidecheckbox', '0');
-		$hidestyle = ($hidecheckbox == '1') ? 'display:none;' : '';
-		$id = 'list_' . $this->getId() . '_checkAll';
-		$select = '<input type="checkbox" name="checkAll" class="' . $id . '" id="' . $id . '" />';
+		$params                          = $this->getParams();
+		$hidecheckbox                    = $params->get('hidecheckbox', '0');
+		$hidestyle                       = ($hidecheckbox == '1') ? 'display:none;' : '';
+		$id                              = 'list_' . $this->getId() . '_checkAll';
+		$select                          = '<input type="checkbox" name="checkAll" class="' . $id . '" id="' . $id . '" />';
 		$aTableHeadings['fabrik_select'] = $select;
-		$headingClass['fabrik_select'] = array('class' => 'fabrik_ordercell fabrik_select', 'style' => $hidestyle);
+		$headingClass['fabrik_select']   = array('class' => 'fabrik_ordercell fabrik_select', 'style' => $hidestyle);
 		// Needed for ajax filter/nav
 		$cellClass['fabrik_select'] = array('class' => 'fabrik_select fabrik_element', 'style' => $hidestyle);
 	}
@@ -8217,7 +8241,8 @@ class FabrikFEModelList extends JModelForm
 		try
 		{
 			$db->execute();
-		} catch (RuntimeException $e)
+		}
+		catch (RuntimeException $e)
 		{
 			// Try to suppress error
 			$this->setError($e->getMessage());
@@ -8260,7 +8285,8 @@ class FabrikFEModelList extends JModelForm
 					try
 					{
 						$db->execute();
-					} catch (Exception $e)
+					}
+					catch (Exception $e)
 					{
 						$this->setError($e->getMessage());
 					}

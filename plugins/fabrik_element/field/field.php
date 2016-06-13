@@ -370,8 +370,8 @@ class Field extends Element
 			$s->deps[] = $folder . 'jquery.geocomplete';
 		}
 
-		if (count($s->deps) > 1)
-		{
+		//if (count($s->deps) > 1)
+		//{
 			if (array_key_exists($key, $shim))
 			{
 				$shim[$key]->deps = array_merge($shim[$key]->deps, $s->deps);
@@ -380,7 +380,7 @@ class Field extends Element
 			{
 				$shim[$key] = $s;
 			}
-		}
+		//}
 
 		parent::formJavascriptClass($srcs, $script, $shim);
 

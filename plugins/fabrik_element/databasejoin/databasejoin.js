@@ -77,8 +77,8 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
             if (e) {
                 // Loading from click
                 e.stop();
-                onContentLoaded = function (win) {
-                    this.fitToContent();
+                onContentLoaded = function () {
+                    this.fitToContent(false);
                 };
 
                 // @FIXME - if set to true, then click addrow, click select rows, click add row => can't submit the form
@@ -100,6 +100,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
             var a = c.getElement('.toggle-addoption'),
                 url = typeOf(a) === 'null' ? e.target.get('href') : a.get('href');
 
+            url += '&format=partial';
 
             var id = this.element.id + '-popupwin';
             this.windowopts = {
@@ -576,6 +577,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
             e.stop();
             var id = this.selectRecordWindowId();
             var url = this.getContainer().getElement('a.toggle-selectoption').href;
+            url += '&format=partial';
             url += '&triggerElement=' + this.element.id;
             url += '&resetfilters=1';
             url += '&c=' + this.options.listRef;

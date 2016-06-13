@@ -54,6 +54,20 @@ class Email extends Lizt
 	private $gateway = null;
 
 	/**
+	 * Mails sent
+	 *
+	 * @var int
+	 */
+	private $sent = 0;
+
+	/**
+	 * Mails not sent
+	 *
+	 * @var int
+	 */
+	private $notSent = 0;
+
+	/**
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
@@ -116,7 +130,7 @@ class Email extends Lizt
 		return true;
 	}
 
-	private function _toType()
+	public function _toType()
 	{
 		return $this->getParams()->get('emailtable_to_type');
 	}
@@ -403,23 +417,42 @@ class Email extends Lizt
 		$params    = $this->getParams();
 		$input     = $this->app->input;
 		$updateVal = $params->get($name);
+		$search    = array();
+		$replace   = array();
 
-		if ($updateVal === 'now()')
+		if ($updateVal === 'now()' || $updateVal === '{now}')
 		{
-			$updateVal = $this->date->toSql();
+			$search[]  = 'now()';
+			$replace[] = $this->date->toSql();
+			$search[]  = '{now}';
+			$replace[] = $this->date->toSql();
 		}
 
 		if ($updateVal === '{subject}')
 		{
-			$updateVal = $input->get('subject', '', 'string');
+			$search[]  = '{subject}';
+			$replace[] = $input->get('subject', '', 'string');
 		}
 
 		if ($updateVal === '{$my->id}')
 		{
-			$updateVal = (int) $this->user->get('id', 0);
+			$search[]  = '{$my->id}';
+			$replace[] = (int) $this->user->get('id', 0, 'int');
 		}
 
-		return $updateVal;
+		if ($updateVal === '{sent}')
+		{
+			$search[]  = '{sent}';
+			$replace[] = $this->sent;
+		}
+
+		if ($updateVal === '{notsent}')
+		{
+			$search[]  = '{notsent}';
+			$replace[] = $this->notSent;
+		}
+
+		return str_replace($search, $replace, $updateVal);
 	}
 
 	/**
@@ -438,6 +471,7 @@ class Email extends Lizt
 		{
 			return false;
 		}
+
 
 		$listModel->setId($input->getInt('id', 0));
 		$w           = new Worker;
@@ -537,6 +571,8 @@ class Email extends Lizt
 			list($sent, $notSent) = $this->mailMerged($firstRow, $mergedMsg, $sent, $notSent);
 		}
 
+		$this->sent = $sent;
+		$this->notSent = $notSent;
 		$this->_updateRows($updated);
 
 		// T3 blank tmpl doesn't seem to render messages when tmpl=component
@@ -618,7 +654,7 @@ class Email extends Lizt
 		$params        = $this->getParams();
 		$sendSMS       = $params->get('emailtable_email_or_sms', 'email') == 'sms';
 		$input         = $this->app->input;
-		$coverMessage  = $input->get('message', '', 'html');
+		$coverMessage  = $input->get('message', '', 'raw');
 		$coverMessage  = nl2br($coverMessage);
 		$oldStyle      = $this->_oldStyle();
 		$emailTemplate = $this->_emailTemplate();
@@ -653,9 +689,7 @@ class Email extends Lizt
 			list($replyEmail, $replyEmailName) = $this->_replyEmailName($row);
 			$thisSubject = $w->parseMessageForPlaceholder($subject, $row);
 
-			$mail = JFactory::getMailer();
-
-			return $mail->sendMail($emailFrom, $fromName, $mailTo, $thisSubject, $thisMsg, 1, $cc, $bcc, $this->filepath,
+			return FabrikWorker::sendMail($emailFrom, $fromName, $mailTo, $thisSubject, $thisMsg, 1, $cc, $bcc, $this->filepath,
 				$replyEmail, $replyEmailName);
 		}
 	}
@@ -716,12 +750,46 @@ class Email extends Lizt
 	 *
 	 * @return string
 	 */
-	private function _emailTo()
+	public function _emailTo()
 	{
 		$params  = $this->getParams();
 		$emailTo = $params->get('emailtable_to', '');
 
 		return $emailTo;
+	}
+
+	/**
+	 * Get address book
+	 * @return array
+	 */
+	public function addressBook()
+	{
+		$params = $this->getParams();
+		$table      = $params->get('emailtable_to_table_table');
+
+		if (empty($table))
+		{
+			return array();
+		}
+
+		$tableEmail = $params->get('emailtable_to_table_email');
+		$tableName  = $params->get('emailtable_to_table_name');
+
+		$toTableModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$toTableModel->setId($table);
+		$toDb = $toTableModel->getDb();
+
+		$tableName          = FabrikString::safeColName($tableName);
+		$tableEmail         = FabrikString::safeColName($tableEmail);
+		$emailTableTo_table = $toDb->qn($toTableModel->getTable()->db_table_name);
+
+		$query = $toDb->getQuery(true);
+		$query->select($tableEmail . ' AS email, ' . $tableName . ' AS name')
+			->from($emailTableTo_table)->order('name ASC');
+		$toDb->setQuery($query);
+		$results = $toDb->loadObjectList();
+
+		return $results;
 	}
 
 	/**
@@ -877,8 +945,7 @@ class Email extends Lizt
 
 			if ($sent > 0)
 			{
-				$mail = JFactory::getMailer();
-				$res  = $mail->sendMail($emailFrom, $fromName, $thisTos, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
+				$res = FabrikWorker::sendMail($emailFrom, $fromName, $thisTos, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
 					$replyEmail, $replyEmailName);
 			}
 		}
@@ -888,8 +955,7 @@ class Email extends Lizt
 			{
 				if (Worker::isEmail($thisTo))
 				{
-					$mail = JFactory::getMailer();
-					$res  = $mail->sendMail($emailFrom, $fromName, $thisTo, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
+					$res = FabrikWorker::sendMail($emailFrom, $fromName, $thisTo, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
 						$replyEmail, $replyEmailName);
 
 					if ($res)

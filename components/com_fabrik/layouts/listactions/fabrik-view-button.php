@@ -24,6 +24,8 @@ $viewText = $d->action === 'dropdown' ? $d->viewLabel : '<span class="hidden">' 
 <a data-loadmethod="<?php echo $d->loadMethod; ?>"
 	class="<?php echo $class; ?>" <?php echo $d->detailsAttributes; ?>
 	data-list="<?php echo $d->dataList; ?>"
+	data-isajax="<?php echo $d->isAjax; ?>"
+	data-rowid="<?php echo $d->rowId; ?>"
 	href="<?php echo $d->link; ?>"
 	title="<?php echo $d->viewLabel; ?>"
 	target="<?php echo $d->viewLinkTarget; ?>">

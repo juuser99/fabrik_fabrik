@@ -52,8 +52,7 @@ class Visualization extends Controller
 	public function display($cachable = false, $urlparams = array())
 	{
 		$document = JFactory::getDocument();
-		$app      = JFactory::getApplication();
-		$input    = $app->input;
+		$input = $this->input;
 		$viewName = $this->vName();
 
 		if ($viewName == '')
@@ -126,8 +125,7 @@ class Visualization extends Controller
 	protected function getViewName()
 	{
 		$viz = FabTable::getInstance('Visualization', 'FabrikTable');
-		$app = JFactory::getApplication();
-		$viz->load($app->input->getInt('id'));
+		$viz->load($this->input->getInt('id'));
 		$viewName = $viz->plugin;
 		//$this->addViewPath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/views');
 		//JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/models');

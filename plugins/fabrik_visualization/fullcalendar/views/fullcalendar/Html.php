@@ -166,7 +166,8 @@ class Html extends JViewLegacy
 		$options->open           = $params->get('open-hour', "00:00:00");
 		$options->close          = $params->get('close-hour', "23:59:59");
 		$options->lang           = Worker::getShortLang();
-		$options->showweekends   = (bool) $params->get('calendar-show-weekends', true);
+		$options->showweekends   = (bool) $params->get('show-weekends', true);
+		$options->greyscaledweekend = (bool) $params->get('greyscaled-weekend', false);
 		$options->readonly       = (bool) $params->get('calendar-read-only', false);
 		$options->timeFormat     = $params->get('time_format', '%X');
 		$options->readonlyMonth  = (bool) $params->get('readonly_monthview', false);
@@ -211,20 +212,34 @@ class Html extends JViewLegacy
 		$js    = implode("\n", $js);
 
 		$srcs                       = HtmlHelper::framework();
-		$srcs['FbListFilter']       = 'media/com_fabrik/js/listfilter.js';
+
+		$srcs['FbListFilter'] = $mediaFolder . '/listfilter.js';
 		$srcs['fabrikFullcalendar'] = 'plugins/fabrik_visualization/fullcalendar/fullcalendar.js';
 
 		$shim = $model->getShim();
+		
+		$fcLangFolder = 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/lang/';
+		
+		// Figure out what language we are using
+		$lang = strtolower(JFactory::getUser()->getParam('language', JFactory::getLanguage()->getTag()));
+		if ( file_exists( JPATH_BASE . '/' . $fcLangFolder . $lang . '.js') === false ) {
+			$lang = FabrikWorker::getShortLang();
+			if ( file_exists( JPATH_BASE . '/' . $fcLangFolder . $lang . '.js') === false ) {
+				$lang = 'en-gb';
+			}
+		}
 
-		$shim['fullcalendar'] = (object) array('deps' =>
-			                                       array('lib/moment/moment')
+		$shim['lang'] = (object) array('deps' =>
+			array('lib/moment/moment', 'fullcalendar')
 		);
 
 		$shim['viz/fullcalendar/fullcalendar'] = (object) array('deps' =>
-			                                                        array('fullcalendar', 'jquery')
+			array('lang', 'jquery')
 		);
 
-		HtmlHelper::iniRequireJs($shim, array('fullcalendar' => 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/fullcalendar.min'));
+		HtmlHelper::iniRequireJs($shim, 
+			array('fullcalendar' => 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/fullcalendar.min',
+				'lang' => $fcLangFolder . $lang));
 		HtmlHelper::script($srcs, $js);
 	}
 

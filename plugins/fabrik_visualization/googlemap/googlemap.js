@@ -249,6 +249,7 @@ var FbGoogleMapViz = new Class({
 		this.markers.each(function (marker) {
 			marker.setMap(null);
 		});
+		this.bounds = new google.maps.LatLngBounds(null);
 	},
 
 	noData: function () {
@@ -299,17 +300,9 @@ var FbGoogleMapViz = new Class({
 			}
 			this.cluster = new MarkerClusterer(this.map, this.clusterMarkers, {'splits': this.options.cluster_splits, 'icon_increment': this.options.icon_increment, maxZoom: zoom, gridSize: size, styles: styles});
 		}
-		/*
-		if (this.options.clustering) {
-			google.maps.event.addListener(this.markerMgr, 'loaded', function () {
-				this.markerMgr.addMarkers(this.markers, 0, 15);
-				this.markerMgr.refresh();
-			}.bind(this));
+		if (this.options.fitbounds) {
+			this.map.fitBounds(this.bounds);
 		}
-		*/
-		/* this.cluster=new ClusterMarker(this.map, { markers:this.clusterMarkers, 'splits':this.options.cluster_splits, 'icon_increment':this.options.icon_increment});
-		this.cluster.fitMapToMarkers();
-		this.map.savePosition();	//	enables the large map control centre button to return the map to initial view*/
 	},
 
 	center: function () {
@@ -358,6 +351,7 @@ var FbGoogleMapViz = new Class({
 
 	geoCenterErr: function (p) {
 		fconsole('geo location error=' + p.message);
+		var c;
 		if (this.noData()) {
 			c = new google.maps.LatLng(this.options.lat, this.options.lon);
 		}
@@ -458,7 +452,13 @@ var FbGoogleMapViz = new Class({
 	addOverlays: function () {
 		if (this.options.use_overlays) {
 			this.options.overlay_urls.each(function (overlay_url, k) {
-				this.options.overlays[k] = new google.maps.KmlLayer(overlay_url);
+				var pv = this.options.overlay_preserveviewports[k] === '1';
+				var so = this.options.overlay_suppressinfowindows[k] === '1';
+				this.options.overlays[k] = new google.maps.KmlLayer({
+					url: overlay_url,
+					preserveViewport: pv,
+					suppressInfoWindows: so
+				});
 				this.options.overlays[k].setMap(this.map);
 				this.options.overlay_events[k] = function (e) {
 					this.toggleOverlay(e);

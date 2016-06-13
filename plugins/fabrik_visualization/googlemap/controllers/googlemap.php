@@ -35,10 +35,8 @@ class Controller extends VizController
 	public function ajax_getMarkers($tmpl = 'default')
 	{
 		$viewName = 'googlemap';
-		$app      = JFactory::getApplication();
-		$input    = $app->input;
 		$model    = $this->getModel($viewName);
-		$id       = $input->getInt('visualizationid', 0);
+		$id       = $this->input->getInt('visualizationid', 0);
 		$model->setId($id);
 		$model->onAjax_getMarkers();
 	}

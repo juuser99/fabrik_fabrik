@@ -89,6 +89,7 @@ class Model extends \Fabrik\Models\Visualization
 		$opts->polyline        = $this->getPolyline();
 		$opts->id              = $viz->get('id');
 		$opts->zoomlevel       = (int) $params->get('fb_gm_zoomlevel');
+		$opts->fitbounds = (bool) $params->get('fb_gm_fitbounds');
 		$opts->scalecontrol    = (bool) $params->get('fb_gm_scalecontrol');
 		$opts->scrollwheel     = (bool) $params->get('fb_gm_scrollwheelcontrol');
 		$opts->maptypecontrol  = (bool) $params->get('fb_gm_maptypecontrol');
@@ -121,6 +122,8 @@ class Model extends \Fabrik\Models\Visualization
 		$opts->polygonfillcolour    = (array) $params->get('fb_gm_polygon_fillColor');
 		$opts->overlay_urls         = (array) $params->get('fb_gm_overlay_urls');
 		$opts->overlay_labels       = (array) $params->get('fb_gm_overlay_labels');
+		$opts->overlay_preserveviewports = (array) $params->get('fb_gm_overlay_preserveviewport');
+		$opts->overlay_suppressinfowindows = (array) $params->get('fb_gm_overlay_suppressinfowindows');
 		$opts->use_overlays         = (int) $params->get('fb_gm_use_overlays', '0');
 		$opts->use_overlays_sidebar = $opts->use_overlays && (int) $params->get('fb_gm_use_overlays_sidebar', '0');
 		$opts->use_groups           = (bool) $params->get('fb_gm_group_sidebar', 0);

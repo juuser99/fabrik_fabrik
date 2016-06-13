@@ -43,7 +43,7 @@ class plgSystemFabrikj2store extends JPlugin
 
 				if ($content->published == 1)
 				{
-					$product->exists = 0;
+					$product->exists = 1;
 				}
 				else
 				{

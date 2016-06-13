@@ -72,7 +72,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.events = {};
 
             this.submitBroker = new FbFormSubmit();
-
+            this.scrollTips();
             Fabrik.fireEvent('fabrik.form.loaded', [this]);
         },
 
@@ -336,15 +336,23 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 targetInRepeat = target.options.inRepeatGroup;
             }
 
+            if (id.slice(0, 21) === 'fabrik_trigger_group_') {
+                groupfx = true;
+            }
+            else {
+                groupfx = false;
+            }
+
             // Update the element id that we will apply the fx to to be that of the calling elementModels group
             // (if in a repeat group)
-            if (elementModel && targetInRepeat) {
+            if (elementModel && targetInRepeat && !groupfx) {
                 if (elementModel.options.inRepeatGroup) {
                     var bits = id.split('_');
                     bits[bits.length - 1] = elementModel.options.repeatCounter;
                     id = bits.join('_');
                 }
             }
+
             // Create the fx key
             id = id.replace('fabrik_trigger_', '');
             if (id.slice(0, 6) === 'group_') {
@@ -354,9 +362,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     id = id.slice(6, id.length);
                 }
                 k = id;
-                groupfx = true;
             } else {
-                groupfx = false;
                 id = id.slice(8, id.length);
                 k = 'element' + id;
             }
@@ -1016,6 +1022,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             }).send();
         },
 
+        /**
+         * Run once a validation is completed
+         * @param {string} r
+         * @param {string} id
+         * @param {string} origid
+         * @private
+         */
         _completeValidaton: function (r, id, origid) {
             r = JSON.decode(r);
             if (typeOf(r) === 'null') {
@@ -1114,6 +1127,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             return err;
         },
 
+        /**
+         * Show element error
+         * @param {array} r
+         * @param {string} id
+         * @returns {boolean}
+         * @private
+         */
         _showElementError: function (r, id) {
             // r should be the errors for the specific element, down to its repeat group
             // id.
@@ -1234,8 +1254,9 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             }.bind(this));
         },
 
-        mockSubmit: function () {
-            var btn = this._getButton('Submit');
+        mockSubmit: function (btnName) {
+            btnName = typeof btnName !== 'undefined' ? btnName : 'Submit';
+            var btn = this._getButton(btnName);
             if (!btn) {
                 btn = new Element('button', {'name': 'Submit', 'type': 'submit'});
             }
@@ -1736,8 +1757,12 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             if (typeOf(sge) === 'null') {
                 sge = subGroup;
                 var add = sge.getElement('.addGroup');
-                var lastth = sge.getParent('table').getElements('thead th').getLast();
                 if (typeOf(add) !== 'null') {
+                    var lastth = sge.getParent('table').getElements('*[data-role="fabrik-group-repeaters"]').getLast();
+                    if (!lastth) {
+                        // for old custom templates that don't have the data-role, fall back to just grabbing last th
+                        lastth = sge.getParent('table').getElements('thead th').getLast();
+                    }
                     add.inject(lastth);
                 }
             }
@@ -2151,7 +2176,43 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         hideTips: function () {
           this.elements.each(function(element) {
               element.removeTipMsg();
-          })
+          });
+        },
+
+        /**
+         * If the form is in a modal and the modal scrolls we should update the
+         * elements tips to keep the tip attached to the element.
+         */
+        scrollTips: function () {
+            var self = this, top, left,
+                match = jQuery(self.form).closest('.fabrikWindow'),
+                modal = match.find('.itemContent'),
+                currentPos;
+
+            var pos = function () {
+                var origPos = match.data('origPosition');
+                if (origPos === undefined) {
+                    origPos = match.position();
+                    match.data('origPosition', origPos);
+                }
+
+                currentPos = match.position();
+                top = origPos.top - currentPos.top + modal.scrollTop();
+                left = origPos.left - currentPos.left + modal.scrollLeft();
+                self.elements.each(function(element) {
+                    element.moveTip(top, left);
+                });
+            };
+
+            modal.on('scroll', function () {
+                pos();
+            });
+
+            Fabrik.on('fabrik.window.resized', function (window) {
+                if (match.length > 0 && window === match[0]) {
+                    pos();
+                }
+            });
         },
 
         stopEnterSubmitting: function () {

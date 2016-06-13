@@ -825,10 +825,11 @@ class Birthday extends Element
 	 * @param   string  $value          search string - already quoted if specified in filter array options
 	 * @param   string  $originalValue  original filter value without quotes or %'s applied
 	 * @param   string  $type           filter type advanced/normal/prefilter/search/querystring/searchall
-	 *
+	 * @param   string  $evalFilter     evaled
+	 *                                  
 	 * @return  string	sql query part e,g, "key = value"
 	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
 	{
 		$params = $this->getParams();
 		$element = $this->getElement();
@@ -897,7 +898,7 @@ class Birthday extends Element
 				return $query;
 			}
 
-			$query = parent::getFilterQuery($key, $condition, $value, $originalValue, $type);
+			$query = parent::getFilterQuery($key, $condition, $value, $originalValue, $type, $evalFilter);
 
 			return $query;
 		}

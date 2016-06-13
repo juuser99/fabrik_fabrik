@@ -135,7 +135,7 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
         },
 
         hideAll: function () {
-
+            jQuery('.popover').remove();
         }
 
     });

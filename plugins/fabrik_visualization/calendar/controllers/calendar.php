@@ -47,12 +47,10 @@ class Controller extends VizController
 	 */
 	public function getEvents()
 	{
-		$viewName = 'calendar';
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$model = &$this->getModel($viewName);
-		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)));
+		$input  = $this->input;
+		$config = JComponentHelper::getParams('com_fabrik');
+		$model  = $this->getModel('calendar');
+		$id     = $input->getInt('id', $config->get('visualizationid', $input->getInt('visualizationid', 0)));
 		$model->setId($id);
 		echo $model->getEvents();
 	}
@@ -64,19 +62,13 @@ class Controller extends VizController
 	 */
 	public function chooseaddevent()
 	{
-		$document = JFactory::getDocument();
-		$viewName = 'calendar';
-
-		$viewType = $document->getType();
-
-		// Set the default view name from the Request
-		$view = $this->getView($viewName, $viewType);
-
+		// Set the default view name
+		$view      = $this->getView('calendar', $this->doc->getType());
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
 		$view->setModel($formModel);
 
 		// Push a model into the view
-		$model = $this->getModel($viewName);
+		$model = $this->getModel('calendar');
 		$view->setModel($model, true);
 		$view->chooseaddevent();
 	}
@@ -88,18 +80,16 @@ class Controller extends VizController
 	 */
 	public function addEvForm()
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$input = $app->input;
-		$listId = $input->getInt('listid');
-		$viewName = 'calendar';
+		$package     = $this->package;
+		$input       = $this->input;
+		$listId      = $input->getInt('listid');
+		$viewName    = 'calendar';
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$model = $this->getModel($viewName);
-		$id = $input->getInt('visualizationid', $usersConfig->get('visualizationid', 0));
+		$model       = $this->getModel($viewName);
+		$id          = $input->getInt('visualizationid', $usersConfig->get('visualizationid', 0));
 		$model->setId($id);
 		$model->setupEvents();
-		$config = JFactory::getConfig();
-		$prefix = $config->get('dbprefix');
+		$prefix = $this->config->get('dbprefix');
 
 		if (array_key_exists($listId, $model->events))
 		{

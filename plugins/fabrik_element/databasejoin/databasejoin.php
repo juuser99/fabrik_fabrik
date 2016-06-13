@@ -1464,6 +1464,7 @@ class Databasejoin extends ElementList
 			$displayData                   = new stdClass;
 			$displayData->opts             = $options;
 			$displayData->default          = ArrayHelper::getValue($default, 0);
+			$displayData->editable         = $this->isEditable();
 			$displayData->showPleaseSelect = $this->showPleaseSelect();
 
 			return $layout->render($displayData);
@@ -2485,10 +2486,11 @@ class Databasejoin extends ElementList
 	 * @param   string $value         search string - already quoted if specified in filter array options
 	 * @param   string $originalValue original filter value without quotes or %'s applied
 	 * @param   string $type          filter type advanced/normal/prefilter/search/querystring/searchall
-	 *
+	 * @param   string  $evalFilter     evaled
+	 *                                  
 	 * @return  string    sql query part e,g, "key = value"
 	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
 	{
 		/* $$$ rob $this->_rawFilter set in tableModel::getFilterArray()
 		 used in pre-filter drop-down in admin to allow users to pre-filter on raw db join value */
@@ -3189,7 +3191,7 @@ class Databasejoin extends ElementList
 				$trigger = 'change';
 				break;
 			case 'auto-complete':
-				$trigger = '';
+				$trigger = 'blur';
 				$id      = str_replace('[]', '', $id) . '-auto-complete';
 				break;
 			default:
@@ -3203,8 +3205,6 @@ class Databasejoin extends ElementList
 		{
 			$ar[] = array('id' => $id, 'triggerEvent' => $trigger);
 		}
-
-		$ar[] = array('id' => $id, 'triggerEvent' => 'blur');
 
 		return $ar;
 	}

@@ -60,6 +60,7 @@ class FabrikAdminViewHome extends JViewLegacy
 		Admin::setViewLayout($this);
 		$this->sidebar = JHtmlSidebar::render();
 
+		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
 

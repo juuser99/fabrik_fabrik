@@ -221,7 +221,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 if(start >= 0 || jQuery('div.itemContent').outerHeight()==0){
                     /* If selectable options - hide and remove space in DOM by setting outerHeight to 0 */
                     if(jQuery('div.modal-footer').length) {
-                        jQuery('div.itemContent').outerHeight(0);
+                        //jQuery('div.itemContent').outerHeight(0);
                         jQuery('div.modal').css('height','auto');
                     }else{
                         jQuery('div.itemContent').css('overflow','initial');
@@ -281,14 +281,6 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 
                 /* set modal window height to auto to allow collapes/expansion */
                 jQuery('div.modal').css('height','auto');
-                
-                /* Prevent browser window from being scrolled */
-                jQuery('body').css({'height':'100%','overflow':'hidden'});
-
-                /* Allow browser window to be scrolled again when modal is released from DOM */
-                jQuery('div.modal').on('remove', function () {
-                    jQuery('body').css({'height':'initial','overflow':'initial'});  
-                }); 
 
                 /* adds draggable feature to modal popup */
                 jQuery('div.modal').draggable({
