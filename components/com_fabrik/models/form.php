@@ -411,7 +411,7 @@ class FabrikFEModelForm extends \Fabrik\Models\Model
 	 *
 	 * @return  FabTable  form table
 	 */
-	public function getForm()
+	public function getForm($data = array(), $loadData = true)
 	{
 		return $this->getTable();
 	}

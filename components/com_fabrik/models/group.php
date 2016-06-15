@@ -366,8 +366,8 @@ class FabrikFEModelGroup extends \Fabrik\Models\Model
 				 * $$$ rob Using @ for now as in inline edit in podion you get multiple notices when
 				* saving the status element
 				*/
-				/* Bauer note: this error prevents adding new elements 
-				 * in a new list (where Id is not yet known) in php 7 
+				/* Bauer note: this error prevents adding new elements
+				 * in a new list (where Id is not yet known) in php 7
 				 */
 				// $this->elements = @$allGroups[$this->getId()]->elements;
 				$thisId = $this->getId();
@@ -533,18 +533,6 @@ class FabrikFEModelGroup extends \Fabrik\Models\Model
 		}
 
 		return $widths;
-	}
-
-	/**
-	 * Alias to getFormModel()
-	 *
-	 * @deprecated
-	 *
-	 * @return object form model
-	 */
-	public function getForm()
-	{
-		return $this->getFormModel();
 	}
 
 	/**
