@@ -210,7 +210,7 @@ define(['jquery', 'fab/fabrik', 'fab/advanced-search'], function (jQuery, Fabrik
                 'type' : 'hidden'
             }).appendTo(injectForm);
             if (this.options.type === 'list') {
-                this.list.submit('list.clearfilter');
+                this.list.submit('list.filter');
             } else {
                 this.container.find('form[name=filter]').submit();
             }
@@ -222,6 +222,7 @@ define(['jquery', 'fab/fabrik', 'fab/advanced-search'], function (jQuery, Fabrik
         watchClearOne: function () {
             var self = this;
             this.container.find('*[data-filter-clear]').on('click', function (e) {
+                e.preventDefault();
                 e.stopPropagation();
                 var currentTarget = e.event ? e.event.currentTarget : e.currentTarget,
                     key = jQuery(currentTarget).data('filter-clear'),
@@ -233,6 +234,7 @@ define(['jquery', 'fab/fabrik', 'fab/advanced-search'], function (jQuery, Fabrik
 
                 self.submitClearForm();
                 self.showFilterState();
+
             });
         },
 

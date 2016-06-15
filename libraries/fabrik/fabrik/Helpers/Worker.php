@@ -169,7 +169,7 @@ class Worker
 	public static function getDocMimeTypes()
 	{
 		return array(
-			'pdf' => 'application/pdf',
+			'pdf'  => 'application/pdf',
 			'epub' => 'document/x-epub'
 		);
 	}
@@ -745,14 +745,15 @@ class Worker
 	 * Iterates through string to replace every
 	 * {placeholder} with posted data
 	 *
-	 * @param   mixed         $msg              Text|Array to parse
-	 * @param   array|object  $searchData       Data to search for placeholders (default $_REQUEST)
-	 * @param   bool          $keepPlaceholders If no data found for the place holder do we keep the {...} string in the
+	 * @param   mixed        $msg               Text|Array to parse
+	 * @param   array|object $searchData        Data to search for placeholders (default $_REQUEST)
+	 * @param   bool         $keepPlaceholders  If no data found for the place holder do we keep the {...} string in
+	 *                                          the
 	 *                                          message
-	 * @param   bool          $addSlashes       Add slashed to the text?
-	 * @param   object        $theirUser        User to use in replaceWithUserData (defaults to logged in user)
-	 * @param   bool          $unsafe           If true (default) will not replace certain placeholders like $jConfig_secret
-	 *                                          must not be shown to users
+	 * @param   bool         $addSlashes        Add slashed to the text?
+	 * @param   object       $theirUser         User to use in replaceWithUserData (defaults to logged in user)
+	 * @param   bool         $unsafe            If true (default) will not replace certain placeholders like
+	 *                                          $jConfig_secret must not be shown to users
 	 *
 	 * @return  string  parsed message
 	 */
@@ -953,7 +954,7 @@ class Worker
 
 		$replacements = array(
 			'{$jConfig_absolute_path}' => JPATH_SITE,
-			'{$jConfig_secret}' => $config->get('secret')
+			'{$jConfig_secret}'        => $config->get('secret')
 		);
 
 		return $replacements;
@@ -980,17 +981,17 @@ class Worker
 
 		$replacements = array(
 			'{$jConfig_live_site}' => COM_FABRIK_LIVESITE,
-			'{$jConfig_offset}' => $config->get('offset'),
-			'{$Itemid}' => $itemId,
-			'{$jConfig_sitename}' => $config->get('sitename'),
-			'{$jConfig_mailfrom}' => $config->get('mailfrom'),
-			'{where_i_came_from}' => $app->input->server->get('HTTP_REFERER', '', 'string'),
-			'{date}' => date('Ymd'),
-			'{mysql_date}' => date('Y-m-d H:i:s'),
-			'{lang}' => $lang,
-			'{multilang}' => $multiLang,
-			'{shortlang}' => $shortLang,
-			'{session.token}' => $token,
+			'{$jConfig_offset}'    => $config->get('offset'),
+			'{$Itemid}'            => $itemId,
+			'{$jConfig_sitename}'  => $config->get('sitename'),
+			'{$jConfig_mailfrom}'  => $config->get('mailfrom'),
+			'{where_i_came_from}'  => $app->input->server->get('HTTP_REFERER', '', 'string'),
+			'{date}'               => date('Ymd'),
+			'{mysql_date}'         => date('Y-m-d H:i:s'),
+			'{lang}'               => $lang,
+			'{multilang}'          => $multiLang,
+			'{shortlang}'          => $shortLang,
+			'{session.token}'      => $token,
 		);
 
 		foreach ($_SERVER as $key => $val)
@@ -1636,7 +1637,7 @@ class Worker
 			// Test for swapping db table names
 			$driver .= '_fab';
 			$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,
-				'prefix' => $dbPrefix);
+			                 'prefix' => $dbPrefix);
 
 			$version              = new JVersion;
 			self::$database[$sig] = $version->RELEASE > 2.5 ? JDatabaseDriver::getInstance($options) : \JDatabase::getInstance($options);
@@ -1684,7 +1685,8 @@ class Worker
 			try
 			{
 				$fabrikDb->execute();
-			} catch (Exception $e)
+			}
+			catch (Exception $e)
 			{
 				// Fail silently
 			}
@@ -1758,14 +1760,15 @@ class Worker
 	 * Takes a string which may or may not be json and returns either string/array/object
 	 * will also turn valGROUPSPLITTERval2 to array
 	 *
-	 * @param   string $data     Json encoded string
-	 * @param   bool   $toArray  Force data to be an array
-	 * @param   bool   $emptyish Set to false to return an empty array if $data is an empty string, instead of an
-	 *                           emptyish (one empty string entry) array
+	 * @param   string $data          Json encoded string
+	 * @param   bool   $toArray       Force data to be an array
+	 * @param   bool   $emptyish      Set to false to return an empty array if $data is an empty string, instead of an
+	 *                                emptyish (one empty string entry) array
+	 * @param  bool    $nestedToArray Do a deep conversion from nested objects to arrays.
 	 *
 	 * @return  mixed data
 	 */
-	public static function JSONtoData($data, $toArray = false, $emptyish = true)
+	public static function JSONtoData($data, $toArray = false, $emptyish = true, $nestedToArray = false)
 	{
 		if (is_string($data))
 		{
@@ -1808,7 +1811,14 @@ class Worker
 			}
 		}
 
-		$data = $toArray ? (array) $data : $data;
+		if ($nestedToArray)
+		{
+			$data = json_decode(json_encode($data), true);
+		}
+		else
+		{
+			$data = $toArray ? (array) $data : $data;
+		}
 
 		return $data;
 	}
@@ -1839,7 +1849,8 @@ class Worker
 		try
 		{
 			$dt = new DateTime($d);
-		} catch (\Exception $e)
+		}
+		catch (\Exception $e)
 		{
 			return false;
 		}
@@ -1918,17 +1929,17 @@ class Worker
 	/**
 	 * Function to send an email
 	 *
-	 * @param   string   $from         From email address
-	 * @param   string   $fromName     From name
-	 * @param   mixed    $recipient    Recipient email address(es)
-	 * @param   string   $subject      email subject
-	 * @param   string   $body         Message body
-	 * @param   boolean  $mode         false = plain text, true = HTML
-	 * @param   mixed    $cc           CC email address(es)
-	 * @param   mixed    $bcc          BCC email address(es)
-	 * @param   mixed    $attachment   Attachment file name(s)
-	 * @param   mixed    $replyTo      Reply to email address(es)
-	 * @param   mixed    $replyToName  Reply to name(s)
+	 * @param   string  $from        From email address
+	 * @param   string  $fromName    From name
+	 * @param   mixed   $recipient   Recipient email address(es)
+	 * @param   string  $subject     email subject
+	 * @param   string  $body        Message body
+	 * @param   boolean $mode        false = plain text, true = HTML
+	 * @param   mixed   $cc          CC email address(es)
+	 * @param   mixed   $bcc         BCC email address(es)
+	 * @param   mixed   $attachment  Attachment file name(s)
+	 * @param   mixed   $replyTo     Reply to email address(es)
+	 * @param   mixed   $replyToName Reply to name(s)
 	 *
 	 * @return  boolean  True on success
 	 *

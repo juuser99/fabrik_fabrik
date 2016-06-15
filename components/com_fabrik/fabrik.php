@@ -38,7 +38,6 @@ $input = $app->input;
 JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
 JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models', 'FabrikFEModel');
 
-
 // $$$ rob if you want to you can override any fabrik model by copying it from
 // models/ to models/adaptors the copied file will overwrite (NOT extend) the original
 $paths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/adaptors');
@@ -79,7 +78,8 @@ else
 		$controller = $cName === 'oai' ? $cName : $controllerName;
 	}
 
-	if (strtolower($controller) == 'list') {
+	if (strtolower($controller) == 'list')
+	{
 		$controller = 'lizt';
 	}
 	$controller = StringHelper::ucfirst($controller);
@@ -98,6 +98,11 @@ if (strpos($input->getCmd('task'), '.') !== false)
 
 	// Needed to process J content plugin (form)
 	$input->set('view', $controller);
+
+	if ($controller === 'list')
+	{
+		$controller = 'lizt';
+	}
 	$className  = '\Fabrik\Controllers\\' . StringHelper::ucfirst($controller);
 	$controller = new $className;
 

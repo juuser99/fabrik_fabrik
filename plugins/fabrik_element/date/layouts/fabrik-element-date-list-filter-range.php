@@ -32,6 +32,7 @@ else :
 		<?php echo Text::_('COM_FABRIK_DATE_RANGE_BETWEEN') . ' '; ?>
 		<div class="input-append">
 			<input type="text" name="<?php echo $from->name; ?>" id="<?php echo $from->id; ?>"
+				data-filter-name="<?php echo $d->filterName;?>"
 				value="<?php echo $from->value; ?>"<?php echo $calOpts; ?> />
 			<?php echo $from->img; ?>
 			<?php echo $append; ?>
@@ -39,6 +40,7 @@ else :
 		<?php echo Text::_('COM_FABRIK_DATE_RANGE_AND') . ' '; ?>
 		<div class="input-append">
 			<input type="text" name="<?php echo $to->name; ?>" id="<?php echo $to->id; ?>"
+				data-filter-name="<?php echo $d->filterName;?>"
 				value="<?php echo $to->value; ?>"<?php echo $calOpts; ?> />
 			<?php echo $to->img; ?>
 		</div>

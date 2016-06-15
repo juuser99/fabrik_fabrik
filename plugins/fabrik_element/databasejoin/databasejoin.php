@@ -2188,6 +2188,7 @@ class Databasejoin extends ElementList
 				break;
 			case 'auto-complete':
 				$defaultLabel = $this->getLabelForValue($default);
+				$this->filterDisplayValues = array($defaultLabel);
 				$autoComplete = $this->autoCompleteFilter($default, $v, $defaultLabel, $normal);
 				$return       = array_merge($return, $autoComplete);
 				break;
@@ -2487,7 +2488,7 @@ class Databasejoin extends ElementList
 	 * @param   string $originalValue original filter value without quotes or %'s applied
 	 * @param   string $type          filter type advanced/normal/prefilter/search/querystring/searchall
 	 * @param   string  $evalFilter     evaled
-	 *                                  
+	 *
 	 * @return  string    sql query part e,g, "key = value"
 	 */
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')

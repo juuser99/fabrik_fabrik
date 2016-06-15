@@ -1690,24 +1690,13 @@ class Date extends ElementList
 			$default[1] = $d->format($format);
 		}
 
-		// Add wrapper div for list filter toggling
-		$return[] = '<div class="fabrik_filter_container">';
-
 		$layout              = $this->getLayout('list-filter-range');
-		$displayData         = new stdClass;
-		$displayData->htmlId = $this->getHTMLId();
-		$displayData->class  = $this->filterClass();
 		$from                = new stdClass;
 		$from->id            = $this->getFilterHtmlId(0);
 		$from->value         = $default[0];
 		$from->name          = $v . '[0]';
 
 		$from->img = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
-
-		$displayData->from = $from;
-
-		$displayData->format  = $format;
-		$displayData->calOpts = $this->filterCalendarOpts();
 
 		$to        = new stdClass;
 		$to->id    = $this->getFilterHtmlId(1);
@@ -1716,8 +1705,16 @@ class Date extends ElementList
 
 		$to->img = Html::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar'));
 
-		$displayData->to         = $to;
-		$displayData->filterType = $this->getFilterType();
+		$displayData         = (object) array(
+			'htmlId' => $this->getHTMLId(),
+			'format' => $format,
+			'calOpts' => $this->filterCalendarOpts(),
+			'filterType' => $this->getFilterType(),
+			'class' => $this->filterClass(),
+			'filterName' => $this->getFullName(true, false),
+			'to' => $to,
+			'from' => $from
+		);
 
 		return $layout->render($displayData);
 	}

@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
+use Fabrik\Models\CsvExport as Model;
 
 require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
@@ -36,7 +37,7 @@ class FabrikViewList extends FabrikViewListBase
 		$input = $this->app->input;
 
 		/** @var FabrikFEModelCSVExport $exporter */
-		$exporter = JModelLegacy::getInstance('Csvexport', 'FabrikFEModel');
+		$exporter = new Model;//JModelLegacy::getInstance('Csvexport', 'FabrikFEModel');
 
 		/** @var FabrikFEModelList $model */
 		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');

@@ -3507,10 +3507,12 @@ class Element extends Plugin
 		 * $$$ rob 28/10/2011 using selector rather than element id so we can have n modules with the same filters
 		 * showing and not produce invalid html & duplicate js calls
 		 */
+		$filterName = 'data-filter-name="' . $this->getFullName(true, false) . '"';
 		$return   = array();
-		$return[] = '<input type="hidden" " data-filter-name="' . $this->getFullName(true, false) .
-			'" name="' . $v . '" class="' . $class . ' ' . $id . '" value="' . $default . '" />';
-		$return[] = '<input type="text" name="auto-complete' . $this->getElement()->id . '" class="' . $class . ' autocomplete-trigger '
+		$return[] = '<input type="hidden" " ' . $filterName .
+			' name="' . $v . '" class="' . $class . ' ' . $id . '" value="' . $default . '" />';
+		$return[] = '<input type="text" name="auto-complete' . $this->getElement()->id . '" ' . $filterName
+			. ' class="' . $class . ' autocomplete-trigger '
 			. $id . '-auto-complete" value="' . $labelValue . '" />';
 		$opts     = array();
 
@@ -6017,7 +6019,7 @@ class Element extends Plugin
 				{
 					$d = json_encode($d);
 				}
-				
+
 				$d = $this->rollover($d, $thisRow, 'list');
 			}
 
@@ -6813,7 +6815,7 @@ class Element extends Plugin
 		{
 			$thousandSep = '';
 		}
-		
+
 		$val = str_replace($thousandSep, '', $val);
 		$val = str_replace($decimalSep, '.', $val);
 
