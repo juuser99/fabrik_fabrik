@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.controller');
 
 /**
  * Fabrik Email Form Controller
@@ -21,7 +21,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-class FabrikControllerEmailform extends JControllerLegacy
+class Emailform extends Controller
 {
 	/**
 	 * Display the view
@@ -29,17 +29,15 @@ class FabrikControllerEmailform extends JControllerLegacy
 	 * @param   boolean          $cachable    If true, the view output will be cached - NOTE not actually used to control caching!!!
 	 * @param   array|boolean    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController  A JController object to support chaining.
+	 * @return  \JController  A JController object to support chaining.
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{
-		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$viewName = $input->get('view', 'emailform');
 		$modelName = 'form';
 
-		$viewType = $document->getType();
+		$viewType = $this->doc->getType();
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);

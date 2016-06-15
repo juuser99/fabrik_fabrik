@@ -14,11 +14,9 @@ namespace Fabrik\Plugins\Cron;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-use \JModelLegacy;
+use Fabrik\Models\CsvImport;
 use \JFile;
 use \JFolder;
-
-require_once COM_FABRIK_FRONTEND . '/models/importcsv.php';
 
 /**
  * Cron Import CSV class
@@ -143,7 +141,7 @@ class Importcsv extends Cron
 			}
 
 			Worker::log('plg.cron.cronimportcsv.information', "Starting import: $fullCsvFile:  ");
-			$clsImportCSV = JModelLegacy::getInstance('Importcsv', 'FabrikFEModel');
+			$clsImportCSV = new CsvImport;
 
 			if ($useTableName)
 			{

@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use \Joomla\Utilities\ArrayHelper;
-
-jimport('joomla.application.component.controller');
+use \JModelLegacy;
 
 /**
  * Fabrik Open Archive Initiative Controller
@@ -23,8 +24,12 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       3.4
  */
-class FabrikControllerOai extends JControllerLegacy
+class Oai extends Controller
 {
+	/**
+	 * @var \FabrikFEModelOai
+	 */
+	public $model;
 	/**
 	 * Display the view
 	 *
@@ -33,27 +38,23 @@ class FabrikControllerOai extends JControllerLegacy
 	 * @param   array   $urlparams An array of safe url parameters and their variable types, for valid values see
 	 *                             {@link JFilterInput::clean()}.
 	 *
-	 * @throws Exception
-	 * @return  JController|void  A JController object to support chaining.
+	 * @throws \Exception
+	 * @return  \JController|void  A JController object to support chaining.
 	 */
 
 	public function display($cachable = false, $urlparams = array())
 	{
-		$doc = JFactory::getDocument();
-		$doc->setMimeEncoding('application/xml');
-		$this->app   = JFactory::getApplication();
-		$this->input = $this->app->input;
+		$this->doc->setMimeEncoding('application/xml');
 		$verb        = strtolower($this->input->get('verb'));
 
-		/** @var FabrikFEModelOai $model */
-		$this->model = $model = $this->getModel('oai', 'FabrikFEModel');
+		$this->model = $this->getModel('oai', 'FabrikFEModel');
 
 		switch ($verb)
 		{
 			case 'identify':
 				// http://localhost:81/fabrik31x/public_html/index.php?option=com_fabrik&controller=oai&verb=Identify
 				$view = $this->getView('identity', 'oai');
-				$view->setModel($model, true);
+				$view->setModel($this->model, true);
 				$view->display();
 				break;
 			case 'listsets':
@@ -112,7 +113,7 @@ class FabrikControllerOai extends JControllerLegacy
 		$url = 'index.php?option=com_fabrik&view=details&format=oai';
 		list($listId, $rowId) = $this->model->getListRowIdFromIdentifier($identifier);
 
-		/** @var FabrikFEModelList $listModel */
+		/** @var \FabrikFEModelList $listModel */
 		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$listModel->setId($listId);
 		$formId = $listModel->getFormModel()->getId();

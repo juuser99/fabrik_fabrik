@@ -155,4 +155,21 @@ class Visualization extends Controller
 			$viewName = $viewName == '' ? $this->getViewName() : $name;
 			return parent::getView($viewName, $type, $prefix, $config);*/
 	}
+
+	/**
+	 * Method to get a model object, loading it if required.
+	 *
+	 * @param   string  $name    The model name. Optional.
+	 * @param   string  $prefix  The class prefix. Optional.
+	 * @param   array   $config  Configuration array for model. Optional.
+	 *
+	 * @return  object  The model.
+	 *
+	 * @since   12.2
+	 */
+	public function getModel($name = '', $prefix = '', $config = array())
+	{
+		$class = 'Fabrik\\Plugins\\Visualization\\' . $name . '\\Model';
+		return new $class;
+	}
 }

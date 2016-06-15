@@ -8,11 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
-
+use \FabTable;
+use \JModelLegacy;
+use \JFactory;
+use \JUri;
 
 /**
  * Cron Controller
@@ -22,7 +26,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       3.0.7
  */
-class FabrikControllerCron extends JControllerLegacy
+class Cron extends Controller
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -44,7 +48,7 @@ class FabrikControllerCron extends JControllerLegacy
 	 * @param   boolean          $cachable   If true, the view output will be cached - NOTE not actually used to control caching!!!
 	 * @param   array|boolean    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController  A JController object to support chaining.
+	 * @return  \JController  A JController object to support chaining.
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
@@ -88,7 +92,7 @@ class FabrikControllerCron extends JControllerLegacy
 			// Build unique cache id on url, post and user id
 			$user = JFactory::getUser();
 
-			$uri = JURI::getInstance();
+			$uri = JUri::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
 			$cacheId = serialize(array($uri, $post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_fabrik', 'view');
@@ -105,8 +109,7 @@ class FabrikControllerCron extends JControllerLegacy
 	{
 		if (!isset($this->viewName))
 		{
-			$app = JFactory::getApplication();
-			$input = $app->input;
+			$input = $this->input;
 			$item = FabTable::getInstance('Cron', 'FabrikTable');
 			$item->load($input->getInt('id'));
 			$this->viewName = $item->plugin;

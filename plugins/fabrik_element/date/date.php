@@ -2085,7 +2085,7 @@ class Date extends ElementList
 	 * @param   string $originalValue Original filter value without quotes or %'s applied
 	 * @param   string $type          Filter type advanced/normal/prefilter/search/querystring/searchall
 	 * @param   string  $evalFilter     evaled
-	 *                                  
+	 *
 	 * @return  string    sql query part e,g, "key = value"
 	 */
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
@@ -2525,4 +2525,3 @@ class Date extends ElementList
 	}
 }
 
-		catch (Exception $e)

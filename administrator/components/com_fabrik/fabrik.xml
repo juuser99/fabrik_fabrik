@@ -34,7 +34,6 @@
 
 
 	<files folder="site">
-		<folder>controllers</folder>
 		<folder>css</folder>
 		<folder>helpers</folder>
 		<folder>js</folder>

@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.controller');
 
 /**
  * Fabrik Element Controller
@@ -20,7 +20,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-class FabrikControllerElement extends JControllerLegacy
+class Element extends Controller
 {
 	/**
 	 * Is the view rendered from the J content plugin
@@ -50,11 +50,9 @@ class FabrikControllerElement extends JControllerLegacy
 	 */
 	public function display()
 	{
-		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$viewName = $input->get('view', 'element', 'cmd');
-		$viewType = $document->getType();
+		$viewType = $this->doc->getType();
 
 		// Set the default view name from the Request
 		$view = &$this->getView($viewName, $viewType);
@@ -77,8 +75,7 @@ class FabrikControllerElement extends JControllerLegacy
 	 */
 	public function save()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$listModel = $this->getModel('list', 'FabrikFEModel');
 		$listModel->setId($input->getInt('listid'));
 		$rowId = $input->get('rowid');

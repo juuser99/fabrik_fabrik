@@ -8,10 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use \Fabrik\Models\CsvImport as Model;
 
 /**
  * Fabrik Import Controller
@@ -19,8 +21,23 @@ jimport('joomla.application.component.controller');
  * @package  Fabrik
  * @since    3.0
  */
-class FabrikControllerImport extends JControllerLegacy
+class Import extends Controller
 {
+	/**
+	 *
+	 * List row
+	 *
+	 * @var null
+	 */
+	public $table = null;
+
+	/**
+	 * List id
+	 *
+	 * @var int
+	 */
+	public $listid = null;
+
 	/**
 	 * Display the view
 	 *
@@ -29,27 +46,26 @@ class FabrikControllerImport extends JControllerLegacy
 	 * @param   array   $urlparams An array of safe url parameters and their variable types, for valid values see
 	 *                             {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController  A JController object to support chaining.
+	 * @return  \JController  A JController object to support chaining.
 	 */
-
 	public function display($cachable = false, $urlparams = array())
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
-		$this->getModel('Importcsv', 'FabrikFEModel')->clearSession();
+
+		$input = $this->input;
+		$this->getModel()->clearSession();
 		$this->listid = $input->getInt('listid', 0);
-		$listModel    = $this->getModel('list', 'FabrikFEModel');
+
+		$listModel = new \FabrikFEModelList;
 		$listModel->setId($this->listid);
 		$this->table = $listModel->getTable();
-		$document    = JFactory::getDocument();
+
 		$viewName    = $input->get('view', 'form');
-		$viewType    = $document->getType();
+		$viewType    = $this->doc->getType();
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
-		/** @var FabrikFEModelImportcsv $model */
-		$model = $this->getModel('Importcsv', 'FabrikFEModel');
+		$model = new Model;
 		$view->setModel($model, true);
 		$view->display();
 	}
@@ -62,16 +78,13 @@ class FabrikControllerImport extends JControllerLegacy
 	 */
 	public function doimport()
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
-
-		/** @var FabrikFEModelImportcsv $model */
-		$model     = $this->getModel('Importcsv', 'FabrikFEModel');
+		$input     = $this->input;
+		$model     = $this->getModel();
 		$listModel = $model->getListModel();
 
 		if (!$listModel->canCSVImport())
 		{
-			throw new RuntimeException('Naughty naughty!', 400);
+			throw new \RuntimeException('Naughty naughty!', 400);
 		}
 
 		if (!$model->checkUpload())
@@ -82,9 +95,8 @@ class FabrikControllerImport extends JControllerLegacy
 		}
 
 		$id       = $listModel->getId();
-		$document = JFactory::getDocument();
 		$viewName = $input->get('view', 'form');
-		$viewType = $document->getType();
+		$viewType = $this->doc->getType();
 
 		// Set the default view name from the Request
 		$this->getView($viewName, $viewType);
@@ -94,7 +106,7 @@ class FabrikControllerImport extends JControllerLegacy
 		if (!empty($model->newHeadings))
 		{
 			// As opposed to admin you can't alter table structure with a CSV import from the front end
-			$app->enqueueMessage($model->makeError(), 'notice');
+			$this->app->enqueueMessage($model->makeError(), 'notice');
 			$this->setRedirect('index.php?option=com_fabrik&view=import&filetype=csv&listid=' . $id . '&Itemid=' . $itemId);
 		}
 		else
@@ -104,5 +116,23 @@ class FabrikControllerImport extends JControllerLegacy
 			$msg = $model->updateMessage();
 			$this->setRedirect('index.php?option=com_fabrik&view=list&listid=' . $id . "&resetfilters=1&Itemid=" . $itemId, $msg);
 		}
+	}
+
+	/**
+	 * Method to get a model object, loading it if required.
+	 *
+	 * @param   string $name   The model name. Optional.
+	 * @param   string $prefix The class prefix. Optional.
+	 * @param   array  $config Configuration array for model. Optional.
+	 *
+	 * @return  \Fabrik\Models\CsvImport  The model.
+	 *
+	 * @since   12.2
+	 */
+	public function getModel($name = '', $prefix = '', $config = array())
+	{
+		$class = 'Fabrik\\Models\\CsvImport';
+
+		return new $class;
 	}
 }

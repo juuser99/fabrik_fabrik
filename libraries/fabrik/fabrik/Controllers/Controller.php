@@ -11,6 +11,9 @@ namespace Fabrik\Controllers;
 use \Joomla\Utilities\ArrayHelper;
 use \JFactory;
 
+// @todo - remove when we namespace the list model and place in library
+require_once JPATH_COMPONENT . '/models/list.php';
+
 class Controller extends \JControllerLegacy
 {
 	/**
@@ -79,7 +82,11 @@ class Controller extends \JControllerLegacy
 	 */
 	public function getModel($name = '', $prefix = '', $config = array())
 	{
-		$class = 'Fabrik\\Plugins\\Visualization\\' . $name . '\\Model';
-		return new $class;
+		return parent::getModel($name = '', $prefix = '', $config = array());
+
+		// For now any controller that actually has a Fabrik\Model\Foo class
+		// should override getModel() as follows:
+		//$class = 'Fabrik\\Models\\' . $name;
+		//return new $class;
 	}
 }

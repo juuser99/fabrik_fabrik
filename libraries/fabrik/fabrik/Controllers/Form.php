@@ -8,15 +8,21 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
-
-jimport('joomla.application.component.controller');
+use \JSession;
+use \JProfiler;
+use \Exception;
+use \JFactory;
+use \JUri;
+use \JModelLegacy;
+use \JRoute;
 
 /**
  * Fabrik From Controller
@@ -26,7 +32,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-class FabrikControllerForm extends JControllerLegacy
+class Form extends Controller
 {
 	/**
 	 * Is the view rendered from the J content plugin
@@ -82,7 +88,7 @@ class FabrikControllerForm extends JControllerLegacy
 	 * @param   boolean  $cachable   If true, the view output will be cached - NOTE not actually used to control caching!!!
 	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController|void  A JController object to support chaining.
+	 * @return  \JController|void  A JController object to support chaining.
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{
@@ -104,7 +110,7 @@ class FabrikControllerForm extends JControllerLegacy
 		$view = $this->getView($viewName, $viewType);
 
 		// Push a model into the view (may have been set in content plugin already)
-		/** @var FabrikFEModelForm $model */
+		/** @var \FabrikFEModelForm $model */
 		$model = !isset($this->_model) ? $this->getModel($modelName, 'FabrikFEModel') : $this->_model;
 		$model->isMambot = $this->isMambot;
 		$model->packageId = $app->input->getInt('packageId');
@@ -135,7 +141,7 @@ class FabrikControllerForm extends JControllerLegacy
 			$msg = $model->aclMessage();
 			$this->setRedirect(JRoute::_($url), $msg, 'notice');
 
-			return;
+			return $this;
 		}
 		// Display the view
 		$view->error = $this->getError();
@@ -158,7 +164,7 @@ class FabrikControllerForm extends JControllerLegacy
 		}
 		else
 		{
-			$uri = JURI::getInstance();
+			$uri = JUri::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
 			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = JFactory::getCache('com_' . $package, 'view');
@@ -188,8 +194,7 @@ class FabrikControllerForm extends JControllerLegacy
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('controller process: start') : null;
 
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 
 		if ($input->get('format', '') == 'raw')
 		{
@@ -197,9 +202,9 @@ class FabrikControllerForm extends JControllerLegacy
 		}
 
 		$viewName = $input->get('view', 'form');
-		$view = $this->getView($viewName, JFactory::getDocument()->getType());
+		$view = $this->getView($viewName, $this->doc->getType());
 
-		/** @var FabrikFEModelForm $model */
+		/** @var \FabrikFEModelForm $model */
 		if ($model = $this->getModel('form', 'FabrikFEModel'))
 		{
 			$view->setModel($model, true);
@@ -246,7 +251,7 @@ class FabrikControllerForm extends JControllerLegacy
 		catch (Exception $e)
 		{
 			$model->errors['process_error'] = true;
-			$app->enqueueMessage($e->getMessage(), 'error');
+			$this->app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		if ($input->getInt('elid', 0) !== 0)
@@ -299,9 +304,10 @@ class FabrikControllerForm extends JControllerLegacy
 					'suppressMsg' => !$model->showSuccessMsg()
 			);
 
+			$session = $this->session;
+
 			if (!$this->baseRedirect && $this->isMambot)
 			{
-				$session = JFactory::getSession();
 				$context = $model->getRedirectContext();
 				$redirect_opts['redirect_how'] = $session->get($context . 'redirect_content_how', 'popup');
 				$redirect_opts['width'] = (int) $session->get($context . 'redirect_content_popup_width', '300');
@@ -318,7 +324,6 @@ class FabrikControllerForm extends JControllerLegacy
 				 * in which case I don't think "popup" is realy a valid option.  Anyway, need to set something,
 				 * so for now just do the same as we do for isMambot, but default redirect_how to 'samepage'
 				 */
-				$session = JFactory::getSession();
 				$context = $model->getRedirectContext();
 				$redirect_opts['redirect_how'] = $session->get($context . 'redirect_content_how', 'samepage');
 				$redirect_opts['width'] = (int) $session->get($context . 'redirect_content_popup_width', '300');
@@ -333,7 +338,6 @@ class FabrikControllerForm extends JControllerLegacy
 			{
 				// $$$ hugh - special case to allow custom code to specify that
 				// the form should not be cleared after a failed AJAX submit
-				$session = JFactory::getSession();
 				$context = 'com_fabrik.form.' . $model->get('id') . '.redirect.';
 				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
 			}
@@ -367,8 +371,8 @@ class FabrikControllerForm extends JControllerLegacy
 	/**
 	 * Handle the view error
 	 *
-	 * @param   JViewLegacy        $view   View
-	 * @param   FabrikFEModelForm  $model  Form Model
+	 * @param   \JViewLegacy        $view   View
+	 * @param   \FabrikFEModelForm  $model  Form Model
 	 *
 	 * @since   3.1b
 	 *
@@ -376,8 +380,7 @@ class FabrikControllerForm extends JControllerLegacy
 	 */
 	protected function handleError($view, $model)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$validated = false;
 
 		// If its in a module with ajax or in a package or inline edit
@@ -471,7 +474,7 @@ class FabrikControllerForm extends JControllerLegacy
 	/**
 	 * Get redirect URL
 	 *
-	 * @param   FabrikFEModelForm  $model       Form model
+	 * @param   \FabrikFEModelForm  $model       Form model
 	 * @param   bool               $incSession  Set url in session?
 	 *
 	 * @since 3.0
@@ -495,10 +498,9 @@ class FabrikControllerForm extends JControllerLegacy
 	 */
 	public function ajax_validate()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 
-		/** @var FabrikFEModelForm $model */
+		/** @var \FabrikFEModelForm $model */
 		$model = $this->getModel('form', 'FabrikFEModel');
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();
@@ -518,8 +520,7 @@ class FabrikControllerForm extends JControllerLegacy
 	 */
 	public function savepage()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$model = $this->getModel('Formsession', 'FabrikFEModel');
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
 		$formModel->setId($input->getInt('formid'));
@@ -534,8 +535,7 @@ class FabrikControllerForm extends JControllerLegacy
 	 */
 	public function removeSession()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$sessionModel = $this->getModel('formsession', 'FabrikFEModel');
 		$sessionModel->setFormId($input->getInt('formid', 0));
 		$sessionModel->setRowId($input->get('rowid', '', 'string'));
@@ -550,8 +550,7 @@ class FabrikControllerForm extends JControllerLegacy
 	 */
 	public function paginate()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$model = $this->getModel('Form', 'FabrikFEModel');
 		$model->setId($input->getInt('formid'));
 		$model->paginateRowId($input->get('dir'));
@@ -567,9 +566,8 @@ class FabrikControllerForm extends JControllerLegacy
 	{
 		// Check for request forgeries
 		JSession::checkToken() or die('Invalid Token');
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
+		$input = $this->input;
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$ids = array($input->get('rowid', 0));
 
@@ -596,18 +594,18 @@ class FabrikControllerForm extends JControllerLegacy
 
 			$ref = str_replace("limitstart$listId=$limitStart", "limitstart$listId=$newLimitStart", $ref);
 			$context = 'com_' . $package . '.list.' . $model->getRenderContext() . '.';
-			$app->setUserState($context . 'limitstart', $newLimitStart);
+			$this->app->setUserState($context . 'limitstart', $newLimitStart);
 		}
 
 		if ($input->get('format') == 'raw')
 		{
-			$app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listId . '&format=raw');
+			$this->app->redirect('index.php?option=com_fabrik&view=list&listid=' . $listId . '&format=raw');
 		}
 		else
 		{
 			$msg = $ok ? count($ids) . ' ' . Text::_('COM_FABRIK_RECORDS_DELETED') : '';
-			$app->enqueueMessage($msg);
-			$app->redirect($ref);
+			$this->app->enqueueMessage($msg);
+			$this->app->redirect($ref);
 		}
 	}
 }

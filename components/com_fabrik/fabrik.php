@@ -35,26 +35,6 @@ $app = JFactory::getApplication();
 $app->set('jquery', true);
 $input = $app->input;
 
-/**
- * Test for YQL & XML document type
- * use the format request value to check for document type
- */
-$docs = array("yql", "xml");
-
-foreach ($docs as $d)
-{
-	if ($input->getCmd("type") == $d)
-	{
-		// Get the class
-		require_once JPATH_SITE . '/administrator/components/com_fabrik/classes/' . $d . 'document.php';
-
-		// Replace the document
-		$document = JFactory::getDocument();
-		$docClass = 'JDocument' . StringHelper::strtoupper($d);
-		$document = new $docClass;
-	}
-}
-
 JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
 
 // $$$ rob if you want to you can override any fabrik model by copying it from
@@ -62,7 +42,7 @@ JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
 JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/adaptors');
 
 $controllerName = $input->getCmd('view');
-
+$type           = '';
 // Check for a plugin controller
 
 // Call a plugin controller via the url :
@@ -74,24 +54,7 @@ $cName    = $input->getCmd('controller');
 if (StringHelper::strpos($cName, '.') != false)
 {
 	list($type, $name) = explode('.', $cName);
-
-	if ($type == 'visualization')
-	{
-		//require_once JPATH_COMPONENT . '/controllers/visualization.php';
-	}
 	$controller = StringHelper::ucfirst($name);
-	/*$path = JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/controllers/' . $name . '.php';
-
-	if (JFile::exists($path))
-	{
-		require_once $path;
-		$isPlugin   = true;
-		$controller = $type . $name;
-	}
-	else
-	{
-		$controller = '';
-	}*/
 }
 else
 {
@@ -114,24 +77,10 @@ else
 		$controller = $cName === 'oai' ? $cName : $controllerName;
 	}
 
-	if ($controller === 'visualization')
-	{
-		$controller = StringHelper::ucfirst($controller);
+	if (strtolower($controller) == 'list') {
+		$controller = 'lizt';
 	}
-	else
-	{
-		$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
-
-		if (JFile::exists($path))
-		{
-			require_once $path;
-		}
-		else
-		{
-			$controller = '';
-		}
-	}
-
+	$controller = StringHelper::ucfirst($controller);
 }
 
 /**
@@ -143,22 +92,13 @@ if (strpos($input->getCmd('task'), '.') !== false)
 {
 	$controllerTask = explode('.', $input->getCmd('task'));
 	$controller     = array_shift($controllerTask);
-	$className      = 'FabrikController' . StringHelper::ucfirst($controller);
-	$path           = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
+	$task           = array_pop($controllerTask);
 
-	if (JFile::exists($path))
-	{
-		require_once $path;
+	// Needed to process J content plugin (form)
+	$input->set('view', $controller);
+	$className  = '\Fabrik\Controllers\\' . StringHelper::ucfirst($controller);
+	$controller = new $className;
 
-		// Needed to process J content plugin (form)
-		$input->set('view', $controller);
-		$task       = array_pop($controllerTask);
-		$controller = new $className;
-	}
-	else
-	{
-		$controller = JControllerLegacy::getInstance('Fabrik');
-	}
 }
 else
 {
@@ -168,15 +108,10 @@ else
 		$className  = '\Fabrik\Plugins\Visualization\\' . $controller . '\Controller';
 		$controller = new $className;
 	}
-	elseif ($controller === 'Visualization')
-	{
-		$controller = new \Fabrik\Controllers\Visualization;
-	}
 	else
 	{
-		$className  = 'FabrikController' . StringHelper::ucfirst($controller);
+		$className  = '\Fabrik\Controllers\\' . $controller;
 		$controller = new $className;
-
 	}
 
 	$task = $input->getCmd('task');
@@ -194,7 +129,7 @@ if ($isPlugin)
 $package = $input->get('package', 'fabrik');
 $app->setUserState('com_fabrik.package', $package);
 
-$controller->execute(addEvForm);
+$controller->execute($task);
 
 // Redirect if set by the controller
 $controller->redirect();

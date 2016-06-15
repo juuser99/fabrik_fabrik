@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
+use \Fabrik\Models\CsvImport;
 
 require_once 'fabcontrollerform.php';
 
@@ -151,8 +152,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 		$input   = $app->input;
 		$jform   = $input->get('jform', null, 'array');
 
-		/** @var FabrikFEModelImportcsv $model */
-		$model  = $this->getModel('Importcsv', 'FabrikFEModel');
+		$model  = new CsvImport;
 		$listId = (int) $input->getInt('fabrik_list', $input->get('listid'));
 
 		if ($listId === 0)
@@ -190,19 +190,19 @@ class FabrikAdminControllerImport extends FabControllerForm
 			 * to something for the elementtype import.  Defaulting to 1 for now.
 			 */
 			$data = array(
-				'id' => 0,
+				'id'             => 0,
 				'_database_name' => $dbName,
-				'connection_id' => $input->getInt('connection_id'),
-				'rows_per_page' => 10,
-				'template' => 'default',
-				'published' => 1,
-				'access' => 1,
-				'label' => $input->getString('label'),
-				'jform' => array(
-					'id' => 0,
+				'connection_id'  => $input->getInt('connection_id'),
+				'rows_per_page'  => 10,
+				'template'       => 'default',
+				'published'      => 1,
+				'access'         => 1,
+				'label'          => $input->getString('label'),
+				'jform'          => array(
+					'id'             => 0,
 					'_database_name' => $dbName,
-					'db_table_name' => '',
-					'contenttype' => null
+					'db_table_name'  => '',
+					'contenttype'    => null
 				)
 			);
 
@@ -241,7 +241,8 @@ class FabrikAdminControllerImport extends FabControllerForm
 	{
 		$viewType = JFactory::getDocument()->getType();
 		$view     = $this->getView('import', $viewType);
-		$this->getModel('Importcsv', 'FabrikFEModel')->clearSession();
+		$model    = new CsvImport;
+		$model->clearSession();
 
 		if ($model = $this->getModel())
 		{
@@ -262,8 +263,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 	 */
 	public function doimport()
 	{
-		/** @var FabrikFEModelImportcsv $model */
-		$model = $this->getModel('Importcsv', 'FabrikFEModel');
+		$model = new CsvImport;
 		$app   = JFactory::getApplication();
 		$input = $app->input;
 

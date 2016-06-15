@@ -8,14 +8,18 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Controllers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Worker;
-
-jimport('joomla.application.component.controller');
+use \stdClass;
+use \JModelLegacy;
+use \JEventDispatcher;
+use \JPluginHelper;
 
 /**
  * Fabrik Plugin Controller
@@ -25,7 +29,7 @@ jimport('joomla.application.component.controller');
  * @subpackage  Fabrik
  * @since       1.5
  */
-class FabrikControllerPlugin extends JControllerLegacy
+class Plugin extends Controller
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
@@ -43,8 +47,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 	 */
 	public function pluginAjax()
 	{
-		$app    = JFactory::getApplication();
-		$input  = $app->input;
+		$input  = $this->input;
 		$plugin = $input->get('plugin', '');
 		$method = $input->get('method', '');
 		$group  = $input->get('g', 'element');
@@ -55,7 +58,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 		{
 			// First lets try the fabrik plugin manager - needed when loading namespaced plugins
 			$pluginManager->loadPlugIn($plugin, $group);
-		} catch (Exception $e)
+		} catch (\Exception $e)
 		{
 			if (!JPluginHelper::importPlugin('fabrik_' . $group, $plugin))
 			{
@@ -85,10 +88,9 @@ class FabrikControllerPlugin extends JControllerLegacy
 	{
 		$db = Worker::getDbo();
 		require_once COM_FABRIK_FRONTEND . '/user_ajax.php';
-		$app      = JFactory::getApplication();
-		$input    = $app->input;
+		$input    = $this->input;
 		$method   = $input->get('method', '');
-		$userAjax = new userAjax($db);
+		$userAjax = new \userAjax($db);
 
 		if (method_exists($userAjax, $method))
 		{
@@ -106,8 +108,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 	public function doCron(&$pluginManager)
 	{
 		$db    = Worker::getDbo();
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$cid   = $input->get('element_id', array(), 'array');
 		$cid   = ArrayHelper::toInteger($cid);
 
@@ -126,13 +127,14 @@ class FabrikControllerPlugin extends JControllerLegacy
 
 		$db->setQuery($query);
 		$rows      = $db->loadObjectList();
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var \FabrikFEModelList $listModel */
+		$listModel = \JModelLegacy::getInstance('list', 'FabrikFEModel');
 		$c         = 0;
 
 		foreach ($rows as $row)
 		{
 			// Load in the plugin
-			/** @var PlgFabrik_Cron $plugin */
+			/** @var \Fabrik\Plugins\Cron\Cron $plugin */
 			$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
 			$plugin->setId($row->id);
 			$params        = $plugin->getParams();
