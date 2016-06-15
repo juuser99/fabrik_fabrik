@@ -36,11 +36,13 @@ $app->set('jquery', true);
 $input = $app->input;
 
 JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
+JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models', 'FabrikFEModel');
+
 
 // $$$ rob if you want to you can override any fabrik model by copying it from
 // models/ to models/adaptors the copied file will overwrite (NOT extend) the original
-JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/adaptors');
-
+$paths = JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/adaptors');
+//echo "<pre>";print_r($paths);exit;
 $controllerName = $input->getCmd('view');
 $type           = '';
 // Check for a plugin controller

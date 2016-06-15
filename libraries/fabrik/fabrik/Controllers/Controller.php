@@ -82,7 +82,7 @@ class Controller extends \JControllerLegacy
 	 */
 	public function getModel($name = '', $prefix = '', $config = array())
 	{
-		return parent::getModel($name = '', $prefix = '', $config = array());
+		return parent::getModel($name, $prefix, $config);
 
 		// For now any controller that actually has a Fabrik\Model\Foo class
 		// should override getModel() as follows:

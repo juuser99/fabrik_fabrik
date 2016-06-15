@@ -69,7 +69,7 @@ class Lizt extends Controller
 		}
 
 		$view->setModel($model, true);
-echo"here";exit;
+
 		// Display the view
 		$view->error = $this->getError();
 
