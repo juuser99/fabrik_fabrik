@@ -267,7 +267,7 @@ class ElementList extends Element
 		{
 			$originalValue = stripslashes(htmlspecialchars_decode($originalValue, ENT_QUOTES));
 			$originalValue = @eval($originalValue);
-			FabrikWorker::logEval($originalValue, 'Caught exception on eval of elementList::filterQueryMultiValues() ' . $key . ': %s');
+			Worker::logEval($originalValue, 'Caught exception on eval of elementList::filterQueryMultiValues() ' . $key . ': %s');
 		}
 
 		if ($condition === 'NOT IN')

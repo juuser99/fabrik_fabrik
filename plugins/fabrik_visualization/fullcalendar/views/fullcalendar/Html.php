@@ -223,7 +223,7 @@ class Html extends JViewLegacy
 		// Figure out what language we are using
 		$lang = strtolower(JFactory::getUser()->getParam('language', JFactory::getLanguage()->getTag()));
 		if ( file_exists( JPATH_BASE . '/' . $fcLangFolder . $lang . '.js') === false ) {
-			$lang = FabrikWorker::getShortLang();
+			$lang = Worker::getShortLang();
 			if ( file_exists( JPATH_BASE . '/' . $fcLangFolder . $lang . '.js') === false ) {
 				$lang = 'en-gb';
 			}

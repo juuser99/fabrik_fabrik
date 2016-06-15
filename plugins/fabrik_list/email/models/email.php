@@ -689,7 +689,7 @@ class Email extends Lizt
 			list($replyEmail, $replyEmailName) = $this->_replyEmailName($row);
 			$thisSubject = $w->parseMessageForPlaceholder($subject, $row);
 
-			return FabrikWorker::sendMail($emailFrom, $fromName, $mailTo, $thisSubject, $thisMsg, 1, $cc, $bcc, $this->filepath,
+			return Worker::sendMail($emailFrom, $fromName, $mailTo, $thisSubject, $thisMsg, 1, $cc, $bcc, $this->filepath,
 				$replyEmail, $replyEmailName);
 		}
 	}
@@ -945,7 +945,7 @@ class Email extends Lizt
 
 			if ($sent > 0)
 			{
-				$res = FabrikWorker::sendMail($emailFrom, $fromName, $thisTos, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
+				$res = Worker::sendMail($emailFrom, $fromName, $thisTos, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
 					$replyEmail, $replyEmailName);
 			}
 		}
@@ -955,7 +955,7 @@ class Email extends Lizt
 			{
 				if (Worker::isEmail($thisTo))
 				{
-					$res = FabrikWorker::sendMail($emailFrom, $fromName, $thisTo, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
+					$res = Worker::sendMail($emailFrom, $fromName, $thisTo, $thisSubject, $mergedMsg, true, $cc, $bcc, $this->filepath,
 						$replyEmail, $replyEmailName);
 
 					if ($res)

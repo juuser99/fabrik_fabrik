@@ -13,13 +13,13 @@ namespace Fabrik\Plugins\Validationrule;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Joomla\Registry\Registry;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
-use Fabrik\Helpers\Worker;
-use Fabrik\Helpers\Text;
 use Fabrik\Helpers\StringHelper;
+use Fabrik\Helpers\Text;
+use Fabrik\Helpers\Worker;
 use Fabrik\Plugins\Plugin;
+use \Joomla\Registry\Registry;
 use \JPluginHelper;
 use \JFilterInput;
 
@@ -135,9 +135,9 @@ class Validationrule extends Plugin
 		}
 
 		$condition = trim($w->parseMessageForPlaceHolder($condition, $post));
-		FabrikWorker::clearEval();
+		Worker::clearEval();
 		$res = @eval($condition);
-		FabrikWorker::logEval($res, 'Caught exception on eval in validation condition : %s');
+		Worker::logEval($res, 'Caught exception on eval in validation condition : %s');
 
 		if (is_null($res))
 		{

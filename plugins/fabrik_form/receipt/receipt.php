@@ -13,12 +13,12 @@ namespace Fabrik\Plugins\Form;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\Text;
-use\RuntimeException;
+use Fabrik\Helpers\Worker;
 use \JFactory;
 use \JConfig;
 use \stdClass;
+use\RuntimeException;
 
 /**
  * Send a receipt
@@ -135,7 +135,7 @@ class Receipt extends Form
 		}
 
 		$from = $params->get('from_email', $from);
-		$res = FabrikWorker::sendMail($from, $fromName, $to, $subject, $message, true);
+		$res = Worker::sendMail($from, $fromName, $to, $subject, $message, true);
 
 		if (!$res)
 		{

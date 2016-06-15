@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
@@ -50,12 +52,12 @@ class PlgFabrik_FormClone extends PlgFabrik_Form
 
 		if ($clone_times_field_id != '')
 		{
-			$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($clone_times_field_id);
+			$elementModel = Worker::getPluginManager()->getElementPlugin($clone_times_field_id);
 			$element = $elementModel->getElement(true);
 
 			if ($clone_batchid_field_id != '')
 			{
-				$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($clone_batchid_field_id);
+				$elementModel = Worker::getPluginManager()->getElementPlugin($clone_batchid_field_id);
 				$id_element = $elementModel->getElement(true);
 				$formModel->formData[$id_element->name] = $formModel->fullFormData['rowid'];
 				$formModel->formData[$id_element->name . '_raw'] = $formModel->fullFormData['rowid'];

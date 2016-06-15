@@ -106,6 +106,18 @@ class FabrikFEModelImportcsv extends JModelForm
 	protected $baseDir = null;
 
 	/**
+	 * Counter for number of lines added
+	 * @var int
+	 */
+	protected $addedCount = 0;
+
+	/**
+	 * Used elements in import
+	 * @var array
+	 */
+	protected $aUsedElements = [];
+
+	/**
 	 * Import the csv file
 	 *
 	 * @return  boolean
@@ -180,7 +192,7 @@ class FabrikFEModelImportcsv extends JModelForm
 		/* Track errors message- so if from frontend menu redirect
 		    to current url rather than throwing exception
 		 */
-		$errmsg = '';
+		$errMsg = '';
 
 		if (!(bool) ini_get('file_uploads'))
 		{
@@ -200,13 +212,13 @@ class FabrikFEModelImportcsv extends JModelForm
 		else
 		{
 			jimport('joomla.filesystem.file');
-			$allowedlist = FabrikWorker::getMenuOrRequestVar('csv_import_extensions', '', false, 'menu');
-			$allowed     = empty($allowedlist) ? array('txt', 'csv', 'tsv') : explode(',', $allowedlist);
+			$allowedList = Worker::getMenuOrRequestVar('csv_import_extensions', '', false, 'menu');
+			$allowed     = empty($allowedList) ? array('txt', 'csv', 'tsv') : explode(',', $allowedList);
 			$ext         = JFile::getExt($userFile['userfile']['name']);
 
 			if (!in_array($ext, $allowed))
 			{
-				$errmsg = 'Import Failed! Invalid file format (' . $ext . '). Valid formats are (' . implode(', ', $allowed) . ')';
+				$errMsg = 'Import Failed! Invalid file format (' . $ext . '). Valid formats are (' . implode(', ', $allowed) . ')';
 			}
 			else
 			{
@@ -221,28 +233,28 @@ class FabrikFEModelImportcsv extends JModelForm
 				}
 				else
 				{
-					$listid = $input->getInt('listid');
+					$listId = $input->getInt('listid');
 					// Allows user-created post-processing script to be (optionally) run
-					if (file_exists(JPATH_PLUGINS . '/fabrik_list/listcsv/scripts/list_' . $listid . '_csv_import.php'))
+					if (file_exists(JPATH_PLUGINS . '/fabrik_list/listcsv/scripts/list_' . $listId . '_csv_import.php'))
 					{
-						require(JPATH_PLUGINS . '/fabrik_list/listcsv/scripts/list_' . $listid . '_csv_import.php');
+						require_once JPATH_PLUGINS . '/fabrik_list/listcsv/scripts/list_' . $listId . '_csv_import.php';
 					}
 				}
 			}
 		}
 
-		if (!empty($errmsg))
+		if (!empty($errMsg))
 		{
 			// If from frontend menu redirect back to list with displayed error message, else throw exception
-			if (FabrikWorker::getMenuOrRequestVar('csv_import_extensions', '', false, 'menu') == '')
+			if (Worker::getMenuOrRequestVar('csv_import_extensions', '', false, 'menu') == '')
 			{
-				throw new Exception(FText::_($errmsg));
+				throw new Exception(Text::_($errMsg));
 			}
 			else
 			{
 				$cururl = JUri::getInstance();
 				$app    = JFactory::getApplication();
-				$app->redirect($cururl, $errmsg, 'error');
+				$app->redirect($cururl, $errMsg, 'error');
 			}
 		}
 
@@ -391,7 +403,7 @@ class FabrikFEModelImportcsv extends JModelForm
 	 */
 	private function sanitizeHeadings(&$row)
 	{
-		$model       = $this->getlistModel();
+		$model       = $this->getListModel();
 		$tableParams = $model->getParams();
 		$mode        = $tableParams->get('csvfullname');
 
@@ -525,7 +537,7 @@ class FabrikFEModelImportcsv extends JModelForm
 	 *
 	 * @return FabrikFEModelList List model
 	 */
-	public function getlistModel()
+	public function getListModel()
 	{
 		$app = JFactory::getApplication();
 
@@ -545,7 +557,7 @@ class FabrikFEModelImportcsv extends JModelForm
 	 */
 	public function findExistingElements()
 	{
-		$model = $this->getlistModel();
+		$model = $this->getListModel();
 		$model->getFormGroupElementData();
 
 		/** @var FabrikFEModelPluginmanager $pluginManager */
@@ -559,13 +571,13 @@ class FabrikFEModelImportcsv extends JModelForm
 		$elementMap  = array();
 
 		// $$ Phil - Get 'Show in List' elements from menu (if 'use show in list') or set as empty array if not
-		$use_sil       = FabrikWorker::getMenuOrRequestVar('csv_import_sil_only', '0', false, 'menu');
-		$list_elements = $use_sil ? FabrikWorker::getMenuOrRequestVar('list_elements', '', false, 'menu') : '';
-		$showinlist    = !empty($list_elements) ? json_decode($list_elements, 1) : array();
+		$use_sil       = Worker::getMenuOrRequestVar('csv_import_sil_only', '0', false, 'menu');
+		$list_elements = $use_sil ? Worker::getMenuOrRequestVar('list_elements', '', false, 'menu') : '';
+		$showInList    = !empty($list_elements) ? json_decode($list_elements, 1) : array();
 
-		if (!empty($showinlist))
+		if (!empty($showInList))
 		{
-			$showinlist = $showinlist['show_in_list'];
+			$showInList = $showInList['show_in_list'];
 		}
 
 		// $$ hugh - adding $rawMap so we can tell prepareCSVData() if data is already raw
@@ -586,11 +598,12 @@ class FabrikFEModelImportcsv extends JModelForm
 					// $$ Phil - Only include elements set in menu show in list, or if not set at all
 					$elid = (int) $element->id;
 
-					if (empty($showinlist) || in_array($elid, $showinlist))
+					if (empty($showInList) || in_array($elid, $showInList))
 					{
 
 						switch ($mode)
 						{
+							default:
 							case 0:
 								$name = $element->name;
 								break;
@@ -739,7 +752,7 @@ class FabrikFEModelImportcsv extends JModelForm
 			$overWrite = (int) ArrayHelper::getValue($jForm, 'overwrite', 0);
 		}
 
-		$model               = $this->getlistModel();
+		$model               = $this->getListModel();
 		$model->importingCSV = true;
 		$formModel           = $model->getFormModel();
 
@@ -870,8 +883,8 @@ class FabrikFEModelImportcsv extends JModelForm
 			{
 				if (StringHelper::substr($k, StringHelper::strlen($k) - 4, StringHelper::strlen($k)) == '_raw')
 				{
-					$noneraw        = StringHelper::substr($k, 0, strlen($k) - 4);
-					$aRow[$noneraw] = $val;
+					$noneRaw        = StringHelper::substr($k, 0, strlen($k) - 4);
+					$aRow[$noneRaw] = $val;
 				}
 			}
 
@@ -940,19 +953,19 @@ class FabrikFEModelImportcsv extends JModelForm
 		{
 			if (StringHelper::substr($k, StringHelper::strlen($k) - 4, StringHelper::strlen($k)) == '_raw')
 			{
-				$noneraw = StringHelper::substr($k, 0, StringHelper::strlen($k) - 4);
+				$noneRaw = StringHelper::substr($k, 0, StringHelper::strlen($k) - 4);
 
-				if (array_key_exists($noneraw, $aRow))
+				if (array_key_exists($noneRaw, $aRow))
 				{
 					// Complete madness for encoding issue with fileupload ajax + single upload max
 					preg_match('/params":"(.*)"\}\]/', $val, $matches);
 
 					if (count($matches) == 2)
 					{
-						$replace = addSlashes($matches[1]);
+						$replace = addslashes($matches[1]);
 						$val     = preg_replace('/params":"(.*)\}\]/', 'params":"' . $replace . '"}]', $val, -1, $c);
 					}
-					$aRow[$noneraw] = $val;
+					$aRow[$noneRaw] = $val;
 					unset($aRow[$k]);
 				}
 			}
@@ -1133,10 +1146,10 @@ class FabrikFEModelImportcsv extends JModelForm
 		$app      = JFactory::getApplication();
 
 		// $$ Phil changed to let overwrite from menu take precidence
-		$overWrite = FabrikWorker::getMenuOrRequestVar('csv_import_overwrite', '', false, 'menu');
+		$overWrite = Worker::getMenuOrRequestVar('csv_import_overwrite', '', false, 'menu');
 		if ($overWrite == '')
 		{
-			$overWrite = $app->input->getInt('overwrite', 0, 'post');
+			$overWrite = $app->input->getInt('overwrite', 0);
 		}
 
 		$joins        = $this->getJoins();
@@ -1221,7 +1234,7 @@ class FabrikFEModelImportcsv extends JModelForm
 
 	private function getJoinPkRecords($join)
 	{
-		$model     = $this->getlistModel();
+		$model     = $this->getListModel();
 		$formModel = $model->getFormModel();
 
 		if (!isset($this->joinpkids))
@@ -1250,7 +1263,7 @@ class FabrikFEModelImportcsv extends JModelForm
 	{
 		if (!isset($this->joins))
 		{
-			$model = $this->getlistModel();
+			$model = $this->getListModel();
 
 			// Move the join table data into their own array space
 			$this->joins = $model->getJoins();
@@ -1299,7 +1312,7 @@ class FabrikFEModelImportcsv extends JModelForm
 		$app    = JFactory::getApplication();
 		$input  = $app->input;
 		$post   = $input->get('jform', array(), 'array');
-		$addKey = (int) FArrayHelper::getValue($post, 'addkey', 0);
+		$addKey = (int) ArrayHelper::getValue($post, 'addkey', 0);
 		$task   = $input->get('task', '', 'string');
 
 		// $$$ rob 30/01/2012 - if in csvimport cron plugin then we have to return true here
@@ -1328,7 +1341,7 @@ class FabrikFEModelImportcsv extends JModelForm
 			return true;
 		}
 
-		if (trim($this->getlistModel()->getPrimaryKey()) !== '')
+		if (trim($this->getListModel()->getPrimaryKey()) !== '')
 		{
 			return false;
 		}
@@ -1421,21 +1434,21 @@ class Csv_Bv
 	/**
 	 * Seperator character
 	 *
-	 * @var char
+	 * @var string
 	 */
 	protected $mFldSeperator;
 
 	/**
 	 * Enclose character
 	 *
-	 * @var char
+	 * @var string
 	 */
 	protected $mFldEnclosure;
 
 	/**
 	 * Escape character
 	 *
-	 * @var char
+	 * @var string
 	 */
 	protected $mFldEscapor;
 

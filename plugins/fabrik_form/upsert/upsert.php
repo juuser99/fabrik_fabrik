@@ -14,8 +14,8 @@ namespace Fabrik\Plugins\Form;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\ArrayHelper;
-use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper;
+use Fabrik\Helpers\Worker;
 use \JModelLegacy;
 use \stdClass;
 
@@ -169,7 +169,7 @@ class Upsert extends Form
 			if ($upsert->upsert_eval_value[$i] === '1')
 			{
 				$res = FabrikHelperHTML::isDebug() ? eval($v) : @eval($v);
-				FabrikWorker::logEval($res, 'Eval exception : upsert : ' . $v . ' : %s');
+				Worker::logEval($res, 'Eval exception : upsert : ' . $v . ' : %s');
 				$v = $res;
 			}
 
