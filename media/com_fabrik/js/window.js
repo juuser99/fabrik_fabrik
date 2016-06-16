@@ -116,7 +116,7 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
             w.css('height', 'auto');
 
             // The mootools getDimensions actually works (jQuery height() is incorrect)
-            return w[0].getDimensions(true).height;
+            return Math.max(w[0].getDimensions(true).height, w.find('.itemContent').height());
         },
 
         /**
@@ -240,16 +240,6 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
                     }
                 });
             }
-
-            // Rob - removed this caused any form with a file upload in it to be unscrollable - as we load the window
-            // in the background.
-            /* Prevent browser window from being scrolled */
-           /* jQuery('body').css({'height':'100%','overflow':'hidden'});
-
-            /!* Allow browser window to be scrolled again when modal is released from DOM *!/
-            jQuery('div.modal').on('remove', function () {
-                jQuery('body').css({'height':'initial','overflow':'initial'});
-            });*/
 
             /* Use form title if modal handlelabel is blank
             * $$$ Rob - this is not going to work with UIKit for example - try not to rely on the DOM classes/markup
@@ -400,13 +390,17 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
                         this.close();
                         return;
                     }
+                    self.window.width(self.options.width);
+                    self.window.height(self.options.height);
+
                     if (typeOf(this.options.content) === 'element') {
                         jQuery(this.options.content).appendTo(this.contentEl);
                     } else {
                         this.contentEl.html(this.options.content);
                     }
-                    this.options.onContentLoaded.apply(this);
-                    this.watchTabs();
+                    self.watchTabs();
+                    self.center();
+                    self.options.onContentLoaded.apply(self);
 
                     break;
                 case 'xhr':
@@ -548,9 +542,10 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
          */
         fitToWidth: function () {
             var contentEl = this.window.find('.itemContent'),
-                winWidth = jQuery(window).width(),
+                winWidth = jQuery(window).outerWidth(),
                 x = contentEl[0].scrollWidth;
             var w = x + 25 < winWidth ? x + 25 : winWidth;
+            w = Math.max(w, this.options.width);
             this.window.css('width', w);
         },
 
@@ -609,9 +604,9 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
         /**
          * Fit the window width to the min of either its content width or the window width
          */
-        fitToWidth: function () {
+        /*fitToWidth: function () {
             this.window.css('width', this.options.width);
-        },
+        },*/
     });
 
     Fabrik.RedirectWindow = new Class({
