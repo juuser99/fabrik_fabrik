@@ -76,14 +76,23 @@ class FabrikPDFHelper
 		$data = str_replace('xmlns=', 'ns=', $data);
 		libxml_use_internal_errors(true);
 
+		$uri = JUri::getInstance();
+		$host = $uri->getHost();
+
+		// If the port is not default, add it
+		if (! (($uri->getScheme() == 'http' && $uri->getPort() == 80) ||
+			($uri->getScheme() == 'https' && $uri->getPort() == 443))) {
+			$host .= ':' . $uri->getPort();
+		}
+
+		$base = $uri->getScheme() . '://' . $host;
+
 		try
 		{
 			$ok = new SimpleXMLElement($data);
 
 			if ($ok)
 			{
-				$uri = JUri::getInstance();
-				$base = $uri->getScheme() . '://' . $uri->getHost();
 				$imgs = $ok->xpath('//img');
 
 				foreach ($imgs as &$img)
@@ -127,7 +136,7 @@ class FabrikPDFHelper
 			$config = JComponentHelper::getParams('com_fabrik');
 
 			// Don't show the errors if we want to debug the actual pdf html
-			if (JDEBUG && $config->get('pdf_debug', true) === true)
+			if (JDEBUG && $config->get('pdf_debug', false) === true)
 			{
 				echo "<pre>";
 				print_r($errors);
@@ -137,8 +146,6 @@ class FabrikPDFHelper
 			//Create the full path via general str_replace
 			else
 			{
-				$uri = JUri::getInstance();
-				$base = $uri->getScheme() . '://' . $uri->getHost();
 				$data = str_replace('href="/', 'href="'.$base.'/', $data);
 				$data = str_replace('src="/', 'src="'.$base.'/', $data);
 				$data = str_replace("href='/", "href='".$base.'/', $data);

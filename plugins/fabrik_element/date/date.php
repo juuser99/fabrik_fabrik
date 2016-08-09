@@ -916,6 +916,11 @@ class Date extends ElementList
 		$dates = Html::isDebug() ? eval($php) : @eval($php);
 		Worker::logEval($dates, 'Eval exception : ' . $this->getElement()->name . '::getAllowedPHPDates() : %s');
 
+		if (!FArrayHelper::hasStringKeys($dates))
+		{
+
+		}
+
 		return (array) $dates;
 	}
 

@@ -193,8 +193,18 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             var fn = this.options.calendarSetup.dateAllowFunc;
             if (typeOf(fn) !== 'null' && fn !== '') {
                 eval(fn);
-                return result;
+                if (result === true) {
+                    return 'disabled';
+                }
+                else if (result === false) {
+                    return 'enabled';
+                }
+                else {
+                    return result;
+                }
             }
+
+            return false;
         },
 
         /**
