@@ -42,8 +42,9 @@ modules/*
 !modules/mod_fabrik_list/*
 !modules/mod_tagcloud
 !modules/mod_tagcloud/*
+!media/
 media/*
-!media/com_fabrik/*
+!media/com_fabrik/
 media/com_fabrik/uploads/
 node_modules/*
 plugins/*
@@ -112,7 +113,7 @@ custom.css
 /ZendFramework-1.12.3
 /mobiquo
 /node_modules
-
 components/com_fabrik/language/.DS_Store
-
 components/com_fabrik/models/.DS_Store
+.transifexrc
+private.json

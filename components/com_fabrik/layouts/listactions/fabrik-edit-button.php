@@ -25,6 +25,7 @@ $editText = $d->action == 'dropdown' ? $d->editLabel : '<span class="hidden">' .
 	data-list="<?php echo $d->dataList;?>"
 	data-isajax="<?php echo $d->isAjax; ?>"
 	data-rowid="<?php echo $d->rowId; ?>"
+	data-iscustom="<?php if ($d->isCustom) echo '1'; else echo '0'; ?>"
 	href="<?php echo $d->editLink;?>"
 	title="<?php echo $d->editLabel;?>">
 	<?php echo Html::image('edit.png', 'list', '', array('alt' => $d->editLabel)); ?><?php echo $editText; ?>

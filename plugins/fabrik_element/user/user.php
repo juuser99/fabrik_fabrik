@@ -88,7 +88,8 @@ class User extends Databasejoin
 		 * @TODO when editing a form with joined repeat group the rowid will be set but
 		 * the record is in fact new
 		 */
-		if ($params->get('update_on_edit') || !$rowId || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
+		//if ($params->get('update_on_edit') || !$rowId || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
+		if ($params->get('update_on_edit') || !$rowId)
 		{
 			// Set user to logged in user
 			if ($this->isEditable())
@@ -97,10 +98,11 @@ class User extends Databasejoin
 			}
 			else
 			{
-				$userId = (int) $this->getValue($data, $repeatCounter);
+				$userId = $this->getValue($data, $repeatCounter, array('raw' => 1));
+				$userId = is_array($userId) ? (int) FArrayHelper::getValue($userId, 0) : (int) $userId;
 
 				// On failed validation value is 1 - user ids are always more than that so don't load userid=1 otherwise an error is generated
-				$user = $userId <= 1 ? $this->user : JFactory::getUser($userId);
+				$user = $userId <= 1 ? false : JFactory::getUser($userId);
 			}
 		}
 		else
@@ -141,7 +143,7 @@ class User extends Databasejoin
 
 				if ($id === '')
 				{
-					$id = $this->getValue($data, $repeatCounter);
+					$id = $this->getValue($data, $repeatCounter, array('raw' => 1));
 				}
 
 				/*
@@ -532,7 +534,20 @@ class User extends Databasejoin
 	 */
 	protected function _getSelectLabel($filter = false)
 	{
-		return $this->getParams()->get('user_noselectionlabel', Text::_('COM_FABRIK_PLEASE_SELECT'));
+		$label  = $this->getParams()->get('user_noselectionlabel');
+
+		if (strstr($label, '::'))
+		{
+			$labels = explode('::', $label);
+			$label  = $filter ? $labels[1] : $labels[0];
+		}
+
+		if (!$filter && $label == '')
+		{
+			$label = 'COM_FABRIK_PLEASE_SELECT';
+		}
+
+		return Text::_($label);
 	}
 
 	/**

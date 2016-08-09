@@ -30,7 +30,9 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
                 case 'modal':
                     Fabrik.Windows[opts.id] = new Fabrik.Modal(opts);
                     jQuery(window).on('resize', function () {
-                        Fabrik.Windows[opts.id].fitToContent(false);
+                        if (opts.id in Fabrik.Windows) {
+                            Fabrik.Windows[opts.id].fitToContent(false);
+                        }
                     });
                     break;
                 case '':
@@ -135,7 +137,7 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
             h = parseInt(h, 10);
 
 
-            yy = window.getSize().y / 2 - (h / 2);
+            yy = jQuery(window).height() / 2 - (h / 2);
 
             if ( jQuery.inArray(jQuery(source).css('position'),['fixed','static']) === -1) {
                 yy += window.getScroll().y;
@@ -144,7 +146,7 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
             d.top = this.options.offset_y !== null ? window.getScroll().y + this.options.offset_y : yy;
             //d.top = this.options.offset_y !== null ? this.options.offset_y : yy;
 
-            xx = window.getSize().x / 2 + window.getScroll().x - w / 2;
+            xx = jQuery(window).width() / 2 + window.getScroll().x - w / 2;
             //xx = (window.getSize().x / 2) - (w / 2);
             d.left = this.options.offset_x !== null ? window.getScroll().x + this.options.offset_x : xx;
             //d.left = this.options.offset_x !== null ? this.options.offset_x : xx;
@@ -166,7 +168,12 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
                 dim = this.options[dir] + '';
             if (dim.indexOf('%') !== -1) {
                 // @TODO fix
-                return Math.floor(window.getSize()[coord] * (dim.toFloat() / 100));
+                if (dir === 'height') {
+                    return Math.floor(jQuery(window).height() * (dim.toFloat() / 100));
+                }
+                else {
+                    return Math.floor(jQuery(window).width() * (dim.toFloat() / 100));
+                }
             }
             return parseInt(dim, 10);
         },
@@ -183,11 +190,17 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
                 this.window = this.buildWinViaJS();
             }
 
+            // use fabrikHide to prevent the window displaying momentarily as page loads
+            if (!this.options.visible) {
+                this.window.addClass('fabrikHide');
+            }
+
             jQuery(document.body).append(this.window);
             this.loadContent();
 
             if (!this.options.visible) {
-                this.window.fadeOut();
+                this.window.hide();
+                this.window.removeClass('fabrikHide');
             }
 
             jQuery(this.window).find('*[data-role="close"]').on('click', function (e) {
@@ -300,13 +313,17 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
                 hclass += ' draggable';
                 draggerC = jQuery('<div />').addClass('bottomBar modal-footer');
                 dragger = jQuery('<div />').addClass('dragger');
-                resizeIcon = jQuery(Fabrik.jLayouts['icon-expand']);
-                resizeIcon.prependTo(dragger);
+                // not really compatible with using jQuery resizeable()
+                //resizeIcon = jQuery(Fabrik.jLayouts['icon-expand']);
+                //resizeIcon.prependTo(dragger);
                 draggerC.append(dragger);
             }
 
             expandIcon = jQuery(Fabrik.jLayouts['icon-full-screen']);
             label = jQuery('<h3 />').addClass(hclass).text(this.options.title);
+            jQuery(label).data('role', 'title');
+            // turns out you can find() data attrs added with data()
+            jQuery(label).attr('data-role', 'title');
 
             handleParts.push(label);
             if (this.options.expandable && this.options.modal === false) {
@@ -353,12 +370,11 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
         expand: function () {
             if (!this.expanded) {
                 this.expanded = true;
-                var w = window.getSize();
                 this.unexpanded = jQuery.extend({}, this.window.position(),
                     {'width': this.window.width(), 'height': this.window.height()});//this.window.getCoordinates();
                 var scroll = window.getScroll();
                 this.window.css({'left': scroll.x + 'px', 'top': scroll.y + 'px'});
-                this.window.css({'width': w.x, 'height': w.y});
+                this.window.css({'width': jQuery(window).width(), 'height': jQuery(window).height()});
             } else {
                 this.window.css({
                     'left': this.unexpanded.left + 'px',
@@ -566,6 +582,7 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
             }
             Fabrik.tips.hideAll();
             this.fireEvent('onClose', [this]);
+            Fabrik.fireEvent('fabrik.window.close', [this]);
         },
 
         /**
@@ -576,7 +593,8 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
             if (e) {
                 e.stopPropagation();
             }
-            this.window.fadeIn({duration: 0});
+            //this.window.fadeIn({duration: 0});
+            this.window.show();
             this.fireEvent('onOpen', [this]);
         }
 

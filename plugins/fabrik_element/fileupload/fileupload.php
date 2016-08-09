@@ -205,7 +205,7 @@ class Fileupload extends Element
 
 			// MCL test
 			$mcl = FabrikHelperHTML::mcl();
-			$s->deps[] = array_merge($s->deps, $mcl);
+			//$s->deps = array_merge($s->deps, $mcl);
 
 			if (strstr($runtimes, 'html5'))
 			{
@@ -398,7 +398,7 @@ class Fileupload extends Element
 						}
 						else
 						{
-							$parts   = explode('/', $value[$x]);
+							$parts   = explode(DIRECTORY_SEPARATOR, $value[$x]);
 							$o       = new stdClass;
 							$o->id   = 'alreadyuploaded_' . $element->id . '_' . $rawValues[$x];
 							$o->name = array_pop($parts);
@@ -561,6 +561,8 @@ class Fileupload extends Element
 		if ($params->get('fu_show_image_in_table', '0') != '2')
 		{
 			$data     = json_encode($data);
+			// icons will already have been set in _renderListData
+			$opts['icon'] = 0;
 			$rendered = parent::renderListData($data, $thisRow, $opts);
 		}
 
@@ -1043,9 +1045,11 @@ class Fileupload extends Element
 	/**
 	 * Get an array of allowed file extensions
 	 *
+	 * @param  stripDot  bool  strip the dot prefix
+	 *
 	 * @return array
 	 */
-	protected function _getAllowedExtension()
+	protected function _getAllowedExtension($stripDot = true)
 	{
 		$params       = $this->getParams();
 		$allowedFiles = $params->get('ul_file_types');
@@ -1055,13 +1059,24 @@ class Fileupload extends Element
 			// $$$ hugh - strip spaces and leading ., as folk often do ".bmp, .jpg"
 			// preg_replace('#(\s*|^)\.?#', '', trim($allowedFiles));
 			$allowedFiles = str_replace(' ', '', $allowedFiles);
-			$allowedFiles = str_replace('.', '', $allowedFiles);
+			if ($stripDot)
+			{
+				$allowedFiles = str_replace('.', '', $allowedFiles);
+			}
 			$aFileTypes   = explode(",", $allowedFiles);
 		}
 		else
 		{
 			$mediaParams = JComponentHelper::getParams('com_media');
 			$aFileTypes  = explode(',', $mediaParams->get('upload_extensions'));
+		}
+
+		if (!$stripDot)
+		{
+			foreach ($aFileTypes as &$type)
+			{
+				$type = '.' . ltrim($type, '.');
+			}
 		}
 
 		return $aFileTypes;
@@ -1647,8 +1662,9 @@ class Fileupload extends Element
 			{
 				$val = $origData[$j]->$name;
 
-				if (!empty($val))
-				{
+				// http://fabrikar.com/forums/index.php?threads/fileupload-file-save-in-the-bad-record.44751/#post-230064
+				//if (!empty($val))
+				//{
 					if (in_array($val, $deletedImages))
 					{
 						unset($origData[$j]->$name);
@@ -1657,7 +1673,7 @@ class Fileupload extends Element
 					{
 						$filesToKeep[$index] = $origData[$j]->$name;
 					}
-				}
+				//}
 			}
 
 			$index++;
@@ -2307,33 +2323,34 @@ class Fileupload extends Element
 		$allRenders = implode('<br/>', $allRenders);
 		$allRenders .= ($allRenders == '') ? '' : '<br/>';
 		$capture = '';
+		$fileTypes = implode(',', $this->_getAllowedExtension(false));
+
 		switch ($device_capture)
 		{
 			case 1:
 				$capture = ' capture="camera"';
-				break;
 			case 2:
 				$capture = ' accept="image/*"' . $capture;
 				break;
 			case 3:
 				$capture = ' capture="microphone"';
-				break;
 			case 4:
 				$capture = ' accept="audio/*"' . $capture;
 				break;
 			case 5:
 				$capture = ' capture="camcorder"';
-				break;
 			case 6:
 				$capture = ' accept="video/*"' . $capture;
 				break;
 			default:
-				$capture = implode(",.", $this->_getAllowedExtension());
+				$capture = $fileTypes;
 				$capture = $capture ? ' accept=".' . $capture . '"' : '';
 				break;
 		}
 
-		$str[] = $allRenders . '<input class="fabrikinput" name="' . $name . '" type="file" id="' . $id . '"' . $capture . ' />' . "\n";
+		$accept = !empty($fileTypes) ? ' accept="' . $fileTypes . '" ' : ' ';
+
+		$str[] = $allRenders . '<input class="fabrikinput" name="' . $name . '" type="file" ' . $accept . ' id="' . $id . '" ' . $capture . ' />' . "\n";
 
 		if ($params->get('fileupload_storage_type', 'filesystemstorage') == 'filesystemstorage' && $params->get('upload_allow_folderselect') == '1')
 		{
@@ -2939,6 +2956,7 @@ class Fileupload extends Element
 		$params                    = $this->getParams();
 		$storage                   = $this->getStorage();
 		$this->_repeatGroupCounter = $repeatCounter;
+		$output                    = array();
 
 		if ($params->get('fu_show_image_in_email', false))
 		{
@@ -2973,19 +2991,26 @@ class Fileupload extends Element
 				{
 					$render->render($this, $params, $v);
 				}
-			}
 
-			if ($render->output == '' && $params->get('default_image') != '')
-			{
-				$render->output = '<img src="' . $params->get('default_image') . '" alt="image" />';
-			}
+				if ($render->output == '' && $params->get('default_image') != '')
+				{
+					$render->output = '<img src="' . $params->get('default_image') . '" alt="image" />';
+				}
 
-			return $render->output;
+				$output[] = $render->output;
+			}
 		}
 		else
 		{
-			return $storage->preRenderPath($value);
+			$value     = (array) $value;
+
+			foreach ($value as $v) {
+				$output[] = $storage->preRenderPath($value);
+			}
 		}
+
+		// @TODO figure better solution for sepchar
+		return implode('<br />', $output);
 	}
 
 	/**
@@ -3084,14 +3109,14 @@ class Fileupload extends Element
 		$filePath = Worker::JSONtoData($filePath, false);
 		$filePath = is_object($filePath) ? ArrayHelper::fromObject($filePath) : (array) $filePath;
 
-		if ($this->getGroupModel()->canRepeat())
-		{
-			$filePath = ArrayHelper::getValue($filePath, $repeatCount);
-		}
+		$filePath = ArrayHelper::getValue($filePath, $repeatCount);
 
 		if ($ajaxIndex !== '')
 		{
-			$filePath = ArrayHelper::getValue($filePath, $ajaxIndex);
+			if (is_array($filePath))
+			{
+				$filePath = ArrayHelper::getValue($filePath, $ajaxIndex);
+			}
 		}
 
 		$filePath    = $storage->getFullPath($filePath);

@@ -152,6 +152,13 @@ class Update_Col extends Lizt
 			for ($i = 0; $i < count($values['elementid']); $i ++)
 			{
 				$id = $values['elementid'][$i];
+
+				// meh, nasty hack to handle autocomplete values, which currently aren't working in this plugin
+				if (array_key_exists('auto-complete' . $id, $output))
+				{
+					$values['value'][$i] = $output['auto-complete' . $id];
+				}
+
 				$elementModel = $formModel->getElement($id, true);
 				$elementName = $elementModel->getFullName(false, false);
 
@@ -163,13 +170,13 @@ class Update_Col extends Lizt
 					// nope, wasn't preset, so just add it to the updates
 					$update->coltoupdate[] = $elementName;
 					$update->update_value[] = $values['value'][$i];
-					$update->udate_eval[] = '0';
+					$update->update_eval[] = '0';
 				}
 				else
 				{
 					// yes it was preset, so use the $index to modify the existing value
 					$update->update_value[$index] = $values['value'][$i];
-					$update->udate_eval[$index] = '0';
+					$update->update_eval[$index] = '0';
 				}
 			}
 		}

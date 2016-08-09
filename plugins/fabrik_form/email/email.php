@@ -184,6 +184,7 @@ class Email extends Form
 		$message = str_replace('{fabrik_viewlink}', $viewLink, $message);
 		$message = str_replace('{fabrik_editurl}', $editURL, $message);
 		$message = str_replace('{fabrik_viewurl}', $viewURL, $message);
+		FabrikPDFHelper::fullPaths($message);
 
 
 		// $$$ rob if email_to is not a valid email address check the raw value to see if that is
@@ -301,6 +302,16 @@ class Email extends Form
 			$userIds = array();
 		}
 
+		$customHeadersEval = $params->get('email_headers_eval', '');
+		$customHeaders = array();
+
+		if (!empty($customHeadersEval))
+		{
+			$customHeadersEval = $w->parseMessageForPlaceholder($customHeadersEval, $this->data, false);
+			$customHeaders = @eval($customHeadersEval);
+			FabrikWorker::logEval($customHeadersEval, 'Caught exception on eval in email custom headers : %s');
+		}
+
 		// Send email
 		foreach ($emailTo as $email)
 		{
@@ -345,8 +356,18 @@ class Email extends Form
 				}
 
 				$res = Worker::sendMail(
-					$emailFrom, $emailFromName, $email, $thisSubject, $thisMessage,
-					$htmlEmail, $cc, $bcc, $thisAttachments, $returnPath, $returnPathName
+					$emailFrom,
+					$emailFromName,
+					$email,
+					$thisSubject,
+					$thisMessage,
+					$htmlEmail,
+					$cc,
+					$bcc,
+					$thisAttachments,
+					$returnPath,
+					$returnPathName,
+					$customHeaders
 				);
 
 				/*

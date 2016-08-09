@@ -92,7 +92,7 @@
 		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-visualization-calendar" label="COM_FABRIK_OPTIONS">
 			
 			<field name="fullcalendar_layout"
-				type="folderlist"
+				type="fabrikfolderlist"
 				directory="plugins/fabrik_visualization/fullcalendar/views/fullcalendar/tmpl/"
 				default="bootstrap"
 				label="PLG_VISUALIZATION_FULLCALENDAR_TEMPLATE_LABEL" />
@@ -215,7 +215,14 @@
 				default="00:30:00"
 				description="PLG_VISUALIZATION_FULLCALENDAR_MINIMUM_DURATION_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_MINIMUM_DURATION_LABEL" />
-				
+
+			<field name="startdate_hour_offset"
+			       type="text"
+			       class="input-small"
+			       default="0"
+			       description="PLG_VISUALIZATION_FULLCALENDAR_STARTDATE_HOUR_OFFSET_DESC"
+			       label="PLG_VISUALIZATION_FULLCALENDAR_STARTDATE_HOUR_OFFSET_LABEL" />
+
 			<field name="fullcalendar_show_messages"
 				type="radio"
 				default="1"

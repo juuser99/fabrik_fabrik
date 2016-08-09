@@ -124,9 +124,17 @@ class Validationrule extends Plugin
 			{
 				$name = $element->getFullName(true, false);
 				$elementData = ArrayHelper::getValue($post, $name, array());
-				$post[$name] = ArrayHelper::getValue($elementData, $repeatCounter, '');
-				$rawData = ArrayHelper::getValue($post, $name . '_raw', array());
-				$post[$name . '_raw'] = ArrayHelper::getValue($rawData, $repeatCounter, '');
+				// things like buttons don't submit data, so check for empty
+				if (!empty($elementData))
+				{
+					$post[$name]          = ArrayHelper::getValue($elementData, $repeatCounter, '');
+					$rawData              = ArrayHelper::getValue($post, $name . '_raw', array());
+					$post[$name . '_raw'] = ArrayHelper::getValue($rawData, $repeatCounter, '');
+				}
+				else{
+					$post[$name] = '';
+					$post[$name . '_raw'] = '';
+				}
 			}
 		}
 		else

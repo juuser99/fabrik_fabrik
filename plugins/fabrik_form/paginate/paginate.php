@@ -201,7 +201,7 @@ class Paginate extends Form
 		$opts = json_encode($opts);
 		$container = $formModel->jsKey();
 		$this->formJavascriptClass();
-		$formModel->formPluginJS['FabRecordSet'] = "var " . $container . "_paginate = new FabRecordSet($container, $opts);";
+		$formModel->formPluginJS['Paginate'] = "var " . $container . "_paginate = new Paginate($container, $opts);";
 	}
 
 	/**

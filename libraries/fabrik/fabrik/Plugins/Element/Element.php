@@ -2209,6 +2209,11 @@ class Element extends Plugin
 		if ($this->dataConsideredEmpty($element->element_ro, $c))
 		{
 			$element->containerClass .= ' fabrikDataEmpty';
+			$element->dataEmpty = true;
+		}
+		else
+		{
+			$element->dataEmpty = false;
 		}
 
 		// Tips (if not rendered as hovers)
@@ -2909,12 +2914,15 @@ class Element extends Plugin
 				$js = $jsAct->code;
 				$js = str_replace(array("\n", "\r"), "", $js);
 
+				// Don't think we need to do this any more, although removing it will break bc
+				/*
 				if ($jsAct->action == 'load')
 				{
 					// JS code is already stored in the db as htmlspecialchars() 09/08/2013
 					$quote = '&#039;';
 					$js    = preg_replace('#\bthis\b#', 'document.id(' . $quote . $elId . $quote . ')', $js);
 				}
+				*/
 
 				if ($jsAct->action != '' && $js !== '')
 				{

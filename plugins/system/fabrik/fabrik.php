@@ -79,8 +79,14 @@ class PlgSystemFabrik extends JPlugin
 			JLoader::import($base . '.layout.file', JPATH_SITE . '/administrator', 'administrator.');
 			JLoader::import($base . '.layout.helper', JPATH_SITE . '/administrator', 'administrator.');
 		}
+		
+		if (!file_exists(JPATH_LIBRARIES . '/fabrik/include.php'))
+		{
+			throw new Exception('PLG_FABRIK_SYSTEM_AUTOLOAD_MISSING');
+		}
 
 		require_once JPATH_LIBRARIES . '/fabrik/include.php';
+
 		parent::__construct($subject, $config);
 	}
 

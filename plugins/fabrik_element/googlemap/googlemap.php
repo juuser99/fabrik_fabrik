@@ -350,7 +350,7 @@ class Googlemap extends Element
 			}
 
 			// remove any duplicates in case they have misunderstood and selected the same element for all fields
-			$opts->geocode_fields = array_unique($opts->geocode_fields);
+			$opts->geocode_fields = array_values(array_unique($opts->geocode_fields));
 		}
 
 		$opts->reverse_geocode = $params->get('fb_gm_reverse_geocode', '0') == '0' ? false : true;
@@ -407,6 +407,10 @@ class Googlemap extends Element
 		{
 			$opts->directionsFrom = false;
 		}
+
+		$config = JComponentHelper::getParams('com_fabrik');
+		$apiKey = $config->get('google_api_key', '');
+		$opts->key = empty($apiKey) ? false : $apiKey;
 
 		return array('FbGoogleMap', $id, $opts);
 	}
@@ -496,6 +500,7 @@ class Googlemap extends Element
 		if (!isset(self::$usestatic))
 		{
 			$params = $this->getParams();
+			$static = $params->get('fb_gm_staticmap');
 
 			// Requires you to have installed the pda plugin
 			// http://joomup.com/blog/2007/10/20/pdaplugin-joomla-15/
@@ -505,7 +510,7 @@ class Googlemap extends Element
 			}
 			else
 			{
-				self::$usestatic = ($params->get('fb_gm_staticmap') == '1' && !$this->isEditable());
+				self::$usestatic = ($static == '1' || $static == '3') && !$this->isEditable();
 			}
 		}
 
@@ -771,7 +776,7 @@ class Googlemap extends Element
 		$layout = $this->getLayout('static');
 		$displayData = new stdClass;
 
-		if (!$tableView || ($tableView && $params->get('fb_gm_staticmap_tableview', '0') === '1'))
+		if ((!$tableView && $params->get('fb_gm_staticmap') == '1') || ($tableView && $params->get('fb_gm_staticmap_tableview', '0') === '1'))
 		{
 			$displayData->src = Fabimage::cacheRemote($src, $folder, $file);
 
@@ -918,5 +923,48 @@ class Googlemap extends Element
 		}
 
 		return $this->default;
+	}
+
+
+	/**
+	 * Used to format the data when shown in the form's email
+	 *
+	 * @param   mixed $value         element's data
+	 * @param   array $data          form records data
+	 * @param   int   $repeatCounter repeat group counter
+	 *
+	 * @return  string    formatted value
+	 */
+	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
+	{
+		if ($this->inRepeatGroup && is_array($value))
+		{
+			$val = array();
+
+			foreach ($value as $v2)
+			{
+				$val[] = $this->getIndEmailValue($v2, $data, $repeatCounter);
+			}
+		}
+		else
+		{
+			$val = $this->getIndEmailValue($value, $data, $repeatCounter);
+		}
+
+		return $val;
+	}
+
+	/**
+	 * Turn form value into email formatted value
+	 *
+	 * @param   mixed $value         Element value
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter Group repeat counter
+	 *
+	 * @return  string  email formatted value
+	 */
+	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
+	{
+		return $this->_staticMap($value, null, null, null, $repeatCounter, false, $data);
 	}
 }

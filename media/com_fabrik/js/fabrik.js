@@ -225,13 +225,17 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
     /**
      * Load the google maps API once
      *
-     * @param {boolean} s Sensor
+     * @param {boolean|string} k API key
      * @param {function|string} cb Callback method function or function name (assigned to window)
      */
-    Fabrik.loadGoogleMap = function (s, cb) {
+    Fabrik.loadGoogleMap = function (k, cb) {
 
         var prefix = document.location.protocol === 'https:' ? 'https:' : 'http:';
-        var src = prefix + '//maps.googleapis.com/maps/api/js?&sensor=' + s + '&libraries=places&callback=Fabrik.mapCb';
+        var src = prefix + '//maps.googleapis.com/maps/api/js?libraries=places&callback=Fabrik.mapCb';
+        
+        if (k !== false) {
+            src += '&key=' + k;
+        }
 
         // Have we previously started to load the Googlemaps script?
         var gmapScripts = Array.from(document.scripts).filter(function (f) {
@@ -406,8 +410,13 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
             a = jQuery(e.target).find('a').length > 0 ? jQuery(e.target).find('a') : jQuery(e.target).closest('a');
         }
         url = a.prop('href');
-        url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
-        url += '&format=partial';
+
+        // if it's a custom link, don't add our junk 'n' stuff
+        if (jQuery(target).data('iscustom') !== 1) {
+            url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
+            url += '&format=partial';
+        }
+
         title = a.prop('title');
         loadMethod = a.data('loadmethod');
         if (loadMethod === undefined) {

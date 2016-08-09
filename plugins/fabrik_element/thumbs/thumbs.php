@@ -249,7 +249,7 @@ class Thumbs extends Element
 			return '';
 		}
 
-		$listId = $this->getlistModel()->getTable()->id;
+		$listId = $this->getListModel()->getTable()->id;
 		$formModel = $this->getFormModel();
 		$formId = isset($this->formid) ? $this->formid : $formModel->getId();
 		$rowId = $input->getInt('commentId', $formModel->getRowId());

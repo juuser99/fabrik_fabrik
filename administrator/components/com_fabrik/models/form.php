@@ -138,10 +138,10 @@ class FabrikAdminModelForm extends FabModelAdmin
 	{
 		$input                                = $this->app->input;
 		$jForm                                = $input->get('jform', array(), 'array');
-		$data['params']['plugins']            = (array) ArrayHelper::getValue($jForm, 'plugin');
-		$data['params']['plugin_locations']   = (array) ArrayHelper::getValue($jForm, 'plugin_locations');
-		$data['params']['plugin_events']      = (array) ArrayHelper::getValue($jForm, 'plugin_events');
-		$data['params']['plugin_description'] = (array) ArrayHelper::getValue($jForm, 'plugin_description');
+		$data['params']['plugins']            = array_values((array) ArrayHelper::getValue($jForm, 'plugin'));
+		$data['params']['plugin_locations']   = array_values((array) ArrayHelper::getValue($jForm, 'plugin_locations'));
+		$data['params']['plugin_events']      = array_values((array) ArrayHelper::getValue($jForm, 'plugin_events'));
+		$data['params']['plugin_description'] = array_values((array) ArrayHelper::getValue($jForm, 'plugin_description'));
 
 		/**
 		 * Move back into the main data array some values we are rendering as

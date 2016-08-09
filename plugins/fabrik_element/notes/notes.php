@@ -45,6 +45,8 @@ class Notes extends Databasejoin
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->rowid = (int) $this->getFormModel()->getRowId();
+		$opts->joinPkVal = (int) $this->getJoinedGroupPkVal($repeatCounter);
+		$opts->primaryKey = $this->getGroupModel()->isJoin() ? (int) $this->getJoinedGroupPkVal($repeatCounter) : $opts->rowid;
 		$opts->id = $this->id;
 
 		return array('FbNotes', $id, $opts);
@@ -66,10 +68,11 @@ class Notes extends Databasejoin
 		$layoutData = new stdClass;
 		$layoutData->id = $this->getHTMLId($repeatCounter);
 		$layoutData->labels = array();
-		$layoutData->name = $this->getHTMLName($repeatCounter);;
+		$layoutData->name = $this->getHTMLName($repeatCounter);
 		$layoutData->fieldType = $params->get('fieldType', 'textarea');
 		$layoutData->editable = $this->isEditable();
 		$layoutData->rowid = $this->getFormModel()->getRowId();
+		$layoutData->primaryKey = $this->getGroupModel()->isJoin() ? $this->getJoinedGroupPkVal($repeatCounter) : $layoutData->rowid;
 		$layoutData->rows = $tmp;
 		$layoutData->model = $this;
 		$layoutData->labels = array();
@@ -227,6 +230,7 @@ class Notes extends Databasejoin
 		$value = $params->get('notes_where_value');
 		$fk = $params->get('join_fk_column', '');
 		$rowId = $this->getFormModel()->getRowId();
+		$primaryKey = $this->getGroupModel()->isJoin() ? $this->getJoinedGroupPkVal($repeatCounter) : $rowId;
 		$where = array();
 
 		// Jaanus: here we can choose whether WHERE has to have single or (if field is the same as FK then only) custom (single or multiple) criteria,
@@ -242,9 +246,9 @@ class Notes extends Databasejoin
 			}
 		}
 		// Jaanus: when we choose WHERE field to be the same as FK then WHERE criteria is automatically FK = rowid, custom criteria(s) above may be added
-		if ($fk !== '' && $field === $fk && $rowId != '')
+		if ($fk !== '' && $field === $fk && $primaryKey != '')
 		{
-			$where[] = $db->qn($fk) . ' = ' . $rowId;
+			$where[] = $db->qn($fk) . ' = ' . $primaryKey;
 		}
 
 		if ($this->loadRow != '')
@@ -411,6 +415,7 @@ class Notes extends Databasejoin
 		$col = $params->get('join_val_column');
 		$v = $input->get('v', '', 'string');
 		$rowId = $this->getFormModel()->getRowId();
+		$joinPkVal = $this->getJoinedGroupPkVal($repeatCounter);
 
 		// Jaanus - avoid inserting data when the form is 'new' not submitted ($rowId == '')
 		if ($rowId !== '')
@@ -427,7 +432,14 @@ class Notes extends Databasejoin
 
 			if ($fk !== '')
 			{
-				$query->set($db->qn($fk) . ' = ' . $db->q($input->get('rowid')));
+				if ($this->getGroupModel()->isJoin())
+				{
+					$query->set($db->qn($fk) . ' = ' . $db->q($input->get('joinPkVal')));
+				}
+				else
+				{
+					$query->set($db->qn($fk) . ' = ' . $db->q($input->get('rowid')));
+				}
 			}
 
 			$date = $params->get('notes_date', '');

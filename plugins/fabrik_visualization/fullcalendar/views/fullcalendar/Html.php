@@ -79,10 +79,21 @@ class Html extends JViewLegacy
 		$this->jLayouts();
 		$this->jsText();
 		$this->iniJs();
-
+		FabrikHelperHTML::slimbox();
+		
 		$this->params = $model->getParams();
-		$tpl          = $params->get('calendar_layout', $tpl);
-		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/Fullcalendar/Views/Fullcalendar/tmpl/' . $tpl);
+		$tpl          = $params->get('fullcalendar_layout', $tpl);
+		$tmplPath     = JPATH_ROOT . '/plugins/fabrik_visualization/fullcalendar/views/fullcalendar/tmpl/' . $tpl;
+		$this->_setPath('template', $tmplPath);
+
+		// Store the file in the tmp folder so it can be attached
+		$layout             = FabrikHelperHTML::getLayout(
+			'fabrik-visualization-fullcalendar-event-modal-popup',
+			array(JPATH_ROOT . '/plugins/fabrik_visualization/fullcalendar/layouts')
+		);
+		$displayData       = new stdClass;
+		$displayData->id   = 'fabrikEvent_modal';
+		$this->modalLayout = $layout->render($displayData);
 
 		$this->css($tpl);
 
@@ -172,6 +183,7 @@ class Html extends JViewLegacy
 		$options->timeFormat     = $params->get('time_format', '%X');
 		$options->readonlyMonth  = (bool) $params->get('readonly_monthview', false);
 		$options->calOptions     = $params->get('calOptions', '{}');
+		$options->startOffset    = (int) $params->get('startdate_hour_offset', '0');
 
 		return $options;
 	}
@@ -217,7 +229,16 @@ class Html extends JViewLegacy
 		$srcs['fabrikFullcalendar'] = 'plugins/fabrik_visualization/fullcalendar/fullcalendar.js';
 
 		$shim = $model->getShim();
-		
+		$paths = array('fullcalendar' => 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/fullcalendar.min');
+
+		$shim['fullcalendar'] = (object) array(
+			'deps' => array('lib/moment/moment')
+		);
+
+		$shim['viz/fullcalendar/fullcalendar'] = (object) array(
+			'deps' => array('fullcalendar', 'jquery')
+		);
+
 		$fcLangFolder = 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/lang/';
 		
 		// Figure out what language we are using
@@ -225,22 +246,22 @@ class Html extends JViewLegacy
 		if ( file_exists( JPATH_BASE . '/' . $fcLangFolder . $lang . '.js') === false ) {
 			$lang = Worker::getShortLang();
 			if ( file_exists( JPATH_BASE . '/' . $fcLangFolder . $lang . '.js') === false ) {
-				$lang = 'en-gb';
+				$lang = '';
 			}
 		}
 
-		$shim['lang'] = (object) array('deps' =>
-			array('lib/moment/moment', 'fullcalendar')
-		);
+		if ( $lang != '' && $lang != 'en-gb') {
+			$shim['lang'] = (object) array('deps' =>
+				array('lib/moment/moment', 'fullcalendar')
+			);
+			$shim['viz/fullcalendar/fullcalendar']->deps[] = 'lang';
+			$paths['lang'] = 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/lang/' . $lang;
+		}
 
-		$shim['viz/fullcalendar/fullcalendar'] = (object) array('deps' =>
-			array('lang', 'jquery')
-		);
+		$model->getCustomJsAction($srcs);
 
-		HtmlHelper::iniRequireJs($shim, 
-			array('fullcalendar' => 'plugins/fabrik_visualization/fullcalendar/libs/fullcalendar/fullcalendar.min',
-				'lang' => $fcLangFolder . $lang));
-		HtmlHelper::script($srcs, $js);
+		FabrikHelperHTML::iniRequireJs($shim, $paths);
+		FabrikHelperHTML::script($srcs, $js);
 	}
 
 	/**

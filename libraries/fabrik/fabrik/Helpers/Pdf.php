@@ -93,6 +93,16 @@ class FabrikPDFHelper
 
 			if ($ok)
 			{
+				$uri = JUri::getInstance();
+				$host = $uri->getHost();
+
+				// If the port is not default, add it
+				if (! (($uri->getScheme() == 'http' && $uri->getPort() == 80) ||
+					($uri->getScheme() == 'https' && $uri->getPort() == 443))) {
+					$host .= ':' . $uri->getPort();
+				}
+
+				$base = $uri->getScheme() . '://' . $host;
 				$imgs = $ok->xpath('//img');
 
 				foreach ($imgs as &$img)

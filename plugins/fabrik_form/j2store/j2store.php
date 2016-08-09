@@ -373,6 +373,12 @@ class J2Store extends Form
 				q = $(this).val();
 				$(\'a[data-product_id=\' + productId + \']\').data(\'product_qty\', q);
 			});
+			$(\'body\').on(\'adding_to_cart\', function(e, btn, data) {
+				Fabrik.loader.start(btn.closest(\'.fabrikForm\'), Joomla.JText._(\'COM_FABRIK_LOADING\'));
+			});
+			$(\'body\').on(\'after_adding_to_cart\', function(e, btn, response, type) {
+				Fabrik.loader.stop(btn.closest(\'.fabrikForm\'));
+			});
 		});
 		');
 		}

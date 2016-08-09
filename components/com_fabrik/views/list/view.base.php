@@ -128,6 +128,7 @@ class FabrikViewListBase extends FabrikView
 			$modalOpts = array(
 				'content' => '',
 				'id' => 'advanced-filter',
+				'title' => JText::_('COM_FABRIK_FIELD_ADVANCED_SEARCH_LABEL'),
 				'modal' => false,
 				'expandable' => true
 			);
@@ -481,8 +482,7 @@ class FabrikViewListBase extends FabrikView
 		$this->showToggleCols = (bool) $params->get('toggle_cols', false);
 		$this->canGroupBy     = $model->canGroupBy();
 		$this->navigation     = $nav;
-		$this->nav            = $input->getInt('fabrik_show_nav', $params->get('show-table-nav', 1))
-			? $nav->getListFooter($this->renderContext, $model->getTmpl()) : '';
+		$this->nav            = $nav->getListFooter($this->renderContext, $model->getTmpl());
 		$this->nav            = '<div class="fabrikNav">' . $this->nav . '</div>';
 		$this->fabrik_userid  = $this->user->get('id');
 		$this->canDelete      = $model->deletePossible() ? true : false;

@@ -26,8 +26,9 @@ $viewText = $d->action === 'dropdown' ? $d->viewLabel : '<span class="hidden">' 
 	data-list="<?php echo $d->dataList; ?>"
 	data-isajax="<?php echo $d->isAjax; ?>"
 	data-rowid="<?php echo $d->rowId; ?>"
-	href="<?php echo $d->link; ?>"
-	title="<?php echo $d->viewLabel; ?>"
+	data-iscustom="<?php if ($d->isCustom) echo '1'; else echo '0'; ?>"
+	href="<?php echo $d->link; ?>" 
+	title="<?php echo $d->viewLabel;?>" 
 	target="<?php echo $d->viewLinkTarget; ?>">
 	<?php echo Html::image($d->list_detail_link_icon, 'list', '', array('alt' => $d->viewLabel)); ?>
 	<?php echo $viewText; ?>

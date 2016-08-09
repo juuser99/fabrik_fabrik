@@ -124,9 +124,11 @@ class Html extends JViewLegacy
 
 		$js .= $model->getFilterJs();
 
+		$model->getCustomJsAction($srcs);
+
 		HtmlHelper::iniRequireJs($model->getShim());
-		HtmlHelper::script($srcs, $js);
-		HtmlHelper::stylesheetFromPath('plugins/fabrik_visualization/Googlemap/Views/Googlemap/tmpl/' . $tpl . '/template.css');
+		Htmlhelper::script($srcs, $js);
+		HtmlHelper::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl . '/template.css');
 
 		// Check and add a general fabrik custom css file overrides template css and generic table css
 		HtmlHelper::stylesheetFromPath('media/com_fabrik/css/custom.css');

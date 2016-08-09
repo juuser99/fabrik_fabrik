@@ -93,6 +93,7 @@ class FabrikAdminViewPackages extends JViewLegacy
 		$canDo = JHelperContent::getActions('com_fabrik', '', $this->state->get('filter.category_id'));
 		JToolBarHelper::title(Text::_('COM_FABRIK_MANAGER_PACKAGES'), 'box-add');
 
+		/*
 		if ($canDo->get('core.create'))
 		{
 			JToolBarHelper::addNew('package.add', 'JTOOLBAR_NEW');
@@ -129,6 +130,8 @@ class FabrikAdminViewPackages extends JViewLegacy
 			JToolBarHelper::trash('packages.trash', 'JTOOLBAR_TRASH');
 		}
 
+		*/
+
 		if ($canDo->get('core.admin'))
 		{
 			JToolBarHelper::divider();
@@ -138,11 +141,18 @@ class FabrikAdminViewPackages extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::help('JHELP_COMPONENTS_FABRIK_PACKAGES', false, Text::_('JHELP_COMPONENTS_FABRIK_PACKAGES'));
 
-		$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
-		JHtmlSidebar::addFilter(
-		Text::_('JOPTION_SELECT_PUBLISHED'),
-		'filter_published',
-		JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
-		);
+		/*
+		if (FabrikWorker::j3())
+		{
+			JHtmlSidebar::setAction('index.php?option=com_fabrik&view=packages');
+
+			$publishOpts = JHtml::_('jgrid.publishedOptions', array('archived' => false));
+			JHtmlSidebar::addFilter(
+			FText::_('JOPTION_SELECT_PUBLISHED'),
+			'filter_published',
+			JHtml::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+			);
+		}
+		*/
 	}
 }

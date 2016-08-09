@@ -134,6 +134,9 @@ class Model extends \Fabrik\Models\Visualization
 		$opts->radius_defaults      = (array) $params->get('fb_gm_radius_default');
 		$opts->radius_fill_colors   = (array) $params->get('fb_gm_radius_fill_color');
 		$opts->styles               = Googlemap::styleJs($params);
+		$config                     = JComponentHelper::getParams('com_fabrik');
+		$apiKey                     = $config->get('google_api_key', '');
+		$opts->key                  = empty($apiKey) ? false : $apiKey;
 		$opts                       = json_encode($opts);
 		$ref                        = $this->getJSRenderContext();
 		$js                         = array();
@@ -357,6 +360,7 @@ class Model extends \Fabrik\Models\Visualization
 					$rowData['coords']  = $v[0] . ',' . $v[1];
 					$rowData['nav_url'] = "http://maps.google.com/maps?q=loc:" . $rowData['coords'] . "&navigate=yes";
 					$html               = $w->parseMessageForPlaceHolder($template, $rowData);
+					Html::runContentPlugins($html);
 
 					$titleElement = ArrayHelper::getValue($titleElements, $c, '');
 					$title        = $titleElement == '' ? '' : html_entity_decode(strip_tags($row->$titleElement), ENT_COMPAT, 'UTF-8');
@@ -433,7 +437,7 @@ class Model extends \Fabrik\Models\Visualization
 							{
 								case 'media':
 								default:
-									$iconImg = 'media/com_fabrik/images' . $iconImg;
+									$iconImg = 'media/com_fabrik/images/' . ltrim($iconImg, '/');
 									break;
 								case 'jroot':
 									break;

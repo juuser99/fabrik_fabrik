@@ -323,6 +323,10 @@ class Field extends Element
 
 		$opts->geocomplete = $params->get('autocomplete', '0') === '3';
 
+		$config = JComponentHelper::getParams('com_fabrik');
+		$apiKey = $config->get('google_api_key', '');
+		$opts->mapKey = empty($apiKey) ? false : $apiKey;
+
 		if ($this->getParams()->get('autocomplete', '0') == '2')
 		{
 			$autoOpts = array();
@@ -369,18 +373,15 @@ class Field extends Element
 			$folder = 'components/com_fabrik/libs/googlemaps/geocomplete/';
 			$s->deps[] = $folder . 'jquery.geocomplete';
 		}
-
-		//if (count($s->deps) > 1)
-		//{
-			if (array_key_exists($key, $shim))
-			{
-				$shim[$key]->deps = array_merge($shim[$key]->deps, $s->deps);
-			}
-			else
-			{
-				$shim[$key] = $s;
-			}
-		//}
+		
+		if (array_key_exists($key, $shim))
+		{
+			$shim[$key]->deps = array_merge($shim[$key]->deps, $s->deps);
+		}
+		else
+		{
+			$shim[$key] = $s;
+		}
 
 		parent::formJavascriptClass($srcs, $script, $shim);
 

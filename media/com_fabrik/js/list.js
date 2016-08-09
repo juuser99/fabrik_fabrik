@@ -218,7 +218,66 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                     });
                 }
             },
+            centerCSVWindow: function(start) {
+                /* hide the 'Save to' until file name is known */
+                var savingto = (start > 0) ? 'block' : 'none';
+                jQuery('p.saveto').css('display',savingto); 
 
+                /* allow modal to collapse height once form options are hidden
+                 * so that only csvmsg div is shown
+                 */
+                if(start >= 0 || jQuery('div.itemContent').outerHeight()==0){
+                    /* If selectable options - hide and remove space in DOM by setting outerHeight to 0 */
+                    if(jQuery('div.modal-footer').length) {
+                        //jQuery('div.itemContent').outerHeight(0);
+                        jQuery('div.modal').css('height','auto');
+                    }else{
+                        jQuery('div.itemContent').css('overflow','initial');
+                    }   
+                }else{
+                    /* reset the itemContent height to max */
+                    if(jQuery('div.modal-footer').length) {
+                        jQuery('div.opt__file-type div').css({'float':'left','width': (this.exportWindowOpts.optswidth-8)+'px','background-color':'bisque','margin':'0px','padding':'4px 8px','font-weight':'600'});                        
+                        jQuery('div.itemContent').css('height','auto');
+                        jQuery('div.modal').css('height','auto');
+                    }   
+                }   
+                jQuery('div.contentWrapper').css('height','auto');
+                jQuery('#csvmsg').css('text-align','center');
+                                    
+                /* re-center the modal vertically */
+                var viewHeight = jQuery(window).outerHeight();
+                var headHeight = jQuery('div.modal-header').outerHeight(true);
+    
+                /* modHeight source depends on if there is a mod_footer (options were are shown) */
+                if(jQuery('div.modal-footer').length) {
+                    var modHeight = jQuery('div.itemContent').outerHeight(true);
+                    var footHeight =  jQuery('div.modal-footer').outerHeight(true);
+                }else{
+                    /* just hard-code the itemContent height to accomodate 
+                     * the csvmsg div if no options and footer are used */
+                    var modHeight = 134;
+                    var footHeight = 0;
+                    jQuery( 'div.modal' ).css('height',(headHeight+modHeight)+'px');
+                }
+        
+                var frameHeight = parseInt(headHeight+modHeight+footHeight);
+
+                /* If modal height will be within 10px of max (viewport) height
+                 * set height of scrolling content be to 80% of viewport height 
+                 * (allowing for header and footer)
+                 */
+                if(frameHeight+10 > viewHeight){
+                    var fullHeight= parseInt(headHeight+(viewHeight*.8)+footHeight);
+                    jQuery( 'div.itemContent' ).outerHeight(parseInt(viewHeight*.8));
+                    jQuery( 'div.modal' ).outerHeight(fullHeight);
+                    var offtop = parseInt((viewHeight-fullHeight)/2);
+                    jQuery( 'div.modal' ).css('top',offtop+'px');
+                }else{
+                    var offtop = parseInt((viewHeight-frameHeight)/2);
+                    jQuery('div.modal').css('top',offtop+'px');
+                }
+            },
             /**
              * Open either the window to choose csv export options or auto-start the CSV
              * download
@@ -515,9 +574,12 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                                 jQuery('#csvmsg').html(msg);
                                 document.getElements('input.exportCSVButton').removeProperty('disabled');
 
+                                // commenting this out as it seems to hose up the download in IE11/Edge
+                                /*
                                 jQuery('#csvmsg a.btn-success').mouseup(function () {
                                     jQuery(this).hide();
                                 });
+                                */
 
                                 jQuery('#csvmsg a.btn-success').focusout(function () {
                                     Fabrik.Windows.exportcsv.close(true);
@@ -1168,8 +1230,22 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
              * @private
              */
             _updateRows: function (data) {
-                var tbody, itemTemplate, i, groupHeading, columnCount, parent, items = [], item,
-                    rowTemplate, cell, cells, form = jQuery(this.form), self = this, fullRow;
+                var tbody,
+                    itemTemplate,
+                    i,
+                    groupHeading,
+                    columnCount,
+                    parent,
+                    items = [],
+                    item,
+                    rowTemplate,
+                    cell,
+                    cells,
+                    form = jQuery(this.form),
+                    self = this,
+                    tmpl = 'tr',
+                    fullRow;
+
                 if (typeOf(data) !== 'object') {
                     return;
                 }
@@ -1191,9 +1267,11 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 if (cell.prop('tagName') === 'TR') {
                     parent = cell;
                     columnCount = 1;
+                    tmpl = 'tr';
                 } else {
                     parent = cell.parent();
                     columnCount = form.find('.fabrikDataContainer').data('cols');
+                    tmpl = 'div';
                 }
 
                 columnCount = columnCount === undefined ? 1 : columnCount;
@@ -1232,13 +1310,13 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
 
                     items = Fabrik.Array.chunk(items, columnCount);
                     for (i = 0; i < items.length; i++) {
-                        if (items[i].length > 0) {
-                            // We need to treat <tr>s differently from div templates
-                            cells = items[i][0].prop('tagName') === 'TR' ? items[i][0].children() : items[i];
-                        } else {
+                        if (tmpl === 'div') {
                             cells = items[i];
+                            fullRow = rowTemplate.clone().append(cells);
                         }
-                        fullRow = rowTemplate.clone().append(cells);
+                        else {
+                            fullRow = items[i];
+                        }
                         tbody.append(fullRow);
                     }
                 });
@@ -1291,20 +1369,31 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                     if (cell.prop('tagName') !== 'A') {
                         cell.html(val);
                     } else {
-                        cell.prop('href', val);
+                        var href;
+                        try {
+                            // handle our view/edit links with data-rowid
+                            href = jQuery(val).prop('href');
+                            var rowid = jQuery(val).data('rowid');
+                            cell.prop('href', href);
+                            cell.data('rowid', rowid);
+                        }
+                        catch (err) {
+                            // val wasn't an A tag, so just treat it as an href
+                            cell.prop('href', val);
+                        }
                     }
                 });
-                template.find('.fabrik_row').prop('id', row.id);
                 if (typeof(this.options.itemTemplate) === 'string') {
-                    c = template.find('.fabrik_row');
+                    c = template.find('.fabrik_row').addBack(template);
                     c.prop('id', row.id);
+                    c.removeClass();
                     var newClass = row['class'].split(' ');
                     for (j = 0; j < newClass.length; j++) {
                         c.addClass(newClass[j]);
                     }
                     r = template.clone();
                 } else {
-                    r = template.find('.fabrik_row');
+                    r = template.find('.fabrik_row').addBack(template);
                 }
                 return r;
             },

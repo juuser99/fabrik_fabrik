@@ -621,4 +621,28 @@ class Visualization extends Model
 
 		return in_array($row->get('access'), $groups);
 	}
+
+	/**
+	 * Load the JS files into the document
+	 *
+	 * @param   array  &$scripts  Js script sources to load in the head
+	 *
+	 * @return null
+	 */
+	public function getCustomJsAction(&$scripts)
+	{
+		$views = array(
+			'visualization',
+			'viz'
+		);
+		$scriptsKey = 'viz_' . $this->getId();
+
+		foreach ($views as $view)
+		{
+			if (JFile::exists(COM_FABRIK_FRONTEND . '/js/' . $view . '_' . $this->getId() . '.js'))
+			{
+				$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
+			}
+		}
+	}
 }

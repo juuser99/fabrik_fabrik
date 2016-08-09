@@ -1929,24 +1929,25 @@ class Worker
 	/**
 	 * Function to send an email
 	 *
-	 * @param   string  $from        From email address
-	 * @param   string  $fromName    From name
-	 * @param   mixed   $recipient   Recipient email address(es)
-	 * @param   string  $subject     email subject
-	 * @param   string  $body        Message body
-	 * @param   boolean $mode        false = plain text, true = HTML
-	 * @param   mixed   $cc          CC email address(es)
-	 * @param   mixed   $bcc         BCC email address(es)
-	 * @param   mixed   $attachment  Attachment file name(s)
-	 * @param   mixed   $replyTo     Reply to email address(es)
-	 * @param   mixed   $replyToName Reply to name(s)
+	 * @param   string   $from         From email address
+	 * @param   string   $fromName     From name
+	 * @param   mixed    $recipient    Recipient email address(es)
+	 * @param   string   $subject      email subject
+	 * @param   string   $body         Message body
+	 * @param   boolean  $mode         false = plain text, true = HTML
+	 * @param   mixed    $cc           CC email address(es)
+	 * @param   mixed    $bcc          BCC email address(es)
+	 * @param   mixed    $attachment   Attachment file name(s)
+	 * @param   mixed    $replyTo      Reply to email address(es)
+	 * @param   mixed    $replyToName  Reply to name(s)
+	 * @param   array    $headers      Optional custom headers, assoc array keyed by header name
 	 *
 	 * @return  boolean  True on success
 	 *
 	 * @since   11.1
 	 */
 	public static function sendMail($from, $fromName, $recipient, $subject, $body, $mode = false,
-		$cc = null, $bcc = null, $attachment = null, $replyTo = null, $replyToName = null)
+		$cc = null, $bcc = null, $attachment = null, $replyTo = null, $replyToName = null, $headers = array())
 	{
 		// do a couple of tweaks to improve spam scores
 
@@ -2003,13 +2004,16 @@ class Worker
 			// not sure if we should bail if Bcc is bad, for now just soldier on
 		}
 
-		try
+		if (!empty($attachment))
 		{
-			$mailer->addAttachment($attachment);
-		}
-		catch (Exception $e)
-		{
-			// most likely file didn't exist, ignore
+			try
+			{
+				$mailer->addAttachment($attachment);
+			}
+			catch (Exception $e)
+			{
+				// most likely file didn't exist, ignore
+			}
 		}
 
 		$autoReplyTo = false;
@@ -2065,6 +2069,10 @@ class Worker
 		if ($mode)
 		{
 			$mailer->AltBody = JMailHelper::cleanText(strip_tags($body));
+		}
+
+		foreach ($headers as $headerName => $headerValue) {
+			$mailer->addCustomHeader($headerName, $headerValue);
 		}
 
 		try

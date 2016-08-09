@@ -1457,39 +1457,41 @@ class FabrikFEModelList extends JModelForm
 				//$class = $btnClass . 'fabrik_edit fabrik__rowlink';
 				$dataList   = 'list_' . $this->getRenderContext();
 				$loadMethod = $this->getLoadMethod('editurl');
-
-				$displayData = (object) array(
-					'loadMethod'     => $loadMethod,
-					'action'         => $buttonAction,
-					'editAttributes' => $editAttribs,
-					'dataList'       => $dataList,
-					'editLink'       => $edit_link,
-					'editLabel'      => $editLabel,
-					'rowData'        => $row
-				);
-
-				$displayData->rowId  = $rowId;
+				
+				$displayData = new stdClass;
+				$displayData->loadMethod = $loadMethod;
+				$displayData->class = $class;
+				$displayData->editAttributes = $editAttribs;
+				$displayData->dataList = $dataList;
+				$displayData->editLink = $edit_link;
+				$displayData->editLabel = $editLabel;
+				$displayData->editText = $editText;
+				$displayData->rowData = $row;
+				$displayData->rowId = $rowId;
 				$displayData->isAjax = $isAjax;
-				$layout              = $this->getLayout('listactions.fabrik-edit-button');
-				$editLink            = $layout->render($displayData);
-				$viewLabel           = $this->viewLabel($data[$groupKey][$i]);
-				$loadMethod          = $this->getLoadMethod('detailurl');
-
-				$displayData         = (object) array(
-					'loadMethod'            => $loadMethod,
-					'action'                => $buttonAction,
-					'detailsAttributes'     => $detailsAttribs,
-					'link'                  => $link,
-					'viewLabel'             => $viewLabel,
-					'viewLinkTarget'        => $viewLinkTarget,
-					'dataList'              => $dataList,
-					'rowData'               => $row,
-					'list_detail_link_icon' => $params->get('list_detail_link_icon', 'search.png')
-				);
-				$displayData->rowId  = $rowId;
+				$layout = $this->getLayout('listactions.fabrik-edit-button');
+				$editLink = $layout->render($displayData);
+				
+				$viewLabel = $this->viewLabel($data[$groupKey][$i]);
+				$viewText = $buttonAction == 'dropdown' ? $viewLabel : '<span class="hidden">' . $viewLabel . '</span>';
+				$class = $j3 ? $btnClass . 'fabrik_view fabrik__rowlink' : 'btn fabrik__rowlink';
+				$loadMethod = $this->getLoadMethod('detailurl');
+				
+				$displayData = new stdClass;
+				$displayData->loadMethod = $loadMethod;
+				$displayData->class = $class;
+				$displayData->detailsAttributes = $detailsAttribs;
+				$displayData->link = $link;
+				$displayData->viewLabel = $viewLabel;
+				$displayData->viewLinkTarget = $viewLinkTarget;
+				$displayData->viewText = $viewText;
+				$displayData->dataList = $dataList;
+				$displayData->rowData = $row;
+				$displayData->rowId = $rowId;
 				$displayData->isAjax = $isAjax;
-				$layout              = $this->getLayout('listactions.fabrik-view-button');
-				$viewLink            = $layout->render($displayData);
+				$displayData->list_detail_link_icon = $params->get('list_detail_link_icon', 'search.png');
+				$layout = $this->getLayout('listactions.fabrik-view-button');
+				$viewLink = $layout->render($displayData);
 
 				$row->fabrik_actions = array();
 
@@ -2178,15 +2180,18 @@ class FabrikFEModelList extends JModelForm
 		$dataList   = 'list_' . $this->getRenderContext();
 		$rowId      = $this->getSlug($row);
 		$isAjax     = $this->isAjaxLinks() ? '1' : '0';
+		$isCustom   = $customLink === '' ? '0' : '1';
 		
 		if ($target !== '')
 		{
-			$target = 'target="' . $target . '"';
+			target = 'target="' . $target . '"';
 		}
+		
 		$data = '<a data-loadmethod="' . $loadMethod
 			. '" data-list="' . $dataList
 			. '" data-rowid="' . $rowId
 			. '" data-isajax="' . $isAjax
+			. '" data-iscustom="' . $isCustom
 			. '" class="' . $class
 			. '" href="' . $link
 			. '"' . $target . '>' . $data
@@ -5680,9 +5685,10 @@ class FabrikFEModelList extends JModelForm
 			$this->nav->url           = $this->getTableAction();
 			$this->nav->showAllOption = $params->get('showall-records', false);
 			$this->nav->setId($this->getId());
-			$this->nav->showTotal      = $params->get('show-total', false);
-			$item                      = $this->getTable();
-			$this->nav->startLimit     = Worker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $this->isMambot);
+			$this->nav->showTotal     = $params->get('show-total', false);
+			$this->nav->showNav       = $this->app->input->getInt('fabrik_show_nav', $params->get('show-table-nav', 1));
+			$item                     = $this->getTable();
+			$this->nav->startLimit    = Worker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $this->isMambot);
 			$this->nav->showDisplayNum = $params->get('show_displaynum', true);
 		}
 
@@ -6076,7 +6082,7 @@ class FabrikFEModelList extends JModelForm
 
 		foreach ($types as $i => $type)
 		{
-			if ($type != 'prefilter')
+			if ($type != 'prefilter' && $type != 'menuPrefilter')
 			{
 				return true;
 			}
@@ -7294,7 +7300,10 @@ class FabrikFEModelList extends JModelForm
 			{
 				if (isset($oRecord->$primaryKey) && is_numeric($oRecord->$primaryKey))
 				{
-					$oRecord->$primaryKey = $rowId;
+					if (!empty($rowid))
+					{
+						$oRecord->$primaryKey = $rowId;
+					}
 				}
 			}
 		}

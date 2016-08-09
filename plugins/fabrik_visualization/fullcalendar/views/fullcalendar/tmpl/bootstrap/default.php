@@ -17,6 +17,8 @@ use Fabrik\Helpers\Text;
 // Replaced with classes contained within a distinct id
 
 $row = $this->row;
+
+echo $this->modalLayout;
 ?>
 <div id="<?php echo $this->containerId; ?>" class="fabrik_visualization" style="border:1px sold;margin:5px;">
 	<?php if ($this->params->get('show-title', 0))
