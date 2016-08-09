@@ -2184,7 +2184,7 @@ class FabrikFEModelList extends JModelForm
 		
 		if ($target !== '')
 		{
-			target = 'target="' . $target . '"';
+			$target = 'target="' . $target . '"';
 		}
 		
 		$data = '<a data-loadmethod="' . $loadMethod
