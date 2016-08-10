@@ -1454,42 +1454,43 @@ class FabrikFEModelList extends JModelForm
 
 				$editLabel = $this->editLabel($data[$groupKey][$i]);
 
-				//$class = $btnClass . 'fabrik_edit fabrik__rowlink';
 				$dataList   = 'list_' . $this->getRenderContext();
 				$loadMethod = $this->getLoadMethod('editurl');
 				
-				$displayData = new stdClass;
-				$displayData->loadMethod = $loadMethod;
-				$displayData->class = $class;
-				$displayData->editAttributes = $editAttribs;
-				$displayData->dataList = $dataList;
-				$displayData->editLink = $edit_link;
-				$displayData->editLabel = $editLabel;
-				$displayData->editText = $editText;
-				$displayData->rowData = $row;
-				$displayData->rowId = $rowId;
-				$displayData->isAjax = $isAjax;
+				$displayData = (object) array(
+					'loadMethod'     => $loadMethod,
+					'action'         => $buttonAction,
+					'editAttributes' => $editAttribs,
+					'dataList'       => $dataList,
+					'editLink'       => $edit_link,
+					'editLabel'      => $editLabel,
+					'rowData'        => $row,
+					'rowId'          => $rowId,
+					'isAjax'         => $isAjax,
+					'isCustom'       => $this->getCustomLink('url', 'edit') !== ''
+				);
+
 				$layout = $this->getLayout('listactions.fabrik-edit-button');
 				$editLink = $layout->render($displayData);
-				
+
 				$viewLabel = $this->viewLabel($data[$groupKey][$i]);
-				$viewText = $buttonAction == 'dropdown' ? $viewLabel : '<span class="hidden">' . $viewLabel . '</span>';
-				$class = $j3 ? $btnClass . 'fabrik_view fabrik__rowlink' : 'btn fabrik__rowlink';
 				$loadMethod = $this->getLoadMethod('detailurl');
-				
-				$displayData = new stdClass;
-				$displayData->loadMethod = $loadMethod;
-				$displayData->class = $class;
-				$displayData->detailsAttributes = $detailsAttribs;
-				$displayData->link = $link;
-				$displayData->viewLabel = $viewLabel;
-				$displayData->viewLinkTarget = $viewLinkTarget;
-				$displayData->viewText = $viewText;
-				$displayData->dataList = $dataList;
-				$displayData->rowData = $row;
-				$displayData->rowId = $rowId;
-				$displayData->isAjax = $isAjax;
-				$displayData->list_detail_link_icon = $params->get('list_detail_link_icon', 'search.png');
+
+				$displayData = (object) array(
+					'loadMethod'            => $loadMethod,
+					'action'                => $buttonAction,
+					'detailsAttributes'     => $detailsAttribs,
+					'dataList'              => $dataList,
+					'link'                  => $link,
+					'viewLabel'             => $viewLabel,
+					'viewLinkTarget'        => $viewLinkTarget,
+					'rowData'               => $row,
+					'rowId'                 => $rowId,
+					'isAjax'                => $isAjax,
+					'isCustom'              => $this->getCustomLink('url', 'details') !== '',
+					'list_detail_link_icon' => $params->get('list_detail_link_icon', 'search.png')
+				);
+
 				$layout = $this->getLayout('listactions.fabrik-view-button');
 				$viewLink = $layout->render($displayData);
 

@@ -20,6 +20,7 @@ use Fabrik\Helpers\Text;
 use \RuntimeException;
 use \stdClass;
 use \JHtml;
+use \JComponentHelper;
 
 /**
  * Add a radius search option to the list filters

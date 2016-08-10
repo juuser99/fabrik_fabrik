@@ -22,7 +22,7 @@ use Fabrik\Helpers\Googlemap as FabGoogleMapHelper;
 use Fabrik\Helpers\Html;
 use \JComponentHelper;
 use Fabrik\Helpers\Text;
-use \Fabimage;
+use Fabrik\Image\Image;
 use \Exception;
 
 /**
@@ -767,7 +767,6 @@ class Googlemap extends Element
 		}
 
 		// Serve cached file from remote url
-		require_once COM_FABRIK_FRONTEND . '/helpers/image.php';
 		$src .= implode('&', $attribs);
 		$folder = 'cache/com_fabrik/staticmaps/';
 		$file = implode('.', $attribs) . '.png';
@@ -778,7 +777,7 @@ class Googlemap extends Element
 
 		if ((!$tableView && $params->get('fb_gm_staticmap') == '1') || ($tableView && $params->get('fb_gm_staticmap_tableview', '0') === '1'))
 		{
-			$displayData->src = Fabimage::cacheRemote($src, $folder, $file);
+			$displayData->src = Image::cacheRemote($src, $folder, $file);
 
 			// if cacheImage returned false, probably an issue with permissions on the cache folder, so punt to direct URL
 			if ($displayData->src === false)

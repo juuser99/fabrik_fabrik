@@ -99,7 +99,7 @@ class User extends Databasejoin
 			else
 			{
 				$userId = $this->getValue($data, $repeatCounter, array('raw' => 1));
-				$userId = is_array($userId) ? (int) FArrayHelper::getValue($userId, 0) : (int) $userId;
+				$userId = is_array($userId) ? (int) ArrayHelper::getValue($userId, 0) : (int) $userId;
 
 				// On failed validation value is 1 - user ids are always more than that so don't load userid=1 otherwise an error is generated
 				$user = $userId <= 1 ? false : JFactory::getUser($userId);

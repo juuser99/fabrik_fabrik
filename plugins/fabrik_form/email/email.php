@@ -184,7 +184,7 @@ class Email extends Form
 		$message = str_replace('{fabrik_viewlink}', $viewLink, $message);
 		$message = str_replace('{fabrik_editurl}', $editURL, $message);
 		$message = str_replace('{fabrik_viewurl}', $viewURL, $message);
-		FabrikPDFHelper::fullPaths($message);
+		Pdf::fullPaths($message);
 
 
 		// $$$ rob if email_to is not a valid email address check the raw value to see if that is

@@ -16,7 +16,6 @@ defined('_JEXEC') or die('Restricted access');
 use \JComponentHelper;
 use \stdClass;
 use \JModelLegacy;
-use \JBrowser;
 use \JHtmlBootstrap;
 use \JVersion;
 use \JUri;
@@ -26,6 +25,7 @@ use \JFactory;
 use \JFile;
 
 jimport('joomla.filesystem.file');
+jimport('joomla.environment.browser');
 
 if (!defined('COM_FABRIK_FRONTEND'))
 {
@@ -2284,7 +2284,7 @@ EOD;
 	 */
 	public static function canvasSupport()
 	{
-		$navigator = JBrowser::getInstance();
+		$navigator = \JBrowser::getInstance();
 
 		return !($navigator->getBrowser() == 'msie' && $navigator->getMajor() < 9);
 	}

@@ -368,7 +368,7 @@ class Calc extends Element
 			//  $$$ Paul - Because this is run on List rows before repeat-group merges, repeat group placeholders are OK.
 			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
 			$d = $data;
-			$w = new FabrikWorker;
+			$w = new Worker;
 			$cal = $w->parseMessageForPlaceHolder($cal, $data, true, true);
 
 			if (Html::isDebug())

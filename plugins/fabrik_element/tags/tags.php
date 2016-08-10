@@ -22,6 +22,7 @@ use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Html;
 use \TagsModelTag;
 use \JTable;
+use \JRoute;
 
 /**
  * Plugin element to render Joomla's tags field
