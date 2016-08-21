@@ -360,7 +360,7 @@ class Model extends \Fabrik\Models\Visualization
 					$rowData['coords']  = $v[0] . ',' . $v[1];
 					$rowData['nav_url'] = "http://maps.google.com/maps?q=loc:" . $rowData['coords'] . "&navigate=yes";
 					$html               = $w->parseMessageForPlaceHolder($template, $rowData);
-					Html::runContentPlugins($html);
+					Html::runContentPlugins($html, true);
 
 					$titleElement = ArrayHelper::getValue($titleElements, $c, '');
 					$title        = $titleElement == '' ? '' : html_entity_decode(strip_tags($row->$titleElement), ENT_COMPAT, 'UTF-8');

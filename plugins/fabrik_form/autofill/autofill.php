@@ -93,8 +93,8 @@ class Autofill extends Form
 			$formModel->formPluginJS = array();
 		}
 
-		$this->formJavascriptClass();
-		$formModel->formPluginJS['Autofill'] = 'var autofill = new Autofill(' . $opts . ');';
+		$this->formJavascriptClass($params, $formModel);
+		$formModel->formPluginJS['Autofill' . $this->renderOrder] = 'var autofill = new Autofill(' . $opts . ');';
 	}
 
 	/**

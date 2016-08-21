@@ -302,7 +302,7 @@ class Lizt extends Controller
 		}
 		else
 		{
-			$ref = $defaultRef;
+			$ref = $defaultRef . '&setListRefFromRequest=1&listref=' . $model->getRenderContext();
 		}
 
 		$this->app->redirect($ref);

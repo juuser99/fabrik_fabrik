@@ -129,6 +129,7 @@ class Link extends Element
 				&& substr(StringHelper::strtolower($href), 0, 7) != 'http://'
 				&& substr(StringHelper::strtolower($href), 0, 8) != 'https://'
 				&& substr(StringHelper::strtolower($href), 0, 6) != 'ftp://'
+				&& substr(StringHelper::strtolower($href), 0, 7) != 'mailto:'
 				)
 			{
 					$href = 'http://' . $href;

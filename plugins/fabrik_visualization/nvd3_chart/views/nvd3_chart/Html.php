@@ -102,7 +102,7 @@ class Html extends JViewLegacy
 		HtmlHelper::script($srcs, $js);
 
 		$text = $this->loadTemplate();
-		HtmlHelper::runContentPlugins($text);
+		HtmlHelper::runContentPlugins($text, true);
 		echo $text;
 	}
 }

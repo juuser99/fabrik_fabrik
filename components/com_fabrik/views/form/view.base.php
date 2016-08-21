@@ -306,14 +306,16 @@ class FabrikViewFormBase extends FabrikView
 		$text   = $this->loadTemplate();
 		$model  = $this->getModel();
 		$params = $model->getParams();
+		$view = $model->isEditable() === false ? 'details' : 'form';
 
 		if ($params->get('process-jplugins', 2) == 1 || ($params->get('process-jplugins', 2) == 2 && $model->isEditable() === false))
 		{
-			Html::runContentPlugins($text);
+			$cloak = $view === 'details' && $this->app->input->get('format') !== 'pdf';
+			Html::runContentPlugins($text, $cloak);
 		}
 
 		// Allows you to use {placeholders} in form template Only replacing data accessible to the users acl.
-		$view = $model->isEditable() === false ? 'details' : 'form';
+
 		$text = $w->parseMessageForPlaceHolder($text, $model->accessibleData($view));
 		echo $text;
 	}

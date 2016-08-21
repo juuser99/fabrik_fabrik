@@ -2292,13 +2292,14 @@ EOD;
 	/**
 	 * Run Joomla content plugins over text
 	 *
-	 * @param   string &$text Content
+	 * @param   string &$text  Content
+	 * @param   bool   $cloak  Cloak emails
 	 *
 	 * @return  void
 	 *
 	 * @since   3.0.7
 	 */
-	public static function runContentPlugins(&$text)
+	public static function runContentPlugins(&$text, $cloak = false)
 	{
 		$app    = JFactory::getApplication();
 		$input  = $app->input;
@@ -2318,15 +2319,14 @@ EOD;
 		 * In addition, if we are in a details PDF view we should not run the email cloak plugin.
 		 */
 
-		if ($view !== 'details' || $input->get('format') === 'pdf')
+		if (!$cloak)
 		{
 			$text .= '{emailcloak=off}';
 		}
 
 		$text = JHtml::_('content.prepare', $text);
 
-		if ($view !== 'details' || $input->get('format') === 'pdf')
-
+		if (!$cloak)
 		{
 			$text = StringHelper::rtrimword($text, '{emailcloak=off}');
 		}
@@ -2335,6 +2335,19 @@ EOD;
 		$input->set('view', $view);
 		$input->set('format', $format);
 	}
+
+	/**
+	 * Run text through J!'s email cloaking
+	 * @param $text
+	 *
+	 * @return mixed
+	 */
+	public static function cloakEmails($text)
+	{
+		$text = JHtml::_('email.cloak',$text);
+		return $text;
+	}
+
 
 	/**
 	 * Get content item template
@@ -2384,7 +2397,7 @@ EOD;
 
 		if ($runPlugins === true)
 		{
-			self::runContentPlugins($res);
+			self::runContentPlugins($res, false);
 		}
 
 		return $res;

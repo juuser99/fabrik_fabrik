@@ -238,6 +238,11 @@ class Update_Col extends Lizt
 			$this->_process($model, $userCol, (int) $this->user->get('id'), false);
 		}
 
+		if ($params->get('update_email_after_update', '1') == '0')
+		{
+			$this->sendEmails($ids);
+		}
+
 		if (!empty($update))
 		{
 			foreach ($update->coltoupdate as $i => $col)
@@ -246,7 +251,10 @@ class Update_Col extends Lizt
 			}
 		}
 
-		$this->sendEmails($ids);
+		if ($params->get('update_email_after_update', '1') == '1')
+		{
+			$this->sendEmails($ids);
+		}
 
 		$this->msg = $params->get('update_message', '');
 
@@ -402,7 +410,7 @@ class Update_Col extends Lizt
 		$tbl = array_shift(explode('.', $emailColumn));
 		$db = $this->_db;
 		$userIdsEmails = array();
-		$query = $db->getQuery();
+		$query = $db->getQuery(true);
 		$query->select('#__users.id AS id, #__users.email AS email')
 		->from('#__users')->join('LEFT', $tbl . ' ON #__users.id = ' . $emailColumn)
 		->where($item->db_primary_key . ' IN (' . $ids . ')');

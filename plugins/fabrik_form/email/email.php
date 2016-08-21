@@ -128,7 +128,7 @@ class Email extends Form
 
 			if ($runContentPlugins === true)
 			{
-				Html::runContentPlugins($messageTemplate);
+				Html::runContentPlugins($messageTemplate, false);
 			}
 
 			$messageTemplate = str_replace('{content}', $content, $messageTemplate);
@@ -141,7 +141,7 @@ class Email extends Form
 
 			if ($runContentPlugins === true)
 			{
-				Html::runContentPlugins($messageText);
+				Html::runContentPlugins($messageText, false);
 			}
 
 			$messageText = str_replace('{content}', $content, $messageText);

@@ -58,7 +58,7 @@ class Email extends Cron
 		jimport('joomla.mail.helper');
 		$params = $this->getParams();
 		$msg    = $params->get('message');
-		Html::runContentPlugins($msg);
+		Html::runContentPlugins($msg, false);
 		$to = explode(',', $params->get('to'));
 
 		$w = new Worker;

@@ -43,9 +43,6 @@ use Fabrik\Helpers\Text;
 						case 'editable':
 							echo '<input type="text" name="list_email_to" id="list_email_to" value="' . $to . '" />';
 							break;
-						case 'hidden':
-							echo '<input name="list_email_to" id="list_email_to" value="' . $to . '" type="hidden" />';
-							break;
 						case 'readonly':
 						default:
 							echo '<input type="text" name="list_email_to" id="list_email_to" value="' . $to . '" readonly="readonly" />';
@@ -138,7 +135,9 @@ use Fabrik\Helpers\Text;
 		<input type="hidden" name="recordids" value="<?php echo $this->recordids ?>" />
 		<?php
 		if (!$this->showToField) :
-			echo $this->fieldList;
+			?>
+			<input type=hidden name="list_email_to" id="list_email_to" value="<?php echo $this->emailTo; ?>" />
+			<?php
 		endif;
 		if (!$this->showSubject) :
 			?>
