@@ -45,6 +45,7 @@ class Notification extends Cron
 	 * Do the plugin action
 	 *
 	 * @param   array  &$data  Record data
+	 * @param   object  &$listModel  List model
 	 *
 	 * @return number of records updated
 	 */
