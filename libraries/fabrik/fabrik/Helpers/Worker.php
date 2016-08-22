@@ -2075,6 +2075,20 @@ class Worker
 			$mailer->addCustomHeader($headerName, $headerValue);
 		}
 
+		$config = JComponentHelper::getParams('com_fabrik');
+
+		if ($config->get('verify_peer', '1') === '0')
+		{
+			$mailer->SMTPOptions = array(
+				'ssl' =>
+					array(
+						'verify_peer' => false,
+						'verify_peer_name' => false,
+						'allow_self_signed' => true
+					)
+			);
+		}
+
 		try
 		{
 			$ret = $mailer->Send();

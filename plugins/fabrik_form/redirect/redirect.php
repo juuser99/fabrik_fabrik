@@ -141,7 +141,7 @@ class Redirect extends Form
 		// Don't display system message if thanks is empty
 		if (ArrayHelper::getValue($this->data, 'thanks_message', '') !== '')
 		{
-			$this->session->set($context . 'msg', $smsg);
+			$this->session->set($context . 'msg', $smsg[$this->renderOrder]);
 		}
 
 		return true;

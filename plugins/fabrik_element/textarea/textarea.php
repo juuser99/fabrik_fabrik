@@ -403,7 +403,9 @@ class Textarea extends Element
 			$value = $value[$repeatCounter];
 		}
 
-		return $this->renderListData($value, new stdClass);
+		$oData = FArrayHelper::toObject($data);
+
+		return $this->renderListData($value, $oData);
 	}
 
 	/**
