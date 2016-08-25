@@ -181,6 +181,11 @@ class Kunena extends Form
 			{
 				$app->enqueueMessage(Text::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_MESSAGE') . ': ' . $message->getError(), 'error');
 			}
+
+			if ($params->get('kunena_notify', '0') === '1')
+			{
+				$message->sendNotification();
+			}
 		}
 		else
 		{

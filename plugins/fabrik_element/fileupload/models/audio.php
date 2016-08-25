@@ -57,7 +57,7 @@ class AudioRenderModel extends \Fabrik\Models\Model
 	{
 		$layout = $model->getLayout('audio');
 		$displayData = new stdClass;
-		$displayData->file = str_replace("\\", "/", COM_FABRIK_LIVESITE . $file);
+		$displayData->file = $model->getStorage()->getFileUrl($file);
 
 		$this->output = $layout->render($displayData);
 	}
