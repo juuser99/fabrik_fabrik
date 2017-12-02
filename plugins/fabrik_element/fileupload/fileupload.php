@@ -2158,7 +2158,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		// $$$ hugh - check if we need to blow away the cached filepath, set in validation
 		$myFileName = $storage->cleanName($myFileName, $repeatCounter);
-		$myFileName = $this->renameFile($myFileName, $repeatCounter);
 
 		$folder = $params->get('ul_directory');
 		$folder = $folder . '/' . $myFileDir;

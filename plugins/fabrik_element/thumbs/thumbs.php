@@ -371,16 +371,7 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 	{
 		$cookieName = 'thumb-table_' . $listId . '_row_' . $rowId . '_ip_' . FabrikString::filteredIp();
 		jimport('joomla.utilities.utility');
-		$version = new JVersion;
-
-		if (version_compare($version->RELEASE, '3.1', '>'))
-		{
-			return JApplicationHelper::getHash($cookieName);
-		}
-		else
-		{
-			return JApplication::getHash($cookieName);
-		}
+		return JApplicationHelper::getHash($cookieName);
 	}
 
 	/**

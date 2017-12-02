@@ -470,32 +470,19 @@ class Pagination extends \JPagination
 	 */
 	public function get($property, $default = null)
 	{
-		$version = new JVersion;
-
-		if ($version->RELEASE > 2.5)
+		if (strpos($property, '.'))
 		{
-			if (strpos($property, '.'))
-			{
-				$prop     = explode('.', $property);
-				$prop[1]  = ucfirst($prop[1]);
-				$property = implode($prop);
-			}
-
-			if (isset($this->$property))
-			{
-				return $this->$property;
-			}
-
-			return $default;
+			$prop     = explode('.', $property);
+			$prop[1]  = ucfirst($prop[1]);
+			$property = implode($prop);
 		}
-		elseif (isset($this->$property))
+
+		if (isset($this->$property))
 		{
 			return $this->$property;
 		}
-		else
-		{
-			return $default;
-		}
+
+		return $default;
 	}
 
 	/**

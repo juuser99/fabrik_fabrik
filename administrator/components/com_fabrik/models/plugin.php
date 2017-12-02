@@ -142,9 +142,7 @@ class FabrikAdminModelPlugin extends JModelLegacy
 	{
 		$data                   = $this->getData();
 		$c                      = $this->getState('c') + 1;
-		$version                = new JVersion;
-		$j3                     = version_compare($version->RELEASE, '3.0') >= 0 ? true : false;
-		$class                  = $j3 ? 'form-horizontal ' : 'adminform ';
+		$class                  = 'form-horizontal ';
 		$str                    = array();
 		$str[]                  = '<div class="pane-slider content pane-down accordion-inner">';
 		$str[]                  = '<fieldset class="' . $class . 'pluginContainer" id="formAction_' . $c . '"><ul>';
@@ -167,31 +165,15 @@ class FabrikAdminModelPlugin extends JModelLegacy
 
 			foreach ($topForm->getFieldset($fieldset->name) as $field)
 			{
-				if (!$j3)
-				{
-					$str[] = '<li>' . $field->label . $field->input . '</li>';
-				}
-				else
-				{
-					$str[] = '<div class="control-group"><div class="control-label">' . $field->label;
-					$str[] = '</div><div class="controls">' . $field->input . '</div></div>';
-				}
+				$str[] = '<div class="control-group"><div class="control-label">' . $field->label;
+				$str[] = '</div><div class="controls">' . $field->input . '</div></div>';
 			}
 		}
 
 		$str[] = '</ul>';
 		$str[] = '<div class="pluginOpts" style="clear:left"></div>';
-
-		if ($j3)
-		{
-			$str[] = '<div class="form-actions"><a href="#" class="btn btn-danger" data-button="removeButton">';
-			$str[] = '<i class="icon-delete"></i> ' . FText::_('COM_FABRIK_DELETE') . '</a></div>';
-		}
-		else
-		{
-			$str[] = '<a href="#" class="delete removeButton">' . FText::_('COM_FABRIK_DELETE') . '</a>';
-		}
-
+		$str[] = '<div class="form-actions"><a href="#" class="btn btn-danger" data-button="removeButton">';
+		$str[] = '<i class="icon-delete"></i> ' . FText::_('COM_FABRIK_DELETE') . '</a></div>';
 		$str[] = '</fieldset>';
 		$str[] = '</div>';
 

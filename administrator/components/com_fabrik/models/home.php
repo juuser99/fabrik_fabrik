@@ -69,25 +69,11 @@ class FabrikAdminModelHome extends FabModelAdmin
 		//  Get RSS parsed object - Turn off error reporting as SimplePie creates strict error notices.
 		$origError = error_reporting();
 		error_reporting(0);
-		$version = new JVersion;
-
-		if ($version->RELEASE == 2.5)
-		{
-			//  get RSS parsed object
-			$options               = array();
-			$options['rssUrl']     = 'http://feeds.feedburner.com/fabrik';
-			$options['cache_time'] = 86400;
-
-			$rssDoc = JFactory::getXMLparser('RSS', $options);
-		}
-		else
-		{
-			jimport('simplepie.simplepie');
-			$rssDoc = new SimplePie();
-			$rssDoc->set_feed_url('http://feeds.feedburner.com/fabrik');
-			$rssDoc->set_cache_duration(86400);
-			$rssDoc->init();
-		}
+		jimport('simplepie.simplepie');
+		$rssDoc = new SimplePie();
+		$rssDoc->set_feed_url('http://feeds.feedburner.com/fabrik');
+		$rssDoc->set_cache_duration(86400);
+		$rssDoc->init();
 
 		if ($rssDoc == false)
 		{

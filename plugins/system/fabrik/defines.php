@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Version;
+
 jimport('joomla.filesystem.folder');
 
 // Could be that the sys plugin is installed but fabrik not
@@ -42,7 +44,6 @@ $app = JFactory::getApplication();
 $input = $app->input;
 
 // Override JHTML -needed for framework override
-$version = new JVersion;
 JHTML::addIncludePath(JPATH_SITE . '/components/com_fabrik/jhelpers/' . $version->RELEASE . '/');
 
 // Register the element class with the loader

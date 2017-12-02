@@ -993,20 +993,16 @@ EOD;
 			$fbConfig    = JComponentHelper::getParams('com_fabrik');
 
 			// Only use template test for testing in 2.5 with my temp J bootstrap template.
-			$bootstrapped = in_array($app->getTemplate(), array('bootstrap', 'fabrik4')) || $version->RELEASE > 2.5;
+			$bootstrapped = true;
 
 			//$ext = self::isDebug() ? '.js' : '-min.js';
 			$mediaFolder = self::getMediaFolder();
 			$src         = array();
 			JHtml::_('behavior.framework', true);
 
-			// Ensure bootstrap js is loaded - as J template may not load it.
-			if ($version->RELEASE > 2.5)
-			{
-				JHtml::_('bootstrap.framework');
-				self::loadBootstrapCSS();
-				JHtml::_('script', $mediaFolder . '/lib/jquery-ui/jquery-ui.min.js');
-			}
+            JHtml::_('bootstrap.framework');
+            self::loadBootstrapCSS();
+            JHtml::_('script', $mediaFolder . '/lib/jquery-ui/jquery-ui.min.js');
 
 			// Require js test - list with no cal loading ajax form with cal
 			if (version_compare(JVERSION, '3.7', '>='))
@@ -1340,13 +1336,7 @@ EOD;
 				$r->fab .= '/dist';
 			}
 
-			$version = new JVersion;
-
-			if ($version->RELEASE >= 3.2 && $version->DEV_LEVEL > 1)
-			{
-				$r->punycode = 'media/system/js/punycode';
-			}
-
+            $r->punycode = 'media/system/js/punycode';
 			self::$allRequirePaths = $r;
 		}
 
@@ -3008,26 +2998,20 @@ EOT;
 		// Include MooTools More framework
 		static::framework('more');
 
-		$debug   = JFactory::getConfig()->get('debug');
-		$version = new JVersion;
+		$debug   = JFactory::getConfig()->get('debug');$file = $debug ? 'punycode-uncompressed' : 'punycode';
+        $path = JURI::root() . 'media/system/js/' . $file;
 
-		if ($version->RELEASE >= 3.2 && $version->DEV_LEVEL > 1)
-		{
-			$file = $debug ? 'punycode-uncompressed' : 'punycode';
-			$path = JURI::root() . 'media/system/js/' . $file;
+        $js   = array();
+        $js[] = "requirejs({";
+        $js[] = "   'paths': {";
+        $js[] = "     'punycode': '" . $path . "'";
+        $js[] = "   }";
+        $js[] = " },";
+        $js[] = "['punycode'], function (p) {";
+        $js[] = "  window.punycode = p;";
+        $js[] = "});";
 
-			$js   = array();
-			$js[] = "requirejs({";
-			$js[] = "   'paths': {";
-			$js[] = "     'punycode': '" . $path . "'";
-			$js[] = "   }";
-			$js[] = " },";
-			$js[] = "['punycode'], function (p) {";
-			$js[] = "  window.punycode = p;";
-			$js[] = "});";
-
-			self::addToSessionHeadScripts(implode("\n", $js));
-		}
+        self::addToSessionHeadScripts(implode("\n", $js));
 
 		JHtml::_('script', 'system/validate.js', false, true);
 		static::$loaded[__METHOD__] = true;

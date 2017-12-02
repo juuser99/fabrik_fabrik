@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Version;
 
 require_once 'fabmodeladmin.php';
 
@@ -1115,16 +1116,13 @@ class FabrikAdminModelPackage extends FabModelAdmin
 	 */
 	protected function joomlaTargetVersion($row)
 	{
-		$version = new JVersion;
 		/*
 		 * Not sure this is going to be possible with out a lot more logic related to source/target j versions
 		 * and whether or not to install additional plugins etc.
 		 * Don't want to install a j2.5 plugin in a j3.0 site for example)
 		 */
-		// $jversion = isset($row->params->jversion) ? $row->params->jversion : $version->RELEASE;
-		$jVersion = str_replace('.', '', $version->RELEASE);
 
-		return $jVersion;
+		return Version::MAJOR_VERSION . Version::MINOR_VERSION;
 	}
 
 	/**

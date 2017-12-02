@@ -449,7 +449,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 		else
 		{
-			$path = empty($path) ? '' : JPath::clean($path);
+			$path = JPath::clean($path);
 		}
 
 		$path = str_replace("\\", '/', $path);

@@ -232,12 +232,7 @@ class FabrikAdminViewLists extends JViewLegacy
 		$model = $this->getModel('lists');
 		$this->items = $model->getDbTableNames();
 		$this->addConfirmDeleteToolbar();
-		$v = new JVersion;
-
-		if ($v->RELEASE > 2.5)
-		{
-			$this->setLayout('confirmdeletebootstrap');
-		}
+		$this->setLayout('confirmdeletebootstrap');
 
 		parent::display($tpl);
 	}

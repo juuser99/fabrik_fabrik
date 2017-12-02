@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Version;
 
 jimport('joomla.plugin.plugin');
 jimport('joomla.filesystem.file');
@@ -49,8 +50,7 @@ class PlgSystemFabrik extends JPlugin
 		 * than Kunena's.  We might want to set our default to -1.
 		 */
 		$app     = JFactory::getApplication();
-		$version = new JVersion;
-		$base    = 'components.com_fabrik.classes.' . str_replace('.', '', $version->RELEASE);
+		$base    = 'components.com_fabrik.classes.' . Version::MAJOR_VERSION . Version::MINOR_VERSION;
 
 		// Test if Kunena is loaded - if so notify admins
 		if (class_exists('KunenaAccess'))
@@ -66,7 +66,7 @@ class PlgSystemFabrik extends JPlugin
 		{
 			$loaded = true;
 
-		    if (version_compare($version->RELEASE, '3.8', '<'))
+		    if (version_compare(JVERSION, '3.8', '<'))
             {
                 $loaded = JLoader::import($base . '.field', JPATH_SITE . '/administrator', 'administrator.');
             }
@@ -85,13 +85,13 @@ class PlgSystemFabrik extends JPlugin
 		}
 
         // The fabrikfeed doc type has been deprecated.  For backward compat, change it use standard J! feed instead
-        if (version_compare($version->RELEASE, '3.8', '>=')) {
+        if (version_compare(JVERSION, '3.8', '>=')) {
             if ($app->input->get('format') === 'fabrikfeed') {
                 $app->input->set('format', 'feed');
             }
         }
 
-		if (version_compare($version->RELEASE, '3.1', '<='))
+		if (version_compare(JVERSION, '3.1', '<='))
 		{
 			JLoader::import($base . '.layout.layout', JPATH_SITE . '/administrator', 'administrator.');
 			JLoader::import($base . '.layout.base', JPATH_SITE . '/administrator', 'administrator.');
@@ -243,9 +243,7 @@ class PlgSystemFabrik extends JPlugin
 		self::clearJs();
 		self::storeHeadJs();
 
-		$version           = new JVersion;
-		$lessThanThreeFour = version_compare($version->RELEASE, '3.4', '<');
-		$content           = $lessThanThreeFour ? JResponse::getBody() : $app->getBody();
+		$content = $app->getBody();
 
 		if (!stristr($content, '</body>'))
 		{
@@ -256,7 +254,7 @@ class PlgSystemFabrik extends JPlugin
 			$content = FabrikString::replaceLast('</body>', $script . '</body>', $content);
 		}
 
-		$lessThanThreeFour ? JResponse::setBody($content) : $app->setBody($content);
+		$app->setBody($content);
 	}
 
 	/**

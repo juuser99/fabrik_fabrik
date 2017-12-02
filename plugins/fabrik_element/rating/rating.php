@@ -487,7 +487,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 		jimport('joomla.utilities.utility');
 		$version = new JVersion;
 
-		if (version_compare($version->RELEASE, '3.1', '>'))
+		if (version_compare(JVERSION, '3.1', '>'))
 		{
 			return JApplicationHelper::getHash($cookieName);
 		}

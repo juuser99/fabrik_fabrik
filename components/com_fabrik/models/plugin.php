@@ -290,8 +290,6 @@ class FabrikPlugin extends JPlugin
 	public function onRenderAdminSettings($data = array(), $repeatCounter = null, $mode = null)
 	{
 		$this->makeDbTable();
-		$version = new JVersion;
-		$j3      = version_compare($version->RELEASE, '3.0') >= 0 ? true : false;
 		$type    = str_replace('fabrik_', '', $this->_type);
 
 		$form         = $this->getPluginForm($repeatCounter);
@@ -418,7 +416,7 @@ class FabrikPlugin extends JPlugin
 				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . '-' . $repeatCounter . '">';
 			}
 
-			$class = $j3 ? 'form-horizontal ' : 'adminform ';
+			$class = 'form-horizontal ';
 			$class .= $type . 'Settings page-' . $this->_name;
 			$repeat = isset($fieldset->repeatcontrols) && $fieldset->repeatcontrols == 1;
 
@@ -453,19 +451,11 @@ class FabrikPlugin extends JPlugin
 			}
 
 			$form->repeat = $repeat;
-			$j3           = FabrikWorker::j3();
 
 			if ($repeat)
 			{
-				if ($j3)
-				{
-					$str[] = '<a class="btn" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', FText::_('COM_FABRIK_ADD')) . '</a>';
-					$str[] = '<a class="btn" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', FText::_('COM_FABRIK_REMOVE')) . '</a>';
-				}
-				else
-				{
-					$str[] = '<a class="addButton" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', FText::_('COM_FABRIK_ADD')) . '</a>';
-				}
+				$str[] = '<a class="btn" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', FText::_('COM_FABRIK_ADD')) . '</a>';
+				$str[] = '<a class="btn" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', FText::_('COM_FABRIK_REMOVE')) . '</a>';
 			}
 
 			for ($r = 0; $r < $repeatDataMax; $r++)
@@ -474,11 +464,6 @@ class FabrikPlugin extends JPlugin
 				{
 					$str[]               = '<div class="repeatGroup">';
 					$form->repeatCounter = $r;
-				}
-
-				if (!$j3)
-				{
-					$str[] = '<ul class="adminformlist">';
 				}
 
 				foreach ($form->getFieldset($fieldset->name) as $field)
@@ -498,47 +483,10 @@ class FabrikPlugin extends JPlugin
 						}
 					}
 
-					if ($j3)
-					{
-						if ($field->showon)
-						{
-							$showOns = JFormHelper::parseShowOnConditions($field->showon, $field->formControl, $field->group);
-
-							if ($field->repeat)
-							{
-								foreach ($showOns as &$showOn)
-								{
-									$showOn['field'] .= '[' . $form->repeatCounter . ']';
-								}
-							}
-
-							$dataShowOn = ' data-showon=\'' . json_encode($showOns) . '\'';
-
-						}
-						else
-						{
-							$dataShowOn = '';
-						}
-						$str[] = '<div class="control-group"' . $dataShowOn . '>';
-						$str[] = '<div class="control-label">' . $field->label . '</div>';
-						$str[] = '<div class="controls">' . $field->input . '</div>';
-						$str[] = '</div>';
-					}
-					else
-					{
-						$str[] = '<li>' . $field->label . $field->input . '</li>';
-					}
-				}
-
-				if ($repeat && !$j3)
-				{
-					$str[] = '<li><a class="removeButton delete btn" href="#">' . FabrikHelperHTML::icon('icon-minus-sign', FText::_('COM_FABRIK_REMOVE'))
-						. '</a></li>';
-				}
-
-				if (!$j3)
-				{
-					$str[] = '</ul>';
+					$str[] = '<div class="control-group">';
+					$str[] = '<div class="control-label">' . $field->label . '</div>';
+					$str[] = '<div class="controls">' . $field->input . '</div>';
+					$str[] = '</div>';
 				}
 
 				if ($repeat)

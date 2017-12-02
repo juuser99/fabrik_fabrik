@@ -60,6 +60,8 @@ class Com_FabrikInstallerScript
 		$row->database    = $app->get('db');
 		$row->description = 'site database';
 		$row->published   = 1;
+		$row->checked_out = 0;
+		$row->params      = '';
 		$row->default     = 1;
 		$res              = $db->insertObject('#__fabrik_connections', $row, 'id');
 
@@ -104,8 +106,7 @@ class Com_FabrikInstallerScript
 
 	protected function getVersion()
     {
-        $version = new JVersion;
-        return $version->RELEASE;
+        return JVERSION;
     }
 
 	/**

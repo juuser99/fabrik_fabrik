@@ -76,13 +76,6 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 			. $columns . $rows . $class . $disabled . $onChange . $required . '>'
 			. $this->value . '</textarea>';
 
-		$version = new JVersion;
-
-		if ($version->RELEASE == 2.5)
-		{
-			return $editor;
-		}
-
 		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 
