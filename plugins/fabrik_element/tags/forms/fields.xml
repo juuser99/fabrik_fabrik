@@ -5,7 +5,7 @@
 
 			<field type="helplink"
 				url="PLG_ELEMENT_TAGS_HELP_SERVER" />
-				
+
 			<field name="tags_dbname"
 				description="PLG_ELEMENT_TAGS_DBNAME_DESC"
 				label="PLG_ELEMENT_TAGS_DBNAME_LABEL"
