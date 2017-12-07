@@ -80,7 +80,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	public function toggleInList()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die(FText::_('JINVALID_TOKEN'));
+		\JSession::checkToken() or die(FText::_('JINVALID_TOKEN'));
 
 		// Get items to publish from the request.
 		$app = JFactory::getApplication();
@@ -166,7 +166,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 */
 	public function copySelectGroup()
 	{
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$viewType = JFactory::getDocument()->getType();
 		$view = $this->getView($this->view_item, $viewType);
 		$view->setLayout('copyselectgroup');
@@ -190,7 +190,7 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 	 */
 	public function batch()
 	{
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$model = $this->getModel('Elements');

@@ -74,7 +74,7 @@ class FabrikViewEmailform extends FabrikView
 	 */
 	public function sendMail($email)
 	{
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$input = $this->app->input;
 
 		/*

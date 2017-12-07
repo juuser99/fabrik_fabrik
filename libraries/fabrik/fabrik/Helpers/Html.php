@@ -986,7 +986,6 @@ EOD;
 		if (!self::$framework)
 		{
 			$app     = JFactory::getApplication();
-			$version = new JVersion;
 			Html::modalJLayouts();
 			$liveSiteSrc = array();
 			$liveSiteReq = array();
@@ -998,8 +997,7 @@ EOD;
 			//$ext = self::isDebug() ? '.js' : '-min.js';
 			$mediaFolder = self::getMediaFolder();
 			$src         = array();
-			JHtml::_('behavior.framework', true);
-
+			self::mootools( true, self::isDebug());
             JHtml::_('bootstrap.framework');
             self::loadBootstrapCSS();
             JHtml::_('script', $mediaFolder . '/lib/jquery-ui/jquery-ui.min.js');
@@ -1189,7 +1187,6 @@ EOD;
 		self::$allRequirePaths = (object) array_merge((array) self::requirePaths(), $paths);
 		$framework    = array();
 		$deps         = array();
-		$j3           = Worker::j3();
 
 		$requirejsBaseURI = self::getJSAssetBaseURI();
 
@@ -1206,26 +1203,11 @@ EOD;
 			$newShim[$k] = $s;
 		}
 
-		$navigator = JBrowser::getInstance();
-
-		if ($navigator->getBrowser() == 'msie' && !$j3)
-		{
-			$deps[] = 'lib/flexiejs/flexie';
-		}
-
 		$deps[] = 'fab/utils';
 		$deps[] = 'jquery';
 
 		$deps[] = 'fab/mootools-ext';
 		$deps[] = 'lib/Event.mock';
-
-		if (!$j3)
-		{
-			$deps[] = 'lib/art';
-			$deps[] = 'fab/tips';
-			$deps[] = 'fab/icons';
-			$deps[] = 'fab/icongen';
-		}
 
 		self::addRequireJsShim($framework, 'fab/fabrik', $deps, false);
 		self::addRequireJsShim($framework, 'fab/autocomplete-bootstrap', array('fab/fabrik'), false);
@@ -1350,10 +1332,51 @@ EOD;
 	 *
 	 * @return  void
 	 */
-	public static function mootools()
+	public static function mootoolsold()
 	{
 		self::framework();
 	}
+	/**
+	 * Method to load the MooTools framework into the document head
+	 *
+	 * If debugging mode is on an uncompressed version of MooTools is included for easier debugging.
+	 *
+	 * @param   boolean  $extras  Flag to determine whether to load MooTools More in addition to Core
+	 * @param   mixed    $debug   Is debugging mode on? [optional]
+	 *
+	 * @return  void
+	 *
+	 * @since   1.6
+	 */
+	public static function mootools($extras = false, $debug = null)
+	{
+		$type = $extras ? 'more' : 'core';
+
+		// Only load once
+		if (!empty(static::$loaded[__METHOD__][$type]))
+		{
+			return;
+		}
+
+		// If no debugging value is set, use the configuration setting
+		if ($debug === null)
+		{
+			$debug = JDEBUG;
+		}
+
+		if ($type !== 'core' && empty(static::$loaded[__METHOD__]['core']))
+		{
+			self::mootools(false, $debug);
+		}
+
+		$mediaFolder = self::getMediaFolder();
+		JHtml::_('script', $mediaFolder . '/lib/mootools/mootools-' . $type . '.js', array('version' => 'auto', 'relative' => false, 'detectDebug' => $debug));
+		static::$loaded[__METHOD__][$type] = true;
+
+		return;
+	}
+
+
 
 	/**
 	 * Load J!'s bootstrap CSS if requested.  Special case for iframes in non J! pages loading us.

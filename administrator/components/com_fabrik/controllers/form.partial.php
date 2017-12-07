@@ -89,7 +89,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 			$cache->get($view, 'display', $cacheId);
 			$contents = ob_get_contents();
 			ob_end_clean();
-			$token       = JSession::getFormToken();
+			$token       = \JSession::getFormToken();
 			$search      = '#<input type="hidden" name="[0-9a-f]{32}" value="1" />#';
 			$replacement = '<input type="hidden" name="' . $token . '" value="1" />';
 			echo preg_replace($search, $replacement, $contents);
@@ -127,7 +127,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 		// Check for request forgeries
 		if ($model->spoofCheck())
 		{
-			JSession::checkToken() or die('Invalid Token');
+			\JSession::checkToken() or die('Invalid Token');
 		}
 
 		$validated = $model->validate();
@@ -331,7 +331,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 	public function delete()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app   = JFactory::getApplication();
 		$input = $this->input;
 		$model = $this->getModel('list', 'FabrikFEModel');
@@ -388,7 +388,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 	public function save($key = null, $urlVar = null)
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$data = $this->input->post->get('jform', array(), 'array');
 
 		if ((int) $data['id'] === 0)
@@ -445,7 +445,7 @@ class FabrikAdminControllerForm extends FabControllerForm
 	public function createContentType()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$id        = $this->input->get('cid', array(), 'array');
 		$id        = array_pop($id);
 		$formModel = $this->getModel('Form', 'FabrikFEModel');

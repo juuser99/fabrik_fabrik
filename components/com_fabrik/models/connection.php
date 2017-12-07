@@ -98,13 +98,11 @@ class FabrikFEModelConnection extends FabModel
 	 *
 	 * @since  3.1b2
 	 *
-	 * @return  JDatabaseDriver|JDatabase
+	 * @return  JDatabaseDriver
 	 */
 	public function getDriverInstance($options)
 	{
-		$version = new JVersion;
-
-		return JDatabaseDriver::getInstance($options);
+		return \JDatabaseDriver::getInstance($options);
 	}
 
 	/**
@@ -162,7 +160,7 @@ class FabrikFEModelConnection extends FabModel
 			$this->decryptPw($this->connection);
 		}
 
-		if ($this->connection->get('published') !== '1')
+		if ($this->connection->get('published') !== 1)
 		{
 			throw new RuntimeException('Connection ID #' . $this->connection->get('id') . ' is unpublished or trashed', E_ERROR);
 		}
@@ -272,7 +270,7 @@ class FabrikFEModelConnection extends FabModel
 	 */
 	private function getBaseDriverName($driverName = '')
 	{
-		return FabrikString::rtrimword($driverName, '_fab');
+		return FabrikString::rtrimword($driverName, FabrikWorker::j4() ? 'fab' : '_fab');
 	}
 
 	/**
@@ -303,11 +301,11 @@ class FabrikFEModelConnection extends FabModel
 	/**
 	 * Get the options to connect to a db
 	 *
-	 * @param   object  &$cn  connection table
+	 * @param   object  $cn  connection table
 	 *
 	 * @return  array  connection options
 	 */
-	public function getConnectionOptions(&$cn)
+	public function getConnectionOptions($cn)
 	{
 		$conf = $this->config;
 		$host = $cn->host;
@@ -318,7 +316,7 @@ class FabrikFEModelConnection extends FabModel
 		$driver = $conf->get('dbtype');
 
 		// Test for swapping db table names
-		$driver .= '_fab';
+		$driver .= FabrikWorker::j4() ? 'fab' : '_fab';
 		$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix);
 
 		return $options;

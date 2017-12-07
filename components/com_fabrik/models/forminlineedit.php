@@ -75,7 +75,7 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 			{
 				$onLoad[] = "o.select();";
 				$onLoad[] = "o.focus();";
-				$onLoad[] = "Fabrik.inlineedit_$elementId.token = '" . JSession::getFormToken() . "';";
+				$onLoad[] = "Fabrik.inlineedit_$elementId.token = '" . \JSession::getFormToken() . "';";
 			}
 
 			$eCounter++;

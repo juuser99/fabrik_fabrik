@@ -13,7 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<div class="tab-pane" id="access">
+
     <fieldset class="form-horizontal">
     	<legend>
     		<?php echo FText::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS'); ?>
@@ -27,4 +27,4 @@ defined('_JEXEC') or die('Restricted access');
 		endforeach;
 		?>
 	</fieldset>
-</div>
+

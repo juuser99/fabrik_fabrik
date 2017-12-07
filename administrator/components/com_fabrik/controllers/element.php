@@ -102,7 +102,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 	public function updateStructure()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
@@ -142,7 +142,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 	 */
 	public function cancelUpdateStructure()
 	{
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
 		$app = JFactory::getApplication();
 		$input = $app->input;

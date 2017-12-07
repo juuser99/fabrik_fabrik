@@ -94,7 +94,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function doCopy()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$input = $this->input;
 		$model = $this->getModel();
 		$model->copy();
@@ -189,7 +189,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function order()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$input = $this->input;
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$id    = $input->getInt('listid');
@@ -222,7 +222,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function filter()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$input = $this->input;
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$id    = $input->get('listid');
@@ -243,7 +243,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function delete()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$input  = $this->input;
 		$model  = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$listId = $input->getInt('listid');

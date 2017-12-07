@@ -295,7 +295,7 @@ class FabrikFEModelVisualization extends FabModel
 					. $table->id . '&amp;nextview=' . $this->app->input->get('view', 'list')
 					. '&scope&amp;=' . $this->app->scope;
 
-				$url .= '&amp;tkn=' . JSession::getFormToken();
+				$url .= '&amp;tkn=' . \JSession::getFormToken();
 				$links[$table->label] = $url;
 			}
 		}

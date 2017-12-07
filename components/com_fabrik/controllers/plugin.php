@@ -70,8 +70,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 			$method = 'on' . JString::ucfirst($method);
 		}
 
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger($method);
+		$app->triggerEvent($method);
 	}
 
 	/**

@@ -21,71 +21,76 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 
-	Joomla.submitbutton = function(task) {
-		requirejs(['fab/fabrik'], function (Fabrik) {
-			if (task !== 'list.cancel' && !Fabrik.controller.canSaveForm()) {
-				window.alert('Please wait - still loading');
-				return false;
-			}
-			if (task == 'list.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
+    Joomla.submitbutton = function(task) {
+        requirejs(['fab/fabrik'], function (Fabrik) {
+            if (task !== 'list.cancel' && !Fabrik.controller.canSaveForm()) {
+                window.alert('Please wait - still loading');
+                return false;
+            }
+            if (task == 'list.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
 				<?php echo $this->form->getField('introduction')->save(); ?>
-				window.fireEvent('form.save');
-				Joomla.submitform(task, document.getElementById('adminForm'));
-			} else {
-				window.alert('<?php echo $this->escape(FText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
-			}
-		});
-	}
+                window.fireEvent('form.save');
+                Joomla.submitform(task, document.getElementById('adminForm'));
+            } else {
+                window.alert('<?php echo $this->escape(FText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
+            }
+        });
+    }
 </script>
 
 <form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
-	<div class="row-fluid" id="elementFormTable">
+    <div class="row" id="elementFormTable">
 
-		<div class="span2">
+        <div class="col-md-2">
+            <ul class="nav flex-column"style="margin-top:40px">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#detailsX">
+						<?php echo FText::_('COM_FABRIK_DETAILS')?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#data">
+						<?php echo FText::_('COM_FABRIK_DATA')?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#publishing">
+						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_PUBLISHING_DETAILS')?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#access">
+						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS')?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#tabplugins">
+						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_PLUGINS_DETAILS')?>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-10">
+            <div class="tab-content">
+                <div class="tab-pane" id="detailsX">
+				    <?php echo $this->loadTemplate('details'); ?>
+                </div>
+                <div class="tab-pane" id="data">
+		            <?php echo $this->loadTemplate('data'); ?>
+                </div>
+                <div class="tab-pane" id="publishing">
+		            <?php echo $this->loadTemplate('publishing'); ?>
+                </div>
+                <div class="tab-pane" id="access">
+		            <?php echo $this->loadTemplate('access'); ?>
+                </div>
+                <div class="tab-pane" id="tabplugins">
+		            <?php echo $this->loadTemplate('plugins'); ?>
+                </div>
+            </div>
 
-
-				<ul class="nav nav-list"style="margin-top:40px">
-					<li class="active">
-						<a data-toggle="tab" href="#detailsX">
-							<?php echo FText::_('COM_FABRIK_DETAILS')?>
-						</a>
-					</li>
-					<li>
-						<a data-toggle="tab" href="#data">
-							<?php echo FText::_('COM_FABRIK_DATA')?>
-						</a>
-					</li>
-					<li>
-						<a data-toggle="tab" href="#publishing">
-							<?php echo FText::_('COM_FABRIK_GROUP_LABEL_PUBLISHING_DETAILS')?>
-						</a>
-					</li>
-					<li>
-						<a data-toggle="tab" href="#access">
-							<?php echo FText::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS')?>
-						</a>
-					</li>
-					<li>
-						<a data-toggle="tab" href="#tabplugins">
-							<?php echo FText::_('COM_FABRIK_GROUP_LABEL_PLUGINS_DETAILS')?>
-						</a>
-					</li>
-				</ul>
-		</div>
-		<div class="span10">
-
-			<div class="tab-content">
-				<?php
-				echo $this->loadTemplate('details');
-				echo $this->loadTemplate('data');
-				echo $this->loadTemplate('publishing');
-				echo $this->loadTemplate('plugins');
-				echo $this->loadTemplate('access');
-				?>
-			</div>
-
-			<input type="hidden" name="task" value="" />
+            <input type="hidden" name="task" value="" />
 			<?php echo JHtml::_('form.token'); ?>
-		</div>
-	</div>
+        </div>
+    </div>
 </form>

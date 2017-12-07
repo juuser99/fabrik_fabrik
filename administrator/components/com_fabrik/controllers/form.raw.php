@@ -90,7 +90,7 @@ class FabrikAdminControllerForm extends JControllerForm
 		// Check for request forgeries
 		if ($model->spoofCheck())
 		{
-			JSession::checkToken() or die('Invalid Token');
+			\JSession::checkToken() or die('Invalid Token');
 		}
 
 		$validated = $model->validate();

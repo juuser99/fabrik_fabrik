@@ -260,7 +260,7 @@ class FabrikAdminViewElements extends JViewLegacy
 
 	public function copySelectGroup($tpl = null)
 	{
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$model = $this->getModel();
 		$app = JFactory::getApplication();
 		$input = $app->input;

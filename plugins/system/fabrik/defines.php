@@ -43,9 +43,6 @@ define("GROUPSPLITTER", "//..*..//");
 $app = JFactory::getApplication();
 $input = $app->input;
 
-// Override JHTML -needed for framework override
-JHTML::addIncludePath(JPATH_SITE . '/components/com_fabrik/jhelpers/' . $version->RELEASE . '/');
-
 // Register the element class with the loader
 JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik/element.php');
 

@@ -464,7 +464,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$opts->listName         = $this->getListModel()->getTable()->db_table_name;
 		$opts->useWIP           = (bool) $params->get('upload_use_wip', '0') == '1';
 		$opts->page_url         = COM_FABRIK_LIVESITE;
-		$opts->ajaxToken        = JSession::getFormToken();
+		$opts->ajaxToken        = \JSession::getFormToken();
         $opts->isAdmin          = (bool) $this->app->isAdmin();
         $opts->iconDelete       = FabrikHelperHTML::icon("icon-delete",  '', '', true);
         $opts->spanNames        = array();
@@ -2698,7 +2698,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         }
 
         // Check for request forgeries
-        if ($formModel->spoofCheck() && !JSession::checkToken('request'))
+        if ($formModel->spoofCheck() && !\JSession::checkToken('request'))
         {
             $o->error = FText::_('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ERR');
             echo json_encode($o);

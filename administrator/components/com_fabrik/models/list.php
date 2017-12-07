@@ -191,7 +191,7 @@ class FabrikAdminModelList extends FabModelAdmin
 	public function publish(&$pks, $value = 1)
 	{
 		// Initialise variables.
-		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher = \JFactory::getApplication()->getDispatcher();
 		$table      = $this->getTable();
 		$pks        = (array) $pks;
 
@@ -1315,7 +1315,7 @@ class FabrikAdminModelList extends FabModelAdmin
 	protected function makeElementsFromFields($groupId, $tableName)
 	{
 		$fabrikDb      = $this->getFEModel()->getDb();
-		$dispatcher    = JEventDispatcher::getInstance();
+		$dispatcher    = \JFactory::getApplication()->getDispatcher();
 		$input         = $this->app->input;
 		$elementModel  = new PlgFabrik_Element($dispatcher);
 		$pluginManager = FabrikWorker::getPluginManager();
@@ -1930,7 +1930,7 @@ class FabrikAdminModelList extends FabModelAdmin
 	public function delete(&$pks)
 	{
 		// Initialise variables.
-		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher = \JFactory::getApplication()->getDispatcher();
 		$pks        = (array) $pks;
 		$table      = $this->getTable();
 

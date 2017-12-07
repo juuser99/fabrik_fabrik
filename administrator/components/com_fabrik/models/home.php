@@ -66,29 +66,22 @@ class FabrikAdminModelHome extends FabModelAdmin
 	 */
 	public function getRSSFeed()
 	{
-		//  Get RSS parsed object - Turn off error reporting as SimplePie creates strict error notices.
-		$origError = error_reporting();
-		error_reporting(0);
-		jimport('simplepie.simplepie');
-		$rssDoc = new SimplePie();
-		$rssDoc->set_feed_url('http://feeds.feedburner.com/fabrik');
-		$rssDoc->set_cache_duration(86400);
-		$rssDoc->init();
+		$data = new SimpleXMLElement('http://feeds.feedburner.com/fabrik', LIBXML_NOCDATA, true);
 
-		if ($rssDoc == false)
+		if (!$data)
 		{
 			$output = FText::_('Error: Feed not retrieved');
 		}
 		else
 		{
-			// Channel header and link
-			$title = $rssDoc->get_title();
-			$link  = $rssDoc->get_link();
+			$data = json_decode(json_encode($data), true);
+			$title = $data['channel']['title'];
+			$link  = $data['channel']['link'];
 
 			$output = '<table class="adminlist">';
 			$output .= '<tr><th colspan="3"><a href="' . $link . '" target="_blank">' . FText::_($title) . '</th></tr>';
 
-			$items    = array_slice($rssDoc->get_items(), 0, 3);
+			$items    = $data['channel']['item'];
 			$numItems = count($items);
 
 			if ($numItems == 0)
@@ -99,19 +92,14 @@ class FabrikAdminModelHome extends FabModelAdmin
 			{
 				$k = 0;
 
-				for ($j = 0; $j < $numItems; $j++)
+				foreach ($items as $item)
 				{
-					$item = $items[$j];
+					$date = new DateTime($item['pubDate']);
 					$output .= '<tr><td class="row' . $k . '">';
-					$output .= '<a href="' . $item->get_link() . '" target="_blank">' . $item->get_title() . '</a>';
-					$output .= '<br />' . $item->get_date('Y-m-d');
-
-					if ($item->get_description())
-					{
-						$description = FabrikString::truncate($item->get_description(), array('wordcount' => 50));
-						$output .= '<br />' . $description;
-					}
-
+					$output .= '<a href="' . $item['link'] . '" target="_blank">' . $item['title'] . '</a>';
+					$output .= '<br />' . $date->format('Y-m-d');
+					$description = FabrikString::truncate($item['description'], array('wordcount' => 50));
+					$output .= '<br />' . $description;
 					$output .= '</td></tr>';
 					$k = 1 - $k;
 				}
@@ -119,8 +107,6 @@ class FabrikAdminModelHome extends FabModelAdmin
 
 			$output .= '</table>';
 		}
-
-		error_reporting($origError);
 
 		return $output;
 	}

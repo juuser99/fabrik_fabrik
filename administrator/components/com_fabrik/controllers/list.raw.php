@@ -78,7 +78,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function delete()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
@@ -185,7 +185,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function order()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
@@ -221,7 +221,7 @@ class FabrikAdminControllerList extends FabControllerForm
 	public function filter()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$model = JModelLegacy::getInstance('List', 'FabrikFEModel');
 		$id = $app->input->getInt('listid');

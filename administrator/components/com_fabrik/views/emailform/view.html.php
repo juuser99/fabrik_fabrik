@@ -61,7 +61,7 @@ class FabrikAdminViewemailform extends JViewLegacy
 
 	public function sendMail(&$email)
 	{
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 

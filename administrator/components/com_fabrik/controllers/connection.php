@@ -38,7 +38,7 @@ class FabrikAdminControllerConnection extends FabControllerForm
 	 */
 	public function test()
 	{
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('cid', array(), 'array');

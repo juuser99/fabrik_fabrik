@@ -172,24 +172,10 @@ class FabrikAdminModelConnection extends FabModelAdmin
 		$params = new stdClass;
 		$params->encryptedPw = true;
 		$data['params'] = json_encode($params);
-
-		/**
-		$encryptedPassword = FabrikWorker::encryptCipher($data['password']);
-		$decryptedPassword = FabrikWorker::decryptCipher($encryptedPassword);
-         */
-
 		$data['password'] = $crypt->encrypt($data['password']);
-		// $$$ hugh TESTING REMOVE!!!!
-		// $$$ Felikat - Not sure what you were testing but it broke stuff!
-		// unset($data['password']);
-
 		$options = $model->getConnectionOptions(ArrayHelper::toObject($data));
 		$db = $model->getDriverInstance($options);
 		$key = 'fabrik.connection.' . $data['id'];
-		/**
-		 * erm yeah will remove the session connection for the admin user, but not any other user whose already using the site
-		 * would need to clear out the session table i think - but that would then log out all users.
-		 */
 		$this->session->clear($key);
 
 		return parent::save($data);

@@ -26,6 +26,7 @@ class FabrikAutoloader
 		spl_autoload_register(array($this, 'controller'));
 		spl_autoload_register(array($this, 'helper'));
 		spl_autoload_register(array($this, 'view'));
+		spl_autoload_register(array($this, 'driver'));
 
 		// @TODO - at some point allow auto-loading of these as per Fabble
 		/*
@@ -259,6 +260,39 @@ class FabrikAutoloader
 		if (file_exists($path))
 		{
 			require_once $path;
+		}
+	}
+
+	/**
+	 * Load database driver file
+	 **/
+	private function driver($class)
+	{
+		$types = array(
+			'fabDriver',
+			'fabQuery'
+		);
+		$found = false;
+
+			foreach ($types as $type)
+		{
+			if (strstr($class, $type))
+			{
+				$found = true;
+				break;
+			}
+		}
+
+		if ($found)
+		{
+			$class = str_replace('\\', '/', $class);
+			$path  = preg_replace('#Joomla\/#', JPATH_SITE . '/libraries/fabrik/fabrik/', $class);
+			$path  = $path . '.php';
+
+			if (file_exists($path))
+			{
+				require_once $path;
+			}
 		}
 	}
 }

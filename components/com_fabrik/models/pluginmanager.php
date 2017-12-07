@@ -300,7 +300,7 @@ class FabrikFEModelPluginmanager extends FabModel
         }
 
 		JPluginHelper::importPlugin('fabrik_' . $group, $className);
-		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher = \JFactory::getApplication()->getDispatcher();
 
 		if ($className != '')
 		{

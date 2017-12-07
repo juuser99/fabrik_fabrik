@@ -62,8 +62,7 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 			$method = 'on' . JString::ucfirst($method);
 		}
 
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger($method);
+		$app->triggerEvent($method);
 
 		return;
 	}

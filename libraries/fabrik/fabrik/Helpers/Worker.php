@@ -19,9 +19,7 @@ use FabTable;
 use JAccess;
 use JCache;
 use JComponentHelper;
-use JCrypt;
-use JCryptCipherSimple;
-use JCryptKey;
+use Fabrik\Helpers\FCipher;
 use JDatabaseDriver;
 use JFactory;
 use JFile;
@@ -699,24 +697,11 @@ class Worker
 	 *
 	 * @since  3.1
 	 *
-	 * @return  JCrypt
+	 * @return  Fabrik\Helpers\FCipher
 	 */
 	public static function getCrypt()
 	{
-		jimport('joomla.crypt.crypt');
-		jimport('joomla.crypt.key');
-		$config = JFactory::getConfig();
-		$secret = $config->get('secret', '');
-
-		if (trim($secret) == '')
-		{
-			throw new RuntimeException('You must supply a secret code in your Joomla configuration.php file');
-		}
-
-		$key   = new JCryptKey('simple', $secret, $secret);
-		$crypt = new JCrypt(new JCryptCipherSimple, $key);
-
-		return $crypt;
+		return new FCipher();
 	}
 
 	/**
@@ -814,7 +799,7 @@ class Worker
 				$this->_searchData = is_null($searchData) ? $post : array_merge($post, $searchData);
 
 				// Enable users to use placeholder to insert session token
-				$this->_searchData['JSession::getFormToken'] = JSession::getFormToken();
+				$this->_searchData['\JSession::getFormToken'] = \JSession::getFormToken();
 
 				// Replace with the user's data
 				$msg = self::replaceWithUserData($msg);
@@ -1041,7 +1026,7 @@ class Worker
 			$sessionData = array(
 				'id' => $session->getId(),
 				'token' => $session->get('session.token'),
-				'formtoken' => JSession::getFormToken()
+				'formtoken' => \JSession::getFormToken()
 			);
 
 			foreach ($sessionData as $key => $value)
@@ -1796,7 +1781,7 @@ class Worker
 			$driver   = $conf->get('dbtype');
 
 			// Test for swapping db table names
-			$driver .= '_fab';
+			$driver .= 'fab';
 			$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,
 				'prefix' => $dbPrefix);
 
@@ -2632,6 +2617,18 @@ class Worker
 	public static function j3()
 	{
 		return true;
+	}
+
+	/*
+	 * Are we in j4
+	 *
+	 * @since 4.0
+	 *
+	 * @return bool
+	 */
+	public static function j4()
+	{
+		return version_compare(JVERSION, '4.0', '>=');
 	}
 
 	/**

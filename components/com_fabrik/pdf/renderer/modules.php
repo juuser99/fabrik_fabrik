@@ -50,7 +50,7 @@ class JDocumentRendererModules extends JDocumentRenderer
 			$buffer .= $moduleHtml;
 		}
 
-		JEventDispatcher::getInstance()->trigger('onAfterRenderModules', array(&$buffer, &$params));
+		$app->triggerEvent('onAfterRenderModules', array(&$buffer, &$params));
 
 		return $buffer;
 	}

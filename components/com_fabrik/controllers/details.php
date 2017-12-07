@@ -150,7 +150,7 @@ class FabrikControllerDetails extends JControllerLegacy
 
 		if ($model->getParams()->get('spoof_check', $fbConfig->get('spoofcheck_on_formsubmission', true)) == true)
 		{
-			JSession::checkToken() or die('Invalid Token');
+			\JSession::checkToken() or die('Invalid Token');
 		}
 
 		if ($input->getBool('fabrik_ignorevalidation', false) != true)
@@ -468,7 +468,7 @@ class FabrikControllerDetails extends JControllerLegacy
 	public function delete()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;

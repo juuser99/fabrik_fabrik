@@ -125,7 +125,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	 */
 	protected function saveArticle($id, $catId)
 	{
-		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher = \JFactory::getApplication()->getDispatcher();
 		// Include the content plugins for the on save events.
 		JPluginHelper::importPlugin('content');
 

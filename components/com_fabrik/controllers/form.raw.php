@@ -123,7 +123,7 @@ class FabrikControllerForm extends JControllerLegacy
 		// Check for request forgeries
 		if ($model->spoofCheck())
 		{
-			JSession::checkToken() or die('Invalid Token');
+			\JSession::checkToken() or die('Invalid Token');
 		}
 
 		if ($input->getBool('fabrik_ignorevalidation', false) != true)

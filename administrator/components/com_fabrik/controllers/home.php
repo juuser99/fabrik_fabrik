@@ -54,7 +54,8 @@ class FabrikAdminControllerHome extends JControllerAdmin
 	public function getRSSFeed()
 	{
 		// Get RSS parsed object
-		$rssDoc = JSimplepieFactory::getFeedParser('http://feeds.feedburner.com/fabrik', 86400);
+		//$rssDoc = JSimplepieFactory::getFeedParser('http://feeds.feedburner.com/fabrik', 86400);
+		$rssDoc = new SimpleXMLElement('http://feeds.feedburner.com/fabrik', true);
 
 		if ($rssDoc == false)
 		{

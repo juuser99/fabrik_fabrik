@@ -190,7 +190,7 @@ class FabrikControllerForm extends JControllerLegacy
 			ob_end_clean();
 
 			// Workaround for token caching
-			$token = JSession::getFormToken();
+			$token = \JSession::getFormToken();
 			$search = '#<input type="hidden" name="[0-9a-f]{32}" value="1" />#';
 			$replacement = '<input type="hidden" name="' . $token . '" value="1" />';
 			echo preg_replace($search, $replacement, $contents);
@@ -290,7 +290,7 @@ class FabrikControllerForm extends JControllerLegacy
 		// Check for request forgeries
 		if ($model->spoofCheck())
 		{
-			JSession::checkToken() or die('Invalid Token');
+			\JSession::checkToken() or die('Invalid Token');
 		}
 
 		JDEBUG ? $profiler->mark('controller process validate: start') : null;
@@ -651,7 +651,7 @@ class FabrikControllerForm extends JControllerLegacy
 	public function delete()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or die('Invalid Token');
+		\JSession::checkToken() or die('Invalid Token');
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');

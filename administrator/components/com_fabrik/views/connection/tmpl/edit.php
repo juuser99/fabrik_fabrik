@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidator');
 FabrikHelperHTML::formvalidation();
 JHtml::_('behavior.keepalive');
 ?>

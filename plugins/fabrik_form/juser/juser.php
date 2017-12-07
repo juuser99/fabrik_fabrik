@@ -357,7 +357,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 		$data = $formModel->formData;
 
 		// Check for request forgeries
-		JSession::checkToken() or jexit('Invalid Token');
+		\JSession::checkToken() or jexit('Invalid Token');
 		$originalId = 0;
 
 		if ($params->get('juser_field_userid') != '')

@@ -150,7 +150,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 	public function addToListView(&$pks, $value = 1)
 	{
 		// Initialise variables.
-		$dispatcher = JEventDispatcher::getInstance();
+		$app = \JFactory::getApplication();
 		$item       = $this->getTable();
 		$pks        = (array) $pks;
 
@@ -182,7 +182,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$context = $this->option . '.' . $this->name;
 
 		// Trigger the onContentChangeState event.
-		$result = $dispatcher->trigger($this->event_change_state, array($context, $pks, $value));
+		$result = $app->triggerEvent($this->event_change_state, array($context, $pks, $value));
 
 		if (in_array(false, $result, true))
 		{
@@ -1333,7 +1333,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 
-		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher = \JFactory::getApplication()->getDispatcher();
 		$ok         = JPluginHelper::importPlugin('fabrik_validationrule');
 
 		foreach ($usedPlugins as $usedPlugin)

@@ -339,7 +339,7 @@ class FabrikFEModelAdvancedSearch extends FabModel
 
 		// Defines if we are in a module or in the component.
 		$url .= '&amp;scope=' . $this->app->scope;
-		$url .= '&amp;tkn=' . JSession::getFormToken();
+		$url .= '&amp;tkn=' . \JSession::getFormToken();
 
 		return $url;
 	}
