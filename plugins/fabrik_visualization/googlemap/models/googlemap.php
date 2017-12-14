@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\StringHelper;
 use Fabrik\Helpers\Lizt;
 use Fabrik\Helpers\Googlemap;
 
@@ -617,7 +618,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 						// Default icon - lets see if we need to use a letter icon instead
 						if (FArrayHelper::getValue($letters, $c, '') != '')
 						{
-							$iconImg = $uri->getScheme() . '://www.google.com/mapfiles/marker' . JString::strtoupper($letters[$c]) . '.png';
+							$iconImg = $uri->getScheme() . '://www.google.com/mapfiles/marker' . StringHelper::strtoupper($letters[$c]) . '.png';
 						}
 
 						$icons[$v[0] . $v[1]] = array($v[0], $v[1], $html, $iconImg, $width, $height, 'groupkey' => $groupKey, 'listid' => $listId,

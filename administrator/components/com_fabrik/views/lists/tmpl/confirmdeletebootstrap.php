@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+JHtml::_('behavior.formvalidator');
+
 $app = JFactory::getApplication();
 ?>
 <script type="text/javascript">

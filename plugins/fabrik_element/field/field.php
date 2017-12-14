@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\StringHelper;
 
 jimport('joomla.application.component.model');
 
@@ -86,7 +87,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 		if ($params->get('password') == '1')
 		{
-			$d = str_pad('', JString::strlen($d), '*');
+			$d = str_pad('', StringHelper::strlen($d), '*');
 		}
 
 		return $d;
@@ -234,10 +235,10 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			$opts = $this->linkOpts();
 			$title = $params->get('link_title', '');
 
-			if (FabrikWorker::isEmail($value) || JString::stristr($value, 'http'))
+			if (FabrikWorker::isEmail($value) || StringHelper::stristr($value, 'http'))
 			{
 			}
-			elseif (JString::stristr($value, 'www.'))
+			elseif (StringHelper::stristr($value, 'www.'))
 			{
 				$value = 'http://' . $value;
 			}

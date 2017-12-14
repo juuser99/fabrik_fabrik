@@ -15,7 +15,6 @@ defined('_JEXEC') or die('Restricted access');
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHTML::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
 JHtml::_('behavior.tooltip');
-JHtml::_('behavior.framework', true);
 FabrikHelperHTML::formvalidation();
 JHtml::_('behavior.keepalive');
 
@@ -56,53 +55,55 @@ JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 	</div>
 <?php
 }?>
-	<div class="row-fluid" id="elementFormTable">
+	<div class="row" id="elementFormTable">
 
-		<div class="span2">
+		<div class="col-md-2">
 
-			<ul class="nav nav-list">
-				<li class="active">
-			    	<a data-toggle="tab" href="#tab-details">
+			<ul class="nav flex-column">
+				<li class="nav-item">
+			    	<a class="nav-link active" data-toggle="tab" href="#tab-details">
 			    		<?php echo FText::_('COM_FABRIK_DETAILS')?>
 			    	</a>
 			    </li>
-			    <li>
-			    	<a data-toggle="tab" href="#tab-publishing">
+			    <li class="nav-item">
+			    	<a class="nav-link" data-toggle="tab" href="#tab-publishing">
 			    		<?php echo FText::_('COM_FABRIK_PUBLISHING')?>
 			    	</a>
 			    </li>
-			    <li>
-			    	<a data-toggle="tab" href="#tab-access">
+			    <li class="nav-item">
+			    	<a class="nav-link" data-toggle="tab" href="#tab-access">
 			    		<?php echo FText::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS')?>
 			    	</a>
 			    </li>
-			    <li>
-			    	<a data-toggle="tab" href="#tab-listview">
+			    <li class="nav-item">
+			    	<a class="nav-link" data-toggle="tab" href="#tab-listview">
 			    		<?php echo FText::_('COM_FABRIK_LIST_VIEW_SETTINGS')?>
 			    	</a>
 			    </li>
-			    <li>
-			    	<a data-toggle="tab" href="#tab-validations">
+			    <li class="nav-item">
+			    	<a class="nav-link" data-toggle="tab" href="#tab-validations">
 			    		<?php echo FText::_('COM_FABRIK_VALIDATIONS')?>
 			    	</a>
 			    </li>
-			    <li>
-			    	<a data-toggle="tab" href="#tab-javascript">
+			    <li class="nav-item">
+			    	<a class="nav-link" data-toggle="tab" href="#tab-javascript">
 			    		<?php echo FText::_('COM_FABRIK_JAVASCRIPT')?>
 			    	</a>
 			    </li>
 			</ul>
 		</div>
 
-		<div class="span10 tab-content">
-			<?php
-			echo $this->loadTemplate('details');
-			echo $this->loadTemplate('publishing');
-			echo $this->loadTemplate('access');
-			echo $this->loadTemplate('listview');
-			echo $this->loadTemplate('validations');
-			echo $this->loadTemplate('javascript');
-			?>
+		<div class="col-md-10">
+            <div class="tab-content">
+                <?php
+                echo $this->loadTemplate('details');
+                echo $this->loadTemplate('publishing');
+                echo $this->loadTemplate('access');
+                echo $this->loadTemplate('listview');
+                echo $this->loadTemplate('validations');
+                echo $this->loadTemplate('javascript');
+                ?>
+            </div>
 		</div>
 	</div>
 

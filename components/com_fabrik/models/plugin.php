@@ -210,19 +210,7 @@ class FabrikPlugin extends JPlugin
 		return $this->jform;
 	}
 
-	/**
-	 * Create bootstrap horizontal tab headings from fieldset labels
-	 * Used for rendering viz plugin options
-	 *
-	 * @param   JForm $form          Plugin form
-	 * @param   array &$output       Plugin render output
-	 * @param   int   $repeatCounter Repeat count for plugin
-	 *
-	 * @since   3.1
-	 *
-	 * @return  void
-	 */
-	protected function renderFromNavTabHeadings($form, &$output, $repeatCounter = 0)
+	protected function getFirstTabName($form, $repeatCounter)
 	{
 		$fieldsets = $form->getFieldsets();
 
@@ -231,6 +219,31 @@ class FabrikPlugin extends JPlugin
 			return;
 		}
 
+		$firstField = reset($fieldsets);
+		return 'tab-' . $firstField->name . '-' . $repeatCounter;
+	}
+
+	/**
+	 * Create bootstrap horizontal tab headings from fieldset labels
+	 * Used for rendering viz plugin options
+	 *
+	 * @param   JForm $form          Plugin form
+	 * @param   string  $name  tabset name
+	 * @param   string  $repeatCounter  repeat counter
+	 * @since   3.1
+	 *
+	 * @return  void
+	 */
+	protected function renderFromNavTabHeadings($form, $name, $repeatCounter)
+	{
+		$fieldsets = $form->getFieldsets();
+
+		if (count($fieldsets) <= 1)
+		{
+			return '';
+		}
+
+		/*
 		$tabs = array();
 		$i    = 0;
 
@@ -254,6 +267,10 @@ class FabrikPlugin extends JPlugin
 		$displayData->tabs = $tabs;
 		$layout            = FabrikHelperHTML::getLayout('fabrik-tabs');
 		$output[]          = $layout->render($displayData);
+		*/
+
+		$active = $this->getFirstTabName($form, $repeatCounter);
+		return JHtml::_('bootstrap.startTabSet', $name, array('active' => $active));
 	}
 
 	/**
@@ -292,6 +309,7 @@ class FabrikPlugin extends JPlugin
 	{
 		$this->makeDbTable();
 		$type    = str_replace('fabrik_', '', $this->_type);
+		$tabSetName = $type . 'Tabs';
 
 		$form         = $this->getPluginForm($repeatCounter);
 		$repeatScript = array();
@@ -394,11 +412,14 @@ class FabrikPlugin extends JPlugin
 			}
 		}
 
+		/*
 		if ($mode === 'nav-tabs')
 		{
 			$this->renderFromNavTabHeadings($form, $str, $repeatCounter);
 			$str[] = '<div class="tab-content">';
 		}
+		*/
+		$str[] = $this->renderFromNavTabHeadings($form, $tabSetName, $repeatCounter);
 
 		$c         = 0;
 		$fieldsets = $form->getFieldsets();
@@ -411,11 +432,15 @@ class FabrikPlugin extends JPlugin
 		// Filer the forms fieldsets for those starting with the correct $searchName prefix
 		foreach ($fieldsets as $fieldset)
 		{
+			/*
 			if ($mode === 'nav-tabs')
 			{
 				$tabClass = $c === 0 ? ' active' : '';
 				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . '-' . $repeatCounter . '">';
 			}
+			*/
+			$tabName = 'tab-' . $fieldset->name . '-' . $repeatCounter;
+			$str[] = JHtml::_('bootstrap.addTab', $tabSetName, $tabName, JText::_($fieldset->label));
 
 			$class = 'form-horizontal ';
 			$class .= $type . 'Settings page-' . $this->_name;
@@ -498,18 +523,24 @@ class FabrikPlugin extends JPlugin
 
 			$str[] = '</fieldset>';
 
+			/*
 			if ($mode === 'nav-tabs')
 			{
 				$str[] = '</div>';
 			}
+			*/
+			$str[] = JHtml::_('bootstrap.endTab');
 
 			$c++;
 		}
 
+		/*
 		if ($mode === 'nav-tabs')
 		{
 			$str[] = '</div>';
 		}
+		*/
+		$str[] = JHtml::_('bootstrap.endTabSet');
 
 		if (!empty($repeatScript))
 		{
@@ -1204,5 +1235,28 @@ class FabrikPlugin extends JPlugin
 				}
 			}
 		}
+	}
+
+	/**
+	 * Borrowed from 3.x CMSObject for migration
+	 * Returns a property of the object or the default value if the property is not set.
+	 *
+	 * @param   string  $property  The name of the property.
+	 * @param   mixed   $default   The default value.
+	 *
+	 * @return  mixed    The value of the property.
+	 *
+	 * @since   11.1
+	 *
+	 * @see     CMSObject::getProperties()
+	 */
+	public function get($property, $default = null)
+	{
+		if (isset($this->$property))
+		{
+			return $this->$property;
+		}
+
+		return $default;
 	}
 }

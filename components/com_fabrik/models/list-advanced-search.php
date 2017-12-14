@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\String\StringHelper;
+
 /**
  * List Advanced Search Class
  *
@@ -198,8 +200,8 @@ class FabrikFEModelAdvancedSearch extends FabModel
 						$jsSel = '>';
 						break;
 					default:
-						$firstChar = JString::substr($v2, 1, 1);
-						$lastChar = JString::substr($v2, -2, 1);
+						$firstChar = StringHelper::substr($v2, 1, 1);
+						$lastChar = StringHelper::substr($v2, -2, 1);
 
 						switch ($firstChar)
 						{

@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\String\StringHelper;
+
 /**
  * View when emailing a form to a user
  *
@@ -91,7 +93,7 @@ class FabrikAdminViewemailform extends JViewLegacy
 		{
 			foreach ($badStrings as $v2)
 			{
-				if (JString::strpos($v, $v2) !== false)
+				if (StringHelper::strpos($v, $v2) !== false)
 				{
 					throw new RuntimeException(FText::_('JERROR_ALERTNOAUTHOR'), 500);
 				}

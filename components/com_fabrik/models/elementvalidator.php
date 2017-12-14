@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\String\StringHelper;
+
 /**
  * Fabrik Element Validator Model
  * - Helper class for dealing with groups of attached validation rules.
@@ -94,10 +96,10 @@ class FabrikFEModelElementValidator extends FabModel
 
 				if ($isPublished)
 				{
-					$class = 'PlgFabrik_Validationrule' . JString::ucfirst($usedPlugin);
+					$class = 'PlgFabrik_Validationrule' . StringHelper::ucfirst($usedPlugin);
 					$conf = array();
-					$conf['name'] = JString::strtolower($usedPlugin);
-					$conf['type'] = JString::strtolower('fabrik_Validationrule');
+					$conf['name'] = StringHelper::strtolower($usedPlugin);
+					$conf['type'] = StringHelper::strtolower('fabrik_Validationrule');
 
 					/** @var PlgFabrik_Validationrule $plugIn */
 					$plugIn = new $class($dispatcher, $conf);

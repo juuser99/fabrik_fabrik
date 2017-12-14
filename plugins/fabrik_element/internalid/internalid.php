@@ -105,7 +105,7 @@ class PlgFabrik_ElementInternalid extends PlgFabrik_Element
 	 */
 	public function getDefaultProperties($properties = array())
 	{
-		$item = parent::getDefaultProperties();
+		$item = parent::getDefaultProperties($properties);
 		$item->primary_key = true;
 		$item->width = 3;
 		$item->hidden = 1;

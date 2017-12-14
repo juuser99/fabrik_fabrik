@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\StringHelper;
 use Fabrik\Helpers\LayoutFile;
 
 jimport('joomla.application.component.model');
@@ -4118,13 +4119,13 @@ class PlgFabrik_Element extends FabrikPlugin
 		// Apply element where/order by statements to the filter (e.g. dbjoins 'Joins where and/or order by statement')
 		$elementWhere = $this->buildQueryWhere(array(), true, null, array('mode' => 'filter'));
 
-		if (JString::stristr($sql, 'WHERE ') && JString::stristr($elementWhere, 'WHERE '))
+		if (StringHelper::stristr($sql, 'WHERE ') && StringHelper::stristr($elementWhere, 'WHERE '))
 		{
 			// $$$ hugh - only replace the WHERE with AND if it's the first word, so we don't munge sub-queries
-			// $elementWhere = JString::str_ireplace('WHERE ', 'AND ', $elementWhere);
+			// $elementWhere = StringHelper::str_ireplace('WHERE ', 'AND ', $elementWhere);
 			$elementWhere = preg_replace("#^(\s*)(WHERE)(.*)#i", "$1AND$3", $elementWhere);
 		}
-		else if (JString::stristr($sql, 'WHERE ') && !empty($elementWhere) && !JString::stristr($elementWhere, 'WHERE '))
+		else if (StringHelper::stristr($sql, 'WHERE ') && !empty($elementWhere) && !StringHelper::stristr($elementWhere, 'WHERE '))
 		{
 			// if we have a WHERE in the main query, and the element clause isn't empty but doesn't start with WHERE ...
 			$elementWhere = 'AND ' . $elementWhere;
@@ -4475,7 +4476,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	public function getFilterValue($value, $condition, $eval)
 	{
-		$condition = JString::strtolower($condition);
+		$condition = StringHelper::strtolower($condition);
 		$this->escapeQueryValue($condition, $value);
 		$db = FabrikWorker::getDbo();
 
@@ -4591,8 +4592,8 @@ class PlgFabrik_Element extends FabrikPlugin
 			if ($eval == FABRKFILTER_NOQUOTES)
 			{
 				// $$$ hugh - darn, this is stripping the ' of the end of things like "select & from foo where bar = '123'"
-				$value = JString::ltrim($value, "'");
-				$value = JString::rtrim($value, "'");
+				$value = StringHelper::ltrim($value, "'");
+				$value = StringHelper::rtrim($value, "'");
 			}
 
 			if ($condition == '=' && $value == "'_null_'")
@@ -4711,7 +4712,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		$fieldDesc = $this->getFieldDescription();
 
-		if (JString::stristr($fieldDesc, 'INT') || $this->getElement()->filter_exact_match == 1)
+		if (StringHelper::stristr($fieldDesc, 'INT') || $this->getElement()->filter_exact_match == 1)
 		{
 			return '=';
 		}
@@ -6408,15 +6409,22 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		$now = $this->date->toSql();
 		$this->setId(0);
+		$createDate = JFactory::getDate()->toSQL();
 		$item = $this->getElement();
 		$item->set('plugin', $this->_name);
 		$item->set('params', $this->getDefaultAttribs());
 		$item->set('created', $now);
 		$item->set('created_by', $this->user->get('id'));
 		$item->set('created_by_alias', $this->user->get('username'));
+		$item->set('created', $createDate);
+		$item->set('modified', $createDate);
+		$item->set('modified_by', $this->user->get('id'));
+		$item->set('checked_out', 0);
+		$item->set('checked_out_time', '0000-00-00 00:00:00');
 		$item->set('published', '1');
 		$item->set('show_in_list_summary', '1');
 		$item->set('link_to_detail', '1');
+		$item->set('filter_exact_match', '0');
 		$item->bind($properties);
 
 		return $item;
@@ -6748,7 +6756,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		}
 		else
 		{
-			echo $cache->call(array(get_class($this), 'cacheAutoCompleteOptions'), $this, $search);
+			echo $cache->get(array(get_class($this), 'cacheAutoCompleteOptions'), array($this, $search));
 		}
 	}
 
@@ -6854,7 +6862,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 				if ($where != '')
 				{
-					$where = JString::substr($where, 5, JString::strlen($where) - 5);
+					$where = StringHelper::substr($where, 5, StringHelper::strlen($where) - 5);
 
 					if (!in_array($where, $whereArray))
 					{
@@ -7893,7 +7901,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			$name = array_pop($name);
 		}
 
-		return strtolower(JString::str_ireplace('PlgFabrik_Element', '', $name));
+		return strtolower(StringHelper::str_ireplace('PlgFabrik_Element', '', $name));
 	}
 
 	/**

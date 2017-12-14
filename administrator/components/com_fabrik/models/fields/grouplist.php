@@ -84,12 +84,6 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 			$groups[$option->form][] = $option;
 		}
 
-		// Check for a database error.
-		if ($db->getErrorNum())
-		{
-			JError::raiseWarning(500, $db->getErrorMsg());
-		}
-
 		return $groups;
 	}
 }

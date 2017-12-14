@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\String\StringHelper;
+
 /**
  * Fabrik Plugin Controller
  * DEPRECIATED SEE NOTE FROM 11/07/2011
@@ -53,7 +55,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 
 		if (substr($method, 0, 2) !== 'on')
 		{
-			$method = 'on' . JString::ucfirst($method);
+			$method = 'on' . StringHelper::ucfirst($method);
 		}
 
 		$app->triggerEvent($method);

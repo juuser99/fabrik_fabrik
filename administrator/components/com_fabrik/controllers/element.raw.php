@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controllerform');
 
+use Fabrik\Helpers\Html;
+
 /**
  * Raw Element controller class.
  *
@@ -50,7 +52,9 @@ class FabrikAdminControllerElement extends JControllerForm
 		$model = $this->getModel();
 		$model->setState('element.id', $input->getInt('id'));
 		$model->getForm();
-		echo $model->getPluginHTML($plugin);
+		$html = $model->getPluginHTML($plugin);
+		HTML::addJoomlaScriptOptions();
+		echo $html;
 	}
 
 	/**

@@ -15,7 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHTML::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
 JHtml::_('behavior.tooltip');
-FabrikHelperHTML::formvalidation();
+//FabrikHelperHTML::formvalidation();
+JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 
 ?>
@@ -72,7 +73,7 @@ JHtml::_('behavior.keepalive');
         </div>
         <div class="col-md-10">
             <div class="tab-content">
-                <div class="tab-pane" id="detailsX">
+                <div class="tab-pane active" id="detailsX">
 				    <?php echo $this->loadTemplate('details'); ?>
                 </div>
                 <div class="tab-pane" id="data">

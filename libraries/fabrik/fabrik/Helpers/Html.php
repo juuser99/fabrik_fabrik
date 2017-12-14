@@ -3009,35 +3009,7 @@ EOT;
 
 	public static function formvalidation()
 	{
-		// Only load once
-		if (isset(static::$loaded[__METHOD__]))
-		{
-			return;
-		}
-
-		// Add validate.js language strings
-		JText::script('JLIB_FORM_FIELD_INVALID');
-
-		// Include MooTools More framework
-		static::framework('more');
-
-		$debug   = JFactory::getConfig()->get('debug');$file = $debug ? 'punycode-uncompressed' : 'punycode';
-        $path = JURI::root() . 'media/system/js/' . $file;
-
-        $js   = array();
-        $js[] = "requirejs({";
-        $js[] = "   'paths': {";
-        $js[] = "     'punycode': '" . $path . "'";
-        $js[] = "   }";
-        $js[] = " },";
-        $js[] = "['punycode'], function (p) {";
-        $js[] = "  window.punycode = p;";
-        $js[] = "});";
-
-        self::addToSessionHeadScripts(implode("\n", $js));
-
-		JHtml::_('script', 'system/validate.js', false, true);
-		static::$loaded[__METHOD__] = true;
+		JHtml::_('behavior.formvalidator');
 	}
 
 	/**
@@ -3148,4 +3120,22 @@ EOT;
 
         return $spans[$viewport][$size];
 	}
+
+	/**
+	 * Fetch J! script options (for things like bootstrap tabs, etc. and add a script to load them
+	 *
+	 * @since version 4.0
+	 */
+	public static function addJoomlaScriptOptions()
+    {
+	    $scriptOptions = \JFactory::getDocument()->getScriptOptions();
+
+	    if (!empty($scriptOptions))
+	    {
+		    $jsonOptions = json_encode($scriptOptions);
+		    $jsonOptions = $jsonOptions ? $jsonOptions : '{}';
+		    HTML::addScriptDeclaration("Joomla.loadOptions(JSON.parse('" . $jsonOptions . "')); Joomla.Event.dispatch(document, 'joomla:updated')");
+	    }
+
+    }
 }

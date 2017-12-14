@@ -10,6 +10,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\StringHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -125,7 +126,6 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 	 */
 	protected function saveArticle($id, $catId)
 	{
-		$dispatcher = \JFactory::getApplication()->getDispatcher();
 		// Include the content plugins for the on save events.
 		JPluginHelper::importPlugin('content');
 
@@ -182,7 +182,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		$item->bind($data);
 
 		// Trigger the onContentBeforeSave event.
-		$dispatcher->trigger('onContentBeforeSave', array('com_content.article', $item, $isNew));
+		\JFactory::getApplication()->triggerEvent('onContentBeforeSave', array('com_content.article', $item, $isNew));
 
 		$item->store();
 
@@ -205,7 +205,7 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		}
 
 		// Trigger the onContentAfterSave event.
-		$dispatcher->trigger('onContentAfterSave', array('com_content.article', $item, $isNew));
+		\JFactory::getApplication()->triggerEvent('onContentAfterSave', array('com_content.article', $item, $isNew));
 
 		// New record - need to re-save with {readmore} replacement
 		if ($isNew && strstr($data['articletext'], '{readmore}'))
@@ -595,9 +595,9 @@ class PlgFabrik_FormArticle extends PlgFabrik_Form
 		// should increment the Joomla article title.
 		while ($table->load(array('alias' => $alias, 'catid' => $catId)))
 		{
-			$title                      = JString::increment($title);
+			$title                      = StringHelper::increment($title);
 			$titles[$table->get('id')]  = $title;
-			$alias                      = JString::increment($alias, 'dash');
+			$alias                      = StringHelper::increment($alias, 'dash');
 			$aliases[$table->get('id')] = $alias;
 		}
 

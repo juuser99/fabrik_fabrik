@@ -99,7 +99,8 @@ class FabrikAdminViewElements extends JViewLegacy
 		{
 			$this->sidebar = JHtmlSidebar::render();
 		}
-
+		FabrikHelperHTML::formvalidation();
+		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
@@ -229,6 +230,9 @@ class FabrikAdminViewElements extends JViewLegacy
 		$model->setState('filter.cid', $input->get('cid', array(), 'array'));
 		$this->items = $this->get('Items');
 		$this->addConfirmDeleteToolbar();
+		FabrikHelperHTML::formvalidation();
+		FabrikHelperHTML::framework();
+		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
 
@@ -272,6 +276,8 @@ class FabrikAdminViewElements extends JViewLegacy
 		$db->setQuery($query);
 		$this->groups = $db->loadObjectList();
 		$this->addConfirmCopyToolbar();
+		FabrikHelperHTML::formvalidation();
+		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}

@@ -16,6 +16,7 @@ require_once 'fabmodeladmin.php';
 
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\StringHelper;
 
 /**
  * Fabrik Admin List Model
@@ -191,7 +192,6 @@ class FabrikAdminModelList extends FabModelAdmin
 	public function publish(&$pks, $value = 1)
 	{
 		// Initialise variables.
-		$dispatcher = \JFactory::getApplication()->getDispatcher();
 		$table      = $this->getTable();
 		$pks        = (array) $pks;
 
@@ -223,7 +223,7 @@ class FabrikAdminModelList extends FabModelAdmin
 		$context = $this->option . '.' . $this->name;
 
 		// Trigger the onContentChangeState event.
-		$result = $dispatcher->trigger($this->event_change_state, array($context, $pks, $value));
+		$result = \JFactory::getApplication()->triggerEvent($this->event_change_state, array($context, $pks, $value));
 
 		if (in_array(false, $result, true))
 		{
@@ -689,6 +689,49 @@ class FabrikAdminModelList extends FabModelAdmin
 				$row->set('created', $date->toSql());
 			}
 
+			if (empty($row->get('created_by')))
+			{
+				$row->created_by           = $this->user->get('id');
+				$row->created_by_alias     = $this->user->get('username');
+			}
+
+			if ($row->get('modified', '') == '')
+			{
+				$row->set('modified', $date->toSql());
+			}
+
+			if (empty($row->get('modified_by')))
+			{
+				$row->modified_by           = $this->user->get('id');
+			}
+
+			if ($row->get('checked_out', '') == '')
+			{
+				$row->set('checked_out', 0);
+			}
+
+			if ($row->get('checked_out_time', '') == '')
+			{
+				$row->set('checked_out_time', '0000-00-00 00:00:00');
+			}
+
+			if ($row->get('hits', '') == '')
+			{
+				$row->set('hits', 0);
+			}
+
+			if ($row->get('publish_up', '') == '')
+			{
+				$row->set('publish_up', '0000-00-00 00:00:00');
+			}
+
+			if ($row->get('publish_down', '') == '')
+			{
+				$row->set('publish_down', '0000-00-00 00:00:00');
+			}
+
+
+
 			$isNew         = false;
 			$existingTable = ArrayHelper::getValue($data, 'db_table_name', '');
 			$newTable      = $existingTable === '' ? trim(FArrayHelper::getValue($data, '_database_name')) : '';
@@ -761,7 +804,7 @@ class FabrikAdminModelList extends FabModelAdmin
 			// Store without qns as that's db specific
 			$row->set('db_primary_key', $row->get('db_primary_key', '') == '' ? $row->get('db_table_name') . '.' . $key
 				: $row->get('db_primary_key'));
-			$row->set('auto_inc', JString::stristr($extra, 'auto_increment') ? true : false);
+			$row->set('auto_inc', StringHelper::stristr($extra, 'auto_increment') ? true : false);
 		}
 
 		$row->store();
@@ -876,11 +919,11 @@ class FabrikAdminModelList extends FabModelAdmin
 					continue;
 				}
 
-				if (JString::stristr($colType, 'int'))
+				if (StringHelper::stristr($colType, 'int'))
 				{
 					$size = '';
 				}
-				elseif (JString::stristr($colType, 'datetime'))
+				elseif (StringHelper::stristr($colType, 'datetime'))
 				{
 					$size = '';
 				}
@@ -1008,7 +1051,7 @@ class FabrikAdminModelList extends FabModelAdmin
 		$sql            = 'SHOW TABLES LIKE ' . $fabrikDatabase->quote($tableName);
 		$fabrikDatabase->setQuery($sql);
 		$total = $fabrikDatabase->loadResult();
-		echo $fabrikDatabase->getError();
+		//echo $fabrikDatabase->getError();
 
 		return ($total == '') ? false : true;
 	}
@@ -1369,7 +1412,7 @@ class FabrikAdminModelList extends FabModelAdmin
 			else
 			{
 				// If the field is the primary key and it's an INT type set the plugin to be the fabrik internal id
-				if ($key[0]['colname'] == $label && JString::strtolower(substr($key[0]['type'], 0, 3)) === 'int')
+				if ($key[0]['colname'] == $label && StringHelper::strtolower(substr($key[0]['type'], 0, 3)) === 'int')
 				{
 					$plugin = 'internalid';
 				}
@@ -1406,7 +1449,7 @@ class FabrikAdminModelList extends FabModelAdmin
 				}
 				// Then alter if defined in Fabrik global config
 				// Jaanus: but first check if there are any pk field and if yes then create as internalid
-				$defType = JString::strtolower(substr($key[0]['type'], 0, 3));
+				$defType = StringHelper::strtolower(substr($key[0]['type'], 0, 3));
 				$plugin  = ($key[0]['colname'] == $label && $defType === 'int') ? 'internalid' : $fbConfig->get($type, $plugin);
 			}
 
@@ -1534,8 +1577,15 @@ class FabrikAdminModelList extends FabModelAdmin
 			$form->set('created', $createDate);
 			$form->set('created_by', $this->user->get('id'));
 			$form->set('created_by_alias', $this->user->get('username'));
+			$form->set('modified', $createDate);
+			$form->set('modified_by', $this->user->get('id'));
+			$form->set('checked_out', 0);
+			$form->set('checked_out_time', '0000-00-00 00:00:00');
+			$form->set('publish_up', '0000-00-00 00:00:00');
+			$form->set('publish_down', '0000-00-00 00:00:00');
 			$form->set('error', FText::_('COM_FABRIK_FORM_ERROR_MSG_TEXT'));
 			$form->set('submit_button_label', FText::_('COM_FABRIK_SAVE'));
+			$form->set('reset_button_label', FText::_('COM_FABRIK_FIELD_RESET_BUTTON_LABEL_DEFAULT'));
 			$form->set('published', $item->get('published'));
 			$form->set('form_template', 'bootstrap');
 			$form->set('view_only_template', 'bootstrap');
@@ -1578,7 +1628,11 @@ class FabrikAdminModelList extends FabModelAdmin
 		$group->set('created', $createDate->toSql());
 		$group->set('created_by', $this->user->get('id'));
 		$group->set('created_by_alias', $this->user->get('username'));
+		$group->set('modified', $createDate->toSql());
+		$group->set('modified_by', $this->user->get('id'));
 		$group->set('published', ArrayHelper::getValue($data, 'published', 1));
+		$group->set('checked_out', 0);
+		$group->set('checked_out_time', '0000-00-00 00:00:00');
 		$opts                          = ArrayHelper::getValue($data, 'params', new stdClass);
 		$opts->repeat_group_button     = $isRepeat ? 1 : 0;
 		$opts->repeat_group_show_first = 1;
@@ -1733,7 +1787,7 @@ class FabrikAdminModelList extends FabModelAdmin
 				// not any similarly named elements from joined tables (like 'id')
 				if ($el->getElement()->name == $join->table_key)
 				{
-					$size = JString::stristr($el->getFieldDescription(), 'int') ? '' : '10';
+					$size = StringHelper::stristr($el->getFieldDescription(), 'int') ? '' : '10';
 				}
 			}
 
@@ -1957,7 +2011,7 @@ class FabrikAdminModelList extends FabModelAdmin
 
 				if ($drop)
 				{
-					if (strncasecmp($table->db_table_name, $dbConfigPrefix, JString::strlen($dbConfigPrefix)) == 0)
+					if (strncasecmp($table->db_table_name, $dbConfigPrefix, StringHelper::strlen($dbConfigPrefix)) == 0)
 					{
 						$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_TABLE_NOT_DROPPED_PREFIX', $table->db_table_name, $dbConfigPrefix), 'notice');
 					}
@@ -1980,7 +2034,7 @@ class FabrikAdminModelList extends FabModelAdmin
 					$context = $this->option . '.' . $this->name;
 
 					// Trigger the onContentBeforeDelete event.
-					$result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+					$result = \JFactory::getApplication()->triggerEvent($this->event_before_delete, array($context, $table));
 
 					if (in_array(false, $result, true))
 					{
@@ -1997,7 +2051,7 @@ class FabrikAdminModelList extends FabModelAdmin
 					}
 
 					// Trigger the onContentAfterDelete event.
-					$dispatcher->trigger($this->event_after_delete, array($context, $table));
+					\JFactory::getApplication()->triggerEvent($this->event_after_delete, array($context, $table));
 				}
 				else
 				{
@@ -2127,7 +2181,7 @@ class FabrikAdminModelList extends FabModelAdmin
 			}
 			else
 			{
-				switch (JString::strtolower($type))
+				switch (StringHelper::strtolower($type))
 				{
 					case 'integer':
 						$objType = 'INT';
@@ -2326,7 +2380,7 @@ class FabrikAdminModelList extends FabModelAdmin
 
 				if ($objName != '' && !is_null($objType))
 				{
-					if (JString::stristr($objType, 'not null'))
+					if (StringHelper::stristr($objType, 'not null'))
 					{
 						$lines[] = $fabrikDb->qn($objName) . ' ' . $objType;
 					}

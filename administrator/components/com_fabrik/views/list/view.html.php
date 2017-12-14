@@ -125,6 +125,8 @@ class FabrikAdminViewList extends JViewLegacy
 		$dep->deps                         = array('admin/pluginmanager');
 		$shim['admin/list/tmpl/adminlist'] = $dep;
 		$shim['adminfields/tables']        = $dep;
+		FabrikHelperHTML::formvalidation();
+		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS($shim);
 		FabrikHelperHTML::script($srcs, $this->js);
 		parent::display($tpl);
@@ -143,6 +145,8 @@ class FabrikAdminViewList extends JViewLegacy
 		$this->addLinkedElementsToolbar();
 		$this->formGroupEls = $model->getFormGroups(false);
 		$this->formTable    = $model->getForm();
+		FabrikHelperHTML::formvalidation();
+		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
@@ -189,6 +193,8 @@ class FabrikAdminViewList extends JViewLegacy
 
 		$this->lists = $lists;
 		$this->addConfirmCopyToolbar();
+		FabrikHelperHTML::formvalidation();
+		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 		parent::display($tpl);
 	}
@@ -207,6 +213,7 @@ class FabrikAdminViewList extends JViewLegacy
 		$input      = JFactory::getApplication()->input;
 		$this->data = $input->post->get('jform', array(), 'array');
 		$this->addSelectSaveToolBar();
+		FabrikHelperHTML::formvalidation();
 		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 

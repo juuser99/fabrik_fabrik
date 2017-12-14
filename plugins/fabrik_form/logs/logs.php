@@ -10,6 +10,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\StringHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -117,7 +118,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 
 		while ($i < $length)
 		{
-			$char = JString::substr($possible, mt_rand(0, JString::strlen($possible) - 1), 1);
+			$char = StringHelper::substr($possible, mt_rand(0, StringHelper::strlen($possible) - 1), 1);
 			$key .= $char;
 			$i++;
 		}
@@ -340,7 +341,7 @@ class PlgFabrik_FormLogs extends PlgFabrik_Form
 				}
 			}
 
-			$clabels_createdb = JString::substr_replace($clabels_createdb_imp, '', -2);
+			$clabels_createdb = StringHelper::substr_replace($clabels_createdb_imp, '', -2);
 
 			if ($params->get('compare_data') == 1)
 			{

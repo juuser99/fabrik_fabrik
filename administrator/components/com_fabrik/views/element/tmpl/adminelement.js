@@ -167,6 +167,7 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 					Browser.exec(this.script);
 					this.updateBootStrap();
 					FabrikAdmin.reTip();
+					//Joomla.Event.dispatch(document, 'joomla:updated')
 				}.bind(this)
 			});
 			Fabrik.requestQueue.add(myAjax);

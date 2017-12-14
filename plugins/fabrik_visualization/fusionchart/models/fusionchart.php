@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\String\StringHelper;
+
 require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
 
 /**
@@ -573,7 +575,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 				* they get rendered as tow groups of data and on bar charts this overlays one average over the other, rather than next to it
 				*/
 				$calcfound = true;
-				$column = JString::substr($column, 6);
+				$column = StringHelper::substr($column, 6);
 				$calckey = $calc_prefixmap[$pref];
 				$caldata = FArrayHelper::getValue($cals[$calckey], $column . '_obj');
 

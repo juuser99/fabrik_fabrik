@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\String\StringHelper;
+
 /**
  * Plugin element to captcha
  *
@@ -38,7 +40,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		while ($i < $characters)
 		{
-			$code .= JString::substr($possible, mt_rand(0, JString::strlen($possible) - 1), 1);
+			$code .= StringHelper::substr($possible, mt_rand(0, StringHelper::strlen($possible) - 1), 1);
 			$i++;
 		}
 
@@ -213,7 +215,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 			// $$$tom added lang & theme options
 			$theme = $params->get('recaptcha_theme', 'red');
-			$lang  = FabrikWorker::replaceWithLanguageTags(JString::strtolower($params->get('recaptcha_lang', 'en')));
+			$lang  = FabrikWorker::replaceWithLanguageTags(StringHelper::strtolower($params->get('recaptcha_lang', 'en')));
 			$error = null;
 
 			if ($this->user->get('id') != 0 && $params->get('captcha-showloggedin', 0) == false)
@@ -235,7 +237,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$displayData->id       = $id;
 			$displayData->name     = $name;
 			$displayData->site_key = $params->get('recaptcha_publickey');
-			$displayData->lang     = FabrikWorker::replaceWithLanguageTags(JString::strtolower($params->get('recaptcha_lang', 'en')));
+			$displayData->lang     = FabrikWorker::replaceWithLanguageTags(StringHelper::strtolower($params->get('recaptcha_lang', 'en')));
 
 			return $layout->render($displayData);
 		}
@@ -479,7 +481,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		for ($i = 0; $i < 3; $i++)
 		{
-			if (JString::strlen($rgb[$i]) == 1)
+			if (StringHelper::strlen($rgb[$i]) == 1)
 			{
 				$rgb[$i] .= $rgb[$i];
 			}
@@ -596,7 +598,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 		// http://fabrikar.com/forums/showthread.php?t=26941&page=5
 		if (version_compare(PHP_VERSION, '5.3.0') < 0)
 		{
-			header('Content-Length: ' . JString::strlen($img));
+			header('Content-Length: ' . StringHelper::strlen($img));
 		}
 
 		imagedestroy($image);

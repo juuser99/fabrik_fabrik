@@ -15,6 +15,7 @@ require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
 
 use Aws\Exception\AwsException;
 use Aws\S3\Exception\S3Exception;
+use Joomla\String\StringHelper;
 
 
 /**
@@ -176,7 +177,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 
 	private function removePrependedURL($filepath)
 	{
-		if (substr($filepath, 0, JString::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
+		if (substr($filepath, 0, StringHelper::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
 		{
 			$filepath = Fabrikstring::ltrimword($filepath, COM_FABRIK_BASE);
 		}
@@ -231,7 +232,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 
 		// $$$ rob avoid urls like http://bucket.s3.amazonaws.com//home/users/path/to/file/Chrysanthemum.jpg
-		$filepath = JString::ltrim($filepath, '/');
+		$filepath = StringHelper::ltrim($filepath, '/');
 
 		// Move the file
 		try

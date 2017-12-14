@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\Inflector;
 use Joomla\String\Normalise;
+use Joomla\String\StringHelper;
 
 /**'
  * Autoloader Class
@@ -92,7 +93,7 @@ class FabrikAutoloader
 					$part = $plural->toSingular($part);
 				}
 
-				$part = JString::ucfirst(strtolower($part));
+				$part = StringHelper::ucfirst(strtolower($part));
 			}
 
 			$path .= implode('/', $parts) . '.php';
@@ -104,7 +105,7 @@ class FabrikAutoloader
 
 				if (!$isFabble)
 				{
-					class_alias('\\Fabble\\Model\\FabbleModel' . JString::ucfirst($type), $class);
+					class_alias('\\Fabble\\Model\\FabbleModel' . StringHelper::ucfirst($type), $class);
 				}
 
 				return;
@@ -118,7 +119,7 @@ class FabrikAutoloader
 			{
 				require_once $defaultPath;
 				$type = array_pop($parts);
-				class_alias("\\Fabble\\Model\\FabbleModel" . JString::ucfirst($type), $class);
+				class_alias("\\Fabble\\Model\\FabbleModel" . StringHelper::ucfirst($type), $class);
 
 				return;
 			}
@@ -145,7 +146,7 @@ class FabrikAutoloader
 		{
 			$parts    = Normalise::fromCamelCase($class, true);
 			$type     = array_pop($parts);
-			$path     = JPATH_SITE . '/libraries/fabble/Views/' . JString::ucfirst($type) . '.php';
+			$path     = JPATH_SITE . '/libraries/fabble/Views/' . StringHelper::ucfirst($type) . '.php';
 			$original = $type;
 
 			if (file_exists($path))
