@@ -1018,8 +1018,8 @@ class PlgFabrik_Element extends FabrikPlugin
 			$this->access->$key = in_array($params->get($prop, $default), $groups);
 		}
 
-		// Override with check on lookup element's value = logged in user id.
-		if ($params->get('view_access_user', '') !== '' && $view == 'form')
+		// If no group access, can override with check on lookup element's value = logged in user id.
+		if (!$this->access->$key && $params->get('view_access_user', '') !== '' && $view == 'form')
 		{
 			$formModel = $this->getFormModel();
 			$data      = $formModel->getData();
@@ -1037,7 +1037,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 				if ($lookUp)
 				{
-					$fullName           = $lookUp->getFullName(false, true);
+					$fullName           = $lookUp->getFullName(true, true);
 					$value              = $formModel->getElementData($fullName, true);
 					$this->access->$key = ($this->user->get('id') == $value) ? true : false;
 				}
@@ -8007,5 +8007,79 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function setValidationFailedData(&$data)
 	{
 		return;
+	}
+
+	/**
+	 * Swap values for labels
+	 *
+	 * @param   array  &$d  Data
+	 *
+	 * @return  void
+	 */
+	protected function swapValuesForLabels(&$d)
+	{
+		$groups = $this->getFormModel()->getGroupsHiarachy();
+
+		foreach (array_keys($groups) as $gkey)
+		{
+			$group = $groups[$gkey];
+			$elementModels = $group->getPublishedElements();
+
+			for ($j = 0; $j < count($elementModels); $j++)
+			{
+				$elementModel = $elementModels[$j];
+				$elKey = $elementModel->getFullName(true, false);
+				$v = FArrayHelper::getValue($d, $elKey);
+
+				if (is_array($v))
+				{
+					$origData = FArrayHelper::getValue($d, $elKey, array());
+
+					foreach (array_keys($v) as $x)
+					{
+						$origVal = FArrayHelper::getValue($origData, $x);
+						$d[$elKey][$x] = $elementModel->getLabelForValue($v[$x], $origVal, true);
+					}
+				}
+				else
+				{
+					$d[$elKey] = $elementModel->getLabelForValue($v, FArrayHelper::getValue($d, $elKey), true);
+				}
+			}
+		}
+	}
+
+	/**
+	 * When running parseMessageForPlaceholder on data we need to set the none-raw value of things like birthday/time
+	 * elements to that stored in the listModel::storeRow() method
+	 *
+	 * @param   array  &$data          Form data
+	 * @param   int    $repeatCounter  Repeat group counter
+	 *
+	 * @return  void
+	 */
+	protected function setStoreDatabaseFormat(&$data, $repeatCounter = 0)
+	{
+		$formModel = $this->getFormModel();
+		$groups = $formModel->getGroupsHiarachy();
+
+		foreach ($groups as $groupModel)
+		{
+			$elementModels = $groupModel->getPublishedElements();
+
+			foreach ($elementModels as $elementModel)
+			{
+				$fullKey = $elementModel->getFullName(true, false);
+				$value = $data[$fullKey];
+
+				if ($this->getGroupModel()->canRepeat() && is_array($value))
+				{
+					$value = FArrayHelper::getValue($value, $repeatCounter);
+				}
+
+				// For radio buttons and dropdowns otherwise nothing is stored for them??
+				$data[$fullKey] = $elementModel->storeDatabaseFormat($value, $data);
+			}
+		}
 	}
 }

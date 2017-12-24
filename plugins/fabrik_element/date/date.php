@@ -1092,7 +1092,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 		if ($formModel->isNewRecord() && $value !== '')
 		{
 			// OK for : Default to current  = no Local time = yes
-			if (!$defaultToday)
+			if (!$defaultToday && !$formModel->failedValidation())
 			{
 				$date = new DateTime($date, $timeZone);
 				return $date->format('Y-m-d H:i:s');
