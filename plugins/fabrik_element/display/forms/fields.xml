@@ -14,7 +14,7 @@
 			<field name="eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DISPLAY_EVAL_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -32,7 +32,7 @@
 			<field name="display_showlabel"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DISPLAY_SHOW_LABEL_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>

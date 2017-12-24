@@ -20,7 +20,7 @@
 			<field name="isemail-allow_empty"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VALIDATIONRULE_ALLOW_EMPTY_DESC"
 				label="PLG_VALIDATIONRULE_ALLOW_EMPTY_LABEL"
 				repeat="true">
@@ -31,7 +31,7 @@
 			<field name="isemail-check_mx"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VALIDATIONRULE_ISEMAIL_CHECK_MX_DESC"
 			       label="PLG_VALIDATIONRULE_ISEMAIL_CHECK_MX_LABEL"
 			       repeat="true">

@@ -10,7 +10,7 @@
 			<field name="hidden"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_CDD_HIDDEN">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -19,7 +19,7 @@
 			<field name="eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_CDD_EVAL_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -133,7 +133,7 @@
 			<field name="cascadingdropdown_showpleaseselect"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_CDD_SHOW_PLEASE_SELECT_DESC"
 				label="PLG_ELEMENT_CDD_SHOW_PLEASE_SELECT_LABEL">
 					<option value="0">JNO</option>
@@ -182,7 +182,7 @@
 			<field name="advanced_behavior"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
 			       description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC" >
 				<option value="0">JNO</option>
@@ -207,7 +207,7 @@
 			<field name="cascadingdropdown_readonly_link"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_CDD_READONLY_LINK_DESC"
 				label="PLG_ELEMENT_CDD_READONLY_LINK_LABEL">
 					<option value="0">JNO</option>

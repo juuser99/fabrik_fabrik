@@ -26,7 +26,7 @@
 				repeat="true" />
 				
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_SUBSCRIPTIONS_TEST_MODE_DESC"
 				label="PLG_FORM_SUBSCRIPTIONS_TEST_MODE_LABEL"
 				name="subscriptions_testmode" repeat="true" type="radio">
@@ -35,7 +35,7 @@
 			</field>
 
 			<field default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_SUBSCRIPTIONS_DEBUG_EMAIL_DESC"
 				label="PLG_FORM_SUBSCRIPTIONS_DEBUG_EMAIL_LABEL"
 				name="subscriptions_receive_debug_emails" repeat="true" type="radio">
@@ -46,7 +46,7 @@
 			<field type="radio"
 				name="subscriptions_send_default_email"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_SUBSCRIPTIONS_DEFAULT_EMAIL_DESC"
 				label="PLG_FORM_SUBSCRIPTIONS_DEFAULT_EMAIL_LABEL"
 				repeat="true">

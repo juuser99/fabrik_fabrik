@@ -145,7 +145,7 @@
 			<field name="fb_gm_scalecontrol"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_SCALE_CONTROL_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_SCALE_CONTROL_LABEL">
 					<option value="0">JNO</option>
@@ -155,7 +155,7 @@
 			<field name="fb_gm_maptypecontrol"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_TYPE_CONTROL_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_TYPE_CONTROL_LABEL">
 					<option value="0">JNO</option>
@@ -165,7 +165,7 @@
 			<field name="fb_gm_trafficlayer"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_TRAFFIC_LAYER_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_TRAFFIC_LAYER_LABEL">
 					<option value="0">JNO</option>
@@ -176,7 +176,7 @@
 			<field name="fb_gm_overviewcontrol"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_OVERVIEW_CONTROL_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_OVERVIEW_CONTROL_LABEL">
 					<option value="0">JNO</option>
@@ -196,7 +196,7 @@
 			<field name="fb_gm_scroll_wheel"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_MOUSE_WHEEL_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_MOUSE_WHEEL_LABEL">
 					<option value="0">JNO</option>
@@ -206,7 +206,7 @@
 			<field name="fb_gm_street_view"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_STREET_VIEW_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_STREET_VIEW_LABEL">
 					<option value="0">JNO</option>
@@ -216,7 +216,7 @@
 			<field name="fb_gm_latlng"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_LATLNG_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_LATLNG_LABEL">
 					<option value="0">JNO</option>
@@ -226,7 +226,7 @@
 			<field name="fb_gm_latlng_dms"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_LATLNG_DMS_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_LATLNG_DMS_LABEL">
 					<option value="0">JNO</option>
@@ -236,7 +236,7 @@
 			<field name="fb_gm_latlng_osref"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_LATLNG_OSREF_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_LATLNG_OSREF_LABEL">
 					<option value="0">JNO</option>
@@ -246,7 +246,7 @@
 			<field name="fb_gm_auto_center"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_GOOGLE_MAP_AUTO_CENTER_DESC"
 			       label="PLG_ELEMENT_GOOGLE_MAP_AUTO_CENTER_LABEL">
 				<option value="0">JNO</option>
@@ -303,7 +303,7 @@
 			<field name="fb_gm_reverse_geocode"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_REVERSE_GEOCODE_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_REVERSE_GEOCODE_LABEL">
 					<option value="0">JNO</option>
@@ -380,7 +380,7 @@
 			<field name="fb_gm_radius"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLEMAP_RADIUS_DESC"
 				label="PLG_ELEMENT_GOOGLEMAP_RADIUS_LABEL">
 					<option value="0">JNO</option>
@@ -417,7 +417,7 @@
 			<field name="fb_gm_radius_fitmap"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLEMAP_RADIUS_FITMAP_DESC"
 				label="PLG_ELEMENT_GOOGLEMAP_RADIUS_FITMAP_LABEL">
 					<option value="0">JNO</option>
@@ -434,7 +434,7 @@
 			<field name="fb_gm_staticmap_tableview"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_GOOGLE_MAP_STATIC_MAP_TABLE_VIEW_DESC"
 				label="PLG_ELEMENT_GOOGLE_MAP_STATIC_MAP_TABLE_VIEW_LABEL">
 					<option value="0">JNO</option>
@@ -480,7 +480,7 @@
 
 			<field name="visual_refresh"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				deafult="0"
 				label="PLG_ELEMENT_GOOGLE_MAP_VISUAL_REFRESH_LABEL"
 				description="PLG_ELEMENT_GOOGLE_MAP_VISUAL_REFRESH_DESC" >

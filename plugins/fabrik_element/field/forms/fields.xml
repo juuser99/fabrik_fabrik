@@ -9,7 +9,7 @@
 			<field name="hidden"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_HIDDEN_DESC"
 				label="PLG_ELEMENT_FIELD_HIDDEN_LABEL">
 					<option value="0">JNO</option>
@@ -24,7 +24,7 @@
 			<field name="eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_FIELD_EVAL_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -67,7 +67,7 @@
 			<field name="disable"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_DISABLE_ELEMENT_DESC"
 				label="PLG_ELEMENT_FIELD_DISABLE_ELEMENT_LABEL">
 					<option value="0">JNO</option>
@@ -77,7 +77,7 @@
 			<field name="readonly"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_READ_ONLY_DESC"
 				label="PLG_ELEMENT_FIELD_READ_ONLY_LABEL">
 					<option value="0">JNO</option>
@@ -98,7 +98,7 @@
 			<field name="speech"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_SPEECH_DESC"
 				label="PLG_ELEMENT_FIELD_SPEECH_LABEL">
 					<option value="0">JNO</option>
@@ -108,7 +108,7 @@
 			<field name="advanced_behavior"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_FIELD_JQUERY_CHOSEN_LABEL"
 			       description="PLG_ELEMENT_FIELD_JQUERY_CHOSEN_DESC">
 				<option value="0">JNO</option>
@@ -155,7 +155,7 @@
 			<field name="field_use_number_format"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_USE_NUMBER_FORMAT_DESC"
 				label="PLG_ELEMENT_FIELD_USE_NUMBER_FORMAT_LABEL">
 					<option value="0">JNO</option>
@@ -187,7 +187,7 @@
 			<field name="field_format_string_blank"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_FORMAT_STRING_BLANK_DESC"
 				label="PLG_ELEMENT_FIELD_FORMAT_STRING_BLANK_LABEL">
 					<option value="0">JNO</option>
@@ -203,7 +203,7 @@
 			<field name="text_input_mask_autoclear"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FIELD_INPUT_MASK_CLEAR_DESC"
 			       label="PLG_ELEMENT_FIELD_INPUT_MASK_CLEAR_LABEL">
 				<option value="0">JNO</option>
@@ -219,7 +219,7 @@
 			<field name="render_as_qrcode"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_RENDER_AS_QRCODE_DESC"
 				label="PLG_ELEMENT_FIELD_RENDER_AS_QRCODE_LABEL">
 					<option value="0">JNO</option>
@@ -236,7 +236,7 @@
 			<field name="guess_linktype"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_FIELD_GUESS_LINK_TYPE_DESC"
 				label="PLG_ELEMENT_FIELD_GUESS_LINK_TYPE_LABEL">
 					<option value="0">JNO</option>

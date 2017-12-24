@@ -27,7 +27,7 @@
 			<field name="advanced_behavior"
 				   type="radio"
 				   default="0"
-				   class="btn-group"
+				   class="switcher"
 				   label="PLG_ELEMENT_FIELD_JQUERY_CHOSEN_LABEL"
 				   description="PLG_ELEMENT_FIELD_JQUERY_CHOSEN_DESC">
 				<option value="0">JNO</option>

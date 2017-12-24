@@ -24,7 +24,7 @@
 				
 			<field name="toggle_others"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="PLG_ELEMENT_YESNO_TOGGLE_OTHERS_DESC"
 				label="PLG_ELEMENT_YESNO_TOGGLE_OTHERS_LABEL">

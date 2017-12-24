@@ -65,7 +65,7 @@
 			
 			<field name="update_user_select"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				repeat="true"
 				default="0"
 				label="PLG_LIST_UPDATE_COL_USER_SELECT_LABEL"
@@ -186,7 +186,7 @@
 
 			<field name="update_email_after_update"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       repeat="true"
 			       default="1"
 			       label="PLG_LIST_UPDATE_COL_EMAIL_AFTER_UPDATE_LABEL"

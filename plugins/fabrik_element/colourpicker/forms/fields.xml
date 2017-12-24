@@ -44,7 +44,7 @@
 
 			<field name="show_picker"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				description="PLG_ELEMENT_COLOURPICKER_SHOW_PICKER_DESC"
 				label="PLG_ELEMENT_COLOURPICKER_SHOW_PICKER_LABEL">

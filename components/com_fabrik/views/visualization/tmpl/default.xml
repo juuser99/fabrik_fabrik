@@ -13,7 +13,7 @@
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset label="COM_FABRIK_OPTIONS" name="params">
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				description="COM_FABRIK_FIELD_RESET_FILTERS_DESC" label="COM_FABRIK_FIELD_RESET_FILTERS_LABEL" name="resetfilters" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>

@@ -21,7 +21,7 @@
 			       size="50"/>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description=""
 			       label="INCLUDERELATEDVIDEOS"
 			       name="include_related"
@@ -31,7 +31,7 @@
 			</field>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_YOUTUBE_AUTOPLAY_DESC"
 			       label="PLG_ELEMENT_YOUTUBE_AUTOPLAY_LABEL"
 			       name="youtube_autoplay"
@@ -41,7 +41,7 @@
 			</field>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_YOUTUBE_FULLSCREEN_DESC"
 			       label="PLG_ELEMENT_YOUTUBE_FULLSCREEN_DESC"
 			       name="youtube_fullscreen"
@@ -53,7 +53,7 @@
 			<field name="enable_delayed_cookies"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="ENABLEDELAYEDCOOKIESDESC"
 			       label="ENABLEDELAYEDCOOKIES">
 				<option value="0">JNO</option>

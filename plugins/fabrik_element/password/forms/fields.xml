@@ -16,7 +16,7 @@
 			
 			<field name="strength_meter"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				description="PLG_ELEMENT_PASSWORD_SHOW_STRENGTH_METER_DESC"
 				label="PLG_ELEMENT_PASSWORD_SHOW_STRENGTH_METER_LABEL">
@@ -26,7 +26,7 @@
 
 			<field name="password_j_validate"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="PLG_ELEMENT_PASSWORD_JRULE_VALIDATION_DESC"
 			       label="PLG_ELEMENT_PASSWORD_JRULE_VALIDATION_LABEL">

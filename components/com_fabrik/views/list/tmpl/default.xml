@@ -33,7 +33,7 @@
 
 			<field name="show-title"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				label="COM_FABRIK_SHOW_TITLE_LABEL"
 				description="COM_FABRIK_SHOW_TITLE_DESC"
@@ -44,7 +44,7 @@
 
 			<field name="calculations"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				label="COM_FABRIK_MENU_LIST_RELOAD_CALCS_LABEL"
 				description="COM_FABRIK_MENU_LIST_RELOAD_CALCS_DESC"
@@ -69,7 +69,7 @@
 
 			<field name="resetfilters"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="COM_FABRIK_FIELD_RESET_FILTERS_DESC"
 				label="COM_FABRIK_FIELD_RESET_FILTERS_LABEL"
@@ -211,7 +211,7 @@
             
 		        <field name="csv_import_sil_only"
  				type="radio"
- 				class="btn-group"
+ 				class="switcher"
  				default="0"
  				description="COM_FABRIK_FIELD_CSV_IMPORT_SIL_ONLY_DESC"
  				label="COM_FABRIK_FIELD_CSV_IMPORT_SIL_ONLY_LABEL"
@@ -222,7 +222,7 @@
             
 			<field name="csv_import_dropdata"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="COM_FABRIK_FIELD_CSV_IMPORT_DROPDATA_DESC"
 				label="COM_FABRIK_FIELD_CSV_IMPORT_DROPDATA_LABEL"
@@ -234,7 +234,7 @@
             
 			<field name="csv_import_overwrite"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_DESC"
 				label="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_LABEL"

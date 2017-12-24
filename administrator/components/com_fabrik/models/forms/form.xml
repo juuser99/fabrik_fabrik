@@ -41,7 +41,7 @@
 
 		<field name="published"
 		       type="radio"
-		       class="btn-group"
+		       class="switcher"
 		       default="1"
 		       label="JSTATUS"
 		       description="JFIELD_PUBLISHED_DESC"
@@ -127,7 +127,7 @@
 
 			<field name="reset_button"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_RESET_BUTTON_DESC"
 			       label="COM_FABRIK_FIELD_RESET_BUTTON_LABEL">
@@ -149,7 +149,7 @@
 
 			<field name="reset_icon_location"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="before"
 			       description="COM_FABRIK_FIELD_RESET_ICON_LOC_DESC"
 			       label="COM_FABRIK_FIELD_RESET_ICON_LOC_LABEL">
@@ -163,7 +163,7 @@
 
 			<field name="copy_button"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_COPY_BUTTON_DESC"
 			       label="COM_FABRIK_FIELD_COPY_BUTTON_LABEL">
@@ -185,7 +185,7 @@
 
 			<field name="copy_icon_location"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="before"
 			       description="COM_FABRIK_FIELD_COPY_ICON_LOC_DESC"
 			       label="COM_FABRIK_FIELD_COPY_ICON_LOC_LABEL">
@@ -199,7 +199,7 @@
 
 			<field name="goback_button"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_GO_BACK_BUTTON_DESC"
 			       label="COM_FABRIK_FIELD_GO_BACK_BUTTON_LABEL">
@@ -221,7 +221,7 @@
 
 			<field name="goback_icon_location"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="before"
 			       description="COM_FABRIK_FIELD_GO_BACK_ICON_LOC_DESC"
 			       label="COM_FABRIK_FIELD_GO_BACK_ICON_LOC_LABEL">
@@ -235,7 +235,7 @@
 
 			<field name="apply_button"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_APPLY_BUTTON_DESC"
 			       label="COM_FABRIK_FIELD_APPLY_BUTTON_LABEL">
@@ -257,7 +257,7 @@
 
 			<field name="apply_icon_location"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="before"
 			       description="COM_FABRIK_FIELD_APPLY_ICON_LOC_DESC"
 			       label="COM_FABRIK_FIELD_APPLY_ICON_LOC_LABEL">
@@ -271,7 +271,7 @@
 
 			<field name="delete_button"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_DELETE_BUTTON_DESC"
 			       label="COM_FABRIK_FIELD_DELETE_BUTTON_LABEL">
@@ -293,7 +293,7 @@
 
 			<field name="delete_icon_location"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="before"
 			       description="COM_FABRIK_FIELD_DELETE_ICON_LOC_DESC"
 			       label="COM_FABRIK_FIELD_DELETE_ICON_LOC_LABEL">
@@ -307,7 +307,7 @@
 
 			<field name="submit_button"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="COM_FABRIK_FIELD_SUBMIT_BUTTON_DESC"
 			       label="COM_FABRIK_FIELD_SUBMIT_BUTTON_LABEL">
@@ -329,7 +329,7 @@
 
 			<field name="save_icon_location"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="before"
 			       description="COM_FABRIK_FIELD_SUBMIT_ICON_LOC_DESC"
 			       label="COM_FABRIK_FIELD_SUBMIT_ICON_LOC_LABEL">
@@ -339,7 +339,7 @@
 
 			<field name="submit_on_enter"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_SUBMIT_ON_ENTER_DESC"
 			       label="COM_FABRIK_FIELD_SUBMIT_ON_ENTER_LABEL">
@@ -353,7 +353,7 @@
 
 			<field name="labels_above"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       label="COM_FABRIK_FIELD_LABELS_ABOVE_LABEL"
 			       description="COM_FABRIK_FIELD_LABELS_ABOVE_DESC">
@@ -364,7 +364,7 @@
 
 			<field name="labels_above_details"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       label="COM_FABRIK_FIELD_LABELS_ABOVE_DETAILS_LABEL"
 			       description="COM_FABRIK_FIELD_LABELS_ABOVE_DETAILS_DESC">
@@ -425,7 +425,7 @@
 
 			<field name="show-title"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="COM_FABRIK_FIELD_SHOW_TITLE_DESC"
 			       label="COM_FABRIK_FIELD_SHOW_TITLE_LABEL">
@@ -500,7 +500,7 @@
 
 			<field name="show-referring-table-releated-data"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_SHOW_RELATED_TABLE_LINKS_DESC"
 			       label="COM_FABRIK_FIELD_SHOW_RELATED_TABLE_LINKS_LABEL">
@@ -535,7 +535,7 @@
 
 			<field name="ajax_validations"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_AJAX_VALIDATIONS_DESC"
 			       label="COM_FABRIK_FIELD_AJAX_VALIDATIONS_LABEL">
@@ -545,7 +545,7 @@
 
 			<field name="ajax_validations_toggle_submit"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_AJAX_VALIDATIONS_TOGGLE_SUBMIT_DESC"
 			       label="COM_FABRIK_FIELD_AJAX_VALIDATIONS_TOGGLE_SUBMIT_LABEL">
@@ -572,7 +572,7 @@
 
 			<field name="show_loader_on_submit"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="COM_FABRIK_FIELD_SHOW_LOADER_ON_SUBMIT_DESC"
 			       label="COM_FABRIK_FIELD_SHOW_LOADER_ON_SUBMIT_LABEL">
@@ -582,7 +582,7 @@
 
 			<field name="spoof_check"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="COM_FABRIK_FIELD_SPOOF_CHECK_DESC"
 			       label="COM_FABRIK_FIELD_SPOOF_CHECK_LABEL">
@@ -608,7 +608,7 @@
 
 		<field name="_createGroup"
 		       type="autocreategroup"
-		       class="btn-group"
+		       class="switcher"
 		       label="COM_FABRIK_CREATE_GROUP_WITH_SAME_NAME">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -622,7 +622,7 @@
 
 		<field name="randomise_groups"
 		       type="radio"
-		       class="btn-group"
+		       class="switcher"
 		       default="0"
 		       description="COM_FABRIK_FIELD_RANDOMISE_GROUPS_DESC"
 		       label="COM_FABRIK_FIELD_RANDOMISE_GROUPS_LABEL">
@@ -636,7 +636,7 @@
 
 		<field name="record_in_database"
 		       type="radio"
-		       class="btn-group"
+		       class="switcher"
 		       default="1"
 		       description="COM_FABRIK_FIELD_RECORD_IN_DATABASE_DESC"
 		       label="COM_FABRIK_FIELD_RECORD_IN_DATABASE_LABEL">

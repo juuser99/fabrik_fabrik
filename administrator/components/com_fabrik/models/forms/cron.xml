@@ -28,7 +28,7 @@
 
 		<field name="published"
 			type="radio"
-			class="btn-group"
+			class="switcher"
 			default="0"
 			label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC"
@@ -81,7 +81,7 @@
 
 			<field name="log"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="COM_FABRIK_CRON_FIELD_LOG_EVENTS_DESCRIPTION"
 				label="COM_FABRIK_CRON_FIELD_LOG_EVENTS_LABEL">
@@ -98,7 +98,7 @@
 
 			<field name="require_qs"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="COM_FABRIK_CRON_FIELD_REQUIRE_QS_DESC"
 				label="COM_FABRIK_CRON_FIELD_REQUIRE_QS_LABEL">
@@ -114,7 +114,7 @@
 			
 			<field name="cron_rungate"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="COM_FABRIK_CRON_FIELD_RUNGATE_DESC"
 				label="COM_FABRIK_CRON_FIELD_RUNGATE_LABEL">

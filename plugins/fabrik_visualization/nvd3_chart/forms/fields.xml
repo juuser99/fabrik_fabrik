@@ -141,7 +141,7 @@
 
 			<field name="controls"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="PLG_FABRIK_VIZ_NV3D_CONTROLS_DESC"
 			       label="PLG_FABRIK_VIZ_NV3D_CONTROLS_LABEL">
@@ -163,7 +163,7 @@
 
 			<field name="pie_labels"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="PLG_FABRIK_VIZ_NVD3_PIE_LABELS_DESC"
 			       label="PLG_FABRIK_VIZ_NVD3_PIE_LABELS_LABEL">
@@ -173,7 +173,7 @@
 
 			<field name="donut"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="PLG_FABRIK_VIZ_NVD3_DONUT_DESC"
 			       label="PLG_FABRIK_VIZ_NVD3_DONUT_LABEL">

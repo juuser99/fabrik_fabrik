@@ -23,7 +23,7 @@
 			<field name="timer_disable"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TIMER_DISABLE_ELEMENT_DESC"
 				label="PLG_ELEMENT_TIMER_DISABLE_ELEMENT_LABEL" >
 					<option value="0">JNO</option>
@@ -33,7 +33,7 @@
 			<field name="timer_autostart"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TIMER_AUTO_START_DESC"
 				label="PLG_ELEMENT_TIMER_AUTO_START_LABEL" >
 					<option value="0">JNO</option>
@@ -43,7 +43,7 @@
 			<field name="timer_readonly"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TIMER_READ_ONLY_DESC"
 				label="PLG_ELEMENT_TIMER_READ_ONLY_LABEL">
 					<option value="0">JNO</option>

@@ -11,7 +11,7 @@
 	<fieldset name="drop">
 	
 		<field 
-			class="btn-group"
+			class="switcher"
 			default="0"
 			description="COM_FABRIK_FIELD_CSV_IMPORT_DROP_DATA_DESC"
 			label="COM_FABRIK_FIELD_CSV_IMPORT_DROP_DATA_LABEL"
@@ -27,7 +27,7 @@
 		
 		<field name="overwrite"
 			type="radio"
-			class="btn-group"
+			class="switcher"
 			default="0"
 			description="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_DESC"
 			label="COM_FABRIK_FIELD_CSV_IMPORT_OVERWRITE_LABEL" >
@@ -80,7 +80,7 @@
 				
 		<field description="COM_FABRIK_FIELD_CSV_IMPORT_LIST_LABEL_DESC" label="COM_FABRIK_FIELD_CSV_IMPORT_LIST_LABEL_LABEL" name="label" required="true" type="field"/>
 				
-			<field class="btn-group" default="0" description="COM_FABRIK_FIELD_CSV_IMPORT_CREATE_PK_DESC" label="COM_FABRIK_FIELD_CSV_IMPORT_CREATE_PK_LABEL" name="addkey" required="true" type="radio">
+			<field class="switcher" default="0" description="COM_FABRIK_FIELD_CSV_IMPORT_CREATE_PK_DESC" label="COM_FABRIK_FIELD_CSV_IMPORT_CREATE_PK_LABEL" name="addkey" required="true" type="radio">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>		
 			</field>

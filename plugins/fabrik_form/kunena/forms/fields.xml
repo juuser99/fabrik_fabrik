@@ -37,7 +37,7 @@
 				description="PLG_FORM_KUNENA_NOTIFY_DESC"
 				repeat="true"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>

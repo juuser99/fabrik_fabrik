@@ -14,7 +14,7 @@
 			<field name="captcha-showloggedin"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_CAPTCHA_SHOW_WHEN_LOGGED_IN_DESC"
 				label="PLG_ELEMENT_CAPTCHA_SHOW_WHEN_LOGGED_IN_LABEL">
 				<option value="0">JNO</option>

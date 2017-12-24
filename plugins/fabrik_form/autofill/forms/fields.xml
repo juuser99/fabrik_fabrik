@@ -57,7 +57,7 @@
 			<field name="autofill_show_not_found"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_FORM_AUTOFILL_SHOW_NOT_FOUND_DESC"
 			       label="PLG_FORM_AUTOFILL_SHOW_NOT_FOUND_LABEL"
 			       repeat="true">
@@ -76,7 +76,7 @@
 			<field name="autofill_edit_orig"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_FORM_AUTOFILL_EDIT_ORIG_DESC"
 			       label="PLG_FORM_AUTOFILL_EDIT_ORIG_LABEL"
 			       repeat="true">
@@ -87,7 +87,7 @@
 			<field name="autofill_confirm"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_AUTOFILL_CONFIRM_DESC"
 				label="PLG_FORM_AUTOFILL_CONFIRM_LABEL"
 				repeat="true">

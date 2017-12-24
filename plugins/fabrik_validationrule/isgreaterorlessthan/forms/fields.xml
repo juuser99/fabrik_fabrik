@@ -37,7 +37,7 @@
 
 			<field name="isgreaterorlessthan-allow_empty"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="PLG_VALIDATIONRULE_ISGREATERORLESSTHAN_ALLOW_EMPTY_DESC"
 				label="PLG_VALIDATIONRULE_ISGREATERORLESSTHAN_ALLOW_EMPTY_LABEL"

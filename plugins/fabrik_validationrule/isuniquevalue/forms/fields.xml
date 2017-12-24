@@ -20,7 +20,7 @@
 			<field name="isuniquevalue-caseinsensitive"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_VALIDATIONRULE_ISUNIQUE_CASE_SENSETIVE_LABEL"
 				repeat="true">
 					<option value="0">JNO</option>

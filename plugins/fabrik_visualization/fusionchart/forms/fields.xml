@@ -260,7 +260,7 @@
 			       type="text"/>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_TREND_SHOWONTOP_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_TREND_SHOWONTOP_LABEL"
 			       name="fusionchart_trendshowontop"
@@ -270,7 +270,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_TREND_ISZONE_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_TREND_ISZONE_LABEL"
 			       name="fusionchart_trendiszone"
@@ -379,7 +379,7 @@
 		<fieldset label="PLG_VISUALIZATION_FUSIONCHART_SPACER_GAL_PROPERTIES"
 		          name="gal">
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_SHOWNAMES_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_SHOWNAMES_LABEL"
 			       name="fusionchart_shownames"
@@ -389,7 +389,7 @@
 			</field>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_SHOWVALUES_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_SHOWVALUES_LABEL"
 			       name="fusionchart_showvalues"
@@ -399,7 +399,7 @@
 			</field>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_SHOWLIMITS_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_SHOWLIMITS_LABEL"
 			       name="fusionchart_showlimits"
@@ -409,7 +409,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_ROTATENAMES_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_ROTATENAMES_LABEL"
 			       name="fusionchart_rotatenames"
@@ -419,7 +419,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_SLANTLABELS_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_SLANTLABELS_LABEL"
 			       name="fusionchart_slantlabels"
@@ -429,7 +429,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_ROTATEVALUES_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_ROTATEVALUES_LABEL"
 			       name="fusionchart_rotatevalues"
@@ -439,7 +439,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_VALUES_INSIDE_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_VALUES_INSIDE_LABEL"
 			       name="fusionchart_values_inside"
@@ -449,7 +449,7 @@
 			</field>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_ANIMATION_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_ANIMATION_LABEL"
 			       name="fusionchart_animation"
@@ -459,7 +459,7 @@
 			</field>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_COL_SHADOW_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_COL_SHADOW_LABEL"
 			       name="fusionchart_colshadow"
@@ -544,7 +544,7 @@
 			       type="text"/>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_FORMAT_NUM_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_FORMAT_NUM_LABEL"
 			       name="fusionchart_formatnumber"
@@ -554,7 +554,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_FORMAT_NUM_SCALE_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_FORMAT_NUM_SCALE_LABEL"
 			       name="fusionchart_formatnumberscale"
@@ -654,7 +654,7 @@
 			       type="text"/>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_VISUALIZATION_FUSIONCHART_DIVLINE_SHOWVALUE_DESC"
 			       label="PLG_VISUALIZATION_FUSIONCHART_DIVLINE_SHOWVALUE_LABEL"
 			       name="fusionchart_divline_showvalue"

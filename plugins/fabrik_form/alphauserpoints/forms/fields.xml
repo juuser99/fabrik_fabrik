@@ -25,7 +25,7 @@
 			<field name="random_points_eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				repeat="true"
 				description="PLG_FABRIK_FORM_AUP_RANDOM_POINTS_EVAL_DESC"
 				label="PLG_FABRIK_FORM_AUP_RANDOM_POINTS_EVAL_LABEL">

@@ -22,7 +22,7 @@
 
 			<field name="caneditrow_useraw"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="PLG_LIST_CANEDITROW_USERAW_DESC"
 				label="PLG_LIST_CANEDITROW_USERAW_LABEL"
@@ -50,7 +50,7 @@
 
 			<field name="caneditrow_on_submit"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="PLG_LIST_CANEDITROW_ON_SUBMIT_DESC"
 			       label="PLG_LIST_CANEDITROW_ON_SUBMIT_LABEL"
@@ -61,7 +61,7 @@
 
 			<field name="caneditrow_on_failed_validation"
 				   type="radio"
-				   class="btn-group"
+				   class="switcher"
 				   default="1"
 				   description="PLG_LIST_CANEDITROW_ON_FAILED_VALIDATION_DESC"
 				   label="PLG_LIST_CANEDITROW_ON_FAILED_VALIDATION_LABEL"

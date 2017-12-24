@@ -50,7 +50,7 @@
 		<field name="unpublish_clones"
 			type="radio"
 			default="0"
-			class="btn-group"
+			class="switcher"
 			description="COM_FABRIK_UNPUBLISH_CLONES_DESC"
 			label="COM_FABRIK_UNPUBLISH_CLONES_LABEL">
 				<option value="0">JNO</option>
@@ -401,7 +401,7 @@
 		<field name="advanced_behavior"
 			type="radio"
 			default="0"
-			class="btn-group"
+			class="switcher"
 			label="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_GLOBAL_LABEL"
 			description="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_GLOBAL_DESC" >
 				<option value="0">JNO</option>
@@ -555,7 +555,7 @@
 		<field name="pdf_debug"
 			type="radio"
 			default="0"
-			class="btn-group"
+			class="switcher"
 			description="COM_FABRIK_PDF_DEBUG_DESC"
 			label="COM_FABRIK_PDF_DEBUG_LABEL">
 				<option value="0">JNO</option>
@@ -565,7 +565,7 @@
 		<field name="verify_peer"
 		       type="radio"
 		       default="1"
-		       class="btn-group"
+		       class="switcher"
 		       description="COM_FABRIK_VERIFY_PEER_DESC"
 		       label="COM_FABRIK_VERIFY_PEER_LABEL">
 			<option value="0">JNO</option>

@@ -61,7 +61,7 @@
 			
 			<field name="start_active"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				repeat="true"
 				description="PLG_LIST_RADIUS_SEARCH_START_ACTIVE_DESC"
@@ -97,7 +97,7 @@
 						
 			<field name="myloc"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				repeat="true"
 				description="PLG_LIST_RADIUS_SEARCH_MYLOC_DESC"
@@ -108,7 +108,7 @@
 			
 			<field name="place"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				repeat="true"
 				description="PLG_LIST_RADIUS_SEARCH_PLACE_DESC"
@@ -119,7 +119,7 @@
 			
 			<field name="coords"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				repeat="true"
 				description="PLG_LIST_RADIUS_SEARCH_COORDS_DESC"
@@ -130,7 +130,7 @@
 			
 			<field name="geocode"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				repeat="true"
 				description="PLG_LIST_RADIUS_SEARCH_GEOCODE_DESC"
@@ -141,7 +141,7 @@
 			
 			<field name="geocode_as_type"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				repeat="true"
 				description="PLG_LIST_RADIUS_SEARCH_GEOCODE_AS_TYPE_DESC"

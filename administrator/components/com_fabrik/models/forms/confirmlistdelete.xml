@@ -11,7 +11,7 @@
 				<option value="3">COM_FABRIK_DELETE_LISTS_FORMS_GROUPS_AND_ELEMENTS</option>	
 		</field>
 		
-		<field class="btn-group" default="0" label="COM_FABRIK_DROP_DATABASE_TABLE_LABEL" name="dropTablesFromDB" type="radio">
+		<field class="switcher" default="0" label="COM_FABRIK_DROP_DATABASE_TABLE_LABEL" name="dropTablesFromDB" type="radio">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 		</field>

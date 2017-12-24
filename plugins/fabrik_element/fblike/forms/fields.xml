@@ -18,7 +18,7 @@
 			</field>
 
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_FBLIKE_SHOW_FACES_LABEL" name="fblike_showfaces" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>

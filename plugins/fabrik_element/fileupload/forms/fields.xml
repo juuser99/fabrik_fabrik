@@ -47,7 +47,7 @@
 			<field name="ul_email_file"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_FILEUPLOAD_EMAIL_UPLOADED_FILE_LABEL">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
@@ -56,7 +56,7 @@
 			<field name="random_filename"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_RANDOM_FILENAME_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_RANDOM_FILENAME_LABEL">
 				<option value="0">JNO</option>
@@ -82,7 +82,7 @@
 			<field name="upload_allow_folderselect"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_SELECT_FOLDER_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_SELECT_FOLDER_LABEL">
 				<option value="0">PLG_ELEMENT_FILEUPLOAD_HIDE</option>
@@ -92,7 +92,7 @@
 			<field name="upload_delete_image"
 			       type="radio"
 			       default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_DELETE_IMAGE_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_DELETE_IMAGE_LABEL">
 				<option value="0">JNO</option>
@@ -102,7 +102,7 @@
 			<field name="upload_use_wip"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_USE_WIP_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_USE_WIP_LABEL">
 				<option value="0">JNO</option>
@@ -112,7 +112,7 @@
 
 			<field name="allow_unsafe"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="PLG_ELEMENT_FILEUPLOAD_ALLOW_UNSAFE_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_ALLOW_UNSAFE_LABEL">
@@ -141,7 +141,7 @@
 
 			<field name="make_link"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="PLG_ELEMENT_FILEUPLOAD_MAKE_LINK_IN_TABLE_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_MAKE_LINK_IN_TABLE_LABEL">
@@ -151,7 +151,7 @@
 
 			<field name="fu_show_image_in_table"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="PLG_ELEMENT_FILEUPLOAD_SHOW_IN_LIST_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_SHOW_IN_LIST_LABEL">
@@ -173,7 +173,7 @@
 
 			<field name="fu_show_image_in_email"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="PLG_ELEMENT_FILEUPLOAD_SHOW_IN_EMAIL_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_SHOW_IN_EMAIL_LABEL">
@@ -221,7 +221,7 @@
 
 			<field name="restrict_lightbox"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="PLG_ELEMENT_FILEUPLOAD_RESTRICT_LIGHTBOX_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_RESTRICT_LIGHTBOX_LABEL">
@@ -238,7 +238,7 @@
 			       url="PLG_ELEMENT_FILEUPLOAD_HELP_SERVER"/>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_MAKE_THUMBNAIL_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_MAKE_THUMBNAIL_LABEL"
 			       name="make_thumbnail"
@@ -248,7 +248,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_MAKE_PDF_THUMB_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_MAKE_PDF_THUMB_LABEL"
 			       name="fu_make_pdf_thumb"
@@ -315,7 +315,7 @@
 			<field name="fileupload_crop"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_CROP_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_CROP_LABEL">
 				<option value="0">JNO</option>
@@ -412,7 +412,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_SSL_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_SSL_LABEL"
 			       name="fileupload_ssl"
@@ -422,7 +422,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_AMAZONS3_ENCRYPT_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_AMAZONS3_ENCRYPT_LABEL"
 			       name="fileupload_aws_encrypt"
@@ -438,7 +438,7 @@
 			       type="text"/>
 
 			<field default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_AMAZONS3_INCLUDE_SERVER_PATH_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_AMAZONS3_INCLUDE_SERVER_PATH_LABEL"
 			       name="fileupload_s3_serverpath"
@@ -458,7 +458,7 @@
 			</field>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_SKIP_CHECK_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_SKIP_CHECK_LABEL"
 			       name="fileupload_skip_check"
@@ -487,7 +487,7 @@
 			<field name="ajax_upload"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_AJAX_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_AJAX_LABEL">
 				<option value="0">JNO</option>
@@ -550,7 +550,7 @@
 			</field>
 			
            		<field default="0"
-                   		class="btn-group"
+                   		class="switcher"
                    		description="PLG_ELEMENT_FILEUPLOAD_FORCE_DOWNLOAD_SCRIPT_ON_EDIT_DESC"
                    		label="PLG_ELEMENT_FILEUPLOAD_FORCE_DOWNLOAD_SCRIPT_ON_EDIT_LABEL"
                    		name="fu_force_download_script"
@@ -590,7 +590,7 @@
 			       valueformat="tableelement"/>
 
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_LOG_DESC"
 			       label="PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_LOG_LABEL"
 			       name="fu_download_log"

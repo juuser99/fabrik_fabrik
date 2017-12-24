@@ -4,7 +4,7 @@
 	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="details">
 			
 		
-		<field class="btn-group" default="0" label="MOD_FABRIK_LIST_RANDOMIZE_LABEL" name="radomizerecords" type="radio">
+		<field class="switcher" default="0" label="MOD_FABRIK_LIST_RANDOMIZE_LABEL" name="radomizerecords" type="radio">
 			description="MOD_FABRIK_LIST_RANDOMIZE_DESC"
 				<option value="0">JNo</option>
 				<option value="1">JYES</option>

@@ -26,7 +26,7 @@
 			<field cols="40" description="PLG_VIZ_TIMELINE_DETAIL_TEMPLATE_DESC" label="PLG_VIZ_TIMELINE_DETAIL_TEMPLATE_LABEL" name="timeline_detailtemplate" rows="8" type="textarea"/>
 			
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VIZ_TIMELINE_EVAL_DESC" label="PLG_VIZ_TIMELINE_EVAL_LABEL" name="eval_template" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>	

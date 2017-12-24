@@ -22,7 +22,7 @@
 
 			<field name="candeleterow_useraw"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				description="PLG_LIST_CANDELETEROW_USERAW_DESC"
 				label="PLG_LIST_CANDELETEROW_USERAW_LABEL"

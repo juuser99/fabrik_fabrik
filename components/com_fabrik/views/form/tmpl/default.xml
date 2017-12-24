@@ -36,7 +36,7 @@
 				
 			<field name="random"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				label="COM_FABRIK_FIELD_SHOW_RANDOM_RECORDS_LABEL"
 				description="COM_FABRIK_FIELD_SHOW_RANDOM_RECORDS_DESC"

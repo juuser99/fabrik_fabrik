@@ -7,7 +7,7 @@
 
 			<field name="js_published"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				repeat="true"
 				default="1"
 				label="COM_FABRIK_PUBLISHED">

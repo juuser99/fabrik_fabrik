@@ -14,7 +14,7 @@
 			</field>
 			
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_IMAGE_SHOW_IN_TABLE_DESC" label="PLG_ELEMENT_IMAGE_SHOW_IN_TABLE_LABEL" name="show_image_in_table" type="radio">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>	

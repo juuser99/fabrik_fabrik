@@ -21,7 +21,7 @@
 				
 			<field name="show_limit_message"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_LIMIT_SHOW_LIMIT_MESSAGE_DESC"
 				label="PLG_FORM_LIMIT_SHOW_LIMIT_MESSAGE_LABEL"
 				default="1">
@@ -31,7 +31,7 @@
 				
 			<field name="limit_allow_anonymous"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="PLG_FORM_LIMIT_ALLOW_ANONYMOUS_DESC"
 				label="PLG_FORM_LIMIT_ALLOW_ANONYMOUS_LABEL"
@@ -80,7 +80,7 @@
 			
 			<field name="lookup_type"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="user"
 				repeat="true"
 				description="PLG_FORM_LIMIT_LOOKUP_DATA_TYPE_DESC"

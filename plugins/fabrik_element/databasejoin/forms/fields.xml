@@ -10,7 +10,7 @@
 			<field default="0"
 			       name="eval"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_DBJOIN_EVAL_DESC"
 			       label="PLG_ELEMENT_DBJOIN_EVAL_LABEL">
 				<option value="0">JNO</option>
@@ -25,7 +25,7 @@
 			<field name="hidden"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_DBJOIN_HIDDEN">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
@@ -122,7 +122,7 @@
 			<field name="databasejoin_where_ajax"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_DBJOIN_JOIN_WHERE_AJAX_LABEL"
 			       description="PLG_ELEMENT_DBJOIN_JOIN_WHERE_AJAX_DESC">
 				<option value="0">JNO</option>
@@ -154,7 +154,7 @@
 			<field name="database_join_show_please_select"
 			       type="radio"
 			       default="1"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_DBJOIN_SHOW_PLEASE_SELECT_DESC"
 			       label="PLG_ELEMENT_DBJOIN_SHOW_PLEASE_SELECT_LABEL">
 				<option value="0">JNO</option>
@@ -192,7 +192,7 @@
 			<field name="fabrikdatabasejoin_frontend_add"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_DBJOIN_FRONTEND_ADD_DESC"
 			       label="PLG_ELEMENT_DBJOIN_FRONTEND_ADD_LABEL">
 				<option value="0">JNO</option>
@@ -210,7 +210,7 @@
 			<field name="databasejoin_readonly_link"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_DBJOIN_READONLY_LINK_DESC"
 			       label="PLG_ELEMENT_DBJOIN_READONLY_LINK_LABEL">
 				<option value="0">JNO</option>
@@ -220,7 +220,7 @@
 			<field name="fabrikdatabasejoin_frontend_select"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_DBJOIN_FRONTEND_SELECT_DESC"
 			       label="PLG_ELEMENT_DBJOIN_FRONTEND_SELECT_LABEL">
 				<option value="0">JNO</option>
@@ -238,7 +238,7 @@
 			<field name="advanced_behavior"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
 			       description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC">
 				<option value="0">JNO</option>
@@ -326,7 +326,7 @@
 
 			<field name="clean_concat"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       description="PLG_ELEMENT_DBJOIN_CLEAN_CONCAT_DESC"
 			       label="PLG_ELEMENT_DBJOIN_CLEAN_CONCAT_LABEL">

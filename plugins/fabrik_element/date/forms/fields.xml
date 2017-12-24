@@ -7,7 +7,7 @@
 				url="PLG_ELEMENT_DATE_HELP_SERVER" />
 
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DATE_HIDDEN_LABEL" name="hidden" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -21,7 +21,7 @@
 			<field name="eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DATE_EVAL_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -46,7 +46,7 @@
 			<field name="date_showtime"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DATE_SHOW_TIME_DESC"
 				label="PLG_ELEMENT_DATE_SHOW_TIME_LABEL" >
 					<option value="0">JNO</option>
@@ -108,7 +108,7 @@
 			<field name="date_defaulttotoday"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DATE_DEFAULT_TODAY_DESC"
 				label="PLG_ELEMENT_DATE_DEFAULT_TODAY_LABEL">
 					<option value="0">JNO</option>
@@ -118,7 +118,7 @@
 			<field name="date_alwaystoday"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DATE_ALWAYS_TODAY_DESC"
 				label="PLG_ELEMENT_DATE_ALWAYS_TODAY_LABEL">
 					<option value="0">JNO</option>
@@ -138,7 +138,7 @@
 			<field name="date_allow_typing_in_field"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DATE_ALLOW_TYPING_IN_FIELD_DESC"
 				label="PLG_ELEMENT_DATE_ALLOW_TYPING_IN_FIELD_LABEL">
 					<option value="0">JNO</option>
@@ -165,7 +165,7 @@
 			<field name="date_advanced"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DATE_ADVANCED_DESC"
 				label="PLG_ELEMENT_DATE_ADVANCED_LABEL">
 					<option value="0">JNO</option>

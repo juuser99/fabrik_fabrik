@@ -14,7 +14,7 @@
 			<field name="eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_TEXTAREA_EVAL_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -61,7 +61,7 @@
 			<field name="textarea_showlabel"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_TEXTAREA_SHOW_LABEL_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -76,7 +76,7 @@
 			<field name="use_wysiwyg"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TEXTAREA_USE_WYSIWYG_EDITOR_DESC"
 				label="PLG_ELEMENT_TEXTAREA_USE_WYSIWYG_EDITOR_LABEL">
 					<option value="0">JNO</option>
@@ -85,7 +85,7 @@
 
 			<field name="wysiwyg_extra_buttons"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				label="PLG_ELEMENT_TEXTAREA_WYSIWYG_EXTRA_BUTTONS_LABEL"
 				description="PLG_ELEMENT_TEXTAREA_WYSIWYG_EXTRA_BUTTONS_DESC">
@@ -112,7 +112,7 @@
 			<field name="textarea-showmax"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TEXTAREA_SHOW_MAX_LIMIT_DESC"
 				label="PLG_ELEMENT_TEXTAREA_SHOW_MAX_LIMIT_LABEL">
 					<option value="0">JNO</option>
@@ -146,7 +146,7 @@
 			<field name="textarea-tagify"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TEXTAREA_TAGIFY_DESC"
 				label="PLG_ELEMENT_TEXTAREA_TAGIFY_LABEL">
 					<option value="0">JNO</option>
@@ -170,7 +170,7 @@
 			<field name="textarea-truncate-where"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TEXTAREA_TRUNCATE_WHERE_DESC"
 				label="PLG_ELEMENT_TEXTAREA_TRUNCATE_WHERE_LABEL">
 					<option value="0">JNO</option>
@@ -182,7 +182,7 @@
 			<field name="textarea-truncate-html"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TEXTAREA_TRUNCATE_HTML_DESC"
 				label="PLG_ELEMENT_TEXTAREA_TRUNCATE_HTML_LABEL">
 					<option value="0">JNO</option>
@@ -200,7 +200,7 @@
 			<field name="textarea-hover"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TEXTAREA_SHOW_HOVER_DESC"
 				label="PLG_ELEMENT_TEXTAREA_SHOW_HOVER_LABEL">
 					<option value="0">JNO</option>

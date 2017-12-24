@@ -46,7 +46,7 @@
 				
 			<field name="wysiwyg"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				label="PLG_LIST_EMAIL_WYSIWYG_LABEL">
 					<option value="0">JNO</option>
@@ -55,7 +55,7 @@
 			
 			<field name="checkall"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				label="PLG_LIST_EMAIL_CHECKALL_LABEL"
 				description="PLG_LIST_EMAIL_CHECKALL_DESC">
@@ -67,7 +67,7 @@
 
 		<fieldset name="plg-list-email-sending" label="PLG_LIST_EMAIL_SENDING">
 			<field default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_LIST_EMAIL_SEND_FROM_USER_DESC"
 			       label="PLG_LIST_EMAIL_SEND_FROM_USER_LABEL"
 			       name="emailtable_from_user"
@@ -156,7 +156,7 @@
 			
 			<field name="emailtable_hide_subject"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				repeat="true"
 				label="PLG_LIST_EMAIL_HIDE_SUBJECT_LABEL" 
@@ -195,7 +195,7 @@
 							
 			<field name="emailtable_allow_attachment"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_LIST_EMAIL_ALLOW_ATTACHMENT_DESC"
 				label="PLG_LIST_EMAIL_ALLOW_ATTACHMENT_LABEL"
 				repeat="true"
@@ -257,7 +257,7 @@
 				type="radio"
 				default="0"
 				repeat="true"
-				class="btn-group"
+				class="switcher"
 				label="PLG_LIST_EMAIL_MERGE_MESSAGES_LABEL"
 				description="PLG_LIST_EMAIL_MERGE_MESSAGES_DESC">
 					<option value="0">JNO</option>

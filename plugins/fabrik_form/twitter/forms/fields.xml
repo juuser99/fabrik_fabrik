@@ -40,7 +40,7 @@
 			<field name="twitter-show-success-msg"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_TWITTERSHOWSUCCESSMSG_DESC"
 				label="PLG_FORM_TWITTERSHOWSUCCESSMSG_LABEL"
 				repeat="true">

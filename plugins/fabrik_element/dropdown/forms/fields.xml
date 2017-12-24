@@ -14,7 +14,7 @@
 			<field name="multiple"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DROPDOWN_ALLOW_MULTISELECT_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -38,7 +38,7 @@
 			<field name="allow_frontend_addtodropdown"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DROPDOWN_EDIT_DROPDOWN_DESC"
 				label="PLG_ELEMENT_DROPDOWN_EDIT_DROPDOWN_LABEL">
 					<option value="0">JNO</option>
@@ -48,7 +48,7 @@
 			<field name="dd-allowadd-onlylabel"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DROPDOWN_ONLY_ADD_LABEL_DESC"
 				label="PLG_ELEMENT_DROPDOWN_ONLY_ADD_LABEL_LABEL">
 					<option value="0">JNO</option>
@@ -58,7 +58,7 @@
 			<field name="dd-savenewadditions"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_DROPDOWN_SAVE_NEW_ADDITIONS_DESC"
 				label="PLG_ELEMENT_DROPDOWN_SAVE_NEW_ADDITIONS_LABEL">
 					<option value="0">JNO</option>
@@ -98,7 +98,7 @@
 			<field name="advanced_behavior"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
 				description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC" >
 					<option value="0">JNO</option>
@@ -128,7 +128,7 @@
 			<field name="eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DROPDOWN_EVAL_LABEL" >
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>

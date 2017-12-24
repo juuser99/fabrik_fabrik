@@ -31,7 +31,7 @@
 			<field name="random"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="COM_FABRIK_FIELD_SHOW_RANDOM_RECORDS_DESC"
 				label="COM_FABRIK_FIELD_SHOW_RANDOM_RECORDS_LABEL">
 					<option value="0">JNO</option>

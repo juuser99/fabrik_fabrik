@@ -48,7 +48,7 @@
 					<option value="1">JYES</option>
 				</field>
 
-				<field name="radomizerecords" type="radio" default="0" class="btn-group" label="MOD_FABRIK_LIST_RANDOMIZE_LABEL" description="MOD_FABRIK_LIST_RANDOMIZE_DESC">
+				<field name="radomizerecords" type="radio" default="0" class="switcher" label="MOD_FABRIK_LIST_RANDOMIZE_LABEL" description="MOD_FABRIK_LIST_RANDOMIZE_DESC">
 					<option value="0">JNo</option>
 					<option value="1">JYES</option>
 				</field>

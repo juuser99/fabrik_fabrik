@@ -20,7 +20,7 @@
 			<field name="isiban-allow_empty"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VALIDATIONRULE_ISIBAN_ALLOW_EMPTY_DESC"
 				label="PLG_VALIDATIONRULE_ISIBAN_ALLOW_EMPTY_LABEL"
 				repeat="true" >

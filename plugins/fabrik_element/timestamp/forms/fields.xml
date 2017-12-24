@@ -13,7 +13,7 @@
 			</field>
 
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				descripton="PLG_ELEMENT_TIMESTAMP_UPDATE_ON_EDIT_DESC" label="PLG_ELEMENT_TIMESTAMP_UPDATE_ON_EDIT_LABEL" name="timestamp_update_on_edit" type="radio">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>

@@ -55,7 +55,7 @@
 
 			<field type="radio"
 				name="button_in_row"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				repeat="true"
 				label="COM_FABRIK_LIST_PLUGIN_BUITON_IN_ROW_LABEL"
@@ -66,7 +66,7 @@
 
 			<field type="radio"
 			       name="table_php_require_checked"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       repeat="true"
 			       label="PLG_FABRIK_LIST_PHP_REQUIRE_CHECKED_LABEL"

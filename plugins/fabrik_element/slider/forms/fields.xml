@@ -53,7 +53,7 @@
 			<field name="slider-shownone"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_SLIDER_SHOW_NONE_DESC"
 				label="PLG_ELEMENT_SLIDER_SHOW_NONE_LABEL">
 					<option value="0">JNO</option>

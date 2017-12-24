@@ -9,7 +9,7 @@
 			
 			<field name="show_down"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				description="PLG_ELEMENT_THUMBS_SHOW_DOWN_DESC"
 				label="PLG_ELEMENT_THUMBS_SHOW_DOWN_LABEL">
@@ -19,7 +19,7 @@
 			
 			<field name="rate_in_from"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				description="PLG_ELEMENT_THUMBS_RATE_IN_FORM_DESC"
 				label="PLG_ELEMENT_THUMBS_RATE_IN_FORM_LABEL">

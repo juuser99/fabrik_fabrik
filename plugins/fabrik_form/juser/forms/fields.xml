@@ -75,7 +75,7 @@
 			<field name="juser_bypass_activation"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_BYPASS_ACTIVATION_DESC"
 				label="PLG_FABRIK_FORM_JUSER_BYPASS_ACTIVATION_LABEL"
 				repeat="true">
@@ -86,7 +86,7 @@
 			<field name="juser_bypass_registration"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_BYPASS_REGISTRATION_DESC"
 				label="PLG_FABRIK_FORM_JUSER_BYPASS_REGISTRATION_LABEL"
 				repeat="true">
@@ -97,7 +97,7 @@
 			<field name="juser_bypass_accountdetails"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_BYPASS_J_ACCOUNT_DETAILS_EMAIL_DESC"
 				label="PLG_FABRIK_FORM_JUSER_BYPASS_J_ACCOUNT_DETAILS_EMAIL_LABEL"
 				repeat="true">
@@ -108,7 +108,7 @@
 			<field name="juser_use_email_plugin"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_USE_EMAIL_PLUGIN_DESC"
 				label="PLG_FABRIK_FORM_JUSER_USE_EMAIL_PLUGIN_LABEL"
 				repeat="true">
@@ -119,7 +119,7 @@
 			<field name="juser_require_reset"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_FABRIK_FORM_JUSER_REQUIRE_RESET_DESC"
 			       label="PLG_FABRIK_FORM_JUSER_REQUIRE_RESET_LABEL"
 			       repeat="true">
@@ -158,7 +158,7 @@
 			<field name="juser_delete_user"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_DELETE_USERS_DESC"
 				label="PLG_FABRIK_FORM_JUSER_DELETE_USERS_LABEL"
 				repeat="true">
@@ -169,7 +169,7 @@
 			<field name="juser_auto_login"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_AUTO_LOGIN_DESC"
 				label="PLG_FABRIK_FORM_JUSER_AUTO_LOGIN_LABEL"
 				repeat="true">
@@ -180,7 +180,7 @@
 			<field name="synchro_users"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_SYNCRONIZE_USERS_DESC"
 				label="PLG_FABRIK_FORM_JUSER_SYNCRONIZE_USERS_LABEL"
 				repeat="true">
@@ -191,7 +191,7 @@
 			<field name="juser_sync_on_edit"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_JUSERSYNCONEDIT_DESC"
 				label="PLG_FABRIK_FORM_JUSER_JUSERSYNCONEDIT_LABEL"
 				repeat="true">
@@ -202,7 +202,7 @@
 			<field name="juser_sync_load_current_user"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FABRIK_FORM_JUSER_JUSERLOADCURRENTUSER_DESC"
 				label="PLG_FABRIK_FORM_JUSER_JUSERLOADCURRENTUSER_LABEL"
 				repeat="true">

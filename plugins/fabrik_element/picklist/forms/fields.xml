@@ -16,7 +16,7 @@
 			<field name="allowadd"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_PICKLIST_EDIT_DROPDOWN_DESC"
 				label="PLG_ELEMENT_PICKLIST_EDIT_DROPDOWN_LABEL">
 					<option value="0">JNO</option>
@@ -26,7 +26,7 @@
 			<field name="allowadd-onlylabel"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_PICKLIST_ONLY_ADD_LABEL_DESC"
 				label="PLG_ELEMENT_PICKLIST_ONLY_ADD_LABEL_LABEL">
 					<option value="0">JNO</option>
@@ -36,7 +36,7 @@
 			<field name="savenewadditions"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_PICKLIST_SAVE_NEW_ADDITIONS_DESC"
 				label="PLG_ELEMENT_PICKLIST_SAVE_NEW_ADDITIONS_LABEL">
 					<option value="0">JNO</option>

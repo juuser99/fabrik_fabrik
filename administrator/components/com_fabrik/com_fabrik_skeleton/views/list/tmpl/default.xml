@@ -25,7 +25,7 @@
 
 			<field name="calculations"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				label="COM_FABRIK_MENU_LIST_RELOAD_CALCS_LABEL"
 				description="COM_FABRIK_MENU_LIST_RELOAD_CALCS_DESC"

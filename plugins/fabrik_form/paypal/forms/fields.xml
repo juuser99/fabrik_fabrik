@@ -54,7 +54,7 @@
 				repeat="true" />
 
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_PAYPAL_EVAL_COST_DESC" label="PLG_FORM_PAYPAL_EVAL_COST_LABEL" name="paypal_cost_eval" repeat="true" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -73,7 +73,7 @@
 				repeat="true" />
 
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_PAYPAL_EVAL_ITEM_DESC"
 				label="PLG_FORM_PAYPAL_EVAL_ITEM_LABEL" name="paypal_item_eval" repeat="true" type="radio">
 					<option value="0">JNO</option>
@@ -95,7 +95,7 @@
 				repeat="true" />
 
  			<field default="0"
- 				class="btn-group"
+ 				class="switcher"
  				description="PLG_FORM_PAYPAL_EVAL_SHIPPING_COST_DESC" label="PLG_FORM_PAYPAL_EVAL_COST_LABEL" name="paypal_shipping_cost_eval" repeat="true" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -126,7 +126,7 @@
 			<field connection="params_paypal_shippingdata_connection" description="PLG_FORM_PAYPAL_SHIPPING_COUNTRY_DESC" label="PLG_FORM_PAYPAL_SHIPPING_COUNTRY_LABEL" name="paypal_shippingdata_country" repeat="true" table="params_paypal_shippingdata_table" type="element"/>
 
 			<field default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_PAYPAL_SHIPPING_OVERRIDE_DESC" label="PLG_FORM_PAYPAL_SHIPPING_OVERRIDE_LABEL" name="paypal_shipping_address_override" repeat="true" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -204,7 +204,7 @@
 			<field name="paypal_testmode"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_PAYPAL_TEST_MODE_DESC"
 				label="PLG_FORM_PAYPAL_TEST_MODE_LABEL"
 				repeat="true">
@@ -221,7 +221,7 @@
 			<field name="paypal_receive_debug_emails"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_PAYPAL_DEBUG_EMAIL_DESC" label="PLG_FORM_PAYPAL_DEBUG_EMAIL_LABEL"
 				repeat="true">
 					<option value="0">JNO</option>
@@ -231,7 +231,7 @@
 			<field name="paypal_send_default_email"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_PAYPAL_DEFAULT_EMAIL_DESC"
 				label="PLG_FORM_PAYPAL_DEFAULT_EMAIL_LABEL"
 				repeat="true">

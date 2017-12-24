@@ -15,7 +15,7 @@
 			<field name="save_and_next"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_REDIRECT_SAVE_AND_NEXT_DESC"
 				label="PLG_FORM_REDIRECT_SAVE_AND_NEXT_LABEL"
 				repeat="true">
@@ -26,7 +26,7 @@
 			<field name="append_jump_url"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_REDIRECT_APPENDJUMPURL_DESC"
 				label="PLG_FORM_REDIRECT_APPENDJUMPURL_LABEL"
 				repeat="true">
@@ -44,7 +44,7 @@
 			<field name="save_insession"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_REDIRECT_SAVEINSESSION_DESC"
 				label="PLG_FORM_REDIRECT_SAVEINSESSION_LABEL"
 				repeat="true">
@@ -66,7 +66,7 @@
 			<field name="redirect_content_reset_form"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_REDIRECT_CONTENT_RESET_FORM_DESC"
 				label="PLG_FORM_REDIRECT_CONTENT_RESET_FORM_LABEL"
 				repeat="true">

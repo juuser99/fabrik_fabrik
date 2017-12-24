@@ -57,7 +57,7 @@
 				<field name="salesforce_allowupsert"
 					type="radio"
 					default="0"
-					class="btn-group"
+					class="switcher"
 					description="PLG_FABRIK_FORM_SALESFORCE_ALLOWUPSERTS_DESC"
 					label="PLG_FABRIK_FORM_SALESFORCE_ALLOWUPSERTS_LABEL"  repeat="true">
 						<option value="0">JNO</option>

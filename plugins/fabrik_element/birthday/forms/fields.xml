@@ -63,7 +63,7 @@
 			<field name="advanced_behavior"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
 			       description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC">
 				<option value="0">JNO</option>
@@ -94,7 +94,7 @@
 			<field name="details_dateandage"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_ELEMENT_BIRTHDAY_DETAILS_DATEANDAGE_DESC"
 			       label="PLG_ELEMENT_BIRTHDAY_DETAILS_DATEANDAGE">
 				<option value="0">JNO</option>
@@ -139,7 +139,7 @@
 			<field name="empty_is_null"
 			       type="radio"
 			       default="1"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_BIRTHDAY_EMPTYISNULL"
 			       description="PLG_ELEMENT_BIRTHDAY_EMPTYISNULLDESC">
 				<option value="0">JNO</option>

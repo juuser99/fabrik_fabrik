@@ -91,7 +91,7 @@
 
 			<field name="email_run_content_plugins"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				repeat="true"
 				description="PLG_FABRIK_FORM_EMAIL_RUN_CONTENT_PLUGINS_DESC"
@@ -148,7 +148,7 @@
 
 			<field name="attach_pdf"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				repeat="true"
 				description="PLG_FABRIK_FORM_EMAIL_ATTACH_PDF_DESC"

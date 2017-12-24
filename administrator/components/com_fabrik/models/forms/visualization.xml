@@ -45,7 +45,7 @@
 
 		<field name="published"
 		       type="radio"
-		       class="btn-group"
+		       class="switcher"
 		       default="1"
 		       label="JSTATUS"
 		       description="JFIELD_PUBLISHED_DESC"
@@ -95,7 +95,7 @@
 
 			<field name="show-title"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="COM_FABRIK_FIELD_SHOW_TITLE_DESC"
 			       label="COM_FABRIK_FIELD_SHOW_TITLE_LABEL">
@@ -105,7 +105,7 @@
 
 			<field name="show_filters"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       description="COM_FABRIK_FIELD_SHOW_FILTERS_DESC"
 			       label="COM_FABRIK_FIELD_SHOW_FILTERS_LABEL">

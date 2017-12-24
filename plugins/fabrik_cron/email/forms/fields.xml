@@ -50,7 +50,7 @@
 			<field name="cronemail-eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_CRON_EMAIL_EVAL_DESC"
 				label="PLG_CRON_EMAIL_EVAL_LABEL" >
 					<option value="0">JNO</option>
@@ -66,7 +66,7 @@
 			<field name="cronemail_no_dups"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_CRON_EMAIL_NO_DUPS_DESC"
 			       label="PLG_CRON_EMAIL_NO_DUPS_LABEL" >
 				<option value="0">JNO</option>
@@ -76,7 +76,7 @@
 			<field name="cronemail_test_mode"
 				   type="radio"
 				   default="0"
-				   class="btn-group"
+				   class="switcher"
 				   description="PLG_CRON_EMAIL_TEST_MODE_DESC"
 				   label="PLG_CRON_EMAIL_TEST_MODE_LABEL" >
 				<option value="0">JNO</option>
@@ -102,7 +102,7 @@
 
 			<field name="cronemail-updatefield-eval"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0" description="PLG_CRON_EMAIL_UPDATE_EVAL_DESC"
 				label="PLG_CRON_EMAIL_UPDATE_EVAL_LABEL" >
 					<option value="0">JNO</option>

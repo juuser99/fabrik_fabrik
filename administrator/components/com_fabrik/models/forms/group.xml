@@ -35,7 +35,7 @@
 
 			<field name="published"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       label="JSTATUS"
 			       description="JFIELD_PUBLISHED_DESC"
@@ -73,7 +73,7 @@
 
 			<field name="list_view_and_query"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="1"
 			       label="COM_FABRIK_FIELD_IN_LIST_LABEL"
 			       description="COM_FABRIK_FIELD_IN_LIST_DESC"
@@ -235,7 +235,7 @@
 				<option value="0">JNO</option>
 			</field>
 
-			<field class="btn-group"
+			<field class="switcher"
 			       default="0"
 			       description="COM_FABRIK_RANDOMISE_ELEMENTS_DESC"
 			       label="COM_FABRIK_RANDOMISE_ELEMENTS_LABEL"
@@ -246,7 +246,7 @@
 			</field>
 			<field name="labels_above"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="-1"
 			       label="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_LABEL"
 			       description="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_DESC">
@@ -258,7 +258,7 @@
 
 			<field name="labels_above_details"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="-1"
 			       label="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_DETAILS_LABEL"
 			       description="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_DETAILS_DESC">

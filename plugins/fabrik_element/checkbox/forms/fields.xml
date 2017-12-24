@@ -46,7 +46,7 @@
 			<field name="allow_frontend_addtocheckbox"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_CHECKBOX_ALLOW_ADD_DESC"
 				label="PLG_ELEMENT_CHECKBOX_ALLOW_ADD_LABEL">
 					<option value="0">JNO</option>
@@ -56,7 +56,7 @@
 			<field name="chk-allowadd-onlylabel"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_CHECKBOX_ONLY_ADD_LABEL_DESC"
 				label="PLG_ELEMENT_CHECKBOX_ONLY_ADD_LABEL_LABEL">
 					<option value="0">JNO</option>
@@ -66,7 +66,7 @@
 			<field name="chk-savenewadditions"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_CHECKBOX_SAVE_NEW_ADDITIONS_DESC"
 				label="PLG_ELEMENT_CHECKBOX_SAVE_NEW_ADDITIONS_LABEL" >
 					<option value="0">JNO</option>

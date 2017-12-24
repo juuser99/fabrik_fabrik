@@ -44,7 +44,7 @@
 
 			<field name="comment_jcomment_notify"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       label="PLG_FORM_COMMENT_JCOMMENT_NOTIFY_LABEL">
 					<option value="0">JNO</option>
@@ -67,7 +67,7 @@
 
 			<field name="comment_komento_notify"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       label="PLG_FORM_COMMENT_COMENTO_NOTIFY_LABEL">
 				<option value="0">JNO</option>
@@ -91,7 +91,7 @@
 			<field name="comment_internal_wysiwyg"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_COMMENT_INTERNAL_WYSIWYG_DESC"
 				label="PLG_FORM_COMMENT_INTERNAL_WYSIWYG_LABEL"
 				repeat="true">
@@ -109,7 +109,7 @@
 			<field name="comment-date-format"
 				type="text"
 				default=""
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_COMMENT_DATE_FORMAT_DESC"
 				label="PLG_FORM_COMMENT_DATE_FORMAT_LABEL"
 				>
@@ -118,7 +118,7 @@
 			<field name="comment-internal-rating"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_COMMENT_ALLOW_RATING_DESC"
 				label="PLG_FORM_COMMENT_ALLOW_RATING_LABEL"
 				repeat="true">
@@ -129,7 +129,7 @@
 			<field name="comment-internal-anonymous"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_COMMENT_ALLOW_ANANYMOUS_DESC"
 				label="PLG_FORM_COMMENT_ALLOW_ANANYMOUS_LABEL"
 				 repeat="true">
@@ -140,7 +140,7 @@
 			<field name="comment-internal-allow-guest"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_FORM_COMMENT_ALLOW_GUEST_DESC"
 			       label="PLG_FORM_COMMENT_ALLOW_GUEST_LABEL"
 			       repeat="true">
@@ -151,7 +151,7 @@
 			<field name="comment-show-count-in-title"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_COMMENT_SHOW_COUNT_IN_TITLE_DESC"
 				label="PLG_FORM_COMMENT_SHOW_COUNT_IN_TITLE_LABEL"
 				repeat="true">
@@ -162,7 +162,7 @@
 			<field name="comment-thumb"
 				default="0"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				description="PLG_FORM_COMMENT_THUMB_DESC"
 				label="PLG_FORM_COMMENT_THUMB_LABEL"
 				repeat="true" >
@@ -187,7 +187,7 @@
 			<field name="comment-internal-notify"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_FORM_COMMENT_NOTIFY_ON_NEW_COMMENT_DESC"
 			       label="PLG_FORM_COMMENT_NOTIFY_ON_NEW_COMMENT_LABEL"
 			       repeat="true">
@@ -198,7 +198,7 @@
 			<field name="comment_allow_user_subscriptions_to_notifications"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_FORM_COMMENT_CAN_USER_SUBSCRIBE_TO_NOTIFICATIONS_DESC"
 			       label="PLG_FORM_COMMENT_CAN_USER_SUBSCRIBE_TO_NOTIFICATIONS_LABEL"
 					>
@@ -209,7 +209,7 @@
 			<field name="comment-notify-admins"
 			       type="radio"
 			       default="0"
-			       class="btn-group"
+			       class="switcher"
 			       description="PLG_FORM_COMMENT_NOTIFY_ADMINS_DESC"
 			       label="PLG_FORM_COMMENT_NOTIFY_ADMINS_LABEL"
 			       repeat="true">

@@ -109,7 +109,7 @@
 			<field name="show_fullcalendar_legend"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VISUALIZATION_FULLCALENDAR_SHOW_LEGEND_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_SHOW_LEGEND_LABEL">
 					<option value="0">JNO</option>
@@ -119,7 +119,7 @@
 			<field name="show_day"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VISUALIZATION_FULLCALENDAR_SHOW_DAY_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_SHOW_DAY_LABEL">
 					<option value="0">JNO</option>
@@ -129,7 +129,7 @@
 			<field name="show_week"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VISUALIZATION_FULLCALENDAR_SHOW_WEEK_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_SHOW_WEEK_LABEL">
 					<option value="0">JNO</option>
@@ -139,7 +139,7 @@
 			<field name="show-weekends"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VISUALIZATION_FULLCALENDAR_SHOW_WEEKENDS_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_SHOW_WEEKENDS_LABEL">
 					<option value="0">JNO</option>
@@ -149,7 +149,7 @@
 			<field name="greyscaled-weekend"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VISUALIZATION_FULLCALENDAR_GREYSCALE_WEEKEND_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_GREYSCALE_WEEKEND_LABEL" >
 					<option value="0">JNO</option>
@@ -168,7 +168,7 @@
 			
 			<field name="show_full_details"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				label="PLG_VISUALIZATION_FULLCALENDAR_SHOW_FULL_DETAILS_LABEL"
 				description="PLG_VISUALIZATION_FULLCALENDAR_SHOW_FULL_DETAILS_DESC">
@@ -194,7 +194,7 @@
 			<field name="fullcalendar-read-only"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VISUALIZATION_FULLCALENDAR_READ_ONLY_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_READ_ONLY_LABEL" >
 					<option value="0">JNO</option>
@@ -235,7 +235,7 @@
 			<field name="fullcalendar_show_messages"
 				type="radio"
 				default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_VISUALIZATION_FULLCALENDAR_SHOW_MESSAGES_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_SHOW_MESSAGES_LABEL" >
 					<option value="0">JNO</option>
@@ -256,7 +256,7 @@
 				
 			<field name="readonly_monthview"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="PLG_VISUALIZATION_FULLCALENDAR_READ_ONLY_MONTH_VIEW_DESC"
 				label="PLG_VISUALIZATION_FULLCALENDAR_READ_ONLY_LABEL">

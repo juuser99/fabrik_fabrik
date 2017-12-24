@@ -73,7 +73,7 @@
 
 			<field name="link_smart_link"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0" description="PLG_ELEMENT_LINK_SMART_LINK_DESC"
 				label="PLG_ELEMENT_LINK_SMART_LINK_LABEL" >
 					<option value="0">JNO</option>
@@ -82,7 +82,7 @@
 
 			<field name="link_normalize"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0" description="PLG_ELEMENT_LINK_NORMALIZE_DESC"
 			       label="PLG_ELEMENT_LINK_NORMALIZE_LABEL" >
 				<option value="0">JNO</option>
@@ -105,7 +105,7 @@
 
 			<field name="use_bitly"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="PLG_ELEMENT_LINK_USE_BITLY_DESC"
 				label="PLG_ELEMENT_LINK_USE_BITLY_LABEL" >

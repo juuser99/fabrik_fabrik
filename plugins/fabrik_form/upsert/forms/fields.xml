@@ -30,7 +30,7 @@
             <field name="upsert_pk_or_fk"
                    type="radio"
                    default="pk"
-                   class="btn-group"
+                   class="switcher"
                    description="PLG_FORM_UPSERT_PK_OR_FK_DESC"
                    label="PLG_FORM_UPSERT_PK_OR_FK_LABEL"
                    repeat="true">

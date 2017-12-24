@@ -10,7 +10,7 @@
 		</field>
 		
 		<field default="1"
-			class="btn-group"
+			class="switcher"
 			description="PLG_FORM_PAGINATE_AJAX_DESC" label="PLG_FORM_PAGINATE_AJAX_LABEL" name="paginate_ajax" repeat="true" type="radio">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>	

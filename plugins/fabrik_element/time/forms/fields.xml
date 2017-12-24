@@ -9,7 +9,7 @@
 			<field name="eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_TIME_EVAL_DESC"
 				label="PLG_ELEMENT_TIME_EVAL_LABEL">
 					<option value="0">JNO</option>
@@ -96,7 +96,7 @@
 			<field name="advanced_behavior"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_LABEL"
 				description="PLG_ELEMENT_DROPDOWN_JQUERY_CHOSEN_DESC" >
 					<option value="0">JNO</option>
@@ -106,7 +106,7 @@
 			<field name="time_24h"
 			       type="radio"
 			       default="1"
-			       class="btn-group"
+			       class="switcher"
 			       label="PLG_ELEMENT_TIME_24H_LABEL"
 			       description="PLG_ELEMENT_TIME_24H_DESC" >
 				<option value="0">JNO</option>

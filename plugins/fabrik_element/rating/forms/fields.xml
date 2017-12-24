@@ -18,14 +18,14 @@
 				description="PLG_ELEMENT_RATING_ACCESS_DESC" />
 			
 			<field default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_RATING_NO_RATING_OPTION_FIRST_DESC" label="PLG_ELEMENT_RATING_NO_RATING_OPTION_FIRST_LABEL" name="rating-nonefirst" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 			</field>
 			
 			<field default="1"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_RATING_RATE_IN_FORM_DESC" label="PLG_ELEMENT_RATING_RATE_IN_FORM_LABEL" name="rating-rate-in-form" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>

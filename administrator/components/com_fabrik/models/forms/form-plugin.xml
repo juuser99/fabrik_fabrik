@@ -7,7 +7,7 @@
 		
 			<field name="plugin_state"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="1"
 				label="COM_FABRIK_PUBLISHED"
 				repeat="true">

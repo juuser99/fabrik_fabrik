@@ -34,7 +34,7 @@
 
 			<field name="table_link_isfabrik"
 			       type="radio"
-			       class="btn-group"
+			       class="switcher"
 			       default="0"
 			       label="PLG_FABRIK_LIST_LINK_ISFABRIK_LABEL"
 			       description="PLG_FABRIK_LIST_LINK_ISFABRIK_DESC">

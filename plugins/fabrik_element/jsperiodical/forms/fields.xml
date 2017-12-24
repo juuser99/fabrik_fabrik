@@ -23,7 +23,7 @@
 			<field name="readonly"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_JSPERIODICAL_READ_ONLY_DESC"
 				label="PLG_ELEMENT_JSPERIODICAL_READ_ONLY_LABEL">
 					<option value="0">JNO</option>

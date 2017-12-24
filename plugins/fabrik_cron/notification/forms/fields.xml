@@ -27,7 +27,7 @@
 
 			<field name="cronemail-eval"
 				type="radio"
-				class="btn-group"
+				class="switcher"
 				default="0"
 				description="PLG_CRON_EMAIL_EVAL_DESC"
 				label="PLG_CRON_EMAIL_EVAL_LABEL">
@@ -61,7 +61,7 @@
 			<field name="cronemail-updatefield-eval"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_CRON_EMAIL_UPDATE_EVAL_DESC"
 				label="PLG_CRON_EMAIL_UPDATE_EVAL_LABEL" >
 				<option value="0">JNO</option>

@@ -9,7 +9,7 @@
 			<field name="hidden"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				label="PLG_ELEMENT_IP_HIDDEN_LABEL">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
@@ -27,7 +27,7 @@
 			<field name="ip_update_on_edit"
 				type="radio"
 				default="0"
-				class="btn-group"
+				class="switcher"
 				description="PLG_ELEMENT_IP_UPDATE_ON_EDIT_DESC"
 				label="PLG_ELEMENT_IP_UPDATE_ON_EDIT_LABEL">
 					<option value="0">JNO</option>
