@@ -123,7 +123,7 @@ class JFormFieldFabrikModalrepeat extends JFormField
 
 		// As JForm will render child fieldsets we have to hide it via CSS
 		$fieldSetId = str_replace('jform_params_', '', $modalId);
-		$css = 'a[href="#' . $fieldSetId . '"] { display: none!important; }';
+		$css = 'a[href="#attrib-' . $fieldSetId . '"] { display: none!important; }';
 		$document->addStyleDeclaration($css);
 
 		$path = 'templates/' . $app->getTemplate() . '/images/menu/';

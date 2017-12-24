@@ -1206,7 +1206,7 @@ EOD;
 		$deps[] = 'fab/utils';
 		$deps[] = 'jquery';
 
-		$deps[] = 'fab/mootools-ext';
+		//$deps[] = 'fab/mootools-ext';
 		$deps[] = 'lib/Event.mock';
 
 		self::addRequireJsShim($framework, 'fab/fabrik', $deps, false);
@@ -1372,6 +1372,12 @@ EOD;
 		$mediaFolder = self::getMediaFolder();
 		JHtml::_('script', $mediaFolder . '/lib/mootools/mootools-' . $type . '.js', array('version' => 'auto', 'relative' => false, 'detectDebug' => $debug));
 		static::$loaded[__METHOD__][$type] = true;
+
+		if (empty(static::$loaded[__METHOD__]['ext']))
+		{
+			//JHtml::_('script', $mediaFolder . '/lib/mootools/mootools-ext.js', array('version' => 'auto', 'relative' => false, 'detectDebug' => $debug));
+			static::$loaded[__METHOD__]['ext'] = true;
+		}
 
 		return;
 	}
@@ -3124,18 +3130,38 @@ EOT;
 	/**
 	 * Fetch J! script options (for things like bootstrap tabs, etc. and add a script to load them
 	 *
+     * param  bool  addScript  add a script declaration, or return JSON script tag
 	 * @since version 4.0
 	 */
-	public static function addJoomlaScriptOptions()
+	public static function addJoomlaScriptOptions($addScript = false)
     {
 	    $scriptOptions = \JFactory::getDocument()->getScriptOptions();
+	    $script = '';
 
-	    if (!empty($scriptOptions))
+	    if ($addScript)
 	    {
-		    $jsonOptions = json_encode($scriptOptions);
-		    $jsonOptions = $jsonOptions ? $jsonOptions : '{}';
-		    HTML::addScriptDeclaration("Joomla.loadOptions(JSON.parse('" . $jsonOptions . "')); Joomla.Event.dispatch(document, 'joomla:updated')");
+		    if (!empty($scriptOptions))
+		    {
+			    $jsonOptions = json_encode($scriptOptions);
+			    $jsonOptions = $jsonOptions ? $jsonOptions : '{}';
+			    HTML::addScriptDeclaration("Joomla.loadOptions(JSON.parse('" . $jsonOptions . "')); Joomla.Event.dispatch(document, 'joomla:updated')");
+		    }
+	    }
+	    else
+	    {
+		    if (!empty($scriptOptions))
+		    {
+			    $script .= '<script type="application/json" class="joomla-script-options new">';
+
+			    $prettyPrint = (JDEBUG && defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : false);
+			    $jsonOptions = json_encode($scriptOptions, $prettyPrint);
+			    $jsonOptions = $jsonOptions ? $jsonOptions : '{}';
+
+			    $script .= $jsonOptions;
+			    $script .= '</script>';
+		    }
 	    }
 
+	    return $script;
     }
 }

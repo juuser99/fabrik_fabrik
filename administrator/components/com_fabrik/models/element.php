@@ -581,6 +581,33 @@ class FabrikAdminModelElement extends FabModelAdmin
 			$data['created']          = $dateNow->toSql();
 			$data['created_by']       = $this->user->get('id');
 			$data['created_by_alias'] = $this->user->get('username');
+			$data['modified']         = '0000-00-00 00:00:00';
+			$data['modified_by']      = 0;
+			$data['checked_out']      = 0;
+			$data['checked_out_time'] = '0000-00-00 00:00:00';
+
+			if (!isset($data['primary_key']))
+			{
+				$data['primary_key'] = 0;
+				$data['auto_increment'] = 0;
+			}
+
+			if (!isset($data['parent_id']))
+			{
+				$data['parent_id'] = 0;
+			}
+
+
+			if (!isset($data['width']))
+			{
+				$data['width'] = 0;
+			}
+
+
+			if (!isset($data['height']))
+			{
+				$data['height'] = 0;
+			}
 		}
 
 		/**

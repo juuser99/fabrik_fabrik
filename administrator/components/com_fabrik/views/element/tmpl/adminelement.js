@@ -148,6 +148,7 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 		changePlugin: function (e) {
 			document.id('plugin-container').empty()
 				.adopt(new Element('span').set('text', Joomla.JText._('COM_FABRIK_LOADING')));
+			/*
 			var myAjax = new Request({
 				url: 'index.php',
 				'evalResponse': false,
@@ -171,6 +172,23 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 				}.bind(this)
 			});
 			Fabrik.requestQueue.add(myAjax);
+			*/
+			var self = this;
+			jQuery.ajax({
+				url: 'index.php',
+				data: {
+					'option': 'com_fabrik',
+					'id': this.options.id,
+					'task': 'element.getPluginHTML',
+					'format': 'raw',
+					'plugin': e
+				},
+				context: document.id('plugin-container')
+			}).done(function (r) {
+				jQuery(this).html(r);
+				Joomla.loadOptions();
+				Joomla.Event.dispatch(this, 'joomla:updated');
+			});
 		},
 
 		deleteJS: function (target) {

@@ -53,7 +53,7 @@ class FabrikAdminControllerElement extends JControllerForm
 		$model->setState('element.id', $input->getInt('id'));
 		$model->getForm();
 		$html = $model->getPluginHTML($plugin);
-		HTML::addJoomlaScriptOptions();
+		$html .= HTML::addJoomlaScriptOptions(false);
 		echo $html;
 	}
 

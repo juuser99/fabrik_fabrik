@@ -6,7 +6,7 @@
  */
 
 define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', 'fab/list-keys',
-        'fab/list-actions', 'fab/mootools-ext'],
+        'fab/list-actions'],
     function (jQuery, Fabrik, FbListToggle, FbGroupedToggler, FbListKeys, FbListActions) {
         var FbList = new Class({
 
