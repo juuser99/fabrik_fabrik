@@ -15,6 +15,7 @@ require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
 
 use Aws\Exception\AwsException;
 use Aws\S3\Exception\S3Exception;
+use GuzzleHttp\Psr7;
 use Joomla\String\StringHelper;
 
 
@@ -177,7 +178,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 
 	private function removePrependedURL($filepath)
 	{
-		if (substr($filepath, 0, StringHelper::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
+		if (substr($filepath, 0, JString::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
 		{
 			$filepath = Fabrikstring::ltrimword($filepath, COM_FABRIK_BASE);
 		}
@@ -208,6 +209,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	public function upload($tmpFile, $filepath)
 	{
 		$filepath = str_replace("\\", '/', $filepath);
+		$mimeType = GuzzleHttp\Psr7\mimetype_from_filename($filepath);
 
 		if (!$this->bucketExists())
 		{
@@ -232,7 +234,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 
 		// $$$ rob avoid urls like http://bucket.s3.amazonaws.com//home/users/path/to/file/Chrysanthemum.jpg
-		$filepath = StringHelper::ltrim($filepath, '/');
+		$filepath = JString::ltrim($filepath, '/');
 
 		// Move the file
 		try
@@ -241,7 +243,8 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 				'SourceFile' => $tmpFile,
 				'Bucket' => $this->getBucketName(),
 				'Key' => $this->urlToKey($filepath),
-				'ACL' => $this->getAcl()
+				'ACL' => $this->getAcl(),
+				'ContentType' => $mimeType
 			];
 
 			if ($this->isEncrypted())
@@ -450,7 +453,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		}
 		else
 		{
-			$path = JPath::clean($path);
+			$path = empty($path) ? '' : JPath::clean($path);
 		}
 
 		$path = str_replace("\\", '/', $path);
@@ -479,11 +482,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Delete a file
 	 *
 	 * @param   string  $filepath  File to delete
+	 * @param   bool    $prependRoot  also test with root prepended
 	 *
 	 * @return  void
 	 */
 
-	public function delete($filepath)
+	public function delete($filepath, $prependRoot = true)
 	{
 		$filepath = $this->urlToPath($filepath);
 		try
@@ -725,6 +729,11 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 
 	public function preRenderPath($filepath)
 	{
+		if (empty($filepath))
+		{
+			return '';
+		}
+
 		$params = $this->getParams();
 		static $presigned = array();
 
@@ -736,7 +745,8 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 				{
 					$cmd                  = $this->s3->getCommand('GetObject', [
 						'Bucket' => $this->getBucketName(),
-						'Key'    => $this->urlToKey($filepath)
+						'Key'    => $this->urlToKey($filepath),
+						'ResponseCacheControl' => "no-cache"
 					]);
 					$request              = $this->s3->createPresignedRequest($cmd, '+' . $lifetime . ' seconds');
 					$presigned[$filepath] = (string) $request->getUri();
