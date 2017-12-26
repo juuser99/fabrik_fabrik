@@ -149,7 +149,7 @@ class FabrikAdminModelConnection extends FabModelAdmin
 	{
 		$config = $this->config;
 		$crypt = FabrikWorker::getCrypt();
-		$pwMatch = $config->get('password') == $item->password || $crypt->encrypt($config->get('password')) == $item->password;
+		$pwMatch = $config->get('password') === $item->password || $config->get('password') === $crypt->decrypt($item->password);
 
 		return $config->get('host') == $item->host && $config->get('user') == $item->user && $pwMatch
 			&& $config->get('db') == $item->database;
