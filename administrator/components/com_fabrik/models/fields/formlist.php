@@ -78,10 +78,17 @@ class JFormFieldFormList extends JFormFieldList
 			}
 		}
 
-		$o = new stdClass;
-		$o->value = '';
-		$o->text = '';
-		array_unshift($rows, $o);
+		if ($this->element['searchtools'])
+		{
+			$sel  = JHtml::_('select.option', '', FText::_('COM_FABRIK_SELECT_FORM'));
+			$sel->default = false;
+		}
+		else
+		{
+			$sel  = JHtml::_('select.option', '', '');
+		}
+
+		array_unshift($rows, $sel);
 
 		return $rows;
 	}
@@ -94,6 +101,11 @@ class JFormFieldFormList extends JFormFieldList
 
 	protected function getInput()
 	{
+		if ($this->element['searchtools'])
+		{
+			return parent::getInput();
+		}
+
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$option = $input->get('option');

@@ -13,7 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<div class="tab-pane" id="tab-validations">
+
 	<fieldset>
 		<legend><?php echo FText::_('COM_FABRIK_VALIDATIONS'); ?></legend>
 		<div id="plugins" class="accordion"></div>
@@ -26,4 +26,3 @@ defined('_JEXEC') or die('Restricted access');
 			</div>
 		</div>
 	</fieldset>
-</div>

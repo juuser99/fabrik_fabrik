@@ -169,6 +169,7 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                 'id'              : this.id
             };
 
+            /*
             var request = new Request.HTML({
                 url        : 'index.php',
                 data       : d,
@@ -195,9 +196,29 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                     fconsole('Fabrik pluginmanager addTop ajax exception:', headerName, value);
                 }
             });
-            this.topTotal++;
+            */
+	        var self = this;
+	        jQuery.ajax({
+		        url: 'index.php',
+		        data: d,
+		        context: body
+	        }).done(function (r) {
+		        jQuery(this).html(r);
+		        if (plugin !== '') {
+			        // Sent temp variable as c to addPlugin, so they are aligned properly
+			        self.addPlugin(plugin, tt_temp);
+		        } else {
+			        toggler.getElement('span.pluginTitle').set('text', Joomla.JText._('COM_FABRIK_PLEASE_SELECT'));
+		        }
+		        Joomla.loadOptions();
+		        Joomla.Event.dispatch(this, 'joomla:updated');
+	        });
 
+	        this.topTotal++;
+
+            /*
             Fabrik.requestQueue.add(request);
+            */
         },
 
         // Bootstrap specific
@@ -258,6 +279,7 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
             }
 
             // Ajax request to load the plugin content
+            /*
             var request = new Request.HTML({
                 url        : 'index.php',
                 data       : {
@@ -298,6 +320,34 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                 }
             });
             Fabrik.requestQueue.add(request);
+            */
+	        var self = this;
+	        jQuery.ajax({
+		        url: 'index.php',
+		        data: {
+			        'option': 'com_fabrik',
+			        'view'  : 'plugin',
+			        'format': 'raw',
+			        'type'  : this.type,
+			        'plugin': plugin,
+			        'c'     : c,
+			        'id'    : this.id
+		        },
+		        context: document.id('plugins').getElements('.actionContainer')[c].getElement('.pluginOpts')
+	        }).done(function (r) {
+		        jQuery(this).html(r);
+		        var container = document.id('plugins').getElements('.actionContainer')[c];
+		        var title = container.getElement('span.pluginTitle'),
+			        heading = plugin,
+			        desc = container.getElement('input[name*=plugin_description]');
+		        if (desc) {
+			        heading += ': ' + desc.getValue();
+		        }
+		        title.set('text', heading);
+		        self.pluginTotal++;
+		        Joomla.loadOptions();
+		        Joomla.Event.dispatch(this, 'joomla:updated');
+	        });
         },
 
         deletePlugin: function (e) {

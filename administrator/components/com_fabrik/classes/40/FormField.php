@@ -592,6 +592,10 @@ abstract class FormField
 		// Set the group of the field.
 		$this->group = $group;
 
+		// Allow for repeatable elements
+		$repeat = (string) $element['repeat'];
+		$this->repeat = ($repeat == 'true' || $repeat == 'multiple' || (!empty($this->form->repeat) && $this->form->repeat == 1));
+
 		$attributes = array(
 			'multiple', 'name', 'id', 'hint', 'class', 'description', 'labelclass', 'onchange', 'onclick', 'validate', 'pattern', 'validationtext', 'default',
 			'required', 'disabled', 'readonly', 'autofocus', 'hidden', 'autocomplete', 'spellcheck', 'translateHint', 'translateLabel',
@@ -606,10 +610,6 @@ abstract class FormField
 		{
 			$this->__set($attributeName, $element[$attributeName]);
 		}
-
-		// Allow for repeatable elements
-		$repeat = (string) $element['repeat'];
-		$this->repeat = ($repeat == 'true' || $repeat == 'multiple' || (!empty($this->form->repeat) && $this->form->repeat == 1));
 
 		// Set the visibility.
 		$this->hidden = ($this->hidden || (string) $element['type'] == 'hidden');

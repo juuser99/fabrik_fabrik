@@ -95,14 +95,24 @@ JText::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 
 		<div class="col-md-10">
             <div class="tab-content">
-                <?php
-                echo $this->loadTemplate('details');
-                echo $this->loadTemplate('publishing');
-                echo $this->loadTemplate('access');
-                echo $this->loadTemplate('listview');
-                echo $this->loadTemplate('validations');
-                echo $this->loadTemplate('javascript');
-                ?>
+                <div class="tab-pane active" id="tab-details">
+                    <?php echo $this->loadTemplate('details'); ?>
+                </div>
+                <div class="tab-pane" id="tab-publishing">
+                    <?php echo $this->loadTemplate('publishing'); ?>
+                </div>
+                <div class="tab-pane" id="tab-access">
+                    <?php echo $this->loadTemplate('access'); ?>
+                </div>
+                <div class="tab-pane" id="tab-listview">
+                    <?php echo $this->loadTemplate('listview'); ?>
+                </div>
+                <div class="tab-pane" id="tab-validations">
+                    <?php echo $this->loadTemplate('validations'); ?>
+                </div>
+                <div class="tab-pane" id="tab-javascript">
+                    <?php echo $this->loadTemplate('javascript'); ?>
+                </div>
             </div>
 		</div>
 	</div>

@@ -217,6 +217,7 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 			this.jsAccordion.addSection(toggler, body);
 			div.inject(document.id('javascriptActions'));
 			var c = this.jsCounter;
+			/*
 			var request = new Request.HTML({
 				url: 'index.php',
 				data: {
@@ -253,10 +254,39 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 					fconsole('Fabrik adminelement.js addJavascript: ajax exception: ', headerName, value);
 				}
 			});
+			*/
 			this.jsCounter++;
+			/*
 			Fabrik.requestQueue.add(request);
 			this.updateBootStrap();
 			FabrikAdmin.reTip();
+			*/
+			var self = this;
+			jQuery.ajax({
+				url: 'index.php',
+				data: {
+					'option': 'com_fabrik',
+					'view': 'plugin',
+					'task': 'top',
+					'format': 'raw',
+					'type': 'elementjavascript',
+					'plugin': null,
+					'plugin_published': true,
+					'c': c,
+					'id': jsId,
+					'elementid': this.id
+				},
+				context: body
+			}).done(function (r) {
+				jQuery(this).html(r);
+				this.getElement('textarea[id^="jform_code-"]').addEvent('change', function (e, target) {
+					self.setAccordionHeader(e.target.getParent('.actionContainer'));
+				}.bind(this));
+				self.setAccordionHeader(div);
+				self.jsAjaxed++;
+				Joomla.loadOptions();
+				Joomla.Event.dispatch(this, 'joomla:updated');
+			});
 		},
 
 		setAccordionHeader: function (c) {

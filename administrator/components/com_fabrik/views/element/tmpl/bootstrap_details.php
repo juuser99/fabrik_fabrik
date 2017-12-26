@@ -13,7 +13,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<div class="tab-pane active" id="tab-details">
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -41,4 +40,3 @@ defined('_JEXEC') or die('Restricted access');
         </div>
     </div>
 
-</div>

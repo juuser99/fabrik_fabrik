@@ -44,10 +44,18 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 
 	protected function getGroups()
 	{
+		$app = JFactory::getApplication();
+
 		if ($this->value == '')
 		{
-			$app = JFactory::getApplication();
-			$this->value = $app->getUserStateFromRequest('com_fabrik.elements.filter.group', 'filter_groupId', $this->value);
+			if ($this->element['searchtools'])
+			{
+				$this->value = $app->getUserState('com_fabrikadmin.elements.filter.group', '');
+			}
+			else
+			{
+				$this->value = $app->getUserStateFromRequest('com_fabrik.elements.filter.group', 'filter_groupId', $this->value);
+			}
 		}
 
 		// Initialize variables.
@@ -62,17 +70,34 @@ class JFormFieldGroupList extends JFormFieldGroupedList
 		->join('INNER', '#__{package}_forms AS f on fg.form_id = f.id');
 		$query->order('f.label, g.name');
 
+		if ($this->element['searchtools'])
+		{
+			$formId = (int) $app->getUserState('com_fabrikadmin.elements.filter.form', '');
+
+			if (!empty($formId))
+			{
+				$query->where('f.id = ' . $formId);
+			}
+		}
+
 		// Get the options.
 		$db->setQuery($query);
 		$options = $db->loadObjectList();
-		$groups = array();
 
-		// Add please select
-		$sel = new stdClass;
-		$sel->value = '';
-		$sel->form = '';
-		$sel->text = FText::_('COM_FABRIK_PLEASE_SELECT');
+		if ($this->element['searchtools'])
+		{
+			$sel  = JHtml::_('select.option', '', FText::_('COM_FABRIK_SELECT_GROUP'));
+			$sel->default = false;
+		}
+		else
+		{
+			$sel       = JHtml::_('select.option', '', FText::_('COM_FABRIK_PLEASE_SELECT'));
+			$sel->form = '';
+		}
+
 		array_unshift($options, $sel);
+
+		$groups    = array();
 
 		foreach ($options as $option)
 		{
