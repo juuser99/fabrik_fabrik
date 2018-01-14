@@ -1892,7 +1892,7 @@ EOD;
 		{
 			// Remove any <pre> tags provided by e.g. JQuery::dump
 			$content = preg_replace('/(^\s*<pre( .*)?>)|(<\/pre>\s*$)/i', '', $content);
-			echo htmlspecialchars($content);
+			echo '<pre>' . htmlspecialchars($content) . '</pre>';
 		}
 
 		echo '</div>';
