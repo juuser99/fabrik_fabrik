@@ -396,6 +396,7 @@ class FabrikViewListBase extends FabrikView
 		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$profiler = JProfiler::getInstance('Application');
 		$input    = $this->app->input;
+		$itemId   = FabrikWorker::itemId();
 
 		/** @var FabrikFEModelList $model */
 		$model = $this->getModel();
@@ -517,7 +518,18 @@ class FabrikViewListBase extends FabrikView
 		}
 
 		$this->emptyLink     = $model->canEmpty() ? '#' : '';
-		$this->csvImportLink = $this->showCSVImport ? JRoute::_('index.php?option=com_' . $this->package . '&view=import&filetype=csv&listid=' . $item->id) : '';
+
+		if ($this->showCSVImport)
+		{
+			$this->csvImportLink = 'index.php?option=com_' . $this->package . '&view=import&filetype=csv&listid=' . $item->id;
+			$this->csvImportLink .= empty($itemId) ? '' : '&Itemid=' . $itemId;
+			$this->csvImportLink = JRoute::_($this->csvImportLink);
+		}
+		else
+		{
+			$this->csvImportLink = '';
+		}
+
 		$this->showAdd       = $model->canAdd();
 
 		if ($this->showAdd)
@@ -719,7 +731,7 @@ class FabrikViewListBase extends FabrikView
 	{
 		$model                     = $this->getModel();
 		$this->buttons             = new stdClass;
-		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => "{notice:true}",
+		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => '{"notice":true}',
 			'title' => '<span>' . FText::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
 		$buttonProperties['alt']   = FText::_('COM_FABRIK_EXPORT_TO_CSV');
 		$this->buttons->csvexport  = FabrikHelperHTML::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);

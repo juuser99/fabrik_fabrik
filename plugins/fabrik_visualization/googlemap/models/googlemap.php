@@ -85,8 +85,8 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$viz    = $this->getVisualization();
 
 		$opts            = new stdClass;
-		$opts->lat       = (float) $params->get('fb_gm_default_lat', 0);
-		$opts->lon       = (float) $params->get('fb_gm_default_lon', 0);
+		$opts->lat       = floatval($params->get('fb_gm_default_lat', 0));
+		$opts->lon       = floatval($params->get('fb_gm_default_lon', 0));
 		$opts->ajaxDefer = (bool) $params->get('fb_gm_ajax_defer', '0');
 
 		if ($params->get('fb_gm_ajax_defer', '0') !== '1')
@@ -202,6 +202,13 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$opts->zoomStyle            = (int) $params->get('fb_gm_zoom_control_style', 0);
 		$opts->zoom                 = $params->get('fb_gm_zoom', 1);
 		$opts->show_radius          = $params->get('fb_gm_use_radius', '1') == '1' ? true : false;
+		$opts->heatmap              = $params->get('fb_gm_heatmap', '0') == '1' ? true : false;
+
+		if ($opts->heatmap)
+		{
+			$opts->clustering = false;
+		}
+
 		$opts->radius_defaults      = (array) $params->get('fb_gm_radius_default');
 		$opts->radius_fill_colors   = (array) $params->get('fb_gm_radius_fill_color');
 		$opts->styles               = Googlemap::styleJs($params);
@@ -357,6 +364,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$radiusDefaults = (array) $params->get('fb_gm_radius_default');
 		$radiusUnits = (array) $params->get('fb_gm_radius_unit');
 		$groupClass = (array) $params->get('fb_gm_group_class');
+		$heatmapWeightingElements = (array) $params->get('fb_gm_heatmap_weighting_element');
 
 		$c = 0;
 		$this->recordCount = 0;
@@ -645,6 +653,21 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 						}
 					}
 
+					if ($params->get('fb_gm_heatmap', '0') == '1')
+					{
+						$heatmapWeightingElement = FArrayHelper::getValue($heatmapWeightingElements, $c, '');
+
+						if (!empty($heatmapWeightingElement))
+						{
+							$heatmapWeighting = (float) $row->$heatmapWeightingElement;
+							$icons[$v[0] . $v[1]]['heatmapWeighting'] = $heatmapWeighting;
+						}
+						else
+						{
+							$icons[$v[0] . $v[1]]['heatmapWeighting'] = 1;
+						}
+					}
+
 					$icons[$v[0] . $v[1]]['c'] = $c;
 					$this->recordCount++;
 					$k++;
@@ -661,6 +684,8 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 				$icons[$v[0] . $v[1]][5] = $height;
 			}
 
+			// $$$ hugh - not used?  And doesn't make sense
+			/*
 			if (!empty($icons))
 			{
 				$this->iconRowData[] = array(
@@ -668,6 +693,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 					'data' => $rowData
 				);
 			}
+			*/
 
 			$c++;
 		}

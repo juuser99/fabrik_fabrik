@@ -11,10 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\LayoutFile;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
-use Fabrik\Helpers\LayoutFile;
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
@@ -667,25 +667,8 @@ class PlgFabrik_Element extends FabrikPlugin
 					$data           = '<span>' . $data . '</span>';
 
 					// See if data has an <a> tag
-					if (class_exists('DOMDocument'))
-					{
-						$html = new DOMDocument;
-						/**
-						 * The loadXML() chokes if data has & in it.  But we can't htmlspecialchar() it, as that removes
-						 * the HTML markup we're looking for.  So we need to ONLY change &'s which aren't already part of
-						 * any HTML entities which may be in the data.  So use a negative lookahead regex, which finds & followed
-						 * by anything except non-space the ;.  Then after doing the loadXML, we have to turn the &amp;s back in
-						 * to &, to avoid double encoding 'cos we're going to do an htmpsepecialchars() on $data in a few lines.
-						 *
-						 * It also chokes if the data already contains any HTML entities which XML doesn't like, like &eacute;,
-						 * so first we need to do an html_entity_decode() to get rid of those!
-						 */
-						$data = html_entity_decode($data);
-						$data = preg_replace('/&(?!\S+;)/', '&amp;', $data);
-						$html->loadXML($data);
-						$data = str_replace('&amp;', '&', $data);
-						$as   = $html->getElementsBytagName('a');
-					}
+					$html = FabrikHelperHTML::loadDOMDocument($data);
+					$as   = $html->getElementsBytagName('a');
 
 					if ($params->get('icon_hovertext', true))
 					{
@@ -693,7 +676,7 @@ class PlgFabrik_Element extends FabrikPlugin
 						$aHref  = '#';
 						$target = '';
 
-						if (class_exists('DOMDocument') && $as->length)
+						if ($as->length)
 						{
 							// Data already has an <a href="foo"> lets get that for use in hover text
 							$a      = $as->item(0);
@@ -723,7 +706,7 @@ class PlgFabrik_Element extends FabrikPlugin
 						 * After ages dicking around with a regex to do this, decided to use DOMDocument instead!
 						 */
 
-						if (class_exists('DOMDocument') && $as->length)
+						if ($as->length)
 						{
 							$img = $html->createElement('img');
 							$src = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true, array('forceImage' => true));
@@ -1045,6 +1028,15 @@ class PlgFabrik_Element extends FabrikPlugin
 				{
 					FabrikWorker::logError('Did not load element ' . $lookUpId . ' for element::canView()', 'error');
 				}
+			}
+		}
+		else if ($this->access->$key && $view == 'form')
+		{
+			$formModel = $this->getFormModel();
+			$pluginManager = FabrikWorker::getPluginManager();
+			if (in_array(false, $pluginManager->runPlugins('onElementCanView', $formModel, 'form', $this)))
+			{
+				$this->access->view = false;
 			}
 		}
 
@@ -2464,7 +2456,9 @@ class PlgFabrik_Element extends FabrikPlugin
 			// $$$ rob changed from span wrapper to div wrapper as element's content may contain divs which give html error
 
 			// Placeholder to be updated by ajax code
-			$v = html_entity_decode($this->getROElement($data, $repeatCounter));
+			// @TODO the entity decode causes problems on RO with tooltips
+			$v = $this->getROElement($data, $repeatCounter);
+			$v = html_entity_decode($v);
 			//$v = $v == '' ? '&nbsp;' : $v;
 
 			return '<div class="fabrikElementReadOnly" id="' . $htmlId . '">' . $v . '</div>';
@@ -2710,6 +2704,9 @@ class PlgFabrik_Element extends FabrikPlugin
 					break;
 				case '5' :
 					$type = 'url';
+					break;
+				case '6' :
+					$type = 'number';
 					break;
 				default :
 					$type = 'text';
@@ -3553,7 +3550,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			$default = array_shift($default);
 		}
-		
+
 		// $$$ rob - if searching on "O'Fallon" from querystring filter the string has slashes added regardless
 		$default = (string) $default;
 		$default = stripslashes($default);
@@ -3699,7 +3696,7 @@ class PlgFabrik_Element extends FabrikPlugin
 					}
 				}
 
-				if (FabrikWorker::isJSON($rows[$j]->value))
+				if (FabrikWorker::isJSON($rows[$j]->value, false))
 				{
 					// $$$ rob 01/10/2012 - if not unset then you could get json values in standard dd filter (checkbox)
 					unset($rows[$j]);
@@ -4523,7 +4520,7 @@ class PlgFabrik_Element extends FabrikPlugin
 						case FABRIKFILTER_QUERY:
 							$value = '(' . $value . ')';
 							break;
-						case FABRKFILTER_NOQUOTES:
+						case FABRIKFILTER_NOQUOTES:
 							$value = $value;
 							break;
 						default:
@@ -4589,7 +4586,7 @@ class PlgFabrik_Element extends FabrikPlugin
 					break;
 			}
 			// $$$ hugh - if 'noquotes' (3) selected, strip off the quotes again!
-			if ($eval == FABRKFILTER_NOQUOTES)
+			if ($eval == FABRIKFILTER_NOQUOTES)
 			{
 				// $$$ hugh - darn, this is stripping the ' of the end of things like "select & from foo where bar = '123'"
 				$value = StringHelper::ltrim($value, "'");
@@ -5498,7 +5495,39 @@ class PlgFabrik_Element extends FabrikPlugin
 			if ($plugin->hasSubElements)
 			{
 				// http://fabrikar.com/forums/index.php?threads/calculation-split-on-problem.40122/
-				$val->label = ($type != 'median') ? $plugin->getLabelForValue($val->label) : $plugin->getLabelForValue($key, $key);
+				$labelParts = explode(' & ', $val->label);
+				if (count($labelParts) > 1)
+				{
+					$label = $labelParts[1];
+				}
+				else
+				{
+					$label = $labelParts[0];
+				}
+
+				$label = FabrikWorker::JSONtoData($label);
+				$ls = array();
+
+				if (is_array($label))
+				{
+					foreach ($label as $l)
+					{
+						$ls[] = ($type != 'median') ? $plugin->getLabelForValue($l) : $plugin->getLabelForValue($key, $key);
+					}
+				}
+				else
+				{
+					$ls[] = ($type != 'median') ? $plugin->getLabelForValue($label) : $plugin->getLabelForValue($key, $key);
+				}
+
+				if (count($labelParts > 1))
+				{
+					$val->label = $labelParts[0] . ' & ' . implode(',', $ls);
+				}
+				else
+				{
+					$val->label = impode(',', $ls);
+				}
 			}
 			else
 			{
@@ -7011,7 +7040,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			$thousandSep = '';
 		}
-		
+
 		$val = str_replace($thousandSep, '', $val);
 		$val = str_replace($decimalSep, '.', $val);
 
@@ -7451,7 +7480,10 @@ class PlgFabrik_Element extends FabrikPlugin
 
 					if ($c !== false)
 					{
+						// added noRowClass and rowClass for use in div templates that need to split those out
+						$data[$groupKey][$i]->noRowClass = $data[$groupKey][$i]->class;
 						$data[$groupKey][$i]->class .= ' ' . FabrikString::getRowClass($c, $this->element->name);
+						$data[$groupKey][$i]->rowClass = FabrikString::getRowClass($c, $this->element->name);
 					}
 				}
 			}
@@ -8072,13 +8104,17 @@ class PlgFabrik_Element extends FabrikPlugin
 				$fullKey = $elementModel->getFullName(true, false);
 				$value = $data[$fullKey];
 
-				if ($this->getGroupModel()->canRepeat() && is_array($value))
+				if ($groupModel->canRepeat() && is_array($value))
 				{
-					$value = FArrayHelper::getValue($value, $repeatCounter);
+					foreach ($value as $k => $v)
+					{
+						$data[$fullKey][$k] = $elementModel->storeDatabaseFormat($v, $data);
+					}
 				}
-
-				// For radio buttons and dropdowns otherwise nothing is stored for them??
-				$data[$fullKey] = $elementModel->storeDatabaseFormat($value, $data);
+				else
+				{
+					$data[$fullKey] = $elementModel->storeDatabaseFormat($value, $data);
+				}
 			}
 		}
 	}

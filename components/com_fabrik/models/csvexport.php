@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\Html;
 
 jimport('joomla.application.component.model');
 
@@ -345,16 +346,12 @@ class FabrikFEModelCSVExport extends FabModel
 	private function getFileName()
 	{
 		$this->model->setId($this->app->input->getInt('listid'));
-		$table    = $this->model->getTable();
-		$filename = $this->model->getParams()->get('csv_filename');
-		if ($filename == '')
-		{
-			$filename = $table->db_table_name . '-export.csv';
-		}
-		else
-		{
-			$filename = sprintf($filename, date('Y-m-d'));
-		}
+
+		$filename = Html::getLayout('fabrik-csv-filename')
+			->render((object) array(
+				'model' => $this->model,
+				'filename' => $this->model->getParams()->get('csv_filename')
+			));
 		return $filename;
 	}
 
@@ -419,7 +416,7 @@ class FabrikFEModelCSVExport extends FabModel
 		$listid = $this->app->input->getInt('listid');
 		// Allows for custom csv file processing. Included php file should kill php processing
 		// with die; or exit; to prevent continuation of this script (normal download). See Wiki.
-		if(file_exists(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php')){	
+		if(file_exists(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php')){
    			require(JPATH_PLUGINS.'/fabrik_list/listcsv/scripts/list_'.$listid.'_csv_export.php');
 		}
 		$document = JFactory::getDocument();
@@ -548,18 +545,18 @@ class FabrikFEModelCSVExport extends FabModel
 	protected function quote($n)
 	{
 		$cleanhtml = $this->model->getParams()->get('csv_clean_html', 'leave');
-		
+
 		switch ($cleanhtml)
 		{
 			default:
 			case 'leave':
 				break;
-			
+
 			case 'remove':
 				$n = strip_tags($n);
 				$n =  html_entity_decode($n);
 				break;
-				
+
 			case 'replaceli':
 				$n = str_replace ('<li>', '', $n);
 				$n = str_replace ('</li>', "\n", $n);
@@ -567,7 +564,7 @@ class FabrikFEModelCSVExport extends FabModel
 				$n =  html_entity_decode($n);
 				break;
 		}
-		
+
 		$doubleQuote  = $this->model->getParams()->get('csv_double_quote', '1') === '1';
 		if ($doubleQuote == true)
 		{

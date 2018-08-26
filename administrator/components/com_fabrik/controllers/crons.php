@@ -112,7 +112,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 			$table = FabTable::getInstance('cron', 'FabrikTable');
 			$table->load($row->id);
 			$plugin->setRow($table);
-			$plugin->getParams();
+			$pluginParams = $plugin->getParams();
 			$thisListModel = clone ($listModel);
 			$thisAdminListModel = clone ($adminListModel);
 			$tid = (int) $rowParams->table;
@@ -124,8 +124,9 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 
 				if ($plugin->requiresTableData())
 				{
-					$thisListModel->setLimits(0, 0);
-					$thisListModel->getPagination(0, 0, 0);
+					$cron_row_limit = (int)$pluginParams->get('cron_row_limit', 100);
+					$thisListModel->setLimits(0, $cron_row_limit);
+					$thisListModel->getPagination(0, 0, $cron_row_limit);
 					$data = $thisListModel->getData();
 				}
 			}
@@ -153,6 +154,12 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 				$recipient = explode(',', $recipient);
 				$subject = $config->get('sitename') . ': ' . $row->plugin . ' scheduled task';
 				$mailer->sendMail($config->get('mailfrom'), $config->get('fromname'), $recipient, $subject, $this->log->message, true);
+			}
+
+			if ($pluginParams->get('cron_reschedule_manual', '0') === '1')
+			{
+				$table->lastrun = JFactory::getDate()->toSql();
+				$table->store();
 			}
 		}
 

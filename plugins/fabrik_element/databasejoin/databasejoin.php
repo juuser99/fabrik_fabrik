@@ -56,6 +56,13 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	protected $optionVals = array();
 
 	/**
+	 * Option values
+	 *
+	 * @var array
+	 */
+	protected $optionLabels = array();
+
+	/**
 	 * Linked form data
 	 *
 	 * @var array
@@ -557,7 +564,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		// $$$ hugh - attempting to make sure we never do an unconstrained query for auto-complete
 		$displayType = $this->getDisplayType();
-		$value       = (array) $this->getValue($data, $repeatCounter);
+		$value       = (array) $this->getValue($data, $repeatCounter, $opts);
 
 		/*
 		 *  $$$ rob 20/08/2012 - removed empty test - seems that this method is called more than one time, when in auto-complete filter
@@ -578,6 +585,11 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 				}
 
 				$this->autocomplete_where = $this->getJoinValueColumn() . ' IN (' . implode(', ', $quoteV) . ')';
+			}
+			else
+			{
+				// avoid unconstrained query
+				$this->autocomplete_where = '7 = -7';
 			}
 		}
 		// $$$ rob 18/06/2012 cache the option vals on a per query basis (was previously incwhere but this was not ok
@@ -1977,7 +1989,15 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	 */
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
-		$tmp = $this->_getOptions($data, $repeatCounter);
+		/**
+		 * The 'emailValue' option doesn't "do" anything, it's there for a specific case where form submission plugins
+		 * want to change formData[] for this join, and if we don't provide some unique option, the getValue() called
+		 * by _getOptions() will cache, and the key (which includes serialized options) will then match during
+		 * processing to the DB.  So we add 'emaiValue' as an option here, so the cache key will be different when the
+		 * data is actually being stored, so it'll use formData[] rather than the cached value.
+		 */
+		$tmp = $this->_getOptions($data, $repeatCounter, true, array('emailValue' => true));
+
 		// $$$ hugh - PLEASE LEAVE.  No, we don't use $name, but I'm in here xdebug'ing stuff frequently, I use it as a time saver.
 		$name = $this->getFullName(false, true);
 
@@ -2417,8 +2437,10 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 					{
 						if (stristr($joinLabel, "CONCAT"))
 						{
-							$join = $this->getJoinModel()->getJoin();
+							//$join = $this->getJoinModel()->getJoin();
+							$join      = $this->getJoin();
 							$to        = $this->getDbName();
+							$joinLabel = str_replace($join->table_join_alias, $to, $joinLabel);
 							$joinLabel = str_replace($join->table_join, $to, $joinLabel);
 						}
 					}
@@ -2721,7 +2743,8 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	{
 		$db        = $this->getDb();
 		$query     = $db->getQuery(true);
-		$join      = $this->getJoinModel()->getJoin();
+		//$join      = $this->getJoinModel()->getJoin();
+		$join      = $this->getJoin();
 		$joinTable = $db->qn($join->table_join);
 		$shortName = $db->qn($this->getElement()->name);
 		$tableAlias = $join->table_join;
@@ -2742,7 +2765,8 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		{
 			$jKey  = $this->getLabelOrConcatVal();
 			$jKey  = !strstr($jKey, 'CONCAT') ? $label : $jKey;
-			$label = str_replace($join->table_join, $to, $jKey);
+			$label = str_replace($join->table_join_alias, $to, $jKey);
+			$label = str_replace($join->table_join, $to, $label);
 			$tableAlias = $to;
 		}
 
@@ -3382,6 +3406,13 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			return $v;
 		}
 
+		$ckey = serialize($v);
+
+		if (isset($this->optionLabels[$ckey]))
+		{
+			return $this->optionLabels[$ckey];
+		}
+
 		if ($this->isJoin())
 		{
 			/*
@@ -3396,13 +3427,14 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			{
 				if ($v == $defaultLabel)
 				{
+					$this->optionLabels[$ckey] = $v;
 					return $v;
 				}
 			}
 
 			$rows = $this->checkboxRows('id');
 
-			if (count($v) === 0)
+			if (is_array($v) && count($v) === 0)
 			{
 				$v = '';
 			}
@@ -3417,6 +3449,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 			if (is_array($rows) && array_key_exists($v, $rows))
 			{
+				$this->optionLabels[$ckey] = $rows[$v]->text;
 				return $rows[$v]->text;
 			}
 		}
@@ -3426,6 +3459,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if (!$query)
 		{
+			$this->optionLabels[$ckey] = '';
 			return '';
 		}
 		$key = $this->getJoinValueColumn();
@@ -3462,10 +3496,12 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if (!$r)
 		{
+			$this->optionLabels[$ckey] = $defaultLabel;
 			return $defaultLabel;
 		}
 
 		$r = isset($r->text) ? $r->text : $defaultLabel;
+		$this->optionLabels[$ckey] = $r;
 
 		return $r;
 	}
@@ -3672,8 +3708,10 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	 */
 	public function buildQueryElementConcat($jKey, $addAs = true)
 	{
-		$join      = $this->getJoinModel()->getJoin();
+		//$join      = $this->getJoinModel()->getJoin();
+		$join      = $this->getJoin();
 		$joinTable = $join->table_join;
+		$joinAlias = $join->table_join_alias;
 		$params    = $this->getParams();
 		$jKey      = $this->getLabelOrConcatVal();
 		$where     = $this->buildQueryWhere(array(), true, $params->get('join_db_name'));
@@ -3695,6 +3733,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			* (say) a field name 'foobar', etc.
 			* Also ... I think we need to NOT do this inside a subquery!
 			*/
+			$jKey = str_replace($joinAlias, 'lookup', $jKey);
 			$jKey = str_replace($joinTable, 'lookup', $jKey);
 		}
 
