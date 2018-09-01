@@ -121,10 +121,11 @@ Element.implement({
 	 * containers you want to use those effect with, like ...
 	 * <div class="carousel slide mootools-noconflict'>
 	 */
+
 	hide: function () {
-        if (Fabrik.bootstrapVersion('modal') !== '2.x') {
-            return this;
-        }
+		if (Fabrik.bootstrapVersion('modal') >= 3) {
+			return;
+		}
 		if (this.hasClass('mootools-noconflict')) {
 			return this;
 		}

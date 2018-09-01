@@ -408,6 +408,4 @@ class FCipher
 
         return $s;
     }
-
-
 }

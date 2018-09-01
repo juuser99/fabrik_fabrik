@@ -260,6 +260,17 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 			return $layout->render($displayData);
 		}
+		elseif ($params->get('captcha-method') == 'invisible')
+		{
+			$layout                = $this->getLayout('nocaptcha-invisible');
+			$displayData           = new stdClass;
+			$displayData->id       = $id;
+			$displayData->name     = $name;
+			$displayData->site_key = $params->get('recaptcha_publickey');
+			$displayData->lang     = FabrikWorker::replaceWithLanguageTags(JString::strtolower($params->get('recaptcha_lang', 'en')));
+
+			return $layout->render($displayData);
+		}
 		else
 		{
 			if (!function_exists('imagettfbbox'))
