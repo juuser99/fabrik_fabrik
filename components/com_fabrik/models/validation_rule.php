@@ -102,7 +102,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		}
 
 		$params = $this->getParams();
-		$condition = trim($params->get($this->pluginName . '-validation_condition'));
+		$condition = trim($params->get($this->pluginName . '-validation_condition', ''));
 
 		if ($condition == '')
 		{

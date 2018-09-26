@@ -315,7 +315,7 @@ class FabrikAdminModelList extends FabModelAdmin
 				break;
 		}
 
-		$dd = str_replace("\n", "", JHTML::_('select.genericlist', $aConditions, $name, 'class="inputbox input-small"  size="1" ', 'value', 'text', ''));
+		$dd = str_replace("\n", "", JHTML::_('select.genericlist', $aConditions, $name, 'class="inputbox input-medium"  size="1" ', 'value', 'text', ''));
 
 		if ($addSlashes)
 		{
@@ -401,13 +401,13 @@ class FabrikAdminModelList extends FabModelAdmin
 		$filterOpts               = new stdClass;
 		$filterOpts->filterJoinDd = $this->getFilterJoinDd(false, 'jform[params][filter-join][]');
 		$filterOpts->filterCondDd = $this->getFilterConditionDd(false, 'jform[params][filter-conditions][]', 2);
-		$filterOpts->filterAccess = JHtml::_('access.level', 'jform[params][filter-access][]', $item->access, 'class="input-small"');
+		$filterOpts->filterAccess = JHtml::_('access.level', 'jform[params][filter-access][]', $item->access, 'class="input-medium"', false);
 		$filterOpts->filterAccess = str_replace(array("\n", "\r"), '', $filterOpts->filterAccess);
 		$filterOpts->j3           = FabrikWorker::j3();
 		$filterOpts               = json_encode($filterOpts);
 
 		$formModel    = $this->getFormModel();
-		$attribs      = 'class="inputbox input-small" size="1"';
+		$attribs      = 'class="inputbox input-medium" size="1"';
 		$filterfields = $formModel->getElementList('jform[params][filter-fields][]', '', false, false, true, 'name', $attribs);
 		$filterfields = addslashes(str_replace(array("\n", "\r"), '', $filterfields));
 
@@ -647,7 +647,8 @@ class FabrikAdminModelList extends FabModelAdmin
 		$params = new Registry($row->get('params'));
 
 		$isView = $this->setIsView($params);
-		$data['params']['isView'] = (string) $isView;
+		$data['params']['isview'] = (string) $isView;
+
 
 		$this->setState('list.id', $id);
 		$this->setState('list.form_id', $row->get('form_id'));
@@ -762,6 +763,17 @@ class FabrikAdminModelList extends FabModelAdmin
 			$groupData          = FabrikWorker::formDefaults('group');
 			$groupData['name']  = $row->label;
 			$groupData['label'] = $row->label;
+
+			$params = new Registry($row->get('params'));
+			$this->setIsView($params);
+
+			if ($params->get('isview', '') === '1')
+			{
+				$this->app->enqueueMessage(FText::_('COM_FABRIK_LIST_VIEW_SET_ALTER_NO'));
+				$params->set('alter_existing_db_cols', '0');
+			}
+
+			$row->params = $params->toString();
 
 			if ($newTable == '')
 			{
@@ -1524,6 +1536,12 @@ class FabrikAdminModelList extends FabModelAdmin
 				case '4':
 					$element->label = strtoupper($element->label);
 					break;
+				case '5':
+					$element->label = strtoupper(str_replace(" ", "_", $element->label));
+					break;
+				case '6':
+					$element->label = FArrayHelper::getValue($elementLabels, $ordering, $label);
+					break;
 				default:
 					break;
 			}
@@ -1634,6 +1652,12 @@ class FabrikAdminModelList extends FabModelAdmin
 		$group->set('checked_out', 0);
 		$group->set('checked_out_time', '0000-00-00 00:00:00');
 		$opts                          = ArrayHelper::getValue($data, 'params', new stdClass);
+
+		if (is_array($opts))
+		{
+			$opts = ArrayHelper::toObject($opts);
+		}
+
 		$opts->repeat_group_button     = $isRepeat ? 1 : 0;
 		$opts->repeat_group_show_first = 1;
 		$group->set('params', json_encode($opts));
@@ -2392,12 +2416,11 @@ class FabrikAdminModelList extends FabModelAdmin
 			}
 		}
 
-		$func = create_function('$value', '$db = FabrikWorker::getDbo(true);;return $db->qn($value);');
 		$sql .= implode(', ', $lines);
 
 		if (!empty($keys))
 		{
-			$sql .= ', PRIMARY KEY (' . implode(',', array_map($func, $keys)) . '))';
+			$sql .= ', PRIMARY KEY (' . implode(',', array_map(function($value) use ($db) {return $db->qn($value);}, $keys)) . '))';
 		}
 		else
 		{

@@ -553,7 +553,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         hideGroupTab: function (groupId) {
             var tab = this.getGroupTab(groupId);
             if (tab !== false) {
-                tab.hide();
+                jQuery(tab).hide();
                 if (tab.hasClass('active')) {
                     if (tab.getPrevious()) {
                         jQuery(tab.getPrevious().getFirst()).tab('show');
@@ -587,7 +587,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         showGroupTab: function (groupId) {
             var tab = this.getGroupTab(groupId);
             if (tab !== false) {
-                tab.show();
+                jQuery(tab).show();
             }
         },
 
@@ -999,16 +999,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     id + '" does not exist.');
                 return;
             }
-            if (el.hasClass('fabrikSubElementContainer')) {
-                // check for things like radio buttons & checkboxes
-                el.find('.fabrikinput').on(triggerEvent, function (e) {
-                    self.doElementValidation(e, true);
-                });
-                return;
-            }
-            el.on(triggerEvent, function (e) {
-                self.doElementValidation(e, false);
-            });
+            el = this.formElements.get(id);
+            el.addAjaxValidation();
         },
 
         /**
@@ -1113,7 +1105,12 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             }
             var el = this.formElements.get(id);
             if ((typeOf(r.modified[origid]) !== 'null')) {
-                el.update(r.modified[origid]);
+                if (el.options.inRepeatGroup) {
+                    el.update(r.modified[origid][el.options.repeatCounter]);
+                }
+                else {
+                    el.update(r.modified[origid]);
+                }
             }
             if (typeOf(r.errors[origid]) !== 'null') {
                 this._showElementError(r.errors[origid][el.options.repeatCounter], id);
@@ -1165,21 +1162,44 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (this.formElements.has(k)) {
                     var el = this.formElements.get(k);
                     if (gids.contains(el.groupid.toInt())) {
-                        if (r.errors[k]) {
-                            // prepare error so that it only triggers for real errors and not success
-                            // msgs
 
-                            var msg = '';
-                            if (typeOf(r.errors[k]) !== 'null') {
-                                msg = r.errors[k].flatten().join('<br />');
+                        if (r.errors[k]) {
+                            if (el.options.inRepeatGroup) {
+                                r.errors[k].each(function (v2, k2) {
+                                    var k3 = k.replace(/_(\d+)$/, '_' + k2);
+                                    var rEl = this.formElements.get(k3);
+
+
+                                    var msg = '';
+                                    if (typeOf(v2) !== 'null') {
+                                        msg = v2.flatten().join('<br />');
+                                    }
+                                    if (msg !== '') {
+                                        tmperr = this._showElementError(v2, k3);
+                                        if (err === false) {
+                                            err = tmperr;
+                                        }
+                                    } else {
+                                        rEl.setErrorMessage('', '');
+                                    }
+                                }.bind(this));
                             }
-                            if (msg !== '') {
-                                tmperr = this._showElementError(r.errors[k], k);
-                                if (err === false) {
-                                    err = tmperr;
+                            else {
+                                // prepare error so that it only triggers for real errors and not success
+                                // msgs
+
+                                var msg = '';
+                                if (typeOf(r.errors[k]) !== 'null') {
+                                    msg = r.errors[k].flatten().join('<br />');
                                 }
-                            } else {
-                                el.setErrorMessage('', '');
+                                if (msg !== '') {
+                                    tmperr = this._showElementError(r.errors[k], k);
+                                    if (err === false) {
+                                        err = tmperr;
+                                    }
+                                } else {
+                                    el.setErrorMessage('', '');
+                                }
                             }
                         }
                         if (r.modified[k]) {
@@ -1557,22 +1577,28 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                     // Process errors if there are some
                                     jQuery(this.form.getElements('[data-role=fabrik_tab]')).removeClass('fabrikErrorGroup')
                                     var errfound = false;
-                                    if (json.errors !== undefined) {
 
+                                    if (json.errors !== undefined) {
                                         // For every element of the form update error message
                                         $H(json.errors).each(function (errors, key) {
-                                            if (this.formElements.has(key) && errors.flatten().length > 0) {
+                                            if (errors.flatten().length > 0) {
+                                                /*
+                                                 * might not be an element error - could be a custom plugin error - so
+                                                 * flag an error found, even if we don't match it to an element.
+                                                 */
                                                 errfound = true;
-                                                if (this.formElements[key].options.inRepeatGroup) {
-                                                    for (e = 0; e < errors.length; e++) {
-                                                        if (errors[e].flatten().length > 0) {
-                                                            var this_key = key.replace(/(_\d+)$/, '_' + e);
-                                                            this._showElementError(errors[e], this_key);
+                                                if (this.formElements.has(key)) {
+                                                    if (this.formElements[key].options.inRepeatGroup) {
+                                                        for (e = 0; e < errors.length; e++) {
+                                                            if (errors[e].flatten().length > 0) {
+                                                                var this_key = key.replace(/(_\d+)$/, '_' + e);
+                                                                this._showElementError(errors[e], this_key);
+                                                            }
                                                         }
                                                     }
-                                                }
-                                                else {
-                                                    this._showElementError(errors, key);
+                                                    else {
+                                                        this._showElementError(errors, key);
+                                                    }
                                                 }
                                             }
                                         }.bind(this));
@@ -1846,7 +1872,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (repeat_rows === 1) {
                     repeat_id_0 = this.form.getElement('#' + this.options.group_pk_ids[groupId] + '_0');
 
-                    if (typeOf(repeat_id_0) !== 'null' && repeat_id_0.value === '') {
+                    // check rowid - if new form and failed validation
+                    if (this.options.rowid !== '' && typeOf(repeat_id_0) !== 'null' && repeat_id_0.value === '') {
                         repeat_real = 0;
                     }
                 }
@@ -2014,10 +2041,16 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         },
 
         hideLastGroup: function (groupId, subGroup) {
+            var msg = this.options.noDataMsg[groupId];
+
+            if (msg === '') {
+                msg = Joomla.JText._('COM_FABRIK_NO_REPEAT_GROUP_DATA');
+            }
+
             var sge = subGroup.getElement('.fabrikSubGroupElements');
             var notice = new Element(
                 'div', {'class': 'fabrikNotice alert'}
-            ).appendText(Joomla.JText._('COM_FABRIK_NO_REPEAT_GROUP_DATA'));
+            ).appendText(msg);
             if (typeOf(sge) === 'null') {
                 sge = subGroup;
                 var add = sge.getElement('.addGroup');

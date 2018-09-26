@@ -1089,4 +1089,17 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		*/
 		return $return;
 	}
+
+	/**
+	 * Internal element validation
+	 *
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter Repeat group counter
+	 *
+	 * @return bool
+	 */
+	public function validate($data, $repeatCounter = 0)
+	{
+		return true;
+	}
 }
