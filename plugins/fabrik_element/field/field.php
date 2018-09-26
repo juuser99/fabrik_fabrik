@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Helper\MediaHelper;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 
@@ -164,6 +165,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			if ($params->get('autocomplete', '0') === '3')
 			{
 				$bits['class'] .= ' fabrikGeocomplete';
+				$bits['autocomplete'] = 'off';
 			}
 		}
 
@@ -234,23 +236,48 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			$w = new FabrikWorker;
 			$opts = $this->linkOpts();
 			$title = $params->get('link_title', '');
+			$attrs = $params->get('link_attributes', '');
 
-			if (FabrikWorker::isEmail($value) || StringHelper::stristr($value, 'http'))
+			if (!empty($attrs))
 			{
+				$attrs = $w->parseMessageForPlaceHolder($attrs);
+				$attrs = explode(' ', $attrs);
+
+				foreach ($attrs as $attr)
+				{
+					list($k, $v) = explode('=', $attr);
+					$opts[$k] = trim($v, '"');
+				}
 			}
-			elseif (StringHelper::stristr($value, 'www.'))
+			else
 			{
-				$value = 'http://' . $value;
+				$attrs = array();
 			}
 
-			if ($title !== '')
+			if ((new MediaHelper)->isImage($value))
 			{
-				$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
+				$alt = empty($title) ? '' : 'alt="' . strip_tags($w->parseMessageForPlaceHolder($title, $data)) . '"';
+				$value = '<img src="' . $value . '" ' . $alt . ' ' . implode(' ', $attrs) . ' />';
 			}
+			else
+			{
+				if (FabrikWorker::isEmail($value) || StringHelper::stristr($value, 'http'))
+				{
+				}
+				elseif (StringHelper::stristr($value, 'www.'))
+				{
+					$value = 'http://' . $value;
+				}
 
-			$label = FArrayHelper::getValue($opts, 'title', '') !== '' ? $opts['title'] : $value;
+				if ($title !== '')
+				{
+					$opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
+				}
 
-			$value = FabrikHelperHTML::a($value, $label, $opts);
+				$label = FArrayHelper::getValue($opts, 'title', '') !== '' ? $opts['title'] : $value;
+
+				$value = FabrikHelperHTML::a($value, $label, $opts);
+			}
 		}
 	}
 
@@ -370,7 +397,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			$folder = 'components/com_fabrik/libs/googlemaps/geocomplete/';
 			$s->deps[] = $folder . 'jquery.geocomplete';
 		}
-		
+
 		if (array_key_exists($key, $shim))
 		{
 			$shim[$key]->deps = array_merge($shim[$key]->deps, $s->deps);
@@ -534,9 +561,9 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		$url = 'index.php';
 		$this->lang->load('com_fabrik.plg.element.field', JPATH_ADMINISTRATOR);
 
-		if (!$this->canView())
+		if (!$this->getListModel()->canView() || !$this->canView())
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_PERMISSION'));
+			$this->app->enqueueMessage(FText::_('JERROR_ALERTNOAUTHOR'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -664,6 +691,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		$layout = $this->getLayout('qr');
 		$displayData = new stdClass;
 		$displayData->src = $src;
+		$displayData->data = $thisRow;
 
 		return $layout->render($displayData);
 	}

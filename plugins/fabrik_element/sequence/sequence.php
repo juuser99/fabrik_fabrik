@@ -127,6 +127,9 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 		$tableName = $this->getlistModel()->getTable()->db_table_name;
 		$elementId = $this->getElement()->id;
 
+		// create the table if it doesn't exist ... should get created on install, but ... eh ...
+		$this->createSequenceTable();
+
 		$method = $params->get('sequence_method', 'load');
 
 		if ($method !== 'pk')
@@ -182,7 +185,7 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 		}
 		else
 		{
-			$sequence = (int) ArrayHelper::getValue($data, '__pk_val', '');
+			$sequence = (int) ArrayHelper::getValue($data, 'rowid', '');
 		}
 
 		$sequence = sprintf('%0' . $padding . 'd', $sequence);
