@@ -8,10 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Administrator\View\Home;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 
 /**
  * View class for a list of lists.
@@ -21,7 +23,7 @@ jimport('joomla.application.component.view');
  * @since       1.6
  */
 
-class FabrikViewHome extends JViewLegacy
+class RawView extends HtmlView
 {
 	/**
 	 * Display the view

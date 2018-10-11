@@ -8,10 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Administrator\View\Home;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 
 /**
  * Fabrik Admin Home Page View
@@ -21,7 +27,7 @@ jimport('joomla.application.component.view');
  * @since       3.0
  */
 
-class FabrikAdminViewHome extends JViewLegacy
+class HtmlView extends BaseHtmlView
 {
 	/**
 	 * Recently logged activity
@@ -45,24 +51,24 @@ class FabrikAdminViewHome extends JViewLegacy
 
 	public function display($tpl = null)
 	{
-		$srcs = FabrikHelperHTML::framework();
-		FabrikHelperHTML::script($srcs);
-		$db = FabrikWorker::getDbo(true);
+		$srcs = Html::framework();
+		Html::script($srcs);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__{package}_log')->where('message_type != ""')->order('timedate_created DESC');
 		$db->setQuery($query, 0, 10);
 		$this->logs = $db->loadObjectList();
 		$this->feed = $this->get('RSSFeed');
 		$this->addToolbar();
-		FabrikAdminHelper::addSubmenu('home');
-		FabrikAdminHelper::setViewLayout($this);
+		\FabrikAdminHelper::addSubmenu('home');
+		\FabrikAdminHelper::setViewLayout($this);
 
-		if (FabrikWorker::j3())
+		if (Worker::j3())
 		{
-			$this->sidebar = JHtmlSidebar::render();
+			$this->sidebar = \JHtmlSidebar::render();
 		}
 
-		FabrikHelperHTML::iniRequireJS();
+		Html::iniRequireJS();
 		parent::display($tpl);
 	}
 
@@ -74,13 +80,12 @@ class FabrikAdminViewHome extends JViewLegacy
 
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 		$canDo = FabrikAdminHelper::getActions();
 
 		if ($canDo->get('core.admin'))
 		{
-			JToolBarHelper::divider();
-			JToolBarHelper::preferences('com_fabrik');
+			ToolbarHelper::divider();
+			ToolBarHelper::preferences('com_fabrik');
 		}
 	}
 }
