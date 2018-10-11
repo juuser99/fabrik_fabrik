@@ -110,7 +110,6 @@ class HtmlView extends ListView
 
         $this->tableGroups = $this->get('TableGroups');
 
-        $this->addToolbar();
         FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
 
         $this->sidebar = \JHtmlSidebar::render();
@@ -126,7 +125,6 @@ class HtmlView extends ListView
      */
     protected function addToolbar()
     {
-	    require_once JPATH_COMPONENT . '/helpers/fabrik.php';
 	    $canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
 	    ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_LISTS'), 'list');
 
