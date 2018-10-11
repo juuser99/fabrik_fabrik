@@ -23,7 +23,7 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
  * @since       1.6
  */
 
-class RawView extends HtmlView
+class RawView extends BaseHtmlView
 {
 	/**
 	 * Display the view

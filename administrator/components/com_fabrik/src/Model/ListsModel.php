@@ -9,12 +9,17 @@
  * @since       1.6
  */
 
+namespace Joomla\Component\Fabrik\Administrator\Model;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Utilities\ArrayHelper;
-
-require_once 'fabmodellist.php';
 
 /**
  * Fabrik Admin Lists Model
@@ -23,7 +28,7 @@ require_once 'fabmodellist.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikAdminModelLists extends FabModelList
+class ListsModel extends FabListModel
 {
 	/**
 	 * Constructor.
@@ -46,7 +51,7 @@ class FabrikAdminModelLists extends FabModelList
 	/**
 	 * Build an SQL query to load the list data.
 	 *
-	 * @return  JDatabaseQuery
+	 * @return  DatabaseQuery
 	 *
 	 * @since    1.6
 	 */
@@ -157,7 +162,7 @@ class FabrikAdminModelLists extends FabModelList
 	 */
 	public function getTable($type = 'View', $prefix = 'FabrikTable', $config = array())
 	{
-		$config['dbo'] = FabrikWorker::getDbo();
+		$config['dbo'] = Worker::getDbo();
 
 		return FabTable::getInstance($type, $prefix, $config);
 	}
@@ -177,7 +182,7 @@ class FabrikAdminModelLists extends FabModelList
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Initialise variables.
-		$app = JFactory::getApplication('administrator');
+		$app = Factory::getApplication('administrator');
 
 		// Load the filter state.
 		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
@@ -188,7 +193,7 @@ class FabrikAdminModelLists extends FabModelList
 		$this->setState('filter.published', $published);
 
 		// Load the parameters.
-		$params = JComponentHelper::getParams('com_fabrik');
+		$params = ComponentHelper::getParams('com_fabrik');
 		$this->setState('params', $params);
 
 		// List state information.
@@ -202,11 +207,11 @@ class FabrikAdminModelLists extends FabModelList
 	 */
 	public function getDbTableNames()
 	{
-		$app   = JFactory::getApplication();
+		$app   = Factory::getApplication();
 		$input = $app->input;
 		$cid   = $input->get('cid', array(), 'array');
 		$cid   = ArrayHelper::toInteger($cid);
-		$db    = FabrikWorker::getDbo(true);
+		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('db_table_name')->from('#__{package}_lists')->where('id IN(' . implode(',', $cid) . ')');
 		$db->setQuery($query);
