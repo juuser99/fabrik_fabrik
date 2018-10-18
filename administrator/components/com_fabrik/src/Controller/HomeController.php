@@ -4,16 +4,15 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 namespace Joomla\Component\Fabrik\Administrator\Controller;
 
-// No direct access
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\AdminController;
 
+// No direct access
 defined('_JEXEC') or die('Restricted access');
 
 /**
@@ -21,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
 class HomeController extends AdminController
 {
@@ -29,6 +28,8 @@ class HomeController extends AdminController
 	 * Delete all data from fabrik
 	 *
 	 * @return null
+	 *
+	 * @since 4.0
 	 */
 	public function reset()
 	{
@@ -41,6 +42,8 @@ class HomeController extends AdminController
 	 * Install sample form
 	 *
 	 * @return null
+	 *
+	 * @since 4.0
 	 */
 	public function installSampleData()
 	{
@@ -53,6 +56,8 @@ class HomeController extends AdminController
 	 * Get RSS News feed
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function getRSSFeed()
 	{
@@ -67,11 +72,11 @@ class HomeController extends AdminController
 		else
 		{
 			// Channel header and link
-			$title = $rssDoc->get_title();
-			$link = $rssDoc->get_link();
-			$output = '<table class="adminlist">';
-			$output .= '<tr><th colspan="3"><a href="' . $link . '" target="_blank">' . Text::_($title) . '</th></tr>';
-			$items = array_slice($rssDoc->get_items(), 0, 3);
+			$title    = $rssDoc->get_title();
+			$link     = $rssDoc->get_link();
+			$output   = '<table class="adminlist">';
+			$output   .= '<tr><th colspan="3"><a href="' . $link . '" target="_blank">' . Text::_($title) . '</th></tr>';
+			$items    = array_slice($rssDoc->get_items(), 0, 3);
 			$numItems = count($items);
 
 			if ($numItems == 0)
@@ -84,7 +89,7 @@ class HomeController extends AdminController
 
 				for ($j = 0; $j < $numItems; $j++)
 				{
-					$item = $items[$j];
+					$item   = $items[$j];
 					$output .= '<tr><td class="row' . $k . '">';
 					$output .= '<a href="' . $item->get_link() . '" target="_blank">' . $item->get_title() . '</a>';
 					$output .= '<br />' . $item->get_date('Y-m-d');
@@ -92,11 +97,11 @@ class HomeController extends AdminController
 					if ($item->get_description())
 					{
 						$description = $this->_truncateText($item->get_description(), 50);
-						$output .= '<br />' . $description;
+						$output      .= '<br />' . $description;
 					}
 
 					$output .= '</td></tr>';
-					$k = 1 - $k;
+					$k      = 1 - $k;
 				}
 			}
 

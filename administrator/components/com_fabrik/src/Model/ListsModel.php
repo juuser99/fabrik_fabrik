@@ -4,9 +4,9 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       1.6
+ * @since       4.0
  */
 
 namespace Joomla\Component\Fabrik\Administrator\Model;
@@ -26,7 +26,7 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
 class ListsModel extends FabListModel
 {
@@ -35,8 +35,7 @@ class ListsModel extends FabListModel
 	 *
 	 * @param   array $config An optional associative array of configuration settings.
 	 *
-	 * @see        JController
-	 * @since      1.6
+	 * @since      4.0
 	 */
 	public function __construct($config = array())
 	{
@@ -53,7 +52,7 @@ class ListsModel extends FabListModel
 	 *
 	 * @return  DatabaseQuery
 	 *
-	 * @since    1.6
+	 * @since    4.0
 	 */
 	protected function getListQuery()
 	{
@@ -117,7 +116,7 @@ class ListsModel extends FabListModel
 	 *
 	 * @return  string  A store id.
 	 *
-	 * @since    1.6
+	 * @since    4.0
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -158,7 +157,7 @@ class ListsModel extends FabListModel
 	 *
 	 * @return  JTable    A database object
 	 *
-	 * @since    1.6
+	 * @since    4.0
 	 */
 	public function getTable($type = 'View', $prefix = 'FabrikTable', $config = array())
 	{
@@ -175,7 +174,7 @@ class ListsModel extends FabListModel
 	 * @param   string $ordering  An optional ordering field.
 	 * @param   string $direction An optional direction (asc|desc).
 	 *
-	 * @since    1.6
+	 * @since    4.0
 	 *
 	 * @return  void
 	 */
@@ -204,6 +203,8 @@ class ListsModel extends FabListModel
 	 * Get an array of database table names used in fabrik lists
 	 *
 	 * @return  array  database table names
+	 *
+	 * @since 4.0
 	 */
 	public function getDbTableNames()
 	{

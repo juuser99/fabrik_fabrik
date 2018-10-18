@@ -4,9 +4,9 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       1.6
+ * @since       4.0
  */
 
 namespace Joomla\Component\Fabrik\Administrator\Helper;
@@ -28,7 +28,7 @@ use Joomla\String\StringHelper;
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       1.5
+ * @since       4.0
  */
 class FabrikAdminHelper
 {
@@ -36,16 +36,18 @@ class FabrikAdminHelper
 	 * Prepare the date for saving
 	 * DATES SHOULD BE SAVED AS UTC
 	 *
-	 * @param   string  $strdate  publish down date
+	 * @param   string $strdate publish down date
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 
 	public static function prepareSaveDate($strdate)
 	{
-		$config = Factory::getConfig();
+		$config   = Factory::getConfig();
 		$tzoffset = $config->get('offset');
-		$db = Worker::getDbo(true);
+		$db       = Worker::getDbo(true);
 
 		// Handle never unpublish date
 		if (trim($strdate) == Text::_('Never') || trim($strdate) == '' || trim($strdate) == $db->getNullDate())
@@ -59,7 +61,7 @@ class FabrikAdminHelper
 				$strdate .= ' 00:00:00';
 			}
 
-			$date = Factory::getDate($strdate, $tzoffset);
+			$date    = Factory::getDate($strdate, $tzoffset);
 			$strdate = $date->toSql();
 		}
 
@@ -69,16 +71,16 @@ class FabrikAdminHelper
 	/**
 	 * Gets a list of the actions that can be performed.
 	 *
-	 * @param   int  $categoryId  The category ID.
+	 * @param   int $categoryId The category ID.
 	 *
-	 * @since	1.6
+	 * @since    4.0
 	 *
-	 * @return	CMSObject
+	 * @return    CMSObject
 	 */
 
 	public static function getActions($categoryId = 0)
 	{
-		$user = Factory::getUser();
+		$user   = Factory::getUser();
 		$result = new CMSObject();
 
 		if (empty($categoryId))
@@ -103,11 +105,11 @@ class FabrikAdminHelper
 	/**
 	 * Configure the Linkbar.
 	 *
-	 * @param   string  $vName  The name of the active view.
+	 * @param   string $vName The name of the active view.
 	 *
-	 * @since	1.6
+	 * @since    4.0
 	 *
-	 * @return	void
+	 * @return    void
 	 */
 
 	public static function addSubmenu($vName)
@@ -128,29 +130,31 @@ class FabrikAdminHelper
 	/**
 	 * Applies the content tag filters to arbitrary text as per settings for current user group
 	 *
-	 * @param   string  $text  The string to filter
+	 * @param   string $text The string to filter
 	 *
 	 * @return  string  The filtered string
+	 *
+	 * @since 4.0
 	 */
 
 	public static function filterText($text)
 	{
 		// Filter settings
-		$config = ComponentHelper::getParams('com_config');
-		$user = Factory::getUser();
+		$config     = ComponentHelper::getParams('com_config');
+		$user       = Factory::getUser();
 		$userGroups = Access::getGroupsByUser($user->get('id'));
 
 		$filters = $config->get('filters');
 
-		$blackListTags = array();
+		$blackListTags       = array();
 		$blackListAttributes = array();
 
-		$whiteListTags = array();
+		$whiteListTags       = array();
 		$whiteListAttributes = array();
 
-		$noHtml = false;
-		$whiteList = false;
-		$blackList = false;
+		$noHtml     = false;
+		$whiteList  = false;
+		$blackList  = false;
 		$unfiltered = false;
 
 		// Cycle through each of the user groups the user is in.
@@ -181,9 +185,9 @@ class FabrikAdminHelper
 			{
 				// Black or white list.
 				// Preprocess the tags and attributes.
-				$tags = explode(',', $filterData->filter_tags);
-				$attributes = explode(',', $filterData->filter_attributes);
-				$tempTags = array();
+				$tags           = explode(',', $filterData->filter_tags);
+				$attributes     = explode(',', $filterData->filter_attributes);
+				$tempTags       = array();
 				$tempAttributes = array();
 
 				foreach ($tags as $tag)
@@ -210,23 +214,23 @@ class FabrikAdminHelper
 				// Each list is cumulative.
 				if ($filterType == 'BL')
 				{
-					$blackList = true;
-					$blackListTags = array_merge($blackListTags, $tempTags);
+					$blackList           = true;
+					$blackListTags       = array_merge($blackListTags, $tempTags);
 					$blackListAttributes = array_merge($blackListAttributes, $tempAttributes);
 				}
 				elseif ($filterType == 'WL')
 				{
-					$whiteList = true;
-					$whiteListTags = array_merge($whiteListTags, $tempTags);
+					$whiteList           = true;
+					$whiteListTags       = array_merge($whiteListTags, $tempTags);
 					$whiteListAttributes = array_merge($whiteListAttributes, $tempAttributes);
 				}
 			}
 		}
 
 		// Remove duplicates before processing (because the black list uses both sets of arrays).
-		$blackListTags = array_unique($blackListTags);
+		$blackListTags       = array_unique($blackListTags);
 		$blackListAttributes = array_unique($blackListAttributes);
-		$whiteListTags = array_unique($whiteListTags);
+		$whiteListTags       = array_unique($whiteListTags);
 		$whiteListAttributes = array_unique($whiteListAttributes);
 
 		// Unfiltered assumes first priority.
@@ -240,8 +244,8 @@ class FabrikAdminHelper
 			if ($blackList)
 			{
 				// Remove the white-listed attributes from the black-list.
-				$tags = array_diff($blackListTags, $whiteListTags);
-				$attrs = array_diff($blackListAttributes, $whiteListAttributes);
+				$tags   = array_diff($blackListTags, $whiteListTags);
+				$attrs  = array_diff($blackListAttributes, $whiteListAttributes);
 				$filter = InputFilter::getInstance($tags, $attrs, 1, 1);
 			}
 			// White lists take third precedence.

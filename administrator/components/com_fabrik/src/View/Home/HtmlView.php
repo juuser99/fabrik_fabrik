@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -24,36 +24,43 @@ use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-
 class HtmlView extends BaseHtmlView
 {
 	/**
 	 * Recently logged activity
+	 *
 	 * @var  array
+	 *
+	 * @since 4.0
 	 */
 	protected $logs;
 
 	/**
 	 * RSS feed
+	 *
 	 * @var  array
+	 *
+	 * @since 4.0
 	 */
 	protected $feed;
 
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tpl  template
+	 * @param   string $tpl template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 
 	public function display($tpl = null)
 	{
 		$srcs = Html::framework();
 		Html::script($srcs);
-		$db = Worker::getDbo(true);
+		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__{package}_log')->where('message_type != ""')->order('timedate_created DESC');
 		$db->setQuery($query, 0, 10);
@@ -76,6 +83,8 @@ class HtmlView extends BaseHtmlView
 	 * Add the page title and toolbar.
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 
 	protected function addToolbar()

@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2014  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -22,15 +22,16 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-
 class FabTable extends Table
 {
 	/**
 	 * JSON encoded JFormField param options
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	public $params = '';
 
@@ -39,11 +40,13 @@ class FabTable extends Table
 	 * the table include paths.  To add include paths for searching for JTable
 	 * classes @see JTable::addIncludePath().
 	 *
-	 * @param   string  $type    The type (name) of the JTable class to get an instance of.
-	 * @param   string  $prefix  An optional prefix for the table class name.
-	 * @param   array   $config  An optional array of configuration values for the JTable object.
+	 * @param   string $type   The type (name) of the JTable class to get an instance of.
+	 * @param   string $prefix An optional prefix for the table class name.
+	 * @param   array  $config An optional array of configuration values for the JTable object.
 	 *
-	 * @return  mixed	A JTable object if found or boolean false if one could not be found.
+	 * @return  mixed    A JTable object if found or boolean false if one could not be found.
+	 *
+	 * @since 4.0
 	 */
 	public static function getInstance($type, $prefix = 'JTable', $config = array())
 	{
@@ -70,9 +73,9 @@ class FabTable extends Table
 	/**
 	 * Batch set a properties and params
 	 *
-	 * @param   array  $batch  properties and params
+	 * @param   array $batch properties and params
 	 *
-	 * @since   3.0.7
+	 * @since   4.0
 	 *
 	 * @return  bool
 	 */
@@ -97,12 +100,12 @@ class FabTable extends Table
 	/**
 	 * Get the columns from database table.
 	 *
-	 * @param   bool  $reload  flag to reload cache
+	 * @param   bool $reload flag to reload cache
 	 *
 	 * @return  mixed  An array of the field names, or false if an error occurs.
 	 *
-	 * @since   11.1
-	 * @throws  UnexpectedValueException
+	 * @since   4.0
+	 * @throws  \UnexpectedValueException
 	 */
 	public function getFields($reload = false)
 	{

@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       1.6
  */
@@ -16,7 +16,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Fabrik\Administrator\Model\ListsModel;
 use Joomla\Utilities\ArrayHelper;
@@ -26,7 +25,7 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
 class ListsController extends AdminController
 {
@@ -34,6 +33,8 @@ class ListsController extends AdminController
 	 * The prefix to use with controller messages.
 	 *
 	 * @var    string
+	 *
+	 * @since 4.0
 	 */
 	protected $text_prefix = 'COM_FABRIK_LISTS';
 
@@ -41,6 +42,8 @@ class ListsController extends AdminController
 	 * View item name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $view_item = 'lists';
 
@@ -53,7 +56,7 @@ class ListsController extends AdminController
 	 *
 	 * @return  ListsModel  The model.
 	 *
-	 * @since   12.2
+	 * @since   4.0
 	 */
 	public function getModel($name = 'Lists', $prefix = 'Administrator', $config = array())
 	{
@@ -65,7 +68,7 @@ class ListsController extends AdminController
 	/**
 	 * Method to publish a list of items
 	 *
-	 * @return  null
+	 * @since 4.0
 	 */
 	public function publish()
 	{
@@ -131,7 +134,7 @@ class ListsController extends AdminController
 	/**
 	 * Set up page asking about what to delete
 	 *
-	 * @return  null
+	 * @since 4.0
 	 */
 	public function delete()
 	{

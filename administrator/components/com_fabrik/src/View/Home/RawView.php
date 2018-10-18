@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -20,17 +20,18 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @since       1.6
+ * @since       4.0
  */
-
 class RawView extends BaseHtmlView
 {
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
