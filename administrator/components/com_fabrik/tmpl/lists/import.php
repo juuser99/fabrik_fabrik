@@ -4,21 +4,27 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       3.0
+ * @since       4.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-JHtml::_('behavior.tooltip');
-FabrikHelperHTML::formvalidation();
-$app = JFactory::getApplication();
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\HTML\HTMLHelper;
+use Fabrik\Helpers\Html;
+
+HTMLHelper::_('behavior.tooltip');
+Html::formvalidation();
+
+$app   = Factory::getApplication();
 $input = $app->input;
 ?>
 
-<form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php Route::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 	<?php
 	$cid = $input->get('cid', array(), 'array');
 	foreach ($cid as $id) : ?>
@@ -43,6 +49,6 @@ $input = $app->input;
 		</ul>
 	</fieldset>
 	<input type="hidden" name="task" value="" />
-  	<?php echo JHTML::_('form.token');
-	echo JHTML::_('behavior.keepalive'); ?>
+  	<?php echo HTMLHelper::_('form.token');
+	echo HTMLHelper::_('behavior.keepalive'); ?>
 </form>

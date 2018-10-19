@@ -23,7 +23,7 @@ use Joomla\CMS\MVC\Controller\AdminController as BaseAdminController;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class AdminController extends BaseAdminController
+class AbstractAdminController extends BaseAdminController
 {
 	/**
 	 * Component name

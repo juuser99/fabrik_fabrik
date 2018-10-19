@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class HomeController extends AdminController
+class HomeController extends AbstractAdminController
 {
 	/**
 	 * Delete all data from fabrik

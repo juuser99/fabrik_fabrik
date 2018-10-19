@@ -11,11 +11,11 @@
 
 namespace Joomla\Component\Fabrik\Administrator\Model;
 
-// No direct access
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ListModel;
 
+// No direct access
 defined('_JEXEC') or die('Restricted access');
 
 /**

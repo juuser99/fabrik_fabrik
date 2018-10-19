@@ -4,9 +4,9 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       3.0
+ * @since       4.0
  */
 
 // No direct access
@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Fabrik\Helpers\Text;
+use Joomla\CMS\Language\Text;
 
 HTMLHelper::stylesheet('media/com_fabrik/css/admin.css');
 ToolbarHelper::title(Text::_('COM_FABRIK_WELCOME'), 'fabrik.png');

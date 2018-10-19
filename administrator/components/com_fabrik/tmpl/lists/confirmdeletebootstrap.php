@@ -4,17 +4,22 @@
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
- * @since       3.0
+ * @since       4.0
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-JHtml::_('behavior.formvalidator');
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
-$app = JFactory::getApplication();
+HTMLHelper::_('behavior.formvalidator');
+
+$app = Factory::getApplication();
 ?>
 <script type="text/javascript">
 Joomla.submitform = function(task, form) {
@@ -34,7 +39,7 @@ Joomla.submitform = function(task, form) {
 	form.submit();
 };
 </script>
-<form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php Route::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 
 	<?php
 	$cid = $app->input->get('cid', array(), 'array');
@@ -43,7 +48,7 @@ Joomla.submitform = function(task, form) {
 	<?php endforeach; ?>
 
 	<fieldset class="form-horizontal">
-		<legend><?php echo FText::_('COM_FABRIK_DELETE_FROM');?></legend>
+		<legend><?php echo Text::_('COM_FABRIK_DELETE_FROM');?></legend>
 		<ul class="adminformlist">
 		<?php for ($i = 0; $i < count($this->items); $i++) :?>
   			<li>
@@ -66,6 +71,6 @@ Joomla.submitform = function(task, form) {
 			<?php endforeach; ?>
 	</fieldset>
 	<input type="hidden" name="task" value="" />
-  	<?php echo JHTML::_('form.token');
-	echo JHTML::_('behavior.keepalive'); ?>
+  	<?php echo HTMLHelper::_('form.token');
+	echo HTMLHelper::_('behavior.keepalive'); ?>
 </form>

@@ -27,7 +27,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ListsController extends AdminController
+class ListsController extends AbstractAdminController
 {
 	/**
 	 * The prefix to use with controller messages.

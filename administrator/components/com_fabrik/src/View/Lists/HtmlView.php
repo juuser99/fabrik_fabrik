@@ -11,7 +11,7 @@
 namespace Joomla\Component\Fabrik\Administrator\View\Lists;
 
 use Fabrik\Helpers\Html;
-use Fabrik\Helpers\Text;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\ListView;
