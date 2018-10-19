@@ -29,4 +29,26 @@ class DisplayController extends BaseController
 	 * @since  4.0
 	 */
 	protected $default_view = 'home';
+
+
+	/**
+	 * @param string $name
+	 * @param string $type
+	 * @param string $prefix
+	 * @param array  $config
+	 *
+	 * @return \Joomla\CMS\MVC\View\AbstractView
+	 *
+	 * @since version
+	 * @throws \Exception
+	 */
+	public function getView($name = '', $type = '', $prefix = '', $config = array())
+	{
+		if ('list' === $name) {
+			// Workaround for PHP reserved word that doesn't allow us to name the view folder "List"
+			$name = "listView";
+		}
+
+		return parent::getView($name, $type, '', $config);
+	}
 }
