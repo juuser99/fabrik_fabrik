@@ -34,6 +34,8 @@ class FabListModel extends ListModel
 	 * @param   array $config An optional associative array of configuration settings.
 	 *
 	 * @since 4.0
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct($config = array())
 	{
@@ -95,6 +97,8 @@ class FabListModel extends ListModel
 	 * @param   string $direction An optional direction (asc|desc).
 	 *
 	 * @since    4.0
+	 *
+	 * @throws \Exception
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{

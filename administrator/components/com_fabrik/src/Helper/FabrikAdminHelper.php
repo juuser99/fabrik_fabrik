@@ -22,6 +22,7 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Object\CMSObject;
 use Joomla\String\StringHelper;
+use Joomla\CMS\MVC\View\HtmlView;
 
 /**
  * Fabrik Component Helper
@@ -263,5 +264,23 @@ class FabrikAdminHelper
 		}
 
 		return $text;
+	}
+
+
+	/**
+	 * Set the layout based on Joomla version
+	 * Allows for loading of new bootstrap admin templates in J3.0+
+	 *
+	 * @param   HtmlView  $view  current view to setLayout for
+	 *
+	 * @return  void
+	 */
+
+	public static function setViewLayout($view)
+	{
+		// If rendering a list inside a form and viewing in admin - there were layout name conflicts (so renamed bootstrap to admin_bootstrap)
+		$layout = $view->getName() === 'list' ? 'admin_bootstrap' : 'bootstrap';
+
+		$view->setLayout($layout);
 	}
 }

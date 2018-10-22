@@ -22,6 +22,9 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\HelperFabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel;
 
 /**
  * View to edit a list.
@@ -90,6 +93,19 @@ class HtmlView extends BaseHtmlView
 	public $order_dir;
 
 	/**
+	 * @var ListModel
+	 *
+	 * @since 4.0
+	 */
+	protected $_defaultModel;
+
+	/**
+	 * @var string
+	 * @since 4.0
+	 */
+	protected $_name = 'list';
+
+	/**
 	 * Display the list
 	 *
 	 * @param   string $tpl template
@@ -100,10 +116,8 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		die('WIP');
-
 		// Initialise variables.
-		$model      = $this->getModel();
+		$model      = $this->getModel('List');;
 		$this->form = $this->get('Form');
 		$this->item = $this->get('Item');
 		$formModel  = $this->get('FormModel');
@@ -153,7 +167,7 @@ class HtmlView extends BaseHtmlView
 			$this->group_by = $formModel->getElementList('group_by', $this->item->group_by, true, false, false);
 		}
 
-		\FabrikAdminHelper::setViewLayout($this);
+		FabrikAdminHelper::setViewLayout($this);
 
 		$srcs                  = Html::framework();
 		$srcs['Fabrik']        = Html::mediaFile('fabrik.js');
@@ -212,7 +226,7 @@ class HtmlView extends BaseHtmlView
 		$input = $app->input;
 		$cid   = $input->get('cid', array(0), 'array');
 		$lists = array();
-		$model = $this->getModel();
+		$model = $this->getModel('List');;
 
 		foreach ($cid as $id)
 		{
@@ -258,7 +272,7 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function selectContentType($tpl = null)
 	{
-		$model      = $this->getModel();
+		$model      = $this->getModel('List');;
 		$this->form = $model->getContentTypeForm();
 		$input      = Factory::getApplication()->input;
 		$this->data = $input->post->get('jform', array(), 'array');
@@ -285,7 +299,7 @@ class HtmlView extends BaseHtmlView
 		$this->state = $this->get('State');
 		$input       = $app->input;
 		$input->set('hidemainmenu', true);
-		$canDo = \FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
 		ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
 
 		// For new records, check the create permission.
@@ -312,7 +326,7 @@ class HtmlView extends BaseHtmlView
 		$userId     = $user->get('id');
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		$canDo      = \FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		$canDo      = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
 		$title      = $isNew ? Text::_('COM_FABRIK_MANAGER_LIST_NEW') : Text::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->label . '"';
 		ToolbarHelper::title($title, 'list');
 

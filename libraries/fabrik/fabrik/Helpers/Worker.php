@@ -33,6 +33,9 @@ use JMail;
 use JMailHelper;
 use JModelLegacy;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
+use Joomla\Database\DatabaseDriver;
 use JPath;
 use JSession;
 use JTable;
@@ -70,6 +73,16 @@ class Worker
 	 * @var  object
 	 */
 	public static $pluginManager = null;
+
+	/**
+	 * Used for migration purposes to J4; remove once $pluginManager is no longer using the legacy plugin manager
+	 * @todo - remove for J4 once everything is migrated
+	 *
+	 * @var PluginManagerModel
+	 *
+	 * @since 4.0
+	 */
+	protected static $j4PluginManager;
 
 	/**
 	 * Strtotime final date format
@@ -1762,7 +1775,7 @@ class Worker
 	 * @param   mixed $cnnId        If null then loads the fabrik default connection, if an int then loads the
 	 *                              specified connection by its id
 	 *
-	 * @return  JDatabaseDriver object
+	 * @return  DatabaseDriver object
 	 */
 	public static function getDbo($loadJoomlaDb = false, $cnnId = null)
 	{
@@ -1908,10 +1921,20 @@ class Worker
 	 *
 	 * @since    3.0b
 	 *
-	 * @return    FabrikFEModelPluginmanager    Plugin manager
+	 * @return    FabrikFEModelPluginmanager|PluginManagerModel    Plugin manager
 	 */
-	public static function getPluginManager()
+	public static function getPluginManager($useJ4 = false)
 	{
+		if ($useJ4) {
+			// @todo - remove once J4 refactoring complete
+			if (!self::$j4PluginManager)
+			{
+				self::$j4PluginManager = BaseDatabaseModel::getInstance(PluginManagerModel::class);
+			}
+
+			return self::$j4PluginManager;
+		}
+
 		if (!self::$pluginManager)
 		{
 			self::$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');

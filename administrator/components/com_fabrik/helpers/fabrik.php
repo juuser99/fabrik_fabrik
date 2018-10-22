@@ -281,6 +281,5 @@ class FabrikAdminHelper
 		// If rendering a list inside a form and viewing in admin - there were layout name conflicts (so renamed bootstrap to admin_bootstrap)
 		$layout = $view->getName() === 'list' ? 'admin_bootstrap' : 'bootstrap';
 		$view->setLayout($layout);
-
 	}
 }

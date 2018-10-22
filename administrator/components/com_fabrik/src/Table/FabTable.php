@@ -12,6 +12,7 @@ namespace Joomla\Component\Fabrik\Administrator\Table;
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
 
 // No direct access
@@ -44,15 +45,15 @@ class FabTable extends Table
 	 * @param   string $prefix An optional prefix for the table class name.
 	 * @param   array  $config An optional array of configuration values for the JTable object.
 	 *
-	 * @return  mixed    A JTable object if found or boolean false if one could not be found.
+	 * @return  Table    A Table object if found or boolean false if one could not be found.
 	 *
 	 * @since 4.0
 	 */
-	public static function getInstance($type, $prefix = 'JTable', $config = array())
+	public static function getInstance($type, $prefix = '', $config = array())
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		$instance = parent::getInstance($type, $prefix, $config);
+		$instance = Factory::getContainer()->get($type);
 
 		/**
 		 * $$$ hugh - we added $params in this commit:
