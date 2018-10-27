@@ -31,7 +31,7 @@ class FormGroupTable extends FabTable
 	 *
 	 * @since 4.0
 	 */
-	public function __construct($db)
+	public function __construct(DatabaseDriver $db)
 	{
 		parent::__construct('#__{package}_formgroup', 'id', $db);
 	}

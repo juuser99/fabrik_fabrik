@@ -12,7 +12,6 @@ namespace Joomla\Component\Fabrik\Administrator\Table;
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
 
 // No direct access
@@ -37,23 +36,21 @@ class FabTable extends Table
 	public $params = '';
 
 	/**
-	 * Static method to get an instance of a JTable class if it can be found in
-	 * the table include paths.  To add include paths for searching for JTable
-	 * classes @see JTable::addIncludePath().
+	 * @param string $tableClass
 	 *
-	 * @param   string $type   The type (name) of the JTable class to get an instance of.
-	 * @param   string $prefix An optional prefix for the table class name.
-	 * @param   array  $config An optional array of configuration values for the JTable object.
-	 *
-	 * @return  Table    A Table object if found or boolean false if one could not be found.
+	 * @return FabTable
 	 *
 	 * @since 4.0
 	 */
-	public static function getInstance($type, $prefix = '', $config = array())
+	public static function getInstance($tableClass)
 	{
-		$config['dbo'] = Worker::getDbo(true);
+		if (!class_exists($tableClass)) {
+			throw new \InvalidArgumentException($tableClass." was not found");
+		}
 
-		$instance = Factory::getContainer()->get($type);
+		$db = Worker::getDbo(true);
+
+		$instance = new $tableClass($db);
 
 		/**
 		 * $$$ hugh - we added $params in this commit:
@@ -62,8 +59,10 @@ class FabTable extends Table
 		 * until we do another release and can add an SQL update to add it.
 		 *
 		 * $$$ hugh - neither does the comments table ...
+		 *
+		 * @todo - add JCommentsTableObjects table back from fabrik_form plugin once it's namespaced
 		 */
-		if ($type === 'FormGroup' || $type === 'comment')
+		if (in_array($tableClass, array(FormGroupTable::class)))
 		{
 			unset($instance->params);
 		}

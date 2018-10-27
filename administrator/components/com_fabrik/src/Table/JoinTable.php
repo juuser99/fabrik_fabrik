@@ -37,7 +37,7 @@ class JoinTable extends FabTable
 	 *
 	 * @since 4.0
 	 */
-	public function __construct($db)
+	public function __construct(DatabaseDriver $db)
 	{
 		parent::__construct('#__{package}_joins', 'id', $db);
 	}

@@ -13,6 +13,7 @@ namespace Joomla\Component\Fabrik\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Registry\Registry;
 
@@ -46,7 +47,7 @@ class FormTable extends FabTable
 	 *
 	 * @since 4.0
 	 */
-	public function __construct($db)
+	public function __construct(DatabaseDriver $db)
 	{
 		parent::__construct('#__{package}_forms', 'id', $db);
 	}
@@ -157,7 +158,7 @@ class FormTable extends FabTable
 			// Check that $field is in the table.
 			if (!in_array($field, $fields))
 			{
-				$e = new \Exception(JText::sprintf('JLIB_DATABASE_ERROR_CLASS_IS_MISSING_FIELD', get_class($this), $field));
+				$e = new \Exception(Text::sprintf('JLIB_DATABASE_ERROR_CLASS_IS_MISSING_FIELD', get_class($this), $field));
 				$this->setError($e);
 
 				return false;
@@ -173,7 +174,7 @@ class FormTable extends FabTable
 		// Check that we have a result.
 		if (empty($row))
 		{
-			$e = new \Exception(FText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
+			$e = new \Exception(Text::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
 			$this->setError($e);
 
 			return false;

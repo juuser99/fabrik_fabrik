@@ -27,6 +27,8 @@ defined('_JEXEC') or die('Restricted access');
  */
 class FabListModel extends ListModel
 {
+	use TableTrait;
+
 	/**
 	 * Constructor.
 	 * Ensure that we use the fabrik db model for the dbo

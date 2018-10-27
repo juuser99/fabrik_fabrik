@@ -34,6 +34,8 @@ use Joomla\Utilities\ArrayHelper;
  */
 abstract class FabAdminModel extends \Joomla\CMS\MVC\Model\AdminModel
 {
+	use TableTrait;
+
 	/**
 	 * @var CMSApplication
 	 *
