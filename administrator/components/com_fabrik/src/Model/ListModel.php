@@ -22,6 +22,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
@@ -224,8 +225,7 @@ class ListModel extends FabAdminModel
 					// Prune items that you can't change.
 					unset($pks[$i]);
 
-					// @todo - migrate to J4
-					JError::raiseWarning(403, Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'));
+					Log::add(Text::_('JLIB_APPLICATION_ERROR_EDIT_STATE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 				}
 			}
 		}
@@ -2712,7 +2712,7 @@ class ListModel extends FabAdminModel
 				$fabrikDb->execute();
 			} catch (\Exception $e)
 			{
-				JError::raiseWarning(500, 'amend table: ' . $e->getMessage());
+				Log::add(Text::_('amend table: ' . $e->getMessage()), Log::WARNING, 'jerror');
 			}
 		}
 	}
