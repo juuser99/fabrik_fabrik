@@ -33,7 +33,7 @@ class HomeController extends AbstractAdminController
 	 */
 	public function reset()
 	{
-		$model = $this->getModel('Home');
+		$model = $this->getModel();
 		$model->reset();
 		$this->setRedirect('index.php?option=com_fabrik', Text::_('COM_FABRIK_HOME_FABRIK_RESET'));
 	}
@@ -47,7 +47,7 @@ class HomeController extends AbstractAdminController
 	 */
 	public function installSampleData()
 	{
-		$model = $this->getModel('Home');
+		$model = $this->getModel();
 		$model->installSampleData();
 		$this->setRedirect('index.php?option=com_fabrik', Text::_('COM_FABRIK_HOME_SAMPLE_DATA_INSTALLED'));
 	}

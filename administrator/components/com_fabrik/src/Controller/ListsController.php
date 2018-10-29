@@ -17,7 +17,10 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\Component\Fabrik\Administrator\Model\ListsModel;
+use Joomla\Component\Fabrik\Administrator\Model\ElementModel;
+use Joomla\Component\Fabrik\Administrator\Model\FormModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel;
+use Joomla\Component\Users\Administrator\Model\GroupModel;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -48,24 +51,6 @@ class ListsController extends AbstractAdminController
 	protected $view_item = 'lists';
 
 	/**
-	 * Method to get a model object, loading it if required.
-	 *
-	 * @param   string $name   The model name. Optional.
-	 * @param   string $prefix The class prefix. Optional.
-	 * @param   array  $config Configuration array for model. Optional.
-	 *
-	 * @return  ListsModel  The model.
-	 *
-	 * @since   4.0
-	 */
-	public function getModel($name = 'Lists', $prefix = 'Administrator', $config = array())
-	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
-
-		return $model;
-	}
-
-	/**
 	 * Method to publish a list of items
 	 *
 	 * @since 4.0
@@ -86,7 +71,7 @@ class ListsController extends AbstractAdminController
 		{
 			// Make sure the item ids are integers
 			$cid     = ArrayHelper::toInteger($cid);
-			$model   = $this->getModel('Form', 'FabrikAdminModel');
+			$model   = $this->getModel(FormModel::class);
 			$formIds = $model->swapListToFormIds($cid);
 
 			// Publish the items.
@@ -98,7 +83,7 @@ class ListsController extends AbstractAdminController
 			else
 			{
 				// Publish the groups
-				$groupModel = $this->getModel('Group');
+				$groupModel = $this->getModel(GroupModel::class);
 
 				if (is_object($groupModel))
 				{
@@ -113,7 +98,7 @@ class ListsController extends AbstractAdminController
 						else
 						{
 							// Publish the elements
-							$elementModel = $this->getModel('Element');
+							$elementModel = $this->getModel(ElementModel::class);
 							$elementIds   = $elementModel->swapGroupToElementIds($groupIds);
 
 							if (!$elementModel->publish($elementIds, $value))
@@ -149,7 +134,7 @@ class ListsController extends AbstractAdminController
 			$view->setModel($listsModel);
 		}
 		// Used to load in the confirm form fields
-		$view->setModel($this->getModel('list'));
+		$view->setModel($this->getModel(ListModel::class));
 		$view->display();
 	}
 }

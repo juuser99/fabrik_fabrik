@@ -2712,7 +2712,7 @@ class ListModel extends FabAdminModel
 				$fabrikDb->execute();
 			} catch (\Exception $e)
 			{
-				Log::add(Text::_('amend table: ' . $e->getMessage()), Log::WARNING, 'jerror');
+				Log::add('amend table: ' . $e->getMessage(), Log::WARNING, 'jerror');
 			}
 		}
 	}

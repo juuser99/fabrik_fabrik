@@ -10,10 +10,31 @@
 namespace Joomla\Component\Fabrik\Administrator\Controller;
 
 
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 
 trait ModelTrait
 {
+	/**
+	 * Try a clean approach first then fall back to native Joomla
+	 *
+	 * @param string $modelClass
+	 * @param string $prefix
+	 * @param array  $config
+	 *
+	 * @return BaseDatabaseModel
+	 *
+	 * @since 4.0
+	 */
+	public function getModel($modelClass = '', $prefix = '', $config = array())
+	{
+		if (class_exists($modelClass)) {
+			return FabModel::getInstance($modelClass, '', $config);
+		}
+
+		return parent::getModel($modelClass, $prefix, $config);
+	}
+
 	/**
 	 * Why Joomla? Why?
 	 *

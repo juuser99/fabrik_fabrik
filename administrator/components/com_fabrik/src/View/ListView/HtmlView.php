@@ -23,7 +23,6 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Joomla\Component\Fabrik\Administrator\HelperFabrikAdminHelper;
 use Joomla\Component\Fabrik\Administrator\Model\ListModel;
 
 /**
@@ -101,6 +100,7 @@ class HtmlView extends BaseHtmlView
 
 	/**
 	 * @var string
+	 *
 	 * @since 4.0
 	 */
 	protected $_name = 'list';
@@ -117,7 +117,7 @@ class HtmlView extends BaseHtmlView
 	public function display($tpl = null)
 	{
 		// Initialise variables.
-		$model      = $this->getModel('List');;
+		$model      = $this->getModel();
 		$this->form = $this->get('Form');
 		$this->item = $this->get('Item');
 		$formModel  = $this->get('FormModel');
@@ -201,7 +201,7 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function showLinkedElements($tpl = null)
 	{
-		$model = $this->getModel('Form');
+		$model = $this->getModel('form');
 		$this->addLinkedElementsToolbar();
 		$this->formGroupEls = $model->getFormGroups(false);
 		$this->formTable    = $model->getForm();
@@ -226,7 +226,7 @@ class HtmlView extends BaseHtmlView
 		$input = $app->input;
 		$cid   = $input->get('cid', array(0), 'array');
 		$lists = array();
-		$model = $this->getModel('List');;
+		$model = $this->getModel();
 
 		foreach ($cid as $id)
 		{
@@ -272,7 +272,7 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function selectContentType($tpl = null)
 	{
-		$model      = $this->getModel('List');;
+		$model      = $this->getModel();
 		$this->form = $model->getContentTypeForm();
 		$input      = Factory::getApplication()->input;
 		$this->data = $input->post->get('jform', array(), 'array');
@@ -287,7 +287,7 @@ class HtmlView extends BaseHtmlView
 	/**
 	 * Add select content type tool bar
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 *
 	 * @return void
 	 *

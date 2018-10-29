@@ -21,6 +21,7 @@ use Joomla\CMS\Session\Session;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\ConnectionsModel;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Model\ListModel as AdminListModel;
 use Joomla\Component\Fabrik\Site\Model\ListModel;
@@ -68,7 +69,8 @@ class ListController extends AbstractFormController
 	 */
 	public function edit($key = null, $urlVar = null)
 	{
-		$model = $this->getModel('connections');
+		/** @var ConnectionsModel $model */
+		$model = $this->getModel(ConnectionsModel::class);
 
 		if (count($model->activeConnections()) == 0)
 		{
@@ -91,6 +93,7 @@ class ListController extends AbstractFormController
 	{
 		$input = $this->input;
 		$cid   = $input->get('cid', array(0), 'array');
+		/** @var ListModel $model */
 		$model = FabModel::getInstance(ListModel::class);
 
 		if (count($cid) > 0)
