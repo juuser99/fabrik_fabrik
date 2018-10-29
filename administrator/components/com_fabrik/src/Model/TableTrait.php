@@ -13,6 +13,8 @@ namespace Joomla\Component\Fabrik\Administrator\Model;
 
 
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Table\Table;
+use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\Database\DatabaseDriver;
 
 trait TableTrait
@@ -20,7 +22,7 @@ trait TableTrait
 	/**
 	 * Currently loaded list row
 	 *
-	 * @var array
+	 * @var Table[]
 	 *
 	 * @since 4.0
 	 */
@@ -29,23 +31,24 @@ trait TableTrait
 	/**
 	 * MVCFactory::createTable is ugly AF due to requiring a string based $prefix for namespacing.
 	 *
-	 * @param string              $tableClass
-	 * @param DatabaseDriver|null $db
+	 * @param string $tableClass
+	 * @param string $prefix
+	 * @param array  $options
 	 *
-	 * @return mixed
+	 * @return Table
 	 *
-	 * @since 4.0
+	 * @since version
 	 */
-	public function getTable($tableClass, DatabaseDriver $db = null)
+	public function getTable($tableClass = '', $prefix = '', $options = [])
 	{
+		if (!class_exists($tableClass)) {
+			// Try Native Joomla
+			return parent::getTable($tableClass, $prefix, $options);
+		}
+
 		if (!array_key_exists($tableClass, $this->tables))
 		{
-			if (null === $db)
-			{
-				$db = Worker::getDbo(true);
-			}
-
-			$this->tables[$tableClass] = new $tableClass($db);
+			$this->tables[$tableClass] = FabTable::getInstance($tableClass, $prefix, $options);
 		}
 
 		return $this->tables[$tableClass];

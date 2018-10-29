@@ -37,18 +37,20 @@ class FabTable extends Table
 
 	/**
 	 * @param string $tableClass
+	 * @param string $prefix
+	 * @param array  $config
 	 *
 	 * @return FabTable
 	 *
-	 * @since 4.0
+	 * @since version
 	 */
-	public static function getInstance($tableClass)
+	public static function getInstance($tableClass, $prefix = '', $config = [])
 	{
 		if (!class_exists($tableClass)) {
 			throw new \InvalidArgumentException($tableClass." was not found");
 		}
 
-		$db = Worker::getDbo(true);
+		$db = array_key_exists('db', $config) ? $config['db'] : Worker::getDbo(true);
 
 		$instance = new $tableClass($db);
 

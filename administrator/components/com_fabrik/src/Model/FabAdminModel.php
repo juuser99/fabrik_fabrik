@@ -103,7 +103,7 @@ abstract class FabAdminModel extends \Joomla\CMS\MVC\Model\AdminModel
 		$this->session       = ArrayHelper::getValue($config, 'session', Factory::getSession());
 		$this->db            = ArrayHelper::getValue($config, 'db', Factory::getDbo());
 		$this->pluginManager = ArrayHelper::getValue($config, 'pluginManager',
-			BaseDatabaseModel::getInstance(PluginManagerModel::class));
+			FabModel::getInstance(PluginManagerModel::class));
 
 		parent::__construct($config);
 	}
