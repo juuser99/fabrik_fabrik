@@ -30,6 +30,8 @@ use Joomla\Utilities\ArrayHelper;
  */
 class AbstractFormController extends FormController
 {
+	use ModelTrait;
+
 	/**
 	 * JApplication
 	 *
@@ -53,7 +55,6 @@ class AbstractFormController extends FormController
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @see     JControllerLegacy
 	 * @since   4.0
 	 * @throws  \Exception
 	 */

@@ -25,6 +25,8 @@ use Joomla\CMS\MVC\Controller\AdminController as BaseAdminController;
  */
 class AbstractAdminController extends BaseAdminController
 {
+	use ModelTrait;
+
 	/**
 	 * Component name
 	 *

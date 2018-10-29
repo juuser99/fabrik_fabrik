@@ -53,4 +53,26 @@ trait TableTrait
 
 		return $this->tables[$tableClass];
 	}
+
+	/**
+	 * Try a clean approach first then fall back to native Joomla
+	 *
+	 * @param        $name
+	 * @param string $prefix
+	 * @param array  $config
+	 *
+	 * @return FabTable
+	 *
+	 * @since 4.0
+	 */
+	protected function _createTable($name, $prefix = 'Table', $config = array())
+	{
+		$tableClass = "Joomla\\Component\\Fabrik\\Administrator\\Table\\".ucfirst($name)."Table";
+
+		if (class_exists($tableClass)) {
+			return FabTable::getInstance($tableClass, $prefix, $config);
+		}
+
+		return parent::_createTable($name, $prefix, $config);
+	}
 }
