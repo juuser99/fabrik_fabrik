@@ -15,7 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 
@@ -43,7 +44,7 @@ class RawView extends BaseHtmlView
 	{
 		$app = Factory::getApplication();
 		$input = $app->input;
-		$model = BaseDatabaseModel::getInstance('List', 'FabrikFEModel');
+		$model = FabModel::getInstance(ListModel::class);
 		$model->setId($input->getInt('listid'));
 		$this->setModel($model, true);
 		$item = $model->getTable();

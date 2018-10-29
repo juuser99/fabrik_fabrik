@@ -14,8 +14,10 @@ namespace Joomla\Component\Fabrik\Administrator\View\ListView;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Site\Model\CvsExportModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * View to make ajax json object reporting csv file creation progress.
@@ -40,8 +42,8 @@ class CsvView extends BaseHtmlView
 		$app      = Factory::getApplication();
 		$session  = $app->getSession();
 		$input    = $app->input;
-		$exporter = BaseDatabaseModel::getInstance('Csvexport', 'FabrikFEModel');
-		$model    = BaseDatabaseModel::getInstance('list', 'FabrikFEModel');
+		$exporter = FabModel::getInstance(CvsExportModel::class);
+		$model    = FabModel::getInstance(ListModel::class);
 		$model->setId($input->getInt('listid'));
 		$model->setOutPutFormat('csv');
 		$exporter->model = $model;
