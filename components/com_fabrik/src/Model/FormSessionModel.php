@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormSessionModel extends FabModel
+class FormSessionModel extends FabSiteModel
 {
 	/**
 	 * User id

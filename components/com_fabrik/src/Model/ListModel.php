@@ -14,20 +14,30 @@ namespace Joomla\Component\Fabrik\Site\Model;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
+use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Language;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\CMS\MVC\Model\FormModel as BaseModel;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Profiler\Profiler;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Service\Provider\Config;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Administrator\Table\ListTable;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseQuery;
 use Joomla\Registry\Registry;
 use Joomla\Session\Session;
 use Joomla\Utilities\ArrayHelper;
@@ -41,7 +51,7 @@ use Fabrik\Helpers\Pagination;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class ListModel extends BaseModel
+class ListModel extends FabSiteModel
 {
 	/**
 	 * List id
@@ -676,7 +686,7 @@ class ListModel extends BaseModel
 		$id = $input->getInt('listid', $usersConfig->get('listid'));
 		$this->packageId = (int) $input->getInt('packageId', $usersConfig->get('packageId'));
 		$this->setId($id);
-		$this->advancedSearch = BaseDatabaseModel::getInstance(ListAdvancedSearchModel::class);
+		$this->advancedSearch = FabModel::getInstance(ListAdvancedSearchModel::class);
 		$this->advancedSearch->setModel($this);
 		$this->access = new \stdClass;
 	}
@@ -1008,7 +1018,7 @@ class ListModel extends BaseModel
 	{
 		if (!isset($this->filterModel))
 		{
-			$this->filterModel = BaseDatabaseModel::getInstance(ListFilterModel::class);
+			$this->filterModel = FabModel::getInstance(ListFilterModel::class);
 			$this->filterModel->setListModel($this);
 		}
 
@@ -1055,7 +1065,7 @@ class ListModel extends BaseModel
 		}
 
 		$profiler = Profiler::getInstance('Application');
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$pluginManager->runPlugins('onPreLoadData', $this, 'list');
 
 		// Needs to be off for FOUND_ROWS() to work
@@ -1908,9 +1918,9 @@ class ListModel extends BaseModel
 	 * Get a list of possible menus
 	 * USED TO BUILD RELATED TABLE LINKS WITH CORRECT ITEMID AND TEMPLATE
 	 *
-	 * @since   2.0.4
-	 *
 	 * @return  array  linked table menu items
+	 *
+	 * @since 4.0
 	 */
 	protected function getTableLinks()
 	{
@@ -1953,6 +1963,8 @@ class ListModel extends BaseModel
 	 * @param   array   $pks       primary keys to count on
 	 *
 	 * @return  array  counts key'd on element primary key
+	 *
+	 * @since 4.0
 	 */
 	public function getRecordCounts(&$element, $pks = array())
 	{
@@ -1969,7 +1981,7 @@ class ListModel extends BaseModel
 			return $this->recordCounts[$k];
 		}
 
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = FabModel::getInstance(ListModel::class);
 		$listModel->setId($element->list_id);
 		$db = $listModel->getDb();
 		$elementModel = $listModel->getFormModel()->getElement($element->element_id, true);
@@ -2030,6 +2042,8 @@ class ListModel extends BaseModel
 	 * @param   int     $f        repeat value 27/11/2011
 	 *
 	 * @return  string	<a> html part
+	 *
+	 * @since 4.0
 	 */
 	public function viewFormLink($popUp = false, $element = null, $row = null, $key = '', $val = '', $useKey = false, $f = 0)
 	{
@@ -2062,7 +2076,7 @@ class ListModel extends BaseModel
 		if ($facetTable->canAdd())
 		{
 
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				$bits[] = 'task=form.view';
 				$bits[] = 'cid=' . $formId;
@@ -2089,7 +2103,7 @@ class ListModel extends BaseModel
 			}
 
 			$url = 'index.php?option=com_' . $package . '&' . implode('&', $bits);
-			$url = JRoute::_($url);
+			$url = Route::_($url);
 
 			if (is_null($label) || $label == '')
 			{
@@ -2121,6 +2135,8 @@ class ListModel extends BaseModel
 	 * @param   int  $id  list id
 	 *
 	 * @return  object	table
+	 *
+	 * @since 4.0
 	 */
 	protected function facetedTable($id)
 	{
@@ -2131,7 +2147,7 @@ class ListModel extends BaseModel
 
 		if (!array_key_exists($id, $this->facettables))
 		{
-			$this->facettables[$id] = JModelLegacy::getInstance('List', 'FabrikFEModel');
+			$this->facettables[$id] = FabModel::getInstance(ListModel::class);
 			$this->facettables[$id]->setId($id);
 		}
 
@@ -2150,6 +2166,8 @@ class ListModel extends BaseModel
 	 * @param   int     $f        ref to related data admin info 27/16/2011
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function viewDataLink($popUp = false, $element = null, $row = null, $key = '', $val = '', $count = 0, $f = null)
 	{
@@ -2216,9 +2234,9 @@ class ListModel extends BaseModel
 	 * @param   string  $val     Related link value
 	 * @param   int     $listId  List id
 	 *
-	 * @since   3.0.8
-	 *
 	 * @return  string  URL
+	 *
+	 * @since 4.0
 	 */
 	protected function relatedDataURL($key, $val, $listId)
 	{
@@ -2227,7 +2245,7 @@ class ListModel extends BaseModel
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$url = 'index.php?option=com_' . $package . '&';
 
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$bits[] = 'task=list.view';
 			$bits[] = 'cid=' . $listId;
@@ -2270,7 +2288,7 @@ class ListModel extends BaseModel
 		// Test for related data, filter once, go back to main list re-filter -
 		$bits[] = 'fabrik_incsessionfilters=0';
 		$url .= implode('&', $bits);
-		$url = JRoute::_($url);
+		$url = Route::_($url);
 
 		return $url;
 	}
@@ -2284,6 +2302,8 @@ class ListModel extends BaseModel
 	 * @param   int                $repeatCounter  Repeat group counter
 	 *
 	 * @return  string	element data with link added if specified
+	 *
+	 * @since 4.0
 	 */
 	public function _addLink($data, &$elementModel, $row, $repeatCounter = 0)
 	{
@@ -2383,9 +2403,9 @@ class ListModel extends BaseModel
 	 * @param   array   $row            Lists current row data
 	 * @param   int     $repeatCounter  Repeat group counter
 	 *
-	 * @since   2.0.4
-	 *
 	 * @return  string	link href
+	 *
+	 * @since 4.0
 	 */
 	public function linkHref($elementModel, $row, $repeatCounter = 0)
 	{
@@ -2445,7 +2465,7 @@ class ListModel extends BaseModel
 			$array['rowid'] = $this->getSlug($row);
 			$array['listid'] = $table->id;
 
-			$link = JRoute::_($this->parseMessageForRowHolder($customLink, $array));
+			$link = Route::_($this->parseMessageForRowHolder($customLink, $array));
 		}
 
 		// Allow creating custom links, default layout will just return $link unaltered
@@ -2466,6 +2486,8 @@ class ListModel extends BaseModel
 	 * get query to make records
 	 *
 	 * @return  string	sql
+	 *
+	 * @since 4.0
 	 */
 	public function buildQuery()
 	{
@@ -2739,13 +2761,15 @@ class ListModel extends BaseModel
 	 * @param   string  $query  sql query
 	 *
 	 * @return  string	altered query.
+	 *
+	 * @since 4.0
 	 */
 	public function pluginQuery($query)
 	{
 		// Pass the query as an object property so it can be updated via reference
 		$args = new \stdClass;
 		$args->query = $query;
-		Worker::getPluginManager()->runPlugins('onQueryBuilt', $this, 'list', $args);
+		Worker::getPluginManager(true)->runPlugins('onQueryBuilt', $this, 'list', $args);
 		$query = $args->query;
 
 		return $query;
@@ -2756,9 +2780,9 @@ class ListModel extends BaseModel
 	 *
 	 * @param   array  &$fields  fields
 	 *
-	 * @since 3.0.6
-	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	private function selectSlug(&$fields)
 	{
@@ -2794,9 +2818,11 @@ class ListModel extends BaseModel
 	 * Get the select part of the query
 	 *
 	 * @param   string                      $mode   List/form - effects which elements are selected
-	 * @param   JDatabaseQueryElement|bool  $query  QueryBuilder (false to return string)
+	 * @param   DatabaseQueryElement|bool  $query  QueryBuilder (false to return string)
 	 *
 	 * @return  mixed  string if $query = false, otherwise $query
+	 *
+	 * @since 4.0
 	 */
 	public function buildQuerySelect($mode = 'list', $query = false)
 	{
@@ -2863,7 +2889,7 @@ class ListModel extends BaseModel
 			$sql .= ' FROM ' . $db->qn($table->db_table_name) . " \n";
 		}
 
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$pluginManager->runPlugins('onBuildQuerySelect', $this, 'list', $query);
 
 		return $query ? $query : $sql;
@@ -2875,9 +2901,11 @@ class ListModel extends BaseModel
 	 *
 	 * @param   mixed  $query  False or a query object
 	 *
-	 * @throws ErrorException
+	 * @throws \ErrorException
 	 *
 	 * @return  mixed  string or query object - Ordering part of sql statement
+	 *
+	 * @since 4.0
 	 */
 	public function buildQueryOrder($query = false)
 	{
@@ -3022,7 +3050,7 @@ class ListModel extends BaseModel
 					// As we use getString() for query string, need to sanitize
 					if (!in_array(strtolower($dir), array('asc', 'desc','-')))
 					{
-						throw new ErrorException('invalid order direction: ' . $dir, 500);
+						throw new \ErrorException('invalid order direction: ' . $dir, 500);
 					}
 
 					if ($orderByRaw !== '' && $dir != '-')
@@ -3146,9 +3174,9 @@ class ListModel extends BaseModel
 	/**
 	 * Should we order on multiple elements or one
 	 *
-	 * @since   3.0.7 (refactored from buildQueryOrder())
-	 *
 	 * @return  bool
+	 *
+	 * @since   4.0 (refactored from buildQueryOrder())
 	 */
 	public function singleOrdering()
 	{
@@ -3173,6 +3201,8 @@ class ListModel extends BaseModel
 	 * store order options in session
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setOrderByAndDir()
 	{
@@ -3200,9 +3230,11 @@ class ListModel extends BaseModel
 	 * Get the part of the sql query that creates the joins
 	 * used when building the table's data
 	 *
-	 * @param   bool|JDatabaseQuery  $query  JQuery object or false
+	 * @param   bool|DatabaseQuery  $query  JQuery object or false
 	 *
-	 * @return  JDatabaseQuery|string  string or join query - join sql
+	 * @return  DatabaseQuery|string  string or join query - join sql
+	 *
+	 * @since 4.0
 	 */
 	public function buildQueryJoin($query = false)
 	{
@@ -3340,6 +3372,8 @@ class ListModel extends BaseModel
 	 * @param   PlgFabrik_Element  $element  Element model
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function buildQueryPrefilterWhere($element)
 	{
@@ -3374,14 +3408,16 @@ class ListModel extends BaseModel
 	 * Get the part of the main query that provides a group by statement
 	 * only added by 'count' element plug-in at the moment
 	 *
-	 * @param   bool|JDatabaseQuery  $query  false to return a mySQL string, JQuery object to append group statement to.
+	 * @param   bool|DatabaseQuery  $query  false to return a mySQL string, JQuery object to append group statement to.
 	 *
-	 * @return  mixed  string if $query false, else JQuery object
+	 * @return  string|DatabaseQuery  string if $query false, else JQuery object
+	 *
+	 * @since 4.0
 	 */
 	public function buildQueryGroupBy($query = false)
 	{
 		$groups = $this->getFormModel()->getGroupsHiarachy();
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 
 		foreach ($groups as $groupModel)
 		{
@@ -3423,16 +3459,18 @@ class ListModel extends BaseModel
 	 *
 	 * @param   bool                 $incFilters  if true the SQL contains any filters
 	 *                                            if false only contains prefilter sql
-	 * @param   bool|JDatabaseQuery  $query       if false return the where as a string
+	 * @param   bool|DatabaseQuery  $query       if false return the where as a string
 	 *                                            if a db query object, set the where clause
 	 * Paul 2013-07-20 Add join parameter to limit where clause to main table if needed
 	 * @param   bool                 $doJoins     include where clauses for joins?
 	 *
-	 * @return  mixed	string if $query false, else JDatabaseQuery
+	 * @return  string|DatabaseQuery	string if $query false, else DatabaseQuery
+	 *
+	 * @since 4.0
 	 */
 	public function buildQueryWhere($incFilters = true, $query = false, $doJoins = true)
 	{
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$pluginManager->runPlugins('onBuildQueryWhere', $this, 'list');
 
 		$sig = !$query ? 'string' : 'query';
@@ -3546,6 +3584,8 @@ class ListModel extends BaseModel
 	 * @param   bool   $incPlugin       include the pluginQueryWhere statements
 	 *
 	 * @return  array	nofilter, filter sql
+	 *
+	 * @since 4.0
 	 */
 	private function _filtersToSQL(&$filters, $startWithWhere = true, $incPlugin = true)
 	{
@@ -3611,6 +3651,8 @@ class ListModel extends BaseModel
 	 * @param   string  $type      * = filters, 'prefilter' = get prefilter only
 	 *
 	 * @return  array	words making up sql query.
+	 *
+	 * @since 4.0
 	 */
 	private function groupFilterSQL(&$filters, $type = '*')
 	{
@@ -3722,6 +3764,8 @@ class ListModel extends BaseModel
 	 * @deprecated - don't think its used
 	 *
 	 * @return  array	order by names
+	 *
+	 * @since 4.0
 	 */
 	public function getOrderByFields()
 	{
@@ -3750,6 +3794,8 @@ class ListModel extends BaseModel
 	 * Get the elements that are included in the search all query
 	 *
 	 * @return  array  search all fields
+	 *
+	 * @since 4.0
 	 */
 	public function getSearchAllFields()
 	{
@@ -3821,6 +3867,8 @@ class ListModel extends BaseModel
 	 * @param   string  $mode  list/form - effects which elements are selected
 	 *
 	 * @return  array	field names to select in getElement data sql query
+	 *
+	 * @since 4.0
 	 */
 	protected function &getAsFields($mode = 'list')
 	{
@@ -3907,9 +3955,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get the group by element regardless of wheter it was stored as id or string
 	 *
-	 * @since 3.0.7
-	 *
 	 * @return  plgFabrik_Element
+	 *
+	 * @since 4.0
 	 */
 	protected function getGroupByElement()
 	{
@@ -3923,9 +3971,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get group by field name
 	 *
-	 * @since 3.0.7
-	 *
 	 * @return mixed false or name
+	 *
+	 * @since 4.0
 	 */
 	protected function getGroupByName()
 	{
@@ -3945,7 +3993,9 @@ class ListModel extends BaseModel
 	/**
 	 * Checks if the params object has been created and if not creates and returns it
 	 *
-	 * @return  object	params
+	 * @return  Registry	params
+	 *
+	 * @since 4.0
 	 */
 	public function getParams()
 	{
@@ -3965,6 +4015,8 @@ class ListModel extends BaseModel
 	 * @param   int  $id  list ID
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setId($id)
 	{
@@ -3980,6 +4032,8 @@ class ListModel extends BaseModel
 	 * Get the list id
 	 *
 	 * @return  int  list id
+	 *
+	 * @since 4.0
 	 */
 	public function getId()
 	{
@@ -3993,7 +4047,9 @@ class ListModel extends BaseModel
 	 * @param   string  $prefix   The class prefix. Optional.
 	 * @param   array   $options  Configuration array for model. Optional.
 	 *
-	 * @return   object	table
+	 * @return   ListTable	table
+	 *
+	 * @since 4.0
 	 */
 	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
@@ -4004,8 +4060,7 @@ class ListModel extends BaseModel
 
 		if (!isset($this->table) || !is_object($this->table))
 		{
-			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$this->table = FabTable::getInstance('List', 'FabrikTable');
+			$this->table = parent::getTable(ListTable::class);
 			$id = $this->getId();
 
 			if ($id !== 0)
@@ -4025,11 +4080,13 @@ class ListModel extends BaseModel
 	/**
 	 * Set the table object
 	 *
-	 * @param   object  $table  db row
+	 * @param   ListTable  $table  db row
 	 *
 	 * @return   void
+	 *
+	 * @since 4.0
 	 */
-	public function setTable($table)
+	public function setTable(ListTable $table)
 	{
 		$this->table = $table;
 	}
@@ -4038,6 +4095,8 @@ class ListModel extends BaseModel
 	 * unset the table object
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function clearTable()
 	{
@@ -4047,26 +4106,13 @@ class ListModel extends BaseModel
 	/**
 	 * Load the database object associated with the list
 	 *
-	 * @return  JDatabaseDriver	database
+	 * @return  DatabaseDriver	database
+	 *
+	 * @since 4.0
 	 */
-	public function &getDb()
+	public function getDb()
 	{
 		return Worker::getConnection($this->getTable())->getDb();
-	}
-
-	/**
-	 * Get the lists connection object
-	 * sets $this->connection to the lists connection
-	 *
-	 * @deprecated since 3.0b use Worker::getConnection() instead
-	 *
-	 * @return  object	connection
-	 */
-	public function &getConnection()
-	{
-		$this->connection = Worker::getConnection($this->getTable());
-
-		return $this->connection;
 	}
 
 	/**
@@ -4074,8 +4120,9 @@ class ListModel extends BaseModel
 	 * Dates are stored as UTC so we can compare them against a date with no offset applied
 	 *
 	 * @return  bool	published state
+	 *
+	 * @since 4.0
 	 */
-
 	public function canPublish()
 	{
 		$item = $this->getTable();
@@ -4107,6 +4154,8 @@ class ListModel extends BaseModel
 	 * from the table
 	 *
 	 * @return  bool	yes/no
+	 *
+	 * @since 4.0
 	 */
 	public function canEmpty()
 	{
@@ -4140,6 +4189,9 @@ class ListModel extends BaseModel
 		return $this->access->allow_drop;
 	}
 
+	/**
+	 * @since 4.0
+	 */
 	public function setLocalPdf()
     {
         $this->localPdf = true;
@@ -4151,6 +4203,8 @@ class ListModel extends BaseModel
 	 * @param   object  $row  of data currently active
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canViewDetails($row = null)
 	{
@@ -4209,7 +4263,7 @@ class ListModel extends BaseModel
 			 * value other than true or false) then we drop through to normal useDo/ACL checks.  If any plugin returns
 			 * false, access is denied.  If no plugin returns false, and any return true, access is allowed.
 			 */
-			$pluginCanView = Worker::getPluginManager()->runPlugins('onCanView', $this, 'list', $row);
+			$pluginCanView = Worker::getPluginManager(true)->runPlugins('onCanView', $this, 'list', $row);
 
 			// At least one plugin run, so plugin results take precedence over anything else.
 			if (!empty($pluginCanView))
@@ -4248,6 +4302,8 @@ class ListModel extends BaseModel
 	 * @param   object  $row  of data currently active
 	 *
 	 * @return  bool	access allowed
+	 *
+	 * @since 4.0
 	 */
 	public function canEdit($row = null)
 	{
@@ -4262,7 +4318,7 @@ class ListModel extends BaseModel
 		 * value other than true or false) then we drop through to normal useDo/ACL checks.  If any plugin returns
 		 * false, access is denied.  If no plugin returns false, and any return true, access is allowed.
 		 */
-		$pluginCanEdit = Worker::getPluginManager()->runPlugins('onCanEdit', $this, 'list', $row);
+		$pluginCanEdit = Worker::getPluginManager(true)->runPlugins('onCanEdit', $this, 'list', $row);
 
 		// At least one plugin run, so plugin results take precedence over anything else.
 		if (!empty($pluginCanEdit))
@@ -4302,6 +4358,8 @@ class ListModel extends BaseModel
 	 * Checks if any one row is editable = used to get the correct headings
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	protected function canEditARow()
 	{
@@ -4329,6 +4387,8 @@ class ListModel extends BaseModel
 	 * @param   string  $col  access control setting to compare against
 	 *
 	 * @return  mixed	- if ACL setting defined here return bool, otherwise return -1 to contiune with default acl setting
+	 *
+	 * @since 4.0
 	 */
 	protected function canUserDo($row, $col)
 	{
@@ -4343,6 +4403,8 @@ class ListModel extends BaseModel
 	 * @param   object  $row  of data currently active
 	 *
 	 * @return  bool	access allowed
+	 *
+	 * @sicne 4.0
 	 */
 	public function canDelete($row = null)
 	{
@@ -4356,7 +4418,7 @@ class ListModel extends BaseModel
 		 * valuse other than true or false) then we drop through to normal useDo/ACL checks.  If any plugin returns
 		 * false, access is denied.  If no plugin returns false, and any return true, access is allowed.
 		 */
-		$pluginCanDelete = Worker::getPluginManager()->runPlugins('onCanDelete', $this, 'list', $row);
+		$pluginCanDelete = Worker::getPluginManager(true)->runPlugins('onCanDelete', $this, 'list', $row);
 
 		// At least one plugin run, so plugin results take precedence over anything else.
 		if (!empty($pluginCanDelete))
@@ -4398,6 +4460,8 @@ class ListModel extends BaseModel
 	 * delete button in the list view
 	 *
 	 * @return  bool
+	 *              
+	 * @since 4.0
 	 */
 	public function deletePossible()
 	{
@@ -4426,6 +4490,8 @@ class ListModel extends BaseModel
 	 * Checks user access for importing csv
 	 *
 	 * @return  bool  access allowed
+	 *                
+	 * @since 4.0
 	 */
 	public function canCSVImport()
 	{
@@ -4442,6 +4508,8 @@ class ListModel extends BaseModel
 	 * Checks user access for exporting csv
 	 *
 	 * @return  bool  access allowed
+	 *                
+	 * @since 4.0
 	 */
 	public function canCSVExport()
 	{
@@ -4458,6 +4526,8 @@ class ListModel extends BaseModel
 	 * Checks user access for front end group by
 	 *
 	 * @return  bool  access allowed
+	 *                
+	 * @since 4.0
 	 */
 	public function canGroupBy()
 	{
@@ -4474,6 +4544,8 @@ class ListModel extends BaseModel
 	 * Checks user access for adding records
 	 *
 	 * @return  bool  access allowed
+	 *                
+	 * @since 4.0
 	 */
 	public function canAdd()
 	{
@@ -4497,6 +4569,8 @@ class ListModel extends BaseModel
 	 * Check user can view the list
 	 *
 	 * @return  bool  can view or not
+	 *                
+	 * @since 4.0
 	 */
 	public function canView()
 	{
@@ -4515,11 +4589,12 @@ class ListModel extends BaseModel
 	 * @param   int  $formId  (jos_fabrik_forms.id)
 	 *
 	 * @return  object	table row
+	 *                 
+	 * @since 4.0
 	 */
 	public function loadFromFormId($formId)
 	{
-		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/table');
-		$row = FabTable::getInstance('List', 'FabrikTable');
+		$row = $this->getTable(ListTable::class);
 		$row->load(array('form_id' => $formId));
 		$this->table = $row;
 		$this->setId($row->id);
@@ -4537,6 +4612,8 @@ class ListModel extends BaseModel
 	 * as in tableModel::getRecordCounts()
 	 *
 	 * @return  array  join objects (table rows - not table objects or models)
+	 *
+	 * @since 4.0
 	 */
 	protected function getJoinsNoCdd()
 	{
@@ -4571,6 +4648,8 @@ class ListModel extends BaseModel
 	 * Get joins
 	 *
 	 * @return array join objects (table rows - not table objects or models)
+	 *
+	 * @since 4.0
 	 */
 	public function &getJoins()
 	{
@@ -4633,9 +4712,9 @@ class ListModel extends BaseModel
 	 *
 	 * @param   object  &$join  join
 	 *
-	 * @since	3.0.6
-	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function setJoinPk(&$join)
 	{
@@ -4659,7 +4738,7 @@ class ListModel extends BaseModel
 				{
 					$db->execute();
 				}
-				catch (RuntimeException $e)
+				catch (\RuntimeException $e)
 				{
 				}
 
@@ -4674,6 +4753,8 @@ class ListModel extends BaseModel
 	 * @param   object $newJoin
 	 *
 	 * @return array
+	 *
+	 * @since 4.0
 	 */
 	public function makeJoinAliases($newJoin = null)
 	{
@@ -4695,6 +4776,8 @@ class ListModel extends BaseModel
 	 * @param   array  &$joins  joins
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function _makeJoinAliases(&$joins)
 	{
@@ -4807,6 +4890,8 @@ class ListModel extends BaseModel
 	 * @param   string  $key  field to key return array on
 	 *
 	 * @return  array	table fields
+	 *
+	 * @since 4.0
 	 */
 	public function getDBFields($tbl = null, $key = null)
 	{
@@ -4834,7 +4919,7 @@ class ListModel extends BaseModel
 			{
 				$this->dbFields[$sig] = $db->loadObjectList($key);
 			}
-			catch (RuntimeException $e)
+			catch (\RuntimeException $e)
 			{
 				// List may be in second connection but we might try to get #__user fields for join
 				$this->dbFields[$sig] = array();
@@ -4877,15 +4962,17 @@ class ListModel extends BaseModel
 	 * @param   PlgFabrik_Element  &$elementModel  element model
 	 * @param   string             $origColName    original column name
 	 *
-	 * @throws ErrorException
+	 * @throws \ErrorException
 	 *
 	 * @return  array($update, $q, $oldName, $newdesc, $origDesc, $dropKey)
+	 *
+	 * @since 4.0
 	 */
 	public function shouldUpdateElement(&$elementModel, $origColName = null)
 	{
 		$return = array(false, '', '', '', '', false);
 		$element = $elementModel->getElement();
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
 		$fabrikDb = $this->getDb();
 		$group = $elementModel->getGroup();
@@ -4958,9 +5045,9 @@ class ListModel extends BaseModel
 						$fabrikDb->execute();
 						$altered = true;
 					}
-					catch (Exception $e)
+					catch (\Exception $e)
 					{
-						throw new ErrorException('alter structure: ' . $fabrikDb->getErrorMsg(), 500);
+						throw new \ErrorException('alter structure: ' . $fabrikDb->getErrorMsg(), 500);
 					}
 				}
 			}
@@ -5104,11 +5191,13 @@ class ListModel extends BaseModel
 	 * @param   string  $origColName    original field name
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function alterStructure(&$elementModel, $origColName = null)
 	{
 		$element = $elementModel->getElement();
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
 		$fabrikDb = $this->getDb();
 		$table = $this->getTable();
@@ -5157,9 +5246,9 @@ class ListModel extends BaseModel
 				{
 					$fabrikDb->execute();
 				}
-				catch (Exception $e)
+				catch (\Exception $e)
 				{
-					throw new RuntimeException('alter structure: ' . $e->getMessage());
+					throw new \RuntimeException('alter structure: ' . $e->getMessage());
 				}
 			}
 			else
@@ -5178,9 +5267,9 @@ class ListModel extends BaseModel
 					{
 						$fabrikDb->execute();
 					}
-					catch (Exception $e)
+					catch (\Exception $e)
 					{
-						throw new RuntimeException('alter structure: ' . $e->getMessage());
+						throw new \RuntimeException('alter structure: ' . $e->getMessage());
 					}
 				}
 			}
@@ -5193,6 +5282,8 @@ class ListModel extends BaseModel
 	 * Can we alter this tables fields structure?
 	 *
 	 * @return  bool
+	 *              
+	 * @since 4.0
 	 */
 	public function canAlterFields()
 	{
@@ -5211,9 +5302,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get the alter fields setting
 	 *
-	 * @since	3.0.6
-	 *
 	 * @return  string	alter fields setting
+	 *
+	 * @since 4.0
 	 */
 	private function alterExisting()
 	{
@@ -5232,9 +5323,9 @@ class ListModel extends BaseModel
 	/**
 	 * Can we add fields to the list?
 	 *
-	 * @since	3.0.6
-	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canAddFields()
 	{
@@ -5247,13 +5338,15 @@ class ListModel extends BaseModel
 	 * If not loaded this loads in the table's form model
 	 * also binds a reference of the table to the form.
 	 *
-	 * @return  FabrikFEModelForm	form model with form table loaded
+	 * @return  FormModel	form model with form table loaded
+	 *
+	 * @since 4.0
 	 */
-	public function &getFormModel()
+	public function getFormModel()
 	{
 		if (!isset($this->formModel))
 		{
-			$this->formModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+			$this->formModel = FabModel::getInstance(FormModel::class);
 			$table = $this->getTable();
 			$this->formModel->setId($table->form_id);
 			$this->formModel->getForm();
@@ -5266,11 +5359,13 @@ class ListModel extends BaseModel
 	/**
 	 * Set the form model
 	 *
-	 * @param   object  $model  form model
+	 * @param   FormModel  $model  form model
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-	public function setFormModel($model)
+	public function setFormModel(FormModel $model)
 	{
 		$this->formModel = $model;
 	}
@@ -5279,6 +5374,8 @@ class ListModel extends BaseModel
 	 * Sets isView
 	 *
 	 * @param  string   is view
+	 *
+	 * @since 4.0
 	 */
 	public function setIsView($isView = '0')
 	{
@@ -5289,6 +5386,8 @@ class ListModel extends BaseModel
 	 * Tests if the table is in fact a view
 	 *
 	 * @return  bool	true if table is a view
+	 *
+	 * @since 4.0
 	 */
 	public function isView()
 	{
@@ -5309,6 +5408,8 @@ class ListModel extends BaseModel
 	 * @param   array  $request  filters to store
 	 *
 	 * @return  void
+	 *              
+	 * @since 4.0
 	 */
 	public function storeRequestData($request)
 	{
@@ -5352,7 +5453,7 @@ class ListModel extends BaseModel
 			}
 		}
 
-		Worker::getPluginManager()->runPlugins(
+		Worker::getPluginManager(true)->runPlugins(
 			'onStoreRequestData',
 			$this,
 			'list',
@@ -5367,6 +5468,8 @@ class ListModel extends BaseModel
 	 * Creates filter array (return existing if exists)
 	 *
 	 * @return  array	filters
+	 *
+	 * @since 4.0
 	 */
 	public function &getFilterArray()
 	{
@@ -5420,7 +5523,7 @@ class ListModel extends BaseModel
 
 		if (count($this->filters) == 0)
 		{
-			Worker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
+			Worker::getPluginManager(true)->runPlugins('onFiltersGot', $this, 'list');
 
 			return $this->filters;
 		}
@@ -5572,7 +5675,7 @@ class ListModel extends BaseModel
 
 			if ($value == '' && $eval == FABRIKFILTER_QUERY)
 			{
-				throw new RuntimeException(Text::_('COM_FABRIK_QUERY_PREFILTER_WITH_NO_VALUE'), 500);
+				throw new \RuntimeException(Text::_('COM_FABRIK_QUERY_PREFILTER_WITH_NO_VALUE'), 500);
 			}
 
 			list($value, $condition) = $elementModel->getFilterValue($value, $condition, $eval);
@@ -5687,7 +5790,7 @@ class ListModel extends BaseModel
 			}
 		}
 
-		Worker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
+		Worker::getPluginManager(true)->runPlugins('onFiltersGot', $this, 'list');
 		Html::debug($this->filters, 'after plugins:onFiltersGot');
 
 		return $this->filters;
@@ -5696,9 +5799,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get the elements to show in the list view
 	 *
-	 * @since 3.1b2
-	 *
 	 * @return array
+	 *
+	 * @since 4.0
 	 */
 	private function showInList()
 	{
@@ -5724,6 +5827,8 @@ class ListModel extends BaseModel
 	 * Get the module or the menu pre-filter settings
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	private function menuModulePrefilters()
 	{
@@ -5780,7 +5885,9 @@ class ListModel extends BaseModel
 	 * Get the prefilter settings from list/module/menu options
 	 * Use in listModel::getPrefilterArray() and formModel::getElementIds()
 	 *
-	 * @return multitype:array
+	 * @return array 
+	 *
+	 * @since 4.0
 	 */
 	public function prefilterSetting()
 	{
@@ -5860,6 +5967,8 @@ class ListModel extends BaseModel
 	 * @param   array  &$filters  filters
 	 *
 	 * @return  array	prefilters combined with filters
+	 *                
+	 * @since 4.0
 	 */
 	public function getPrefilterArray(&$filters)
 	{
@@ -5915,15 +6024,12 @@ class ListModel extends BaseModel
 
 				if ($elementModel && $elementModel->getElement()->published == 0)
 				{
-					// Include the JLog class.
-					jimport('joomla.log.log');
-
 					// Add the logger.
-					JLog::addLogger(array('text_file' => 'fabrik.log.php'));
+					Log::addLogger(array('text_file' => 'fabrik.log.php'));
 
 					// Start logging...
-					$msg = JText::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', FStringHelper::safeColName($tmpFilter));
-					JLog::add($msg,	JLog::NOTICE, 'com_fabrik');
+					$msg = Text::sprintf('COM_FABRIK_ERR_PREFILTER_NOT_APPLIED', FStringHelper::safeColName($tmpFilter));
+					Log::add($msg,	Log::NOTICE, 'com_fabrik');
 
 					$this->app->enqueueMessage($msg, 'notice');
 					continue;
@@ -5959,6 +6065,8 @@ class ListModel extends BaseModel
 	 * Get the total number of records in the table
 	 *
 	 * @return  int		total number of records
+	 *
+	 * @since 4.0
 	 */
 	public function getTotalRecords()
 	{
@@ -5996,6 +6104,8 @@ class ListModel extends BaseModel
 	 * is to be merged on the main table's primary key
 	 *
 	 * @return int total records
+	 *
+	 * @since 4.0
 	 */
 	protected function getJoinMergeTotalRecords()
 	{
@@ -6023,6 +6133,8 @@ class ListModel extends BaseModel
 	 * If no form loaded for the list object then one is loaded
 	 *
 	 * @return  FabrikFEModelGroup[]	element objects
+	 *
+	 * @since 4.0
 	 */
 	public function getFormGroupElementData()
 	{
@@ -6037,8 +6149,10 @@ class ListModel extends BaseModel
 	 * @param   int  $limit       length of records to return
 	 *
 	 * @return  object	pageNav
+	 *
+	 * @since 4.0
 	 */
-	public function &getPagination($total = 0, $limitStart = 0, $limit = 0)
+	public function getPagination($total = 0, $limitStart = 0, $limit = 0)
 	{
 		if (!isset($this->nav))
 		{
@@ -6073,6 +6187,8 @@ class ListModel extends BaseModel
 	 * Get the random limit start val
 	 *
 	 * @return  int	 Limit start
+	 *
+	 * @since 4.0
 	 */
 	protected function getRandomLimitStart()
 	{
@@ -6118,6 +6234,8 @@ class ListModel extends BaseModel
 	 * If a filter is a range then override lists setting with onsubmit
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getFilterAction()
 	{
@@ -6128,7 +6246,7 @@ class ListModel extends BaseModel
 			$this->real_filter_action = $table->filter_action;
 
 			// Check to see if any list filter plugins require a Go button, like radius search
-			$pluginManager = Worker::getPluginManager();
+			$pluginManager = Worker::getPluginManager(true);
 			$pluginManager->getPlugInGroup('list');
 
 			$pluginManager->runPlugins('requireFilterSubmit', $this, 'list');
@@ -6185,6 +6303,8 @@ class ListModel extends BaseModel
 	 * @param   object  $data  current list row
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getKeyIndetifier($data)
 	{
@@ -6197,6 +6317,8 @@ class ListModel extends BaseModel
 	 * @param   object  $row  current list row data
 	 *
 	 * @return  string	formatted slug
+	 *
+	 * @since 4.0
 	 */
 	public function getSlug($row)
 	{
@@ -6206,7 +6328,7 @@ class ListModel extends BaseModel
 		}
 
 		$row->slug = str_replace(':', '-', $row->slug);
-		$row->slug = JApplication::stringURLSafe($row->slug);
+		$row->slug = ApplicationHelper::stringURLSafe($row->slug);
 
 		return $row->slug;
 	}
@@ -6214,10 +6336,12 @@ class ListModel extends BaseModel
 	/**
 	 * Get other lists who have joins to the list db tables pk
 	 *
-	 * @throws ErrorException
+	 * @throws \ErrorException
 	 *
 	 * @return array of element objects that are database joins and that
 	 * use this table's key as their foreign key
+	 *
+	 * @since 4.0
 	 */
 	public function getJoinsToThisKey()
 	{
@@ -6277,9 +6401,9 @@ class ListModel extends BaseModel
 						$join->join_key_column = $element_params->join_key_column;
 					}
 				}
-				catch (RuntimeException $e)
+				catch (\RuntimeException $e)
 				{
-					throw new ErrorException('getJoinsToThisKey: ' . $e->getMessage(), 500);
+					throw new \ErrorException('getJoinsToThisKey: ' . $e->getMessage(), 500);
 				}
 			}
 		}
@@ -6291,6 +6415,8 @@ class ListModel extends BaseModel
 	 * Get an array of elements that point to a form where their data will be filtered
 	 *
 	 * @return  array
+	 *               
+	 * @since 4.0
 	 */
 	public function getLinksToThisKey()
 	{
@@ -6326,6 +6452,8 @@ class ListModel extends BaseModel
 	 * Get empty data message
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function getEmptyDataMsg()
 	{
@@ -6343,6 +6471,8 @@ class ListModel extends BaseModel
 	 * Get the message telling the user that all required filters must be selected
 	 *
 	 * @return  string
+	 *                
+	 * @since 4.0
 	 */
 	public function getRequiredMsg()
 	{
@@ -6358,6 +6488,8 @@ class ListModel extends BaseModel
 	 * Do we have all required filters, by both list level and element level settings.
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function gotAllRequiredFilters()
 	{
@@ -6382,6 +6514,8 @@ class ListModel extends BaseModel
 	 * Does a filter have to be applied before we show any list data
 	 *
 	 * @return bool
+	 *             
+	 * @since 4.0
 	 */
 	protected function listRequiresFiltering()
 	{
@@ -6401,7 +6535,7 @@ class ListModel extends BaseModel
 				return true;
 				break;
 			case 2:
-				return $this->app->isAdmin() ? false : true;
+				return $this->app->isClient('administrator') ? false : true;
 				break;
 		}
 	}
@@ -6410,6 +6544,8 @@ class ListModel extends BaseModel
 	 * Have all the required filters been met?
 	 *
 	 * @return  bool  true if they have if false we shouldn't show the table data
+	 *
+	 * @since 4.0
 	 */
 	protected function hasRequiredElementFilters()
 	{
@@ -6448,6 +6584,8 @@ class ListModel extends BaseModel
 	 * Do we have any filters that aren't pre-filters
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function gotOptionalFilters()
 	{
@@ -6469,6 +6607,8 @@ class ListModel extends BaseModel
 	 * Have all the required filters been met?
 	 *
 	 * @return  bool  true if they have if false we shouldn't show the table data
+	 *
+	 * @since 4.0
 	 */
 	public function getRequiredFiltersFound()
 	{
@@ -6530,6 +6670,8 @@ class ListModel extends BaseModel
 	 * @param   string  $ref        Js ref used when filters set for visualizations
 	 *
 	 * @return array filters
+	 *
+	 * @since 4.0
 	 */
 	public function getFilters($container = 'listform_1', $type = 'list', $id = '', $ref = '')
 	{
@@ -6560,7 +6702,7 @@ class ListModel extends BaseModel
 				}
 			}
 
-			Worker::getPluginManager()->runPlugins('onMakeFilters', $this, 'list');
+			Worker::getPluginManager(true)->runPlugins('onMakeFilters', $this, 'list');
 		}
 
 		return $this->viewfilters;
@@ -6576,6 +6718,8 @@ class ListModel extends BaseModel
 	 * @param   string  $ref        js filter ref, used when rendering filters for visualizations
 	 *
 	 * @return  array	of html code for each filter
+	 *
+	 * @since 4.0
 	 */
 	protected function &makeFilters($container = 'listform_1', $type = 'list', $id = '', $ref = '')
 	{
@@ -6611,10 +6755,10 @@ class ListModel extends BaseModel
 			{
 				$displayData->advanced = true;
 				$displayData->searchOpts = array();
-				$displayData->searchOpts[] = JHTML::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
-				$displayData->searchOpts[] = JHTML::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
-				$displayData->searchOpts[] = JHTML::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
-				$displayData->searchOpts[] = JHTML::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
+				$displayData->searchOpts[] = HTMLHelper::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
+				$displayData->searchOpts[] = HtmlHelper::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
+				$displayData->searchOpts[] = HtmlHelper::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
+				$displayData->searchOpts[] = HtmlHelper::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
 				$displayData->mode = $this->app->getUserStateFromRequest(
 					'com_' . $package . '.list' . $this->getRenderContext() . '.searchallmode',
 					'search-mode-advanced',
@@ -6727,6 +6871,8 @@ class ListModel extends BaseModel
 	 * Build the advanced search link
 	 *
 	 * @return  string  <a href...> link
+	 *
+	 * @since 4.0
 	 */
 	public function getAdvancedSearchLink()
 	{
@@ -6737,6 +6883,8 @@ class ListModel extends BaseModel
 	 * Get the URL used to open the advanced search window
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getAdvancedSearchURL()
 	{
@@ -6747,6 +6895,8 @@ class ListModel extends BaseModel
 	 * Get a list of submitted advanced filters
 	 *
 	 * @return array advanced filter values
+	 *
+	 * @since 4.0
 	 */
 	public function getAdvancedFilterValues()
 	{
@@ -6757,6 +6907,8 @@ class ListModel extends BaseModel
 	 * Build an array of html data that gets inserted into the advanced search popup view
 	 *
 	 * @return  array	html lists/fields
+	 *
+	 * @since 4.0
 	 */
 	public function getAdvancedSearchRows()
 	{
@@ -6769,6 +6921,8 @@ class ListModel extends BaseModel
 	 * @param   array  $headings  to use (key is element name value must be 1 for it to be added)
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setHeadingsForCSV($headings)
 	{
@@ -6829,6 +6983,8 @@ class ListModel extends BaseModel
 	 * 09/07/2011 moved headingClass into array rather than string
 	 *
 	 * @return  array  (table headings, array columns, $aLinkElements)
+	 *
+	 * @since 4.0
 	 */
 	public function getHeadings()
 	{
@@ -7094,8 +7250,8 @@ class ListModel extends BaseModel
 		$args['cellClass'] =& $cellClass;
 		$args['data'] = $this->data;
 
-		Worker::getPluginManager()->runPlugins('onGetPluginRowHeadings', $this, 'list', $args);
-		Worker::getPluginManager()->runPlugins('onGetPluginRowHeadings', $this->getFormModel(), 'form', $args);
+		Worker::getPluginManager(true)->runPlugins('onGetPluginRowHeadings', $this, 'list', $args);
+		Worker::getPluginManager(true)->runPlugins('onGetPluginRowHeadings', $this->getFormModel(), 'form', $args);
 
 		return array($aTableHeadings, $groupHeadings, $headingClass, $cellClass);
 	}
@@ -7106,6 +7262,8 @@ class ListModel extends BaseModel
 	 * @param   string  $searchKey  Key
 	 *
 	 * @return  mixed   False if not found, join object if found
+	 *
+	 * @since 4.0
 	 */
 	protected function facetedJoin($searchKey)
 	{
@@ -7132,6 +7290,8 @@ class ListModel extends BaseModel
 	 * @param   array  &$cellClass       Cell classes
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function actionHeading(&$aTableHeadings, &$headingClass, &$cellClass)
 	{
@@ -7155,7 +7315,7 @@ class ListModel extends BaseModel
 			$edit = false;
 		}
 
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$pluginManager->runPlugins('button', $this, 'list', array('heading' => true));
 		$pluginHeadings = array_filter($pluginManager->data);
 
@@ -7169,36 +7329,23 @@ class ListModel extends BaseModel
 				$headingButtons[] = $this->deleteButton('', true);
 			}
 
-			if (Worker::j3())
-			{
-				$headingButtons = array_merge($headingButtons, $pluginHeadings);
+			$headingButtons = array_merge($headingButtons, $pluginHeadings);
 
-				if (empty($headingButtons))
-				{
-					$aTableHeadings['fabrik_actions'] = '';
-				}
-				else
-				{
-					if ($this->actionMethod() == 'dropdown')
-					{
-						$align = $params->get('checkboxLocation', 'end') == 'end' ? 'right' : 'left';
-						$aTableHeadings['fabrik_actions'] = Html::bootStrapDropDown($headingButtons, $align);
-					}
-					else
-					{
-						$aTableHeadings['fabrik_actions'] = Html::bootStrapButtonGroup($headingButtons);
-					}
-				}
+			if (empty($headingButtons))
+			{
+				$aTableHeadings['fabrik_actions'] = '';
 			}
 			else
 			{
-				foreach ($pluginHeadings as &$r)
+				if ($this->actionMethod() == 'dropdown')
 				{
-					$r = $this->actionMethod() == 'dropdown' ? '<li>' . $r . '</li>' : $r;
+					$align = $params->get('checkboxLocation', 'end') == 'end' ? 'right' : 'left';
+					$aTableHeadings['fabrik_actions'] = Html::bootStrapDropDown($headingButtons, $align);
 				}
-
-				$headingButtons = array_merge($headingButtons, $pluginHeadings);
-				$aTableHeadings['fabrik_actions'] = empty($headingButtons) ? '' : '<ul class="fabrik_action">' . implode("\n", $headingButtons) . '</ul>';
+				else
+				{
+					$aTableHeadings['fabrik_actions'] = Html::bootStrapButtonGroup($headingButtons);
+				}
 			}
 
 			$headingClass['fabrik_actions'] = array('class' => 'fabrik_ordercell fabrik_actions', 'style' => '');
@@ -7217,6 +7364,8 @@ class ListModel extends BaseModel
 	 * @param   bool   $hide             hide the checkbox (row is not selectable but we still need the chx for plugins)
 	 *
 	 * @return  void
+	 *              
+	 * @since 4.0
 	 */
 	protected function addCheckBox(&$aTableHeadings, &$headingClass, &$cellClass, $hide = false)
 	{
@@ -7237,6 +7386,8 @@ class ListModel extends BaseModel
 	 * @param   array  $arr  array
 	 *
 	 * @return  array
+	 *               
+	 * @since 4.0
 	 */
 	protected function removeHeadingCompositKey($arr)
 	{
@@ -7301,10 +7452,12 @@ class ListModel extends BaseModel
 	 * @param   object  $row  row of list data
 	 *
 	 * @return  bool
+	 *              
+	 * @since 4.0
 	 */
 	public function canSelectRow($row)
 	{
-		$canSelect = Worker::getPluginManager()->runPlugins('onCanSelectRow', $this, 'list', $row);
+		$canSelect = Worker::getPluginManager(true)->runPlugins('onCanSelectRow', $this, 'list', $row);
 
 		if (in_array(false, $canSelect))
 		{
@@ -7326,7 +7479,7 @@ class ListModel extends BaseModel
 			return false;
 		}
 
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$pluginManager->getPlugInGroup('list');
 		$v = in_array(true, $pluginManager->runPlugins('canSelectRows', $this, 'list'));
 
@@ -7347,6 +7500,8 @@ class ListModel extends BaseModel
 	 * if so a checkbox column appears in the table
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -7372,7 +7527,7 @@ class ListModel extends BaseModel
 			return $this->canSelectRows;
 		}
 
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$pluginManager->getPlugInGroup('list');
 		$this->canSelectRows = in_array(true, $pluginManager->runPlugins('canSelectRows', $this, 'list'));
 
@@ -7383,6 +7538,8 @@ class ListModel extends BaseModel
 	 * Clear the calculations
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function clearCalculations()
 	{
@@ -7393,6 +7550,8 @@ class ListModel extends BaseModel
 	 * return mathematical column calculations (run at doCalculations() on for submission)
 	 *
 	 * @return  array  calculations
+	 *
+	 * @since 4.0
 	 */
 	public function getCalculations()
 	{
@@ -7501,6 +7660,8 @@ class ListModel extends BaseModel
 	 * Get list headings to pass into list js oject
 	 *
 	 * @return  string	headings tablename___name
+	 *
+	 * @since 4.0
 	 */
 	public function jsonHeadings()
 	{
@@ -7534,6 +7695,8 @@ class ListModel extends BaseModel
 	 * @param   string  $split  string splitter ___ or .
 	 *
 	 * @return  array stripped data
+	 *                
+	 * @since 4.0
 	 */
 	public function removeTableNameFromSaveData($data, $split = '___')
 	{
@@ -7564,13 +7727,15 @@ class ListModel extends BaseModel
 	 * @param   array   $data            To save
 	 * @param   int     $rowId           Row id to edit/updated
 	 * @param   bool    $isJoin          Is the data being saved into a join table
-	 * @param   JTable  $joinGroupTable  Joined group table
+	 * @param   Table   $joinGroupTable  Joined group table
 	 *
-	 * @throws ErrorException
+	 * @throws \ErrorException
 	 *
 	 * @return  bool	int  Insert id
+	 *
+	 * @since 4.0
 	 */
-	public function storeRow($data, $rowId, $isJoin = false, $joinGroupTable = null)
+	public function storeRow($data, $rowId, $isJoin = false, Table $joinGroupTable = null)
 	{
 		/**
 		 * REMEMBER - if we've arrived here from the group model process(), saving joined rows,
@@ -7769,7 +7934,7 @@ class ListModel extends BaseModel
 		if (!$ok)
 		{
 			$q = JDEBUG ? $fabrikDb->getQuery() : '';
-			throw new ErrorException('Store row failed: ' . $q . "<br>" . $fabrikDb->getErrorMsg(), 500);
+			throw new \ErrorException('Store row failed: ' . $q . "<br>" . $fabrikDb->getErrorMsg(), 500);
 		}
 		else
 		{
@@ -7791,9 +7956,11 @@ class ListModel extends BaseModel
 	 * @param   string  $keyName      name of pk field
 	 * @param   bool    $updateNulls  update null values
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 *
 	 * @return  mixed  query result
+	 *
+	 * @since 4.0
 	 */
 	public function updateObject($table, &$object, $keyName, $updateNulls = true)
 	{
@@ -7857,9 +8024,11 @@ class ListModel extends BaseModel
 	 * @param   object  &$object  An object whose properties match table fields
 	 * @param   string  $keyName  The name of the primary key. If provided the object property is updated.
 	 *
-	 * @thorws Exception
+	 * @thorws \Exception
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function insertObject($table, &$object, $keyName = null)
 	{
@@ -7909,250 +8078,11 @@ class ListModel extends BaseModel
 	}
 
 	/**
-	 * If an element is set to readonly, and has a default value selected then insert this
-	 * data into the array that is to be bound to the table record
-	 *
-	 * @param   array   &$data           List data
-	 * @param   object  &$oRecord        To bind to table row
-	 * @param   int     $isJoin          Is record join record
-	 * @param   int     $rowId           Row id
-	 * @param   JTable  $joinGroupTable  Join group table
-	 *
-	 * @since	1.0.6
-	 *
-	 * @deprecated  since 3.0.7 - we should be using formmodel addEncrytedVarsToArray() only
-	 *
-	 * @return  void
-	 */
-	protected function addDefaultDataFromRO(&$data, &$oRecord, $isJoin, $rowId, $joinGroupTable)
-	{
-		// $$$ rob since 1.0.6 : 10 June 08
-		// Get the current record - not that which was posted
-		$formModel = $this->getFormModel();
-		$input = $this->app->input;
-
-		if (is_null($this->origData))
-		{
-			/* $$$ hugh FIXME - doesn't work for rowid=-1 / usekey submissions,
-			 * ends up querying "WHERE foo.userid = '<rowid>'" instead of <userid>
-			* OK for now, as we should catch RO data from the encrypted vars check
-			* later in this method.
-			*/
-			if (empty($rowId))
-			{
-				$this->origData = $origData = array();
-			}
-			else
-			{
-				$sql = $formModel->buildQuery();
-				$db = $this->getDb();
-				$db->setQuery($sql);
-				$origData = $db->loadObject();
-				$origData = ArrayHelper::fromObject($origData);
-				$origData = is_array($origData) ? $origData : array();
-				$this->origData = $origData;
-			}
-		}
-		else
-		{
-			$origData = $this->origData;
-		}
-
-		$groups = $formModel->getGroupsHiarachy();
-
-		/* $$$ hugh - seems like there's no point in doing this chunk if there is no
-		 $origData to work with?  Not sure if there's ever a valid reason for doing so,
-		but it certainly breaks things like onCopyRow(), where (for instance) user
-		elements will get reset to 0 by this code.
-		*/
-		$repeatGroupCounts = $input->get('fabrik_repeat_group', array(), 'array');
-
-		if (!empty($origData))
-		{
-			$gCounter = 0;
-
-			foreach ($groups as $groupModel)
-			{
-				if (($isJoin && $groupModel->isJoin()) || (!$isJoin && !$groupModel->isJoin()))
-				{
-					$elementModels = $groupModel->getPublishedElements();
-
-					foreach ($elementModels as $elementModel)
-					{
-						// $$$ rob 25/02/2011 unviewable elements are now also being encrypted
-						// if (!$elementModel->canUse() && $elementModel->canView()) {
-						if (!$elementModel->canUse())
-						{
-							$element = $elementModel->getElement();
-							$fullkey = $elementModel->getFullName(true, false);
-
-							// $$$ rob 24/01/2012 if a previous joined data set had a ro element then if we werent checkign that group is the
-							// same as the join group then the insert failed as data from other joins added into the current join
-							if ($isJoin && ($groupModel->getId() != $joinGroupTable->id))
-							{
-								continue;
-							}
-
-							$key = $element->name;
-
-							// $$$ hugh - allow submission plugins to override RO data
-							// TODO - test this for joined data
-							if ($formModel->updatedByPlugin($fullkey))
-							{
-								continue;
-							}
-							// Force a reload of the default value with $origData
-							unset($elementModel->defaults);
-							$default = array();
-							$repeatGroupCount = FArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
-
-							for ($repeatCount = 0; $repeatCount < $repeatGroupCount; $repeatCount++)
-							{
-								$def = $elementModel->getValue($origData, $repeatCount);
-
-								if (is_array($def))
-								{
-									// Radio buttons getValue() returns an array already so don't array the array.
-									$default = $def;
-								}
-								else
-								{
-									$default[] = $def;
-								}
-							}
-
-							$default = count($default) == 1 ? $default[0] : json_encode($default);
-							$data[$key] = $default;
-							$oRecord->$key = $default;
-						}
-					}
-				}
-
-				$gCounter++;
-			}
-		}
-
-		$copy = $input->getBool('Copy');
-
-		// Check crypted querystring vars (encrypted in form/view.html.php ) _cryptQueryString
-		if (array_key_exists('fabrik_vars', $_REQUEST) && array_key_exists('querystring', $_REQUEST['fabrik_vars']))
-		{
-			$crypt = Worker::getCrypt();
-
-			foreach ($_REQUEST['fabrik_vars']['querystring'] as $key => $encrypted)
-			{
-				// $$$ hugh - allow submission plugins to override RO data
-				// TODO - test this for joined data
-				if ($formModel->updatedByPlugin($key))
-				{
-					continue;
-				}
-
-				$key = FStringHelper::shortColName($key);
-
-				/* $$$ hugh - trying to fix issue where encrypted elements from a main group end up being added to
-				 * a joined group's field list for the update/insert on the joined row(s).
-				*/
-				/*
-				 * $$$ rob - commenting it out as this was stopping data that was not viewable or editable from being included
-				* in $data. New test added inside foreach loop below
-				**/
-				/* if (!array_key_exists($key, $data))
-				 {
-				continue;
-				} */
-				foreach ($groups as $groupModel)
-				{
-					// New test to replace if (!array_key_exists($key, $data))
-					// $$$ hugh - this stops elements from joined groups being added to main row, but see 'else'
-					if ($isJoin)
-					{
-						if ($groupModel->getGroup()->id != $joinGroupTable->id)
-						{
-							continue;
-						}
-					}
-					else
-					{
-						// $$$ hugh - need test here if not $isJoin, to stop keys from joined groups being added to main row!
-						if ($groupModel->isJoin())
-						{
-							continue;
-						}
-					}
-
-					$elementModels = $groupModel->getPublishedElements();
-
-					foreach ($elementModels as $elementModel)
-					{
-						$element = $elementModel->getElement();
-
-						/*
-						 * $$$ hugh - I have a feeling this test is a Bad Thing <tm> as it is using short keys,
-						 * so if two joined groups share the same element name(s) ...
-						 */
-						if ($element->name == $key)
-						{
-							// Don't overwrite if something has been entered
-
-							// $$$ rob 25/02/2011 unviewable elements are now also being encrypted
-							// if (!$elementModel->canUse() && $elementModel->canView()) {
-							if (!$elementModel->canUse())
-							{
-								// Repeat groups
-								$default = array();
-								$repeatGroupCount = FArrayHelper::getValue($repeatGroupCounts, $groupModel->getGroup()->id);
-
-								for ($repeatCount = 0; $repeatCount < $repeatGroupCount; $repeatCount++)
-								{
-									$enc = FArrayHelper::getValue($encrypted, $repeatCount);
-
-									if (is_array($enc))
-									{
-										$v = array();
-
-										foreach ($enc as $e)
-										{
-											$e = urldecode($e);
-											$v[] = empty($e) ? '' : $crypt->decrypt($e);
-										}
-
-										$v = json_encode($v);
-									}
-									else
-									{
-										$enc = urldecode($enc);
-										$v = !empty($enc) ? $crypt->decrypt($enc) : '';
-									}
-								}
-
-								/* $$$ hugh - also gets called in storeRow(), not sure if we really need to
-								 * call it here?  And if we do, then we should probably be calling onStoreRow
-								* as well, if $data['fabrik_copy_from_table'] is set?  Can't remember why,
-								* but we differentiate between the two, with onCopyRow being when a row is copied
-								* using the list plugin, and onSaveAsCopy when the form plugin is used.
-								*/
-								if ($copy)
-								{
-									$v = $elementModel->onSaveAsCopy($v);
-								}
-
-								$data[$key] = $v;
-								$oRecord->$key = $v;
-							}
-
-							break 2;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Called when the form is submitted to perform calculations
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function doCalculations()
 	{
@@ -8177,13 +8107,15 @@ class ListModel extends BaseModel
 	 * @param   int  $listId  List id
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public static function cacheDoCalculations($listId)
 	{
 		$profiler = Profiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('cacheDoCalculations: start') : null;
 
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		$listModel = FabModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 
@@ -8259,6 +8191,8 @@ class ListModel extends BaseModel
 	 * @param   int  $gid  view access level to check against
 	 *
 	 * @return  bool  Must apply filter
+	 *
+	 * @since 4.0
 	 */
 	protected function mustApplyFilter($gid)
 	{
@@ -8271,6 +8205,8 @@ class ListModel extends BaseModel
 	 * @param   int  $id  connection id
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setConnectionId($id)
 	{
@@ -8281,6 +8217,8 @@ class ListModel extends BaseModel
 	 * Get group by (can be set via qs group_by var)
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getGroupBy()
 	{
@@ -8297,9 +8235,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get the element ids for list ordering
 	 *
-	 * @since  3.0.7
-	 *
 	 * @return  array  element ids
+	 *
+	 * @since 4.0
 	 */
 	public function getOrderBys()
 	{
@@ -8320,39 +8258,11 @@ class ListModel extends BaseModel
 	 * Test if the main J user can create mySQL tables
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canCreateDbTable()
 	{
-		return true;
-	}
-
-	/**
-	 * Make id element
-	 *
-	 * @param   int  $groupId  element group id
-	 *
-	 * @since Fabrik 3.0
-	 *
-	 * @return  void
-	 */
-	public function makeIdElement($groupId)
-	{
-		$pluginManager = Worker::getPluginManager();
-		$element = $pluginManager->getPlugIn('internalid', 'element');
-		$item = $element->getDefaultProperties();
-		$item->name = $item->label = 'id';
-		$item->group_id = $groupId;
-
-		// PR#2031 do not show repeat group parent_id in list by default
-		$item->show_in_list_summary = 0;
-
-		if (!$item->store())
-		{
-			JError::raiseWarning(500, $item->getError());
-
-			return false;
-		}
-
 		return true;
 	}
 
@@ -8361,13 +8271,13 @@ class ListModel extends BaseModel
 	 *
 	 * @param   int  $groupId  element group id
 	 *
-	 * @since   Fabrik 3.0
-	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function makeFkElement($groupId)
 	{
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$element = $pluginManager->getPlugIn('field', 'element');
 		$item = $element->getDefaultProperties();
 		$item->name = $item->label = 'parent_id';
@@ -8379,6 +8289,7 @@ class ListModel extends BaseModel
 
 		if (!$item->store())
 		{
+			// @todo - migrate to J4
 			JError::raiseWarning(500, $item->getError());
 
 			return false;
@@ -8388,23 +8299,34 @@ class ListModel extends BaseModel
 	}
 
 	/**
-	 * Updates the table record to point to the newly created form
+	 * Make id element
 	 *
-	 * @param   int  $formId  form id
+	 * @param   int  $groupId  element group id
 	 *
-	 * @deprecated - not used
+	 * @return  void
 	 *
-	 * @return  mixed  null/error
+	 * @since 4.0
 	 */
-	protected function _updateFormId($formId)
+	public function makeIdElement($groupId)
 	{
-		$item = $this->getTable();
-		$item->form_id = $formId;
+		$pluginManager = Worker::getPluginManager(true);
+		$element = $pluginManager->getPlugIn('internalid', 'element');
+		$item = $element->getDefaultProperties();
+		$item->name = $item->label = 'id';
+		$item->group_id = $groupId;
+
+		// PR#2031 do not show repeat group parent_id in list by default
+		$item->show_in_list_summary = 0;
 
 		if (!$item->store())
 		{
-			return JError::raiseWarning(500, $item->getError());
+			// @todo - migrate to J4
+			JError::raiseWarning(500, $item->getError());
+
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
@@ -8413,6 +8335,8 @@ class ListModel extends BaseModel
 	 * @param   string  $table  Optional table name (used when getting pk to joined tables)
 	 *
 	 * @return  mixed	If ok returns array(key, extra, type, name) otherwise
+	 *
+	 * @since 4.0
 	 */
 	public function getPrimaryKeyAndExtra($table = null)
 	{
@@ -8489,6 +8413,8 @@ class ListModel extends BaseModel
 	 * @param   mixed  $selValue  string/array pre-filter value
 	 *
 	 * @return  mixed  string/array pre-filter value
+	 *
+	 * @since 4.0
 	 */
 	protected function prefilterParse($selValue)
 	{
@@ -8614,6 +8540,8 @@ class ListModel extends BaseModel
 	 * @param   string  $table   table name, only needed if join
 	 *
 	 * @return array  list indexes
+	 *
+	 * @since 4.0
 	 */
 	protected function getIndexes($table = '')
 	{
@@ -8645,6 +8573,8 @@ class ListModel extends BaseModel
 	 * @param   string  $size    index length
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function addIndex($field, $prefix = '', $type = 'INDEX', $size = '')
 	{
@@ -8708,8 +8638,10 @@ class ListModel extends BaseModel
 		{
 			$db->execute();
 		}
-		catch (RuntimeException $e)
+		catch (\RuntimeException $e)
 		{
+			// @todo - migrate to J4
+
 			// Try to suppress error
 			$this->setError($e->getMessage());
 		}
@@ -8725,6 +8657,8 @@ class ListModel extends BaseModel
 	 * @param   string  $table   db table name
 	 *
 	 * @return  string  index type
+	 *
+	 * @since 4.0
 	 */
 	public function dropIndex($field, $prefix = '', $type = 'INDEX', $table = '')
 	{
@@ -8752,8 +8686,9 @@ class ListModel extends BaseModel
 					{
 						$db->execute();
 					}
-					catch (Exception $e)
+					catch (\Exception $e)
 					{
+						// @todo - migrate to J4
 						$this->setError($e->getMessage());
 					}
 					break;
@@ -8770,6 +8705,8 @@ class ListModel extends BaseModel
 	 * @param   string  $table  table to drop from
 	 *
 	 * @return  void
+	 *              
+	 * @since 4.0
 	 */
 	public function dropColumnNameIndex($field, $table = '')
 	{
@@ -8798,6 +8735,8 @@ class ListModel extends BaseModel
 	 * @param   string  $val  quoted primary key values from the main table's rows that are to be deleted
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function deleteJoinedRows($val)
 	{
@@ -8830,9 +8769,11 @@ class ListModel extends BaseModel
 	 * @param   mixed   &$ids  Key values to delete (string or array)
 	 * @param   string  $key   Key to use (leave empty to default to the list's key)
 	 *
-	 * @throws  Exception  If no key found or main delete row fails (perhaps due to INNODB foreign constraints)
+	 * @throws  \Exception  If no key found or main delete row fails (perhaps due to INNODB foreign constraints)
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function deleteRows(&$ids, $key = '')
 	{
@@ -8851,7 +8792,7 @@ class ListModel extends BaseModel
 
 			if ($key == '')
 			{
-				throw new Exception(Text::_('COM_FABRIK_NO_KEY_FOUND_FOR_THIS_TABLE'));
+				throw new \Exception(Text::_('COM_FABRIK_NO_KEY_FOUND_FOR_THIS_TABLE'));
 			}
 		}
 
@@ -8953,7 +8894,7 @@ class ListModel extends BaseModel
 			}
 		}
 
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 
 		/* $$$ hugh - added onDeleteRowsForm plugin (needed it so fabrikjuser form plugin can delete users)
 		 * NOTE - had to call it onDeleteRowsForm rather than onDeleteRows, otherwise runPlugins() automagically
@@ -9005,6 +8946,8 @@ class ListModel extends BaseModel
 	 * Remove all records from the table
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
 	public function dropData()
 	{
@@ -9026,6 +8969,8 @@ class ListModel extends BaseModel
 	 * Drop the table containing the fabriktables data and drop any internal joins db tables.
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
 	public function drop()
 	{
@@ -9052,6 +8997,8 @@ class ListModel extends BaseModel
 	 * stored in a separate db table
 	 *
 	 * @return  array  join models.
+	 *
+	 * @since 4.0
 	 */
 	public function getInternalRepeatJoins()
 	{
@@ -9081,13 +9028,15 @@ class ListModel extends BaseModel
 	 * Truncate the main db table and any internal joined groups
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function truncate()
 	{
 		$db = $this->getDb();
 		$item = $this->getTable();
 
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 
 		$formModel = $this->getFormModel();
 		$pluginManager->runPlugins('onBeforeTruncate', $this, 'list');
@@ -9121,6 +9070,8 @@ class ListModel extends BaseModel
 	 * @param   int     $elGroupModel  group ID of element
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function fieldExists($field, $ignore = array(), $elGroupModel)
 	{
@@ -9166,6 +9117,8 @@ class ListModel extends BaseModel
 	 * @param   string  $className       Class name
 	 *
 	 * @return  string	html to be added to DOM
+	 *
+	 * @since 4.0
 	 */
 	public function getFieldsDropDown($cnnId, $tbl, $incSelect, $incTableName = false, $selectListName = 'order_by', $selected = null,
 		$className = "inputbox")
@@ -9176,7 +9129,7 @@ class ListModel extends BaseModel
 
 		if ($incSelect != '')
 		{
-			$fieldNames[] = JHTML::_('select.option', '', $incSelect);
+			$fieldNames[] = HtmlHelper::_('select.option', '', $incSelect);
 		}
 
 		if (is_array($aFields))
@@ -9185,17 +9138,17 @@ class ListModel extends BaseModel
 			{
 				if ($incTableName)
 				{
-					$fieldNames[] = JHTML::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
+					$fieldNames[] = HtmlHelper::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
 				}
 				else
 				{
-					$fieldNames[] = JHTML::_('select.option', $oField->Field);
+					$fieldNames[] = HtmlHelper::_('select.option', $oField->Field);
 				}
 			}
 		}
 
 		$opts = 'class="' . $className . '" size="1" ';
-		$fieldDropDown = JHTML::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
+		$fieldDropDown = HtmlHelper::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
 
 		return str_replace("\n", "", $fieldDropDown);
 	}
@@ -9205,6 +9158,8 @@ class ListModel extends BaseModel
 	 * Always returns FRONT end URL - as /administrator links will not be accessible for a feed reader
 	 *
 	 * @return  string	RSS link
+	 *
+	 * @since 4.0
 	 */
 	public function getRSSFeedLink()
 	{
@@ -9213,14 +9168,14 @@ class ListModel extends BaseModel
 
 		if ($this->getParams()->get('rss') == '1')
 		{
-			$base = JURI::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
+			$base = Uri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
 
 			// $$$ rob test fabrik's own feed renderer
 			$link = $base . '?option=com_' . $package . '&view=list&listid=' . $this->getId() . "&format=fabrikfeed";
 
-			if (!$this->app->isAdmin())
+			if (!$this->app->isClient('administrator'))
 			{
-				$link = JRoute::_($link);
+				$link = Route::_($link);
 			}
 		}
 
@@ -9246,6 +9201,8 @@ class ListModel extends BaseModel
 	 * @param   bool    $addSlashes  add slashes to the replaced data (default = false) set to true in fabrikcalc element
 	 *
 	 * @return  string  parsed message
+	 *
+	 * @since 4.0
 	 */
 	public function parseMessageForRowHolder($msg, &$row, $addSlashes = false)
 	{
@@ -9282,6 +9239,8 @@ class ListModel extends BaseModel
 	 * @param   array  $matches  found in parseMessageForRowHolder
 	 *
 	 * @return  string	posted data that corresponds with placeholder
+	 *
+	 * @since 4.0
 	 */
 	private function replaceWithRowData($matches)
 	{
@@ -9293,7 +9252,7 @@ class ListModel extends BaseModel
 			return $match;
 		}
 
-		$config = Factory::getConfig();
+		$config = $this->app->getConfig();
 		$prefix = $config->get('dbprefix');
 		$match  = str_replace('#__', $prefix, $match);
 
@@ -9347,11 +9306,11 @@ class ListModel extends BaseModel
 	 *
 	 * @return  string	url of view details link
 	 *
-	 * @since  3.0
-	 *
 	 * @return  string  link
+	 *
+	 * @since 4.0
 	 */
-	public function viewDetailsLink(&$row, $view = null)
+	public function viewDetailsLink($row, $view = null)
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$itemId = Worker::itemId();
@@ -9370,7 +9329,7 @@ class ListModel extends BaseModel
 				$link .= COM_FABRIK_LIVESITE;
 			}
 
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				$link .= 'index.php?option=com_' . $package . '&task=' . $view . '.view&formid=' . $table->form_id . '&listid=' . $this->getId() . $keyIdentifier;
 			}
@@ -9379,7 +9338,7 @@ class ListModel extends BaseModel
 				$link .= 'index.php?option=com_' . $package . '&view=' . $view . '&formid=' . $table->form_id . $keyIdentifier . '&Itemid=' . $itemId;
 			}
 
-			$link = JRoute::_($link);
+			$link = Route::_($link);
 		}
 		else
 		{
@@ -9397,6 +9356,8 @@ class ListModel extends BaseModel
 	 * @param   object  $row   row's data
 	 *
 	 * @return  string  custom link
+	 *                  
+	 * @since 4.0
 	 */
 	protected function makeCustomLink($link, $row)
 	{
@@ -9432,7 +9393,7 @@ class ListModel extends BaseModel
 			}
 		}
 
-		$link = JRoute::_($link);
+		$link = Route::_($link);
 
 		return $link;
 	}
@@ -9444,6 +9405,8 @@ class ListModel extends BaseModel
 	 * @param   string  $mode  edit/details link
 	 *
 	 * @return  string  link
+	 *
+	 * @since 4.0
 	 */
 	protected function getCustomLink($type = 'url', $mode = 'edit')
 	{
@@ -9466,11 +9429,13 @@ class ListModel extends BaseModel
 	/**
 	 * Get the link to edit the records details
 	 *
-	 * @param   object  &$row  Active table row
+	 * @param   object  $row  Active table row
 	 *
 	 * @return  string  Url of view details link
+	 *
+	 * @since 4.0
 	 */
-	public function editLink(&$row)
+	public function editLink($row)
 	{
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$itemId = Worker::itemId();
@@ -9480,7 +9445,7 @@ class ListModel extends BaseModel
 
 		if ($customLink == '')
 		{
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				$url = 'index.php?option=com_' . $package . '&task=form.view&formid=' . $table->form_id . $keyIdentifier;
 			}
@@ -9490,7 +9455,7 @@ class ListModel extends BaseModel
 						. $this->getId();
 			}
 
-			$link = JRoute::_($url);
+			$link = Route::_($url);
 		}
 		else
 		{
@@ -9504,6 +9469,8 @@ class ListModel extends BaseModel
 	 * Make the drop sql statement for the table
 	 *
 	 * @return  string|bool  drop table sql
+	 *
+	 * @since 4.0
 	 */
 	public function getDropTableSQL()
 	{
@@ -9522,6 +9489,8 @@ class ListModel extends BaseModel
 	 * Convert a prefix__tablename to #__tablename
 	 *
 	 * @return  string  table name
+	 *
+	 * @since 4.0
 	 */
 	public function getGenericTableName()
 	{
@@ -9537,6 +9506,8 @@ class ListModel extends BaseModel
 	 * @param   string  $table           table to get sql for(leave out to use models table)
 	 *
 	 * @return  string	sql to drop & or create table
+	 *
+	 * @since 4.0
 	 */
 	public function getCreateTableSQL($addIfNotExists = false, $table = null)
 	{
@@ -9608,6 +9579,8 @@ class ListModel extends BaseModel
 	 * @deprecated - not used?
 	 *
 	 * @return  string	sql to drop & or create table
+	 *
+	 * @since 4.0
 	 */
 	public function getInsertRowsSQL($oExporter)
 	{
@@ -9673,6 +9646,8 @@ class ListModel extends BaseModel
 	 * @param   bool  $loadJoin  Load the rows joined data @since 2.0.5 (used in J Content plugin)
 	 *
 	 * @return  object	Row
+	 *
+	 * @since 4.0
 	 */
 	public function getRow($id, $format = false, $loadJoin = false)
 	{
@@ -9761,6 +9736,8 @@ class ListModel extends BaseModel
 	 * @param   bool    $format  format the row
 	 *
 	 * @return  object	row
+	 *
+	 * @since 4.0
 	 */
 	public function findRow($key, $val, $format = false)
 	{
@@ -9782,6 +9759,8 @@ class ListModel extends BaseModel
 	 * @param   string  $mode  mode
 	 *
 	 * @return  string  json encoded row
+	 *                  
+	 * @since 4.0
 	 */
 	public function xRecord($mode = 'table')
 	{
@@ -9821,6 +9800,8 @@ class ListModel extends BaseModel
 	 * Ajax get next record
 	 *
 	 * @return  string  json object representing record/row
+	 *                  
+	 * @since 4.0
 	 */
 	public function nextRecord()
 	{
@@ -9835,6 +9816,8 @@ class ListModel extends BaseModel
 	 * Ajax get previous record
 	 *
 	 * @return  string json  object representing record/row
+	 *                 
+	 * @since 4.0
 	 */
 	public function previousRecord()
 	{
@@ -9850,6 +9833,8 @@ class ListModel extends BaseModel
 	 * Ajax get first record
 	 *
 	 * @return  string  json object representing record/row
+	 *
+	 * @since 4.0
 	 */
 	public function firstRecord()
 	{
@@ -9864,6 +9849,8 @@ class ListModel extends BaseModel
 	 * Ajax get last record
 	 *
 	 * @return  string  json object representing record/row
+	 *
+	 * @since 4.0
 	 */
 	public function lastRecord()
 	{
@@ -9884,6 +9871,8 @@ class ListModel extends BaseModel
 	 *                                     where - additional where filter to apply to query (@since 3.0.8)
 	 *
 	 * @return  array  Values for the column - empty array if no results found
+	 *
+	 * @since 4.0
 	 */
 	public function getColumnData($col, $distinct = true, $opts = array())
 	{
@@ -9902,7 +9891,7 @@ class ListModel extends BaseModel
 
 			if ((int) $fbConfig->get('filter_list_max', 100) == count($res))
 			{
-				$this->app->enqueueMessage(JText::sprintf('COM_FABRIK_FILTER_LIST_MAX_REACHED', $col), 'notice');
+				$this->app->enqueueMessage(Text::sprintf('COM_FABRIK_FILTER_LIST_MAX_REACHED', $col), 'notice');
 			}
 
 			$this->columnData[$col] = $res;
@@ -9918,16 +9907,15 @@ class ListModel extends BaseModel
 	 * @param   mixed  $col       Column to grab. Element full name or id
 	 * @param   bool   $distinct  Select distinct values only
 	 * @param   array  $opts      Options: filterLimit bool - should limit to filter_list_max global param (default true)
-	 *                                     where - additional where filter to apply to query (@since 3.0.8)
-	 *
-	 * @since   3.0.7
 	 *
 	 * @return  array  Column's values
+	 *
+	 * @since 4.0
 	 */
 	public static function columnData($listId, $col, $distinct = true, $opts = array())
 	{
-		/** @var FabrikFEModelList $listModel */
-		$listModel = JModelLegacy::getInstance('List', 'FabrikFEModel');
+		/** @var ListModel $listModel */
+		$listModel = FabModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$listModel->filters = FArrayHelper::getValue($opts, 'filters');
 		$table = $listModel->getTable();
@@ -9969,6 +9957,8 @@ class ListModel extends BaseModel
 	 * Determine how the model does filtering and navigation
 	 *
 	 * @return  bool  ajax true /post false; default post
+	 *
+	 * @since 4.0
 	 */
 	public function isAjax()
 	{
@@ -9996,6 +9986,8 @@ class ListModel extends BaseModel
 	 * Model edit/add links can be set separately to the ajax option
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	protected function isAjaxLinks()
 	{
@@ -10011,6 +10003,8 @@ class ListModel extends BaseModel
 	 * @param   string  $plugin  name
 	 *
 	 * @return  PlgFabrik_Element[]	matched element models
+	 *
+	 * @sice 4.0
 	 */
 	public function getElementsOfType($plugin)
 	{
@@ -10043,6 +10037,8 @@ class ListModel extends BaseModel
 	 * @param   bool   $onlyPublished  Return only published elements
 	 *
 	 * @return  PlgFabrik_Element[]	table element models
+	 *
+	 * @since 4.0
 	 */
 	public function getElements($key = 0, $showInTable = true, $onlyPublished = true)
 	{
@@ -10112,6 +10108,8 @@ class ListModel extends BaseModel
 	 * Does the list need to include the slimbox js code
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function requiresSlimbox()
 	{
@@ -10147,6 +10145,8 @@ class ListModel extends BaseModel
 	 * Does the list need to include the slimbox js code
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function requiresSlideshow()
 	{
@@ -10172,21 +10172,11 @@ class ListModel extends BaseModel
 	}
 
 	/**
-	 * Get pluginManager (get reference to form's plugin manager
-	 *
-	 * @deprecated - use Worker::getPluginManager() instead since 3.0b
-	 *
-	 * @return  object  plugin manager model
-	 */
-	public function getPluginManager()
-	{
-		return Worker::getPluginManager();
-	}
-
-	/**
 	 * Called via advanced search to load in a given element filter
 	 *
 	 * @return string html for filter
+	 *
+	 * @since 4.0
 	 */
 	public function getAdvancedElementFilter()
 	{
@@ -10196,9 +10186,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get add button label
 	 *
-	 * @since   3.1rc1
-	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function addLabel()
 	{
@@ -10210,9 +10200,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get add button label
 	 *
-	 * @since   3.1rc1
-	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function addIcon()
 	{
@@ -10224,11 +10214,11 @@ class ListModel extends BaseModel
 	/**
 	 * Get view details button label
 	 *
-	 * @since   3.1rc1
-	 *
 	 * @param   object  &$row  active table row
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function viewLabel($row)
 	{
@@ -10243,9 +10233,9 @@ class ListModel extends BaseModel
 	 *
 	 * @param   object  $row  active table row
 	 *
-	 * @since   3.1rc1
-	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function editLabel($row)
 	{
@@ -10261,6 +10251,8 @@ class ListModel extends BaseModel
 	 * this means that table->faceted table->add will auto select the data you browsed on
 	 *
 	 * @return string  url
+	 *                 
+	 * @since 4.0
 	 */
 	public function getAddRecordLink()
 	{
@@ -10318,7 +10310,7 @@ class ListModel extends BaseModel
 			$formModel = $this->getFormModel();
 			$qs['option'] = 'com_' . $package;
 
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				$qs['task'] = 'form.view';
 			}
@@ -10358,7 +10350,7 @@ class ListModel extends BaseModel
 		$qs = implode('&', $qsArgs);
 		$qs = $w->parseMessageForPlaceHolder($qs, $_REQUEST);
 
-		return !empty($url) ? JRoute::_($url . '?' . $qs) : JRoute::_('index.php?' . $qs);
+		return !empty($url) ? Route::_($url . '?' . $qs) : Route::_('index.php?' . $qs);
 	}
 
 	/**
@@ -10367,6 +10359,8 @@ class ListModel extends BaseModel
 	 * @param   array  &$srcs  JS scripts to load
 	 *
 	 * @return  string  script
+	 *
+	 * @since 4.0
 	 */
 	public function getElementJs(&$srcs)
 	{
@@ -10400,6 +10394,8 @@ class ListModel extends BaseModel
 	 * Return the url for the list form - this url is used when submitting searches, and ordering
 	 *
 	 * @return  string  action url
+	 *
+	 * @since 4.0
 	 */
 	public function getTableAction()
 	{
@@ -10510,7 +10506,7 @@ class ListModel extends BaseModel
 		$action = preg_replace("/limitstart{$this->getId()}=(\d+)?(&amp;|)/", '', $action);
 		$action = FStringHelper::removeQSVar($action, 'fabrik_incsessionfilters');
 		$action = FStringHelper::rtrimword($action, '&');
-		$this->tableAction = JRoute::_($action);
+		$this->tableAction = Route::_($action);
 
 		return $this->tableAction;
 	}
@@ -10522,6 +10518,8 @@ class ListModel extends BaseModel
 	 * @param   string  $whereClause  Where clause (WITHOUT prepended where/and etc)
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function setPluginQueryWhere($pluginName, $whereClause)
 	{
@@ -10554,6 +10552,8 @@ class ListModel extends BaseModel
 	 * @param   string  $pluginName  Plugin name
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function unsetPluginQueryWhere($pluginName)
 	{
@@ -10570,6 +10570,8 @@ class ListModel extends BaseModel
 	 * otherwise do
 	 *
 	 * @return  string	clear filter button link
+	 *
+	 * @since 4.0
 	 */
 	public function getClearButton()
 	{
@@ -10593,7 +10595,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get the join display mode - merge, normal or reduce
 	 *
-	 * @return  string	1 if merge, 2 if reduce, 0 if no merge or reduce
+	 * @return  int	1 if merge, 2 if reduce, 0 if no merge or reduce
+	 *
+	 * @since 4.0
 	 */
 	public function mergeJoinedData()
 	{
@@ -10622,6 +10626,8 @@ class ListModel extends BaseModel
 	 * @param   array  &$data  to pre-format
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function preFormatFormJoins(&$data)
 	{
@@ -10665,6 +10671,8 @@ class ListModel extends BaseModel
 	 * @param  bool  $step  False return dot syntax, true uses ___
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function getPrimaryKey($step = false)
 	{
@@ -10691,6 +10699,8 @@ class ListModel extends BaseModel
 	 * @param   array  &$data  list data
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function formatForJoins(&$data)
 	{
@@ -10951,6 +10961,8 @@ class ListModel extends BaseModel
 	 * which does not store in db, gets its list model)
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function noTable()
 	{
@@ -10967,6 +10979,8 @@ class ListModel extends BaseModel
 	 * @param   string  $value  value
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function storeCell($rowId, $key, $value)
 	{
@@ -10992,6 +11006,8 @@ class ListModel extends BaseModel
 	 * @param   string  $dir    -1/1 etc
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function incrementCell($rowId, $key, $dir)
 	{
@@ -11007,12 +11023,14 @@ class ListModel extends BaseModel
 	 * Set model sate
 	 *
 	 * @return  void
+	 *              
+	 * @since 4.0
 	 */
 	protected function populateState()
 	{
 		$input = $this->app->input;
 
-		if (!$this->app->isAdmin())
+		if (!$this->app->isClient('administrator'))
 		{
 			// Load the menu item / component parameters.
 			$params = $this->app->getParams();
@@ -11035,6 +11053,8 @@ class ListModel extends BaseModel
 	 * Get the output format
 	 *
 	 * @return  string	Outputformat
+	 *
+	 * @since 4.0
 	 */
 	public function getOutPutFormat()
 	{
@@ -11047,6 +11067,8 @@ class ListModel extends BaseModel
 	 * @param   string  $f  Format html/pdf/raw/csv
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setOutputFormat($f)
 	{
@@ -11064,6 +11086,8 @@ class ListModel extends BaseModel
 	 *                               if left blank then all rows are updated.
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 
 	public function updateRows($ids, $col, $val, $update = '', $joinPkVal = null)
@@ -11166,6 +11190,8 @@ class ListModel extends BaseModel
 	 * @param   string  $val     Val to set to
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function updateRow($id, $col, $val)
 	{
@@ -11191,6 +11217,8 @@ class ListModel extends BaseModel
 	 * unset a series of model properties
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function reset()
 	{
@@ -11221,6 +11249,8 @@ class ListModel extends BaseModel
 	 * make sure a new getData query wil recreate data and query from scratch
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function resetQuery()
 	{
@@ -11232,6 +11262,8 @@ class ListModel extends BaseModel
 	 * Get the lists <table> class
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function htmlClass()
 	{
@@ -11264,9 +11296,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get the table template
 	 *
-	 * @since 3.0
-	 *
 	 * @return string template name
+	 *                
+	 * @since 4.0
 	 */
 	public function getTmpl()
 	{
@@ -11277,7 +11309,7 @@ class ListModel extends BaseModel
 			$params = $this->getParams();
 			$document = Factory::getDocument();
 
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				$this->tmpl = $input->get('layout', $params->get('admin_template'));
 			}
@@ -11315,20 +11347,12 @@ class ListModel extends BaseModel
 			}
 
 			// Migration test
-			if (Worker::j3())
-			{
-				$modFolder = JPATH_SITE . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $this->tmpl;
-				$componentFolder = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $this->tmpl;
-			}
-			else
-			{
-				$modFolder = JPATH_SITE . '/templates/' . $this->app->getTemplate() . '/themes/' . $this->tmpl;
-				$componentFolder = JPATH_SITE . '/components/com_fabrik/views/list/tmpl25/' . $this->tmpl;
-			}
+			$modFolder = JPATH_SITE . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $this->tmpl;
+			$componentFolder = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $this->tmpl;
 
-			if (!JFolder::exists($componentFolder) && !JFolder::exists($modFolder))
+			if (!Folder::exists($componentFolder) && !Folder::exists($modFolder))
 			{
-				$this->tmpl = Worker::j3() ? 'bootstrap' : 'default';
+				$this->tmpl = 'bootstrap';
 			}
 		}
 
@@ -11339,6 +11363,8 @@ class ListModel extends BaseModel
 	 * Set the lists elements' tempate to that of the list's
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function setElementTmpl()
 	{
@@ -11369,6 +11395,8 @@ class ListModel extends BaseModel
 	 * Short cut to test if the lists connection is the same as the Joomla database
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function inJDb()
 	{
@@ -11378,14 +11406,14 @@ class ListModel extends BaseModel
 	/**
 	 * Checks : J template html override css file then fabrik list tmpl template css file. Including them if found
 	 *
-	 * @since 3.0 loads lists's css files
-	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function getListCss()
 	{
 		$tmpl = $this->getTmpl();
-		$jTmplFolder = Worker::j3() ? 'tmpl' : 'tmpl25';
+		$jTmplFolder = 'tmpl';
 
 		// Check for a form template file (code moved from view)
 		if ($tmpl != '')
@@ -11432,6 +11460,8 @@ class ListModel extends BaseModel
 	 * Get a unique list identifier (enables the same list to be rendered in component and module at same time)
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getRenderContext()
 	{
@@ -11450,6 +11480,8 @@ class ListModel extends BaseModel
 	 * @param   int  $id  Module/component list id
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setRenderContext($id = null)
 	{
@@ -11476,7 +11508,7 @@ class ListModel extends BaseModel
 		}
 
 		// $$$ rob if admin filter task = filter and not list.filter
-		if ($task == 'filter' || ($this->app->isAdmin() && $input->get('task') == 'filter'))
+		if ($task == 'filter' || ($this->app->isClient('administrator') && $input->get('task') == 'filter'))
 		{
 			$this->setRenderContextFromRequest();
 		}
@@ -11507,6 +11539,8 @@ class ListModel extends BaseModel
 	 * request array
 	 *
 	 * @return  string	listref
+	 *
+	 * @since 4.0
 	 */
 
 	protected function setRenderContextFromRequest()
@@ -11531,12 +11565,14 @@ class ListModel extends BaseModel
 	 * Get lists group by headings
 	 *
 	 * @return   array  heading names
+	 *
+	 * @since 4.0
 	 */
 	public function getGroupByHeadings()
 	{
 		$formModel = $this->getFormModel();
 		$input = $this->app->input;
-		$base = JURI::getInstance();
+		$base = Uri::getInstance();
 		$base = $base->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
 		$qs = $input->server->get('QUERY_STRING', '', 'string');
 
@@ -11590,9 +11626,9 @@ class ListModel extends BaseModel
 	/**
 	 * Get a list of elements to export in the csv file.
 	 *
-	 * @since 3.0b
-	 *
 	 * @return array full element names.
+	 *
+	 * @since 4.0
 	 */
 	public function getCsvFields()
 	{
@@ -11638,6 +11674,8 @@ class ListModel extends BaseModel
 	 * Helper function for view to determine if filters should be shown
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function getShowFilters()
 	{
@@ -11652,6 +11690,8 @@ class ListModel extends BaseModel
 	 * Get the number of buttons that are rendered for the list
 	 *
 	 * @return  number
+	 *
+	 * @since 4.0
 	 */
 	protected function getButtonCount()
 	{
@@ -11664,6 +11704,8 @@ class ListModel extends BaseModel
 	 * Helper view function to determine if any buttons are shown
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function getHasButtons()
 	{
@@ -11687,9 +11729,9 @@ class ListModel extends BaseModel
 	 * @param   string  $colId  column name to order on
 	 * @param   string  $where  additional where query to limit ordering to a particular subset of records
 	 *
-	 * @since   3.0.5
-	 *
 	 * @return  bool
+	 *              
+	 * @since 4.0
 	 */
 	public function reorder($colId, $where = '')
 	{
@@ -11745,35 +11787,22 @@ class ListModel extends BaseModel
 	 * @param   array  &$scripts  reference: js script srcs to load in the head
 	 *
 	 * @return  null
+	 *
+	 * @since 4.0
 	 */
 	public function getCustomJsAction(&$scripts)
 	{
 		$scriptKey = 'list_' . $this->getId();
 
-		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/table_' . $this->getId() . '.js'))
+		if (File::exists(COM_FABRIK_FRONTEND . '/js/table_' . $this->getId() . '.js'))
 		{
 			$scripts[$scriptKey] = 'components/com_fabrik/js/table_' . $this->getId() . '.js';
 		}
 
-		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/list_' . $this->getId() . '.js'))
+		if (File::exists(COM_FABRIK_FRONTEND . '/js/list_' . $this->getId() . '.js'))
 		{
 			$scripts[$scriptKey] = 'components/com_fabrik/js/list_' . $this->getId() . '.js';
 		}
-	}
-
-	/**
-	 * When saving an element it can effect the list parameters, update them here.
-	 *
-	 * @param   object  $elementModel  element model
-	 *
-	 * @deprecated since 3.0b
-	 *
-	 * @since 3.0.6
-	 *
-	 * @return  void
-	 */
-	public function updateFromElement($elementModel)
-	{
 	}
 
 	/**
@@ -11786,6 +11815,8 @@ class ListModel extends BaseModel
 	 * @param   bool  $format_all  optional arg to set format
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function formatAll($format_all = null)
 	{
@@ -11801,10 +11832,10 @@ class ListModel extends BaseModel
 	 * Copy rows
 	 *
 	 * @param   mixed  $ids  array or string of row ids to copy
-	 *
-	 * @since	3.0.6
-	 *
+	 *                       
 	 * @return  bool	all rows copied (true) or false if a row copy fails.
+	 *               
+	 * @since 4.0
 	 */
 	public function copyRows($ids)
 	{
@@ -11837,6 +11868,8 @@ class ListModel extends BaseModel
 	 * Created to call from GetCsvFields()
 	 *
 	 * @return   array  array of element IDs
+	 *                  
+	 * @since 4.0
 	 */
 	public function getAllPublishedListElementIDs()
 	{
@@ -11864,6 +11897,8 @@ class ListModel extends BaseModel
 	 * @param   int   $groupid         Only return elements in this group
 	 *
 	 * @return  bool  array of element models
+	 *                
+	 * @since 4.0
 	 */
 	public function getAlwaysRenderElements($not_shown_only = true, $groupId = 0)
 	{
@@ -11899,6 +11934,8 @@ class ListModel extends BaseModel
 	 * Does the list have any 'always render' elements?
 	 *
 	 * @return   bool
+	 *               
+	 * @since 4.0
 	 */
 	public function hasAlwaysRenderElements()
 	{
@@ -11911,6 +11948,8 @@ class ListModel extends BaseModel
 	 * Get the name of the tab field
 	 *
 	 * @return string  tablename___elementname
+	 *                 
+	 * @since 4.0
 	 */
 	private function getTabField()
 	{
@@ -11928,6 +11967,8 @@ class ListModel extends BaseModel
 	 * Get tab categories and merge as necessary to get down to tab limit
 	 *
 	 * @return   array  Tabs
+	 *
+	 * @since 4.0
 	 */
 	private function getTabCategories()
 	{
@@ -12088,6 +12129,8 @@ class ListModel extends BaseModel
 	 * Set the List's tab HTML
 	 *
 	 * @return  array  Tabs
+	 *
+	 * @since 4.0
 	 */
 	public function loadTabs()
 	{
@@ -12102,7 +12145,7 @@ class ListModel extends BaseModel
 		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$listId = $this->getId();
 		$tabsField = $this->getTabField();
-		if ($this->app->isSite()) {
+		if ($this->app->isClient('site')) {
 			$menu = "menu". $this->app->getMenu()->getActive()->id;
 		} else {
 			$menu = "admin".Factory::getUser()->id;
@@ -12113,7 +12156,7 @@ class ListModel extends BaseModel
 
 		/* get the default rows per page, menu then table then system, whichever is first */
 		$defaultRowsPerPage = "";
-		if ($this->app->isSite()) {
+		if ($this->app->isClient('site')) {
 			$defaultRowsPerPage = $this->app->getMenu()->getActive()->params->get('rows_per_page');
 		}
 		if (empty($defaultRowsPerPage)) {
@@ -12124,7 +12167,7 @@ class ListModel extends BaseModel
 		}
 
 		/* get the various current uri parts */
-		$uri = JURI::getInstance();
+		$uri = Uri::getInstance();
 		$uriActiveTab = $uri->getVar($tabsField, null);
 		/* If the tabsField is an array then we are showing merged tabs, we need the merged tabs names for the activeTabName */
 		if (is_array($uriActiveTab)) {
@@ -12243,6 +12286,8 @@ class ListModel extends BaseModel
 	 * @param   string  $name  Element full name
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function isUserDoElement($name)
 	{
@@ -12270,9 +12315,9 @@ class ListModel extends BaseModel
 	/**
 	 * Build array for list toggle column feature
 	 *
-	 * @since 3.1rc3
-	 *
 	 * @return array
+	 *
+	 * @since 4.0
 	 */
 	public function toggleCols()
 	{
@@ -12319,9 +12364,9 @@ class ListModel extends BaseModel
 	/**
 	 * Set the table label (title), overwrites table->label
 	 *
-	 * @since 3.4
-	 *
 	 * @param  string  $label  label to use for list
+	 *                         
+	 * @since 4.0
 	 */
 	public function setLabel($label)
 	{
@@ -12331,9 +12376,9 @@ class ListModel extends BaseModel
 	/**
 	 * Set the table label (title), overwrites table->label
 	 *
-	 * @since 3.4
-	 *
 	 * @param  string  $label  label to use for list
+	 *                         
+	 * @since 4.0
 	 */
 	public function getLabel()
 	{
@@ -12347,6 +12392,8 @@ class ListModel extends BaseModel
 	 * @param   array   $paths  Optional paths to add as includes
 	 *
 	 * @return LayoutFile
+	 *
+	 * @since 4.0
 	 */
 	public function getLayout($name, $paths = array(), $options = array())
 	{

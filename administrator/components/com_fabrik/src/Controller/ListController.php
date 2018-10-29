@@ -16,12 +16,14 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel as AdminListModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
@@ -89,7 +91,7 @@ class ListController extends AbstractFormController
 	{
 		$input = $this->input;
 		$cid   = $input->get('cid', array(0), 'array');
-		$model = BaseDatabaseModel::getInstance('list', 'FabrikFEModel');
+		$model = FabModel::getInstance(ListModel::class);
 
 		if (count($cid) > 0)
 		{
@@ -143,7 +145,7 @@ class ListController extends AbstractFormController
 			$cid = $input->getInt('listid', $cid);
 
 			// Grab the model and set its id
-			$model = BaseDatabaseModel::getInstance('List', 'FabrikFEModel');
+			$model = FabModel::getInstance(ListModel::class);
 			$model->setState('list.id', $cid);
 		}
 
@@ -191,7 +193,7 @@ class ListController extends AbstractFormController
 		$document = Factory::getDocument();
 		$input    = $this->input;
 		$cid      = $input->get('cid', array(0), 'array');
-		$model    = BaseDatabaseModel::getInstance('List', 'FabrikFEModel');
+		$model    = FabModel::getInstance(ListModel::class);
 		$model->setState('list.id', $cid[0]);
 		$formModel  = $model->getFormModel();
 		$viewType   = $document->getType();
@@ -217,7 +219,7 @@ class ListController extends AbstractFormController
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$input = $this->input;
-		$model = BaseDatabaseModel::getInstance('List', 'FabrikFEModel');
+		$model = FabModel::getInstance(ListModel::class);
 		$id    = $input->getInt('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
@@ -254,7 +256,7 @@ class ListController extends AbstractFormController
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$input = $this->input;
-		$model = BaseDatabaseModel::getInstance('List', 'FabrikFEModel');
+		$model = FabModel::getInstance(ListModel::class);
 		$id    = $input->get('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
@@ -277,7 +279,7 @@ class ListController extends AbstractFormController
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$input  = $this->input;
-		$model  = BaseDatabaseModel::getInstance('List', 'FabrikFEModel');
+		$model  = FabModel::getInstance(ListModel::class);
 		$listId = $input->getInt('listid');
 		$model->setId($listId);
 		$ids        = $input->get('ids', array(), 'array');
@@ -324,7 +326,7 @@ class ListController extends AbstractFormController
 	 */
 	public function doEmpty()
 	{
-		$model = $this->getModel('list', 'FabrikFEModel');
+		$model = $this->getModel(ListModel::class);
 		$input = $this->input;
 		$model->truncate();
 		$listId = $input->getInt('listid');
@@ -344,7 +346,7 @@ class ListController extends AbstractFormController
 		$input = $this->input;
 		$cid   = $input->get('cid', array(0), 'array');
 		$cid   = $cid[0];
-		$model = $this->getModel('list', 'FabrikFEModel');
+		$model = $this->getModel(ListModel::class);
 		$model->setId($input->getInt('listid', $cid));
 
 		// $$$ rob need to ask the model to get its data here as if the plugin calls $model->getData
@@ -393,7 +395,7 @@ class ListController extends AbstractFormController
 		if ((int) $data['id'] === 0 && ArrayHelper::getValue($data, 'db_table_name', '') === '')
 		{
 			$viewType = Factory::getDocument()->getType();
-			$model    = BaseDatabaseModel::getInstance('List', 'FabrikAdminModel');
+			$model    = FabModel::getInstance(AdminListModel::class);
 
 			$view = $this->getView($this->view_item, $viewType, '');
 			$view->setModel($model, true);

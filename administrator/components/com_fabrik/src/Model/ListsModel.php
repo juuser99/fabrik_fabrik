@@ -149,24 +149,6 @@ class ListsModel extends FabListModel
 	}
 
 	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string $type   The table type to instantiate
-	 * @param   string $prefix A prefix for the table class name. Optional.
-	 * @param   array  $config Configuration array for model. Optional.
-	 *
-	 * @return  JTable    A database object
-	 *
-	 * @since    4.0
-	 */
-	public function getTable($type = 'View', $prefix = 'FabrikTable', $config = array())
-	{
-		$config['dbo'] = Worker::getDbo();
-
-		return FabTable::getInstance($type, $prefix, $config);
-	}
-
-	/**
 	 * Method to auto-populate the model state.
 	 *
 	 * Note. Calling getState in this method will result in recursion.

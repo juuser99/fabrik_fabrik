@@ -26,11 +26,11 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Filter\OutputFilter;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Profiler\Profiler;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\Component\Fabrik\Administrator\Table\FormTable;
 use Joomla\Component\Fabrik\Administrator\Table\GroupTable;
@@ -46,7 +46,7 @@ use Fabrik\Helpers\Uploader;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormModel extends FabModel
+class FormModel extends FabSiteModel
 {
 	/**
 	 * id
@@ -1069,7 +1069,7 @@ class FormModel extends FabModel
 		{
 			$this->groups = array();
 			$listModel = $this->getListModel();
-			$groupModel = BaseDatabaseModel::getInstance(GroupModel::class);
+			$groupModel = FabModel::getInstance(GroupModel::class);
 			$groupData = $this->getPublishedGroups();
 
 			foreach ($groupData as $id => $groupD)
@@ -1080,7 +1080,7 @@ class FormModel extends FabModel
 
 				// $$ rob 25/02/2011 this was doing a query per group - pointless as we bind $groupD to $row afterwards
 				// $row = $thisGroup->getGroup();
-				$row = FabTable::getInstance(GroupTable::class);
+				$row = $this->getTable(GroupTable::class);
 				$row->bind($groupD);
 				$thisGroup->setGroup($row);
 
@@ -1349,7 +1349,7 @@ class FormModel extends FabModel
 		$form = $this->getForm();
 		$pluginManager = Worker::getPluginManager();
 
-		$sessionModel = BaseDatabaseModel::getInstance(FormSessionModel::class);
+		$sessionModel = FabModel::getInstance(FormSessionModel::class);
 		$sessionModel->setFormId($this->getId());
 		$sessionModel->setRowId($this->rowId);
 		/* $$$ rob rowId can be updated by jUser plugin so plugin can use check (for new/edit)
@@ -2154,7 +2154,7 @@ class FormModel extends FabModel
 	{
 		if (!isset($this->listModel))
 		{
-			$this->listModel = BaseDatabaseModel::getInstance(ListModel::class);
+			$this->listModel = FabModel::getInstance(ListModel::class);
 			$item = $this->getForm();
 			$this->listModel->loadFromFormId($item->id);
 			$this->listModel->setFormModel($this);
@@ -2403,7 +2403,7 @@ class FormModel extends FabModel
 			return true;
 		}
 
-		$pluginManager = BaseDatabaseModel::getInstance(PluginManagerModel::class);
+		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
 		$pluginManager->getPlugInGroup('validationrule');
 
 		$post = $this->setFormData();
@@ -3839,7 +3839,7 @@ class FormModel extends FabModel
 		}
 
 		$params = $this->getParams();
-		$this->sessionModel = BaseDatabaseModel::getInstance(FormSessionModel::class);
+		$this->sessionModel = FabModel::getInstance(FormSessionModel::class);
 		$this->sessionModel->setFormId($this->getId());
 		$this->sessionModel->setRowId($this->rowId);
 		$useCookie = (int) $params->get('multipage_save', 0) === 2 ? true : false;
@@ -4606,7 +4606,7 @@ class FormModel extends FabModel
 		}
 
 		$listModel = $this->getListModel();
-		$referringTable = BaseDatabaseModel::getInstance(ListModel::class);
+		$referringTable = FabModel::getInstance(ListModel::class);
 
 		// $$$ rob - not sure that referring_table is anything other than the form's table id
 		// but for now just defaulting to that if no other variable found (e.g when links in sef urls)

@@ -29,7 +29,7 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik
  * @since       3.3.4
  */
-class ListAdvancedSearchModel extends FabModel
+class ListAdvancedSearchModel extends FabSiteModel
 {
 	/**
 	 * @var ListModel

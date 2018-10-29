@@ -33,7 +33,7 @@ use JMail;
 use JMailHelper;
 use JModelLegacy;
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
 use Joomla\Database\DatabaseDriver;
 use JPath;
@@ -1929,7 +1929,7 @@ class Worker
 			// @todo - remove once J4 refactoring complete
 			if (!self::$j4PluginManager)
 			{
-				self::$j4PluginManager = BaseDatabaseModel::getInstance(PluginManagerModel::class);
+				self::$j4PluginManager = FabModel::getInstance(PluginManagerModel::class);
 			}
 
 			return self::$j4PluginManager;

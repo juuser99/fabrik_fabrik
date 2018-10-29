@@ -17,9 +17,8 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Table\Table;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Table\FormGroupTable;
 use Joomla\Component\Fabrik\Administrator\Table\GroupTable;
 use Joomla\Registry\Registry;
@@ -32,7 +31,7 @@ use Joomla\String\StringHelper;
  * @package  Fabrik
  * @since    3.0
  */
-class GroupModel extends FabModel
+class GroupModel extends FabSiteModel
 {
 	/**
 	 * Element plugins
@@ -241,7 +240,7 @@ class GroupModel extends FabModel
 	{
 		if (is_null($this->group))
 		{
-			$this->group = FabTable::getInstance(GroupTable::class);
+			$this->group = $this->getTable(GroupTable::class);
 			$this->group->load($this->getId());
 		}
 
@@ -302,7 +301,7 @@ class GroupModel extends FabModel
 		{
 			$formIds    = $this->getFormsIamIn();
 			$formId     = empty($formIds) ? 0 : $formIds[0];
-			$this->form = BaseDatabaseModel::getInstance(FormModel::class);
+			$this->form = FabModel::getInstance(FormModel::class);
 			$this->form->setId($formId);
 			$this->form->getForm();
 			$this->form->getlistModel();
@@ -841,7 +840,7 @@ class GroupModel extends FabModel
 
 		if (is_null($this->joinModel))
 		{
-			$this->joinModel = BaseDatabaseModel::getInstance(JoinModel::class);
+			$this->joinModel = FabModel::getInstance(JoinModel::class);
 			$this->joinModel->setId($group->join_id);
 			$js = $this->getListModel()->getJoins();
 
@@ -1265,7 +1264,7 @@ class GroupModel extends FabModel
 
 		// Create form group
 		$formId              = isset($this->_newFormid) ? $this->_newFormid : $this->getFormModel()->getId();
-		$formGroup           = FabTable::getInstance(FormGroupTable::class);
+		$formGroup           = $this->getTable(FormGroupTable::class);
 		$formGroup->form_id  = $formId;
 		$formGroup->group_id = $group->id;
 		$formGroup->ordering = 999999;

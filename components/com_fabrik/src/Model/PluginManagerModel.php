@@ -25,7 +25,6 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Profiler\Profiler;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\String\StringHelper;
 
 /**
@@ -35,7 +34,7 @@ use Joomla\String\StringHelper;
  * @since    4.0
  */
 
-class PluginManagerModel extends FabModel
+class PluginManagerModel extends FabSiteModel
 {
 	/**
 	 * plugins
@@ -582,7 +581,7 @@ class PluginManagerModel extends FabModel
 	 */
 	public function getPluginFromId($id, $type = 'Element')
 	{
-		$el = FabTable::getInstance($type, 'FabrikTable');
+		$el = $this->getTable($type, 'FabrikTable');
 		$el->load($id);
 		$o = $this->loadPlugIn($el->plugin, $type);
 		$o->setId($id);

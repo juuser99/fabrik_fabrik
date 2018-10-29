@@ -19,8 +19,8 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Table\ListTable;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
@@ -31,7 +31,7 @@ use Joomla\String\StringHelper;
  * @package  Fabrik
  * @since   4.0
  */
-class ListFilterModel extends FabModel
+class ListFilterModel extends FabSiteModel
 {
 	/**
 	 * Request
@@ -961,7 +961,7 @@ class ListFilterModel extends FabModel
 
 			if ($fromFormId != $formModel->get('id'))
 			{
-				$fromForm = BaseDatabaseModel::getInstance(FormModel::class);
+				$fromForm = FabModel::getInstance(FormModel::class);
 				$fromForm->setId($fromFormId);
 				//$fromFormParams = $fromForm->getParams();
 				/**

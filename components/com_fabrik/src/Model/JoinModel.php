@@ -26,7 +26,7 @@ use \Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class JoinModel extends FabModel
+class JoinModel extends FabSiteModel
 {
 	/**
 	 * Join table
@@ -115,7 +115,7 @@ class JoinModel extends FabModel
 	/**
 	 * Get Join
 	 *
-	 * @return  FabrikTableJoin
+	 * @return  JoinTable
 	 *
 	 * @since 4.0
 	 */
@@ -123,7 +123,7 @@ class JoinModel extends FabModel
 	{
 		if (!isset($this->join))
 		{
-			$this->join = FabTable::getInstance(JoinTable::class);
+			$this->join = $this->getTable(JoinTable::class);
 
 			if (isset($this->data))
 			{
@@ -187,7 +187,7 @@ class JoinModel extends FabModel
 	{
 		if (!isset($this->join))
 		{
-			$this->join = FabTable::getInstance(JoinTable::class);
+			$this->join = $this->getTable(JoinTable::class);
 			$this->join->load(array($key => $id));
 			$this->paramsType($this->join);
 		}
