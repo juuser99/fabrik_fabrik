@@ -12,8 +12,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
 ?>
-<?php echo JHtml::_('tabs.panel',FText::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS'), 'list-rules-panel');?>
+<?php echo HTMLHelper::_('tabs.panel',Text::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS'), 'list-rules-panel');?>
 <fieldset class="adminform">
 	<ul class="adminformlist">
 	<?php

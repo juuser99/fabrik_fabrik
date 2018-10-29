@@ -173,9 +173,9 @@ class HtmlView extends BaseHtmlView
 		$srcs['Fabrik']        = Html::mediaFile('fabrik.js');
 		$srcs['NameSpace']     = 'administrator/components/com_fabrik/views/namespace.js';
 		$srcs['PluginManager'] = 'administrator/components/com_fabrik/views/pluginmanager.js';
-		$srcs['AdminList']     = 'administrator/components/com_fabrik/views/list/tmpl/adminlist.js';
 		$srcs['ListForm']      = 'administrator/components/com_fabrik/views/listform.js';
-		$srcs['adminFilters']  = 'administrator/components/com_fabrik/views/list/tmpl/admin-filters.js';
+		$srcs['AdminList']     = 'administrator/components/com_fabrik/tmpl/list/js/adminlist.js';
+		$srcs['adminFilters']  = 'administrator/components/com_fabrik/tmpl/list/js/admin-filters.js';
 
 		$shim                              = array();
 		$dep                               = new \stdClass;

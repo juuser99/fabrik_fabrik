@@ -13,12 +13,15 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\String\StringHelper;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Fabrik\Helpers\Html;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-JHTML::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
-JHtml::_('behavior.tooltip');
-FabrikHelperHTML::formvalidation();
-JHtml::_('behavior.keepalive');
+HtmlHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+HtmlHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
+HtmlHelper::_('behavior.tooltip');
+Html::formvalidation();
+HtmlHelper::_('behavior.keepalive');
 
 ?>
 
@@ -33,7 +36,7 @@ JHtml::_('behavior.keepalive');
 				window.fireEvent('form.save');
 				Joomla.submitform(task, document.getElementById('adminForm'));
 			} else {
-				window.alert('<?php echo $this->escape(FText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
+				window.alert('<?php echo $this->escape(Text::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 			}
 		});
 	}
@@ -45,39 +48,39 @@ JHtml::_('behavior.keepalive');
 	<?php
 
 $panels = array(
-	array('heading'=>FText::_('COM_FABRIK_DETAILS'),
+	array('heading'=>Text::_('COM_FABRIK_DETAILS'),
 		'fieldset'=>array('main', 'details2')),
 
-	array('heading'=>FText::_('COM_FABRIK_FILTERS'),
+	array('heading'=>Text::_('COM_FABRIK_FILTERS'),
 		'fieldset'=>array('main_filter', 'filters')),
 
-	array('heading'=>FText::_('COM_FABRIK_NAVIGATION'),
+	array('heading'=>Text::_('COM_FABRIK_NAVIGATION'),
 		'fieldset'=>array('main_nav', 'navigation')),
 
-	array('heading'=>FText::_('COM_FABRIK_LAYOUT'),
+	array('heading'=>Text::_('COM_FABRIK_LAYOUT'),
 		'fieldset'=>array('main_template', 'layout')),
 
-	array('heading'=>FText::_('COM_FABRIK_PDF'),
+	array('heading'=>Text::_('COM_FABRIK_PDF'),
 		'fieldset'=>array('pdf')),
 
-	array('heading'=>FText::_('COM_FABRIK_LINKS'),
+	array('heading'=>Text::_('COM_FABRIK_LINKS'),
 		'fieldset' => array('links', 'links2', 'links-fabrik30x')),
 
-	array('heading'=>FText::_('COM_FABRIK_TABS'),
+	array('heading'=>Text::_('COM_FABRIK_TABS'),
 		'fieldset'=>array('tabs')),
 
-	array('heading'=>FText::_('COM_FABRIK_NOTES'),
+	array('heading'=>Text::_('COM_FABRIK_NOTES'),
 		'fieldset'=>array('notes')),
 
-	array('heading'=>FText::_('COM_FABRIK_ADVANCED'),
+	array('heading'=>Text::_('COM_FABRIK_ADVANCED'),
 		'fieldset'=>array('advanced'))
 
 );
 
-echo JHtml::_('sliders.start','list-sliders-'.$this->item->id, array('useCookie'=>1));
+echo HtmlHelper::_('sliders.start','list-sliders-'.$this->item->id, array('useCookie'=>1));
 
 foreach ($panels as $panel) {
-	echo JHtml::_('sliders.panel',$panel['heading'], $panel['fieldset'][0].-'details');
+	echo HtmlHelper::_('sliders.panel',$panel['heading'], $panel['fieldset'][0].-'details');
 			?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
@@ -94,19 +97,19 @@ foreach ($panels as $panel) {
 				</ul>
 			</fieldset>
 <?php }
-echo JHtml::_('sliders.end');
+echo HtmlHelper::_('sliders.end');
 ?>
 
 	</div>
 	<div class="width-60 fltrt">
-		<?php echo JHtml::_('tabs.start', 'list-tabs-'.(int) $this->item->id, array('useCookie'=>1));
+		<?php echo HtmlHelper::_('tabs.start', 'list-tabs-'.(int) $this->item->id, array('useCookie'=>1));
 		echo $this->loadTemplate('data');
 		echo $this->loadTemplate('publishing');
 		echo $this->loadTemplate('plugins');
 		echo $this->loadTemplate('rules');
-		echo JHtml::_('tabs.end'); ?>
+		echo HtmlHelper::_('tabs.end'); ?>
 	</div>
 
 	<input type="hidden" name="task" value="" />
-	<?php echo JHtml::_('form.token'); ?>
+	<?php echo HtmlHelper::_('form.token'); ?>
 </form>

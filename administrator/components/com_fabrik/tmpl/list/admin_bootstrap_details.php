@@ -12,10 +12,13 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-?>
-<?php echo JHtml::_('bootstrap.startTabSet', 'detailsTabs', array('active' => 'details-publishing')); ?>
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
-<?php echo JHtml::_('bootstrap.addTab', 'detailsTabs', 'details-publishing', JText::_('COM_FABRIK_TEXT')); ?>
+?>
+<?php echo HtmlHelper::_('bootstrap.startTabSet', 'detailsTabs', array('active' => 'details-publishing')); ?>
+
+<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-publishing', Text::_('COM_FABRIK_TEXT')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -30,9 +33,9 @@ defined('_JEXEC') or die('Restricted access');
         </fieldset>
     </div>
 </div>
-<?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
 
-<?php echo JHtml::_('bootstrap.addTab', 'detailsTabs', 'details-filters', JText::_('COM_FABRIK_FILTERS')); ?>
+<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-filters', Text::_('COM_FABRIK_FILTERS')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -47,9 +50,9 @@ defined('_JEXEC') or die('Restricted access');
         </fieldset>
     </div>
 </div>
-<?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
 
-<?php echo JHtml::_('bootstrap.addTab', 'detailsTabs', 'details-nav', JText::_('COM_FABRIK_NAVIGATION')); ?>
+<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-nav', Text::_('COM_FABRIK_NAVIGATION')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -64,9 +67,9 @@ defined('_JEXEC') or die('Restricted access');
         </fieldset>
     </div>
 </div>
-<?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
 
-<?php echo JHtml::_('bootstrap.addTab', 'detailsTabs', 'details-layout', JText::_('COM_FABRIK_LAYOUT')); ?>
+<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-layout', Text::_('COM_FABRIK_LAYOUT')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -78,7 +81,7 @@ defined('_JEXEC') or die('Restricted access');
         <fieldset class="form-horizontal">
             <div class="row-fluid">
                 <div class="col-md-6">
-                    <legend><?php echo FText::_('COM_FABRIK_TEMPLATES')?></legend>
+                    <legend><?php echo Text::_('COM_FABRIK_TEMPLATES')?></legend>
 				    <?php
 				    foreach ($this->form->getFieldset('main_template') as $this->field) :
 					    echo $this->loadTemplate('control_group');
@@ -89,7 +92,7 @@ defined('_JEXEC') or die('Restricted access');
 				    ?>
                 </div>
                 <div class="col-md-6">
-                    <legend><?php echo FText::_('COM_FABRIK_PDF')?></legend>
+                    <legend><?php echo Text::_('COM_FABRIK_PDF')?></legend>
 				    <?php
 				    foreach ($this->form->getFieldset('pdf') as $this->field) :
 					    echo $this->loadTemplate('control_group');
@@ -102,7 +105,7 @@ defined('_JEXEC') or die('Restricted access');
         <fieldset class="form-horizontal">
             <div class="row-fluid">
                 <div class="col-md-6">
-                    <legend><?php echo FText::_('COM_FABRIK_BOOTSTRAP_LIST_OPTIONS')?></legend>
+                    <legend><?php echo Text::_('COM_FABRIK_BOOTSTRAP_LIST_OPTIONS')?></legend>
 				    <?php
 				    foreach ($this->form->getFieldset('layout-bootstrap') as $this->field) :
 					    echo $this->loadTemplate('control_group');
@@ -110,7 +113,7 @@ defined('_JEXEC') or die('Restricted access');
 				    ?>
                 </div>
                 <div class="col-md-6">
-                    <legend><?php echo FText::_('COM_FABRIK_TABS')?></legend>
+                    <legend><?php echo Text::_('COM_FABRIK_TABS')?></legend>
 				    <?php
 				    foreach ($this->form->getFieldset('tabs') as $this->field) :
 					    echo $this->loadTemplate('control_group');
@@ -122,9 +125,9 @@ defined('_JEXEC') or die('Restricted access');
 
     </div>
 </div>
-<?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
 
-<?php echo JHtml::_('bootstrap.addTab', 'detailsTabs', 'details-link', JText::_('COM_FABRIK_LINKS')); ?>
+<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-link', Text::_('COM_FABRIK_LINKS')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -139,9 +142,9 @@ defined('_JEXEC') or die('Restricted access');
         </fieldset>
     </div>
 </div>
-<?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
 
-<?php echo JHtml::_('bootstrap.addTab', 'detailsTabs', 'details-notes', JText::_('COM_FABRIK_NOTES')); ?>
+<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-notes', Text::_('COM_FABRIK_NOTES')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -152,9 +155,9 @@ defined('_JEXEC') or die('Restricted access');
         </fieldset>
     </div>
 </div>
-<?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
 
-<?php echo JHtml::_('bootstrap.addTab', 'detailsTabs', 'details-advanced', JText::_('COM_FABRIK_ADVANCED')); ?>
+<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-advanced', Text::_('COM_FABRIK_ADVANCED')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -165,6 +168,6 @@ defined('_JEXEC') or die('Restricted access');
         </fieldset>
     </div>
 </div>
-<?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
 
-<?php echo JHtml::_('bootstrap.endTabSet'); ?>
+<?php echo HtmlHelper::_('bootstrap.endTabSet'); ?>

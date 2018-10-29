@@ -12,22 +12,26 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
 $form = $this->formTable;
 ?>
-<form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php Route::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 
-<h3><?php echo FText::_('COM_FABRIK_FORM'); ?></h3>
+<h3><?php echo Text::_('COM_FABRIK_FORM'); ?></h3>
 <a href="index.php?option=com_fabrik&amp;task=form.edit&amp;id=<?php echo $form->id; ?>">
 	<?php echo $form->label?>
 </a>
 <br />
-<h3><?php echo FText::_('COM_FABRIK_ELEMENTS'); ?></h3>
+<h3><?php echo Text::_('COM_FABRIK_ELEMENTS'); ?></h3>
 <table style="margin-bottom:50px;" class="adminlist table table-striped" width="100%">
 	<thead>
 		<tr>
-			<th class='title'><?php echo FText::_('COM_FABRIK_ELEMENT'); ?></th>
-			<th class='title'><?php echo FText::_('COM_FABRIK_LABEL'); ?></th>
-			<th class='title'><?php echo FText::_('COM_FABRIK_GROUP'); ?></th>
+			<th class='title'><?php echo Text::_('COM_FABRIK_ELEMENT'); ?></th>
+			<th class='title'><?php echo Text::_('COM_FABRIK_LABEL'); ?></th>
+			<th class='title'><?php echo Text::_('COM_FABRIK_GROUP'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -55,5 +59,5 @@ endforeach;?>
 </table>
 
  	<input type="hidden" name="task" value="" />
-	<?php echo JHtml::_('form.token'); ?>
+	<?php echo HTMLHelper::_('form.token'); ?>
 </form>

@@ -12,12 +12,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-JHTML::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
-JHtml::_('behavior.tooltip');
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+HTMLHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
+HTMLHelper::_('behavior.tooltip');
 //FabrikHelperHTML::formvalidation();
-JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.keepalive');
+HTMLHelper::_('behavior.formvalidator');
+HTMLHelper::_('behavior.keepalive');
 
 ?>
 <script type="text/javascript">
@@ -33,7 +36,7 @@ JHtml::_('behavior.keepalive');
                 window.fireEvent('form.save');
                 Joomla.submitform(task, document.getElementById('adminForm'));
             } else {
-                window.alert('<?php echo $this->escape(FText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
+                window.alert('<?php echo $this->escape(Text::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
             }
         });
     }
@@ -46,27 +49,27 @@ JHtml::_('behavior.keepalive');
             <ul class="nav flex-column"style="margin-top:40px">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#detailsX">
-						<?php echo FText::_('COM_FABRIK_DETAILS')?>
+						<?php echo Text::_('COM_FABRIK_DETAILS')?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#data">
-						<?php echo FText::_('COM_FABRIK_DATA')?>
+						<?php echo Text::_('COM_FABRIK_DATA')?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#publishing">
-						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_PUBLISHING_DETAILS')?>
+						<?php echo Text::_('COM_FABRIK_GROUP_LABEL_PUBLISHING_DETAILS')?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#access">
-						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS')?>
+						<?php echo Text::_('COM_FABRIK_GROUP_LABEL_RULES_DETAILS')?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tabplugins">
-						<?php echo FText::_('COM_FABRIK_GROUP_LABEL_PLUGINS_DETAILS')?>
+						<?php echo Text::_('COM_FABRIK_GROUP_LABEL_PLUGINS_DETAILS')?>
                     </a>
                 </li>
             </ul>
@@ -91,7 +94,7 @@ JHtml::_('behavior.keepalive');
             </div>
 
             <input type="hidden" name="task" value="" />
-			<?php echo JHtml::_('form.token'); ?>
+			<?php echo HTMLHelper::_('form.token'); ?>
         </div>
     </div>
 </form>
