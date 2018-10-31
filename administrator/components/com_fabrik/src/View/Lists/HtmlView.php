@@ -42,7 +42,7 @@ class HtmlView extends ListView
 	/**
 	 * Pagination
 	 *
-	 * @var  JPagination
+	 * @var  \JPagination
 	 *
 	 * @since 4.0
 	 */
@@ -65,7 +65,7 @@ class HtmlView extends ListView
 	protected $packageOptions;
 
 	/**
-	 * @var
+	 * @var \JForm
 	 *
 	 * @since 4.0
 	 */
@@ -79,7 +79,7 @@ class HtmlView extends ListView
 	public $tableGroups;
 
 	/**
-	 * @var
+	 * @var \JHtmlSidebar
 	 *
 	 * @since 4.0
 	 */
@@ -206,7 +206,12 @@ class HtmlView extends ListView
 
 		if (!empty($this->packageOptions))
 		{
+			// @todo - append packages to filter form like this
+			// $languageXml = new \SimpleXMLElement('<field name="language" type="hidden" default="' . $forcedLanguage . '" />');
+			// $this->filterForm->setField($languageXml, 'filter', true);
+
 			array_unshift($this->packageOptions, HTMLHelper::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
+
 			\JHtmlSidebar::addFilter(
 				Text::_('JOPTION_SELECT_PUBLISHED'),
 				'package',
@@ -284,5 +289,21 @@ class HtmlView extends ListView
 		$this->form = $this->get('ImportForm');
 		$this->addImportToolBar();
 		parent::display($tpl);
+	}
+
+	/**
+	 * Returns an array of fields the table can be sorted by
+	 *
+	 * @return  array  Array containing the field name to sort by as the key and display text as value
+	 *
+	 * @since   3.0
+	 */
+	protected function getSortFields()
+	{
+		return array(
+			'l.id'          => Text::_('JGRID_HEADING_ID'),
+			'label'         => Text::_('COM_FABRIK_LIST_NAME'),
+			'db_table_name' => Text::_('COM_FABRIK_DB_TABLE_NAME'),
+		);
 	}
 }

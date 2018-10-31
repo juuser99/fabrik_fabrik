@@ -28,6 +28,7 @@ $userId	   = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
 
+
 ?>
 <form action="<?php echo Route::_('index.php?option=com_fabrik&view=lists'); ?>" method="post" name="adminForm" id="adminForm">
     <div class="row">
@@ -37,23 +38,23 @@ $listDirn  = $this->state->get('list.direction');
 
         <div class="col-md-10">
             <div id="j-main-container" class="j-main-container">
-				<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this, 'options' => array('filterButton' => false))); ?>
+				<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 
                 <div class="clearfix"> </div>
                 <table class="table table-striped">
                     <thead>
                     <tr>
                         <th width="2%">
-							<?php echo HTMLHelper::_('grid.sort', 'JGRID_HEADING_ID', 'l.id', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'l.id', $listDirn, $listOrder); ?>
                         </th>
                         <th width="1%">
-                            <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
+	                        <?php echo HTMLHelper::_('grid.checkall'); ?>
                         </th>
                         <th width="16%">
-							<?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_LIST_NAME', 'label', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LIST_NAME', 'label', $listDirn, $listOrder); ?>
                         </th>
                         <th width="17%">
-							<?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_DB_TABLE_NAME', 'db_table_name', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_DB_TABLE_NAME', 'db_table_name', $listDirn, $listOrder); ?>
                         </th>
                         <th width="14%">
 							<?php echo Text::_('COM_FABRIK_ELEMENT');?>
@@ -68,7 +69,7 @@ $listDirn  = $this->state->get('list.direction');
 							<?php echo Text::_('COM_FABRIK_VIEW_DETAILS'); ?>
                         </th>
                         <th width="5%">
-							<?php echo HTMLHelper::_('grid.sort', 'JPUBLISHED', 'published', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'published', $listDirn, $listOrder); ?>
                         </th>
                     </tr>
                     </thead>
@@ -93,10 +94,10 @@ $listDirn  = $this->state->get('list.direction');
                             <td>
 								<?php echo $item->id; ?>
                             </td>
-                            <td><?php echo HTMLHelper::_('grid.id', $i, $item->id); ?></td>
+                            <td><?php echo HTMLHelper::_('searchtools.id', $i, $item->id); ?></td>
                             <td>
 								<?php if ($item->checked_out) : ?>
-									<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'lists.', $canCheckin); ?>
+									<?php echo HTMLHelper::_('jsearchtools.checkedout', $i, $item->editor, $item->checked_out_time, 'lists.', $canCheckin); ?>
 								<?php endif; ?>
 								<?php
 								if ($item->checked_out && ( $item->checked_out != $user->get('id'))) : ?>
@@ -135,7 +136,7 @@ $listDirn  = $this->state->get('list.direction');
                                 </a>
                             </td>
                             <td class="center">
-								<?php echo HTMLHelper::_('jgrid.published', $item->published, $i, 'lists.', $canChange);?>
+								<?php echo HTMLHelper::_('jsearchtools.published', $item->published, $i, 'lists.', $canChange);?>
                             </td>
                         </tr>
 					<?php endforeach; ?>
@@ -144,8 +145,6 @@ $listDirn  = $this->state->get('list.direction');
 
                 <input type="hidden" name="task" value="" />
                 <input type="hidden" name="boxchecked" value="0" />
-                <input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-                <input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 				<?php echo HTMLHelper::_('form.token'); ?>
             </div>
         </div>
