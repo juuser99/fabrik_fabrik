@@ -47,6 +47,13 @@ class HtmlView extends BaseHtmlView
 	protected $feed;
 
 	/**
+	 * @var \JHtmlSidebar
+	 *
+	 * @since since 4.0
+	 */
+	protected $sidebar;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl template
@@ -55,27 +62,26 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @since 4.0
 	 */
-
 	public function display($tpl = null)
 	{
 		$srcs = Html::framework();
 		Html::script($srcs);
+
 		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('*')->from('#__{package}_log')->where('message_type != ""')->order('timedate_created DESC');
 		$db->setQuery($query, 0, 10);
+
 		$this->logs = $db->loadObjectList();
 		$this->feed = $this->get('RSSFeed');
-		$this->addToolbar();
+
 		\FabrikAdminHelper::addSubmenu('home');
 		\FabrikAdminHelper::setViewLayout($this);
 
-		if (Worker::j3())
-		{
-			$this->sidebar = \JHtmlSidebar::render();
-		}
+		$this->sidebar = \JHtmlSidebar::render();
 
 		Html::iniRequireJS();
+
 		parent::display($tpl);
 	}
 
@@ -86,7 +92,6 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @since 4.0
 	 */
-
 	protected function addToolbar()
 	{
 		$canDo = FabrikAdminHelper::getActions();

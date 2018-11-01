@@ -11,9 +11,9 @@
 namespace Joomla\Component\Fabrik\Administrator\View\Lists;
 
 use Fabrik\Helpers\Html;
+use Joomla\CMS\HTML\Registry;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\ListView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
@@ -31,27 +31,9 @@ defined('_JEXEC') or die('Restricted access');
 class HtmlView extends ListView
 {
 	/**
-	 * List items
-	 *
-	 * @var  array
-	 *
-	 * @since 4.0
-	 */
-	protected $items;
-
-	/**
-	 * Pagination
-	 *
-	 * @var  \JPagination
-	 *
-	 * @since 4.0
-	 */
-	protected $pagination;
-
-	/**
 	 * View state
 	 *
-	 * @var object
+	 * @var Registry
 	 *
 	 * @since 4.0
 	 */
@@ -65,25 +47,11 @@ class HtmlView extends ListView
 	protected $packageOptions;
 
 	/**
-	 * @var \JForm
-	 *
-	 * @since 4.0
-	 */
-	public $filterForm;
-
-	/**
 	 * @var
 	 *
 	 * @since 4.0
 	 */
 	public $tableGroups;
-
-	/**
-	 * @var \JHtmlSidebar
-	 *
-	 * @since 4.0
-	 */
-	public $sidebar;
 
 	/**
 	 * Display the view
@@ -107,14 +75,11 @@ class HtmlView extends ListView
 
 				return;
 		}
+
 		// Initialise variables.
 		$app                  = Factory::getApplication();
 		$input                = $app->input;
-		$this->items          = $this->get('Items');
-		$this->pagination     = $this->get('Pagination');
-		$this->state          = $this->get('State');
 		$this->packageOptions = $this->get('PackageOptions');
-		$this->filterForm     = $this->get('FilterForm');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -128,9 +93,8 @@ class HtmlView extends ListView
 
 		FabrikAdminHelper::addSubmenu($input->getWord('view', 'lists'));
 
-		$this->sidebar = \JHtmlSidebar::render();
-
 		Html::iniRequireJS();
+
 		parent::display($tpl);
 	}
 
@@ -207,9 +171,10 @@ class HtmlView extends ListView
 		if (!empty($this->packageOptions))
 		{
 			// @todo - append packages to filter form like this
-			// $languageXml = new \SimpleXMLElement('<field name="language" type="hidden" default="' . $forcedLanguage . '" />');
+			// $languageXml = new \SimpleXMLElement('<field name="package" type="hidden" default="' . $forcedLanguage . '" />');
 			// $this->filterForm->setField($languageXml, 'filter', true);
 
+			/*
 			array_unshift($this->packageOptions, HTMLHelper::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 
 			\JHtmlSidebar::addFilter(
@@ -217,6 +182,7 @@ class HtmlView extends ListView
 				'package',
 				HTMLHelper::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
+			*/
 		}
 	}
 
@@ -288,6 +254,7 @@ class HtmlView extends ListView
 	{
 		$this->form = $this->get('ImportForm');
 		$this->addImportToolBar();
+
 		parent::display($tpl);
 	}
 
@@ -296,7 +263,7 @@ class HtmlView extends ListView
 	 *
 	 * @return  array  Array containing the field name to sort by as the key and display text as value
 	 *
-	 * @since   3.0
+	 * @since   4.0
 	 */
 	protected function getSortFields()
 	{
