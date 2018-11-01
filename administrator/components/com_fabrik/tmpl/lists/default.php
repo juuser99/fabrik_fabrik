@@ -39,8 +39,8 @@ $listDirn  = $this->state->get('list.direction');
         <div class="col-md-10">
             <div id="j-main-container" class="j-main-container">
 				<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
-
                 <div class="clearfix"> </div>
+
                 <table class="table table-striped">
                     <thead>
                     <tr>

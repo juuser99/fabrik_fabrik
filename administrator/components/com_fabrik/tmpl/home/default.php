@@ -21,15 +21,10 @@ ToolbarHelper::title(Text::_('COM_FABRIK_WELCOME'), 'fabrik.png');
 ?>
 
 <div class="row">
-<?php if (!empty($this->sidebar)): ?>
 	<div id="j-sidebar-container" class="col-md-2">
 		<?php echo $this->sidebar; ?>
 	</div>
 	<div id="j-main-container" class="col-md-10"">
-<?php else : ?>
-	<div id="j-main-container">
-<?php endif;?>
-
         <div class="row">
             <div class="col-md-6">
                 <div style="float:left;width:250px;">
