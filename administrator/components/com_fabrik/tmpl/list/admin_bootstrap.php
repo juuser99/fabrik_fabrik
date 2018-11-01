@@ -46,7 +46,7 @@ HTMLHelper::_('behavior.keepalive');
     <div class="row" id="elementFormTable">
 
         <div class="col-md-2">
-            <ul class="nav flex-column"style="margin-top:40px">
+            <ul class="nav flex-column" style="margin-top:40px">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#detailsX">
 						<?php echo Text::_('COM_FABRIK_DETAILS')?>
