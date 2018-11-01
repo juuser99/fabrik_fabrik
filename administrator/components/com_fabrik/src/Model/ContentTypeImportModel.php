@@ -722,8 +722,8 @@ class ContentTypeImportModel extends FabAdminModel
 				);
 			}
 
-			/** @var ContentTypeExporterModel $exporter */
-			$exporter = FabModel::getInstance(ContentTypeExporterModel::class,
+			/** @var ContentTypeExportModel $exporter */
+			$exporter = FabModel::getInstance(ContentTypeExportModel::class,
 				array('listModel' => $this->listModel));
 			$xml      = $exporter->createXMLFromArray($groupData, $elements);
 			$this->doc->loadXML($xml);

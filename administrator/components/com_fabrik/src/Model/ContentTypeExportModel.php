@@ -33,7 +33,7 @@ use \Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ContentTypeExporterModel extends FabAdminModel
+class ContentTypeExportModel extends FabAdminModel
 {
 	/**
 	 * Include paths for searching for Content type XML files
@@ -375,7 +375,7 @@ class ContentTypeExporterModel extends FabAdminModel
 		};
 
 		$element       = ContentTypeHelper::buildExportNode($this->doc, 'element', $data);
-		$pluginManager = Worker::getPluginManager();
+		$pluginManager = Worker::getPluginManager(true);
 		$elementModel  = clone($pluginManager->getPlugIn($data['plugin'], 'element'));
 
 		if (is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
