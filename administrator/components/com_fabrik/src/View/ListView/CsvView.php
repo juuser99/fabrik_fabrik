@@ -14,7 +14,7 @@ namespace Joomla\Component\Fabrik\Administrator\View\ListView;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Site\Model\CvsExportModel;
 use Joomla\Component\Fabrik\Site\Model\ListModel;

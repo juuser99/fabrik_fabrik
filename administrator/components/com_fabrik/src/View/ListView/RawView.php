@@ -18,7 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 
 /**
  * View to edit a list.

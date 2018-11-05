@@ -16,14 +16,11 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Form\Form;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Joomla\Component\Fabrik\Administrator\Table\FormTable;
-use Joomla\Registry\Registry;
 
 /**
  * View to edit a form.
@@ -34,33 +31,6 @@ use Joomla\Registry\Registry;
  */
 class HtmlView extends BaseHtmlView
 {
-	/**
-	 * Form
-	 *
-	 * @var Form
-	 *
-	 * @since 4.0
-	 */
-	protected $form;
-
-	/**
-	 * Form item
-	 *
-	 * @var FormTable
-	 *
-	 * @since 4.0
-	 */
-	protected $item;
-
-	/**
-	 * View state
-	 *
-	 * @var Registry
-	 *
-	 * @since 4.0
-	 */
-	protected $state;
-
 	/**
 	 * Js code for controlling plugins
 	 *
@@ -81,20 +51,13 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		// Initialise variables.
-		$this->getModel();
-		$this->form  = $this->get('Form');
-		$this->item  = $this->get('Item');
-		$this->state = $this->get('State');
-		$this->js    = $this->get('Js');
+		$this->js = $this->get('Js');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{
 			throw new \RuntimeException(implode("\n", $errors), 500);
 		}
-
-		$this->addToolbar();
 
 		// Set up the script shim
 		$shim                        = array();

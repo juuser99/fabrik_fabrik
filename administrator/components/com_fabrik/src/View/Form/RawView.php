@@ -14,17 +14,13 @@ namespace Joomla\Component\Fabrik\Administrator\View\Form;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
-use Joomla\Component\Fabrik\Administrator\Table\FormTable;
 use Joomla\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Component\Fabrik\Site\Model\GroupModel;
-use Joomla\Registry\Registry;
-
 /**
  * View to edit a form.
  *
@@ -34,32 +30,6 @@ use Joomla\Registry\Registry;
  */
 class RawView extends BaseHtmlView
 {
-	/**
-	 * Form
-	 *
-	 * @var Form
-	 *
-	 * @since 4.0
-	 */
-	protected $form;
-
-	/**
-	 * Form item
-	 *
-	 * @var FormTable
-	 *
-	 * @since 4.0
-	 */
-	protected $item;
-
-	/**
-	 * View state
-	 *
-	 * @var Registry
-	 *
-	 * @since 4.0
-	 */
-	protected $state;
 
 	/**
 	 * Display the view

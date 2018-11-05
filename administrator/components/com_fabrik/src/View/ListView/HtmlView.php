@@ -16,11 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Form\Form;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
-use Joomla\CMS\Table\Table;
+use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 use Joomla\Component\Fabrik\Administrator\Model\ListModel;
@@ -34,33 +32,6 @@ use Joomla\Component\Fabrik\Administrator\Model\ListModel;
  */
 class HtmlView extends BaseHtmlView
 {
-	/**
-	 * List form
-	 *
-	 * @var Form
-	 *
-	 * @since 4.0
-	 */
-	protected $form;
-
-	/**
-	 * List item
-	 *
-	 * @var Table
-	 *
-	 * @since 4.0
-	 */
-	protected $item;
-
-	/**
-	 * View state
-	 *
-	 * @var object
-	 *
-	 * @since 4.0
-	 */
-	protected $state;
-
 	/**
 	 * JS code
 	 *
@@ -124,7 +95,6 @@ class HtmlView extends BaseHtmlView
 		$formModel->setId($this->item->form_id);
 		$this->state = $this->get('State');
 		$this->js    = $model->getJs();
-		$this->addToolbar();
 
 		if ($this->item->id == 0)
 		{
