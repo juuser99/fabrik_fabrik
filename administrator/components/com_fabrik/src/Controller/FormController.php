@@ -38,7 +38,7 @@ use Joomla\Component\Fabrik\Site\Model\FormSessionModel;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormController extends AbstractAdminController
+class FormController extends AbstractFormController
 {
 	/**
 	 * The prefix to use with controller messages.
