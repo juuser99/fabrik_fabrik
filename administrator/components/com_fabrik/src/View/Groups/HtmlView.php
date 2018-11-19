@@ -162,4 +162,22 @@ class HtmlView extends ListView
 			HtmlHelper::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
 		);
 	}
+
+	/**
+	 * Returns an array of fields the table can be sorted by
+	 *
+	 * @return  array  Array containing the field name to sort by as the key and display text as value
+	 *
+	 * @since   4.0
+	 */
+	protected function getSortFields()
+	{
+		return array(
+			'g.id'        => Text::_('JGRID_HEADING_ID'),
+			'g.name'      => Text::_('COM_FABRIK_NAME'),
+			'g.label'     => Text::_('COM_FABRIK_LABEL'),
+			'f.label'     => Text::_('COM_FABRIK_FORM'),
+			'g.published' => Text::_('JPUBLISHED'),
+		);
+	}
 }

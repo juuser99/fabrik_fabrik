@@ -17,6 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\Component\Fabrik\Administrator\Table\GroupTable;
 use Joomla\Database\DatabaseQuery;
 
@@ -181,7 +182,7 @@ class GroupsModel extends FabListModel
 	{
 		$config['dbo'] = Worker::getDbo();
 
-		return parent::getTable($type, $prefix, $config);
+		return FabTable::getInstance($type, $prefix, $config);
 	}
 
 	/**
