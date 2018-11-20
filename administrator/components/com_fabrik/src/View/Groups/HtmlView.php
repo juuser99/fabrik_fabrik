@@ -137,7 +137,7 @@ class HtmlView extends ListView
 		\JHtmlSidebar::addFilter(
 			Text::_('JOPTION_SELECT_PUBLISHED'),
 			'filter_published',
-			HtmlHelper::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
+			HTMLHelper::_('select.options', $publishOpts, 'value', 'text', $this->state->get('filter.published'), true)
 		);
 
 		if (!empty($this->packageOptions))
@@ -147,11 +147,11 @@ class HtmlView extends ListView
 			// $this->filterForm->setField($languageXml, 'filter', true);
 
 			/*
-			array_unshift($this->packageOptions, HtmlHelper::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
+			array_unshift($this->packageOptions, HTMLHelper::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			\JHtmlSidebar::addFilter(
 				Text::_('JOPTION_SELECT_PUBLISHED'),
 				'package',
-				HtmlHelper::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
+				HTMLHelper::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
 			*/
 		}
@@ -159,7 +159,7 @@ class HtmlView extends ListView
 		\JHtmlSidebar::addFilter(
 			Text::_('COM_FABRIK_SELECT_FORM'),
 			'filter_form',
-			HtmlHelper::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
+			HTMLHelper::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true)
 		);
 	}
 

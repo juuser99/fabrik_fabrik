@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Helpers\Html as FHtmlHelper;
+use Fabrik\Helpers\Html as FHTMLHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Factory;
@@ -123,7 +123,7 @@ class PluginManagerModel extends FabSiteModel
 			$a                         = array(HTMLHelper::_('select.option', '', $defaultLabel));
 			$elementsTypes             = $this->_getList();
 			$elementsTypes             = array_merge($a, $elementsTypes);
-			$this->elementLists[$hash] = HtmlHelper::_('select.genericlist', $elementsTypes, $name, $extra, 'value', 'text', $default);
+			$this->elementLists[$hash] = HTMLHelper::_('select.genericlist', $elementsTypes, $name, $extra, 'value', 'text', $default);
 		}
 
 		return $this->elementLists[$hash];
@@ -243,7 +243,7 @@ class PluginManagerModel extends FabSiteModel
 			$file   = basename($f);
 			$folder = dirname($f);
 			$folder = FStringHelper::ltrimword($folder, '/') . '/';
-			FHtmlHelper::script($folder . $file);
+			FHTMLHelper::script($folder . $file);
 		}
 	}
 

@@ -2834,7 +2834,7 @@ class FormModel extends FabSiteModel
 		asort($aEls);
 
 		// Paul - Prepend rather than append "none" option.
-		array_unshift($aEls, HtmlHelper::_('select.option', '', '-'));
+		array_unshift($aEls, HTMLHelper::_('select.option', '', '-'));
 
 		return HTMLHelper::_('select.genericlist', $aEls, $name, $attribs, 'value', 'text', $default);
 	}
@@ -2993,12 +2993,12 @@ class FormModel extends FabSiteModel
 								$rawVal = str_replace('`', '', $rawVal);
 							}
 
-							$aEls[$label . '(raw)'] = HtmlHelper::_('select.option', $rawVal, $label . '(raw)');
+							$aEls[$label . '(raw)'] = HTMLHelper::_('select.option', $rawVal, $label . '(raw)');
 						}
 					}
 				}
 
-				$aEls[] = HtmlHelper::_('select.option', $val, $label);
+				$aEls[] = HTMLHelper::_('select.option', $val, $label);
 			}
 		}
 		// Paul - Sort removed so that list is presented in group/id order regardless of whether $key is name or id

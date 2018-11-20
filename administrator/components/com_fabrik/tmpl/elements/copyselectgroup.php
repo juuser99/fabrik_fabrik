@@ -16,7 +16,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 
-HtmlHelper::_('behavior.framework', true);
+HTMLHelper::_('behavior.framework', true);
 
 ?>
 
@@ -50,6 +50,6 @@ HtmlHelper::_('behavior.framework', true);
 	</thead>
 	</table>
 	<input type="hidden" name="task" value="" />
-  	<?php echo HtmlHelper::_('form.token');
-	echo HtmlHelper::_('behavior.keepalive'); ?>
+  	<?php echo HTMLHelper::_('form.token');
+	echo HTMLHelper::_('behavior.keepalive'); ?>
 </form>

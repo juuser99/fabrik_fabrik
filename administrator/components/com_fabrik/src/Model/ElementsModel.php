@@ -344,7 +344,7 @@ class ElementsModel extends FabListModel
 	 */
 	public function getShowInListOptions()
 	{
-		return array(HTMLHelper::_('select.option', 0, Text::_('JNO')), HtmlHelper::_('select.option', 1, Text::_('JYES')));
+		return array(HTMLHelper::_('select.option', 0, Text::_('JNO')), HTMLHelper::_('select.option', 1, Text::_('JYES')));
 	}
 
 	/**

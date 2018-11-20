@@ -20,9 +20,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\LayoutHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 
-HtmlHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-HtmlHelper::_('bootstrap.tooltip');
-HtmlHelper::_('script', 'system/multiselect.js', false, true);
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+HTMLHelper::_('bootstrap.tooltip');
+HTMLHelper::_('script', 'system/multiselect.js', false, true);
 
 $config = ComponentHelper::getParams('com_fabrik');
 $truncateOpts = array(
@@ -39,7 +39,7 @@ $saveOrder	= $listOrder == 'e.ordering';
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_fabrik&task=elements.saveOrderAjax&tmpl=component';
-	HtmlHelper::_('sortablelist.sortable', 'elementList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	HTMLHelper::_('sortablelist.sortable', 'elementList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
 }
 
 $states = array(
@@ -77,20 +77,20 @@ $states = array(
             <thead>
                 <tr>
                     <th width="4%">
-                        <?php echo HtmlHelper::_('grid.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?>
                     </th>
 
                     <th width="30px">
-                        <?php echo HtmlHelper::_('grid.sort', '<i class="icon-menu-2"></i>', 'e.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+                        <?php echo HTMLHelper::_('grid.sort', '<i class="icon-menu-2"></i>', 'e.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
                     </th>
                     <th width="30px">&nbsp;&nbsp;&nbsp;</th>
                     <th width="30px"><input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" /></th>
 
                     <th width="13%" >
-                        <?php echo HtmlHelper::_('grid.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
                     </th>
                     <th width="15%">
-                        <?php echo HtmlHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'e.label', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'e.label', $listDirn, $listOrder); ?>
                     </th>
                     <th width="17%">
                         <?php echo Text::_('COM_FABRIK_FULL_ELEMENT_NAME');?>
@@ -99,16 +99,16 @@ $states = array(
                         <?php echo Text::_('COM_FABRIK_VALIDATIONS'); ?>
                     </th>
                     <th width="10%">
-                    <?php echo HtmlHelper::_('grid.sort', 'COM_FABRIK_GROUP', 'g.name', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_GROUP', 'g.name', $listDirn, $listOrder); ?>
                     </th>
                     <th width="10%">
-                        <?php echo HtmlHelper::_('grid.sort', 'COM_FABRIK_PLUGIN', 'e.plugin', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_PLUGIN', 'e.plugin', $listDirn, $listOrder); ?>
                     </th>
                     <th width="7%">
-                        <?php echo HtmlHelper::_('grid.sort', 'COM_FABRIK_SHOW_IN_LIST', 'e.show_in_list_summary', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_SHOW_IN_LIST', 'e.show_in_list_summary', $listDirn, $listOrder); ?>
                     </th>
                     <th width="5%">
-                    <?php echo HtmlHelper::_('grid.sort', 'JPUBLISHED', 'e.published', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('grid.sort', 'JPUBLISHED', 'e.published', $listDirn, $listOrder); ?>
                     </th>
                 </tr>
             </thead>
@@ -158,24 +158,24 @@ $states = array(
                     <td>
                     <?php if ($item->parent_id != 0) :
                         echo "<a href='index.php?option=com_fabrik&task=element.edit&id=" . $item->parent_id . "'>"
-                        . HtmlHelper::image('media/com_fabrik/images/child_element.png', Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id), 'title="' . Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id) . '"')
+                        . HTMLHelper::image('media/com_fabrik/images/child_element.png', Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id), 'title="' . Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id) . '"')
                         . '</a>&nbsp;';
                     else :
                         if (!empty($item->child_ids)) :
-                            echo HtmlHelper::image('media/com_fabrik/images/parent_element.png', Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids), 'title="' . Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids) . '"');
+                            echo HTMLHelper::image('media/com_fabrik/images/parent_element.png', Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids), 'title="' . Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids) . '"');
                         else :
                             // Trying out removing the icon all together if it isn't linked
-                            // echo HtmlHelper::image('media/com_fabrik/images/element.png', Text::_('COM_FABRIK_NONLINKED_ELEMENT'), 'title="' . Text::_('COM_FABRIK_NONLINKED_ELEMENT') . '"');
+                            // echo HTMLHelper::image('media/com_fabrik/images/element.png', Text::_('COM_FABRIK_NONLINKED_ELEMENT'), 'title="' . Text::_('COM_FABRIK_NONLINKED_ELEMENT') . '"');
                         endif;
                     endif;
                     ?>
                     </td>
                     <td>
-                        <?php echo HtmlHelper::_('grid.id', $i, $item->id); ?>
+                        <?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
                     </td>
                     <td>
                         <?php if ($item->checked_out) : ?>
-                            <?php echo HtmlHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'elements.', $canCheckin); ?>
+                            <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'elements.', $canCheckin); ?>
                         <?php endif; ?>
                         <?php
                         if ($item->checked_out && ($item->checked_out != $user->get('id'))) :
@@ -211,11 +211,11 @@ $states = array(
                     </td>
                     <td class="center">
                         <?php
-                        echo HtmlHelper::_('jgrid.state', $states, $item->show_in_list_summary, $i, 'elements.', true, true);
+                        echo HTMLHelper::_('jgrid.state', $states, $item->show_in_list_summary, $i, 'elements.', true, true);
                         ?>
                     </td>
                     <td class="center">
-                        <?php echo HtmlHelper::_('jgrid.published', $item->published, $i, 'elements.', $canChange);?>
+                        <?php echo HTMLHelper::_('jgrid.published', $item->published, $i, 'elements.', $canChange);?>
                     </td>
                 </tr>
 
@@ -225,7 +225,7 @@ $states = array(
 
         <input type="hidden" name="task" value="" />
         <input type="hidden" name="boxchecked" value="0" />
-        <?php echo HtmlHelper::_('form.token'); ?>
+        <?php echo HTMLHelper::_('form.token'); ?>
         </div>
     </div>
 </form>

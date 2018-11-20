@@ -42,7 +42,7 @@ $db = Worker::getDbo(true);
   	<input type="hidden" name="oldname" value="<?php echo $this->oldName?>" />
 	<input type="hidden" name="origplugin" value="<?php echo $this->origPlugin?>" />
   	<?php
-	echo HtmlHelper::_('form.token');
-	echo HtmlHelper::_('behavior.keepalive');
+	echo HTMLHelper::_('form.token');
+	echo HTMLHelper::_('behavior.keepalive');
 	?>
 </form>

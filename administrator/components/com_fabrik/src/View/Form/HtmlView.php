@@ -67,7 +67,7 @@ class HtmlView extends BaseHtmlView
 		Html::iniRequireJS($shim);
 
 		HTMLHelper::_('jquery.framework');
-		HtmlHelper::_('script', 'jui/cms.js', array('version' => 'auto', 'relative' => true));
+		HTMLHelper::_('script', 'jui/cms.js', array('version' => 'auto', 'relative' => true));
 
 		$srcs                  = Html::framework();
 		$srcs['Fabrik']        = Html::mediaFile('fabrik.js');

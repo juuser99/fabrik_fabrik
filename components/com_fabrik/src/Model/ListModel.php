@@ -6756,9 +6756,9 @@ class ListModel extends FabSiteModel
 				$displayData->advanced = true;
 				$displayData->searchOpts = array();
 				$displayData->searchOpts[] = HTMLHelper::_('select.option', 'all', Text::_('COM_FABRIK_ALL_OF_THESE_TERMS'));
-				$displayData->searchOpts[] = HtmlHelper::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
-				$displayData->searchOpts[] = HtmlHelper::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
-				$displayData->searchOpts[] = HtmlHelper::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
+				$displayData->searchOpts[] = HTMLHelper::_('select.option', 'any', Text::_('COM_FABRIK_ANY_OF_THESE_TERMS'));
+				$displayData->searchOpts[] = HTMLHelper::_('select.option', 'exact', Text::_('COM_FABRIK_EXACT_TERMS'));
+				$displayData->searchOpts[] = HTMLHelper::_('select.option', 'none', Text::_('COM_FABRIK_NONE_OF_THESE_TERMS'));
 				$displayData->mode = $this->app->getUserStateFromRequest(
 					'com_' . $package . '.list' . $this->getRenderContext() . '.searchallmode',
 					'search-mode-advanced',
@@ -9129,7 +9129,7 @@ class ListModel extends FabSiteModel
 
 		if ($incSelect != '')
 		{
-			$fieldNames[] = HtmlHelper::_('select.option', '', $incSelect);
+			$fieldNames[] = HTMLHelper::_('select.option', '', $incSelect);
 		}
 
 		if (is_array($aFields))
@@ -9138,17 +9138,17 @@ class ListModel extends FabSiteModel
 			{
 				if ($incTableName)
 				{
-					$fieldNames[] = HtmlHelper::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
+					$fieldNames[] = HTMLHelper::_('select.option', $tbl . '___' . $oField->Field, $oField->Field);
 				}
 				else
 				{
-					$fieldNames[] = HtmlHelper::_('select.option', $oField->Field);
+					$fieldNames[] = HTMLHelper::_('select.option', $oField->Field);
 				}
 			}
 		}
 
 		$opts = 'class="' . $className . '" size="1" ';
-		$fieldDropDown = HtmlHelper::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
+		$fieldDropDown = HTMLHelper::_('select.genericlist', $fieldNames, $selectListName, $opts, 'value', 'text', $selected);
 
 		return str_replace("\n", "", $fieldDropDown);
 	}

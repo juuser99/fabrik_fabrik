@@ -132,7 +132,7 @@ class HtmlView extends ListView
 		ToolbarHelper::help('JHELP_COMPONENTS_FABRIK_FORMS', false, Text::_('JHELP_COMPONENTS_FABRIK_FORMS'));
 
 		\JHtmlSidebar::setAction('index.php?option=com_fabrik&view=forms');
-		$opts = HtmlHelper::_('jgrid.publishedOptions', array('archived' => false));
+		$opts = HTMLHelper::_('jgrid.publishedOptions', array('archived' => false));
 		\JHtmlSidebar::addFilter(
 			Text::_('JOPTION_SELECT_PUBLISHED'),
 			'filter_published',
@@ -146,11 +146,11 @@ class HtmlView extends ListView
 			// $this->filterForm->setField($languageXml, 'filter', true);
 
 			/*
-			array_unshift($this->packageOptions, HtmlHelper::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
+			array_unshift($this->packageOptions, HTMLHelper::_('select.option', 'fabrik', Text::_('COM_FABRIK_SELECT_PACKAGE')));
 			\JHtmlSidebar::addFilter(
 				Text::_('JOPTION_SELECT_PUBLISHED'),
 				'package',
-				HtmlHelper::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
+				HTMLHelper::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true)
 			);
 			*/
 		}

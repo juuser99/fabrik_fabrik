@@ -19,12 +19,12 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\HTML\Registry;
 use Joomla\CMS\Layout\LayoutHelper;
 
-HtmlHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-HtmlHelper::_('behavior.tooltip');
-HtmlHelper::_('script', 'system/multiselect.js', false, true);
-HtmlHelper::_('bootstrap.tooltip');
-HtmlHelper::_('behavior.multiselect');
-HtmlHelper::_('formbehavior.chosen', 'select');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+HTMLHelper::_('behavior.tooltip');
+HTMLHelper::_('script', 'system/multiselect.js', false, true);
+HTMLHelper::_('bootstrap.tooltip');
+HTMLHelper::_('behavior.multiselect');
+HTMLHelper::_('formbehavior.chosen', 'select');
 
 $user      = Factory::getUser();
 $userId    = $user->get('id');
@@ -44,13 +44,13 @@ $listDirn  = $this->state->get('list.direction');
                 <thead>
                 <tr>
                     <th width="2%">
-                        <?php echo HtmlHelper::_('grid.sort', 'JGRID_HEADING_ID', 'f.id', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'JGRID_HEADING_ID', 'f.id', $listDirn, $listOrder); ?>
                     </th>
                     <th width="1%">
                         <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this);" />
                     </th>
                     <th width="35%">
-                        <?php echo HtmlHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'f.label', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'f.label', $listDirn, $listOrder); ?>
                     </th>
                     <th width="10%">
                         <?php echo Text::_('COM_FABRIK_ELEMENT'); ?>
@@ -65,7 +65,7 @@ $listDirn  = $this->state->get('list.direction');
                         <?php echo Text::_('COM_FABRIK_VIEW_DATA'); ?>
                     </th>
                     <th width="5%">
-                        <?php echo HtmlHelper::_('grid.sort', 'JPUBLISHED', 'f.published', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('grid.sort', 'JPUBLISHED', 'f.published', $listDirn, $listOrder); ?>
                     </th>
                 </tr>
                 </thead>
@@ -90,10 +90,10 @@ $listDirn  = $this->state->get('list.direction');
                     ?>
                     <tr class="row<?php echo $i % 2; ?>">
                         <td><?php echo $item->id; ?></td>
-                        <td><?php echo HtmlHelper::_('grid.id', $i, $item->id); ?></td>
+                        <td><?php echo HTMLHelper::_('grid.id', $i, $item->id); ?></td>
                         <td>
                             <?php if ($item->checked_out) : ?>
-                                <?php echo HtmlHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'forms.', $canCheckin); ?>
+                                <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'forms.', $canCheckin); ?>
                             <?php endif; ?>
                             <?php
                             if ($item->checked_out && ($item->checked_out != $user->get('id')))
@@ -151,7 +151,7 @@ $listDirn  = $this->state->get('list.direction');
                             </a>
                         </td>
                         <td class="center">
-                            <?php echo HtmlHelper::_('jgrid.published', $item->published, $i, 'forms.', $canChange); ?>
+                            <?php echo HTMLHelper::_('jgrid.published', $item->published, $i, 'forms.', $canChange); ?>
                         </td>
                     </tr>
 
@@ -161,7 +161,7 @@ $listDirn  = $this->state->get('list.direction');
 
             <input type="hidden" name="task" value="" />
             <input type="hidden" name="boxchecked" value="0" />
-            <?php echo HtmlHelper::_('form.token'); ?>
+            <?php echo HTMLHelper::_('form.token'); ?>
         </div>
     </div>
 </form>

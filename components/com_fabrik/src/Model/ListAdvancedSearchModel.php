@@ -90,7 +90,7 @@ class ListAdvancedSearchModel extends FabSiteModel
 		$statements = $this->getStatementsOpts();
 		$opts->elementList = HTMLHelper::_('select.genericlist', $fieldNames, 'fabrik___filter[list_' . $listRef . '][key][]',
 			'class="inputbox key" size="1" ', 'value', 'text');
-		$opts->statementList = HtmlHelper::_('select.genericlist', $statements, 'fabrik___filter[list_' . $listRef . '][condition][]',
+		$opts->statementList = HTMLHelper::_('select.genericlist', $statements, 'fabrik___filter[list_' . $listRef . '][condition][]',
 			'class="inputbox" size="1" ', 'value', 'text', $defaultStatement);
 		$opts->listid = $list->id;
 		$opts->listref = $listRef;
@@ -122,7 +122,7 @@ class ListAdvancedSearchModel extends FabSiteModel
 		$model = $this->model;
 		$first = false;
 		$firstFilter = false;
-		$fieldNames[] = HtmlHelper::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT'));
+		$fieldNames[] = HTMLHelper::_('select.option', '', Text::_('COM_FABRIK_PLEASE_SELECT'));
 		$elementModels = $model->getElements();
 
 		foreach ($elementModels as $elementModel)
@@ -145,7 +145,7 @@ class ListAdvancedSearchModel extends FabSiteModel
 					$firstFilter = $elementModel->getFilter(0, false);
 				}
 
-				$fieldNames[] = HtmlHelper::_('select.option', $elName, strip_tags(Text::_($element->label)));
+				$fieldNames[] = HTMLHelper::_('select.option', $elName, strip_tags(Text::_($element->label)));
 			}
 		}
 
@@ -256,8 +256,8 @@ class ListAdvancedSearchModel extends FabSiteModel
 				$input->set($lineElName, array('value' => $value));
 				$filter = $elementModel->getFilter($counter, false);
 				$input->set($lineElName, $orig);
-				$key = HtmlHelper::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key input-small" size="1" ', 'value', 'text', $key);
-				$jsSel = HtmlHelper::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox input-small" size="1" ', 'value', 'text', $jsSel);
+				$key = HTMLHelper::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key input-small" size="1" ', 'value', 'text', $key);
+				$jsSel = HTMLHelper::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox input-small" size="1" ', 'value', 'text', $jsSel);
 				$rows[] = array('join' => $join, 'element' => $key, 'condition' => $jsSel, 'filter' => $filter, 'type' => $type,
 					'grouped' => $grouped);
 				$counter++;
@@ -268,9 +268,9 @@ class ListAdvancedSearchModel extends FabSiteModel
 		{
 			$params = $model->getParams();
 			$join = Text::_('COM_FABRIK_WHERE') . '<input type="hidden" name="' . $prefix . 'join][]" value="WHERE" />';
-			$key = HtmlHelper::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key" size="1" ', 'value', 'text', '');
+			$key = HTMLHelper::_('select.genericlist', $fieldNames, $prefix . 'key][]', 'class="inputbox key" size="1" ', 'value', 'text', '');
 			$defaultStatement = $params->get('advanced-filter-default-statement', '<>');
-			$jsSel = HtmlHelper::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox" size="1" ', 'value', 'text', $defaultStatement);
+			$jsSel = HTMLHelper::_('select.genericlist', $statements, $prefix . 'condition][]', 'class="inputbox" size="1" ', 'value', 'text', $defaultStatement);
 			$rows[] = array('join' => $join, 'element' => $key, 'condition' => $jsSel, 'filter' => $firstFilter, 'type' => $type,
 				'grouped' => $grouped);
 		}
@@ -407,22 +407,22 @@ class ListAdvancedSearchModel extends FabSiteModel
 	/**
 	 * Get a list of advanced search options
 	 *
-	 * @return array of HtmlHelper options
+	 * @return array of HTMLHelper options
 	 *
 	 * @since 4.0
 	 */
 	protected function getStatementsOpts()
 	{
 		$statements = array();
-		$statements[] = HtmlHelper::_('select.option', '=', Text::_('COM_FABRIK_EQUALS'));
-		$statements[] = HtmlHelper::_('select.option', '<>', Text::_('COM_FABRIK_NOT_EQUALS'));
-		$statements[] = HtmlHelper::_('select.option', 'BEGINS WITH', Text::_('COM_FABRIK_BEGINS_WITH'));
-		$statements[] = HtmlHelper::_('select.option', 'CONTAINS', Text::_('COM_FABRIK_CONTAINS'));
-		$statements[] = HtmlHelper::_('select.option', 'ENDS WITH', Text::_('COM_FABRIK_ENDS_WITH'));
-		$statements[] = HtmlHelper::_('select.option', '>', Text::_('COM_FABRIK_GREATER_THAN'));
-		$statements[] = HtmlHelper::_('select.option', '<', Text::_('COM_FABRIK_LESS_THAN'));
-		$statements[] = HtmlHelper::_('select.option', 'EMPTY', Text::_('COM_FABRIK_IS_EMPTY'));
-		$statements[] = HtmlHelper::_('select.option', 'NOTEMPTY', Text::_('COM_FABRIK_IS_NOT_EMPTY'));
+		$statements[] = HTMLHelper::_('select.option', '=', Text::_('COM_FABRIK_EQUALS'));
+		$statements[] = HTMLHelper::_('select.option', '<>', Text::_('COM_FABRIK_NOT_EQUALS'));
+		$statements[] = HTMLHelper::_('select.option', 'BEGINS WITH', Text::_('COM_FABRIK_BEGINS_WITH'));
+		$statements[] = HTMLHelper::_('select.option', 'CONTAINS', Text::_('COM_FABRIK_CONTAINS'));
+		$statements[] = HTMLHelper::_('select.option', 'ENDS WITH', Text::_('COM_FABRIK_ENDS_WITH'));
+		$statements[] = HTMLHelper::_('select.option', '>', Text::_('COM_FABRIK_GREATER_THAN'));
+		$statements[] = HTMLHelper::_('select.option', '<', Text::_('COM_FABRIK_LESS_THAN'));
+		$statements[] = HTMLHelper::_('select.option', 'EMPTY', Text::_('COM_FABRIK_IS_EMPTY'));
+		$statements[] = HTMLHelper::_('select.option', 'NOTEMPTY', Text::_('COM_FABRIK_IS_NOT_EMPTY'));
 
 		return $statements;
 	}

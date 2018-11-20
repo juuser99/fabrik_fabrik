@@ -16,8 +16,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
 
 ?>
-<?php echo HtmlHelper::_('bootstrap.startTabSet', 'listviewTabs', array('active' => 'listview-details')); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-details', Text::_('COM_FABRIK_ELEMENT_LABEL_LIST_SETTINGS_DETAILS')); ?>
+<?php echo HTMLHelper::_('bootstrap.startTabSet', 'listviewTabs', array('active' => 'listview-details')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-details', Text::_('COM_FABRIK_ELEMENT_LABEL_LIST_SETTINGS_DETAILS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -32,8 +32,8 @@ use Joomla\CMS\HTML\HTMLHelper;
             </fieldset>
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-icons', Text::_('COM_FABRIK_ELEMENT_LABEL_ICONS_SETTINGS_DETAILS')); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-icons', Text::_('COM_FABRIK_ELEMENT_LABEL_ICONS_SETTINGS_DETAILS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -45,8 +45,8 @@ use Joomla\CMS\HTML\HTMLHelper;
 
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-filters', Text::_('COM_FABRIK_ELEMENT_LABEL_FILTERS_DETAILS')); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-filters', Text::_('COM_FABRIK_ELEMENT_LABEL_FILTERS_DETAILS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -61,8 +61,8 @@ use Joomla\CMS\HTML\HTMLHelper;
             </fieldset>
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-css', Text::_('COM_FABRIK_ELEMENT_LABEL_CSS_DETAILS')); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-css', Text::_('COM_FABRIK_ELEMENT_LABEL_CSS_DETAILS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -73,8 +73,8 @@ use Joomla\CMS\HTML\HTMLHelper;
             </fieldset>
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-calculations', Text::_('COM_FABRIK_ELEMENT_LABEL_CALCULATIONS_DETAILS')); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'listviewTabs', 'listview-calculations', Text::_('COM_FABRIK_ELEMENT_LABEL_CALCULATIONS_DETAILS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -107,5 +107,5 @@ use Joomla\CMS\HTML\HTMLHelper;
 
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.endTabSet'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTabSet'); ?>

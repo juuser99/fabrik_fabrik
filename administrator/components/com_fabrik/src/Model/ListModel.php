@@ -269,9 +269,9 @@ class ListModel extends FabAdminModel
 	{
 		$aConditions   = array();
 		$aConditions[] = HTMLHelper::_('select.option', 'AND');
-		$aConditions[] = HtmlHelper::_('select.option', 'OR');
+		$aConditions[] = HTMLHelper::_('select.option', 'OR');
 		$attribs       = 'class="inputbox input-small" size="1"';
-		$dd            = str_replace("\n", "", HtmlHelper::_('select.genericlist', $aConditions, $name, $attribs, 'value', 'text', ''));
+		$dd            = str_replace("\n", "", HTMLHelper::_('select.genericlist', $aConditions, $name, $attribs, 'value', 'text', ''));
 
 		if ($addSlashes)
 		{
@@ -299,47 +299,47 @@ class ListModel extends FabAdminModel
 		switch ($mode)
 		{
 			case 1: /* used for search filter */
-				$aConditions[] = HtmlHelper::_('select.option', '<>', 'NOT EQUALS');
-				$aConditions[] = HtmlHelper::_('select.option', '=', 'EQUALS');
-				$aConditions[] = HtmlHelper::_('select.option', 'like', 'BEGINS WITH');
-				$aConditions[] = HtmlHelper::_('select.option', 'like', 'CONTAINS');
-				$aConditions[] = HtmlHelper::_('select.option', 'like', 'ENDS WITH');
-				$aConditions[] = HtmlHelper::_('select.option', '>', 'GREATER THAN');
-				$aConditions[] = HtmlHelper::_('select.option', '>=', 'GREATER THAN OR EQUALS');
-				$aConditions[] = HtmlHelper::_('select.option', '<', 'LESS THAN');
-				$aConditions[] = HtmlHelper::_('select.option', '<=', 'LESS THAN OR EQUALS');
+				$aConditions[] = HTMLHelper::_('select.option', '<>', 'NOT EQUALS');
+				$aConditions[] = HTMLHelper::_('select.option', '=', 'EQUALS');
+				$aConditions[] = HTMLHelper::_('select.option', 'like', 'BEGINS WITH');
+				$aConditions[] = HTMLHelper::_('select.option', 'like', 'CONTAINS');
+				$aConditions[] = HTMLHelper::_('select.option', 'like', 'ENDS WITH');
+				$aConditions[] = HTMLHelper::_('select.option', '>', 'GREATER THAN');
+				$aConditions[] = HTMLHelper::_('select.option', '>=', 'GREATER THAN OR EQUALS');
+				$aConditions[] = HTMLHelper::_('select.option', '<', 'LESS THAN');
+				$aConditions[] = HTMLHelper::_('select.option', '<=', 'LESS THAN OR EQUALS');
 				break;
 			case 2: /* used for prefilter */
-				$aConditions[] = HtmlHelper::_('select.option', 'equals', 'EQUALS');
-				$aConditions[] = HtmlHelper::_('select.option', 'notequals', 'NOT EQUAL TO');
-				$aConditions[] = HtmlHelper::_('select.option', 'begins', 'BEGINS WITH');
-				$aConditions[] = HtmlHelper::_('select.option', 'contains', 'CONTAINS');
-				$aConditions[] = HtmlHelper::_('select.option', 'ends', 'ENDS WITH');
-				$aConditions[] = HtmlHelper::_('select.option', '>', 'GREATER THAN');
-				$aConditions[] = HtmlHelper::_('select.option', '>=', 'GREATER THAN OR EQUALS');
-				$aConditions[] = HtmlHelper::_('select.option', '<', 'LESS THAN');
-				$aConditions[] = HtmlHelper::_('select.option', 'IS NULL', 'IS NULL');
-				$aConditions[] = HtmlHelper::_('select.option', '<=', 'LESS THAN OR EQUALS');
-				$aConditions[] = HtmlHelper::_('select.option', 'in', 'IN');
-				$aConditions[] = HtmlHelper::_('select.option', 'not_in', 'NOT IN');
-				$aConditions[] = HtmlHelper::_('select.option', 'exists', 'EXISTS');
-				$aConditions[] = HtmlHelper::_('select.option', 'thisyear', Text::_('COM_FABRIK_THIS_YEAR'));
-				$aConditions[] = HtmlHelper::_('select.option', 'earlierthisyear', Text::_('COM_FABRIK_EARLIER_THIS_YEAR'));
-				$aConditions[] = HtmlHelper::_('select.option', 'laterthisyear', Text::_('COM_FABRIK_LATER_THIS_YEAR'));
+				$aConditions[] = HTMLHelper::_('select.option', 'equals', 'EQUALS');
+				$aConditions[] = HTMLHelper::_('select.option', 'notequals', 'NOT EQUAL TO');
+				$aConditions[] = HTMLHelper::_('select.option', 'begins', 'BEGINS WITH');
+				$aConditions[] = HTMLHelper::_('select.option', 'contains', 'CONTAINS');
+				$aConditions[] = HTMLHelper::_('select.option', 'ends', 'ENDS WITH');
+				$aConditions[] = HTMLHelper::_('select.option', '>', 'GREATER THAN');
+				$aConditions[] = HTMLHelper::_('select.option', '>=', 'GREATER THAN OR EQUALS');
+				$aConditions[] = HTMLHelper::_('select.option', '<', 'LESS THAN');
+				$aConditions[] = HTMLHelper::_('select.option', 'IS NULL', 'IS NULL');
+				$aConditions[] = HTMLHelper::_('select.option', '<=', 'LESS THAN OR EQUALS');
+				$aConditions[] = HTMLHelper::_('select.option', 'in', 'IN');
+				$aConditions[] = HTMLHelper::_('select.option', 'not_in', 'NOT IN');
+				$aConditions[] = HTMLHelper::_('select.option', 'exists', 'EXISTS');
+				$aConditions[] = HTMLHelper::_('select.option', 'thisyear', Text::_('COM_FABRIK_THIS_YEAR'));
+				$aConditions[] = HTMLHelper::_('select.option', 'earlierthisyear', Text::_('COM_FABRIK_EARLIER_THIS_YEAR'));
+				$aConditions[] = HTMLHelper::_('select.option', 'laterthisyear', Text::_('COM_FABRIK_LATER_THIS_YEAR'));
 
-				$aConditions[] = HtmlHelper::_('select.option', 'yesterday', Text::_('COM_FABRIK_YESTERDAY'));
-				$aConditions[] = HtmlHelper::_('select.option', 'today', Text::_('COM_FABRIK_TODAY'));
-				$aConditions[] = HtmlHelper::_('select.option', 'tomorrow', Text::_('COM_FABRIK_TOMORROW'));
-				$aConditions[] = HtmlHelper::_('select.option', 'thismonth', Text::_('COM_FABRIK_THIS_MONTH'));
-				$aConditions[] = HtmlHelper::_('select.option', 'lastmonth', Text::_('COM_FABRIK_LAST_MONTH'));
-				$aConditions[] = HtmlHelper::_('select.option', 'nextmonth', Text::_('COM_FABRIK_NEXT_MONTH'));
-				$aConditions[] = HtmlHelper::_('select.option', 'nextweek1', Text::_('COM_FABRIK_NEXT_WEEK1'));
-				$aConditions[] = HtmlHelper::_('select.option', 'birthday', Text::_('COM_FABRIK_BIRTHDAY_TODAY'));
+				$aConditions[] = HTMLHelper::_('select.option', 'yesterday', Text::_('COM_FABRIK_YESTERDAY'));
+				$aConditions[] = HTMLHelper::_('select.option', 'today', Text::_('COM_FABRIK_TODAY'));
+				$aConditions[] = HTMLHelper::_('select.option', 'tomorrow', Text::_('COM_FABRIK_TOMORROW'));
+				$aConditions[] = HTMLHelper::_('select.option', 'thismonth', Text::_('COM_FABRIK_THIS_MONTH'));
+				$aConditions[] = HTMLHelper::_('select.option', 'lastmonth', Text::_('COM_FABRIK_LAST_MONTH'));
+				$aConditions[] = HTMLHelper::_('select.option', 'nextmonth', Text::_('COM_FABRIK_NEXT_MONTH'));
+				$aConditions[] = HTMLHelper::_('select.option', 'nextweek1', Text::_('COM_FABRIK_NEXT_WEEK1'));
+				$aConditions[] = HTMLHelper::_('select.option', 'birthday', Text::_('COM_FABRIK_BIRTHDAY_TODAY'));
 
 				break;
 		}
 
-		$dd = str_replace("\n", "", HtmlHelper::_('select.genericlist', $aConditions, $name, 'class="inputbox input-medium"  size="1" ', 'value', 'text', ''));
+		$dd = str_replace("\n", "", HTMLHelper::_('select.genericlist', $aConditions, $name, 'class="inputbox input-medium"  size="1" ', 'value', 'text', ''));
 
 		if ($addSlashes)
 		{
@@ -431,7 +431,7 @@ class ListModel extends FabAdminModel
 		$filterOpts               = new \stdClass;
 		$filterOpts->filterJoinDd = $this->getFilterJoinDd(false, 'Form[params][filter-join][]');
 		$filterOpts->filterCondDd = $this->getFilterConditionDd(false, 'Form[params][filter-conditions][]', 2);
-		$filterOpts->filterAccess = HtmlHelper::_('access.level', 'Form[params][filter-access][]', $item->access, 'class="input-medium"', false);
+		$filterOpts->filterAccess = HTMLHelper::_('access.level', 'Form[params][filter-access][]', $item->access, 'class="input-medium"', false);
 		$filterOpts->filterAccess = str_replace(array("\n", "\r"), '', $filterOpts->filterAccess);
 		// @todo - migrate to j4; not sure what this does yet
 		$filterOpts->j3           = Worker::j3();

@@ -18,10 +18,10 @@ use Joomla\CMS\Language\Text;
 use Fabrik\Helpers\Html;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-HtmlHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
-HtmlHelper::_('behavior.tooltip');
+HTMLHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
+HTMLHelper::_('behavior.tooltip');
 Html::formvalidation();
-HtmlHelper::_('behavior.keepalive');
+HTMLHelper::_('behavior.keepalive');
 ?>
 
 <script type="text/javascript">
@@ -117,5 +117,5 @@ HtmlHelper::_('behavior.keepalive');
 		?>
 	</div>
 	<input type="hidden" name="task" value="" />
-	<?php echo HtmlHelper::_('form.token'); ?>
+	<?php echo HTMLHelper::_('form.token'); ?>
 </form>

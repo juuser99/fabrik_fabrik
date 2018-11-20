@@ -16,9 +16,9 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
 ?>
-<?php echo HtmlHelper::_('bootstrap.startTabSet', 'detailsTabs', array('active' => 'details-publishing')); ?>
+<?php echo HTMLHelper::_('bootstrap.startTabSet', 'detailsTabs', array('active' => 'details-publishing')); ?>
 
-<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-publishing', Text::_('COM_FABRIK_TEXT')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'detailsTabs', 'details-publishing', Text::_('COM_FABRIK_TEXT')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -33,9 +33,9 @@ use Joomla\CMS\Language\Text;
         </fieldset>
     </div>
 </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 
-<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-filters', Text::_('COM_FABRIK_FILTERS')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'detailsTabs', 'details-filters', Text::_('COM_FABRIK_FILTERS')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -50,9 +50,9 @@ use Joomla\CMS\Language\Text;
         </fieldset>
     </div>
 </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 
-<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-nav', Text::_('COM_FABRIK_NAVIGATION')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'detailsTabs', 'details-nav', Text::_('COM_FABRIK_NAVIGATION')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -67,9 +67,9 @@ use Joomla\CMS\Language\Text;
         </fieldset>
     </div>
 </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 
-<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-layout', Text::_('COM_FABRIK_LAYOUT')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'detailsTabs', 'details-layout', Text::_('COM_FABRIK_LAYOUT')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -125,9 +125,9 @@ use Joomla\CMS\Language\Text;
 
     </div>
 </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 
-<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-link', Text::_('COM_FABRIK_LINKS')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'detailsTabs', 'details-link', Text::_('COM_FABRIK_LINKS')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -142,9 +142,9 @@ use Joomla\CMS\Language\Text;
         </fieldset>
     </div>
 </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 
-<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-notes', Text::_('COM_FABRIK_NOTES')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'detailsTabs', 'details-notes', Text::_('COM_FABRIK_NOTES')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -155,9 +155,9 @@ use Joomla\CMS\Language\Text;
         </fieldset>
     </div>
 </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 
-<?php echo HtmlHelper::_('bootstrap.addTab', 'detailsTabs', 'details-advanced', Text::_('COM_FABRIK_ADVANCED')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'detailsTabs', 'details-advanced', Text::_('COM_FABRIK_ADVANCED')); ?>
 <div class="row">
     <div class="col-md-12">
         <fieldset class="form-horizontal">
@@ -168,6 +168,6 @@ use Joomla\CMS\Language\Text;
         </fieldset>
     </div>
 </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 
-<?php echo HtmlHelper::_('bootstrap.endTabSet'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTabSet'); ?>

@@ -16,8 +16,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
 
 ?>
-<?php echo HtmlHelper::_('bootstrap.startTabSet', 'publishingTabs', array('active' => 'publishing')); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'publishingTabs', 'publishing', Text::_('COM_FABRIK_ELEMENT_LABEL_PUBLISHING_DETAILS')); ?>
+<?php echo HTMLHelper::_('bootstrap.startTabSet', 'publishingTabs', array('active' => 'publishing')); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'publishingTabs', 'publishing', Text::_('COM_FABRIK_ELEMENT_LABEL_PUBLISHING_DETAILS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -28,8 +28,8 @@ use Joomla\CMS\HTML\HTMLHelper;
             </fieldset>
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'publishingTabs', 'rss', Text::_('COM_FABRIK_ELEMENT_LABEL_RSS')); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'publishingTabs', 'rss', Text::_('COM_FABRIK_ELEMENT_LABEL_RSS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -40,8 +40,8 @@ use Joomla\CMS\HTML\HTMLHelper;
             </fieldset>
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.addTab', 'publishingTabs', 'rss', Text::_('COM_FABRIK_ELEMENT_LABEL_TIPS')); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.addTab', 'publishingTabs', 'rss', Text::_('COM_FABRIK_ELEMENT_LABEL_TIPS')); ?>
     <div class="row">
         <div class="col-md-12">
             <fieldset class="form-horizontal">
@@ -52,5 +52,5 @@ use Joomla\CMS\HTML\HTMLHelper;
             </fieldset>
         </div>
     </div>
-<?php echo HtmlHelper::_('bootstrap.endTab'); ?>
-<?php echo HtmlHelper::_('bootstrap.endTabSet'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+<?php echo HTMLHelper::_('bootstrap.endTabSet'); ?>

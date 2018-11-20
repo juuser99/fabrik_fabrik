@@ -404,13 +404,13 @@ class ConnectionModel extends FabSiteModel
 				$this->id = $cn->id;
 				$fabrikDb = $this->getDb();
 				$tables = $fabrikDb->getTableList();
-				$connectionTables[$cn->value][] = HtmlHelper::_('select.option', '', '- Please select -');
+				$connectionTables[$cn->value][] = HTMLHelper::_('select.option', '', '- Please select -');
 
 				if (is_array($tables))
 				{
 					foreach ($tables as $table)
 					{
-						$connectionTables[$cn->value][] = HtmlHelper::_('select.option', $table, $table);
+						$connectionTables[$cn->value][] = HTMLHelper::_('select.option', $table, $table);
 					}
 				}
 			}

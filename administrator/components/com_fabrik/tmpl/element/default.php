@@ -17,11 +17,11 @@ use Fabrik\Helpers\Html;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
 
-HtmlHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-HtmlHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
-HtmlHelper::_('behavior.tooltip');
+HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+HTMLHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
+HTMLHelper::_('behavior.tooltip');
 Html::formvalidation();
-HtmlHelper::_('behavior.keepalive');
+HTMLHelper::_('behavior.keepalive');
 
 Text::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 ?>
@@ -124,5 +124,5 @@ Text::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="redirectto" value="" />
-	<?php echo HtmlHelper::_('form.token'); ?>
+	<?php echo HTMLHelper::_('form.token'); ?>
 </form>
