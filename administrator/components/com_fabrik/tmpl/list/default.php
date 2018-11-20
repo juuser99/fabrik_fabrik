@@ -45,7 +45,7 @@ HTMLHelper::_('behavior.keepalive');
 <form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
     <div class="row" id="elementFormTable">
 
-        <div class="col-md-2">
+        <div class="col-2">
             <ul class="nav flex-column" style="margin-top:40px">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#detailsX">
@@ -74,7 +74,7 @@ HTMLHelper::_('behavior.keepalive');
                 </li>
             </ul>
         </div>
-        <div class="col-md-10">
+        <div class="col-10">
             <div class="tab-content">
                 <div class="tab-pane active" id="detailsX">
 				    <?php echo $this->loadTemplate('details'); ?>

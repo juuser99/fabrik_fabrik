@@ -20,7 +20,7 @@ Use Joomla\CMS\Language\Text;
 		<legend><?php echo Text::_('COM_FABRIK_VALIDATIONS'); ?></legend>
 		<div id="plugins" class="accordion"></div>
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-12">
 				<a href="#" class="btn btn-success" id="addPlugin">
 					<i class="icon-plus"></i>
 					<?php echo Text::_('COM_FABRIK_ADD'); ?>

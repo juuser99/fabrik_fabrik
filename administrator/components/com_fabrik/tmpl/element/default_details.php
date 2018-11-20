@@ -16,7 +16,7 @@ use Joomla\CMS\Language\Text;
 
 ?>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <fieldset class="form-horizontal">
                 <legend><?php echo Text::_('COM_FABRIK_DETAILS');?></legend>
                 <input type="hidden" id="name_orig" name="name_orig" value="<?php echo $this->item->name; ?>" />

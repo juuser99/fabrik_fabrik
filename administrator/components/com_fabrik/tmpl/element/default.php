@@ -62,7 +62,7 @@ Text::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 }?>
 	<div class="row" id="elementFormTable">
 
-		<div class="col-md-2">
+		<div class="col-2">
 
 			<ul class="nav flex-column">
 				<li class="nav-item">
@@ -98,7 +98,7 @@ Text::script('COM_FABRIK_SUBOPTS_VALUES_ERROR');
 			</ul>
 		</div>
 
-		<div class="col-md-10">
+		<div class="col-10">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab-details">
                     <?php echo $this->loadTemplate('details'); ?>

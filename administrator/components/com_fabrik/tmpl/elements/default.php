@@ -66,10 +66,10 @@ $states = array(
 ?>
 <form action="<?php echo Route::_('index.php?option=com_fabrik&view=elements'); ?>" method="post" name="adminForm" id="adminForm">
     <div class="row">
-        <div id="j-sidebar-container" class="col-md-2">
+        <div id="j-sidebar-container" class="col-2">
 			<?php echo $this->sidebar; ?>
         </div>
-        <div id="j-main-container" class="col-md-10">
+        <div id="j-main-container" class="col-10">
 			<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 
             <div class="clearfix"></div>

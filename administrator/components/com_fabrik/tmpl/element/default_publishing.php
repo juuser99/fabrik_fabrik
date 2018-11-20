@@ -19,7 +19,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 <?php echo HTMLHelper::_('bootstrap.startTabSet', 'publishingTabs', array('active' => 'publishing')); ?>
 <?php echo HTMLHelper::_('bootstrap.addTab', 'publishingTabs', 'publishing', Text::_('COM_FABRIK_ELEMENT_LABEL_PUBLISHING_DETAILS')); ?>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <fieldset class="form-horizontal">
 				<?php foreach ($this->form->getFieldset('publishing') as $this->field) :
 					echo $this->loadTemplate('control_group');
@@ -31,7 +31,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 <?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 <?php echo HTMLHelper::_('bootstrap.addTab', 'publishingTabs', 'rss', Text::_('COM_FABRIK_ELEMENT_LABEL_RSS')); ?>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <fieldset class="form-horizontal">
 				<?php foreach ($this->form->getFieldset('rss') as $this->field) :
 					echo $this->loadTemplate('control_group');
@@ -43,7 +43,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 <?php echo HTMLHelper::_('bootstrap.endTab'); ?>
 <?php echo HTMLHelper::_('bootstrap.addTab', 'publishingTabs', 'rss', Text::_('COM_FABRIK_ELEMENT_LABEL_TIPS')); ?>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <fieldset class="form-horizontal">
 				<?php foreach ($this->form->getFieldset('rss') as $this->field) :
 					echo $this->loadTemplate('control_group');

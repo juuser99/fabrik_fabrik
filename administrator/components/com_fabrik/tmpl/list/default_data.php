@@ -23,7 +23,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 
 <?php echo HTMLHelper::_('bootstrap.addTab', 'dataTabs', 'data-data', Text::_('COM_FABRIK_DATA')); ?>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
         <fieldset class="form-horizontal">
 		    <?php
 		    $this->field = $this->form->getField('connection_id');
@@ -66,7 +66,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 
 <?php echo HTMLHelper::_('bootstrap.addTab', 'dataTabs', 'data-groupby', Text::_('COM_FABRIK_GROUP_BY')); ?>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
         <fieldset class="form-horizontal">
 		    <?php
 		    foreach ($this->form->getFieldset('grouping') as $this->field):
@@ -83,7 +83,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 
 <?php echo HTMLHelper::_('bootstrap.addTab', 'dataTabs', 'data-prefilter', Text::_('COM_FABRIK_PREFILTER')); ?>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
         <fieldset class="form-horizontal">
             <legend><?php echo Text::_('COM_FABRIK_PREFILTERS')?></legend>
 
@@ -107,7 +107,7 @@ $rtlDirInv = $doc->direction === 'rtl' ? 'right' : 'left';
 
 <?php echo HTMLHelper::_('bootstrap.addTab', 'dataTabs', 'table-sliders-data-joins', Text::_('COM_FABRIK_JOINS')); ?>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
         <fieldset>
             <legend>
 			    <?php echo Text::_('COM_FABRIK_JOINS');?>

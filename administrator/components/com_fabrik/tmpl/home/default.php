@@ -21,12 +21,12 @@ ToolbarHelper::title(Text::_('COM_FABRIK_WELCOME'), 'fabrik.png');
 ?>
 
 <div class="row">
-	<div id="j-sidebar-container" class="col-md-2">
+	<div id="j-sidebar-container" class="col-2">
 		<?php echo $this->sidebar; ?>
 	</div>
-	<div id="j-main-container" class="col-md-10"">
+	<div id="j-main-container" class="col-10"">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-6">
                 <div style="float:left;width:250px;">
                     <a href="http://fabrikar.com/" target="_blank">
                         <?php echo HTMLHelper::image('media/com_fabrik/images/logo.png', 'Fabrik'); ?>
@@ -39,7 +39,7 @@ ToolbarHelper::title(Text::_('COM_FABRIK_WELCOME'), 'fabrik.png');
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-6">
                 <ul class="nav nav-tabs">
                     <li class="nav-item active">
                         <a class="nav-link" data-toggle="tab" href="#home-about">
