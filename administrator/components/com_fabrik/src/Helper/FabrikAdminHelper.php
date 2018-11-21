@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Access\Access;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filter\InputFilter;
@@ -43,10 +44,11 @@ class FabrikAdminHelper
 	 *
 	 * @since 4.0
 	 */
-
 	public static function prepareSaveDate($strdate)
 	{
-		$config   = Factory::getConfig();
+		/** @var CMSApplication $app */
+		$app      = Factory::getApplication();
+		$config   = $app->getConfig();
 		$tzoffset = $config->get('offset');
 		$db       = Worker::getDbo(true);
 
@@ -78,7 +80,6 @@ class FabrikAdminHelper
 	 *
 	 * @return    CMSObject
 	 */
-
 	public static function getActions($categoryId = 0)
 	{
 		$user   = Factory::getUser();
@@ -123,7 +124,7 @@ class FabrikAdminHelper
 		\JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_GROUPS'), 'index.php?option=com_fabrik&view=groups', $vName == 'groups');
 		\JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_ELEMENTS'), 'index.php?option=com_fabrik&view=elements', $vName == 'elements');
 		\JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_VISUALIZATIONS'), $vizUrl, $vName == 'visualizations');
-		\JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_PACKAGES'), 'index.php?option=com_fabrik&view=packages', $vName == 'packages');
+		//\JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_PACKAGES'), 'index.php?option=com_fabrik&view=packages', $vName == 'packages');
 		\JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CONNECTIONS'), 'index.php?option=com_fabrik&view=connections', $vName == 'connections');
 		\JHtmlSidebar::addEntry(Text::_('COM_FABRIK_SUBMENU_CRONS'), 'index.php?option=com_fabrik&view=crons', $vName == 'crons');
 	}
@@ -137,7 +138,6 @@ class FabrikAdminHelper
 	 *
 	 * @since 4.0
 	 */
-
 	public static function filterText($text)
 	{
 		// Filter settings
@@ -274,6 +274,8 @@ class FabrikAdminHelper
 	 * @param   HtmlView  $view  current view to setLayout for
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public static function setViewLayout($view)
 	{
