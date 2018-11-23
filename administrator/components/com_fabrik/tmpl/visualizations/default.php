@@ -38,16 +38,16 @@ $listDirn = $this->state->get('list.direction');
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th width="2%"><?php echo HTMLHelper::_('grid.sort',  'JGRID_HEADING_ID', 'v.id', $listDirn, $listOrder); ?></th>
+                        <th width="2%"><?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_ID', 'v.id', $listDirn, $listOrder); ?></th>
                         <th width="1%"> <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" /> </th>
                         <th width="35%" >
-                            <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'v.label', $listDirn, $listOrder); ?>
+                            <?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'v.label', $listDirn, $listOrder); ?>
                         </th>
                         <th width="35%">
-                            <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_TYPE', 'v.plugin', $listDirn, $listOrder); ?>
+                            <?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_TYPE', 'v.plugin', $listDirn, $listOrder); ?>
                         </th>
                         <th width="5%">
-                            <?php echo HTMLHelper::_('grid.sort', 'JPUBLISHED', 'v.published', $listDirn, $listOrder); ?>
+                            <?php echo HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'v.published', $listDirn, $listOrder); ?>
                         </th>
                     </tr>
                 </thead>

@@ -44,13 +44,13 @@ $listDirn  = $this->state->get('list.direction');
                 <thead>
                 <tr>
                     <th width="2%">
-                        <?php echo HTMLHelper::_('grid.sort', 'JGRID_HEADING_ID', 'f.id', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'f.id', $listDirn, $listOrder); ?>
                     </th>
                     <th width="1%">
                         <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this);" />
                     </th>
                     <th width="35%">
-                        <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'f.label', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'f.label', $listDirn, $listOrder); ?>
                     </th>
                     <th width="10%">
                         <?php echo Text::_('COM_FABRIK_ELEMENT'); ?>
@@ -65,7 +65,7 @@ $listDirn  = $this->state->get('list.direction');
                         <?php echo Text::_('COM_FABRIK_VIEW_DATA'); ?>
                     </th>
                     <th width="5%">
-                        <?php echo HTMLHelper::_('grid.sort', 'JPUBLISHED', 'f.published', $listDirn, $listOrder); ?>
+                        <?php echo HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'f.published', $listDirn, $listOrder); ?>
                     </th>
                 </tr>
                 </thead>

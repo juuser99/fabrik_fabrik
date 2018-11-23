@@ -40,25 +40,25 @@ $listDirn = $this->state->get('list.direction');
             <thead>
             <tr>
                 <th width="2%">
-                    <?php echo HTMLHelper::_('grid.sort', 'JGRID_HEADING_ID', 'g.id', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'g.id', $listDirn, $listOrder); ?>
                 </th>
                 <th width="1%">
                     <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
                 </th>
                 <th width="30%" >
-                    <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_NAME', 'g.name', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_NAME', 'g.name', $listDirn, $listOrder); ?>
                 </th>
                 <th width="30%" >
-                    <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'g.label', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'g.label', $listDirn, $listOrder); ?>
                 </th>
                 <th width="30%">
-                    <?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_FORM', 'f.label', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_FABRIK_FORM', 'f.label', $listDirn, $listOrder); ?>
                 </th>
                 <th width="31%">
                     <?php echo Text::_('COM_FABRIK_ELEMENTS'); ?>
                 </th>
                 <th width="5%">
-                    <?php echo HTMLHelper::_('grid.sort', 'JPUBLISHED', 'g.published', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'g.published', $listDirn, $listOrder); ?>
                 </th>
             </tr>
             </thead>
