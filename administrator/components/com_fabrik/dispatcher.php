@@ -7,9 +7,9 @@
  * @since       4.0.0
  */
 
-
 defined('_JEXEC') or die;
 
+use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Dispatcher\ComponentDispatcher;
 
 /**
@@ -27,4 +27,41 @@ class FabrikDispatcher extends ComponentDispatcher
 	 * @since  4.0.0
 	 */
 	protected $namespace = 'Joomla\\Component\\Fabrik';
+
+	/**
+	 * Get a controller from the component with a "hack" for J4 lack of support for formatted controllers
+	 *
+	 * @param   string $name   Controller name
+	 * @param   string $client Optional client (like Administrator, Site etc.)
+	 * @param   array  $config Optional controller config
+	 *
+	 * @return  BaseController
+	 *
+	 * @since   4.0.0
+	 */
+	public function getController(string $name, string $client = '', array $config = array()): BaseController
+	{
+		$format     = $this->input->get('format');
+		$controller = $this->input->get('controller');
+
+		if (!empty($controller) && 'raw' === $format)
+		{
+			$classController    = ucfirst($controller);
+			$format             = ucfirst($format);
+			$backendController  = sprintf("%s\\Administrator\\Controller\\%s%sController", $this->namespace, $classController, $format);
+			$frontendController = sprintf("%s\\Site\\Controller\\%s%sController", $this->namespace, $classController, $format);
+
+			if (!class_exists($backendController) && !class_exists($frontendController))
+			{
+				// Fallback to the standard controller
+				return parent::getController($name, $client, $config);
+			}
+
+			$controller .= 'Raw';
+			$name       .= 'Raw';
+			$this->input->set('controller', $controller);
+		}
+
+		return parent::getController($name, $client, $config);
+	}
 }
