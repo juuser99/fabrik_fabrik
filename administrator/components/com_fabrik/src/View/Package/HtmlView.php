@@ -74,7 +74,6 @@ class HtmlView extends FormView
 			throw new \RuntimeException(implode("\n", $errors), 500);
 		}
 
-		$this->addToolbar();
 		$canvas = FArrayHelper::getValue($this->item->params, 'canvas', array());
 		$blocks = new \stdClass;
 		$b = FArrayHelper::getValue($canvas, 'blocks', array());
