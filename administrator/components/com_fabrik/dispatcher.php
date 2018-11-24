@@ -19,6 +19,10 @@ use Joomla\CMS\Dispatcher\ComponentDispatcher;
  */
 class FabrikDispatcher extends ComponentDispatcher
 {
+	public const NAMESPACE = 'Joomla\\Component\\Fabrik';
+	public const PREFIX_SITE = 'Site';
+	public const PREFIX_ADMIN = 'Administrator';
+
 	/**
 	 * The extension namespace
 	 *
@@ -26,7 +30,7 @@ class FabrikDispatcher extends ComponentDispatcher
 	 *
 	 * @since  4.0.0
 	 */
-	protected $namespace = 'Joomla\\Component\\Fabrik';
+	protected $namespace = self::NAMESPACE;
 
 	/**
 	 * Get a controller from the component with a "hack" for J4 lack of support for formatted controllers
@@ -48,8 +52,21 @@ class FabrikDispatcher extends ComponentDispatcher
 		{
 			$classController    = ucfirst($controller);
 			$format             = ucfirst($format);
-			$backendController  = sprintf("%s\\Administrator\\Controller\\%s%sController", $this->namespace, $classController, $format);
-			$frontendController = sprintf("%s\\Site\\Controller\\%s%sController", $this->namespace, $classController, $format);
+			$controllerString   = "%s\\%s\\Controller\\%s%sController";
+			$backendController  = sprintf(
+				$controllerString,
+				$this->namespace,
+				self::PREFIX_SITE,
+				$classController,
+				$format
+			);
+			$frontendController = sprintf(
+				$controllerString,
+				$this->namespace,
+				self::PREFIX_ADMIN,
+				$classController,
+				$format
+			);
 
 			if (!class_exists($backendController) && !class_exists($frontendController))
 			{
