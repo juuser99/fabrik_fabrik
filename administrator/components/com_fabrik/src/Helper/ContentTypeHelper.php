@@ -12,9 +12,9 @@
 namespace Joomla\Component\Fabrik\Administrator\Helper;
 
 // No direct access
-use Fabrik\Helpers\Worker;
-
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Content Type Helper
