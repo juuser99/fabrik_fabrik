@@ -81,7 +81,6 @@
 		<files folder="admin">
 			<folder>src</folder>
 
-			<file>fabrik.php</file>
 			<folder>sql</folder>
 			<folder>classes</folder>
 			<folder>contentelements</folder>
@@ -94,10 +93,8 @@
 			<folder>views</folder>
 			<file>access.xml</file>
 			<file>config.xml</file>
-			<file>controller.php</file>
-			<file>header.php</file>
+			<file>dispatcher.php</file>
 			<file>headings.css</file>
-			<file>index.html</file>
 		</files>
 
 	</administration>
