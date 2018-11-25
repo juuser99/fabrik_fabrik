@@ -33,7 +33,7 @@ class FabModel extends BaseDatabaseModel
 	public static function getInstance($modelClass, $prefix = '', $config = array())
 	{
 		if (!class_exists($modelClass)) {
-			if (self::PREFIX_SITE !== $prefix && self::PREFIX_ADMIN !== $prefix)
+			if (\FabrikDispatcher::PREFIX_SITE !== $prefix && \FabrikDispatcher::PREFIX_ADMIN !== $prefix)
 			{
 				// Try Native Joomla
 				return parent::getInstance($modelClass, $prefix, $config);
@@ -41,7 +41,7 @@ class FabModel extends BaseDatabaseModel
 
 			// Let's see if one of our models exist in case we are dynamically requesting the model
 			$modelString = "%s\\%s\\Model\\%sModel";
-			$modelClass  = (self::PREFIX_SITE === $prefix) ?
+			$modelClass  = (\FabrikDispatcher::PREFIX_SITE === $prefix) ?
 				sprintf($modelString, \FabrikDispatcher::NAMESPACE, \FabrikDispatcher::PREFIX_SITE, ucfirst($modelClass)) :
 				sprintf($modelString, \FabrikDispatcher::NAMESPACE, \FabrikDispatcher::PREFIX_ADMIN, ucfirst($modelClass));
 
