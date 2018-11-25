@@ -1321,7 +1321,7 @@ EOD;
 			$r->form        = 'plugins/fabrik_form';
 			$r->cron        = 'plugins/fabrik_cron';
 			$r->viz         = 'plugins/fabrik_visualization';
-			$r->admin       = 'administrator/components/com_fabrik/views';
+			$r->admin       = 'administrator/components/com_fabrik/tmpl';
 			$r->adminfields = 'administrator/components/com_fabrik/models/fields';
 
 			$r->jQueryUI   = 'media/com_fabrik/js/lib/jquery-ui/jquery-ui';
