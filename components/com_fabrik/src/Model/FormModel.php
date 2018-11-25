@@ -1155,7 +1155,7 @@ class FormModel extends FabSiteModel
 		if (!isset($this->groups))
 		{
 			$this->getGroups();
-			$this->groups = Worker::getPluginManager(true)->getFormPlugins($this);
+			$this->groups = Worker::getPluginManager()->getFormPlugins($this);
 		}
 
 		return $this->groups;
@@ -4571,7 +4571,7 @@ class FormModel extends FabSiteModel
 			$this->groupidmap[$oldId] = $groupModel->getGroup()->id;
 		}
 		// Need to do finalCopyCheck() on form elements
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 
 		// @TODO something not right here when copying a cascading dropdown element in a join group
 		foreach ($newElements as $origId => $newId)
@@ -5380,7 +5380,7 @@ class FormModel extends FabSiteModel
 			}
 
 			unset($this->groups);
-			$pluginManager = Worker::getPluginManager(true);
+			$pluginManager = Worker::getPluginManager();
 			$pluginManager->clearFormPlugins($this);
 		}
 	}

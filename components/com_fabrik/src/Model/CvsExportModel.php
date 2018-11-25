@@ -238,7 +238,7 @@ class CvsExportModel extends FabSiteModel
 				}
 
 				$this->model->csvExportRow = $a;
-				$pluginResults = Worker::getPluginManager(true)->runPlugins('onExportCSVRow', $this->model, 'list', $a);
+				$pluginResults = Worker::getPluginManager()->runPlugins('onExportCSVRow', $this->model, 'list', $a);
 				if (in_array(false, $pluginResults))
 				{
 					continue;
@@ -776,7 +776,7 @@ class CvsExportModel extends FabSiteModel
 		}
 
 		$this->model->csvExportHeadings = $h;
-		$pluginResults = Worker::getPluginManager(true)->runPlugins('onExportCSVHeadings', $this->model, 'list', $h);
+		$pluginResults = Worker::getPluginManager()->runPlugins('onExportCSVHeadings', $this->model, 'list', $h);
 		if (in_array(false, $pluginResults))
 		{
 			return false;

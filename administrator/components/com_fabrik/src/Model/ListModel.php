@@ -1349,7 +1349,7 @@ class ListModel extends FabAdminModel
 			$tableName = FArrayHelper::getValue($Form, 'db_table_name');
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$groupTable    = FabTable::getInstance(GroupTable::class);
 		$groupTable->load($groupId);
 
@@ -1434,7 +1434,7 @@ class ListModel extends FabAdminModel
 		$dispatcher    = Factory::getApplication()->getDispatcher();
 		$input         = $this->app->input;
 		$elementModel  = new \PlgFabrik_Element($dispatcher);
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$fbConfig      = ComponentHelper::getParams('com_fabrik');
 		$elementTypes  = $input->get('elementtype', array(), 'array');
 		$fields        = $fabrikDb->getTableColumns($tableName, false);
@@ -2544,7 +2544,7 @@ class ListModel extends FabAdminModel
 	 */
 	public function makeElement($name, $data)
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$element       = $pluginManager->loadPlugIn($data['plugin'], 'element');
 		$item          = $element->getDefaultProperties($data);
 		$item->id      = null;

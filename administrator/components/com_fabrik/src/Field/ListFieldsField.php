@@ -228,7 +228,7 @@ class ListFieldsField extends ListField
 	{
 		$input         = Factory::getApplication()->input;
 		$id            = $input->getInt('id');
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$elementModel  = $pluginManager->getElementPlugin($id);
 		$element       = $elementModel->getElement();
 

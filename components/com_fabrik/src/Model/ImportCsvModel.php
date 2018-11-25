@@ -839,7 +839,7 @@ class ImportCsvModel extends FabModel
 		// $$$ rob 27/17/212 we need to reset the form as it was first generated before its elements were created.
 		$formModel->reset();
 
-		Worker::getPluginManager(true)->runPlugins('onStartImportCSV', $model, 'list');
+		Worker::getPluginManager()->runPlugins('onStartImportCSV', $model, 'list');
 
 		if ($dropData && $model->canEmpty())
 		{
@@ -972,10 +972,10 @@ class ImportCsvModel extends FabModel
 			{
 				$formModel->formData = $formModel->formDataWithTableName = $aRow;
 
-				if (!in_array(false, Worker::getPluginManager(true)->runPlugins('onImportCSVRow', $model, 'list')))
+				if (!in_array(false, Worker::getPluginManager()->runPlugins('onImportCSVRow', $model, 'list')))
 				{
 					$rowid = $formModel->processToDB();
-					Worker::getPluginManager(true)->runPlugins('onAfterImportCSVRow', $model, 'list');
+					Worker::getPluginManager()->runPlugins('onAfterImportCSVRow', $model, 'list');
 				}
 			}
 			else
@@ -993,7 +993,7 @@ class ImportCsvModel extends FabModel
 		$this->removeCSVFile();
 		$this->updatedCount = $updatedCount;
 
-		Worker::getPluginManager(true)->runPlugins('onCompleteImportCSV', $model, 'list');
+		Worker::getPluginManager()->runPlugins('onCompleteImportCSV', $model, 'list');
 
 		ini_set('max_execution_time', $origMaxExecution);
 	}
@@ -1209,7 +1209,7 @@ class ImportCsvModel extends FabModel
 			$app->input->set('fabrik_repeat_group', $fabrik_repeat_group);
 			$formModel->formData = $data;
 
-			if (!in_array(false, Worker::getPluginManager(true)->runPlugins('onImportCSVRow', $model, 'list')))
+			if (!in_array(false, Worker::getPluginManager()->runPlugins('onImportCSVRow', $model, 'list')))
 			{
 				$formModel->processToDB();
 			}

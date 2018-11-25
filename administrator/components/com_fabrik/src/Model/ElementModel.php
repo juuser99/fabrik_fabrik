@@ -1441,7 +1441,7 @@ class ElementModel extends FabAdminModel
 			return $this->_aValidations;
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('validationrule');
 		$this->aValidations = array();
 

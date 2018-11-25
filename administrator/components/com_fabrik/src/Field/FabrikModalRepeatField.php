@@ -88,7 +88,7 @@ class FabrikModalRepeatField extends FormField
 
 		if ($view === 'element')
 		{
-			$pluginManager = Worker::getPluginManager(true);
+			$pluginManager = Worker::getPluginManager();
 			$feModel       = $pluginManager->getPluginFromId($id);
 		}
 		else

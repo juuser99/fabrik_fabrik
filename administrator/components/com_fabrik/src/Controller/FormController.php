@@ -182,7 +182,7 @@ class FormController extends AbstractFormController
 		// Check if any plugin has created a new validation error
 		if ($model->hasErrors())
 		{
-			Worker::getPluginManager(true)->runPlugins('onError', $model);
+			Worker::getPluginManager()->runPlugins('onError', $model);
 			$this->handleError($view, $model);
 
 			return;

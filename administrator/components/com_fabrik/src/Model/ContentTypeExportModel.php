@@ -375,7 +375,7 @@ class ContentTypeExportModel extends FabAdminModel
 		};
 
 		$element       = ContentTypeHelper::buildExportNode($this->doc, 'element', $data);
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$elementModel  = clone($pluginManager->getPlugIn($data['plugin'], 'element'));
 
 		if (is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))

@@ -383,7 +383,7 @@ class ListAdvancedSearchModel extends FabSiteModel
 		$model = $this->model;
 		$input = $this->app->input;
 		$elementId = $input->getId('elid');
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$className = $input->get('plugin');
 		$plugin = $pluginManager->getPlugIn($className, 'element');
 		$plugin->setId($elementId);

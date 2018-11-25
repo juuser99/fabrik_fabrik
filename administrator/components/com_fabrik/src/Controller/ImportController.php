@@ -67,7 +67,7 @@ class ImportController extends AbstractFormController
 		$adminListModel->setFormModel($formModel);
 		$groupId       = current(array_keys($formModel->getGroupsHiarachy()));
 		$plugins       = $input->get('plugin', array(), 'array');
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$elementModel  = $pluginManager->getPlugIn('field', 'element');
 		/** @var ElementTable $element */
 		$element     = FabTable::getInstance(ElementTable::class);

@@ -723,7 +723,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function processPlugin()
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('process', $this, 'list');
 
 		return $pluginManager->data;
@@ -738,7 +738,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function getPluginTopButtons()
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('topButton', $this, 'list');
 		$buttons = $pluginManager->data;
 
@@ -754,7 +754,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function getPluginButtons()
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$pluginManager->runPlugins('button', $this, 'list');
 		$buttons = $pluginManager->data;
@@ -775,7 +775,7 @@ class ListModel extends FabSiteModel
 	public function getPluginJsClasses(&$r = array(), &$shim = array())
 	{
 		$r = (array) $r;
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$src = array();
 		$pluginManager->runPlugins('loadJavascriptClass', $this, 'list', $src);
@@ -823,7 +823,7 @@ class ListModel extends FabSiteModel
 			$container = 'listform_' . $this->getId();
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$pluginManager->runPlugins('onLoadJavascriptInstance', $this, 'list', $container);
 
@@ -839,7 +839,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function render()
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBeforeListRender', $this, 'list');
 		Html::debug($_POST, 'render:post');
 		$input = $this->app->input;
@@ -1065,7 +1065,7 @@ class ListModel extends FabSiteModel
 		}
 
 		$profiler = Profiler::getInstance('Application');
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onPreLoadData', $this, 'list');
 
 		// Needs to be off for FOUND_ROWS() to work
@@ -1151,7 +1151,7 @@ class ListModel extends FabSiteModel
 		// fire a plugin hook before we format the data
 		$args       = new \stdClass;
 		$args->data = $this->data;
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onLoadedData', $this, 'list', $args);
 		$pluginManager->runPlugins('onLoadedListData', $this->getFormModel(), 'form', $args);
 
@@ -2769,7 +2769,7 @@ class ListModel extends FabSiteModel
 		// Pass the query as an object property so it can be updated via reference
 		$args = new \stdClass;
 		$args->query = $query;
-		Worker::getPluginManager(true)->runPlugins('onQueryBuilt', $this, 'list', $args);
+		Worker::getPluginManager()->runPlugins('onQueryBuilt', $this, 'list', $args);
 		$query = $args->query;
 
 		return $query;
@@ -2889,7 +2889,7 @@ class ListModel extends FabSiteModel
 			$sql .= ' FROM ' . $db->qn($table->db_table_name) . " \n";
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBuildQuerySelect', $this, 'list', $query);
 
 		return $query ? $query : $sql;
@@ -3417,7 +3417,7 @@ class ListModel extends FabSiteModel
 	public function buildQueryGroupBy($query = false)
 	{
 		$groups = $this->getFormModel()->getGroupsHiarachy();
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 
 		foreach ($groups as $groupModel)
 		{
@@ -3470,7 +3470,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function buildQueryWhere($incFilters = true, $query = false, $doJoins = true)
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('onBuildQueryWhere', $this, 'list');
 
 		$sig = !$query ? 'string' : 'query';
@@ -4263,7 +4263,7 @@ class ListModel extends FabSiteModel
 			 * value other than true or false) then we drop through to normal useDo/ACL checks.  If any plugin returns
 			 * false, access is denied.  If no plugin returns false, and any return true, access is allowed.
 			 */
-			$pluginCanView = Worker::getPluginManager(true)->runPlugins('onCanView', $this, 'list', $row);
+			$pluginCanView = Worker::getPluginManager()->runPlugins('onCanView', $this, 'list', $row);
 
 			// At least one plugin run, so plugin results take precedence over anything else.
 			if (!empty($pluginCanView))
@@ -4318,7 +4318,7 @@ class ListModel extends FabSiteModel
 		 * value other than true or false) then we drop through to normal useDo/ACL checks.  If any plugin returns
 		 * false, access is denied.  If no plugin returns false, and any return true, access is allowed.
 		 */
-		$pluginCanEdit = Worker::getPluginManager(true)->runPlugins('onCanEdit', $this, 'list', $row);
+		$pluginCanEdit = Worker::getPluginManager()->runPlugins('onCanEdit', $this, 'list', $row);
 
 		// At least one plugin run, so plugin results take precedence over anything else.
 		if (!empty($pluginCanEdit))
@@ -4418,7 +4418,7 @@ class ListModel extends FabSiteModel
 		 * valuse other than true or false) then we drop through to normal useDo/ACL checks.  If any plugin returns
 		 * false, access is denied.  If no plugin returns false, and any return true, access is allowed.
 		 */
-		$pluginCanDelete = Worker::getPluginManager(true)->runPlugins('onCanDelete', $this, 'list', $row);
+		$pluginCanDelete = Worker::getPluginManager()->runPlugins('onCanDelete', $this, 'list', $row);
 
 		// At least one plugin run, so plugin results take precedence over anything else.
 		if (!empty($pluginCanDelete))
@@ -4972,7 +4972,7 @@ class ListModel extends FabSiteModel
 	{
 		$return = array(false, '', '', '', '', false);
 		$element = $elementModel->getElement();
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
 		$fabrikDb = $this->getDb();
 		$group = $elementModel->getGroup();
@@ -5197,7 +5197,7 @@ class ListModel extends FabSiteModel
 	public function alterStructure(&$elementModel, $origColName = null)
 	{
 		$element = $elementModel->getElement();
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$basePlugIn = $pluginManager->getPlugIn($element->plugin, 'element');
 		$fabrikDb = $this->getDb();
 		$table = $this->getTable();
@@ -5453,7 +5453,7 @@ class ListModel extends FabSiteModel
 			}
 		}
 
-		Worker::getPluginManager(true)->runPlugins(
+		Worker::getPluginManager()->runPlugins(
 			'onStoreRequestData',
 			$this,
 			'list',
@@ -5523,7 +5523,7 @@ class ListModel extends FabSiteModel
 
 		if (count($this->filters) == 0)
 		{
-			Worker::getPluginManager(true)->runPlugins('onFiltersGot', $this, 'list');
+			Worker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
 
 			return $this->filters;
 		}
@@ -5790,7 +5790,7 @@ class ListModel extends FabSiteModel
 			}
 		}
 
-		Worker::getPluginManager(true)->runPlugins('onFiltersGot', $this, 'list');
+		Worker::getPluginManager()->runPlugins('onFiltersGot', $this, 'list');
 		Html::debug($this->filters, 'after plugins:onFiltersGot');
 
 		return $this->filters;
@@ -6246,7 +6246,7 @@ class ListModel extends FabSiteModel
 			$this->real_filter_action = $table->filter_action;
 
 			// Check to see if any list filter plugins require a Go button, like radius search
-			$pluginManager = Worker::getPluginManager(true);
+			$pluginManager = Worker::getPluginManager();
 			$pluginManager->getPlugInGroup('list');
 
 			$pluginManager->runPlugins('requireFilterSubmit', $this, 'list');
@@ -6702,7 +6702,7 @@ class ListModel extends FabSiteModel
 				}
 			}
 
-			Worker::getPluginManager(true)->runPlugins('onMakeFilters', $this, 'list');
+			Worker::getPluginManager()->runPlugins('onMakeFilters', $this, 'list');
 		}
 
 		return $this->viewfilters;
@@ -7250,8 +7250,8 @@ class ListModel extends FabSiteModel
 		$args['cellClass'] =& $cellClass;
 		$args['data'] = $this->data;
 
-		Worker::getPluginManager(true)->runPlugins('onGetPluginRowHeadings', $this, 'list', $args);
-		Worker::getPluginManager(true)->runPlugins('onGetPluginRowHeadings', $this->getFormModel(), 'form', $args);
+		Worker::getPluginManager()->runPlugins('onGetPluginRowHeadings', $this, 'list', $args);
+		Worker::getPluginManager()->runPlugins('onGetPluginRowHeadings', $this->getFormModel(), 'form', $args);
 
 		return array($aTableHeadings, $groupHeadings, $headingClass, $cellClass);
 	}
@@ -7315,7 +7315,7 @@ class ListModel extends FabSiteModel
 			$edit = false;
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->runPlugins('button', $this, 'list', array('heading' => true));
 		$pluginHeadings = array_filter($pluginManager->data);
 
@@ -7457,7 +7457,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function canSelectRow($row)
 	{
-		$canSelect = Worker::getPluginManager(true)->runPlugins('onCanSelectRow', $this, 'list', $row);
+		$canSelect = Worker::getPluginManager()->runPlugins('onCanSelectRow', $this, 'list', $row);
 
 		if (in_array(false, $canSelect))
 		{
@@ -7479,7 +7479,7 @@ class ListModel extends FabSiteModel
 			return false;
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$v = in_array(true, $pluginManager->runPlugins('canSelectRows', $this, 'list'));
 
@@ -7527,7 +7527,7 @@ class ListModel extends FabSiteModel
 			return $this->canSelectRows;
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$pluginManager->getPlugInGroup('list');
 		$this->canSelectRows = in_array(true, $pluginManager->runPlugins('canSelectRows', $this, 'list'));
 
@@ -8277,7 +8277,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function makeFkElement($groupId)
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$element = $pluginManager->getPlugIn('field', 'element');
 		$item = $element->getDefaultProperties();
 		$item->name = $item->label = 'parent_id';
@@ -8309,7 +8309,7 @@ class ListModel extends FabSiteModel
 	 */
 	public function makeIdElement($groupId)
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$element = $pluginManager->getPlugIn('internalid', 'element');
 		$item = $element->getDefaultProperties();
 		$item->name = $item->label = 'id';
@@ -8894,7 +8894,7 @@ class ListModel extends FabSiteModel
 			}
 		}
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 
 		/* $$$ hugh - added onDeleteRowsForm plugin (needed it so fabrikjuser form plugin can delete users)
 		 * NOTE - had to call it onDeleteRowsForm rather than onDeleteRows, otherwise runPlugins() automagically
@@ -9036,7 +9036,7 @@ class ListModel extends FabSiteModel
 		$db = $this->getDb();
 		$item = $this->getTable();
 
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 
 		$formModel = $this->getFormModel();
 		$pluginManager->runPlugins('onBeforeTruncate', $this, 'list');

@@ -342,7 +342,7 @@ class ContentTypeImportModel extends FabAdminModel
 	{
 		$return        = true;
 		$formModel     = $this->listModel->getFormModel();
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 
 		foreach ($elementMap as $origId => $newId)
 		{
@@ -626,7 +626,7 @@ class ContentTypeImportModel extends FabAdminModel
 	 */
 	public function preview()
 	{
-		$pluginManager = Worker::getPluginManager(true);
+		$pluginManager = Worker::getPluginManager();
 		$xpath         = new \DOMXpath($this->doc);
 		$groups        = $xpath->query('/contenttype/group');
 		$return        = array();

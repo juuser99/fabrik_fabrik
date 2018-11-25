@@ -198,7 +198,7 @@ class GroupModel extends FabSiteModel
 
 		$formModel     = $this->getFormModel();
 
-		$pluginCanEdit = Worker::getPluginManager(true)->runPlugins('onCanEditGroup', $formModel, 'form', $this);
+		$pluginCanEdit = Worker::getPluginManager()->runPlugins('onCanEditGroup', $formModel, 'form', $this);
 
 		if (empty($pluginCanEdit))
 		{
