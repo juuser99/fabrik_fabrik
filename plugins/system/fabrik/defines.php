@@ -60,6 +60,9 @@ if (JFile::exists(COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php'))
 		require_once COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php';
 	}
 }
+
+/*
+// Not needed for namespaced J4; will likely remove these
 else
 {
 	$helpers = JFolder::files(COM_FABRIK_FRONTEND . '/helpers/', '.php');
@@ -87,3 +90,4 @@ if ($app->isAdmin())
 	JModelLegacy::addIncludePath(COM_FABRIK_BACKEND . '/models', 'FabrikAdminModel');
 	require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/fabrik.php';
 }
+*/
