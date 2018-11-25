@@ -1388,6 +1388,8 @@ EOD;
 
 		$mediaFolder = self::getMediaFolder();
 		JHtml::_('script', $mediaFolder . '/lib/mootools/mootools-' . $type . '.js', array('version' => 'auto', 'relative' => false, 'detectDebug' => $debug));
+		JHtml::_('script', $mediaFolder . '/mootools-no-conflict.js', array('version' => 'auto', 'relative' => false, 'detectDebug' => $debug));
+
 		static::$loaded[__METHOD__][$type] = true;
 
 		if (empty(static::$loaded[__METHOD__]['ext']))
@@ -1398,8 +1400,6 @@ EOD;
 
 		return;
 	}
-
-
 
 	/**
 	 * Load J!'s bootstrap CSS if requested.  Special case for iframes in non J! pages loading us.
