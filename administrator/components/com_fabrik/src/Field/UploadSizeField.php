@@ -26,6 +26,8 @@ use Joomla\String\StringHelper;
  */
 class UploadSizeField extends FormField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

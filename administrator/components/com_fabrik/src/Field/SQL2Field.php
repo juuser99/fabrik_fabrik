@@ -29,6 +29,8 @@ FormHelper::loadFieldClass('list');
  */
 class SQL2Field extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

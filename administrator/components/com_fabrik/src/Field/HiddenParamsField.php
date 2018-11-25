@@ -24,6 +24,8 @@ defined('_JEXEC') or die('Restricted access');
  */
 class HiddenParamsField extends FormField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * The form field type.
 	 *

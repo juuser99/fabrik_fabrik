@@ -31,6 +31,8 @@ FormHelper::loadFieldClass('list');
  */
 class FabrikTablesField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

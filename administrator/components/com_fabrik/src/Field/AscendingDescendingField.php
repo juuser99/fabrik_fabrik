@@ -26,6 +26,8 @@ use Joomla\CMS\Language\Text;
  */
 class AscendingDescendingField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * Element name
 	 * @var        string

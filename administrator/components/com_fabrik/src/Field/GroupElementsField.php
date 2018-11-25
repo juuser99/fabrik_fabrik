@@ -33,6 +33,8 @@ FormHelper::loadFieldClass('groupedlist');
  */
 class GroupElementsField extends GroupedlistField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * The form field type.
 	 *

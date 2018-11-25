@@ -31,6 +31,8 @@ use Joomla\Component\Fabrik\Administrator\Model\FabModel;
  */
 class FabrikModalRepeatField extends FormField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * The form field type.
 	 *

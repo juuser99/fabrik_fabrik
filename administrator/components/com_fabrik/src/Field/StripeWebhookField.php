@@ -25,6 +25,8 @@ use Joomla\CMS\Language\Text;
  */
 class StripeWebhookField extends FormField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

@@ -29,6 +29,8 @@ FormHelper::loadFieldClass('radio');
  */
 class GroupRepeatField extends RadioField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

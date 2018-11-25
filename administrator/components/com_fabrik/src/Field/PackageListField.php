@@ -29,6 +29,8 @@ FormHelper::loadFieldClass('list');
  */
 class PackageListField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

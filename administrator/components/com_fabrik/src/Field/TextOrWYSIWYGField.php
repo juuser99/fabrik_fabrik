@@ -30,6 +30,8 @@ FormHelper::loadFieldClass('text');
  */
 class TextOrWYSIWYGField extends TextField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

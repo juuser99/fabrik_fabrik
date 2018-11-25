@@ -27,6 +27,8 @@ FormHelper::loadFieldClass('folderlist');
  */
 class FabrikFolderListField extends FolderlistField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * The form field type.
 	 *

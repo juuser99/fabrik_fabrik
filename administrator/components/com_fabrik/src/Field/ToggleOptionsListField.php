@@ -28,6 +28,8 @@ FormHelper::loadFieldClass('list');
  */
 class ToggleOptionsListField extends ListField
 {
+	use FormFieldNameTrait;
+	
 	/**
 	 * @var string
 	 *

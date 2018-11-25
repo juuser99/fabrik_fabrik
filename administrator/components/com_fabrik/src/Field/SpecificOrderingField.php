@@ -32,6 +32,8 @@ FormHelper::loadFieldClass('list');
  */
 class SpecificOrderingField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

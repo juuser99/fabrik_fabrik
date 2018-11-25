@@ -32,6 +32,8 @@ FormHelper::loadFieldClass('textarea');
  */
 class FabrikEditorField extends TextareaField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * The form field type.
 	 *

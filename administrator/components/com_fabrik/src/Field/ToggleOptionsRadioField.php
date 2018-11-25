@@ -28,6 +28,8 @@ FormHelper::loadFieldClass('radio');
  */
 class ToggleOptionsRadioField extends RadioField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

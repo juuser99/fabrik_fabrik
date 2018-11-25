@@ -30,6 +30,8 @@ FormHelper::loadFieldClass('list');
  */
 class PluginListField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * The form field type.
 	 *

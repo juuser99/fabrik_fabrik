@@ -26,6 +26,8 @@ use Joomla\CMS\HTML\HTMLHelper;
  */
 class CollationField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

@@ -24,6 +24,8 @@ use Joomla\CMS\Form\Field\RadioField;
  */
 class AutocreateGroupField extends RadioField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

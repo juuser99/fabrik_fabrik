@@ -25,6 +25,8 @@ use Joomla\CMS\Form\Field\TextField;
  */
 class FormDatabaseNameField extends TextField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

@@ -30,6 +30,8 @@ FormHelper::loadFieldClass('list');
  */
 class ConnectionsField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

@@ -27,6 +27,8 @@ use Joomla\Utilities\ArrayHelper;
  */
 class SubOptionsField extends FormField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

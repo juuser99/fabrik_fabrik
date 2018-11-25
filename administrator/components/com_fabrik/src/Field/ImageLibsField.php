@@ -27,6 +27,8 @@ use Joomla\CMS\Language\Text;
  */
 class ImageLibsField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

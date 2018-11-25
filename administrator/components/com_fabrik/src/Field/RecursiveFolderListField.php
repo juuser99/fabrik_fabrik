@@ -30,6 +30,8 @@ FormHelper::loadFieldClass('list');
  */
 class RecursiveFolderListField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

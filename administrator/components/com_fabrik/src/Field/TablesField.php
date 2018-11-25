@@ -34,6 +34,8 @@ FormHelper::loadFieldClass('list');
  */
 class TablesField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

@@ -30,6 +30,8 @@ use Joomla\Utilities\ArrayHelper;
  */
 class SwapListField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

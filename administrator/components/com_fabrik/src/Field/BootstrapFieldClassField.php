@@ -28,6 +28,8 @@ FormHelper::loadFieldClass('list');
  */
 class BootstrapFieldClassField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

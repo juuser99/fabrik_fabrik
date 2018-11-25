@@ -31,6 +31,8 @@ FormHelper::loadFieldClass('list');
  */
 class VisualizationListField extends ListField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *

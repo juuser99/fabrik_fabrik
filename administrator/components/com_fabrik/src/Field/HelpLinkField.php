@@ -25,6 +25,8 @@ defined('_JEXEC') or die('Restricted access');
  */
 class HelpLinkField extends FormField
 {
+	use FormFieldNameTrait;
+
 	/**
 	 * @var string
 	 *
