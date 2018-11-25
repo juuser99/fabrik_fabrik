@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\FCipher;
 use DateTime;
 use Exception;
-use FabTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use JAccess;
 use JCache;
 use JComponentHelper;
@@ -34,6 +34,8 @@ use JMailHelper;
 use JModelLegacy;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Administrator\Table\LogTable;
+use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
 use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
 use Joomla\Database\DatabaseDriver;
 use JPath;
@@ -73,16 +75,6 @@ class Worker
 	 * @var  object
 	 */
 	public static $pluginManager = null;
-
-	/**
-	 * Used for migration purposes to J4; remove once $pluginManager is no longer using the legacy plugin manager
-	 * @todo - remove for J4 once everything is migrated
-	 *
-	 * @var PluginManagerModel
-	 *
-	 * @since 4.0
-	 */
-	protected static $j4PluginManager;
 
 	/**
 	 * Strtotime final date format
@@ -1756,7 +1748,7 @@ class Worker
 			$msg = json_encode($msg);
 		}
 
-		$log               = FabTable::getInstance('log', 'FabrikTable');
+		$log               = FabTable::getInstance(LogTable::class);
 		$log->message_type = $type;
 		$log->message      = $msg;
 		$log->store();
@@ -1794,7 +1786,7 @@ class Worker
 
 			if (!$loadJoomlaDb)
 			{
-				$cnModel  = JModelLegacy::getInstance('Connection', 'FabrikFEModel');
+				$cnModel  = FabModel::getInstance(ConnectionModel::class);
 				$cn       = $cnModel->getConnection($cnnId);
 				$host     = $cn->host;
 				$user     = $cn->user;
@@ -1899,7 +1891,7 @@ class Worker
 
 		if (!array_key_exists($connId, self::$connection))
 		{
-			$connectionModel = JModelLegacy::getInstance('connection', 'FabrikFEModel');
+			$connectionModel = FabModel::getInstance(ConnectionModel::class);
 			$connectionModel->setId($connId);
 
 			if ($connId === -1)
@@ -1921,23 +1913,13 @@ class Worker
 	 *
 	 * @since    3.0b
 	 *
-	 * @return    FabrikFEModelPluginmanager|PluginManagerModel    Plugin manager
+	 * @return    PluginManagerModel    Plugin manager
 	 */
-	public static function getPluginManager($useJ4 = false)
+	public static function getPluginManager()
 	{
-		if ($useJ4) {
-			// @todo - remove once J4 refactoring complete
-			if (!self::$j4PluginManager)
-			{
-				self::$j4PluginManager = FabModel::getInstance(PluginManagerModel::class);
-			}
-
-			return self::$j4PluginManager;
-		}
-
 		if (!self::$pluginManager)
 		{
-			self::$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+			self::$pluginManager = FabModel::getInstance(PluginManagerModel::class);
 		}
 
 		return self::$pluginManager;
