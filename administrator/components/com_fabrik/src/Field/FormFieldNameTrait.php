@@ -30,7 +30,7 @@ trait FormFieldNameTrait
 	{
 		// Check if there is special handling needed for a specific version
 		// If we need this, add a new method such as getName40()
-		$getter = 'getName' . Version::MAJOR_VERSION . Version::MINOR_VERSION;
+		$getter = 'getName' . JVERSION;
 		if (method_exists($this, $getter))
 		{
 			return $this->$getter($fieldName);

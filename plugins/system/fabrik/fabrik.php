@@ -44,61 +44,16 @@ class PlgSystemFabrik extends JPlugin
 			return;
 		}
 
-		/**
-		 * Moved these from defines.php to here, to fix an issue with Kunena.  Kunena imports the J!
-		 * JForm class in their system plugin, in the class constructor  So if we wait till onAfterInitialize
-		 * to do this, we blow up.  So, import them here, and make sure the Fabrik plugin has a lower ordering
-		 * than Kunena's.  We might want to set our default to -1.
-		 */
-		$app     = JFactory::getApplication();
-		$base    = 'components.com_fabrik.classes.' . Version::MAJOR_VERSION . Version::MINOR_VERSION;
+		// $$$ Alan removed hijacking FormField in 4.0 in favor of using a trait
 
-		// Test if Kunena is loaded - if so notify admins
-		if (class_exists('KunenaAccess'))
-		{
-			$msg = 'Fabrik: Please ensure the Fabrik System plug-in is ordered before the Kunena system plugin';
+		$app = JFactory::getApplication();
 
-			if ($app->isAdmin())
-			{
-				$app->enqueueMessage($msg, 'error');
-			}
-		}
-		else
-		{
-			$loaded = true;
-
-		    if (version_compare(JVERSION, '3.8', '<'))
-            {
-                $loaded = JLoader::import($base . '.field', JPATH_SITE . '/administrator', 'administrator.');
-            }
-			else
-            {
-                $loaded = JLoader::import($base . '.FormField', JPATH_SITE . '/administrator', 'administrator.');
-            }
-
-            if (!$loaded)
-            {
-	            if ($app->isAdmin() && $app->input->get('option') === 'com_fabrik')
-	            {
-		            $app->enqueueMessage('Fabrik cannot find files required for this version of Joomla.  <b>DO NOT</b> use the Fabrik backend admin until this is resolved.  Please visit <a href="http://fabrikar.com/forums">our web site</a> and check for announcements about this version', 'error');
-	            }
-            }
-		}
-
-        // The fabrikfeed doc type has been deprecated.  For backward compat, change it use standard J! feed instead
+		// The fabrikfeed doc type has been deprecated.  For backward compat, change it use standard J! feed instead
         if (version_compare(JVERSION, '3.8', '>=')) {
             if ($app->input->get('format') === 'fabrikfeed') {
                 $app->input->set('format', 'feed');
             }
         }
-
-		if (version_compare(JVERSION, '3.1', '<='))
-		{
-			JLoader::import($base . '.layout.layout', JPATH_SITE . '/administrator', 'administrator.');
-			JLoader::import($base . '.layout.base', JPATH_SITE . '/administrator', 'administrator.');
-			JLoader::import($base . '.layout.file', JPATH_SITE . '/administrator', 'administrator.');
-			JLoader::import($base . '.layout.helper', JPATH_SITE . '/administrator', 'administrator.');
-		}
 
 		if (!file_exists(JPATH_LIBRARIES . '/fabrik/include.php'))
 		{
