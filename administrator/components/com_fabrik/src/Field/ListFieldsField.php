@@ -432,7 +432,7 @@ class ListFieldsField extends ListField
 
 		$srcs = array(
 			'Fabrik'     => 'media/com_fabrik/js/fabrik.js',
-			'ListFields' => 'administrator/components/com_fabrik/models/fields/listfields.js'
+			'ListFields' => 'administrator/components/com_fabrik/src/Field/listfields.js'
 		);
 		Html::script($srcs, $script);
 	}

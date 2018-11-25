@@ -139,7 +139,7 @@ class FabrikTablesField extends ListField
 			$fabrikTables[$this->id] = true;
 			$src['Fabrik']           = 'media/com_fabrik/js/fabrik.js';
 			$src['Namespace']        = 'administrator/components/com_fabrik/views/namespace.js';
-			$src['FabrikTables']     = 'administrator/components/com_fabrik/models/fields/fabriktables.js';
+			$src['FabrikTables']     = 'administrator/components/com_fabrik/src/Field/fabriktables.js';
 			Html::script($src, $script);
 		}
 

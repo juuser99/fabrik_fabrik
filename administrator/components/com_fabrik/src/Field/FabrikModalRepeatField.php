@@ -197,7 +197,7 @@ class FabrikModalRepeatField extends FormField
 
 			if ($option === 'com_fabrik')
 			{
-				Html::script('administrator/components/com_fabrik/models/fields/fabrikmodalrepeat.js', $script);
+				Html::script('administrator/components/com_fabrik/src/Field/fabrikmodalrepeat.js', $script);
 			}
 			else
 			{
@@ -229,7 +229,7 @@ class FabrikModalRepeatField extends FormField
 
 				// Wont work when rendering in admin module page
 				// @TODO test this now that the list and form pages are loading plugins via ajax (18/08/2012)
-				Html::script('administrator/components/com_fabrik/models/fields/fabrikmodalrepeat.js', $script);
+				Html::script('administrator/components/com_fabrik/src/Field/fabrikmodalrepeat.js', $script);
 			}
 		}
 

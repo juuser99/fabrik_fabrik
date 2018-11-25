@@ -66,7 +66,7 @@ class SwapListField extends ListField
 
 		Html::framework();
 		Html::iniRequireJS();
-		Html::script('administrator/components/com_fabrik/models/fields/swaplist.js', implode("\n", $script));
+		Html::script('administrator/components/com_fabrik/src/Field/swaplist.js', implode("\n", $script));
 
 		list($this->currentGroups, $this->currentGroupList) = $this->getCurrentGroupList();
 		list($this->groups, $this->groupList) = $this->getGroupList();

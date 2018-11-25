@@ -125,7 +125,7 @@ class ElementField extends ListField
 		$script[]                   = "FabrikAdmin.model.fields.element['$this->id'] = p;";
 		$script                     = implode("\n", $script);
 		$fabrikElements[$this->id]  = true;
-		$src['AdmininElelent']      = 'administrator/components/com_fabrik/models/fields/element.js';
+		$src['AdmininElelent']      = 'administrator/components/com_fabrik/src/Field/element.js';
 		Html::script($src, $script);
 
 		if ($mode === 'gui')

@@ -97,7 +97,7 @@ class FabrikContentTypeListField extends ListField
 		$script = 'new FabrikContentTypeList(\'' . $this->id . '\');';
 		$src    = array(
 			'Fabrik'          => 'media/com_fabrik/js/fabrik.js',
-			'ContentTypeList' => 'administrator/components/com_fabrik/models/fields/fabrikcontenttypelist.js'
+			'ContentTypeList' => 'administrator/components/com_fabrik/src/Field/fabrikcontenttypelist.js'
 		);
 		Html::script($src, $script);
 

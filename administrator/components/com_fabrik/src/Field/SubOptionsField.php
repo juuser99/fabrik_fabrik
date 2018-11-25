@@ -81,7 +81,7 @@ class SubOptionsField extends FormField
 		$script[]         = "window.addEvent('domready', function () {";
 		$script[]         = "\tnew Suboptions('$this->name', $opts);";
 		$script[]         = "});";
-		Html::script('administrator/components/com_fabrik/models/fields/suboptions.js', implode("\n", $script));
+		Html::script('administrator/components/com_fabrik/src/Field/suboptions.js', implode("\n", $script));
 
 		$html   = array();
 		$html[] = '<table class="table table-striped" style="width: 100%" id="' . $this->id . '">';

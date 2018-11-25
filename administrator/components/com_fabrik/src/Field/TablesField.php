@@ -127,7 +127,7 @@ class TablesField extends ListField
 			$src            = array(
 				'Fabrik'    => 'media/com_fabrik/js/fabrik.js',
 				'Namespace' => 'administrator/components/com_fabrik/views/namespace.js',
-				'Tables'    => 'administrator/components/com_fabrik/models/fields/tables.js'
+				'Tables'    => 'administrator/components/com_fabrik/src/Field/tables.js'
 			);
 			Html::script($src, implode("\n", $script));
 
