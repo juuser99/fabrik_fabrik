@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields"
+	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
 	        name="params">
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
 		          name="plg-element-fileupload"
 		          label="COM_FABRIK_OPTIONS">
 

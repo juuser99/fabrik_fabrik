@@ -7,7 +7,7 @@
 	</layout>
 	
 	<fields name="request">
-		<fieldset name="request" addfieldpath="/administrator/components/com_fabrik/models/fields">
+		<fieldset name="request" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
 	
 			<field name="listid" 
 				type="fabriktables" 
@@ -18,7 +18,7 @@
 		</fieldset>
 	</fields>
 	
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
 		<fieldset name="params"
 			label="COM_FABRIK_MENU_LIST_OPTIONS"
 		>

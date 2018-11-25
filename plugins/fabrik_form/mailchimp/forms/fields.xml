@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
-    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+    <fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
         <fieldset name="plg-form-mailchimp">
             <field description="PLG_FORM_MAILCHIMP_API_KEY_DESC" label="PLG_FORM_MAILCHIMP_API_KEY_LABEL"
                    name="mailchimp_apikey" repeat="true" size="40" type="text"/>

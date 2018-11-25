@@ -227,7 +227,7 @@
 
 	</fieldset>
 
-	<fieldset label="COM_FABRIK_ELEMENTS" name="elements" addfieldpath="/administrator/components/com_fabrik/models/fields">
+	<fieldset label="COM_FABRIK_ELEMENTS" name="elements" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
 
 		<field name="default_element_plugins"
 			type="spacer"

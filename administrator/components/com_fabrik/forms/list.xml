@@ -24,7 +24,7 @@
 
 	</fieldset>
 
-	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
 	          name="main">
 
 		<field name="id"
@@ -91,7 +91,7 @@
 
 	</fieldset>
 
-	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
 	          name="grouping">
 
 		<field name="group_by"
@@ -234,7 +234,7 @@
 
 		</fieldset>
 
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
 		          name="grouping2">
 
 			<field name="group_by_raw"

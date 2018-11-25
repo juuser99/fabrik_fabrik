@@ -19,7 +19,7 @@
 	</fields>
 
 	<fields name="params">
-		<fieldset label="COM_FABRIK_OPTIONS" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-user-params">
+		<fieldset label="COM_FABRIK_OPTIONS" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-user-params">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_USER_HELP_SERVER" />

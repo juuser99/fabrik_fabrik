@@ -28,7 +28,7 @@
 				<field name="detailurl" type="text" description="MOD_FABRIK_LIST_DETAILURL_DESC" label="MOD_FABRIK_LIST_DETAILURL_LABEL"/>
 
 			</fieldset>
-			<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="advanced">
+			<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="advanced">
 
 				<field name="moduleclass_sfx" type="text" description="MOD_FABRIK_LIST_CLASS_SUFFIX_DESC" label="MOD_FABRIK_LIST_CLASS_SUFFIX_LABEL"/>
 

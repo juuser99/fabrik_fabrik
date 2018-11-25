@@ -42,7 +42,7 @@
 
 	<fields name="params">
 
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-cascadingdropdown-params" label="COM_FABRIK_DATA">
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-cascadingdropdown-params" label="COM_FABRIK_DATA">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
@@ -111,7 +111,7 @@
 
 		</fieldset>
 
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-cascadingdropdown-watch" label="PLG_ELEMENT_CDD_WATCH">
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-cascadingdropdown-watch" label="PLG_ELEMENT_CDD_WATCH">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />
@@ -160,7 +160,7 @@
 
 		</fieldset>
 
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-cascadingdropdown-advanced" label="COM_FABRIK_ADVANCED">
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-cascadingdropdown-advanced" label="COM_FABRIK_ADVANCED">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_CASCADINGDROPDOWN_HELP_SERVER" />

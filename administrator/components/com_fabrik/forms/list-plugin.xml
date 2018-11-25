@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<form addfieldpath="/administrator/components/com_fabrik/models/fields">
+<form addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
 	<name>List Plugin General Options</name>
 
 	<fields name="params">

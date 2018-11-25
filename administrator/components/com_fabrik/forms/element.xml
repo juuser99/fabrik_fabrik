@@ -2,7 +2,7 @@
 <form>
 	<name>Element Edit Form</name>
 
-	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="details">
+	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="details">
 
 		<field name="asset_id"
 			type="hidden"

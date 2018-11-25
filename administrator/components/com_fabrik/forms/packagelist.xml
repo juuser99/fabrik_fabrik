@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <form>
 	<name>Package edit list</name>
-	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="details">
+	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="details">
 			
 		
 		<field class="switcher" default="0" label="MOD_FABRIK_LIST_RANDOMIZE_LABEL" name="radomizerecords" type="radio">

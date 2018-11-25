@@ -6,7 +6,7 @@
 		</message>
 	</layout>
 	<fields name="request">
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="request">
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="request">
 				
 				<field name="formid"
 					type="formlist"
@@ -17,7 +17,7 @@
 			</fieldset>
 	</fields>
 	
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
 		<fieldset name="params" label="COM_FABRIK_MENU_FORM_OPTIONS">
 				
 			<field name="rowid"

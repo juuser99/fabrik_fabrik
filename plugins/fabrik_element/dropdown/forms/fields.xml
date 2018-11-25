@@ -115,7 +115,7 @@
 
 	</fields>
 	<fields>
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-dropdown" label="COM_FABRIK_OPTIONS">
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-dropdown" label="COM_FABRIK_OPTIONS">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />

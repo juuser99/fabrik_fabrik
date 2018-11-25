@@ -6,11 +6,11 @@
 		</message>
 	</layout>
 	<fields name="request">
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="request">
+		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="request">
 			<field default="0" description="" label="Select Instance" name="id" type="visualizationlist"/>
 		</fieldset>
 	</fields>
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
 		<fieldset label="COM_FABRIK_OPTIONS" name="params">
 			<field default="0"
 				class="switcher"

@@ -6,7 +6,7 @@
 		</message>
 	</layout>
 	
-	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
 		<fieldset label="COM_FABRIK_OPTIONS" name="params">
 			<field active="1" description="The Package id to show" label="COM_FABRIK_PACKAGE" name="id" type="packagelist"/>
 		</fieldset>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields>
-		<fieldset label="COM_FABRIK_DEFAULT" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-link">
+		<fieldset label="COM_FABRIK_DEFAULT" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-link">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_LINK_HELP_SERVER" />
@@ -23,7 +23,7 @@
 	</fields>
 
 	<fields name="params">
-		<fieldset label="COM_FABRIK_OPTIONS" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-link-extra">
+		<fieldset label="COM_FABRIK_OPTIONS" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-link-extra">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_LINK_HELP_SERVER" />
@@ -98,7 +98,7 @@
 
 		</fieldset>
 
-		<fieldset label="PLG_ELEMENT_LINK_BITLY" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-link-bitly">
+		<fieldset label="PLG_ELEMENT_LINK_BITLY" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-link-bitly">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_LINK_HELP_SERVER" />

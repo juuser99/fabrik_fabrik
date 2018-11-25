@@ -2,7 +2,7 @@
 <form>
 	<name>Visualization Edit Form</name>
 
-	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
 	          name="details">
 
 		<field name="id"
