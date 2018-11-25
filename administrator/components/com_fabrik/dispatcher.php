@@ -81,4 +81,18 @@ class FabrikDispatcher extends ComponentDispatcher
 
 		return parent::getController($name, $client, $config);
 	}
+
+	/**
+	 * J4 no longer loads frontend language file for the backend which Fabrik depends on
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function loadLanguage()
+	{
+		parent::loadLanguage();
+
+		$this->app->getLanguage()->load($this->option, JPATH_ROOT.'/components/com_fabrik', null, false, true);
+	}
 }
