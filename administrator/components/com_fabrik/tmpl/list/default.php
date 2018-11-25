@@ -16,7 +16,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-HTMLHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
+HTMLHelper::stylesheet('administrator/components/com_fabrik/tmpl/fabrikadmin.css');
 HTMLHelper::_('behavior.tooltip');
 //FabrikHelperHTML::formvalidation();
 HTMLHelper::_('behavior.formvalidator');

@@ -71,8 +71,8 @@ class HtmlView extends BaseHtmlView
 
 		$srcs                  = Html::framework();
 		$srcs['Fabrik']        = Html::mediaFile('fabrik.js');
-		$srcs['Namespace']     = 'administrator/components/com_fabrik/views/namespace.js';
-		$srcs['PluginManager'] = 'administrator/components/com_fabrik/views/pluginmanager.js';
+		$srcs['Namespace']     = 'administrator/components/com_fabrik/tmpl/namespace.js';
+		$srcs['PluginManager'] = 'administrator/components/com_fabrik/tmpl/pluginmanager.js';
 
 		Html::script($srcs, $this->js);
 

@@ -92,7 +92,7 @@ class HtmlView extends FormView
 		$opts->layout = $layout;
 		$opts = json_encode($opts);
 		$this->js = "PackageCanvas = new AdminPackage($opts);";
-		$srcs[] = 'administrator/components/com_fabrik/views/package/adminpackage.js';
+		$srcs[] = 'administrator/components/com_fabrik/tmpl/package/adminpackage.js';
 
 		Html::iniRequireJS();
 		Html::script($srcs, $this->js);

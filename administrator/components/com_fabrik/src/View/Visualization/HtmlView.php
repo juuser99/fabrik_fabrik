@@ -64,9 +64,9 @@ class HtmlView extends FormView
 
 		$source                       = Html::framework();
 		$source['Fabrik']             = Html::mediaFile('fabrik.js');
-		$source['Namespace']          = 'administrator/components/com_fabrik/views/namespace.js';
-		$source['PluginManager']      = 'administrator/components/com_fabrik/views/pluginmanager.js';
-		$source['AdminVisualization'] = 'administrator/components/com_fabrik/views/visualization/adminvisualization.js';
+		$source['Namespace']          = 'administrator/components/com_fabrik/tmpl/namespace.js';
+		$source['PluginManager']      = 'administrator/components/com_fabrik/tmpl/pluginmanager.js';
+		$source['AdminVisualization'] = 'administrator/components/com_fabrik/tmpl/visualization/adminvisualization.js';
 
 		$shim                                           = array();
 		$dep                                            = new \stdClass;

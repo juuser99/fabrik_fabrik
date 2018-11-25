@@ -126,7 +126,7 @@ class TablesField extends ListField
 			$script[]       = "FabrikAdmin.model.fields.fabriktable['$this->id'] = new tablesElement('$this->id', $opts);\n";
 			$src            = array(
 				'Fabrik'    => 'media/com_fabrik/js/fabrik.js',
-				'Namespace' => 'administrator/components/com_fabrik/views/namespace.js',
+				'Namespace' => 'administrator/components/com_fabrik/tmpl/namespace.js',
 				'Tables'    => 'administrator/components/com_fabrik/src/Field/tables.js'
 			);
 			Html::script($src, implode("\n", $script));

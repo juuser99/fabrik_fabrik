@@ -51,7 +51,7 @@ class FabrikModalRepeatField extends FormField
 		// Initialize variables.
 		$app      = Factory::getApplication();
 		$document = Factory::getDocument();
-		HTMLHelper::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
+		HTMLHelper::stylesheet('administrator/components/com_fabrik/tmpl/fabrikadmin.css');
 		$subForm = new Form($this->name, array('control' => 'jform'));
 		$xml     = $this->element->children()->asXML();
 		$subForm->load($xml);

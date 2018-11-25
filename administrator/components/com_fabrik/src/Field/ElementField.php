@@ -74,7 +74,7 @@ class ElementField extends ListField
 			$fabrikElements = array();
 		}
 
-		$src['Namespace'] = 'administrator/components/com_fabrik/views/namespace.js';
+		$src['Namespace'] = 'administrator/components/com_fabrik/tmpl/namespace.js';
 		$c                = (int) @$this->form->repeatCounter;
 		$table            = $this->getAttribute('table');
 

@@ -63,9 +63,9 @@ class HtmlView extends FormView
 
 		$srcs                  = Html::framework();
 		$srcs['Fabrik']        = Html::mediaFile('fabrik.js');
-		$srcs['Namespace']     = 'administrator/components/com_fabrik/views/namespace.js';
-		$srcs['PluginManager'] = 'administrator/components/com_fabrik/views/pluginmanager.js';
-		$srcs['CronAdmin']     = 'administrator/components/com_fabrik/views/cron/admincron.js';
+		$srcs['Namespace']     = 'administrator/components/com_fabrik/tmpl/namespace.js';
+		$srcs['PluginManager'] = 'administrator/components/com_fabrik/tmpl/pluginmanager.js';
+		$srcs['CronAdmin']     = 'administrator/components/com_fabrik/tmpl/cron/admincron.js';
 
 		$shim                         = array();
 		$dep                          = new \stdClass;
