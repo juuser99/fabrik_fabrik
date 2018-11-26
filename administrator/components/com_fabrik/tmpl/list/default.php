@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 HTMLHelper::stylesheet('administrator/components/com_fabrik/tmpl/fabrikadmin.css');
@@ -42,7 +43,7 @@ HTMLHelper::_('behavior.keepalive');
     }
 </script>
 
-<form action="<?php JRoute::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php Route::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
     <div class="row" id="elementFormTable">
 
         <div class="col-2">

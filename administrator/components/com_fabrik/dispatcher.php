@@ -60,6 +60,7 @@ class FabrikDispatcher extends ComponentDispatcher
 				$classController,
 				$format
 			);
+
 			$frontendController = sprintf(
 				$controllerString,
 				$this->namespace,
