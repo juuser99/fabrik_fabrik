@@ -78,6 +78,14 @@ class HtmlView extends BaseHtmlView
 	protected $_name = 'list';
 
 	/**
+	 * J4 automatically calls addToolbar so we have to tell it if we're in the content type tmpl instead of the list tmpl
+	 * @var bool
+	 *
+	 * @since 4.0
+	 */
+	private $inContentTypeForm = false;
+
+	/**
 	 * Display the list
 	 *
 	 * @param   string $tpl template
@@ -90,7 +98,6 @@ class HtmlView extends BaseHtmlView
 	{
 		// Initialise variables.
 		$model      = $this->getModel();
-		$this->form = $this->get('Form');
 		$this->item = $this->get('Item');
 		$formModel  = $this->get('FormModel');
 		$formModel->setId($this->item->form_id);
@@ -247,38 +254,12 @@ class HtmlView extends BaseHtmlView
 		$this->form = $model->getContentTypeForm();
 		$input      = Factory::getApplication()->input;
 		$this->data = $input->post->get('jform', array(), 'array');
-		$this->addSelectSaveToolBar();
+		$this->inContentTypeForm = true;
 		Html::formvalidation();
 		Html::framework();
 		Html::iniRequireJS();
 
 		parent::display($tpl);
-	}
-
-	/**
-	 * Add select content type tool bar
-	 *
-	 * @throws \Exception
-	 *
-	 * @return void
-	 *
-	 * @since 4.0
-	 */
-	protected function addSelectSaveToolBar()
-	{
-		$app         = Factory::getApplication();
-		$this->state = $this->get('State');
-		$input       = $app->input;
-		$input->set('hidemainmenu', true);
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
-
-		// For new records, check the create permission.
-		if ($canDo->get('core.create'))
-		{
-			ToolbarHelper::apply('list.doSave', 'JTOOLBAR_SAVE');
-			ToolbarHelper::cancel('list.cancel', 'JTOOLBAR_CANCEL');
-		}
 	}
 
 	/**
@@ -298,8 +279,16 @@ class HtmlView extends BaseHtmlView
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo      = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		$title      = $isNew ? Text::_('COM_FABRIK_MANAGER_LIST_NEW') : Text::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->label . '"';
-		ToolbarHelper::title($title, 'list');
+
+
+		if ($this->inContentTypeForm) {
+			ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
+		}
+		else
+		{
+			$title = $isNew ? Text::_('COM_FABRIK_MANAGER_LIST_NEW') : Text::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->label . '"';
+			ToolbarHelper::title($title, 'list');
+		}
 
 		if ($isNew)
 		{

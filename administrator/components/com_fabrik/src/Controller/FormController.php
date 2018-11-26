@@ -397,7 +397,7 @@ class FormController extends AbstractFormController
 		{
 			$viewType = Factory::getDocument()->getType();
 			$model    = FabModel::getInstance(ListModel::class);
-
+			/** @var \Joomla\Component\Fabrik\Administrator\View\Form\HtmlView $view */
 			$view = $this->getView($this->view_item, $viewType, '');
 			$view->setModel($model, true);
 			$view->selectContentType('select_content_type');

@@ -41,6 +41,14 @@ class HtmlView extends BaseHtmlView
 	protected $js;
 
 	/**
+	 * J4 automatically calls addToolbar so we have to tell it if we're in the content type tmpl instead of the list tmpl
+	 * @var bool
+	 *
+	 * @since 4.0
+	 */
+	private $inContentTypeForm = false;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl template
@@ -111,9 +119,17 @@ class HtmlView extends BaseHtmlView
 		$isNew      = ($this->item->id == 0);
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo      = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		$title      = $isNew ? Text::_('COM_FABRIK_MANAGER_FORM_NEW') : Text::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "'
-			. Text::_($this->item->label) . '"';
-		ToolbarHelper::title($title, 'file-2');
+
+		if ($this->inContentTypeForm)
+		{
+			ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
+		}
+		else
+		{
+			$title = $isNew ? Text::_('COM_FABRIK_MANAGER_FORM_NEW') : Text::_('COM_FABRIK_MANAGER_FORM_EDIT') . ' "'
+				. Text::_($this->item->label) . '"';
+			ToolbarHelper::title($title, 'file-2');
+		}
 
 		if ($isNew)
 		{
@@ -164,40 +180,14 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function selectContentType($tpl = null)
 	{
-		$model      = $this->getModel();
-		$this->form = $model->getContentTypeForm();
-		$input      = Factory::getApplication()->input;
-		$this->data = $input->post->get('jform', array(), 'array');
-		$this->addSelectSaveToolBar();
+		$model                   = $this->getModel();
+		$this->form              = $model->getContentTypeForm();
+		$input                   = Factory::getApplication()->input;
+		$this->data              = $input->post->get('jform', array(), 'array');
+		$this->inContentTypeForm = true;
 		Html::framework();
 		Html::iniRequireJS();
 
 		parent::display($tpl);
-	}
-
-	/**
-	 * Add select content type tool bar
-	 *
-	 * @throws \Exception
-	 *
-	 * @return void
-	 *
-	 * @since 4.0
-	 */
-	protected function addSelectSaveToolBar()
-	{
-		$app         = Factory::getApplication();
-		$this->state = $this->get('State');
-		$input       = $app->input;
-		$input->set('hidemainmenu', true);
-		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
-		ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
-
-		// For new records, check the create permission.
-		if ($canDo->get('core.create'))
-		{
-			ToolbarHelper::apply('form.doSave', 'JTOOLBAR_SAVE');
-			ToolbarHelper::cancel('form.cancel', 'JTOOLBAR_CANCEL');
-		}
 	}
 }
