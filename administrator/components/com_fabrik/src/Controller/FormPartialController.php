@@ -19,10 +19,13 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\Component\Fabrik\Administrator\Model\ContentTypeExportModel;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel as SiteListModel;
+use Joomla\Component\Fabrik\Site\Model\FormInlineEditModel;
 use Joomla\Component\Fabrik\Site\Model\FormModel;
-
+use Joomla\Component\Fabrik\Site\Model\FormSessionModel;
 /**
  * Form controller class.
  *
@@ -77,6 +80,7 @@ class FormPartialController extends AbstractFormController
 		$input    = $this->input;
 		$model    = FabModel::getInstance(FormModel::class);
 		$viewType = $document->getType();
+		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $input->get('layout', 'default');
 		$this->name = 'Fabrik';
@@ -109,6 +113,7 @@ class FormPartialController extends AbstractFormController
 		$document   = Factory::getDocument();
 		$viewName   = $input->get('view', 'form');
 		$viewType   = $document->getType();
+		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$view = $this->getView($viewName, $viewType);
 
@@ -146,7 +151,8 @@ class FormPartialController extends AbstractFormController
 		if ($input->getInt('elid', 0) !== 0)
 		{
 			// Inline edit show the edited element - ignores validations for now
-			$inlineModel = $this->getModel('forminlineedit', 'FabrikFEModel');
+			/** @var FormInlineEditModel $inlineModel */
+			$inlineModel = $this->getModel(FormInlineEditModel::class);
 			$inlineModel->setFormModel($model);
 			echo $inlineModel->showResults();
 
@@ -287,8 +293,8 @@ class FormPartialController extends AbstractFormController
 	protected function savepage()
 	{
 		$input     = $this->input;
-		$model     = $this->getModel('Formsession', 'FabrikFEModel');
-		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$model     = $this->getModel(FormSessionModel::class);
+		$formModel = $this->getModel(FormModel::class);
 		$formModel->setId($input->getInt('formid'));
 		$model->savePage($formModel);
 	}
@@ -306,7 +312,7 @@ class FormPartialController extends AbstractFormController
 		Session::checkToken() or die('Invalid Token');
 		$app   = Factory::getApplication();
 		$input = $this->input;
-		$model = $this->getModel('list', 'FabrikFEModel');
+		$model = $this->getModel(SiteListModel::class);
 		$ids   = array($input->get('rowid', 0, 'string'));
 
 		$listId     = $input->get('listid');
@@ -369,7 +375,6 @@ class FormPartialController extends AbstractFormController
 		{
 			$viewType = Factory::getDocument()->getType();
 			$model    = FabModel::getInstance(ListModel::class);
-
 			$view = $this->getView($this->view_item, $viewType, '');
 			$view->setModel($model, true);
 			$view->selectContentType('select_content_type');
@@ -426,9 +431,9 @@ class FormPartialController extends AbstractFormController
 		Session::checkToken() or die('Invalid Token');
 		$id        = $this->input->get('cid', array(), 'array');
 		$id        = array_pop($id);
-		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$formModel = $this->getModel(FormModel::class);
 		$formModel->setId($id);
-		$contentModel = $this->getModel('ContentTypeExport');
+		$contentModel = $this->getModel(ContentTypeExportModel::class);
 
 		try
 		{
@@ -451,8 +456,8 @@ class FormPartialController extends AbstractFormController
 	{
 		$id           = $this->input->get('cid', array(), 'array');
 		$id           = array_pop($id);
-		$contentModel = $this->getModel('ContentTypeExport');
-		$formModel    = $this->getModel('Form', 'FabrikFEModel');
+		$contentModel = $this->getModel(ContentTypeExportModel::class);
+		$formModel    = $this->getModel(FormModel::class);
 		$formModel->setId($id);
 		$contentModel->download($formModel);
 	}

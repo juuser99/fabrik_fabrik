@@ -17,6 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\View\ListView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\ListsModel;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -233,7 +234,7 @@ class HtmlView extends ListView
 	protected function confirmdelete($tpl = null)
 	{
 		$this->form  = $this->get('ConfirmDeleteForm', 'list');
-		$model       = $this->getModel('lists');
+		$model       = $this->getModel(ListsModel::class);
 		$this->items = $model->getDbTableNames();
 		$this->addConfirmDeleteToolbar();
 		$this->setLayout('confirmdeletebootstrap');

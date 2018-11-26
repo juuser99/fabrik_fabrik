@@ -217,7 +217,8 @@ class FormRawController extends AbstractFormController
 		if ($input->getInt('elid', 0) !== 0)
 		{
 			// Inline edit show the edited element
-			$inlineModel = $this->getModel('forminlineedit', 'FabrikFEModel');
+			/** @var FormInlineEditModel $inlineModel */
+			$inlineModel = $this->getModel(FormInlineEditModel::class);
 			$inlineModel->setFormModel($model);
 			echo $inlineModel->showResults();
 
@@ -312,7 +313,7 @@ class FormRawController extends AbstractFormController
 	{
 		$app   = Factory::getApplication();
 		$input = $app->input;
-		$model = $this->getModel('form', 'FabrikFEModel');
+		$model = $this->getModel(FormModel::class);
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();
 		$model->setRowId($input->get('rowid', '', 'string'));

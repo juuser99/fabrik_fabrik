@@ -80,6 +80,7 @@ class FormController extends AbstractFormController
 		$input    = $this->input;
 		$model    = FabModel::getInstance(FormModel::class);
 		$viewType = $document->getType();
+		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $input->get('layout', 'default');
 		$this->name = 'Fabrik';
@@ -134,6 +135,7 @@ class FormController extends AbstractFormController
 		$document   = Factory::getDocument();
 		$viewName   = $input->get('view', 'form');
 		$viewType   = $document->getType();
+		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		/** @var HtmlView $view */
 		$view = $this->getView($viewName, $viewType);

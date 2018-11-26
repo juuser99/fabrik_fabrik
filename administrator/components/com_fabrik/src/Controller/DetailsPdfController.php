@@ -63,6 +63,7 @@ class DetailsPdfController extends AbstractFormController
 		$input->set('tmpl', 'component');
 		$input->set('view', 'details');
 		$viewType = $document->getType();
+		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout	= $input->get('layout', 'default');
 		$this->name = 'Fabrik';

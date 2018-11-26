@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\FormView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
 
 /**
  * View class for importing csv file.
@@ -70,7 +71,8 @@ class HtmlView extends FormView
 		$model                 = $this->getModel();
 		$this->newHeadings     = $model->getNewHeadings();
 		$this->headings        = $model->getHeadings();
-		$pluginManager         = $this->getModel('pluginmanager');
+		/** @var PluginManagerModel $pluginManager */
+		$pluginManager         = $this->getModel(PluginManagerModel::class);
 		$this->table           = $model->getListModel()->getTable();
 		$this->elementTypes    = $pluginManager->getElementTypeDd('field', 'plugin[]');
 		$this->sample          = $model->getSample();

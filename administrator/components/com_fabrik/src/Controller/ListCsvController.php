@@ -65,6 +65,7 @@ class ListCsvController extends AbstractFormController
         $viewType = Factory::getDocument()->getType();
 
         // Use the front end list renderer
+	    // @todo refactor to j4
         $this->setPath('view', COM_FABRIK_FRONTEND . '/views');
         $viewLayout	= $input->get('layout', 'default');
         $view = $this->getView($this->view_item, $viewType, 'FabrikView');

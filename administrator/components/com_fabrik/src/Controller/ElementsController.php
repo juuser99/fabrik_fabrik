@@ -22,6 +22,7 @@ use Joomla\CMS\Session\Session;
 use Joomla\Component\Fabrik\Administrator\Model\ElementModel;
 use Joomla\Component\Fabrik\Administrator\Model\ElementsModel;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
@@ -155,14 +156,14 @@ class ElementsController extends AbstractAdminController
 		$view = $this->getView($this->view_item, $viewType);
 		$view->setLayout('confirmdelete');
 
-		if ($model = $this->getModel('Elements'))
+		if ($model = $this->getModel(ElementsModel::class))
 		{
 			// Push the model into the view (as default)
 			$view->setModel($model, true);
 		}
 
 		// Used to load in the confirm form fields
-		$view->setModel($this->getModel('list'));
+		$view->setModel($this->getModel(ListModel::class));
 		$view->display();
 	}
 
@@ -192,13 +193,13 @@ class ElementsController extends AbstractAdminController
 		$view = $this->getView($this->view_item, $viewType);
 		$view->setLayout('copyselectgroup');
 
-		if ($model = $this->getModel('Elements'))
+		if ($model = $this->getModel(ElementsModel::class))
 		{
 			$view->setModel($model, true);
 		}
 
 		// Used to load in the confirm form fields
-		$view->setModel($this->getModel('list'));
+		$view->setModel($this->getModel(ListModel::class));
 		$view->display();
 	}
 
@@ -264,7 +265,7 @@ class ElementsController extends AbstractAdminController
 		$app = Factory::getApplication();
 		$input = $app->input;
 		$cid = $input->get('cid', array(), 'array');
-		$model = $this->getModel('Elements');
+		$model = $this->getModel(ElementsModel::class);
 		$task = $this->getTask();
 
 		if ($task === 'unpublish')

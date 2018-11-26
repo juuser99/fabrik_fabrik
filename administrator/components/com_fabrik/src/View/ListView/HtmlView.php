@@ -21,6 +21,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\FormModel;
 use Joomla\Component\Fabrik\Administrator\Model\ListModel;
 
 /**
@@ -171,7 +172,7 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function showLinkedElements($tpl = null)
 	{
-		$model = $this->getModel('form');
+		$model = $this->getModel(FormModel::class);
 		$this->addLinkedElementsToolbar();
 		$this->formGroupEls = $model->getFormGroups(false);
 		$this->formTable    = $model->getForm();

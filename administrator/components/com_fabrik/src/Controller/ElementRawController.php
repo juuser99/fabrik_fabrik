@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * Raw Element controller class.
@@ -85,7 +86,8 @@ class ElementRawController extends AbstractFormController
 	{
 		$app       = Factory::getApplication();
 		$input     = $app->input;
-		$listModel = $this->getModel('list', 'FabrikFEModel');
+		/** @var ListModel $listModel */
+		$listModel = $this->getModel(ListModel::class);
 		$listModel->setId($input->getInt('listid'));
 		$rowId = $input->get('rowid', '', 'string');
 		$key   = $input->get('element');

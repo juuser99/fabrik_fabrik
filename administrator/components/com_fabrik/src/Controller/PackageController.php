@@ -16,6 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * Package controller class.
@@ -67,6 +69,7 @@ class PackageController extends AbstractFormController
 		$app = Factory::getApplication();
 		$input = $app->input;
 		$viewType = $document->getType();
+		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $input->get('layout', 'default');
 		$view = $this->getView('form', $viewType, '');
@@ -77,17 +80,17 @@ class PackageController extends AbstractFormController
 
 		// If the view is a package create and assign the table and form views
 		$listView = $this->getView('list', $viewType);
-		$listModel = $this->getModel('list', 'FabrikFEModel');
+		$listModel = $this->getModel(ListModel::class);
 		$listView->setModel($listModel, true);
 		$view->tableView = $listView;
 
 		$view->formView = $this->getView('Form', $viewType);
-		$formModel = $this->getModel('Form', 'FabrikFEModel');
+		$formModel = $this->getModel(FormModel::class);
 		$formModel->setDbo(Worker::getDbo());
 		$view->formView->setModel($formModel, true);
 
 		// Push a model into the view
-		if ($this->getModel($viewName, 'FabrikFEModel'))
+		if ($model = $this->getModel($view->getName()))
 		{
 			$view->setModel($model, true);
 		}
