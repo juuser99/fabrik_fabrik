@@ -24,6 +24,7 @@ use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 use Joomla\Component\Fabrik\Administrator\Model\ConnectionsModel;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Model\ListModel as AdminListModel;
+use Joomla\Component\Fabrik\Administrator\View\ListView\HtmlView;
 use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Html;
@@ -55,6 +56,20 @@ class ListController extends AbstractFormController
 	 * @since 4.0
 	 */
 	protected $cacheId = 0;
+
+	/**
+	 * @var string
+	 *
+	 * @since 4.0
+	 */
+	protected $view_item = 'listView';
+
+	/**
+	 * @var string
+	 *
+	 * @since 4.0
+	 */
+	protected $view_list = 'lists';
 
 	/**
 	 * Method to edit an existing record.
@@ -400,7 +415,7 @@ class ListController extends AbstractFormController
 		{
 			$viewType = Factory::getDocument()->getType();
 			$model    = FabModel::getInstance(AdminListModel::class);
-
+			/** @var HtmlView $view */
 			$view = $this->getView($this->view_item, $viewType, '');
 			$view->setModel($model, true);
 			$view->selectContentType('select_content_type');
