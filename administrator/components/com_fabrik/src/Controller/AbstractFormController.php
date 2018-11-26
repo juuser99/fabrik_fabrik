@@ -16,8 +16,10 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\FormFactoryInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\FormController;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Router\Route;
 use Joomla\Utilities\ArrayHelper;
 
@@ -51,18 +53,24 @@ class AbstractFormController extends FormController
 	protected $option = 'com_fabrik';
 
 	/**
-	 * Constructor.
+	 * AbstractFormController constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param array                     $config
+	 * @param MVCFactoryInterface|null  $factory
+	 * @param null                      $app
+	 * @param null                      $input
+	 * @param FormFactoryInterface|null $formFactory
 	 *
-	 * @since   4.0
-	 * @throws  \Exception
+	 * @throws \Exception
+	 *
+	 * @since 4.0
 	 */
-	public function __construct($config = array())
+	public function __construct($config = array(), MVCFactoryInterface $factory = null, $app = null, $input = null,
+		FormFactoryInterface $formFactory = null)
 	{
 		$this->app = ArrayHelper::getValue($config, 'app', Factory::getApplication());
 
-		parent::__construct($config);
+		parent::__construct($config, $factory, $app, $input, $formFactory);
 	}
 
 	/**
