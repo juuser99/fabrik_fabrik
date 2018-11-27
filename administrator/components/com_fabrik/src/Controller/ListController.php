@@ -62,7 +62,7 @@ class ListController extends AbstractFormController
 	 *
 	 * @since 4.0
 	 */
-	protected $view_item = 'listView';
+	protected $view_item = 'list';
 
 	/**
 	 * @var string
@@ -114,7 +114,7 @@ class ListController extends AbstractFormController
 		if (count($cid) > 0)
 		{
 			$viewType = Factory::getDocument()->getType();
-			$view     = $this->getView($this->view_item, $viewType, '');
+			$view     = $this->getView('listView', $viewType, '');
 			$view->setModel($model, true);
 			$view->confirmCopy('confirm_copy');
 		}
@@ -173,7 +173,7 @@ class ListController extends AbstractFormController
 		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $input->getWord('layout', 'default');
-		$view       = $this->getView($this->view_item, $viewType, 'FabrikView');
+		$view       = $this->getView('listView', $viewType);
 		$view->setModel($model, true);
 
 		// Set the layout
@@ -217,7 +217,7 @@ class ListController extends AbstractFormController
 		$formModel  = $model->getFormModel();
 		$viewType   = $document->getType();
 		$viewLayout = $input->getWord('layout', 'linked_elements');
-		$view       = $this->getView($this->view_item, $viewType, '');
+		$view       = $this->getView('listView', $viewType, '');
 		$view->setModel($model, true);
 		$view->setModel($formModel);
 
@@ -416,7 +416,7 @@ class ListController extends AbstractFormController
 			$viewType = Factory::getDocument()->getType();
 			$model    = FabModel::getInstance(AdminListModel::class);
 			/** @var HtmlView $view */
-			$view = $this->getView($this->view_item, $viewType, '');
+			$view = $this->getView('listView', $viewType, '');
 			$view->setModel($model, true);
 			$view->selectContentType('select_content_type');
 
