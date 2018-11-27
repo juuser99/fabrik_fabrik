@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
@@ -1057,7 +1058,7 @@ class GroupModel extends FabSiteModel
 			$group->minMaxErrMsg     = Text::_($group->minMaxErrMsg);
 			$group->canAddRepeat     = $this->canAddRepeat();
 			$group->canDeleteRepeat  = $this->canDeleteRepeat();
-			$intro                   = FabrikString::translate($params->get('intro'));
+			$intro                   = FStringHelper::translate($params->get('intro'));
 			$group->intro            = $formModel->parseIntroOutroPlaceHolders($intro, $group->editable, $formModel->isNewRecord());
 			$outro                   = Text::_($params->get('outro'));
 			$group->outro            = $formModel->parseIntroOutroPlaceHolders($outro, $group->editable, $formModel->isNewRecord());
