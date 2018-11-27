@@ -21,6 +21,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\FormModel;
 
 /**
  * View to edit a form.
@@ -180,14 +181,32 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function selectContentType($tpl = null)
 	{
-		$model                   = $this->getModel();
-		$this->form              = $model->getContentTypeForm();
-		$input                   = Factory::getApplication()->input;
-		$this->data              = $input->post->get('jform', array(), 'array');
+		// $$$ Alan - this doesn't seem to be used since FormModel doesn't have a getContentTypeForm method?
+
+		/** @var FormModel $model */
+		$model      = $this->getModel();
+		$this->form = $model->getContentTypeForm();
+		$this->item  = $this->get('Item');
+		$this->state = $this->get('State');
+
+		$input      = Factory::getApplication()->input;
+		$this->data = $input->post->get('jform', array(), 'array');
 		$this->inContentTypeForm = true;
+		Html::formvalidation();
 		Html::framework();
 		Html::iniRequireJS();
 
-		parent::display($tpl);
+		// Check for errors.
+		if (count($errors = $this->get('Errors')))
+		{
+			throw new \JViewGenericdataexception(implode("\n", $errors), 500);
+		}
+
+		// Build toolbar
+		$this->addToolbar();
+
+		// We have to skip FormView::display or it'll re-initialize the "form" form
+		// This is a PHP feature to skip directly to the "grandparent" class
+		\Joomla\CMS\MVC\View\HtmlView::display($tpl);
 	}
 }

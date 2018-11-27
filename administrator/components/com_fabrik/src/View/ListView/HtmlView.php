@@ -250,8 +250,12 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function selectContentType($tpl = null)
 	{
+		/** @var ListModel $model */
 		$model      = $this->getModel();
 		$this->form = $model->getContentTypeForm();
+		$this->item  = $this->get('Item');
+		$this->state = $this->get('State');
+
 		$input      = Factory::getApplication()->input;
 		$this->data = $input->post->get('jform', array(), 'array');
 		$this->inContentTypeForm = true;
@@ -259,7 +263,18 @@ class HtmlView extends BaseHtmlView
 		Html::framework();
 		Html::iniRequireJS();
 
-		parent::display($tpl);
+		// Check for errors.
+		if (count($errors = $this->get('Errors')))
+		{
+			throw new \JViewGenericdataexception(implode("\n", $errors), 500);
+		}
+
+		// Build toolbar
+		$this->addToolbar();
+
+		// We have to skip FormView::display or it'll re-initialize the list form
+		// This is a PHP feature to skip directly to the "grandparent" class
+		\Joomla\CMS\MVC\View\HtmlView::display($tpl);
 	}
 
 	/**
