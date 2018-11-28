@@ -8,22 +8,23 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Router\Route;
 use Joomla\Utilities\ArrayHelper;
-
-jimport('joomla.application.component.view');
-require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
 
 /**
  * HTML Form view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.6
+ * @since       4.0
  */
-class FabrikViewForm extends FabrikViewFormBase
+class HtmlView extends BaseView
 {
 	/**
 	 * Main setup routine for displaying the form/detail view
@@ -31,6 +32,8 @@ class FabrikViewForm extends FabrikViewFormBase
 	 * @param   string $tpl template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
@@ -45,7 +48,7 @@ class FabrikViewForm extends FabrikViewFormBase
 				$model        = $this->getModel();
 				$this->params = $this->state->get('params');
 				$row          = $model->getData();
-				$w            = new FabrikWorker;
+				$w            = new Worker();
 
 				if ($this->params->get('menu-meta_description'))
 				{
@@ -72,6 +75,8 @@ class FabrikViewForm extends FabrikViewFormBase
 	 * to determine if duplicate URLs are the same content
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getCanonicalLink()
 	{
@@ -79,14 +84,14 @@ class FabrikViewForm extends FabrikViewFormBase
 
 		if (!$this->app->isAdmin() && !$this->isMambot)
 		{
-			/** @var FabrikFEModelForm $model */
+			/** @var FormModel $model */
 			$model  = $this->getModel();
 			$data   = $model->getData();
 			$formId = $model->getId();
 			$slug   = $model->getListModel()->getSlug(ArrayHelper::toObject($data));
 			$rowId  = $slug === '' ? $model->getRowId() : $slug;
 			$view   = $model->isEditable() ? 'form' : 'details';
-			$url    = JRoute::_('index.php?option=com_' . $this->package . '&view=' . $view . '&formid=' . $formId . '&rowid=' . $rowId);
+			$url    = Route::_('index.php?option=com_' . $this->package . '&view=' . $view . '&formid=' . $formId . '&rowid=' . $rowId);
 		}
 
 		return $url;
@@ -96,7 +101,9 @@ class FabrikViewForm extends FabrikViewFormBase
 	 * Set the canonical link - this is the definitive URL that Google et all, will use
 	 * to determine if duplicate URLs are the same content
 	 *
-	 * @throws Exception
+	 * @throws \Exception
+	 *
+	 * @since 4.0
 	 */
 	public function setCanonicalLink()
 	{
@@ -109,7 +116,7 @@ class FabrikViewForm extends FabrikViewFormBase
 			try
 			{
 				$this->doc->addCustomTag('<link rel="canonical" href="' . htmlspecialchars($url) . '" />');
-			} catch (Exception $err)
+			} catch (\Exception $err)
 			{
 
 			}
