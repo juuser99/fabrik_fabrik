@@ -1,10 +1,10 @@
 <?php
 /**
- * @package     Joomla\Component\Fabrik\Administrator\Controller
- * @subpackage
- *
- * @copyright   A copyright
- * @license     A "Slug" license name e.g. GPL2
+ * @package     Joomla.Administrator
+ * @subpackage  Fabrik
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ * @since       4.0
  */
 
 namespace Joomla\Component\Fabrik\Administrator\Controller;
@@ -22,9 +22,11 @@ trait ModelTrait
 	 * @param string $prefix
 	 * @param array  $config
 	 *
-	 * @return BaseDatabaseModel
+	 * @return FabModel
 	 *
 	 * @since 4.0
+	 *
+	 * @throws \Exception
 	 */
 	public function getModel($modelClass = '', $prefix = '', $config = array())
 	{
@@ -33,32 +35,5 @@ trait ModelTrait
 		}
 
 		return parent::getModel($modelClass, $prefix, $config);
-	}
-
-	/**
-	 * Why Joomla? Why?
-	 *
-	 * @param        $name
-	 * @param string $prefix
-	 * @param array  $config
-	 *
-	 * @return mixed
-	 *
-	 * @since 4.0
-	 */
-	protected function createModel($name = '', $prefix = '', $config = array())
-	{
-		if (empty($name))
-		{
-			$name = $this->context;
-		}
-
-		$modelClass = "Joomla\\Component\\Fabrik\\Administrator\\Model\\".ucfirst($name)."Model";
-
-		if (class_exists($modelClass)) {
-			return FabModel::getInstance($modelClass, '', $config);
-		}
-
-		return parent::createModel($name, $prefix, $config);
 	}
 }
