@@ -48,7 +48,7 @@ class FabrikTemplateField extends FolderlistField
 	{
 		$view = $this->element['view'] ? $this->element['view'] : 'list';
 
-		$dir = JPATH_ROOT . '/components/com_fabrik/views/' . $view . '/tmpl/';
+		$dir = JPATH_ROOT . '/components/com_fabrik/tmpl/' . $view . '/';
 		$dir = str_replace('\\', '/', $dir);
 		$dir = str_replace('//', '/', $dir);
 
