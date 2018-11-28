@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<form>
+<form addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
 
 	<fieldset name="main_filter">
 
@@ -24,8 +24,7 @@
 
 	</fieldset>
 
-	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
-	          name="main">
+	<fieldset name="main">
 
 		<field name="id"
 		       type="text"
@@ -91,8 +90,7 @@
 
 	</fieldset>
 
-	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
-	          name="grouping">
+	<fieldset name="grouping">
 
 		<field name="group_by"
 		       type="listfields"
@@ -234,8 +232,7 @@
 
 		</fieldset>
 
-		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
-		          name="grouping2">
+		<fieldset name="grouping2">
 
 			<field name="group_by_raw"
 			       type="radio"

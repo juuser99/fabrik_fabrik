@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<form>
+<form addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
 	<name>Group Edit Form</name>
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
+	<fields>
 		<fieldset name="details">
 
 			<field name="id"

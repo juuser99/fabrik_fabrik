@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<form>
+<form addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
 	<name>Element Edit Form</name>
 
-	<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="details">
+	<fieldset name="details">
 
 		<field name="asset_id"
 			type="hidden"
