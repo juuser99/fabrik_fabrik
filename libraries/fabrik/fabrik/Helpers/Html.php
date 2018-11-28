@@ -968,12 +968,14 @@ EOD;
 			'WK'              => JText::_('JLIB_HTML_BEHAVIOR_WK'),
 			'TIME'            => JText::_('JLIB_HTML_BEHAVIOR_TIME'),
 		);
-		return 'Calendar._DN = ' . json_encode($weekdays_full) . ';'
+		return 'if (typeof Calendar != \'undefined\') {'
+            . ' Calendar._DN = ' . json_encode($weekdays_full) . ';'
 			. ' Calendar._SDN = ' . json_encode($weekdays_short) . ';'
 			. ' Calendar._FD = 0;'
 			. ' Calendar._MN = ' . json_encode($months_long) . ';'
 			. ' Calendar._SMN = ' . json_encode($months_short) . ';'
-			. ' Calendar._TT = ' . json_encode($text) . ';';
+			. ' Calendar._TT = ' . json_encode($text) . ';'
+		    . ' }';
 	}
 
 	/**
