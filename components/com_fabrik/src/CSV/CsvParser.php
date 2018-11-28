@@ -1,10 +1,10 @@
 <?php
 /**
- * @package     Joomla\Component\Fabrik\Site\Helper
- * @subpackage
- *
- * @copyright   A copyright
- * @license     A "Slug" license name e.g. GPL2
+ * @package     Joomla.Site
+ * @subpackage  Fabrik
+ * @copyright   Copyright (C) 2005-2018  Media A-Team, Inc. - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ * @since       4.0
  */
 
 namespace Joomla\Component\Fabrik\Site\CSV;
