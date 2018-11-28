@@ -25,6 +25,8 @@ use Joomla\Component\Fabrik\Site\Model\FormModel;
  *
  * @package     Joomla.Administrator
  * @subpackage  Fabrik
+ *
+ * @since 4.0
  */
 class ContentTypeController extends AbstractFormController
 {
@@ -42,10 +44,9 @@ class ContentTypeController extends AbstractFormController
 		$model = $this->getModel(ContentTypeImportModel::class, '', array('listModel' => $listModel));
 		$viewType = Factory::getDocument()->getType();
 		$this->name = 'Fabrik';
-		// @todo refactor to j4
-		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
+		//$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $this->input->get('layout', 'default');
-		$view = $this->getView('Form', $viewType, '');
+		$view = $this->getView('Form', $viewType, \FabrikDispatcher::PREFIX_SITE);
 		$view->setLayout($viewLayout);
 
 		/** @var FormModel  $formModel */

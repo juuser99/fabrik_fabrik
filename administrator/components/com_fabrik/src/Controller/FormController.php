@@ -135,10 +135,8 @@ class FormController extends AbstractFormController
 		$document   = Factory::getDocument();
 		$viewName   = $input->get('view', 'form');
 		$viewType   = $document->getType();
-		// @todo refactor to j4
-		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		/** @var HtmlView $view */
-		$view = $this->getView($viewName, $viewType);
+		$view = $this->getView($viewName, $viewType, \FabrikDispatcher::PREFIX_SITE);
 
 		/** @var FormModel $model */
 		if ($model = FabModel::getInstance(FormModel::class))
@@ -398,7 +396,7 @@ class FormController extends AbstractFormController
 			$viewType = Factory::getDocument()->getType();
 			$model    = FabModel::getInstance(ListModel::class);
 			/** @var \Joomla\Component\Fabrik\Administrator\View\Form\HtmlView $view */
-			$view = $this->getView($this->view_item, $viewType, '');
+			$view = $this->getView($this->view_item, $viewType, \FabrikDispatcher::PREFIX_ADMIN);
 			$view->setModel($model, true);
 			$view->selectContentType('select_content_type');
 
