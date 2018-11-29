@@ -72,7 +72,7 @@ class HtmlView extends FormView
 		$this->newHeadings     = $model->getNewHeadings();
 		$this->headings        = $model->getHeadings();
 		/** @var PluginManagerModel $pluginManager */
-		$pluginManager         = $this->getModel(PluginManagerModel::class);
+		$pluginManager         = $this->getModel('PluginManager');
 		$this->table           = $model->getListModel()->getTable();
 		$this->elementTypes    = $pluginManager->getElementTypeDd('field', 'plugin[]');
 		$this->sample          = $model->getSample();

@@ -19,6 +19,7 @@ use Joomla\Component\Fabrik\Administrator\Model\ContentTypeImportModel;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Model\ListModel;
 use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Site\View\Form\HtmlView;
 
 /**
  * Content Type controller class.
@@ -46,6 +47,8 @@ class ContentTypeController extends AbstractFormController
 		$this->name = 'Fabrik';
 		//$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $this->input->get('layout', 'default');
+
+		/** @var HtmlView $view */
 		$view = $this->getView('Form', $viewType, \FabrikDispatcher::PREFIX_SITE);
 		$view->setLayout($viewLayout);
 

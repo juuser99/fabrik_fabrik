@@ -234,12 +234,23 @@ class HtmlView extends ListView
 	protected function confirmdelete($tpl = null)
 	{
 		$this->form  = $this->get('ConfirmDeleteForm', 'list');
-		$model       = $this->getModel(ListsModel::class);
+		/** @var ListsModel $model */
+		$model       = $this->getModel();
 		$this->items = $model->getDbTableNames();
 		$this->addConfirmDeleteToolbar();
 		$this->setLayout('confirmdeletebootstrap');
 
-		parent::display($tpl);
+		// Check for errors.
+		if (count($errors = $this->get('Errors')))
+		{
+			throw new \JViewGenericdataexception(implode("\n", $errors), 500);
+		}
+
+		// Build toolbar
+		$this->addConfirmDeleteToolbar();
+
+		// We have to skip FormView::display or it'll re-initialize the form and toolbar
+		\Joomla\CMS\MVC\View\HtmlView::display($tpl);
 	}
 
 	/**
@@ -254,9 +265,18 @@ class HtmlView extends ListView
 	protected function import($tpl = null)
 	{
 		$this->form = $this->get('ImportForm');
+
+		// Check for errors.
+		if (count($errors = $this->get('Errors')))
+		{
+			throw new \JViewGenericdataexception(implode("\n", $errors), 500);
+		}
+
+		// Build toolbar
 		$this->addImportToolBar();
 
-		parent::display($tpl);
+		// We have to skip FormView::display or it'll re-initialize the form and toolbar
+		\Joomla\CMS\MVC\View\HtmlView::display($tpl);
 	}
 
 	/**

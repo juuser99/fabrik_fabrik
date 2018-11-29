@@ -78,14 +78,6 @@ class HtmlView extends BaseHtmlView
 	protected $_name = 'list';
 
 	/**
-	 * J4 automatically calls addToolbar so we have to tell it if we're in the content type tmpl instead of the list tmpl
-	 * @var bool
-	 *
-	 * @since 4.0
-	 */
-	private $inContentTypeForm = false;
-
-	/**
 	 * Display the list
 	 *
 	 * @param   string $tpl template
@@ -179,13 +171,26 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function showLinkedElements($tpl = null)
 	{
-		$model = $this->getModel(FormModel::class);
-		$this->addLinkedElementsToolbar();
+		/** @var FormModel $model */
+		$model = $this->getModel('form');
 		$this->formGroupEls = $model->getFormGroups(false);
 		$this->formTable    = $model->getForm();
 		Html::formvalidation();
 		Html::framework();
 		Html::iniRequireJS();
+
+		// Check for errors.
+		if (count($errors = $this->get('Errors')))
+		{
+			throw new \JViewGenericdataexception(implode("\n", $errors), 500);
+		}
+
+		// Build toolbar
+		$this->addLinkedElementsToolbar();
+
+		// We have to skip FormView::display or it'll re-initialize the form and toolbar
+		\Joomla\CMS\MVC\View\HtmlView::display($tpl);
+
 		parent::display($tpl);
 	}
 
@@ -232,11 +237,22 @@ class HtmlView extends BaseHtmlView
 		}
 
 		$this->lists = $lists;
-		$this->addConfirmCopyToolbar();
+
 		Html::formvalidation();
 		Html::framework();
 		Html::iniRequireJS();
-		parent::display($tpl);
+
+		// Check for errors.
+		if (count($errors = $this->get('Errors')))
+		{
+			throw new \JViewGenericdataexception(implode("\n", $errors), 500);
+		}
+
+		// Build toolbar
+		$this->addConfirmCopyToolbar();
+
+		// We have to skip FormView::display or it'll re-initialize the form and toolbar
+		\Joomla\CMS\MVC\View\HtmlView::display($tpl);
 	}
 
 	/**
@@ -258,7 +274,7 @@ class HtmlView extends BaseHtmlView
 
 		$input      = Factory::getApplication()->input;
 		$this->data = $input->post->get('jform', array(), 'array');
-		$this->inContentTypeForm = true;
+
 		Html::formvalidation();
 		Html::framework();
 		Html::iniRequireJS();
@@ -270,10 +286,9 @@ class HtmlView extends BaseHtmlView
 		}
 
 		// Build toolbar
-		$this->addToolbar();
+		$this->addSelectSaveToolBar();
 
-		// We have to skip FormView::display or it'll re-initialize the list form
-		// This is a PHP feature to skip directly to the "grandparent" class
+		// We have to skip FormView::display or it'll re-initialize the form and toolbar
 		\Joomla\CMS\MVC\View\HtmlView::display($tpl);
 	}
 
@@ -295,15 +310,8 @@ class HtmlView extends BaseHtmlView
 		$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
 		$canDo      = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
 
-
-		if ($this->inContentTypeForm) {
-			ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
-		}
-		else
-		{
-			$title = $isNew ? Text::_('COM_FABRIK_MANAGER_LIST_NEW') : Text::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->label . '"';
-			ToolbarHelper::title($title, 'list');
-		}
+		$title = $isNew ? Text::_('COM_FABRIK_MANAGER_LIST_NEW') : Text::_('COM_FABRIK_MANAGER_LIST_EDIT') . ' "' . $this->item->label . '"';
+		ToolbarHelper::title($title, 'list');
 
 		if ($isNew)
 		{
@@ -383,5 +391,31 @@ class HtmlView extends BaseHtmlView
 		ToolbarHelper::save('list.doCopy', 'JTOOLBAR_SAVE');
 		ToolbarHelper::divider();
 		ToolbarHelper::help('JHELP_COMPONENTS_FABRIK_LISTS_EDIT');
+	}
+
+	/**
+	 * Add select content type tool bar
+	 *
+	 * @throws \Exception
+	 *
+	 * @return void
+	 *
+	 * @since 4.0
+	 */
+	protected function addSelectSaveToolBar()
+	{
+		$app         = Factory::getApplication();
+		$this->state = $this->get('State');
+		$input       = $app->input;
+		$input->set('hidemainmenu', true);
+		$canDo = FabrikAdminHelper::getActions($this->state->get('filter.category_id'));
+		ToolbarHelper::title(Text::_('COM_FABRIK_MANAGER_SELECT_CONTENT_TYPE'), 'puzzle');
+
+		// For new records, check the create permission.
+		if ($canDo->get('core.create'))
+		{
+			ToolbarHelper::apply('form.doSave', 'JTOOLBAR_SAVE');
+			ToolbarHelper::cancel('form.cancel', 'JTOOLBAR_CANCEL');
+		}
 	}
 }
