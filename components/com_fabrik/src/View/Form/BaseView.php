@@ -362,12 +362,10 @@ class BaseView extends AbstractView
 	private function setTmplFolders($tmpl)
 	{
 		// Force front end templates
-		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
+		$this->_basePath = COM_FABRIK_FRONTEND . '/tmpl';
 		$model           = $this->getModel();
-		$jTmplFolder     = 'tmpl';
 		$folder          = $model->isEditable() ? 'form' : 'details';
-		$this->addTemplatePath($this->_basePath . '/' . $folder . '/' . $jTmplFolder . '/' . $tmpl);
-
+		$this->addTemplatePath($this->_basePath . '/' . $folder . '/' . $tmpl);
 		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $folder . '/' . $tmpl);
 	}
