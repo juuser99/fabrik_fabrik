@@ -755,27 +755,10 @@ class ListModel extends FabAdminModel
 				$row->set('checked_out', 0);
 			}
 
-			if ($row->get('checked_out_time', '') == '')
-			{
-				$row->set('checked_out_time', '0000-00-00 00:00:00');
-			}
-
 			if ($row->get('hits', '') == '')
 			{
 				$row->set('hits', 0);
 			}
-
-			if ($row->get('publish_up', '') == '')
-			{
-				$row->set('publish_up', '0000-00-00 00:00:00');
-			}
-
-			if ($row->get('publish_down', '') == '')
-			{
-				$row->set('publish_down', '0000-00-00 00:00:00');
-			}
-
-
 
 			$isNew         = false;
 			$existingTable = ArrayHelper::getValue($data, 'db_table_name', '');

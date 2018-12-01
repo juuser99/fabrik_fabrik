@@ -58,4 +58,20 @@ class CronTable extends FabTable
 
 		return parent::bind($src, $ignore);
 	}
+
+	/**
+	 *
+	 * @return bool
+	 *
+	 * @since version
+	 */
+	public function check()
+	{
+		if (!$this->lastrun)
+		{
+			$this->lastrun = $this->_db->getNullDate();
+		}
+
+		return parent::check();
+	}
 }

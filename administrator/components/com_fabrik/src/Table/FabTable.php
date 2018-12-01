@@ -12,6 +12,7 @@ namespace Joomla\Component\Fabrik\Administrator\Table;
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
 
 // No direct access
@@ -128,5 +129,92 @@ class FabTable extends Table
 		}
 
 		return $cache[$this->_tbl];
+	}
+
+	/**
+	 * Set values to prevent errors due to J4 setting strict table in the session
+	 *
+	 * @return bool
+	 *
+	 * @since 4.0
+	 */
+	public function check()
+	{
+		// set null dates for applicable fields
+		if ($this->hasField('publish_up') && !$this->publish_up)
+		{
+			$this->publish_up = $this->_db->getNullDate();
+		}
+
+		if ($this->hasField('publish_down') && !$this->publish_down)
+		{
+			$this->publish_down = $this->_db->getNullDate();
+		}
+
+		// Check the publish down date is not earlier than publish up.
+		if ($this->publish_down < $this->publish_up && $this->publish_down > $this->_db->getNullDate())
+		{
+			// Swap the dates.
+			$temp = $this->publish_up;
+			$this->publish_up = $this->publish_down;
+			$this->publish_down = $temp;
+		}
+
+		$date = Factory::getDate();
+		$user = Factory::getUser();
+
+		if ($this->hasField('checked_out_time') && !$this->checked_out_time)
+		{
+			$this->checked_out_time = $this->_db->getNullDate();
+		}
+
+		if ($this->id)
+		{
+			// Existing item
+			if ($this->hasField('modified'))
+			{
+				$this->modified = $this->_db->getNullDate();
+			}
+
+			if ($this->hasField('modified_by'))
+			{
+				$this->modified_by = $user->get('id');
+			}
+
+
+			return parent::check();
+		}
+
+		if ($this->hasField('checked_out'))
+		{
+			$this->checked_out = 0;
+		}
+
+		if ($this->hasField('modified_by'))
+		{
+			$this->modified_by = 0;
+		}
+
+		if ($this->hasField('modified') && !$this->modified)
+		{
+			$this->modified = $this->_db->getNullDate();
+		}
+
+		if ($this->hasField('created') && !(int) $this->created)
+		{
+			$this->created = $date->toSql();
+		}
+
+		if ($this->hasField('created_by') && !(int) $this->created_by)
+		{
+			$this->created_by = $user->get('id');
+		}
+
+		if ($this->hasField('created_by_alias') && !$this->created_by_alias)
+		{
+			$this->created_by_alias = $user->get('username');
+		}
+
+		return parent::check();
 	}
 }
