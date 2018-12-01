@@ -81,7 +81,7 @@ $states = array(
                     </th>
 
                     <th width="30px">
-                        <?php echo HTMLHelper::_('searchtools.sort', '<i class="icon-menu-2"></i>', 'e.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+                        <?php echo HTMLHelper::_('searchtools.sort', '', 'e.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
                     </th>
                     <th width="30px">&nbsp;&nbsp;&nbsp;</th>
                     <th width="30px"><input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" /></th>
