@@ -115,8 +115,8 @@ $listDirn  = $this->state->get('list.direction');
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button data-toggle="dropdown" class="dropdown-toggle btn btn-micro">
-                                    <span class="caret"></span>
+                                <button data-toggle="dropdown" class="btn btn-micro">
+                                    <span class="fa fa-caret-down"></span>
                                     <span class="element-invisible">Actions for: COM_FABRIK_EXPORT_CONTENT_TYPE</span>
                                 </button>
                                 <div class="dropdown-menu">
