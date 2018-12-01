@@ -16,7 +16,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\HTML\Registry;
+use Joomla\Registry\Registry;
 use Joomla\CMS\Layout\LayoutHelper;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
@@ -115,29 +115,24 @@ $listDirn  = $this->state->get('list.direction');
                         </td>
                         <td>
                             <div class="btn-group">
-                                <
                                 <button data-toggle="dropdown" class="dropdown-toggle btn btn-micro">
                                     <span class="caret"></span>
                                     <span class="element-invisible">Actions for: COM_FABRIK_EXPORT_CONTENT_TYPE</span>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="javascript://" onclick="listItemTask('cb<?php echo $i; ?>', 'form.createContentType')">
-                                            <span class="icon-upload"></span> <?php echo JText::_('COM_FABRIK_CONTENT_TYPE_EXPORT'); ?>
-                                        </a>
-                                    </li>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="javascript://" onclick="listItemTask('cb<?php echo $i; ?>', 'form.createContentType')">
+                                        <span class="icon-upload"></span> <?php echo JText::_('COM_FABRIK_CONTENT_TYPE_EXPORT'); ?>
+                                    </a>
                                     <?php
                                     if ($params->get('content_type_path', '') !== '') :?>
-                                        <li>
-                                            <a href="index.php?option=com_fabrik&task=form.downloadContentType&cid=<?php echo $item->id; ?>">
-                                                <span class="icon-download"></span> <?php echo JText::_('COM_FABRIK_CONTENT_TYPE_DOWNLOAD'); ?>
-                                            </a>
-                                        </li>
+                                    <a class="dropdown-item" href="index.php?option=com_fabrik&task=form.downloadContentType&cid=<?php echo $item->id; ?>">
+                                        <span class="icon-download"></span> <?php echo JText::_('COM_FABRIK_CONTENT_TYPE_DOWNLOAD'); ?>
+                                    </a>
                                     <?php
 
                                     endif;
                                     ?>
-                                </ul>
+                                </div>
                             </div>
                         </td>
                         <td>
