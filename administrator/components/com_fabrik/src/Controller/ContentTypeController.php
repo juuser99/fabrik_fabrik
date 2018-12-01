@@ -45,7 +45,6 @@ class ContentTypeController extends AbstractFormController
 		$model = $this->getModel(ContentTypeImportModel::class, '', array('listModel' => $listModel));
 		$viewType = Factory::getDocument()->getType();
 		$this->name = 'Fabrik';
-		//$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout = $this->input->get('layout', 'default');
 
 		/** @var HtmlView $view */
