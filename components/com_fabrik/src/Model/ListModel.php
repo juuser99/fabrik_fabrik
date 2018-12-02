@@ -8094,7 +8094,7 @@ class ListModel extends FabSiteModel
 		else
 		{
 			$cache = Worker::getCache($this);
-			$cache->call(array(get_class($this), 'cacheDoCalculations'), $this, $this->getId());
+			$cache->get(array(get_class($this), 'cacheDoCalculations'), $this, $this->getId());
 		}
 		*/
 		$cache = Worker::getCache($this);

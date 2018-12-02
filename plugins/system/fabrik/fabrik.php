@@ -127,7 +127,7 @@ class PlgSystemFabrik extends JPlugin
 			if (!empty($cacheId))
 			{
 				 // We got an ID, so ask the cache for it.
-				$script = $cache->call(array('PlgSystemFabrik', 'buildJs'), $cacheId);
+				$script = $cache->get(array('PlgSystemFabrik', 'buildJs'), $cacheId);
 			}
 			else
 			{

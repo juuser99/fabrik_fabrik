@@ -16,6 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\FCipher;
 use DateTime;
 use Exception;
+use Joomla\CMS\Cache\Cache;
+use Joomla\CMS\Factory;
 use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use JAccess;
 use JCache;
@@ -2661,17 +2663,18 @@ class Worker
 	 *
 	 * @since   3.0.7
 	 *
-	 * @return  JCache
+	 * @return  Cache
 	 */
 	public static function getCache($listModel = null, $group = null, $ttl = null)
 	{
-		$config  = JFactory::getConfig();
-		$app     = JFactory::getApplication();
+		/** @var CMSApplication $app */
+		$app     = Factory::getApplication();
+		$config  = $app->getConfig();
 		$package = isset($group) ? $group : $app->getUserState('com_fabrik.package', 'fabrik');
 		$time    = isset($ttl) ? (int) $ttl : (int) $config->get('cachetime');
 		$base    = JPATH_BASE . '/cache/';
 		$opts    = array('defaultgroup' => 'com_' . $package, 'cachebase' => $base, 'lifetime' => $time, 'language' => 'en-GB', 'storage' => 'file');
-		$cache   = JCache::getInstance('callback', $opts);
+		$cache   = Cache::getInstance('callback', $opts);
 		$doCache = $config->get('caching', 0) > 0 ? true : false;
 
 		if ($doCache && $listModel !== null)
