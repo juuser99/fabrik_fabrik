@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Router\Route;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Utilities\ArrayHelper;
 
 /**

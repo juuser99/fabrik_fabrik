@@ -8,10 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// No direct access
-defined('_JEXEC') or die('Restricted access');
+namespace Joomla\Component\Fabrik\Site\View\ListView;
 
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
+// No direct access
+use Joomla\CMS\Object\CMSObject;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * HTML Partial Fabrik List view class. Renders HTML without <head> or wrapped in <body>
@@ -22,36 +25,40 @@ require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.4.3
+ * @since       4.0
  */
-class FabrikViewList extends FabrikViewListBase
+class PartialView extends BaseView
 {
 	/**
 	 * Tabbed content
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	public $tabs = array();
 
 	/**
 	 * Display the template
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
 		if (parent::display($tpl) !== false)
 		{
-			/** @var FabrikFEModelList $model */
-			$model = $this->getModel();
+			/** @var ListModel $model */
+			$model      = $this->getModel();
 			$this->tabs = $model->loadTabs();
 
 			if (!$this->app->isAdmin() && isset($this->params))
 			{
-				/** @var JObject $state */
-				$state = $model->getState();
+				/** @var CMSObject $state */
+				$state       = $model->getState();
 				$stateParams = $state->get('params');
 
 				if ($stateParams->get('menu-meta_description'))
@@ -77,20 +84,22 @@ class FabrikViewList extends FabrikViewListBase
 	/**
 	 * Render the group by heading as a JLayout list.fabrik-group-by-heading
 	 *
-	 * @param   string  $groupedBy  Group by key for $this->grouptemplates
-	 * @param   array   $group      Group data
+	 * @param   string $groupedBy Group by key for $this->grouptemplates
+	 * @param   array  $group     Group data
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function layoutGroupHeading($groupedBy, $group)
 	{
-		$displayData = new stdClass;
-		$displayData->emptyDataMessage = $this->emptyDataMessage;
-		$displayData->tmpl = $this->tmpl;
-		$displayData->title = $this->grouptemplates[$groupedBy];
-		$displayData->count = count($group);
-		$displayData->group_by_show_count = $this->params->get('group_by_show_count','1');
-		$layout = $this->getModel()->getLayout('list.fabrik-group-by-heading');
+		$displayData                      = new \stdClass;
+		$displayData->emptyDataMessage    = $this->emptyDataMessage;
+		$displayData->tmpl                = $this->tmpl;
+		$displayData->title               = $this->grouptemplates[$groupedBy];
+		$displayData->count               = count($group);
+		$displayData->group_by_show_count = $this->params->get('group_by_show_count', '1');
+		$layout                           = $this->getModel()->getLayout('list.fabrik-group-by-heading');
 
 		return $layout->render($displayData);
 	}
@@ -99,19 +108,21 @@ class FabrikViewList extends FabrikViewListBase
 	 * Create and render layout of the list's filters
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function layoutFilters()
 	{
-		$displayData = new stdClass;
-		$displayData->filterMode = $this->filterMode;
-		$displayData->toggleFilters = $this->toggleFilters;
-		$displayData->filterCols = $this->filterCols;
-		$displayData->showClearFilters = $this->showClearFilters;
+		$displayData                     = new \stdClass;
+		$displayData->filterMode         = $this->filterMode;
+		$displayData->toggleFilters      = $this->toggleFilters;
+		$displayData->filterCols         = $this->filterCols;
+		$displayData->showClearFilters   = $this->showClearFilters;
 		$displayData->gotOptionalFilters = $this->gotOptionalFilters;
-		$displayData->filters = $this->filters;
-		$displayData->filter_action = $this->filter_action;
-		$layoutFile =  $this->filterMode === 5 ? 'fabrik-filters-modal' : 'fabrik-filters';
-		$layout = $this->getModel()->getLayout('list.' . $layoutFile);
+		$displayData->filters            = $this->filters;
+		$displayData->filter_action      = $this->filter_action;
+		$layoutFile                      = $this->filterMode === 5 ? 'fabrik-filters-modal' : 'fabrik-filters';
+		$layout                          = $this->getModel()->getLayout('list.' . $layoutFile);
 
 		return $layout->render($displayData);
 	}

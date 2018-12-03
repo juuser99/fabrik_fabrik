@@ -8,48 +8,72 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\Model;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
-
-jimport('joomla.application.component.model');
 
 /**
  * Fabrik Open Archive Model
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.4
+ * @since       4.0
  */
-class FabrikFEModelOai extends FabModel
+class OaiModel extends FabSiteModel
 {
-
 	/**
 	 * Delimiter used in unique resource identifier
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	private $delimiter = ':';
 
 	/**
-	 * @var DOMDocument
+	 * @var \DOMDocument
+	 *
+	 * @since 4.0
 	 */
 	public $dom;
 
+	/**
+	 * @var ListModel
+	 *
+	 * @since 4.0
+	 */
 	private $listModel;
 
 	/**
 	 * Single getRecord record
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	private $record = array();
 
+	/**
+	 * OaModel constructor.
+	 *
+	 * @param array $config
+	 *
+	 * @throws \Exception
+	 *
+	 * @since 4.0
+	 */
 	public function __construct(array $config)
 	{
-		$this->dom                     = new DOMDocument('1.0', 'utf-8');
+		$this->dom                     = new \DOMDocument('1.0', 'utf-8');
 		$this->dom->preserveWhiteSpace = false;
 		$this->dom->formatOutput       = true;
 		parent::__construct($config);
@@ -58,9 +82,11 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Set the list model
 	 *
-	 * @param $listModel
+	 * @param ListModel $listModel
+	 *
+	 * @since 4.0
 	 */
-	public function setListModel($listModel)
+	public function setListModel(ListModel $listModel)
 	{
 		$this->listModel = $listModel;
 	}
@@ -68,7 +94,9 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Build the document header section
 	 *
-	 * @return DOMNode
+	 * @return \DOMNode
+	 *
+	 * @since 4.0
 	 */
 	public function root()
 	{
@@ -104,10 +132,12 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Map a set of node attributes to a node.
 	 *
-	 * @param DOMNode $node
-	 * @param array   $attributes
+	 * @param \DOMNode $node
+	 * @param array    $attributes
+	 *
+	 * @since 4.0
 	 */
-	public function nodeAttributes(&$node, $attributes)
+	public function nodeAttributes($node, $attributes)
 	{
 		foreach ($attributes as $key => $value)
 		{
@@ -120,7 +150,9 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Create response date
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	public function responseDate()
 	{
@@ -131,10 +163,12 @@ class FabrikFEModelOai extends FabModel
 	 * Get OAI Base URL
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	private function baseUrl()
 	{
-		$uri = Juri::getInstance()->toString(array('scheme', 'host', 'path')) . '?option=com_fabrik&controller=oai&format=oai';
+		$uri = Uri::getInstance()->toString(array('scheme', 'host', 'path')) . '?option=com_fabrik&controller=oai&format=oai';
 
 		return htmlspecialchars($uri, ENT_COMPAT, 'UTF-8');
 	}
@@ -142,7 +176,9 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Create the request DOM element
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	public function requestElement()
 	{
@@ -152,7 +188,9 @@ class FabrikFEModelOai extends FabModel
 	}
 
 	/**
-	 * @param DOMElement $node
+	 * @param \DOMElement $node
+	 *
+	 * @since 4.0
 	 */
 	private function addNameSpace(&$node)
 	{
@@ -181,7 +219,9 @@ class FabrikFEModelOai extends FabModel
 	}
 
 	/**
-	 * @param DOMElement $node
+	 * @param \DOMElement $node
+	 *
+	 * @since 4.0
 	 */
 	public function appendChild($node)
 	{
@@ -192,7 +232,9 @@ class FabrikFEModelOai extends FabModel
 	 * @param      $name
 	 * @param null $value
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	public function createElement($name, $value = null)
 	{
@@ -202,7 +244,9 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Generate the repository identifier
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	private function repositoryIdentifierElement()
 	{
@@ -213,13 +257,15 @@ class FabrikFEModelOai extends FabModel
 
 	/**
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function repositoryIdentifier()
 	{
-		$config = JComponentHelper::getParams('com_fabrik');
+		$config = ComponentHelper::getParams('com_fabrik');
 
 		return $config->get('oai_repository_identifier',
-			Juri::getInstance()->toString(array('host')));
+			Uri::getInstance()->toString(array('host')));
 	}
 
 	/**
@@ -228,6 +274,8 @@ class FabrikFEModelOai extends FabModel
 	 * @param array $err error and code values.
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function generateError($err)
 	{
@@ -250,6 +298,8 @@ class FabrikFEModelOai extends FabModel
 	 * @param string $identifier E.g. 'oai:fabrik.rocks:17/1'
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function checkIdentifier($identifier)
 	{
@@ -263,8 +313,8 @@ class FabrikFEModelOai extends FabModel
 		$listId = $record[0];
 		$rowId  = $record[1];
 
-		/** @var FabrikFEModelList $listModel */
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var ListModel $listModel */
+		$listModel = FabModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 		$formModel->setRowId($rowId);
@@ -284,6 +334,8 @@ class FabrikFEModelOai extends FabModel
 	 * @param   string $identifier
 	 *
 	 * @return array|bool
+	 *
+	 * @since 4.0
 	 */
 	public function getListRowIdFromIdentifier($identifier)
 	{
@@ -301,6 +353,8 @@ class FabrikFEModelOai extends FabModel
 
 	/**
 	 * // <resumptionToken completeListSize="13239" cursor="0">T3hz</resumptionToken>
+	 *
+	 * @since 4.0
 	 */
 	public function resumptionToken($total, $filter)
 	{
@@ -324,6 +378,8 @@ class FabrikFEModelOai extends FabModel
 	 * @param boolean $raw Append _raw to the element name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function dateElName($raw = true)
 	{
@@ -332,7 +388,7 @@ class FabrikFEModelOai extends FabModel
 		$params    = $this->listModel->getParams();
 
 		return $formModel->getElement($params->get('open_archive_timestamp'), true)
-			->getFullName(true, false) . $suffix;
+				->getFullName(true, false) . $suffix;
 	}
 
 	public function supportMetaDataPrefix($prefix)
@@ -344,10 +400,14 @@ class FabrikFEModelOai extends FabModel
 	 * Create the Identity XML response
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function identity()
 	{
-		$config = JFactory::getConfig();
+		/** @var CMSApplication $app */
+		$app    = Factory::getApplication();
+		$config = $app->getConfig();
 
 		$root = $this->root();
 		$root->appendChild($this->responseDate());
@@ -401,7 +461,9 @@ class FabrikFEModelOai extends FabModel
 	 * Build the row's <oai_dc:dc> node (Dublin core date)
 	 * Setting the attribute name space
 	 *
-	 * @return DOMNode
+	 * @return \DOMNode
+	 *
+	 * @since 4.0
 	 */
 	public function rowOaiDc()
 	{
@@ -439,6 +501,8 @@ class FabrikFEModelOai extends FabModel
 
 	/**
 	 * @param array $record
+	 *
+	 * @since 4.0
 	 */
 	public function setRecord($record = array())
 	{
@@ -446,7 +510,9 @@ class FabrikFEModelOai extends FabModel
 	}
 
 	/**
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	public function getRecordHeader()
 	{
@@ -454,24 +520,29 @@ class FabrikFEModelOai extends FabModel
 
 		if (!array_key_exists('__pk_val', $this->record))
 		{
-			throw new UnexpectedValueException('__pk_val value not defined');
+			throw new \UnexpectedValueException('__pk_val value not defined');
 		}
 
 		if (!array_key_exists($dateEl, $this->record))
 		{
-			throw new UnexpectedValueException('date timestamp element not defined');
+			throw new \UnexpectedValueException('date timestamp element not defined');
 		}
 
 		$header = $this->dom->createElement('header');
 
 		$header->appendChild($this->dom->createElement('identifier', $this->recordIdentifier()));
 
-		$timestamp = new DateTime($this->record[$dateEl]);
+		$timestamp = new \DateTime($this->record[$dateEl]);
 		$header->appendChild($this->dom->createElement('datestamp', $timestamp->format('Y-m-d')));
 
 		return $header;
 	}
 
+	/**
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
 	private function recordIdentifier()
 	{
 		$prefix = 'oai:' . $this->repositoryIdentifier() . ':';
@@ -484,7 +555,9 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Get an individual record
 	 *
-	 * @return DOMDocument
+	 * @return \DOMDocument
+	 *
+	 * @since 4.0
 	 */
 	public function getRecord()
 	{
@@ -493,8 +566,8 @@ class FabrikFEModelOai extends FabModel
 		$metaData = $this->getRecordMetaData();
 		$root->appendChild($this->responseDate());
 		$request = $this->requestElement();
-		$this->nodeAttributes($request, array('verb' => 'GetRecord', 'identifier' => $this->recordIdentifier(),
-			'metadataPrefix' => 'oai_dc'));
+		$this->nodeAttributes($request, array('verb'           => 'GetRecord', 'identifier' => $this->recordIdentifier(),
+		                                      'metadataPrefix' => 'oai_dc'));
 		$root->appendChild($request);
 
 		$getRecord = $this->dom->createElement('GetRecord');
@@ -511,7 +584,9 @@ class FabrikFEModelOai extends FabModel
 	}
 
 	/**
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	public function getRecordMetaData()
 	{
@@ -520,12 +595,15 @@ class FabrikFEModelOai extends FabModel
 
 		$this->dcRow($row, $this->record);
 		$metaData->appendChild($row);
+
 		return $metaData;
 	}
 
 	/**
-	 * @param DOMElement &$node To append Dublin Core data to
-	 * @param object     $row   Data
+	 * @param \DOMElement &$node To append Dublin Core data to
+	 * @param object       $row  Data
+	 *
+	 * @since 4.0
 	 */
 	public function dcRow(&$node, $row)
 	{
@@ -557,7 +635,7 @@ class FabrikFEModelOai extends FabModel
 			}
 
 			$nodeValue = html_entity_decode($nodeValue, null, "UTF-8");
-			$child = $this->createElement($nodeType, $nodeValue);
+			$child     = $this->createElement($nodeType, $nodeValue);
 			$node->appendChild($child);
 
 			$i++;
@@ -570,6 +648,8 @@ class FabrikFEModelOai extends FabModel
 	 * @param string $setName
 	 *
 	 * @return mixed
+	 *
+	 * @since 4.0
 	 */
 	public function listIdFromSetName($setName)
 	{
@@ -586,7 +666,9 @@ class FabrikFEModelOai extends FabModel
 	/**
 	 * Create OAI listSet data
 	 *
-	 * @return DOMDocument
+	 * @return \DOMDocument
+	 *
+	 * @since 4.0
 	 */
 	public function listSets()
 	{
@@ -626,7 +708,9 @@ class FabrikFEModelOai extends FabModel
 	 *
 	 * @param string $identifier
 	 *
-	 * @return DOMDocument
+	 * @return \DOMDocument
+	 *
+	 * @since 4.0
 	 */
 	public function listMetaDataFormats($identifier = '')
 	{
@@ -646,5 +730,4 @@ class FabrikFEModelOai extends FabModel
 
 		return $this->dom;
 	}
-
 }

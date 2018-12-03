@@ -9,10 +9,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\ListView;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
+use Joomla\String\Normalise;
 
 /**
  * MS Word/Open office .doc Fabrik List view class
@@ -20,16 +22,18 @@ require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.7
+ * @since       4.0
  */
-class FabrikViewList extends FabrikViewListBase
+class WordView extends BaseView
 {
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  template
+	 * @param   string $tpl template
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
@@ -37,7 +41,7 @@ class FabrikViewList extends FabrikViewListBase
 		{
 			if (!$this->app->isAdmin())
 			{
-				$state = $this->get('State');
+				$state        = $this->get('State');
 				$this->params = $state->get('params');
 
 				if ($this->params->get('menu-meta_description'))
@@ -59,13 +63,19 @@ class FabrikViewList extends FabrikViewListBase
 			// Set the response to indicate a file download
 			$this->app->setHeader('Content-Type', 'application/vnd.ms-word');
 			$name = $this->getModel()->getTable()->label;
-			$name = JStringNormalise::toDashSeparated($name);
+			$name = Normalise::toDashSeparated($name);
 			$this->app->setHeader('Content-Disposition', "attachment;filename=\"" . $name . ".doc\"");
 			$this->doc->setMimeEncoding('text/html; charset=Windows-1252', false);
 			$this->output();
 		}
 	}
 
+	/**
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
 	public function layoutFilters()
 	{
 		return '';

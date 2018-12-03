@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -65,7 +67,7 @@ echo $this->plugintop;
 		// If this is multi-page then groups are consolidated until a group with a page break
 		// So we should only show a tab if: it is first tab, or if it is a page break
 		if (!$model->isMultiPage() || $i === 0 || $group->splitPage) :
-			$tab = new stdClass;
+			$tab = new \stdClass;
 			$tab->class = $i === 0 ? 'active' : '';
 			$tab->css = $group->css;
 			$tab->href = 'group-tab' . $tabId;
@@ -77,7 +79,7 @@ echo $this->plugintop;
 	endforeach;
 	?>
 <?php
-echo FabrikHelperHTML::getLayout('fabrik-tabs')->render((object) array('tabs' => $tabs));
+echo Html::getLayout('fabrik-tabs')->render((object) array('tabs' => $tabs));
 ?>
 <div class="tab-content">
 	<?php
@@ -143,4 +145,4 @@ echo $this->loadTemplate('actions');
 <?php
 echo $form->outro;
 echo $this->pluginend;
-echo FabrikHelperHTML::keepalive();
+echo Html::keepalive();

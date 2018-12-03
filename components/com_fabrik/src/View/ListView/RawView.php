@@ -8,34 +8,34 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\ListView;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
-
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
 /**
  * Raw Fabrik List view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-class FabrikViewList extends FabrikViewListBase
+class RawView extends BaseView
 {
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  template
+	 * @param   string $tpl template
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
 		$input = $this->app->input;
-
-		/** @var FabrikFEModelList $model */
 		$model = $this->getModel();
 		$model->setId($input->getInt('listid'));
 
@@ -44,21 +44,21 @@ class FabrikViewList extends FabrikViewListBase
 			exit;
 		}
 
-		$table = $model->getTable();
+		$table  = $model->getTable();
 		$params = $model->getParams();
-		$rowId = $input->getString('rowid', '', 'string');
-		$data = $model->render();
+		$rowId  = $input->getString('rowid', '', 'string');
+		$data   = $model->render();
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
 		$this->emptyDataMessage = $this->get('EmptyDataMsg');
-		$nav = $model->getPagination();
-		$form = $model->getFormModel();
-		$c = 0;
+		$nav                    = $model->getPagination();
+		$form                   = $model->getFormModel();
+		$c                      = 0;
 
 		foreach ($data as $groupKey => $group)
 		{
 			foreach ($group as $i => $x)
 			{
-				$o = new stdClass;
+				$o = new \stdClass;
 
 				if (is_object($data[$groupKey]))
 				{
@@ -73,16 +73,16 @@ class FabrikViewList extends FabrikViewListBase
 				if (array_key_exists($groupKey, $model->groupTemplates))
 				{
 					$o->groupHeading = $model->groupTemplates[$groupKey];
-					if ($params->get('group_by_show_count','1') == '1')
+					if ($params->get('group_by_show_count', '1') == '1')
 					{
 						$o->groupHeading .= '<span class="groupCount">( ' . count($group) . ' )</span>';
 					}
 				}
 
 				$o->cursor = $i + $nav->limitstart;
-				$o->total = $nav->total;
-				$o->id = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
-				$o->class = 'fabrik_row oddRow' . $c;
+				$o->total  = $nav->total;
+				$o->id     = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
+				$o->class  = 'fabrik_row oddRow' . $c;
 
 				if (is_object($data[$groupKey]))
 				{
@@ -110,15 +110,15 @@ class FabrikViewList extends FabrikViewListBase
 			}
 		}
 
-		$d = array('id' => $table->id, 'listRef' => $input->get('listref'), 'rowid' => $rowId, 'model' => 'list', 'data' => $data,
-			'headings' => $this->headings, 'formid' => $model->getTable()->form_id,
-			'lastInsertedRow' => $this->session->get('lastInsertedRow', 'test'));
+		$d = array('id'              => $table->id, 'listRef' => $input->get('listref'), 'rowid' => $rowId, 'model' => 'list', 'data' => $data,
+		           'headings'        => $this->headings, 'formid' => $model->getTable()->form_id,
+		           'lastInsertedRow' => $this->session->get('lastInsertedRow', 'test'));
 
-		$d['nav'] = get_object_vars($nav);
-		$tmpl = $input->get('tmpl', $this->getTmpl());
-		$d['htmlnav'] = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $tmpl) : '';
-		$d['calculations'] = $model->getCalculations();
-		$d['hasFilters'] = $model->gotOptionalFilters();
+		$d['nav']            = get_object_vars($nav);
+		$tmpl                = $input->get('tmpl', $this->getTmpl());
+		$d['htmlnav']        = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $tmpl) : '';
+		$d['calculations']   = $model->getCalculations();
+		$d['hasFilters']     = $model->gotOptionalFilters();
 		$d['searchallvalue'] = $model->getFilterModel()->getSearchAllValue('html');
 
 		// $$$ hugh - see if we have a message to include, set by a list plugin
@@ -137,12 +137,14 @@ class FabrikViewList extends FabrikViewListBase
 	 * Get the view template name
 	 *
 	 * @return  string template name
+	 *
+	 * @since 4.0
 	 */
 	private function getTmpl()
 	{
-		$input = $this->app->input;
-		$model = $this->getModel();
-		$table = $model->getTable();
+		$input  = $this->app->input;
+		$model  = $this->getModel();
+		$table  = $model->getTable();
 		$params = $model->getParams();
 
 		if ($this->app->isAdmin())

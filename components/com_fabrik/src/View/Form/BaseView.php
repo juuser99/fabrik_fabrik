@@ -36,6 +36,8 @@ use Joomla\Utilities\ArrayHelper;
  * @package     Joomla
  * @subpackage  Fabrik
  * @since       4.0
+ *
+ * @method FormModel getModel($name = null)
  */
 class BaseView extends AbstractView
 {
@@ -128,6 +130,20 @@ class BaseView extends AbstractView
 	 * @since 4.0
 	 */
 	public $rowid = '';
+
+	/**
+	 * @var Registry
+	 *
+	 * @since 4.0
+	 */
+	protected $state;
+
+	/**
+	 * @var Registry
+	 *
+	 * @since 4.0
+	 */
+	protected $params;
 
 	/**
 	 * Preview the form, used in content type admin page.
@@ -439,13 +455,13 @@ class BaseView extends AbstractView
 	 * Set the page title
 	 *
 	 * @param   object  $w      parent worker
-	 * @param   object &$params parameters
+	 * @param   object $params parameters
 	 *
 	 * @return  void
 	 *
 	 * @since 4.0
 	 */
-	protected function setTitle($w, &$params)
+	protected function setTitle($w, $params)
 	{
 		/** @var FormModel $model */
 		$model = $this->getModel();

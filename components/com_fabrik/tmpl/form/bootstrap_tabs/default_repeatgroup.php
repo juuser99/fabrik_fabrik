@@ -12,9 +12,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$input = JFactory::getApplication()->input;
+use Joomla\CMS\Factory;
+use Joomla\Input\Input;
+use Fabrik\Helpers\Worker;
+
+/** @var Input $input */
+$input = Factory::getApplication()->input;
 $group = $this->group;
-$w = new FabrikWorker;
+$w = new Worker();
 $i = 1;
 
 foreach ($group->subgroups as $subgroup) :

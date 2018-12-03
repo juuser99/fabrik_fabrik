@@ -32,6 +32,8 @@ use Joomla\Registry\Registry;
  * @package     Joomla
  * @subpackage  Fabrik
  * @since       3.0.6
+ *
+ * @method ListModel getModel($name = null)
  */
 class BaseView extends AbstractView
 {
@@ -69,7 +71,7 @@ class BaseView extends AbstractView
 		$csvOpts->inccalcs     = (int) $params->get('csv_include_calculations');
 		$csvOpts->custom_qs    = $params->get('csv_custom_qs', '');
 
-		$itemId = Worker::itemId();
+		$itemId    = Worker::itemId();
 		$exportUrl = 'index.php?option=com_' . $this->package . '&view=list&listid=' . $this->getModel()->getId();
 
 		if (!empty($itemId))
@@ -77,20 +79,20 @@ class BaseView extends AbstractView
 			$exportUrl .= '&Itemid=' . $itemId;
 		}
 
-		$exportUrl .= '&format=csv';
-		$csvOpts->exportLink   = Route::_($exportUrl, false);
+		$exportUrl           .= '&format=csv';
+		$csvOpts->exportLink = Route::_($exportUrl, false);
 
 		$w->replaceRequest($csvOpts->custom_qs);
-		$csvOpts->incfilters   = (int) $params->get('incfilters');
-		$csvOpts->popupwidth   = Worker::getMenuOrRequestVar('popup_width','340',false,'menu');
-		$csvOpts->optswidth    = Worker::getMenuOrRequestVar('popup_opts_width','200',false,'menu');
-		$opts->csvOpts         = $csvOpts;
-		$opts->csvFields       = $model->getCsvFields();
-		$modalOpts             = array(
-			'content' => '',
-			'id' => 'ajax_links',
-			'title' => 'Export csv jlayout',
-			'modal' => true,
+		$csvOpts->incfilters = (int) $params->get('incfilters');
+		$csvOpts->popupwidth = Worker::getMenuOrRequestVar('popup_width', '340', false, 'menu');
+		$csvOpts->optswidth  = Worker::getMenuOrRequestVar('popup_opts_width', '200', false, 'menu');
+		$opts->csvOpts       = $csvOpts;
+		$opts->csvFields     = $model->getCsvFields();
+		$modalOpts           = array(
+			'content'    => '',
+			'id'         => 'ajax_links',
+			'title'      => 'Export csv jlayout',
+			'modal'      => true,
 			'expandable' => false
 		);
 
@@ -99,7 +101,7 @@ class BaseView extends AbstractView
 			$modalOpts['footer'] = 'export';
 			$layout              = $model->getLayout('fabrik-button');
 			$layoutData          = (object) array(
-				'name' => 'submit',
+				'name'  => 'submit',
 				'class' => 'exportCSVButton btn-primary',
 				'label' => Text::_('COM_FABRIK_EXPORT')
 			);
@@ -143,10 +145,10 @@ class BaseView extends AbstractView
 			$modalTitle = 'test';
 
 			$modalOpts = array(
-				'content' => '',
-				'id' => 'ajax_links',
-				'title' => Text::_($modalTitle),
-				'modal' => false,
+				'content'    => '',
+				'id'         => 'ajax_links',
+				'title'      => Text::_($modalTitle),
+				'modal'      => false,
 				'expandable' => true
 			);
 			Html::jLayoutJs('ajax_links', 'fabrik-modal', (object) $modalOpts);
@@ -157,19 +159,19 @@ class BaseView extends AbstractView
 		if ($params->get('advanced-filter'))
 		{
 			$modalOpts = array(
-				'content' => '',
-				'id' => 'advanced-filter',
-				'title' => Text::_('COM_FABRIK_FIELD_ADVANCED_SEARCH_LABEL'),
-				'modal' => false,
+				'content'    => '',
+				'id'         => 'advanced-filter',
+				'title'      => Text::_('COM_FABRIK_FIELD_ADVANCED_SEARCH_LABEL'),
+				'modal'      => false,
 				'expandable' => true
 			);
 			Html::jLayoutJs('advanced-filter', 'fabrik-modal', (object) $modalOpts);
 		}
 
 		Html::jLayoutJs('modal-state-label', 'list.fabrik-filters-modal-state-label', $layoutData = (object) array(
-			'label' => '',
+			'label'        => '',
 			'displayValue' => '',
-			'key' => ''
+			'key'          => ''
 		));
 
 		$this->csvJS($opts, $model);
@@ -197,8 +199,7 @@ class BaseView extends AbstractView
 
 		$pluginManager->runPlugins('loadJavascriptClassName', $model, 'list');
 
-		$pluginManager->data = array_filter($pluginManager->data, function ($v)
-		{
+		$pluginManager->data = array_filter($pluginManager->data, function ($v) {
 			return $v !== '';
 		});
 
@@ -425,10 +426,10 @@ class BaseView extends AbstractView
 		/** @var FabrikFEModelList $model */
 		$model = $this->getModel();
 
-        if (!$this->access($model))
-        {
-            return false;
-        }
+		if (!$this->access($model))
+		{
+			return false;
+		}
 
 		// Force front end templates
 		$tmpl            = $model->getTmpl();
@@ -535,7 +536,7 @@ class BaseView extends AbstractView
 			$this->showPdf = Worker::canPdf(false);
 		}
 
-		$this->emptyLink     = $model->canEmpty() ? '#' : '';
+		$this->emptyLink = $model->canEmpty() ? '#' : '';
 
 		if ($this->showCSVImport)
 		{
@@ -548,7 +549,7 @@ class BaseView extends AbstractView
 			$this->csvImportLink = '';
 		}
 
-		$this->showAdd       = $model->canAdd();
+		$this->showAdd = $model->canAdd();
 
 		if ($this->showAdd)
 		{
@@ -593,12 +594,12 @@ class BaseView extends AbstractView
 			}
 
 			if ($this->app->input->get('group_by', '') !== '')
-            {
-                $pdfLink .= '&group_by=' . $this->app->input->get('group_by', '');
-            }
+			{
+				$pdfLink .= '&group_by=' . $this->app->input->get('group_by', '');
+			}
 
-            // Add the listref so we get the right filters if doing PDF from a module or content plugin
-            $pdfLink .= '&setListRefFromRequest=1&listref=' . $model->getRenderContext();
+			// Add the listref so we get the right filters if doing PDF from a module or content plugin
+			$pdfLink       .= '&setListRefFromRequest=1&listref=' . $model->getRenderContext();
 			$this->pdfLink = Route::_($pdfLink);
 		}
 
@@ -626,10 +627,10 @@ class BaseView extends AbstractView
 		$this->isGrouped        = !($model->getGroupBy() == '');
 		$this->colCount         = count($this->headings);
 
-		$this->hasButtons     = $model->getHasButtons();
-		$this->grouptemplates = $model->groupTemplates;
+		$this->hasButtons         = $model->getHasButtons();
+		$this->grouptemplates     = $model->groupTemplates;
 		$this->gotOptionalFilters = $model->gotOptionalFilters();
-		$this->params         = $params;
+		$this->params             = $params;
 		$this->loadTemplateBottom();
 		$this->getManagementJS($this->rows);
 
@@ -671,15 +672,15 @@ class BaseView extends AbstractView
 	/**
 	 * Set page title
 	 *
-	 * @param   Worker $w       Fabrik worker
-	 * @param   object       &$params List params
-	 * @param   ListModel       $model   List model
+	 * @param   Worker    $w      Fabrik worker
+	 * @param   object    $params List params
+	 * @param   ListModel $model  List model
 	 *
 	 * @return  void
 	 *
 	 * @since 4.0
 	 */
-	protected function setTitle($w, &$params, ListModel $model)
+	protected function setTitle($w, $params, ListModel $model)
 	{
 		$input = $this->app->input;
 		$menus = $this->app->getMenu();
@@ -758,7 +759,7 @@ class BaseView extends AbstractView
 		$model                     = $this->getModel();
 		$this->buttons             = new \stdClass;
 		$buttonProperties          = array('class' => 'fabrikTip', 'opts' => '{"notice":true}',
-			'title' => '<span>' . Text::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
+		                                   'title' => '<span>' . Text::_('COM_FABRIK_EXPORT_TO_CSV') . '</span>');
 		$buttonProperties['alt']   = Text::_('COM_FABRIK_EXPORT_TO_CSV');
 		$this->buttons->csvexport  = Html::image('csv-export.png', 'list', $this->tmpl, $buttonProperties);
 		$buttonProperties['title'] = '<span>' . Text::_('COM_FABRIK_IMPORT_FROM_CSV') . '</span>';
@@ -814,9 +815,9 @@ class BaseView extends AbstractView
 
 			if (array_key_exists($key, $modelCals['sums']))
 			{
-				$found = true;
-				$res   = $modelCals['sums'][$key];
-				$calc .= $res;
+				$found           = true;
+				$res             = $modelCals['sums'][$key];
+				$calc            .= $res;
 				$tmpKey          = str_replace('.', '___', $key) . '_calc_sum';
 				$oCalcs->$tmpKey = $res;
 			}
@@ -842,9 +843,9 @@ class BaseView extends AbstractView
 
 			if (array_key_exists($key, $modelCals['avgs']))
 			{
-				$found = true;
-				$res   = $modelCals['avgs'][$key];
-				$calc .= $res;
+				$found           = true;
+				$res             = $modelCals['avgs'][$key];
+				$calc            .= $res;
 				$tmpKey          = str_replace('.', '___', $key) . '_calc_average';
 				$oCalcs->$tmpKey = $res;
 			}
@@ -889,9 +890,9 @@ class BaseView extends AbstractView
 
 			if (array_key_exists($key, $modelCals['medians']))
 			{
-				$found = true;
-				$res   = $modelCals['medians'][$key];
-				$calc .= $res;
+				$found           = true;
+				$res             = $modelCals['medians'][$key];
+				$calc            .= $res;
 				$tmpKey          = str_replace('.', '___', $key) . "_calc_median";
 				$oCalcs->$tmpKey = $res;
 			}
@@ -917,8 +918,8 @@ class BaseView extends AbstractView
 
 			if (array_key_exists($key, $modelCals['count']))
 			{
-				$res = $modelCals['count'][$key];
-				$calc .= $res;
+				$res             = $modelCals['count'][$key];
+				$calc            .= $res;
 				$tmpKey          = str_replace('.', '___', $key) . "_calc_count";
 				$oCalcs->$tmpKey = $res;
 				$found           = true;
@@ -945,8 +946,8 @@ class BaseView extends AbstractView
 
 			if (array_key_exists($key, $modelCals['custom_calc']))
 			{
-				$res = $modelCals['custom_calc'][$key];
-				$calc .= $res;
+				$res             = $modelCals['custom_calc'][$key];
+				$calc            .= $res;
 				$tmpKey          = str_replace('.', '___', $key) . "_calc_custom_calc";
 				$oCalcs->$tmpKey = $res;
 				$found           = true;
@@ -1038,7 +1039,7 @@ class BaseView extends AbstractView
 	 * @param   string $tpl template
 	 *
 	 * @return  void
-	 *              
+	 *
 	 * @since 4.0
 	 */
 	protected function advancedSearch($tpl)

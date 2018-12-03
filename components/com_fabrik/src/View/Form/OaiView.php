@@ -8,30 +8,36 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
-require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Site\Model\OaiModel;
 
 /**
  * Fabrik Raw Form View
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-class FabrikViewForm extends FabrikViewFormBase
+class OaiView extends BaseView
 {
 	/**
 	 * Access value
 	 *
 	 * @var  int
+	 *
+	 * @since 4.0
 	 */
 	public $access = null;
 
 	/**
-	 * @var FabrikFEModelOai
+	 * @var OaiModel
+	 *
+	 * @since 4.0
 	 */
 	private $oaiModel;
 
@@ -40,11 +46,12 @@ class FabrikViewForm extends FabrikViewFormBase
 	 *
 	 * @param   array $config A named configuration array for object construction.
 	 *
+	 * @since 4.0
 	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$this->oaiModel = JModelLegacy::getInstance('Oai', 'FabrikFEModel');
+		$this->oaiModel = FabModel::getInstance(OaiModel::class);
 	}
 
 	/**
@@ -53,6 +60,8 @@ class FabrikViewForm extends FabrikViewFormBase
 	 * @param   string $tpl The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed  A string if successful, otherwise a JError object.
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
@@ -70,7 +79,7 @@ class FabrikViewForm extends FabrikViewFormBase
 		$this->oaiModel->setListModel($listModel);
 		$this->oaiModel->setRecord($model->getData());
 		$dom = $this->oaiModel->getRecord();
+
 		echo $dom->saveXML();
 	}
-
 }

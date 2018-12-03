@@ -9,11 +9,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
-require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
+use Fabrik\Helpers\Worker;
+use Joomla\String\Normalise;
 
 /**
  * MS Word/Open office .doc Fabrik Form view class
@@ -21,9 +23,9 @@ require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.7
+ * @since       4.0
  */
-class FabrikViewForm extends FabrikViewFormBase
+class WordView extends BaseView
 {
 	/**
 	 * Main setup routine for displaying the form/detail view
@@ -31,6 +33,8 @@ class FabrikViewForm extends FabrikViewFormBase
 	 * @param   string $tpl template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
@@ -44,7 +48,7 @@ class FabrikViewForm extends FabrikViewFormBase
 				$model        = $this->getModel();
 				$this->params = $this->state->get('params');
 				$row          = $model->getData();
-				$w            = new FabrikWorker;
+				$w            = new Worker();
 
 				if ($this->params->get('menu-meta_description'))
 				{
@@ -66,7 +70,7 @@ class FabrikViewForm extends FabrikViewFormBase
 				// Set the response to indicate a file download
 				$this->app->setHeader('Content-Type', 'application/vnd.ms-word');
 				$name = $this->getModel()->getTable()->label;
-				$name = JStringNormalise::toDashSeparated($name);
+				$name = Normalise::toDashSeparated($name);
 				$this->app->setHeader('Content-Disposition', "attachment;filename=\"" . $name . ".doc\"");
 				$this->doc->setMimeEncoding('text/html; charset=Windows-1252', false);
 			}

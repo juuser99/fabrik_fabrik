@@ -8,36 +8,43 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\ListView;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Site\Model\CsvExportModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * CSV Fabrik List view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-class FabrikViewList extends FabrikViewListBase
+class CsvView extends BaseView
 {
 	/**
 	 * Execute and display a template script.
 	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 * @param   string $tpl The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed  A string if successful, otherwise a JError object.
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
 		$input = $this->app->input;
 
-		/** @var FabrikFEModelCSVExport $exporter */
-		$exporter = JModelLegacy::getInstance('Csvexport', 'FabrikFEModel');
+		/** @var CsvExportModel $exporter */
+		$exporter = FabModel::getInstance(CsvExportModel::class);
 
-		/** @var FabrikFEModelList $model */
-		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var ListModel $model */
+		$model = FabModel::getInstance(ListModel::class);
 		$model->setId($input->getInt('listid'));
 
 		if (!parent::access($model))
@@ -58,13 +65,13 @@ class FabrikViewList extends FabrikViewListBase
 
 		if (empty($model->asfields))
 		{
-			throw new LengthException('CSV Export - no fields found', 500);
+			throw new \LengthException('CSV Export - no fields found', 500);
 		}
 
 		$request = $model->getRequestData();
 		$model->storeRequestData($request);
 
-		$key = 'fabrik.list.' . $model->getId() . 'csv.total';
+		$key   = 'fabrik.list.' . $model->getId() . 'csv.total';
 		$start = $input->getInt('start', 0);
 
 		// If we are asking for a new export - clear previous total as list may be filtered differently
@@ -86,8 +93,8 @@ class FabrikViewList extends FabrikViewListBase
 
 		if ((int) $total === 0)
 		{
-			$notice = new stdClass;
-			$notice->err = FText::_('COM_FABRIK_CSV_EXPORT_NO_RECORDS');
+			$notice      = new \stdClass;
+			$notice->err = Text::_('COM_FABRIK_CSV_EXPORT_NO_RECORDS');
 			echo json_encode($notice);
 
 			return;
@@ -95,7 +102,7 @@ class FabrikViewList extends FabrikViewListBase
 
 		if ($start < $total)
 		{
-			$download = (bool) $input->getInt('download', true);
+			$download    = (bool) $input->getInt('download', true);
 			$canDownload = ($start + $limit >= $total) && $download;
 			$exporter->writeFile($total, $canDownload);
 
@@ -113,15 +120,17 @@ class FabrikViewList extends FabrikViewListBase
 	}
 
 	/**
-     * Start the download process
-     *
-	 * @param   FabrikFEModelList       $model
-	 * @param   FabrikFEModelCSVExport  $exporter
-	 * @param   string                  $key
+	 * Start the download process
 	 *
-	 * @throws Exception
+	 * @param   ListModel      $model
+	 * @param   CsvExportModel $exporter
+	 * @param   string         $key
+	 *
+	 * @throws \Exception
+	 *
+	 * @since 4.0
 	 */
-	protected function download($model, $exporter, $key)
+	protected function download(ListModel $model, CsvExportModel $exporter, $key)
 	{
 		$input = $this->app->input;
 		$input->set('limitstart' . $model->getId(), 0);

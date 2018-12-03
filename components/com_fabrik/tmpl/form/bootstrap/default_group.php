@@ -12,10 +12,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 $rowStarted      = false;
-$layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group');
-$gridStartLayout = FabrikHelperHTML::getLayout('grid.fabrik-grid-start');
-$gridEndLayout   = FabrikHelperHTML::getLayout('grid.fabrik-grid-end');
+$layout          = Html::getLayout('form.fabrik-control-group');
+$gridStartLayout = Html::getLayout('grid.fabrik-grid-start');
+$gridEndLayout   = Html::getLayout('grid.fabrik-grid-end');
 
 foreach ($this->elements as $element) :
 	$this->element = $element;
@@ -29,7 +31,7 @@ foreach ($this->elements as $element) :
 	endif;
 
 	if ($element->startRow) :
-		echo $gridStartLayout->render(new stdClass);
+		echo $gridStartLayout->render(new \stdClass);
 		$rowStarted = true;
 	endif;
 
@@ -52,7 +54,7 @@ foreach ($this->elements as $element) :
 	{
 		$displayData['row'] = $this->loadTemplate('group_labels_none');
 	}
-	elseif ($element->span == FabrikHelperHTML::getGridSpan(12) || $element->span == '' || $labelsAbove == 0)
+	elseif ($element->span == Html::getGridSpan(12) || $element->span == '' || $labelsAbove == 0)
 	{
 		$displayData['row'] = $this->loadTemplate('group_labels_side');
 	}
@@ -66,12 +68,12 @@ foreach ($this->elements as $element) :
 
 	?><?php
 	if ($element->endRow) :
-		echo $gridEndLayout->render(new stdClass);
+		echo $gridEndLayout->render(new \stdClass);
 		$rowStarted = false;
 	endif;
 endforeach;
 
 // If the last element was not closing the row add an additional div
 if ($rowStarted === true) :
-	echo $gridEndLayout->render(new stdClass);
+	echo $gridEndLayout->render(new \stdClass);
 endif;

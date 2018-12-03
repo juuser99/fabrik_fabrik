@@ -12,13 +12,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 $element = $this->element;
 ?>
 <div class="<?php echo $element->containerClass .' '. $element->span;?>">
-	<div class="<?php echo FabrikHelperHTML::getGridSpan('4'); ?> fabrikLabel">
+	<div class="<?php echo Html::getGridSpan('4'); ?> fabrikLabel">
 		<?php echo $element->label;?>
 	</div>
-	<div class="<?php echo FabrikHelperHTML::getGridSpan('8'); ?>">
+	<div class="<?php echo Html::getGridSpan('8'); ?>">
 		<?php if ($this->tipLocation == 'above') : ?>
 			<p class=""><?php echo $element->tipAbove ?></p>
 		<?php endif ?>

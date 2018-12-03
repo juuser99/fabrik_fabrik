@@ -8,20 +8,24 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\Form;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
-require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Document\PdfDocument;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
 
 /**
  * PDF Form view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.6
+ * @since       4.0
  */
-class FabrikViewForm extends FabrikViewFormBase
+class PdfView extends BaseView
 {
 	/**
 	 * Main setup routine for displaying the form/detail view
@@ -29,19 +33,21 @@ class FabrikViewForm extends FabrikViewFormBase
 	 * @param   string $tpl template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
-		FabrikWorker::canPdf(true);
+		Worker::canPdf(true);
 
 		if (parent::display($tpl) !== false)
 		{
-			FabrikhelperHTML::loadBootstrapCSS(true);
+			Html::loadBootstrapCSS(true);
 
-			/** @var JDocumentpdf $document */
+			/** @var PdfDocument $document */
 			$document = $this->doc;
 
-			/** @var FabrikFEModelList $model */
+			/** @var FormModel $model */
 			$model       = $this->getModel();
 			$params      = $model->getParams();
 			$size        = $this->app->input->get('pdf_size', $params->get('pdf_size', 'A4'));
@@ -54,12 +60,14 @@ class FabrikViewForm extends FabrikViewFormBase
 	/**
 	 * Set the page title
 	 *
-	 * @param   object $w       parent worker
-	 * @param   object &$params parameters
+	 * @param   object  $w      parent worker
+	 * @param   object $params parameters
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-	protected function setTitle($w, &$params)
+	protected function setTitle($w, $params)
 	{
 		parent::setTitle($w, $params);
 
@@ -67,10 +75,10 @@ class FabrikViewForm extends FabrikViewFormBase
 
 		// Set the download file name based on the document title
 
-		$layout                 = $model->getLayout('form.fabrik-pdf-title');
-		$displayData         = new stdClass;
-		$displayData->doc	= $this->doc;
-		$displayData->model	= $this->getModel();
+		$layout             = $model->getLayout('form.fabrik-pdf-title');
+		$displayData        = new \stdClass;
+		$displayData->doc   = $this->doc;
+		$displayData->model = $model;
 
 		$this->doc->setName($layout->render($displayData));
 	}

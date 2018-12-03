@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -44,12 +46,12 @@ echo $this->plugintop;
 </div>
 
 <div class="row-fluid nav">
-	<div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?> pull-right">
+	<div class="<?php echo Html::getGridSpan(6); ?> pull-right">
 		<?php
 		echo $this->loadTemplate('buttons');
 		?>
 	</div>
-	<div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?>">
+	<div class="<?php echo Html::getGridSpan(6); ?>">
 		<?php
 		echo $this->loadTemplate('relateddata');
 		?>
@@ -103,4 +105,4 @@ echo $this->loadTemplate('actions');
 <?php
 echo $form->outro;
 echo $this->pluginend;
-echo FabrikHelperHTML::keepalive();
+echo Html::keepalive();

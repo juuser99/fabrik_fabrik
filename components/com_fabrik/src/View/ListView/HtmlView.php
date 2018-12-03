@@ -11,9 +11,9 @@
 namespace Joomla\Component\Fabrik\Site\View\ListView;
 
 // No direct access
-use Joomla\Component\Fabrik\Site\Model\ListModel;
-
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Object\CMSObject;
 
 /**
  * HTML Fabrik List view class
@@ -46,14 +46,13 @@ class HtmlView extends BaseView
 	{
 		if (parent::display($tpl) !== false)
 		{
-			/** @var ListModel $model */
 			$model = $this->getModel();
 			$this->setCanonicalLink();
 			$this->tabs = $model->loadTabs();
 
 			if (!$this->app->isAdmin() && isset($this->params))
 			{
-				/** @var JObject $state */
+				/** @var CMSObject $state */
 				$state = $model->getState();
 				$stateParams = $state->get('params');
 

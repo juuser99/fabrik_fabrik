@@ -7,11 +7,13 @@
  * @since       3.0.5
  */
 
+namespace Joomla\Component\Fabrik\Site\View\ListView;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
-require_once COM_FABRIK_FRONTEND . '/views/list/view.base.php';
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
 
 /**
  * PDF List view
@@ -20,34 +22,36 @@ require_once COM_FABRIK_FRONTEND . '/views/list/view.base.php';
  * @subpackage  Fabrik
  * @since       3.0.5
  */
-class FabrikViewList extends FabrikViewListBase
+class PdfView extends BaseView
 {
 	/**
 	 * Display the template
 	 *
-	 * @param   sting  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
-		FabrikWorker::canPdf(true);
+		Worker::canPdf(true);
 
 		if (parent::display($tpl) !== false)
 		{
-			FabrikhelperHTML::loadBootstrapCSS(true);
-			$model = $this->getModel();
-			$params = $model->getParams();
+			Html::loadBootstrapCSS(true);
+			$model       = $this->getModel();
+			$params      = $model->getParams();
 			$size        = $this->app->input->get('pdf_size', $params->get('pdf_size', 'A4'));
 			$orientation = $this->app->input->get('pdf_orientation', $params->get('pdf_orientation', 'portrait'));
 			$this->doc->setPaper($size, $orientation);
-			$this->nav = '';
-			$this->showPDF = false;
-			$this->showRSS = false;
+			$this->nav       = '';
+			$this->showPDF   = false;
+			$this->showRSS   = false;
 			$this->emptyLink = false;
 			//$this->filters = array();
 			$this->showFilters = false;
-			$this->hasButtons = false;
+			$this->hasButtons  = false;
 			$this->output();
 		}
 	}
@@ -56,54 +60,55 @@ class FabrikViewList extends FabrikViewListBase
 	 * Build an object with the button icons based on the current tmpl
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function buttons()
 	{
 		// Don't add buttons as pdf is not interactive
-		$this->buttons = new stdClass;
+		$this->buttons = new \stdClass;
 	}
 
 	/**
 	 * Set page title
 	 *
-	 * @param   object  $w        Fabrikworker
-	 * @param   object  &$params  list params
-	 * @param   object  $model    list model
+	 * @param   object   $w      Worker
+	 * @param   object  &$params list params
+	 * @param   object   $model  list model
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-	protected function setTitle($w, &$params, $model)
+	protected function setTitle($w, $params, $model)
 	{
 		parent::setTitle($w, $params, $model);
 
 		// Set the download file name based on the document title
 		$this->doc->setName($this->doc->getTitle());
 	}
-		/**
+
+	/**
 	 * Render the group by heading as a JLayout list.fabrik-group-by-heading
-
 	 *
-	 * @param   string  $groupedBy  Group by key for $this->grouptemplates
-	 * @param   array   $group      Group data
-
-
-
+	 * @param   string $groupedBy Group by key for $this->grouptemplates
+	 * @param   array  $group     Group data
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function layoutGroupHeading($groupedBy, $group)
 
 	{
-		$displayData = new stdClass;
+		$displayData                   = new \stdClass;
 		$displayData->emptyDataMessage = $this->emptyDataMessage;
-		$displayData->tmpl = $this->tmpl;
-		$displayData->title = $this->grouptemplates[$groupedBy];
-		$displayData->count = count($group);
-		$layout = $this->getModel()->getLayout('list.fabrik-group-by-heading');
+		$displayData->tmpl             = $this->tmpl;
+		$displayData->title            = $this->grouptemplates[$groupedBy];
+		$displayData->count            = count($group);
+		$layout                        = $this->getModel()->getLayout('list.fabrik-group-by-heading');
 
 
 		return $layout->render($displayData);
-
-
 	}
 }

@@ -6,27 +6,29 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\ListView;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
 
 /**
  * List JSON view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.1
+ * @since       4.0
  */
-class FabrikViewlist extends FabrikViewListBase
+class JsonView extends BaseView
 {
 	/**
 	 * Display a json object representing the table data.
 	 * Not used for updating fabrik list, use raw view for that, here in case you want to export the data to another application
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{

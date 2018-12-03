@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 $rowStarted = false;
 foreach ($this->elements as $element) :
 	$this->element = $element;
@@ -43,7 +45,7 @@ foreach ($this->elements as $element) :
 	{
 		echo $this->loadTemplate('group_labels_none');
 	}
-	elseif ($element->span == FabrikHelperHTML::getGridSpan(12) || $element->span == '' || $labels_above == 0)
+	elseif ($element->span == Html::getGridSpan(12) || $element->span == '' || $labels_above == 0)
 	{
 		echo $this->loadTemplate('group_labels_side');
 	}

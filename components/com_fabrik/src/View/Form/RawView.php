@@ -8,25 +8,28 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// No direct access
-defined('_JEXEC') or die('Restricted access');
+namespace Joomla\Component\Fabrik\Site\View\Form;
 
-jimport('joomla.application.component.view');
-require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
+// No direct access
+use Joomla\Component\Fabrik\Site\Model\GroupModel;
+
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * Fabrik Raw Form View
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-class FabrikViewForm extends FabrikViewFormBase
+class RawView extends BaseView
 {
 	/**
 	 * Access value
 	 *
 	 * @var  int
+	 *
+	 * @since 4.0
 	 */
 	public $access = null;
 
@@ -36,6 +39,8 @@ class FabrikViewForm extends FabrikViewFormBase
 	 * @param   string $tpl The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed  A string if successful, otherwise a JError object.
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
@@ -49,7 +54,7 @@ class FabrikViewForm extends FabrikViewFormBase
 
 		if (!$this->canAccess())
 		{
-			return false; 
+			return false;
 		}
 
 		if (is_object($listModel))
@@ -76,9 +81,10 @@ class FabrikViewForm extends FabrikViewFormBase
 
 		for ($i = 0; $i < count($gkeys); $i++)
 		{
+			/** @var GroupModel $groupModel */
 			$groupModel  = $groups[$gkeys[$i]];
 			$groupTable  = $groupModel->getGroup();
-			$group       = new stdClass;
+			$group       = new \stdClass;
 			$groupParams = $groupModel->getParams();
 			$aElements   = array();
 
@@ -158,8 +164,8 @@ class FabrikViewForm extends FabrikViewFormBase
 			}
 		}
 
-		$data = array("id" => $model->getId(), 'model' => 'table', "errors" => $model->errors, "data" => $JSONarray, 'html' => $JSONHtml,
-			'post' => $_REQUEST);
+		$data = array("id"   => $model->getId(), 'model' => 'table', "errors" => $model->errors, "data" => $JSONarray, 'html' => $JSONHtml,
+		              'post' => $_REQUEST);
 		echo json_encode($data);
 	}
 }

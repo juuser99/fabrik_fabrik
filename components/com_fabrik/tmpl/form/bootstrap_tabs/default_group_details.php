@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 foreach ($this->elements as $element) :
 	if ($element->startRow) :?>
 		<div class="row-fluid">
@@ -21,8 +23,8 @@ foreach ($this->elements as $element) :
 	if (!$element->hidden) :?>
 		<div class="<?php echo $element->span;?>">
 			<div class="row-fluid">
-				<div class="<?php echo FabrikHelperHTML::getGridSpan(4); ?>"><em><?php echo $element->label_raw ?></em></div>
-				<div class="<?php echo FabrikHelperHTML::getGridSpan(8); ?>"><?php echo $element->element;?></div>
+				<div class="<?php echo Html::getGridSpan(4); ?>"><em><?php echo $element->label_raw ?></em></div>
+				<div class="<?php echo Html::getGridSpan(8); ?>"><?php echo $element->element;?></div>
 			</div>
 		</div>
 

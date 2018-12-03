@@ -9,29 +9,37 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\View\ListView;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/views/list/view.base.php';
+use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Site\Model\OaiModel;
 
 /**
  * Open Archive Initiative List Records View
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.4
+ * @since       4.0
  */
-class FabrikViewList extends FabrikViewListBase
+class OaiView extends BaseView
 {
 	/**
 	 * Row identifier
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	private $rowIdentifier = '';
 
 	/**
-	 * @var FabrikFEModelOai
+	 * @var OaiModel
+	 *
+	 * @since 4.0
 	 */
 	private $oaiModel;
 
@@ -40,19 +48,22 @@ class FabrikViewList extends FabrikViewListBase
 	 *
 	 * @param   array $config A named configuration array for object construction.
 	 *
+	 * @since 4.0
 	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$this->oaiModel = JModelLegacy::getInstance('Oai', 'FabrikFEModel');
+		$this->oaiModel = FabModel::getInstance(OaiModel::class);
 	}
 
 	/**
 	 * Display the Feed
 	 *
-	 * @param   sting $tpl template
+	 * @param   string $tpl template
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
@@ -105,6 +116,8 @@ class FabrikViewList extends FabrikViewListBase
 	 * Work out the filters to apply to the list - basically the from and until querystring vars
 	 *
 	 * @return array
+	 *
+	 * @since 4.0
 	 */
 	private function filter()
 	{
@@ -112,13 +125,13 @@ class FabrikViewList extends FabrikViewListBase
 		$this->app->input->set('fabrik_incsessionfilters', false);
 		// Lets support only the Y-m-d OAI format for now (so no time allowed)
 		$dateEl = $this->oaiModel->dateElName();
-		$from   = DateTime::createFromFormat('Y-m-d', $this->app->input->get('from', ''));
+		$from   = \DateTime::createFromFormat('Y-m-d', $this->app->input->get('from', ''));
 		if ($from !== false)
 		{
 			$from = $from->setTime(0, 0, 0)->format('Y-m-d H:i:s');
 		}
 
-		$until = DateTime::createFromFormat('Y-m-d', $this->app->input->get('until', ''));
+		$until = \DateTime::createFromFormat('Y-m-d', $this->app->input->get('until', ''));
 		if ($until !== false)
 		{
 			$until = $until->setTime(0, 0, 0)->format('Y-m-d H:i:s');
@@ -131,12 +144,12 @@ class FabrikViewList extends FabrikViewListBase
 
 		if ($from !== false & $until === false)
 		{
-			$until = new DateTime();
+			$until = new \DateTime();
 			$until = $until->format('Y-m-d H:i:s');
 		}
 
 		return array($dateEl => array('condition' => 'BETWEEN',
-			'value' => array($from, $until)
+		                              'value'     => array($from, $until)
 		));
 	}
 
@@ -145,7 +158,9 @@ class FabrikViewList extends FabrikViewListBase
 	 *
 	 * @param $rows
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	private function listRecords($rows)
 	{
@@ -178,13 +193,15 @@ class FabrikViewList extends FabrikViewListBase
 	 *
 	 * @param object $row
 	 *
-	 * @return DOMNode
+	 * @return \DOMNode
+	 *
+	 * @since 4.0
 	 */
 	private function rowHeader($row)
 	{
 		$header       = $this->oaiModel->createElement('header');
 		$dateStampKey = $this->oaiModel->dateElName();
-		$dateStamp    = JFactory::getDate($row->$dateStampKey)->format('Y-m-d');
+		$dateStamp    = Factory::getDate($row->$dateStampKey)->format('Y-m-d');
 		$header->appendChild($this->oaiModel->createElement('identifier', $this->rowIdentifier . $row->__pk_val));
 		$header->appendChild($this->oaiModel->createElement('datestamp', $dateStamp));
 
@@ -196,7 +213,9 @@ class FabrikViewList extends FabrikViewListBase
 	 *
 	 * @param object $row
 	 *
-	 * @return DOMNode
+	 * @return \DOMNode
+	 *
+	 * @since 4.0
 	 */
 	private function rowAbout($row)
 	{
@@ -209,7 +228,9 @@ class FabrikViewList extends FabrikViewListBase
 	}
 
 	/**
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	private function request()
 	{
@@ -218,8 +239,8 @@ class FabrikViewList extends FabrikViewListBase
 		$request    = $this->oaiModel->requestElement();
 		$listParams = $model->getParams();
 		$attributes = array(
-			'verb' => 'ListRecords',
-			'set' => $listParams->get('open_archive_set_spec'),
+			'verb'           => 'ListRecords',
+			'set'            => $listParams->get('open_archive_set_spec'),
 			'metadataPrefix' => $input->get('metadataPrefix', 'oai_dc')
 
 		);
@@ -242,6 +263,8 @@ class FabrikViewList extends FabrikViewListBase
 	 * Not implemented yet - but would describe the provenance of the original data
 	 *
 	 * @param $row
+	 *
+	 * @since 4.0
 	 */
 	private function rowProvenance($row)
 	{
@@ -252,14 +275,16 @@ class FabrikViewList extends FabrikViewListBase
 	 *
 	 * @param $row
 	 *
-	 * @return DOMElement
+	 * @return \DOMElement
+	 *
+	 * @since 4.0
 	 */
 	private function rowRights($row)
 	{
 		$rights     = $this->oaiModel->createElement('rights');
 		$attributes = array(
-			"xmlns" => "http://www.openarchives.org/OAI/2.0/rights/",
-			"xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
+			"xmlns"              => "http://www.openarchives.org/OAI/2.0/rights/",
+			"xmlns:xsi"          => "http://www.w3.org/2001/XMLSchema-instance",
 			"xsi:schemaLocation" => "http://www.openarchives.org/OAI/2.0/rights/
                                    http://www.openarchives.org/OAI/2.0/rights.xsd"
 		);
@@ -271,5 +296,4 @@ class FabrikViewList extends FabrikViewListBase
 
 		return $rights;
 	}
-
 }
