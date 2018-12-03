@@ -31,7 +31,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class CvsExportModel extends FabSiteModel
+class CsvExportModel extends FabSiteModel
 {
 	/**
 	 * Number of records to output at a time
