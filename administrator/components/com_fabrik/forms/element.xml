@@ -58,7 +58,7 @@
 	<fieldset name="publishing">
 
 		<field name="published"
-			type="radio"
+			type="list"
 			class="switcher"
 			default="1"
 			label="JSTATUS"
