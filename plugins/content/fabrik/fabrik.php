@@ -11,9 +11,17 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.plugin.plugin');
-
+use Fabrik\Helpers\ArrayHelper;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\View\HtmlView;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik content plugin - renders forms, lists and visualizations
@@ -22,8 +30,22 @@ use Joomla\String\StringHelper;
  * @subpackage  Content.fabrik
  * @since       1.5
  */
-class PlgContentFabrik extends JPlugin
+class PlgContentFabrik extends CMSPlugin
 {
+	/**
+	 * Load the language file on instantiation.
+	 *
+	 * @var    boolean
+	 * @since  3.7.0
+	 */
+	protected $autoloadLanguage = true;
+
+	/**
+	 * @var CMSApplication
+	 * @since 4.0
+	 */
+	protected $app;
+
 	/**
 	 *  Prepare content method
 	 *
@@ -35,27 +57,26 @@ class PlgContentFabrik extends JPlugin
 	 * @param   int    $page    The 'page' number
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function onContentPrepare($context, &$row, &$params, $page = 0)
 	{
-		jimport('joomla.html.parameter');
-		jimport('joomla.filesystem.file');
-
 		// Load fabrik language
-		$lang = JFactory::getLanguage();
+		$lang = Factory::getLanguage();
 		$lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
 
 		if (!defined('COM_FABRIK_FRONTEND'))
 		{
-			throw new RuntimeException(JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
+			throw new \RuntimeException(Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
 		}
 
 		// Get plugin info
-		$plugin = JPluginHelper::getPlugin('content', 'fabrik');
+		$plugin = PluginHelper::getPlugin('content', 'fabrik');
 
 		// $$$ hugh had to rename this, it was stomping on com_content and friends $params
 		// $$$ which is passed by reference to us!
-		$fParams = new JRegistry($plugin->params);
+		$fParams = new Registry($plugin->params);
 
 		// Simple performance check to determine whether bot should process further
 		$botRegex = $fParams->get('botRegex') != '' ? $fParams->get('botRegex') : 'fabrik';
@@ -84,6 +105,8 @@ class PlgContentFabrik extends JPlugin
 	 * @param   array $match preg matched {fabrik} tag
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function preplace($match)
 	{
@@ -100,6 +123,8 @@ class PlgContentFabrik extends JPlugin
 	 * @param   array $match {fabrik} preg match
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function parse($match)
 	{
@@ -107,7 +132,7 @@ class PlgContentFabrik extends JPlugin
 
 		// $$$ hugh - see if we can remove formatting added by WYSIWYG editors
 		$match = strip_tags($match);
-		$w     = new FabrikWorker;
+		$w     = new Worker();
 		$match = preg_replace('/\s+/', ' ', $match);
 		/* $$$ hugh - only replace []'s in value, not key, so we handle
 		 * ranged filters and 'complex' filters
@@ -145,11 +170,12 @@ class PlgContentFabrik extends JPlugin
 	 * @param   string $match plug-in match
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function replace($match)
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 		$match = $match[0];
 		$match = trim($match, "{");
 		$match = trim($match, "}");
@@ -157,8 +183,8 @@ class PlgContentFabrik extends JPlugin
 		$match = $this->parse(array($match));
 		$match = explode(" ", $match);
 		array_shift($match);
-		$user        = JFactory::getUser();
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
+		$user        = Factory::getUser();
+		$usersConfig = ComponentHelper::getParams('com_fabrik');
 		$unused      = array();
 
 		// Special case if we are wanting to write in an element's data
@@ -178,7 +204,7 @@ class PlgContentFabrik extends JPlugin
 		$useKey                = '';
 		$limit                 = false;
 		$ajax                  = true;
-		$session               = JFactory::getSession();
+		$session               = $this->app->getSession();
 		$usersConfig->set('rowid', 0);
 		$viewName = '';
 
@@ -187,7 +213,7 @@ class PlgContentFabrik extends JPlugin
 			$m = explode('=', $m);
 
 			// $$$ hugh - deal with %20 as space in arguments
-			$m[1] = urldecode(FArrayHelper::getValue($m, 1));
+			$m[1] = urldecode(ArrayHelper::getValue($m, 1));
 
 			switch ($m[0])
 			{
@@ -286,7 +312,7 @@ class PlgContentFabrik extends JPlugin
 			$thisLayout = $input->get('layout');
 
 			// Also test for saving an article
-			if ($input->get('option') === 'com_content' && ($thisLayout === 'blog' || ($app->isAdmin() && $thisLayout === 'edit')))
+			if ($input->get('option') === 'com_content' && ($thisLayout === 'blog' || ($this->app->isAdmin() && $thisLayout === 'edit')))
 			{
 				$layout = 'default';
 				$input->set('layout', $layout);
@@ -301,8 +327,6 @@ class PlgContentFabrik extends JPlugin
 		if ($viewName == 'form_css')
 		{
 			// The getFormCss() call blows up if we don't do this
-			jimport('joomla.filesystem.file');
-			$this->generalIncludes('form');
 			$controller = $this->getController('form', $id);
 			$view       = $this->getView($controller, 'form', $id);
 			$model      = $this->getModel($controller, 'form', $id);
@@ -320,8 +344,6 @@ class PlgContentFabrik extends JPlugin
 
 			return '';
 		}
-
-		$this->generalIncludes($viewName);
 
 		$origRowId = $input->get('rowid');
 		// Allow plugin to reference the origin rowid in the URL
@@ -388,7 +410,7 @@ class PlgContentFabrik extends JPlugin
 				}
 				// $$$ hugh - need to pass all row data, or calc elements that use {placeholders} won't work
 				//$defaultData = is_object($row) ? get_object_vars($row) : $row;
-				$defaultData = is_object($row) ? FArrayHelper::fromObject($row, true) : $row;
+				$defaultData = is_object($row) ? ArrayHelper::fromObject($row, true) : $row;
 
 				/* $$$ hugh - if we don't do this, our passed data gets blown away when render() merges the form data
 				 * not sure why, but apparently if you do $foo =& $bar and $bar is NULL ... $foo ends up NULL
@@ -486,7 +508,7 @@ class PlgContentFabrik extends JPlugin
 			case 'details':
 				if ($id === 0)
 				{
-					$app->enqueueMessage('No id set in fabrik plugin declaration', 'warning');
+					$this->app->enqueueMessage('No id set in fabrik plugin declaration', 'warning');
 
 					return;
 				}
@@ -535,7 +557,7 @@ class PlgContentFabrik extends JPlugin
 
 				if ($id === 0)
 				{
-					$app->enqueueMessage('No id set in fabrik plugin declaration', 'warning');
+					$this->app->enqueueMessage('No id set in fabrik plugin declaration', 'warning');
 
 					return;
 				}
@@ -549,12 +571,12 @@ class PlgContentFabrik extends JPlugin
 				 *
 				 * $$$ hugh - nasty little hack to reduce 'emptyish' array, 'cos if no 'elements' in the request, the following ends up setting
 				 * returning an array with a single empty string.  This ends up meaning that we render a list with no
-				 * elements in it.  We've run across this before, so we have a FArrayHelper:;emptyish() to detect it.
+				 * elements in it.  We've run across this before, so we have a ArrayHelper:;emptyish() to detect it.
 				 */
 
 				$show_in_list = explode('|', $input->getString('elements', ''));
 
-				if (FArrayHelper::emptyIsh($show_in_list, true))
+				if (ArrayHelper::emptyIsh($show_in_list, true))
 				{
 					$show_in_list = array();
 				}
@@ -638,8 +660,8 @@ class PlgContentFabrik extends JPlugin
 	 */
 	protected function _setRequest($unused)
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$this->app   = Factory::getApplication();
+		$input = $this->app->input;
 
 		// Ensure &gt; conditions set in {fabrik} are converted to >
 		foreach ($unused as &$v)
@@ -684,8 +706,8 @@ class PlgContentFabrik extends JPlugin
 	 */
 	protected function resetRequest()
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$this->app   = Factory::getApplication();
+		$input = $this->app->input;
 
 		foreach ($this->origRequestVars as $k => $v)
 		{
@@ -711,8 +733,12 @@ class PlgContentFabrik extends JPlugin
 	 * @param   int               $id          Item id
 	 *
 	 * @return  mixed    JModel or false
+	 *
+	 * @since 4.0
+	 *
+	 * @throws \RuntimeException
 	 */
-	protected function getModel(&$controller, $viewName, $id)
+	protected function getModel($controller, $viewName, $id)
 	{
 		if ($viewName == 'visualization')
 		{
@@ -729,20 +755,11 @@ class PlgContentFabrik extends JPlugin
 			$viewName = 'list';
 		}
 
-		$prefix = '';
-
-		if ($viewName == 'form' || $viewName == 'list')
-		{
-			$prefix = 'FabrikFEModel';
-		}
-
 		if (!isset($controller->_model))
 		{
-			JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', $prefix);
-
-			if (!$controller->_model = $controller->getModel($viewName, $prefix))
+			if (!$controller->_model = $controller->getModel($viewName))
 			{
-				throw new RuntimeException('Fabrik Content Plug-in: could not create model');
+				throw new \RuntimeException('Fabrik Content Plug-in: could not create model');
 
 				return false;
 			}
@@ -754,15 +771,17 @@ class PlgContentFabrik extends JPlugin
 	/**
 	 * Get a view
 	 *
-	 * @param   object &$controller controller
+	 * @param   object $controller controller
 	 * @param   string $viewName    view name
 	 * @param   int    $id          item id
 	 *
-	 * @return  JView
+	 * @return  HtmlView
+	 *
+	 * @since 4.0
 	 */
-	protected function getView(&$controller, $viewName, $id)
+	protected function getView($controller, $viewName, $id)
 	{
-		$viewType = JFactory::getDocument()->getType();
+		$viewType = Factory::getDocument()->getType();
 
 		if ($viewName == 'details')
 		{
@@ -780,6 +799,8 @@ class PlgContentFabrik extends JPlugin
 	 * @param   int $id viz id
 	 *
 	 * @return  string    viz plugin name
+	 *
+	 * @since 4.0
 	 */
 	protected function getPluginVizName($id)
 	{
@@ -790,7 +811,7 @@ class PlgContentFabrik extends JPlugin
 
 		if (!array_key_exists($id, $this->pluginVizName))
 		{
-			$db    = FabrikWorker::getDbo(true);
+			$db    = Worker::getDbo(true);
 			$query = $db->getQuery(true);
 			$query->select('plugin')->from('#__{package}_visualizations')->where('id = ' . (int) $id);
 			$db->setQuery($query);
@@ -807,6 +828,8 @@ class PlgContentFabrik extends JPlugin
 	 * @param   int    $id       item id
 	 *
 	 * @return  object  controller
+	 *
+	 * @since 4.0
 	 */
 	protected function getController($viewName, $id)
 	{
@@ -854,45 +877,5 @@ class PlgContentFabrik extends JPlugin
 		$controller->cacheId = $id;
 
 		return $controller;
-	}
-
-	/**
-	 * Load the required fabrik files
-	 *
-	 * @param   string $view view name
-	 *
-	 * @return  void
-	 */
-	protected function generalIncludes($view)
-	{
-		if ($view == 'details')
-		{
-			$view = 'form';
-		}
-
-		if (!FabrikWorker::isViewType($view))
-		{
-			throw new RuntimeException('Please specify a valid view type in your fabrik {} code: ' . $view, 500);
-		}
-
-		require_once COM_FABRIK_FRONTEND . '/controller.php';
-
-		// If in admin form or details view and embedding a list - this gave an error - if only needed for 3.0.x
-
-		if ($view !== 'list')
-		{
-			require_once COM_FABRIK_FRONTEND . '/controllers/form.php';
-			require_once COM_FABRIK_FRONTEND . '/controllers/details.php';
-		}
-
-		require_once COM_FABRIK_FRONTEND . '/controllers/package.php';
-		require_once COM_FABRIK_FRONTEND . '/controllers/list.php';
-		require_once COM_FABRIK_FRONTEND . '/controllers/visualization.php';
-		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
-
-		// $$$rob looks like including the view does something to the layout variable
-		require_once COM_FABRIK_FRONTEND . '/views/' . $view . '/view.html.php';
 	}
 }
