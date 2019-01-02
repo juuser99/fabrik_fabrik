@@ -93,7 +93,7 @@ class HtmlView extends FormView
 		$srcs                       = Html::framework();
 		$srcs['Fabrik']             = Html::mediaFile('fabrik.js');
 		$srcs['NameSpace']          = 'administrator/components/com_fabrik/tmpl/namespace.js';
-		$srcs['fabrikAdminElement'] = 'administrator/components/com_fabrik/tmpl/element/tmpl/adminelement.js';
+		$srcs['fabrikAdminElement'] = 'administrator/components/com_fabrik/tmpl/element/adminelement.js';
 
 		$shim                                    = array();
 		$dep                                     = new \stdClass;
