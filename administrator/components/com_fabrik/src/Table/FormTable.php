@@ -66,6 +66,7 @@ class FormTable extends FabTable
 	 */
 	public function bind($src, $ignore = array())
 	{
+		$src = array($src);
 		if (isset($src['params']) && is_array($src['params']))
 		{
 			$registry = new Registry;
