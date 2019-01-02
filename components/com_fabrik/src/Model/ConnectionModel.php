@@ -195,7 +195,7 @@ class ConnectionModel extends FabSiteModel
 	/**
 	 * Load the connection associated with the table
 	 *
-	 * @return  object  database object using connection details false if connection error
+	 * @return  DatabaseDriver  database object using connection details false if connection error
 	 *
 	 * @since 4.0
 	 */
@@ -254,7 +254,7 @@ class ConnectionModel extends FabSiteModel
 					// $$$rob remove the error from the error stack
 					// if we don't do this the form is not rendered
 					// @todo - migrate to j4
-					JError::getError(true);
+					// JError::getError(true);
 				}
 				else
 				{
