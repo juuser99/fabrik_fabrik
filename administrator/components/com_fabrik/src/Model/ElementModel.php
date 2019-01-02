@@ -28,6 +28,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
 use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 
@@ -120,7 +121,7 @@ class ElementModel extends FabAdminModel
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
-		$form = $this->loadForm('com_fabrik.element', 'element', array('control' => 'Form', 'load_data' => $loadData));
+		$form = $this->loadForm('com_fabrik.element', 'element', array('control' => 'jform', 'load_data' => $loadData));
 
 		if (empty($form))
 		{
@@ -518,13 +519,14 @@ class ElementModel extends FabAdminModel
 	 *
 	 * @param   array $data posted data
 	 *
-	 * @return  object  element model
+	 * @return  AbstractElementPlugin  element model
 	 *
 	 * @since 4.0
 	 */
 	private function getElementPluginModel($data)
 	{
-		$id           = $data['id'];
+		$id = $data['id'];
+		/** @var AbstractElementPlugin $elementModel */
 		$elementModel = $this->pluginManager->getPlugIn($data['plugin'], 'element');
 		/**
 		 * $$$ rob f3 - need to bind the data in here otherwise validate fails on dup name test (as no group_id set)

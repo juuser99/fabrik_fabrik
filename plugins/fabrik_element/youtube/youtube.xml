@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_YOUTUBE_DESCRIPTION</description>
 	<files>
 		<filename plugin="youtube">youtube.php</filename>
-		<filename>index.html</filename>
 		<filename>youtube.js</filename>
 		<filename>youtube-min.js</filename>
 		<folder>forms</folder>

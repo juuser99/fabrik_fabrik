@@ -11,8 +11,18 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.plugin.plugin');
-jimport('joomla.filesystem.file');
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Joomla\Component\Fabrik\Administrator\Table\LogTable;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseQuery;
+use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Joomla! Fabrik cron job plugin
@@ -22,51 +32,69 @@ jimport('joomla.filesystem.file');
  * @since       3.0
  */
 
-class PlgSystemFabrikcron extends JPlugin
+class PlgSystemFabrikcron extends CMSPlugin
 {
 
 	/**
 	 * Row for the currently running plugin, used by the shutdown handler
 	 *
-	 * @var stdClass
+	 * @var \stdClass
+	 *
+	 * @since 4.0
 	 */
 	protected $row = null;
 
 	/**
 	 * Log object
 	 *
-	 * @var Object
+	 * @var LogTable
+	 *
+	 * @since 4.0
 	 */
 	protected $log = null;
 
 	/**
-	 * @var JDatabaseDriver
+	 * @var DatabaseDriver
+	 *
+	 * @since 4.0
 	 */
 	protected $db;
 
 	/**
-	 * @var JDatabaseQuery
+	 * @var CMSApplication
+	 *
+	 * @since 4.0
+	 */
+	protected $app;
+
+	/**
+	 * @var DatabaseQuery
+	 *
+	 * @since 4.0
 	 */
 	protected $query;
-	
+
 	/**
 	 * Plugin model
 	 *
-	 * @var PlgFabrik_Cron
+	 * @var AbstractCronPlugin
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginModel = null;
 
 	/**
 	 * Reschedule the plugin for next run, and republish
 	 *
-	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	protected function reschedule()
 	{
-		$now = JFactory::getDate();
+		$now = Factory::getDate();
 		$now = $now->toUnix();
-		$new = JFactory::getDate($this->row->nextrun);
+		$new = Factory::getDate($this->row->nextrun);
 		$tmp = $new->toUnix();
 
 		switch ($this->row->unit)
@@ -92,7 +120,7 @@ class PlgSystemFabrikcron extends JPlugin
 		}
 
 		// Mark them as being run
-		$nextRun = JFactory::getDate($tmp);
+		$nextRun = Factory::getDate($tmp);
 		$this->query->clear();
 		$this->query->update('#__{package}_cron');
 		$this->query->set('lastrun = ' . $this->db->quote($nextRun->toSql()));
@@ -115,16 +143,20 @@ class PlgSystemFabrikcron extends JPlugin
 
 	/**
 	 * Catch any fatal errors and log them
+	 *
+	 * @since 4.0
 	 */
 	public function shutdownHandler()
 	{
-		if (@is_array($e = @error_get_last())) {
+		if (@is_array($e = @error_get_last()))
+		{
 			$code = isset($e['type']) ? $e['type'] : 0;
-			$msg = isset($e['message']) ? $e['message'] : '';
+			$msg  = isset($e['message']) ? $e['message'] : '';
 			$file = isset($e['file']) ? $e['file'] : '';
 			$line = isset($e['line']) ? $e['line'] : '';
 
-			if ($code > 0) {
+			if ($code > 0)
+			{
 				$this->log->message = "$code,$msg,$file,$line";
 				$this->log->store();
 			}
@@ -134,21 +166,22 @@ class PlgSystemFabrikcron extends JPlugin
 		}
 	}
 
-
 	/**
 	 * Run all active cron jobs
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
+	 *
+	 * @throws \Exception
 	 */
-
 	protected function doCron()
 	{
-		$app = JFactory::getApplication();
-		$mailer = JFactory::getMailer();
-		$config = JFactory::getConfig();
-		$input = $app->input;
+		$mailer = Factory::getMailer();
+		$config = $this->app->getConfig();
+		$input  = $this->app->input;
 
-		if ($app->isAdmin() || $input->get('option') == 'com_acymailing')
+		if ($this->app->isAdmin() || $input->get('option') == 'com_acymailing')
 		{
 			return;
 		}
@@ -159,16 +192,16 @@ class PlgSystemFabrikcron extends JPlugin
 		}
 
 		// Get all active tasks
-		$this->db = FabrikWorker::getDbo(true);
+		$this->db    = Worker::getDbo(true);
 		$this->query = $this->db->getQuery(true);
 
 		$now = $input->get('fabrikcron_run', false);
 
-		$this->log = FabTable::getInstance('Log', 'FabrikTable');
+		$this->log = FabTable::getInstance(LogTable::class);
 
 		if (!$now)
 		{
-			/* $$$ hugh - changed from using NOW() to JFactory::getDate(), to avoid time zone issues, see:
+			/* $$$ hugh - changed from using NOW() to Factory::getDate(), to avoid time zone issues, see:
 			 * http://fabrikar.com/forums/showthread.php?p=102245#post102245
 			 * .. which seems reasonable, as we use getDate() to set 'lastrun' to at the end of this func
 			 */
@@ -186,7 +219,7 @@ class PlgSystemFabrikcron extends JPlugin
 				->select("id, plugin, lastrun, unit, frequency, " . $nextRun . " AS nextrun")
 				->from('#__{package}_cron')
 				->where("published = '1'")
-				->where("$nextRun < '" . JFactory::getDate()->toSql() . "'");
+				->where("$nextRun < '" . Factory::getDate()->toSql() . "'");
 		}
 		else
 		{
@@ -206,11 +239,11 @@ class PlgSystemFabrikcron extends JPlugin
 		register_shutdown_function(array($this, 'shutdownHandler'));
 
 		$this->log->message = '';
-		JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
 
-		/** @var FabrikFEModelPluginmanager $pluginManager */
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var PluginManagerModel $pluginManager */
+		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+		/** @var ListModel $listModel */
+		$listModel = FabModel::getInstance(ListModel::class);
 
 		foreach ($rows as $row)
 		{
@@ -220,9 +253,9 @@ class PlgSystemFabrikcron extends JPlugin
 			// Load in the plugin
 			$this->pluginModel = $pluginManager->getPluginFromId($this->row->id, 'Cron');
 
-			$params = $this->pluginModel->getParams();
-			$this->log->message = '';
-			$this->log->id = null;
+			$params                   = $this->pluginModel->getParams();
+			$this->log->message       = '';
+			$this->log->id            = null;
 			$this->log->referring_url = '';
 
 			$this->log->message_type = 'plg.cron.' . $this->row->plugin;
@@ -238,9 +271,7 @@ class PlgSystemFabrikcron extends JPlugin
 				$this->db->execute();
 			}
 
-
-
-			$tid = (int) $params->get('table');
+			$tid           = (int) $params->get('table');
 			$thisListModel = clone ($listModel);
 
 			if ($tid !== 0)
@@ -253,7 +284,7 @@ class PlgSystemFabrikcron extends JPlugin
 					//$table = $thisListModel->getTable();
 					//$total = $thisListModel->getTotalRecords();
 					//$nav = $thisListModel->getPagination($total, 0, $total);
-					$cron_row_limit = (int)$params->get('cron_row_limit', 100);
+					$cron_row_limit = (int) $params->get('cron_row_limit', 100);
 					$thisListModel->setLimits(0, $cron_row_limit);
 					$thisListModel->getPagination(0, 0, $cron_row_limit);
 					$data = $thisListModel->getData();
@@ -279,7 +310,7 @@ class PlgSystemFabrikcron extends JPlugin
 
 			// Email log message
 			$recipient = explode(',', $params->get('log_email', ''));
-			if (!FArrayHelper::emptyish($recipient))
+			if (!ArrayHelper::emptyish($recipient))
 			{
 				$subject = $config->get('sitename') . ': ' . $this->row->plugin . ' scheduled task';
 				$mailer->sendMail($config->get('mailfrom'), $config->get('fromname'), $recipient, $subject, $this->log->message, true);
@@ -291,11 +322,13 @@ class PlgSystemFabrikcron extends JPlugin
 	 * Perform the actual cron after the page has rendered
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
+	 *
+	 * @throws \Exception
 	 */
-
 	public function onAfterRender()
 	{
 		$this->doCron();
 	}
-
 }

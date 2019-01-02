@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Helpers\StringHelper as FStringHelper;
+
 /**
  * Plugin element to store the user's IP address
  *
@@ -18,20 +21,22 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.ip
  * @since       3.0
  */
-class PlgFabrik_ElementIp extends PlgFabrik_Element
+class PlgFabrik_ElementIp extends AbstractElementPlugin
 {
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
+		$name   = $this->getHTMLName($repeatCounter);
+		$id     = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 
 		$rowId = $this->app->input->get('rowid', false);
@@ -42,14 +47,14 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 
 		if ($params->get('ip_update_on_edit') || !$rowId || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
 		{
-			$ip = FabrikString::filteredIp();
+			$ip = FStringHelper::filteredIp();
 		}
 		else
 		{
 			if (empty($data) || empty($data[$name]))
 			{
 				// If $data is empty, we must (?) be a new row, so just grab the IP
-				$ip = FabrikString::filteredIp();
+				$ip = FStringHelper::filteredIp();
 			}
 			else
 			{
@@ -57,9 +62,9 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 			}
 		}
 
-		$layoutData = new stdClass;
-		$layoutData->id = $id;
-		$layoutData->name = $name;
+		$layoutData        = new \stdClass;
+		$layoutData->id    = $id;
+		$layoutData->name  = $name;
 		$layoutData->value = $ip;
 
 		if ($this->canView())
@@ -90,9 +95,11 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 	 * then insert the users data into the record to be stored
 	 *
 	 * @param   array  &$data          Data to store
-	 * @param   int    $repeatCounter  Repeat group index
+	 * @param   int     $repeatCounter Repeat group index
 	 *
 	 * @return  bool  If false, data should not be added.
+	 *
+	 * @since 4.0
 	 */
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
@@ -101,9 +108,9 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 			return false;
 		}
 
-		$element = $this->getElement();
+		$element   = $this->getElement();
 		$formModel = $this->getFormModel();
-		$formData = $formModel->formData;
+		$formData  = $formModel->formData;
 
 		if (FArrayHelper::getValue($formData, 'rowid', 0) == 0 && !in_array($element->name, $data))
 		{
@@ -115,8 +122,8 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 
 			if ($params->get('ip_update_on_edit', 0))
 			{
-				$data[$element->name] = FabrikString::filteredIp();
-				$data[$element->name . '_raw'] = FabrikString::filteredIp();
+				$data[$element->name]          = FStringHelper::filteredIp();
+				$data[$element->name . '_raw'] = FStringHelper::filteredIp();
 			}
 		}
 
@@ -126,15 +133,17 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 	/**
 	 * This really does get just the default value (as defined in the element's settings)
 	 *
-	 * @param   array  $data  form data
+	 * @param   array $data form data
 	 *
 	 * @return mixed
+	 *
+	 * @since 4.0
 	 */
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
 		{
-			$this->default = FabrikString::filteredIp();
+			$this->default = FStringHelper::filteredIp();
 		}
 
 		return $this->default;
@@ -143,11 +152,13 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 	/**
 	 * Determines the value for the element in the form view
 	 *
-	 * @param   array  $data           form data
-	 * @param   int    $repeatCounter  when repeating joined groups we need to know what part of the array to access
-	 * @param   array  $opts           options
+	 * @param   array $data          form data
+	 * @param   int   $repeatCounter when repeating joined groups we need to know what part of the array to access
+	 * @param   array $opts          options
 	 *
-	 * @return  string	value
+	 * @return  string    value
+	 *
+	 * @since 4.0
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{

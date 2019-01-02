@@ -11,7 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Filesystem\Path;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 if (!defined('DS'))
 {
@@ -26,12 +35,14 @@ if (!defined('DS'))
  * @since       3.0
  */
 
-class PlgFabrik_ElementImage extends PlgFabrik_Element
+class PlgFabrik_ElementImage extends AbstractElementPlugin
 {
 	/**
 	 * Ignored folders
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	protected $ignoreFolders = array('cache', 'lib', 'install', 'modules', 'themes', 'upgrade', 'locks', 'smarty', 'tmp');
 
@@ -39,38 +50,41 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'TEXT';
 
 	/**
 	 * This really does get just the default value (as defined in the element's settings)
 	 *
-	 * @param   array  $data  form data
+	 * @param   array $data form data
 	 *
 	 * @return mixed
+	 *
+	 * @since 4.0
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
 		{
-			$params = $this->getParams();
-			$element = $this->getElement();
-			$w = new FabrikWorker;
+			$params        = $this->getParams();
+			$element       = $this->getElement();
+			$w             = new Worker;
 			$this->default = $params->get('imagepath');
 
 			// $$$ hugh - this gets us the default image, with the root folder prepended.
 			// But ... if the root folder option is set, we need to strip it.
-			$rootFolder = $params->get('selectImage_root_folder', '/');
-			$rootFolder = StringHelper::ltrim($rootFolder, '/');
-			$rootFolder = StringHelper::rtrim($rootFolder, '/') . '/';
+			$rootFolder    = $params->get('selectImage_root_folder', '/');
+			$rootFolder    = StringHelper::ltrim($rootFolder, '/');
+			$rootFolder    = StringHelper::rtrim($rootFolder, '/') . '/';
 			$this->default = preg_replace("#^$rootFolder#", '', $this->default);
 			$this->default = $w->parseMessageForPlaceHolder($this->default, $data);
 
 			if ($element->eval == "1")
 			{
 				$this->default = @eval((string) stripslashes($this->default));
-				FabrikWorker::logEval($this->default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
+				Worker::logEval($this->default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
 			}
 		}
 
@@ -86,14 +100,13 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	 *
 	 * Overrides element model as in edit/view details the image should be loaded regardless of $this->isEditable() #GH-527
 	 *
-	 * @param   array  $data  Form data
-	 * @param   array  $opts  Options
+	 * @param   array $data Form data
+	 * @param   array $opts Options
 	 *
 	 * @since  3.0.7
 	 *
-	 * @return  mixed	value
+	 * @return  mixed    value
 	 */
-
 	protected function getDefaultOnACL($data, $opts)
 	{
 		/**
@@ -107,20 +120,22 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string     $data    Elements data
+	 * @param   stdClass  &$thisRow All the data in the lists current row
+	 * @param   array      $opts    Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        $w = new FabrikWorker;
-		$data = FabrikWorker::JSONtoData($data, true);
-		$params = $this->getParams();
+		$w       = new Worker;
+		$data    = Worker::JSONtoData($data, true);
+		$params  = $this->getParams();
 		$pathset = false;
 
 		foreach ($data as $d)
@@ -140,7 +155,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 			if (!strstr($iPath, '/'))
 			{
 				// Single file specified so find it in tmpl folder
-				$data = (array) FabrikHelperHTML::image($iPath, 'list', @$this->tmpl, array(), true);
+				$data = (array) Html::image($iPath, 'list', @$this->tmpl, array(), true);
 			}
 			else
 			{
@@ -156,7 +171,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		$selectImage_root_folder = $selectImage_root_folder === '' ? '' : $selectImage_root_folder . '/';
 
 		$showImage = $params->get('show_image_in_table', 0);
-		$linkURL = $params->get('link_url', '');
+		$linkURL   = $params->get('link_url', '');
 
 		if (empty($data) || $data[0] == '')
 		{
@@ -175,7 +190,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 				else
 				{
 					$data[$i] = StringHelper::ltrim($data[$i], '/');
-					$src = COM_FABRIK_LIVESITE . $selectImage_root_folder . $data[$i];
+					$src      = COM_FABRIK_LIVESITE . $selectImage_root_folder . $data[$i];
 				}
 
 				$data[$i] = '<img src="' . $src . '" alt="' . $data[$i] . '" />';
@@ -197,23 +212,24 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	/**
 	 * Manipulates posted form data for insertion into database
 	 *
-	 * @param   mixed  $val   this elements posted form data
-	 * @param   array  $data  posted form data
+	 * @param   mixed $val  this elements posted form data
+	 * @param   array $data posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
-		$groupModel = $this->getGroup();
-		$params = $this->getParams();
+		$groupModel              = $this->getGroup();
+		$params                  = $this->getParams();
 		$selectImage_root_folder = $params->get('selectImage_root_folder', '');
-		$key = $this->getFullName(true, false);
+		$key                     = $this->getFullName(true, false);
 
 		if (!array_key_exists($key, $data))
 		{
 			$element = $this->getElement();
-			$key = $element->name;
+			$key     = $element->name;
 		}
 
 		if ($groupModel->canRepeat() && !$groupModel->isJoin())
@@ -261,15 +277,16 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for RSS export
 	 *
-	 * @param   string  $data     Data
-	 * @param   object  $thisRow  All the data in the tables current row
+	 * @param   string $data    Data
+	 * @param   object $thisRow All the data in the tables current row
 	 *
 	 * @return string formatted value
+	 *
+	 * @since 4.0
 	 */
-
 	public function renderListData_rss($data, $thisRow)
 	{
-		$params = $this->getParams();
+		$params                  = $this->getParams();
 		$selectImage_root_folder = $params->get('selectImage_root_folder', '');
 		$selectImage_root_folder = StringHelper::ltrim($selectImage_root_folder, '/');
 		$selectImage_root_folder = StringHelper::rtrim($selectImage_root_folder, '/');
@@ -281,18 +298,19 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$params = $this->getParams();
-		$name = $this->getHTMLName($repeatCounter);
-		$value = $this->getValue($data, $repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
+		$params     = $this->getParams();
+		$name       = $this->getHTMLName($repeatCounter);
+		$value      = $this->getValue($data, $repeatCounter);
+		$id         = $this->getHTMLId($repeatCounter);
 		$rootFolder = $this->rootFolder($value);
 
 		if ($rootFolder != '/')
@@ -306,17 +324,17 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		// $$$ rob - 30/062011 allow for full urls in the image. (e.g from csv import)
 		$defaultImage = StringHelper::substr($value, 0, 4) == 'http' ? $value : COM_FABRIK_LIVESITE . $rootFolder . $value;
 
-		$float = $params->get('image_float');
-		$float = $float != '' ? "style='float:$float;'" : '';
-		$w     = new FabrikWorker;
+		$float      = $params->get('image_float');
+		$float      = $float != '' ? "style='float:$float;'" : '';
+		$w          = new Worker;
 		$rootFolder = str_replace('/', DS, $rootFolder);
 
-		$layout = $this->getLayout('form');
-		$layoutData = new stdClass;
-		$layoutData->id = $id;
-		$layoutData->name = $name;
+		$layout                   = $this->getLayout('form');
+		$layoutData               = new \stdClass;
+		$layoutData->id           = $id;
+		$layoutData->name         = $name;
 		$layoutData->defaultImage = $defaultImage;
-		$layoutData->canSelect = $canSelect && $this->isEditable();
+		$layoutData->canSelect    = $canSelect && $this->isEditable();
 
 		$layoutData->value = $w->parseMessageForPlaceHolder($value, $data);
 		$layoutData->float = $float;
@@ -325,38 +343,47 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		{
 			$path = $this->getPath($value, $data, $repeatCounter);
 
-			$images = array();
-			$imageNames = (array) JFolder::files(JPATH_SITE . '/' . $path);
+			$images     = array();
+			$imageNames = (array) Folder::files(JPATH_SITE . '/' . $path);
 
 			foreach ($imageNames as $n)
 			{
-				$images[] = JHTML::_('select.option', $n, $n);
+				$images[] = HTMLHelper::_('select.option', $n, $n);
 			}
 
 			// $$$rob not sure about his name since we are adding $repeatCounter to getHTMLName();
-			$layoutData->imageName = $this->getGroupModel()->canRepeat() ? FabrikString::rtrimWord($name, "][$repeatCounter]") . "_image][$repeatCounter]"
+			$layoutData->imageName = $this->getGroupModel()->canRepeat() ? FStringHelper::rtrimWord($name, "][$repeatCounter]") . "_image][$repeatCounter]"
 				: $id . '_image';
-			$bits = explode('/', $value);
-			$image = array_pop($bits);
+			$bits                  = explode('/', $value);
+			$image                 = array_pop($bits);
 
 			// $$$ hugh - append $rootFolder to JPATH_SITE, otherwise we're showing folders
 			// they aren't supposed to be able to see.
-			$layoutData->folders = JFolder::folders(JPATH_SITE . '/' . $rootFolder);
-			$layoutData->images = $images;
-			$layoutData->image = $image;
+			$layoutData->folders = Folder::folders(JPATH_SITE . '/' . $rootFolder);
+			$layoutData->images  = $images;
+			$layoutData->image   = $image;
 		}
-		
+
 		$layoutData->linkURL = $w->parseMessageForPlaceHolder($params->get('link_url', ''), $data);
 
 
 		return $layout->render($layoutData);
 	}
 
+	/**
+	 * @param $value
+	 * @param $data
+	 * @param $repeatCounter
+	 *
+	 * @return mixed|string
+	 *
+	 * @since version
+	 */
 	protected function getPath($value, $data, $repeatCounter)
 	{
 		$rootFolder = $this->rootFolder($value);
 		$rootFolder = str_replace('/', DS, $rootFolder);
-		$name = $this->getHTMLName($repeatCounter);
+		$name       = $this->getHTMLName($repeatCounter);
 
 		if (array_key_exists($name, $data))
 		{
@@ -391,8 +418,9 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	 * On Ajax files
 	 *
 	 * @return  void
+	 *
+	 * @since
 	 */
-
 	public function onAjax_files()
 	{
 		$this->loadMeForAjax();
@@ -403,11 +431,11 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 			$folder = JPATH_SITE . '/' . $folder;
 		}
 
-		$pathA = JPath::clean($folder);
+		$pathA  = Path::clean($folder);
 		$folder = array();
-		$files = array();
+		$files  = array();
 		$images = array();
-		FabrikWorker::readImages($pathA, "/", $folders, $images, $this->ignoreFolders);
+		Worker::readImages($pathA, "/", $folders, $images, $this->ignoreFolders);
 
 		if (!array_key_exists('/', $images))
 		{
@@ -420,22 +448,23 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
-		$params = $this->getParams();
-		$element = $this->getElement();
-		$id = $this->getHTMLId($repeatCounter);
-		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts->rootPath = $this->rootFolder();
+		$params          = $this->getParams();
+		$element         = $this->getElement();
+		$id              = $this->getHTMLId($repeatCounter);
+		$opts            = $this->getElementJSOptions($repeatCounter);
+		$opts->rootPath  = $this->rootFolder();
 		$opts->canSelect = (bool) $params->get('image_front_end_select', false);
-		$opts->id = $element->id;
-		$opts->ds = DS;
-		$opts->dir = JPATH_SITE . '/' . str_replace('/', DS, $opts->rootPath);
+		$opts->id        = $element->id;
+		$opts->ds        = DS;
+		$opts->dir       = JPATH_SITE . '/' . str_replace('/', DS, $opts->rootPath);
 
 		return array('FbImage', $id, $opts);
 	}
@@ -443,16 +472,17 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	/**
 	 * Get the root folder for images
 	 *
-	 * @param   string  $value  Value
+	 * @param   string $value Value
 	 *
 	 * @return  string  root folder
+	 *
+	 * @since 4.0
 	 */
-
 	protected function rootFolder($value = '')
 	{
 		$rootFolder = '';
-		$params = $this->getParams();
-		$canSelect = ($params->get('image_front_end_select', '0') && StringHelper::substr($value, 0, 4) !== 'http');
+		$params     = $this->getParams();
+		$canSelect  = ($params->get('image_front_end_select', '0') && StringHelper::substr($value, 0, 4) !== 'http');
 		$defaultImg = $params->get('imagepath');
 
 		if (JFile::exists($defaultImg) || JFile::exists(COM_FABRIK_BASE . $defaultImg))
@@ -461,7 +491,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		}
 
 		// Changed first || from a && - http://fabrikar.com/forums/index.php?threads/3-1rc1-image-list-options-bug.36585/#post-184266
-		if ($canSelect || (JFolder::exists($defaultImg) || JFolder::exists(COM_FABRIK_BASE . $defaultImg)))
+		if ($canSelect || (Folder::exists($defaultImg) || Folder::exists(COM_FABRIK_BASE . $defaultImg)))
 		{
 			$rootFolder = $defaultImg;
 		}
@@ -478,13 +508,14 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	/**
 	 * Used to format the data when shown in the form's email
 	 *
-	 * @param   mixed  $value          element's data
-	 * @param   array  $data           form records data
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   mixed $value         element's data
+	 * @param   array $data          form records data
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		return $this->render($data);
@@ -497,12 +528,13 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	 * $$$ hugh - right now this is the default code, here as a reminder we
 	 * need to fix this so it makes sensible decisions about 'empty' image
 	 *
-	 * @param   array  $data           data to test against
-	 * @param   int    $repeatCounter  repeat group #
+	 * @param   array $data          data to test against
+	 * @param   int   $repeatCounter repeat group #
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		return ($data == '') ? true : false;

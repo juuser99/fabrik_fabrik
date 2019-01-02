@@ -148,7 +148,7 @@ class ListModel extends FabAdminModel
 	public function getConfirmDeleteForm($data = array(), $loadData = true)
 	{
 		// Get the form.
-		$form = $this->loadForm('com_fabrik.confirmdelete', 'confirmlistdelete', array('control' => 'Form', 'load_data' => $loadData));
+		$form = $this->loadForm('com_fabrik.confirmdelete', 'confirmlistdelete', array('control' => 'jform', 'load_data' => $loadData));
 
 		if (empty($form))
 		{

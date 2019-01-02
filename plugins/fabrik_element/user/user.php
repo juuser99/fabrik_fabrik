@@ -11,7 +11,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php';
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Plugin element to render dropdown list to select user
@@ -20,12 +27,14 @@ require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php
  * @subpackage  Fabrik.element.user
  * @since       3.0
  */
-class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
+class PlgFabrik_ElementUser extends AbstractElementDatabaseJoinPlugin
 {
 	/**
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'INT(11)';
 
@@ -34,6 +43,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * bit of a hack to set join_db_name in params
 	 *
 	 * @return  object  default element params
+	 *
+	 * @since 4.0
 	 */
 	public function getParams()
 	{
@@ -60,6 +71,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
@@ -92,7 +105,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 				$userId = is_array($userId) ? (int) FArrayHelper::getValue($userId, 0) : (int) $userId;
 
 				// On failed validation value is 1 - user ids are always more than that so don't load userid=1 otherwise an error is generated
-				$user = $userId <= 1 ? false : JFactory::getUser($userId);
+				$user = $userId <= 1 ? false : Factory::getUser($userId);
 			}
 		}
 		else
@@ -101,7 +114,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			 *  $$$ hugh - this is blowing away the userid, as $element->default is empty at this point
 			 *  so for now I changed it to the $data value
 			 *  keep previous user
-			 *  $user = JFactory::getUser((int) $element->default);
+			 *  $user = Factory::getUser((int) $element->default);
 			 */
 			// $$$ hugh ... what a mess ... of course if it's a new form, $data doesn't exist ...
 			if (empty($data))
@@ -145,9 +158,9 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 				$id = is_array($id) ? $id[0] : $id;
 
 				$id = html_entity_decode($id);
-				if (FabrikWorker::isJSON($id))
+				if (Worker::isJSON($id))
 				{
-					$id = FabrikWorker::JSONtoData($id, true);
+					$id = Worker::JSONtoData($id, true);
 				}
 
 				$id = is_array($id) ? $id[0] : $id;
@@ -156,18 +169,18 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 				 */
 				if ($rowId && empty($id) && !$params->get('update_on_edit'))
 				{
-					$user = JFactory::getUser(0);
+					$user = Factory::getUser(0);
 				}
 				else
 				{
-					$user = $id === '' ? $this->user : JFactory::getUser((int) $id);
+					$user = $id === '' ? $this->user : Factory::getUser((int) $id);
 				}
 			}
 		}
 
 		$displayParam           = $this->getLabelOrConcatVal();
 		$layout                 = $this->getLayout('form');
-		$layoutData             = new stdClass;
+		$layoutData             = new \stdClass;
 		$layoutData->inJDb      = $this->inJDb();
 		$layoutData->name       = $name;
 		$layoutData->id         = $htmlId;
@@ -185,6 +198,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * If the table db isn't the same as the joomla db the element
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function isHidden()
 	{
@@ -204,6 +219,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   int $c repeat group counter
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function preProcess($c)
 	{
@@ -277,10 +294,12 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * If we are creating a new record, and the element was set to readonly
 	 * then insert the users data into the record to be stored
 	 *
-	 * @param   array &$data         Data to store
-	 * @param   int   $repeatCounter Repeat group index
+	 * @param   array &$data          Data to store
+	 * @param   int    $repeatCounter Repeat group index
 	 *
 	 * @return  bool  If false, data should not be added.
+	 *
+	 * @since 4.0
 	 */
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
@@ -323,9 +342,9 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		$data[$element->name] = html_entity_decode($data[$element->name]);
 
-		if (FabrikWorker::isJSON($data[$element->name]))
+		if (Worker::isJSON($data[$element->name]))
 		{
-			$data[$element->name] = FabrikWorker::JSONtoData($data[$element->name], true);
+			$data[$element->name] = Worker::JSONtoData($data[$element->name], true);
 		}
 
 		$data[$element->name] = is_array($data[$element->name]) ? $data[$element->name][0] : $data[$element->name];
@@ -343,7 +362,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			//if ($input->getString('rowid', '', 'string') == '' && $input->get('task') !== 'doimport')
 			if ($input->getString('rowid', '', 'string') == '' && !$this->getListModel()->importingCSV)
 			{
-				$session = JFactory::getSession();
+				$session = Factory::getApplication()->getSession();
 
 				if ($session->has('fabrik.plugin.profile_id'))
 				{
@@ -396,11 +415,12 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 				if ($groupModel->canRepeat())
 				{
-					$formModel->formDataWithTableName[$thisFullName][$repeatCounter] = array($data[$element->name]);
+					$formModel->formDataWithTableName[$thisFullName][$repeatCounter]          = array($data[$element->name]);
 					$formModel->formDataWithTableName[$thisFullName . '_raw'][$repeatCounter] = array($data[$element->name]);
 				}
-				else{
-					$formModel->formDataWithTableName[$thisFullName] = array($data[$element->name]);
+				else
+				{
+					$formModel->formDataWithTableName[$thisFullName]          = array($data[$element->name]);
 					$formModel->formDataWithTableName[$thisFullName . '_raw'] = array($data[$element->name]);
 				}
 
@@ -425,12 +445,12 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 					$userId   = FArrayHelper::getValue($formData, $element->name, '');
 					if (!empty($userId) && !is_numeric($userId))
 					{
-						$user      = JFactory::getUser($userId);
+						$user      = Factory::getUser($userId);
 						$newUserId = $user->get('id');
 
-						if (empty($newUserId) && FabrikWorker::isEmail($userId))
+						if (empty($newUserId) && Worker::isEmail($userId))
 						{
-							$db    = $this->_db;
+							$db    = $this->db;
 							$query = $db->getQuery(true)
 								->select($db->qn('id'))
 								->from($db->qn('#__users'))
@@ -452,6 +472,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * Should the element's value be replaced with the current user's id
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	protected function updateOnEdit()
 	{
@@ -487,6 +509,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   string $view View list/form @since 3.0.7
 	 *
 	 * @return  bool  can view or not
+	 *
+	 * @since 4.0
 	 */
 	public function canView($view = 'form')
 	{
@@ -504,6 +528,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
@@ -513,18 +539,18 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		return array('FbUser', $id, $opts);
 	}
 
-
-
 	/**
 	 * Get select option label
 	 *
 	 * @param  bool $filter get alt label for filter, if present using :: splitter
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function _getSelectLabel($filter = false)
 	{
-		$label  = $this->getParams()->get('user_noselectionlabel');
+		$label = $this->getParams()->get('user_noselectionlabel');
 
 		if (strstr($label, '::'))
 		{
@@ -537,7 +563,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			$label = 'COM_FABRIK_PLEASE_SELECT';
 		}
 
-		return FText::_($label);
+		return Text::_($label);
 	}
 
 	/**
@@ -545,15 +571,17 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 *
 	 * @param   array &$aFields   array of element names
 	 * @param   array &$aAsFields array of 'name AS alias' fields
-	 * @param   array $opts       options
+	 * @param   array  $opts      options
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
 		$table      = $this->actualTableName();
 		$element    = $this->getElement();
-		$db         = FabrikWorker::getDbo();
+		$db         = Worker::getDbo();
 		$fullElName = FArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
 
 		// Check if main database is the same as the elements database
@@ -568,8 +596,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 			// $$$ rob in csv import keytable not set
 			$k  = isset($join->keytable) ? $join->keytable : $join->join_from_table;
-			$k  = FabrikString::safeColName($k . '.' . $element->name);
-			$k2 = FabrikString::safeColName($this->getJoinLabelColumn());
+			$k  = FStringHelper::safeColName($k . '.' . $element->name);
+			$k2 = FStringHelper::safeColName($this->getJoinLabelColumn());
 
 			if (FArrayHelper::getValue($opts, 'inc_raw', true))
 			{
@@ -598,6 +626,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   array $data posted element save data
 	 *
 	 * @return  bool  save ok or not
+	 *
+	 * @since 4.0
 	 */
 	public function onSave($data)
 	{
@@ -605,7 +635,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if (!$this->canEncrypt() && !empty($params->encrypt))
 		{
-			throw new InvalidArgumentException('The encryption option is only available for field and text area plugins');
+			throw new \InvalidArgumentException('The encryption option is only available for field and text area plugins');
 		}
 
 		$label = (isset($params->my_table_data) && $params->my_table_data !== '') ? $params->my_table_data : 'username';
@@ -618,6 +648,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * Get the join label name
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getJoinLabel()
 	{
@@ -637,6 +669,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   array $data Form data
 	 *
 	 * @return mixed
+	 *
+	 * @since 4.0
 	 */
 	public function getDefaultValue($data = array())
 	{
@@ -656,6 +690,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   array $opts          options
 	 *
 	 * @return  string    value
+	 *
+	 * @since 4.0
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
@@ -705,7 +741,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 *                        if normal include the hidden fields as well (default true, use false for advanced filter
 	 *                        rendering)
 	 *
-	 * @return  string    filter html
+	 * @return  string    filter htmle
+	 * @since 4.0
 	 */
 	public function getFilter($counter = 0, $normal = true, $container = '')
 	{
@@ -729,7 +766,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		$return                    = array();
 		$tableType                 = $this->getLabelOrConcatVal();
 		$join                      = $this->getJoin();
-		$joinTableName             = FabrikString::safeColName($join->table_join_alias);
+		$joinTableName             = FStringHelper::safeColName($join->table_join_alias);
 
 		// If filter type isn't set was blowing up in switch below 'cos no $rows
 		// so added '' to this test.  Should probably set $element->filter_type to a default somewhere.
@@ -741,7 +778,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 			if ($element->filter_type !== 'checkbox')
 			{
-				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
+				array_unshift($rows, HTMLHelper::_('select.option', '', $this->filterSelectLabel()));
 			}
 		}
 
@@ -792,15 +829,17 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * join
 	 *
 	 * @return  string  required join text to ensure exact filter list code produces a valid query.
+	 *
+	 * @since 4.0
 	 */
 	protected function buildFilterJoin()
 	{
 		$params        = $this->getParams();
-		$joinTable     = FabrikString::safeColName($params->get('join_db_name'));
+		$joinTable     = FStringHelper::safeColName($params->get('join_db_name'));
 		$join          = $this->getJoin();
-		$joinTableName = FabrikString::safeColName($join->table_join_alias);
+		$joinTableName = FStringHelper::safeColName($join->table_join_alias);
 		$joinKey       = $this->getJoinValueColumn();
-		$elName        = FabrikString::safeColName($this->getFullName(true, false));
+		$elName        = FStringHelper::safeColName($this->getFullName(true, false));
 
 		return 'INNER JOIN ' . $joinTable . ' AS ' . $joinTableName . ' ON ' . $joinKey . ' = ' . $elName;
 	}
@@ -814,9 +853,11 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   string $value         search string - already quoted if specified in filter array options
 	 * @param   string $originalValue original filter value without quotes or %'s applied
 	 * @param   string $type          filter type advanced/normal/prefilter/search/querystring/searchall
-	 * @param   string  $evalFilter     evaled
-	 *                                  
+	 * @param   string $evalFilter    evaled
+	 *
 	 * @return  string    sql query part e,g, "key = value"
+	 *
+	 * @since 4.0
 	 */
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
 	{
@@ -842,17 +883,17 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if ($type == 'querystring' || $type == 'jpluginfilters')
 		{
-			$key = FabrikString::safeColNameToArrayKey($key);
+			$key = FStringHelper::safeColNameToArrayKey($key);
 			/* $$$ rob no matter whether you use elementname_raw or elementname in the querystring filter
 			 * by the time it gets here we have normalized to elementname. So we check if the original qs filter was looking at the raw
 			 * value if it was then we want to filter on the key and not the label
 			 */
-			$filter = JFilterInput::getInstance();
+			$filter = InputFilter::getInstance();
 			$get    = $filter->clean($_GET, 'array');
 
 			if (!array_key_exists($key, $get))
 			{
-				$key = $this->_db->qn($joinTableName . '.id');
+				$key = $this->db->qn($joinTableName . '.id');
 				$this->encryptFieldName($key);
 
 				return $key . ' ' . $condition . ' ' . $value;
@@ -861,7 +902,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 		if ($type == 'advanced')
 		{
-			$key = $this->_db->qn($joinTableName . '.id');
+			$key = $this->db->qn($joinTableName . '.id');
 			$this->encryptFieldName($key);
 
 			return $key . ' ' . $condition . ' ' . $value;
@@ -881,18 +922,18 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 					break;
 			}
 
-			$k = $this->_db->qn($joinTableName . '.' . $tableType);
+			$k = $this->db->qn($joinTableName . '.' . $tableType);
 		}
 		else
 		{
 			if ($this->_rawFilter)
 			{
-				$k = $this->_db->qn($joinTableName . '.id');
+				$k = $this->db->qn($joinTableName . '.id');
 			}
 			else
 			{
 				$tableType = $this->getLabelOrConcatVal();
-				$k         = $this->_db->qn($joinTableName . '.' . $tableType);
+				$k         = $this->db->qn($joinTableName . '.' . $tableType);
 			}
 		}
 
@@ -906,10 +947,12 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * Get the database object
 	 *
 	 * @return  object    database
+	 *
+	 * @since 4.0
 	 */
 	public function getDb()
 	{
-		return FabrikWorker::getDbo(true);
+		return Worker::getDbo(true);
 	}
 
 	/**
@@ -920,6 +963,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
@@ -950,7 +995,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			// Test json string e.g. ["350"] - fixes JUser: :_load: User does not exist notices
 			if (!is_int($userId))
 			{
-				$userId = FabrikWorker::JSONtoData($userId, true);
+				$userId = Worker::JSONtoData($userId, true);
 				$userId = (int) FArrayHelper::getValue($userId, 0, 0);
 			}
 		}
@@ -960,7 +1005,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			return '';
 		}
 
-		$user = JFactory::getUser($userId);
+		$user = Factory::getUser($userId);
 
 		return $this->getUserDisplayProperty($user);
 	}
@@ -985,11 +1030,13 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * Get the column name used for the value part of the db join element
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getJoinValueColumn()
 	{
 		$join = $this->getJoin();
-		$db   = FabrikWorker::getDbo();
+		$db   = Worker::getDbo();
 
 		if ((string) $join->table_join_alias === '')
 		{
@@ -1004,12 +1051,14 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * Over written here as we need to get the label field for field searches
 	 *
 	 * @return string element filter name
+	 *
+	 * @since 4.0
 	 */
 	public function getFilterFullName()
 	{
 		$elName = $this->getFullName(true, false);
 
-		return FabrikString::safeColName($elName);
+		return FStringHelper::safeColName($elName);
 	}
 
 	/**
@@ -1018,6 +1067,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   mixed $val value to copy into new record
 	 *
 	 * @return mixed value to copy into new record
+	 *
+	 * @since 4.0
 	 */
 	public function onCopyRow($val)
 	{
@@ -1037,6 +1088,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   mixed $val value to copy into new record
 	 *
 	 * @return  mixed  value to copy into new record
+	 *
+	 * @since 4.0
 	 */
 	public function onSaveAsCopy($val)
 	{
@@ -1055,6 +1108,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * table data field
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getLabelOrConcatVal()
 	{
@@ -1068,7 +1123,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 
 			if (!isset($displayMessage))
 			{
-				$this->app->enqueueMessage(JText::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->id), 'notice');
+				$this->app->enqueueMessage(Text::sprintf('PLG_ELEMENT_USER_NOTICE_GID', $this->getElement()->id), 'notice');
 				$displayMessage = true;
 			}
 		}
@@ -1084,6 +1139,8 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @param   int $repeatCounter repeat group counter
 	 *
 	 * @return  array  html ids to watch for validation
+	 *
+	 * @since 4.0
 	 */
 	public function getValidationWatchElements($repeatCounter)
 	{

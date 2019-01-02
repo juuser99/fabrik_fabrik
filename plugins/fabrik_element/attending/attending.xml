@@ -25,7 +25,6 @@
 
 	<files>
 		<filename plugin="attending">attending.php</filename>
-		<filename>index.html</filename>
 		<filename>attending.js</filename>
 		<filename>attending-min.js</filename>
 		<folder>forms</folder>

@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_SPOTIFY_DESCRIPTION</description>
 	<files>
 		<filename plugin="spotify">spotify.php</filename>
-		<filename>index.html</filename>
 		<folder>forms</folder>
 		<folder>language</folder>
 		<folder>layouts</folder>

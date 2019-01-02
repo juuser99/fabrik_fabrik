@@ -22,6 +22,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Table\FormGroupTable;
 use Joomla\Component\Fabrik\Administrator\Table\GroupTable;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
@@ -197,7 +198,7 @@ class GroupModel extends FabSiteModel
 			return $this->canEdit;
 		}
 
-		$formModel     = $this->getFormModel();
+		$formModel = $this->getFormModel();
 
 		$pluginCanEdit = Worker::getPluginManager()->runPlugins('onCanEditGroup', $formModel, 'form', $this);
 
@@ -422,7 +423,7 @@ class GroupModel extends FabSiteModel
 	 *
 	 * since 120/10/2011 - can override with elementid request data (used in inline edit to limit which elements are shown)
 	 *
-	 * @return  PlgFabrik_Element[]    published element objects
+	 * @return  \PlgFabrik_Element[]    published element objects
 	 *
 	 * @since 4.0
 	 */
@@ -467,7 +468,7 @@ class GroupModel extends FabSiteModel
 	 * NOTE: pretty sure that ->elements will already be loaded
 	 * within $formModel->getGroupsHiarachy()
 	 *
-	 * @return  PlgFabrik_Element[]    Element objects (bound to element plugin)
+	 * @return  AbstractElementPlugin[]    Element objects (bound to element plugin)
 	 *
 	 * @since 4.0
 	 */
@@ -550,7 +551,7 @@ class GroupModel extends FabSiteModel
 	 * Set the element column css allows for group column settings to be applied
 	 *
 	 * @param   object &$element Pre-render element properties
-	 * @param   int    $rowIx    Current key when looping over elements.
+	 * @param   int     $rowIx   Current key when looping over elements.
 	 *
 	 * @since   4.0
 	 *
@@ -617,8 +618,8 @@ class GroupModel extends FabSiteModel
 		$element->column .= '" ';
 		$spans           = $this->columnSpans();
 		$spanKey         = $rowIx % $colCount;
-		$default = floor(12 / $colCount);
-		$element->span   = $element->hidden ? '' : FArrayHelper::getValue($spans, $spanKey, Html::getGridSpan((int)floor(12 / $colCount)));
+		$default         = floor(12 / $colCount);
+		$element->span   = $element->hidden ? '' : FArrayHelper::getValue($spans, $spanKey, Html::getGridSpan((int) floor(12 / $colCount)));
 
 		if (!$element->hidden)
 		{
@@ -876,7 +877,7 @@ class GroupModel extends FabSiteModel
 	/**
 	 * Get published elements to show in list
 	 *
-	 * @return  PlgFabrik_Element[]
+	 * @return  AbstractElementPlugin[]
 	 *
 	 * @since 4.0
 	 */
@@ -1454,7 +1455,7 @@ class GroupModel extends FabSiteModel
 	 * Get the number of times the group was repeated when the user fills
 	 * in the form
 	 *
-	 * @todo whats the difference between this and @link(repeatCount)
+	 * @todo  whats the difference between this and @link(repeatCount)
 	 *
 	 * @return  int
 	 *

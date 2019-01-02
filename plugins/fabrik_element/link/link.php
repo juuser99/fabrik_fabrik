@@ -11,8 +11,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Joomla\String\StringHelper as FStringHelper;
 
 /**
  * Plugin element to render two fields to capture a link (url/label)
@@ -21,13 +28,14 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik.element.link
  * @since       3.0
  */
-
-class PlgFabrik_ElementLink extends PlgFabrik_Element
+class PlgFabrik_ElementLink extends AbstractElementPlugin
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	public $hasSubElements = true;
 
@@ -35,34 +43,38 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'TEXT';
 
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string     $data    Elements data
+	 * @param   stdClass  &$thisRow All the data in the lists current row
+	 * @param   array      $opts    Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        $listModel = $this->getlistModel();
-		$params = $this->getParams();
-		$target = $params->get('link_target', '');
+		$listModel  = $this->getlistModel();
+		$params     = $this->getParams();
+		$target     = $params->get('link_target', '');
 		$smart_link = $params->get('link_smart_link', false);
 
 		if ($listModel->getOutPutFormat() != 'rss' && ($smart_link || $target == 'mediabox'))
 		{
-			FabrikHelperHTML::slimbox();
+			Html::slimbox();
 		}
 
-		$data = FabrikWorker::JSONtoData($data, true);
+		$data = Worker::JSONtoData($data, true);
 
 		if (!empty($data))
 		{
@@ -89,23 +101,24 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	 * Render Individual parts of the cell data.
 	 * Called from renderListData();
 	 *
-	 * @param   string  $data     cell data
-	 * @param   object  $thisRow  the data in the lists current row
+	 * @param   string $data    cell data
+	 * @param   object $thisRow the data in the lists current row
 	 *
 	 * @return  string  formatted value
+	 *
+	 * @since 4.0
 	 */
-
 	protected function _renderListData($data, $thisRow)
 	{
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		if (is_string($data))
 		{
-			$data = FabrikWorker::JSONtoData($data, true);
+			$data = Worker::JSONtoData($data, true);
 		}
 
 		$listModel = $this->getlistModel();
-		$params = $this->getParams();
+		$params    = $this->getParams();
 
 		if (is_array($data))
 		{
@@ -113,7 +126,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			if (count($data) === 0)
 			{
 				$data['label'] = '';
-				$data['link'] = '';
+				$data['link']  = '';
 			}
 			else if (count($data) === 1)
 			{
@@ -121,7 +134,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			}
 
 			$href = trim($data['link']);
-			$lbl = trim($data['label']);
+			$lbl  = trim($data['label']);
 			$href = $w->parseMessageForPlaceHolder(urldecode($href), ArrayHelper::fromObject($thisRow));
 
 			if (StringHelper::strtolower($href) == 'http://' || StringHelper::strtolower($href) == 'https://')
@@ -134,9 +147,9 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				&& substr(StringHelper::strtolower($href), 0, 8) != 'https://'
 				&& substr(StringHelper::strtolower($href), 0, 6) != 'ftp://'
 				&& substr(StringHelper::strtolower($href), 0, 7) != 'mailto:'
-				)
+			)
 			{
-					$href = 'http://' . $href;
+				$href = 'http://' . $href;
 			}
 			// If used as a icon - the dom parser needs to use &amp; and not & in url querystrings
 			if (!strstr($href, '&amp;'))
@@ -147,9 +160,9 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			if ($listModel->getOutPutFormat() != 'rss')
 			{
 				$opts['smart_link'] = $params->get('link_smart_link', false);
-				$opts['rel'] = $params->get('rel', '');
-				$opts['target'] = $params->get('link_target', '');
-				$title = $params->get('link_title', '');
+				$opts['rel']        = $params->get('rel', '');
+				$opts['target']     = $params->get('link_target', '');
+				$title              = $params->get('link_title', '');
 
 				if ($title !== '')
 				{
@@ -158,14 +171,14 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 				$normalize = $params->get('link_normalize', '0') === '1';
 
-				return FabrikHelperHTML::a($href, $lbl, $opts, $normalize);
+				return Html::a($href, $lbl, $opts, $normalize);
 			}
 			else
 			{
 				$link = $href;
 			}
 
-			$w = new FabrikWorker;
+			$w    = new Worker;
 			$aRow = ArrayHelper::fromObject($thisRow);
 			$link = $listModel->parseMessageForRowHolder($link, $aRow);
 
@@ -178,13 +191,14 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	/**
 	 * Prepares the element data for CSV export
 	 *
-	 * @param   string  $data      Element data
-	 * @param   object  &$thisRow  All the data in the lists current row
+	 * @param   string    $data    Element data
+	 * @param   \stdClass $thisRow All the data in the lists current row
 	 *
-	 * @return  string	Formatted CSV export value
+	 * @return  string    Formatted CSV export value
+	 *
+	 * @since 4.0
 	 */
-
-	public function renderListData_csv($data, &$thisRow)
+	public function renderListData_csv($data, \stdClass $thisRow)
 	{
 		$o = json_decode($data);
 
@@ -194,20 +208,21 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
+		$name   = $this->getHTMLName($repeatCounter);
+		$id     = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
-		$bits = $this->inputProperties($repeatCounter);
-		$value = $this->getValue($data, $repeatCounter);
-		$opts = array();
+		$bits   = $this->inputProperties($repeatCounter);
+		$value  = $this->getValue($data, $repeatCounter);
+		$opts   = array();
 
 		if ($value == '')
 		{
@@ -217,7 +232,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		{
 			if (!is_array($value))
 			{
-				$value = FabrikWorker::JSONtoData($value, true);
+				$value = Worker::JSONtoData($value, true);
 				/**
 				 * In some legacy case, data is like ...
 				 * [{"label":"foo","link":"bar"}]
@@ -240,22 +255,22 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			$value = array('label' => '', 'link' => '');
 		}
 
-		if (FabrikWorker::getMenuOrRequestVar('rowid') == 0 && FArrayHelper::getValue($value, 'link', '') === '')
+		if (Worker::getMenuOrRequestVar('rowid') == 0 && FArrayHelper::getValue($value, 'link', '') === '')
 		{
 			$value['link'] = $params->get('link_default_url');
 		}
 
 		if (!$this->isEditable())
 		{
-			$lbl = trim(FArrayHelper::getValue($value, 'label'));
+			$lbl  = trim(FArrayHelper::getValue($value, 'label'));
 			$href = trim(FArrayHelper::getValue($value, 'link'));
-			$w = new FabrikWorker;
+			$w    = new Worker;
 			$href = is_array($data) ? $w->parseMessageForPlaceHolder($href, $data) : $w->parseMessageForPlaceHolder($href);
 
-			$opts['target'] = trim($params->get('link_target', ''));
+			$opts['target']     = trim($params->get('link_target', ''));
 			$opts['smart_link'] = $params->get('link_smart_link', false);
-			$opts['rel'] = $params->get('rel', '');
-			$title = $params->get('link_title', '');
+			$opts['rel']        = $params->get('rel', '');
+			$title              = $params->get('link_title', '');
 
 			if ($title !== '')
 			{
@@ -264,27 +279,27 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 
 			$normalize = $params->get('link_normalize', '0') === '1';
 
-			return FabrikHelperHTML::a($href, $lbl, $opts, $normalize);
+			return Html::a($href, $lbl, $opts, $normalize);
 		}
 
-		$labelname = FabrikString::rtrimword($name, '[]') . '[label]';
-		$linkname = FabrikString::rtrimword($name, '[]') . '[link]';
+		$labelname = FStringHelper::rtrimword($name, '[]') . '[label]';
+		$linkname  = FStringHelper::rtrimword($name, '[]') . '[link]';
 
-		$bits['name'] = $labelname;
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_LABEL');
-		$bits['value'] = $value['label'];
-		$bits['class'] .= ' fabrikSubElement';
+		$bits['name']        = $labelname;
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_LINK_LABEL');
+		$bits['value']       = $value['label'];
+		$bits['class']       .= ' fabrikSubElement';
 		unset($bits['id']);
 
-		$layout = $this->getLayout('form');
-		$layoutData = new stdClass;
-		$layoutData->id = $id;
-		$layoutData->name = $name;
+		$layout                     = $this->getLayout('form');
+		$layoutData                 = new \stdClass;
+		$layoutData->id             = $id;
+		$layoutData->name           = $name;
 		$layoutData->linkAttributes = $bits;
 
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_LINK_URL');
-		$bits['name'] = $linkname;
-		$bits['value'] = FArrayHelper::getValue($value, 'link');
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_LINK_URL');
+		$bits['name']        = $linkname;
+		$bits['value']       = FArrayHelper::getValue($value, 'link');
 
 		if (is_a($bits['value'], 'stdClass'))
 		{
@@ -299,26 +314,27 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	/**
 	 * Turn form value into email formatted value
 	 *
-	 * @param   mixed  $value          Element value
-	 * @param   array  $data           Form data
-	 * @param   int    $repeatCounter  Group repeat counter
+	 * @param   mixed $value         Element value
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter Group repeat counter
 	 *
 	 * @return  string  email formatted value
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		if (is_string($value))
 		{
-			$value = FabrikWorker::JSONtoData($value, true);
+			$value          = Worker::JSONtoData($value, true);
 			$value['label'] = FArrayHelper::getValue($value, 0);
-			$value['link'] = FArrayHelper::getValue($value, 1);
+			$value['link']  = FArrayHelper::getValue($value, 1);
 		}
 
 		if (is_array($value))
 		{
-			$w = new FabrikWorker;
-			$link = $w->parseMessageForPlaceHolder($value['link']);
+			$w     = new Worker;
+			$link  = $w->parseMessageForPlaceHolder($value['link']);
 			$value = '<a href="' . $link . '" >' . $value['label'] . '</a>';
 		}
 
@@ -328,12 +344,13 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	/**
 	 * Manipulates posted form data for insertion into database
 	 *
-	 * @param   mixed  $val   this elements posted form data
-	 * @param   array  $data  posted form data
+	 * @param   mixed $val  this elements posted form data
+	 * @param   array $data posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		/* $$$ hugh - added 'normalization' of links, to add http:// if no :// in the link.
@@ -346,7 +363,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 		{
 			if ($params->get('use_bitly'))
 			{
-				$login = $params->get('bitly_login');
+				$login  = $params->get('bitly_login');
 				$apikey = $params->get('bitly_apikey');
 			}
 
@@ -356,7 +373,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 				{
 					if ($params->get('use_bitly'))
 					{
-						$v['link'] = FabrikString::bitlify($v['link'], $login, $apikey, true);
+						$v['link'] = FStringHelper::bitlify($v['link'], $login, $apikey, true);
 					}
 				}
 				else
@@ -364,7 +381,7 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 					// Not in repeat group
 					if ($key == 'link' && $params->get('use_bitly'))
 					{
-						$v = FabrikString::bitlify($v, $login, $apikey, true);
+						$v = FStringHelper::bitlify($v, $login, $apikey, true);
 					}
 				}
 			}
@@ -385,24 +402,25 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
-		$listModel = $this->getlistModel();
-		$params = $this->getParams();
-		$target = $params->get('link_target', '');
+		$listModel  = $this->getlistModel();
+		$params     = $this->getParams();
+		$target     = $params->get('link_target', '');
 		$smart_link = $params->get('link_smart_link', false);
 
 		if ($listModel->getOutPutFormat() != 'rss' && ($smart_link || $target == 'mediabox'))
 		{
-			FabrikHelperHTML::slimbox();
+			Html::slimbox();
 		}
 
-		$id = $this->getHTMLId($repeatCounter);
+		$id   = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
 		return array('FbLink', $id, $opts);
@@ -411,19 +429,20 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	/**
 	 * Called by form model to build an array of values to encrypt
 	 *
-	 * @param   array  &$values  previously encrypted values
-	 * @param   array  $data     form data
-	 * @param   int    $c        repeat group counter
+	 * @param   array  &$values previously encrypted values
+	 * @param   array   $data   form data
+	 * @param   int     $c      repeat group counter
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function getValuesToEncrypt(&$values, $data, $c)
 	{
-		$name = $this->getFullName(true, false);
+		$name  = $this->getFullName(true, false);
 		$group = $this->getGroup();
 		$value = $this->getValue($data, $c);
-		$value = FabrikWorker::JSONtoData($value, true);
+		$value = Worker::JSONtoData($value, true);
 
 		if ($group->canRepeat())
 		{
@@ -431,34 +450,35 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			if (!array_key_exists($name, $values))
 			{
 				$values[$name]['data']['label'] = array();
-				$values[$name]['data']['link'] = array();
+				$values[$name]['data']['link']  = array();
 			}
 
 			$values[$name]['data']['label'][$c] = FArrayHelper::getValue($value, 'label');
-			$values[$name]['data']['link'][$c] = FArrayHelper::getValue($value, 'link');
+			$values[$name]['data']['link'][$c]  = FArrayHelper::getValue($value, 'link');
 		}
 		else
 		{
 			$values[$name]['data']['label'] = FArrayHelper::getValue($value, 'label');
-			$values[$name]['data']['link'] = FArrayHelper::getValue($value, 'link');
+			$values[$name]['data']['link']  = FArrayHelper::getValue($value, 'link');
 		}
 	}
 
 	/**
 	 * This really does get just the default value (as defined in the element's settings)
 	 *
-	 * @param   array  $data  form data
+	 * @param   array $data form data
 	 *
 	 * @return mixed
+	 *
+	 * @since 4.0
 	 */
-
 	public function getDefaultValue($data = array())
 	{
 		if (!isset($this->default))
 		{
-			$w = new FabrikWorker;
+			$w      = new Worker;
 			$params = $this->getParams();
-			$link = $params->get('link_default_url');
+			$link   = $params->get('link_default_url');
 			/* $$$ hugh - no idea what this was here for, but it was causing some BIZARRE bugs!
 			*$formdata = $this->getForm()->getData();
 			* $$$ rob only parse for place holder if we can use the element
@@ -488,12 +508,13 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 	 * Does the element consider the data to be empty
 	 * Used in isempty validation rule
 	 *
-	 * @param   array  $data           data to test against
-	 * @param   int    $repeatCounter  repeat group #
+	 * @param   array $data          data to test against
+	 * @param   int   $repeatCounter repeat group #
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		if (is_array($data))

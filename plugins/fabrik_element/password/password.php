@@ -11,6 +11,13 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Text;
+use Joomla\CMS\User\UserHelper;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+
 /**
  * Plugin element to render 2 fields to capture and confirm a password
  *
@@ -18,7 +25,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.password
  * @since       3.0
  */
-class PlgFabrik_ElementPassword extends PlgFabrik_Element
+class PlgFabrik_ElementPassword extends AbstractElementPlugin
 {
 	/**
 	 * States if the element contains data which is recorded in the database
@@ -27,6 +34,8 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * @param   array $data Posted data
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function recordInDatabase($data = null)
 	{
@@ -55,12 +64,13 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * @param   array $data Posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-		jimport('joomla.user.helper');
-		$salt  = JUserHelper::genRandomPassword(32);
-		$crypt = JUserHelper::getCryptedPassword($val, $salt);
+		$salt  = UserHelper::genRandomPassword(32);
+		$crypt = UserHelper::getCryptedPassword($val, $salt);
 		$val   = $crypt . ':' . $salt;
 
 		return $val;
@@ -73,11 +83,13 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * @param   int   $repeatCounter Repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
 		$layout     = $this->getLayout('form');
-		$layoutData = new stdClass;
+		$layoutData = new \stdClass;
 		$element    = $this->getElement();
 		$value      = '';
 		$params     = $this->getParams();
@@ -90,46 +102,46 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 		$extraClass = 'strength ' . $params->get('bootstrap_class', '');
 		$extraStyle = 'margin-top: 20px;';
 
-		FabrikHelperHTML::jLayoutJs(
+		Html::jLayoutJs(
 			'fabrik-progress-bar-strong',
 			'fabrik-progress-bar',
 			(object) array(
-				'context' => 'success',
-				'value' => 100,
-				'stripped' => true,
+				'context'    => 'success',
+				'value'      => 100,
+				'stripped'   => true,
 				'extraClass' => $extraClass,
 				'extraStyle' => $extraStyle
 			)
 		);
-		FabrikHelperHTML::jLayoutJs(
+		Html::jLayoutJs(
 			'fabrik-progress-bar-medium',
 			'fabrik-progress-bar',
 			(object) array(
-				'context' => 'info',
-				'value' => 70,
-				'stripped' => true,
+				'context'    => 'info',
+				'value'      => 70,
+				'stripped'   => true,
 				'extraClass' => $extraClass,
 				'extraStyle' => $extraStyle
 			)
 		);
-		FabrikHelperHTML::jLayoutJs(
+		Html::jLayoutJs(
 			'fabrik-progress-bar-weak',
 			'fabrik-progress-bar',
 			(object) array(
-				'context' => 'info',
-				'value' => 30,
-				'stripped' => true,
+				'context'    => 'info',
+				'value'      => 30,
+				'stripped'   => true,
 				'extraClass' => $extraClass,
 				'extraStyle' => $extraStyle
 			)
 		);
-		FabrikHelperHTML::jLayoutJs(
+		Html::jLayoutJs(
 			'fabrik-progress-bar-more',
 			'fabrik-progress-bar',
 			(object) array(
-				'context' => 'warning',
-				'value' => 10,
-				'stripped' => true,
+				'context'    => 'warning',
+				'value'      => 10,
+				'stripped'   => true,
 				'extraClass' => $extraClass,
 				'extraStyle' => $extraStyle
 			)
@@ -137,21 +149,21 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 
 		$bits                = $this->inputProperties($repeatCounter, 'password');
 		$bits['value']       = $value;
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_PASSWORD_TYPE_PASSWORD');
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_PASSWORD_TYPE_PASSWORD');
 
 		$layoutData->pw1Attributes = $bits;
 
 		$origName            = $element->name;
 		$element->name       = $element->name . '_check';
 		$name                = $this->getHTMLName($repeatCounter);
-		$bits['placeholder'] = FText::_('PLG_ELEMENT_PASSWORD_CONFIRM_PASSWORD');
-		$bits['class'] .= ' fabrikSubElement';
-		$bits['name'] = $name;
-		$bits['id']   = $name;
+		$bits['placeholder'] = Text::_('PLG_ELEMENT_PASSWORD_CONFIRM_PASSWORD');
+		$bits['class']       .= ' fabrikSubElement';
+		$bits['name']        = $name;
+		$bits['id']          = $name;
 
 		$layoutData->pw2Attributes     = $bits;
 		$element->name                 = $origName;
-		$layoutData->j3                = FabrikWorker::j3();
+		$layoutData->j3                = Worker::j3();
 		$layoutData->bootstrapClass    = $params->get('bootstrap_class', '');
 		$layoutData->extraStyle        = $extraStyle;
 		$layoutData->showStrengthMeter = $params->get('strength_meter', 1) == 1;
@@ -166,6 +178,8 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * @param   int   $repeatCounter Repeat group counter
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter = 0)
 	{
@@ -217,7 +231,7 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 
 		if ($input->get('fabrik_confirmation', '') !== '2' && $checkValue != $value)
 		{
-			$this->validationError = FText::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_DOES_NOT_MATCH');
+			$this->validationError = Text::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_DOES_NOT_MATCH');
 
 			return false;
 		}
@@ -237,7 +251,7 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 				/**
 				 * Why are we using .= here, but nowhere else?
 				 */
-				$this->validationError .= FText::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_EMPTY_NOT_ALLOWED');
+				$this->validationError .= Text::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_EMPTY_NOT_ALLOWED');
 
 				return false;
 			}
@@ -255,6 +269,8 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
@@ -262,7 +278,7 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 		$opts                  = $this->getElementJSOptions($repeatCounter);
 		$formParams            = $this->getFormModel()->getParams();
 		$opts->ajax_validation = $formParams->get('ajax_validations') === '1';
-		$opts->progressbar     = FabrikWorker::j3() ? true : false;
+		$opts->progressbar     = true;
 
 		JText::script('PLG_ELEMENT_PASSWORD_STRONG');
 		JText::script('PLG_ELEMENT_PASSWORD_MEDIUM');
@@ -281,6 +297,8 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array  html ids to watch for validation
+	 *
+	 * @since 4.0
 	 */
 	public function getValidationWatchElements($repeatCounter)
 	{
@@ -294,6 +312,8 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * Return an internal validation icon
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function internalValidationIcon()
 	{
@@ -304,9 +324,11 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 	 * Return internal validation hover text
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function internalValidationText()
 	{
-		return FText::_('PLG_ELEMENT_PASSWORD_VALIDATION_TIP');
+		return Text::_('PLG_ELEMENT_PASSWORD_VALIDATION_TIP');
 	}
 }

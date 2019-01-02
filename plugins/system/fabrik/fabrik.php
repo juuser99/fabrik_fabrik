@@ -12,12 +12,23 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Table\Extension;
+use Joomla\CMS\Table\Table;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
-use Joomla\CMS\Version;
-
-jimport('joomla.plugin.plugin');
-jimport('joomla.filesystem.file');
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\Database\DatabaseDriver;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\StringHelper;
 
 /**
  * Joomla! Fabrik system
@@ -26,45 +37,67 @@ jimport('joomla.filesystem.file');
  * @subpackage  System
  * @since       3.0
  */
-class PlgSystemFabrik extends JPlugin
+class PlgSystemFabrik extends CMSPlugin
 {
+	/**
+	 * Load the language file on instantiation.
+	 *
+	 * @var    boolean
+	 * @since  3.7.0
+	 */
+	protected $autoloadLanguage = true;
+
+	/**
+	 * Application object.
+	 *
+	 * @var    CMSApplication
+	 * @since  4.0.0
+	 */
+	protected $app;
+
+	/**
+	 * Database object.
+	 *
+	 * @var    DatabaseDriver
+	 * @since  4.0.0
+	 */
+	protected $db;
+
 	/**
 	 * Constructor
 	 *
 	 * @param   object &$subject The object to observe
-	 * @param   array  $config   An array that holds the plugin configuration
+	 * @param   array   $config  An array that holds the plugin configuration
 	 *
 	 * @since    1.0
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct(&$subject, $config)
 	{
-		// Could be component was uninstalled but not the plugin
-		if (!JFile::exists(JPATH_SITE . '/components/com_fabrik/fabrik.php'))
-		{
-			return;
-		}
-
-		// $$$ Alan removed hijacking FormField in 4.0 in favor of using a trait
-
-		$app = JFactory::getApplication();
-
-		// The fabrikfeed doc type has been deprecated.  For backward compat, change it use standard J! feed instead
-        if (version_compare(JVERSION, '3.8', '>=')) {
-            if ($app->input->get('format') === 'fabrikfeed') {
-                $app->input->set('format', 'feed');
-            }
-        }
-
-		if (!file_exists(JPATH_LIBRARIES . '/fabrik/include.php'))
-		{
-			throw new Exception('PLG_FABRIK_SYSTEM_AUTOLOAD_MISSING');
-		}
-
 		require_once JPATH_LIBRARIES . '/fabrik/include.php';
 
 		parent::__construct($subject, $config);
 
-		jimport('joomla.filesystem.file');
+		// Could be component was uninstalled but not the plugin
+		if (!File::exists(JPATH_SITE . '/components/com_fabrik/fabrik.php'))
+		{
+			return;
+		}
+
+		// The fabrikfeed doc type has been deprecated.  For backward compat, change it use standard J! feed instead
+		if (version_compare(JVERSION, '3.8', '>='))
+		{
+			if ($this->app->input->get('format') === 'fabrikfeed')
+			{
+				$this->app->input->set('format', 'feed');
+			}
+		}
+
+		if (!file_exists(JPATH_LIBRARIES . '/fabrik/include.php'))
+		{
+			throw new \Exception('PLG_FABRIK_SYSTEM_AUTOLOAD_MISSING');
+		}
 
 		/**
 		 * Added allow_user_defines to global config, defaulting to No, so even if a user_defines.php is present
@@ -72,10 +105,10 @@ class PlgSystemFabrik extends JPlugin
 		 * managed to creep in to a release ZIP at some point, so some people unknowingly have one, which started causing
 		 * issues after we added some more includes to defines.php.
 		 */
-		$fbConfig         = JComponentHelper::getParams('com_fabrik');
+		$fbConfig         = ComponentHelper::getParams('com_fabrik');
 		$allowUserDefines = $fbConfig->get('allow_user_defines', '0') === '1';
 		$p                = JPATH_SITE . '/plugins/system/fabrik/';
-		$defines          = $allowUserDefines && JFile::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
+		$defines          = $allowUserDefines && File::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
 		require_once $defines;
 
 		$this->setBigSelects();
@@ -84,7 +117,10 @@ class PlgSystemFabrik extends JPlugin
 	/**
 	 * Get Page JavaScript from either session or cached .js file
 	 *
-	 * @return string
+	 * @return mixed|string
+	 *
+	 * @since 4.0
+	 * @throws \Exception
 	 */
 	public static function js()
 	{
@@ -93,14 +129,13 @@ class PlgSystemFabrik extends JPlugin
 		 * out the system cache, so loading a cached page will not have requirejs on the end.
 		 */
 
-		$config = JFactory::getConfig();
-		$app = JFactory::getApplication();
-		$script = '';
-		$session = JFactory::getSession();
+		/** @var CMSApplication $app */
+		$app     = Factory::getApplication();
+		$session = $app->getSession();
 
 		/**
 		 * Whenever we cache a view, we add the cache ID to this session variable, by calling
-		 * FabrikHelperHTML::addToSessionCacheIds().  This gets cleared at the end of this function, so if there's
+		 * Html::addToSessionCacheIds().  This gets cleared at the end of this function, so if there's
 		 * anything in there, it was added on this page load.
 		 *
 		 * The theory is that if the view isn't cached, buildJs() will find everything it needs in our own session
@@ -115,7 +150,7 @@ class PlgSystemFabrik extends JPlugin
 			 * submits a form, or anything else happens that causes Fabrik to do a $cache-clean().  This means that
 			 * the 'fabrik_cacheids' cache could grow quite large, and will need to be cleaned occasionally.
 			 */
-			$cache = Worker::getCache(null, 'fabrik_cacheids');
+			$cache    = Worker::getCache(null, 'fabrik_cacheids');
 			$cacheIds = $session->get('fabrik.js.cacheids', array());
 
 			/**
@@ -126,7 +161,7 @@ class PlgSystemFabrik extends JPlugin
 
 			if (!empty($cacheId))
 			{
-				 // We got an ID, so ask the cache for it.
+				// We got an ID, so ask the cache for it.
 				$script = $cache->get(array('PlgSystemFabrik', 'buildJs'), $cacheId);
 			}
 			else
@@ -150,11 +185,12 @@ class PlgSystemFabrik extends JPlugin
 	/**
 	 * Clear session js store
 	 *
-	 * @return  void
+	 * @since 4.0
+	 * @throws \Exception
 	 */
 	public static function clearJs()
 	{
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 		$session->clear('fabrik.js.scripts');
 		$session->clear('fabrik.js.cacheids');
 		$session->clear('fabrik.js.head.scripts');
@@ -167,13 +203,16 @@ class PlgSystemFabrik extends JPlugin
 	 * Store head script in session js store,
 	 * used by partial document type to exclude scripts already loaded, when building modal windows
 	 *
-	 * @return  void
+	 * @since 4.0
+	 * @throws \Exception
 	 */
 	public static function storeHeadJs()
 	{
-		$session = JFactory::getSession();
-		$doc = JFactory::getDocument();
-		$app = JFactory::getApplication();
+		/** @var CMSApplication $app */
+		$app     = Factory::getApplication();
+		$session = $app->getSession();
+		$doc     = Factory::getDocument();
+
 		$key = md5($app->input->server->get('REQUEST_URI', '', 'string'));
 
 		if (!empty($key))
@@ -186,7 +225,7 @@ class PlgSystemFabrik extends JPlugin
 				$session->clear($key);
 			}
 
-			$scripts = $doc->_scripts;
+			$scripts  = $doc->_scripts;
 			$existing = $session->get($key);
 
 			/**
@@ -197,7 +236,7 @@ class PlgSystemFabrik extends JPlugin
 			{
 				$existing = json_decode($existing);
 				$existing = ArrayHelper::fromObject($existing);
-				$scripts = array_merge($scripts, $existing);
+				$scripts  = array_merge($scripts, $existing);
 			}
 
 			$scripts = json_encode($scripts);
@@ -209,10 +248,13 @@ class PlgSystemFabrik extends JPlugin
 	 * Build Page <script> tag for insertion into DOM
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
+	 * @throws \Exception
 	 */
 	public static function buildJs()
 	{
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 		$config  = (array) $session->get('fabrik.js.config', array());
 		$config  = implode("\n", $config);
 
@@ -233,7 +275,7 @@ class PlgSystemFabrik extends JPlugin
 			 * tests if its inside requirejs (false) then loads scripts via <script> node creation. By the time the secondary
 			 * scripts were loaded, Fabrik had loaded requires js, and conflicts occurred.
 			 */
-			$jsAssetBaseURI = FabrikHelperHTML::getJSAssetBaseURI();
+			$jsAssetBaseURI = Html::getJSAssetBaseURI();
 			$rjs            = $jsAssetBaseURI . 'media/com_fabrik/js/lib/require/require.js';
 			$script         = '<script>
             setTimeout(function(){
@@ -259,34 +301,25 @@ class PlgSystemFabrik extends JPlugin
 	 * Insert require.js config an app ini script into body.
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
+	 *
+	 * @throws \Exception
 	 */
 	public function onAfterRender()
 	{
 		// Could be component was uninstalled but not the plugin
-		if (!class_exists('FabrikString'))
+		if (!File::exists(JPATH_SITE . '/components/com_fabrik/fabrik.php'))
 		{
 			return;
 		}
 
-		$formats = array (
-			'html',
-			'partial'
-		);
-
-		$app    = JFactory::getApplication();
-
-		/*
-		if (!in_array($app->input->get('format', 'html'), $formats))
-		{
-			return;
-		}
-		*/
 
 		$script = self::js();
 		//self::clearJs();
 		self::storeHeadJs();
 
-		$content = $app->getBody();
+		$content = $this->app->getBody();
 
 		if (!stristr($content, '</body>'))
 		{
@@ -294,53 +327,11 @@ class PlgSystemFabrik extends JPlugin
 		}
 		else
 		{
-			$content = FabrikString::replaceLast('</body>', $script . '</body>', $content);
+			$content = StringHelper::replaceLast('</body>', $script . '</body>', $content);
 		}
 
-		$app->setBody($content);
+		$this->app->setBody($content);
 	}
-
-	/**
-	 * Need to call this here otherwise you get class exists error
-	 *
-	 * @since   3.0
-	 *
-	 * @return  void
-	 */
-	public function onAfterInitialise()
-	{
-		//jimport('joomla.filesystem.file');
-
-		/**
-		 * Added allow_user_defines to global config, defaulting to No, so even if a user_defines.php is present
-		 * it won't get used unless this option is specifically set.  Did this because it looks like a user_defines.php
-		 * managed to creep in to a release ZIP at some point, so some people unknowingly have one, which started causing
-		 * issues after we added some more includes to defines.php.
-		 */
-		/*
-		$fbConfig         = JComponentHelper::getParams('com_fabrik');
-		$allowUserDefines = $fbConfig->get('allow_user_defines', '0') === '1';
-		$p                = JPATH_SITE . '/plugins/system/fabrik/';
-		$defines          = $allowUserDefines && JFile::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
-		require_once $defines;
-
-		$this->setBigSelects();
-		*/
-	}
-
-    /**
-     * If a command line like finder_indexer.php is run, it won't call onAfterInitialise, and will then run content
-     * plugins, and ours will bang out because "Fabrik system plugin has not been run".  So onStartIndex, initialize
-     * our plugin.
-     *
-     * @since   3.8
-     *
-     * @return  void
-     */
-	public function onStartIndex()
-    {
-        $this->onAfterInitialise();
-    }
 
 	/**
 	 * From Global configuration setting, set big select for main J database
@@ -351,11 +342,7 @@ class PlgSystemFabrik extends JPlugin
 	 */
 	protected function setBigSelects()
 	{
-		if (class_exists('FabrikWorker'))
-		{
-			$db = JFactory::getDbo();
-			FabrikWorker::bigSelects($db);
-		}
+		Worker::bigSelects($this->db);
 	}
 
 	/**
@@ -365,18 +352,23 @@ class PlgSystemFabrik extends JPlugin
 	 * used in a common display routine: href, title, section, created, text,
 	 * browsernav
 	 *
-	 * @param   string    $text     Target search string
-	 * @param   JRegistry $params   Search plugin params
-	 * @param   string    $phrase   Matching option, exact|any|all
-	 * @param   string    $ordering Option, newest|oldest|popular|alpha|category
+	 * @param   string   $text     Target search string
+	 * @param   Registry $params   Search plugin params
+	 * @param   string   $phrase   Matching option, exact|any|all
+	 * @param   string   $ordering Option, newest|oldest|popular|alpha|category
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
+	 *
+	 * @throws \Exception
 	 */
-	public static function onDoContentSearch($text, $params, $phrase = '', $ordering = '')
+	public static function onDoContentSearch($text, Registry $params, $phrase = '', $ordering = '')
 	{
-		$app      = JFactory::getApplication();
+		/** @var CMSApplication $app */
+		$app      = Factory::getApplication();
 		$package  = $app->getUserState('com_fabrik.package', 'fabrik');
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
+		$fbConfig = ComponentHelper::getParams('com_fabrik');
 
 		if (defined('COM_FABRIK_SEARCH_RUN'))
 		{
@@ -385,9 +377,8 @@ class PlgSystemFabrik extends JPlugin
 
 		$input = $app->input;
 		define('COM_FABRIK_SEARCH_RUN', true);
-		JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 
 		require_once JPATH_SITE . '/components/com_content/helpers/route.php';
 
@@ -443,17 +434,17 @@ class PlgSystemFabrik extends JPlugin
 		$input->set('resetfilters', 1);
 
 		// Ensure search doesn't go over memory limits
-		$memory    = FabrikWorker::getMemoryLimit();
+		$memory    = Worker::getMemoryLimit();
 		$usage     = array();
 		$memSafety = 0;
 
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
-		$app       = JFactory::getApplication();
+		/** @var ListModel $listModel */
+		$listModel = FabModel::getInstance(ListModel::class);
 
 		foreach ($ids as $id)
 		{
 			// Re-ini the list model (was using reset() but that was flaky)
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			$listModel = FabModel::getInstance(ListModel::class);
 
 			// $$$ geros - http://fabrikar.com/forums/showthread.php?t=21134&page=2
 			$key = 'com_' . $package . '.list' . $id . '.filter.searchall';
@@ -466,7 +457,7 @@ class PlgSystemFabrik extends JPlugin
 
 				if ($diff + $usage[count($usage) - 1] > $memory - $memSafety)
 				{
-					$msg = FText::_('PLG_FABRIK_SYSTEM_SEARCH_MEMORY_LIMIT');
+					$msg = Text::_('PLG_FABRIK_SYSTEM_SEARCH_MEMORY_LIMIT');
 					$app->enqueueMessage($msg);
 					break;
 				}
@@ -565,7 +556,7 @@ class PlgSystemFabrik extends JPlugin
 							continue;
 						}
 						$urls[] = $href;
-						$o      = new stdClass;
+						$o      = new \stdClass;
 
 						if (isset($oData->$title))
 						{
@@ -581,7 +572,7 @@ class PlgSystemFabrik extends JPlugin
 						$o->href    = $href;
 
 						// Need to make sure it's a valid date in MySQL format, otherwise J!'s code will pitch a fatal error
-						if (isset($oData->$dateElement) && FabrikString::isMySQLDate($oData->$dateElement))
+						if (isset($oData->$dateElement) && StringHelper::isMySQLDate($oData->$dateElement))
 						{
 							$o->created = $oData->$dateElement;
 						}
@@ -622,9 +613,9 @@ class PlgSystemFabrik extends JPlugin
 		}
 		if ($limit < 0)
 		{
-			$language = JFactory::getLanguage();
+			$language = Factory::getLanguage();
 			$language->load('plg_system_fabrik', JPATH_SITE . '/plugins/system/fabrik');
-			$msg = FText::_('PLG_FABRIK_SYSTEM_SEARCH_LIMIT');
+			$msg = Text::_('PLG_FABRIK_SYSTEM_SEARCH_LIMIT');
 			$app->enqueueMessage($msg);
 		}
 
@@ -634,13 +625,15 @@ class PlgSystemFabrik extends JPlugin
 	/**
 	 * If a form or details view has set a canonical link - removed any J created links
 	 *
-	 * @throws Exception
+	 * @throws \Exception
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterDispatch()
 	{
-		$doc     = JFactory::getDocument();
-		$session = JFactory::getSession();
-		$package = JFactory::getApplication()->getUserState('com_fabrik.package', 'fabrik');
+		$doc     = Factory::getDocument();
+		$session = $this->app->getSession();
+		$package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 
 		if (isset($doc->_links) && $session->get('fabrik.clearCanonical'))
 		{
@@ -662,10 +655,12 @@ class PlgSystemFabrik extends JPlugin
 	 * Check the product key and if it exists create an update site entry
 	 * Update server XML manifest generated from update/premium.php
 	 *
-	 * @param string          $option
-	 * @param JTableExtension $data
+	 * @param string    $option
+	 * @param Extension $data
+	 *
+	 * @since 4.0
 	 */
-	function onExtensionAfterSave($option, $data)
+	function onExtensionAfterSave($option, Extension $data)
 	{
 		if ($option !== 'com_config.component')
 		{
@@ -678,7 +673,7 @@ class PlgSystemFabrik extends JPlugin
 		}
 
 		$props      = $data->getProperties();
-		$params     = new JRegistry($props['params']);
+		$params     = new Registry($props['params']);
 		$productKey = $params->get('fabrik_product_key', '');
 
 		if ($productKey === '')
@@ -686,12 +681,12 @@ class PlgSystemFabrik extends JPlugin
 			return;
 		}
 
-		$table = JTable::getInstance('Updatesite');
+		$table = Table::getInstance('Updatesite');
 		$table->load(array('name' => 'Fabrik - Premium'));
 		$table->save(array(
-			'type' => 'collection',
-			'name' => 'Fabrik - Premium',
-			'enabled' => 1,
+			'type'     => 'collection',
+			'name'     => 'Fabrik - Premium',
+			'enabled'  => 1,
 			'location' => 'http://localhost:81/fabrik31x/public_html/update/premium.php?productKey=' . $productKey
 		));
 	}

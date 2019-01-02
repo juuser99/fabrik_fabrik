@@ -11,6 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Helpers\Worker;
+
 /**
  * Plugin element to render colour picker
  *
@@ -18,12 +23,14 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.colourpicker
  * @since       3.0
  */
-class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
+class PlgFabrik_ElementColourpicker extends AbstractElementPlugin
 {
 	/**
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'CHAR(%s)';
 
@@ -31,26 +38,30 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 	 * Db table field size
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldSize = '10';
 
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string   $data     Elements data
-	 * @param   stdClass &$thisRow All the data in the lists current row
-	 * @param   array    $opts     Rendering options
+	 * @param   string    $data    Elements data
+	 * @param   \stdClass $thisRow All the data in the lists current row
+	 * @param   array     $opts    Rendering options
 	 *
 	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        $data              = FabrikWorker::JSONtoData($data, true);
+		$data              = Worker::JSONtoData($data, true);
 		$layout            = $this->getLayout('list');
-		$displayData       = new stdClass;
+		$displayData       = new \stdClass;
 		$displayData->data = $data;
 
 		return $layout->render($displayData);
@@ -63,6 +74,8 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 	 * @param   array $data Posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
@@ -77,6 +90,8 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
@@ -85,7 +100,7 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 			return array();
 		}
 
-		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/colourpicker/images/', 'image', 'form', false);
+		Html::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/colourpicker/images/', 'image', 'form', false);
 		$params = $this->getParams();
 		$id     = $this->getHTMLId($repeatCounter);
 		$data   = $this->getFormModel()->data;
@@ -99,7 +114,7 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 		$vars = explode(",", $value);
 		$vars = array_pad($vars, 3, 0);
 		$opts = $this->getElementJSOptions($repeatCounter);
-		$c    = new stdClass;
+		$c    = new \stdClass;
 
 		// 14/06/2011 changed over to color param object from ind colour settings
 		$c->red                 = (int) $vars[0];
@@ -127,6 +142,8 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 	 * @param   array $opts          Options, 'raw' = 1/0 use raw value
 	 *
 	 * @return  string    value
+	 *
+	 * @since 4.0
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
@@ -143,6 +160,8 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 	 * @param   int   $repeatCounter Repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
@@ -150,12 +169,12 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 		$params = $this->getParams();
 
 		$layout          = $this->getLayout('form');
-		$displayData     = new stdClass;
+		$displayData     = new \stdClass;
 		$displayData->id = $this->getHTMLId($repeatCounter);;
 		$displayData->name = $this->getHTMLName($repeatCounter);;
 		$displayData->value      = $value;
 		$displayData->editable   = $this->isEditable();
-		$displayData->j3         = FabrikWorker::j3();
+		$displayData->j3         = Worker::j3();
 		$displayData->showPicker = (bool) $params->get('show_picker', 1);
 
 		return $layout->render($displayData);
@@ -165,6 +184,8 @@ class PlgFabrik_ElementColourpicker extends PlgFabrik_Element
 	 * Get database field description
 	 *
 	 * @return  string  Bb field type
+	 *
+	 * @since 4.0
 	 */
 	public function getFieldDescription()
 	{

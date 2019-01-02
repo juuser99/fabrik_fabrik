@@ -11,8 +11,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Editor\Editor;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Plugin element to render text area or wysiwyg editor
@@ -21,28 +27,32 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik.element.textarea
  * @since       3.0
  */
-class PlgFabrik_ElementTextarea extends PlgFabrik_Element
+class PlgFabrik_ElementTextarea extends AbstractElementPlugin
 {
 	/**
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'TEXT';
 
 	/**
 	 * Tagify a string
 	 *
-	 * @param   string  $data  Tagify
+	 * @param   string $data Tagify
 	 *
-	 * @return  string	Tagified string
+	 * @return  string    Tagified string
+	 *
+	 * @since 4.0
 	 */
 	protected function tagify($data)
 	{
-		$name = $this->getFullName(true, false);
+		$name   = $this->getFullName(true, false);
 		$params = $this->getParams();
-		$data = explode(',', strip_tags($data));
-		$url = $params->get('textarea_tagifyurl');
+		$data   = explode(',', strip_tags($data));
+		$url    = $params->get('textarea_tagifyurl');
 		$listId = $this->getListModel()->getId();
 
 		if ($url == '')
@@ -59,11 +69,11 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 
 		// $$$ rob 24/02/2011 remove duplicates from tags
 		// $$$ hugh - strip spaces first, account for "foo,bar, baz, foo"
-		$data = array_map('trim', $data);
-		$data = array_unique($data);
-		$img = FabrikWorker::j3() ? 'bookmark' : 'tag.png';
-		$icon = FabrikHelperHTML::image($img, 'form', @$this->tmpl, array('alt' => 'tag'));
-		$tmplData = new stdClass;
+		$data           = array_map('trim', $data);
+		$data           = array_unique($data);
+		$img            = 'bookmark';
+		$icon           = Html::image($img, 'form', @$this->tmpl, array('alt' => 'tag'));
+		$tmplData       = new \stdClass;
 		$tmplData->tags = array();
 
 		foreach ($data as $d)
@@ -91,10 +101,10 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 					$thisurl = str_replace('{tag}', urlencode($d), $url);
 				}
 
-				$o = new stdClass;
-				$o->url = $thisurl;
-				$o->icon = $icon;
-				$o->label = $d;
+				$o                = new \stdClass;
+				$o->url           = $thisurl;
+				$o->icon          = $icon;
+				$o->label         = $d;
 				$tmplData->tags[] = $o;
 			}
 		}
@@ -107,18 +117,20 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string    $data    Elements data
+	 * @param   \stdClass $thisRow All the data in the lists current row
+	 * @param   array     $opts    Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        $params = $this->getParams();
+		$params = $this->getParams();
 
 		if ($params->get('textarea-tagify') == true)
 		{
@@ -132,7 +144,7 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 				{
 					for ($i = 0; $i < count($data); $i++)
 					{
-						$data[$i] = FabrikString::safeNl2br($data[$i]);
+						$data[$i] = FStringHelper::safeNl2br($data[$i]);
 					}
 				}
 				else
@@ -142,7 +154,7 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 						$this->convertDataToString($data);
 					}
 
-					$data = FabrikString::safeNl2br($data);
+					$data = FStringHelper::safeNl2br($data);
 				}
 			}
 
@@ -151,8 +163,8 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 			if ($data !== '' && ($truncateWhere === 1 || $truncateWhere === 3))
 			{
 				$truncateOpts = $this->truncateOpts();
-				$data = fabrikString::truncate($data, $truncateOpts);
-				$listModel = $this->getListModel();
+				$data         = FStringHelper::truncate($data, $truncateOpts);
+				$listModel    = $this->getListModel();
 
 				if (ArrayHelper::getValue($opts, 'link', 1))
 				{
@@ -168,15 +180,17 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	 * Get the truncate text options. Can be used for both list and details views.
 	 *
 	 * @return array
+	 *
+	 * @since 4.0
 	 */
 	private function truncateOpts()
 	{
-		$opts = array();
-		$params = $this->getParams();
+		$opts                = array();
+		$params              = $this->getParams();
 		$opts['html_format'] = $params->get('textarea-truncate-html', '0') === '1';
-		$opts['wordcount'] = (int) $params->get('textarea-truncate', 0);
-		$opts['tip'] = $params->get('textarea-hover');
-		$opts['position'] = $params->get('textarea_hover_location', 'top');
+		$opts['wordcount']   = (int) $params->get('textarea-truncate', 0);
+		$opts['tip']         = $params->get('textarea-hover');
+		$opts['position']    = $params->get('textarea_hover_location', 'top');
 
 		return $opts;
 	}
@@ -184,14 +198,16 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Get the element's HTML label
 	 *
-	 * @param   int     $repeatCounter  Group repeat counter
-	 * @param   string  $tmpl           Form template
+	 * @param   int    $repeatCounter Group repeat counter
+	 * @param   string $tmpl          Form template
 	 *
 	 * @return  string  label
+	 *
+	 * @since 4.0
 	 */
 	public function getLabel($repeatCounter = 0, $tmpl = '')
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$element = $this->getElement();
 
 		if ($params->get('textarea_showlabel') == '0')
@@ -205,7 +221,9 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Does the element use the WYSIWYG editor
 	 *
-	 * @return  mixed	False if not using the wysiwyg editor. String (element name) if it is
+	 * @return  mixed    False if not using the wysiwyg editor. String (element name) if it is
+	 *
+	 * @since 4.0
 	 */
 	public function useEditor()
 	{
@@ -224,7 +242,7 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Should the element use the WYSIWYG editor
 	 *
-	 * @bool  checkFormat  check the formats (ajax, format=raw), or only check param setting
+	 * @bool    checkFormat  check the formats (ajax, format=raw), or only check param setting
 	 *
 	 * @since   3.0.6.2
 	 *
@@ -233,7 +251,7 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	protected function useWysiwyg($checkFormat = true)
 	{
 		$params = $this->getParams();
-		$input = $this->app->input;
+		$input  = $this->app->input;
 
 		if ($checkFormat && $input->get('format') == 'raw')
 		{
@@ -251,15 +269,17 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           To pre-populate element with
-	 * @param   int    $repeatCounter  Repeat group counter
+	 * @param   array $data          To pre-populate element with
+	 * @param   int   $repeatCounter Repeat group counter
 	 *
-	 * @return  string	Elements html
+	 * @return  string    Elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
+		$name    = $this->getHTMLName($repeatCounter);
+		$id      = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
 
 		if ($element->hidden == '1')
@@ -267,13 +287,13 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 			return $this->getHiddenField($name, $this->getValue($data, $repeatCounter), $id);
 		}
 
-		$params = $this->getParams();
-		$cols = $params->get('width', $element->width);
-		$rows = $params->get('height', $element->height);
-		$value = $this->getValue($data, $repeatCounter);
-		$bits = array();
+		$params        = $this->getParams();
+		$cols          = $params->get('width', $element->width);
+		$rows          = $params->get('height', $element->height);
+		$value         = $this->getValue($data, $repeatCounter);
+		$bits          = array();
 		$bits['class'] = "fabrikinput inputbox " . $params->get('bootstrap_class');
-		$wysiwyg = $this->useWysiwyg();
+		$wysiwyg       = $this->useWysiwyg();
 
 		if (!$this->isEditable())
 		{
@@ -285,15 +305,15 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 			{
 				if (!$this->useWysiwyg(false))
 				{
-					$value = FabrikString::safeNl2br($value);
+					$value = FStringHelper::safeNl2br($value);
 				}
 
 				if ($value !== ''
 					&&
 					((int) $params->get('textarea-truncate-where', 0) === 2 || (int) $params->get('textarea-truncate-where', 0) === 3))
 				{
-					$opts = $this->truncateOpts();
-					$value = fabrikString::truncate($value, $opts);
+					$opts  = $this->truncateOpts();
+					$value = FStringHelper::truncate($value, $opts);
 				}
 			}
 
@@ -302,7 +322,7 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 
 		if ($params->get('textarea_placeholder', '') !== '')
 		{
-			$bits['placeholder'] = FText::_($params->get('textarea_placeholder'));
+			$bits['placeholder'] = Text::_($params->get('textarea_placeholder'));
 		}
 
 		if ($this->elementError != '')
@@ -310,21 +330,21 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 			$bits['class'] .= ' elementErrorHighlight';
 		}
 
-		$layoutData = new stdClass;
+		$layoutData = new \stdClass;
 		$this->charsLeft($value, $layoutData);
 
 		if ($wysiwyg)
 		{
-			$editor = JEditor::getInstance($this->config->get('editor'));
-			$buttons = (bool) $params->get('wysiwyg_extra_buttons', true);
+			$editor             = Editor::getInstance($this->config->get('editor'));
+			$buttons            = (bool) $params->get('wysiwyg_extra_buttons', true);
 			$layoutData->editor = $editor->display($name, $value, $cols * 10, $rows * 15, $cols, $rows, $buttons, $id, 'com_fabrik');
-			$layout = $this->getLayout('wysiwyg');
+			$layout             = $this->getLayout('wysiwyg');
 		}
 		else
 		{
 			if ($params->get('disable'))
 			{
-				$bits['class'] .= " disabled";
+				$bits['class']    .= " disabled";
 				$bits['disabled'] = 'disabled';
 			}
 
@@ -333,12 +353,12 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 				$bits['maxlength'] = $params->get('textarea-maxlength');
 			}
 
-			$bits['name'] = $name;
-			$bits['id'] = $id;
-			$bits['cols'] = $cols;
-			$bits['rows'] = $rows;
+			$bits['name']           = $name;
+			$bits['id']             = $id;
+			$bits['cols']           = $cols;
+			$bits['rows']           = $rows;
 			$layoutData->attributes = $bits;
-			$layoutData->value = $value;
+			$layoutData->value      = $value;
 
 			$layout = $this->getLayout('form');
 		}
@@ -349,31 +369,33 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Create the 'characters left' interface when the element is rendered in the form view
 	 *
-	 * @param   string    $value  Value
-	 * @param   stdClass  &$data  Layout data
+	 * @param   string      $value Value
+	 * @param   \stdClass  &$data  Layout data
 	 *
 	 * @return  array $data
+	 *
+	 * @since 4.0
 	 */
-	protected function charsLeft($value, stdClass &$data)
+	protected function charsLeft($value, \stdClass &$data)
 	{
-		$params = $this->getParams();
+		$params              = $this->getParams();
 		$data->showCharsLeft = false;
 
 		if ($params->get('textarea-showmax'))
 		{
 			if ($params->get('textarea_limit_type', 'char') === 'char')
 			{
-				$label = FText::_('PLG_ELEMENT_TEXTAREA_CHARACTERS_LEFT');
+				$label     = Text::_('PLG_ELEMENT_TEXTAREA_CHARACTERS_LEFT');
 				$charsLeft = $params->get('textarea-maxlength') - StringHelper::strlen($value);
 			}
 			else
 			{
-				$label = FText::_('PLG_ELEMENT_TEXTAREA_WORDS_LEFT');
+				$label     = Text::_('PLG_ELEMENT_TEXTAREA_WORDS_LEFT');
 				$charsLeft = $params->get('textarea-maxlength') - count(explode(' ', $value));
 			}
 
-			$data->showCharsLeft = true;
-			$data->charsLeft = $charsLeft;
+			$data->showCharsLeft  = true;
+			$data->charsLeft      = $charsLeft;
 			$data->charsLeftLabel = $label;
 		}
 
@@ -383,11 +405,13 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Used to format the data when shown in the form's email
 	 *
-	 * @param   mixed  $value          Element's data
-	 * @param   array  $data           Form records data
-	 * @param   int    $repeatCounter  Repeat group counter
+	 * @param   mixed $value         Element's data
+	 * @param   array $data          Form records data
+	 * @param   int   $repeatCounter Repeat group counter
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
 	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
@@ -407,13 +431,15 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	 * Used by radio and dropdown elements to get a dropdown list of their unique
 	 * unique values OR all options - based on filter_build_method
 	 *
-	 * @param   bool    $normal     Do we render as a normal filter or as an advanced search filter
-	 * @param   string  $tableName  Table name to use - defaults to element's current table
-	 * @param   string  $label      Field to use, defaults to element name
-	 * @param   string  $id         Field to use, defaults to element name
-	 * @param   bool    $incjoin    Include join
+	 * @param   bool   $normal    Do we render as a normal filter or as an advanced search filter
+	 * @param   string $tableName Table name to use - defaults to element's current table
+	 * @param   string $label     Field to use, defaults to element name
+	 * @param   string $id        Field to use, defaults to element name
+	 * @param   bool   $incjoin   Include join
 	 *
 	 * @return  array  text/value objects
+	 *
+	 * @since 4.0
 	 */
 	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
 	{
@@ -439,9 +465,9 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	protected function getTags()
 	{
 		$listModel = $this->getListModel();
-		$id = $this->getElement()->id;
-		$cols = $listModel->getColumnData($id);
-		$tags = array();
+		$id        = $this->getElement()->id;
+		$cols      = $listModel->getColumnData($id);
+		$tags      = array();
 
 		foreach ($cols as $col)
 		{
@@ -466,9 +492,11 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
@@ -487,12 +515,12 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 			$id = $this->getHTMLId($repeatCounter);
 		}
 
-		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts->max = $params->get('textarea-maxlength');
-		$opts->maxType = $params->get('textarea_limit_type', 'char');
-		$opts->wysiwyg = $this->useWysiwyg();
+		$opts                 = $this->getElementJSOptions($repeatCounter);
+		$opts->max            = $params->get('textarea-maxlength');
+		$opts->maxType        = $params->get('textarea_limit_type', 'char');
+		$opts->wysiwyg        = $this->useWysiwyg();
 		$opts->deleteOverflow = $params->get('delete_overflow', true) ? true : false;
-		$opts->htmlId = $this->getHTMLId($repeatCounter);
+		$opts->htmlId         = $this->getHTMLId($repeatCounter);
 
 		return array('FbTextarea', $id, $opts);
 	}
@@ -500,10 +528,12 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	/**
 	 * Internal element validation
 	 *
-	 * @param   array  $data           Form data
-	 * @param   int    $repeatCounter  Repeat group counter
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter Repeat group counter
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter = 0)
 	{
@@ -531,48 +561,20 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	 * Get validation error - run through JText
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getValidationErr()
 	{
-		return FText::_('PLG_ELEMENT_TEXTAREA_CONTENT_TOO_LONG');
-	}
-
-	/**
-	 * Get Joomfish translation type
-	 *
-	 * @deprecated
-	 *
-	 * @return  string	joomfish translation type e.g. text/textarea/referenceid/titletext
-	 */
-	public function getJoomfishTranslationType()
-	{
-		return 'textarea';
-	}
-
-	/**
-	 * Get Joomfish translation options
-	 *
-	 * @deprecated
-	 *
-	 * @return  array	Key=>value options
-	 */
-	public function getJoomfishOptions()
-	{
-		$params = $this->getParams();
-		$return = array();
-
-		if ($params->get('textarea-showmax'))
-		{
-			$return['maxlength'] = $params->get('textarea-maxlength');
-		}
-
-		return $return;
+		return Text::_('PLG_ELEMENT_TEXTAREA_CONTENT_TOO_LONG');
 	}
 
 	/**
 	 * Can the element plugin encrypt data
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canEncrypt()
 	{
@@ -583,6 +585,8 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 	 * Get database field description
 	 *
 	 * @return  string  db field type
+	 *
+	 * @since 4.0
 	 */
 	public function getFieldDescription()
 	{
@@ -616,6 +620,4 @@ class PlgFabrik_ElementTextarea extends PlgFabrik_Element
 
 		return $objType;
 	}
-
-
 }

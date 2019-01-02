@@ -31,7 +31,7 @@ class JoinModel extends FabSiteModel
 	/**
 	 * Join table
 	 *
-	 * @var object
+	 * @var JoinTable
 	 *
 	 * @since 4.0
 	 */
@@ -179,7 +179,7 @@ class JoinModel extends FabSiteModel
 	 * @param   string  $key  Db table key
 	 * @param   int     $id   Key value
 	 *
-	 * @return  FabTable  join
+	 * @return  JoinTable  join
 	 *
 	 * @since 4.0
 	 */

@@ -12,6 +12,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Worker;
+
 /**
  * Plugin element to render time dropdowns - derived from birthday element
  *
@@ -19,13 +27,14 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.time
  * @since       3.0
  */
-
-class PlgFabrik_ElementTime extends PlgFabrik_Element
+class PlgFabrik_ElementTime extends AbstractElementPlugin
 {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radiobuttons
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	public $hasSubElements = true;
 
@@ -33,23 +42,26 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'TIME';
 
 	/**
 	 * Draws the form element
 	 *
-	 * @param   array  $data           Data to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          Data to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return  string  returns element html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
-		$params = $this->getParams();
+		$name    = $this->getHTMLName($repeatCounter);
+		$id      = $this->getHTMLId($repeatCounter);
+		$params  = $this->getParams();
 		$element = $this->getElement();
 		/*
 		 * $$$ rob - not sure why we are setting $data to the form's data
@@ -65,8 +77,8 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 		}
 
 		$value = $this->getValue($data, $repeatCounter);
-		$sep = $params->get('time_separatorlabel', FText::_(':'));
-		$fd = $params->get('details_time_format', 'H:i:s');
+		$sep   = $params->get('time_separatorlabel', Text::_(':'));
+		$fd    = $params->get('details_time_format', 'H:i:s');
 
 		if (!$this->isEditable())
 		{
@@ -83,8 +95,8 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 				}
 
 				$hour = FArrayHelper::getValue($bits, 0, '00');
-				$min = FArrayHelper::getValue($bits, 1, '00');
-				$sec = FArrayHelper::getValue($bits, 2, '00');
+				$min  = FArrayHelper::getValue($bits, 1, '00');
+				$sec  = FArrayHelper::getValue($bits, 2, '00');
 
 				// $$$ rob - all this below is nice but ... you still need to set a default
 				$detailvalue = '';
@@ -124,10 +136,10 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 			}
 
 			$hourvalue = FArrayHelper::getValue($value, 0);
-			$minvalue = FArrayHelper::getValue($value, 1);
-			$secvalue = FArrayHelper::getValue($value, 2);
+			$minvalue  = FArrayHelper::getValue($value, 1);
+			$secvalue  = FArrayHelper::getValue($value, 2);
 
-			$hours = array(JHTML::_('select.option', '', $params->get('time_hourlabel', FText::_('PLG_ELEMENT_TIME_SEPARATOR_HOUR'))));
+			$hours = array(HTMLHelper::_('select.option', '', $params->get('time_hourlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_HOUR'))));
 
 			$time24h = $params->get('time_24h', '1') === '1';
 
@@ -143,42 +155,42 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 				{
 					$l = date("ga", strtotime("$v:00"));
 				}
-				$hours[] = JHTML::_('select.option', $v, $l);
+				$hours[] = HTMLHelper::_('select.option', $v, $l);
 			}
 
-			$mins = array(JHTML::_('select.option', '', $params->get('time_minlabel', FText::_('PLG_ELEMENT_TIME_SEPARATOR_MINUTE'))));
+			$mins      = array(HTMLHelper::_('select.option', '', $params->get('time_minlabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_MINUTE'))));
 			$increment = (int) $params->get('minutes_increment', 1);
 
 			// Siin oli enne $monthlabels, viisin ülespoole
 			// google translation: "this was before the $monthlabels, took up the"
 			for ($i = 0; $i < 60; $i += $increment)
 			{
-				$i = str_pad($i, 2, '0', STR_PAD_LEFT);
-				$mins[] = JHTML::_('select.option', $i);
+				$i      = str_pad($i, 2, '0', STR_PAD_LEFT);
+				$mins[] = HTMLHelper::_('select.option', $i);
 			}
 
-			$secs = array(JHTML::_('select.option', '', $params->get('time_seclabel', FText::_('PLG_ELEMENT_TIME_SEPARATOR_SECOND'))));
+			$secs = array(HTMLHelper::_('select.option', '', $params->get('time_seclabel', Text::_('PLG_ELEMENT_TIME_SEPARATOR_SECOND'))));
 
 			for ($i = 0; $i < 60; $i++)
 			{
-				$i = str_pad($i, 2, '0', STR_PAD_LEFT);
-				$secs[] = JHTML::_('select.option', $i);
+				$i      = str_pad($i, 2, '0', STR_PAD_LEFT);
+				$secs[] = HTMLHelper::_('select.option', $i);
 			}
 
-			$layout = $this->getLayout('form');
-			$layoutData = new stdClass;
-			$layoutData->id = $id;
-			$layoutData->name = $name;
+			$layout                    = $this->getLayout('form');
+			$layoutData                = new \stdClass;
+			$layoutData->id            = $id;
+			$layoutData->name          = $name;
 			$layoutData->advancedClass = $this->getAdvancedSelectClass();
-			$layoutData->errorCss = $this->elementError != '' ? " elementErrorHighlight" : '';;
-			$layoutData->format = $fd;
-			$layoutData->sep = $sep;
-			$layoutData->hours = $hours;
-			$layoutData->mins = $mins;
-			$layoutData->secs = $secs;
+			$layoutData->errorCss      = $this->elementError != '' ? " elementErrorHighlight" : '';;
+			$layoutData->format    = $fd;
+			$layoutData->sep       = $sep;
+			$layoutData->hours     = $hours;
+			$layoutData->mins      = $mins;
+			$layoutData->secs      = $secs;
 			$layoutData->hourValue = $hourvalue;
-			$layoutData->minValue = $minvalue;
-			$layoutData->secValue = $secvalue;
+			$layoutData->minValue  = $minvalue;
+			$layoutData->secValue  = $secvalue;
 
 			return $layout->render($layoutData);
 		}
@@ -187,12 +199,13 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	/**
 	 * Manipulates posted form data for insertion into database
 	 *
-	 * @param   mixed  $val   this elements posted form data
-	 * @param   array  $data  posted form data
+	 * @param   mixed $val  this elements posted form data
+	 * @param   array $data posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		return $this->_indStoreDBFormat($val);
@@ -201,11 +214,12 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	/**
 	 * Get the value to store the value in the db
 	 *
-	 * @param   mixed  $val  (array normally but string on csv import or copy rows)
+	 * @param   mixed $val (array normally but string on csv import or copy rows)
 	 *
 	 * @return  string  hh-mm-ss
+	 *
+	 * @since 4.0
 	 */
-
 	private function _indStoreDBFormat($val)
 	{
 		if (is_array($val) && implode($val) != '')
@@ -225,19 +239,20 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	 * this function to convert back to human readable format. E.g. time element
 	 * calcs in seconds but we'd want to convert back into h:m:s
 	 *
-	 * @param   array  &$rows  Calculation values
+	 * @param   array  &$rows Calculation values
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	protected function formatCalValues(&$rows)
 	{
 		foreach ($rows as &$row)
 		{
-			$seconds = $row->value;
-			$h = (int) ($seconds / 3600);
-			$m = (int) (($seconds - $h * 3600) / 60);
-			$s = (int) ($seconds - $h * 3600 - $m * 60);
+			$seconds    = $row->value;
+			$h          = (int) ($seconds / 3600);
+			$m          = (int) (($seconds - $h * 3600) / 60);
+			$s          = (int) ($seconds - $h * 3600 - $m * 60);
 			$row->value = (($h) ? (($h < 10) ? ("0" . $h) : $h) : "00") . ":" . (($m) ? (($m < 10) ? ("0" . $m) : $m) : "00") . ":"
 				. (($s) ? (($s < 10) ? ("0" . $s) : $s) : "00");
 		}
@@ -246,61 +261,64 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	/**
 	 * Get sum query
 	 *
-	 * @param   object  &$listModel  List model
-	 * @param   array   $labels      Label
+	 * @param   ListModel $listModel List model
+	 * @param   array     $labels    Label
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
-
-	protected function getSumQuery(&$listModel, $labels = array())
+	protected function getSumQuery(ListModel $listModel, $labels = array())
 	{
-		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
-		$table = $listModel->getTable();
-		$db = $listModel->getDb();
-		$joinSQL = $listModel->buildQueryJoin();
+		$label    = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
+		$table    = $listModel->getTable();
+		$db       = $listModel->getDb();
+		$joinSQL  = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->buildQueryWhere();
-		$name = $this->getFullName(false, false);
+		$name     = $this->getFullName(false, false);
 
 		return 'SELECT SUM(substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60
 			+ substr(' . $name . ' FROM 7 FOR 2))  AS value, ' . $label . ' FROM '
-				. $db->qn($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
+			. $db->qn($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
 	}
 
 	/**
 	 * Build the query for the avg calculation
 	 *
-	 * @param   model  &$listModel  list model
-	 * @param   array  $labels      Labels
+	 * @param   ListModel  $listModel list model
+	 * @param   array   $labels    Labels
 	 *
-	 * @return  string	sql statement
+	 * @return  string    sql statement
+	 *
+	 * @since 4.0
 	 */
-
-	protected function getAvgQuery(&$listModel, $labels = array())
+	protected function getAvgQuery(ListModel $listModel, $labels = array())
 	{
-		$label = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
-		$item = $listModel->getTable();
-		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->buildQueryWhere();
-		$name = $this->getFullName(false, false);
+		$label      = count($labels) == 0 ? "'calc' AS label" : 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
+		$item       = $listModel->getTable();
+		$joinSQL    = $listModel->buildQueryJoin();
+		$whereSQL   = $listModel->buildQueryWhere();
+		$name       = $this->getFullName(false, false);
 		$groupModel = $this->getGroup();
-		$roundTo = (int) $this->getParams()->get('avg_round');
+		$roundTo    = (int) $this->getParams()->get('avg_round');
 
 		$valueSelect = 'substr(' . $name . ' FROM 1 FOR 2) * 60 * 60 + substr(' . $name . ' FROM 4 FOR 2) * 60 + substr(' . $name . ' FROM 7 FOR 2)';
 
 		// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
 		return "SELECT ROUND(AVG($valueSelect), $roundTo) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
-		. " $joinSQL $whereSQL";
+			. " $joinSQL $whereSQL";
 	}
 
 	/**
 	 * Used in isempty validation rule
 	 *
-	 * @param   array  $data           Data
-	 * @param   int    $repeatCounter  Repeat group counter
+	 * @param   array $data          Data
+	 * @param   int   $repeatCounter Repeat group counter
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		$data = str_replace(null, '', $data);
@@ -326,16 +344,17 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
-		$params = $this->getParams();
-		$id = $this->getHTMLId($repeatCounter);
-		$opts = $this->getElementJSOptions($repeatCounter);
+		$params          = $this->getParams();
+		$id              = $this->getHTMLId($repeatCounter);
+		$opts            = $this->getElementJSOptions($repeatCounter);
 		$opts->separator = $params->get('time_separatorlabel', ':');
 
 		return array('FbTime', $id, $opts);
@@ -344,40 +363,42 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string    $data    Elements data
+	 * @param   \stdClass $thisRow All the data in the lists current row
+	 * @param   array     $opts    Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        $params = $this->getParams();
+		$params     = $this->getParams();
 		$groupModel = $this->getGroup();
 		/*
 		 * Jaanus: removed condition canrepeat() from renderListData:
 		 * weird result such as ["00:03:45","00 when not repeating but still join and merged. Using isJoin() instead
 		 */
-		$data = $groupModel->isJoin() ? FabrikWorker::JSONtoData($data, true) : array($data);
-		$data = (array) $data;
-		$ft = $params->get('list_time_format', 'H:i:s');
-		$sep = $params->get('time_separatorlabel', FText::_(':'));
+		$data   = $groupModel->isJoin() ? Worker::JSONtoData($data, true) : array($data);
+		$data   = (array) $data;
+		$ft     = $params->get('list_time_format', 'H:i:s');
+		$sep    = $params->get('time_separatorlabel', Text::_(':'));
 		$format = array();
 
 		foreach ($data as $d)
 		{
 			if ($d)
 			{
-				$bits = explode(':', $d);
-				$hour = FArrayHelper::getValue($bits, 0, '00');
-				$min = FArrayHelper::getValue($bits, 1, '00');
-				$sec = FArrayHelper::getValue($bits, 2, '00');
-				$hms = $hour . $sep . $min . $sep . $sec;
-				$hm = $hour . $sep . $min;
-				$ms = $min . $sep . $sec;
+				$bits     = explode(':', $d);
+				$hour     = FArrayHelper::getValue($bits, 0, '00');
+				$min      = FArrayHelper::getValue($bits, 1, '00');
+				$sec      = FArrayHelper::getValue($bits, 2, '00');
+				$hms      = $hour . $sep . $min . $sep . $sec;
+				$hm       = $hour . $sep . $min;
+				$ms       = $min . $sep . $sec;
 				$timedisp = '';
 
 				if ($ft == "H:i:s")
@@ -416,18 +437,19 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 	/**
 	 * Turn form value into email formatted value
 	 *
-	 * @param   mixed  $value          element value
-	 * @param   array  $data           form data
-	 * @param   int    $repeatCounter  group repeat counter
+	 * @param   mixed $value         element value
+	 * @param   array $data          form data
+	 * @param   int   $repeatCounter group repeat counter
 	 *
 	 * @return  string  email formatted value
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		$params = $this->getParams();
-		$sep = $params->get('time_separatorlabel', ':');
-		$value = implode($sep, $value);
+		$sep    = $params->get('time_separatorlabel', ':');
+		$value  = implode($sep, $value);
 
 		return $value;
 	}

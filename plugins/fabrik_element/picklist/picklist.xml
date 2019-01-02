@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_PICKLIST_DESCRIPTION</description>
 	<files>
 		<filename plugin="picklist">picklist.php</filename>
-		<filename>index.html</filename>
 		<filename>picklist.js</filename>
 		<filename>picklist-min.js</filename>
 		<filename>picklist.css</filename>

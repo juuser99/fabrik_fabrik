@@ -25,6 +25,8 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Joomla\Component\Fabrik\Site\Plugin\FabPlugin;
 use Joomla\String\StringHelper;
 
 /**
@@ -203,7 +205,7 @@ class PluginManagerModel extends FabSiteModel
 	 *
 	 * @param   string $group Plugin group to load
 	 *
-	 * @return  array    Plugins
+	 * @return  FabPlugin[]    Plugins
 	 *
 	 * @since    4.0
 	 */
@@ -260,9 +262,9 @@ class PluginManagerModel extends FabSiteModel
 	{
 		// $$$ rob 16/12/2011 - this was setting $this->plugIns, but if you had 2 lists as admin modules
 		// and the first list had plugins, then the second list would remove that plugin when this method was run
-		$folder                         = 'fabrik_' . $group;
+		$folder                        = 'fabrik_' . $group;
 		$this->abstractPlugins[$group] = array();
-		$plugins                        = PluginHelper::getPlugin($folder);
+		$plugins                       = PluginHelper::getPlugin($folder);
 
 		foreach ($plugins as $plugin)
 		{
@@ -278,7 +280,7 @@ class PluginManagerModel extends FabSiteModel
 	 * @param   string $className Plugin name e.g. fabrikfield
 	 * @param   string $group     Plugin type element/ form or list
 	 *
-	 * @return  object    Plugin
+	 * @return  FabPlugin    Plugin
 	 *
 	 * @since    4.0
 	 */
@@ -303,7 +305,7 @@ class PluginManagerModel extends FabSiteModel
 	 *
 	 * @param   string $group Plugin group
 	 *
-	 * @return  array    Plugins
+	 * @return  FabPlugin[]    Plugins
 	 *
 	 * @since    4.0
 	 */
@@ -329,7 +331,7 @@ class PluginManagerModel extends FabSiteModel
 	 * @throws \RuntimeException
 	 * @throws \Exception
 	 *
-	 * @return  FabrikPlugin Plugin object
+	 * @return  FabPlugin Plugin object
 	 *
 	 * @since    4.0
 	 */
@@ -416,13 +418,13 @@ class PluginManagerModel extends FabSiteModel
 	/**
 	 * Unset a form's element plugins
 	 *
-	 * @param   JModel $formModel Form model
+	 * @param   FormModel $formModel Form model
 	 *
 	 * @since   4.0
 	 *
 	 * @return  void
 	 */
-	public function clearFormPlugins($formModel)
+	public function clearFormPlugins(FormModel $formModel)
 	{
 		$sig = $this->package . '.' . $formModel->get('id');
 		unset($this->formPlugins[$sig]);
@@ -431,13 +433,13 @@ class PluginManagerModel extends FabSiteModel
 	/**
 	 * Load all the forms element plugins
 	 *
-	 * @param   object &$form Form model
+	 * @param   FormModel $form Form model
 	 *
 	 * @return  array    Group objects with plugin objects loaded in group->elements
 	 *
 	 * @since    4.0
 	 */
-	public function getFormPlugins(&$form)
+	public function getFormPlugins(FormModel $form)
 	{
 		$profiler = Profiler::getInstance('Application');
 
@@ -560,7 +562,7 @@ class PluginManagerModel extends FabSiteModel
 	 *
 	 * @param   int $id Element id
 	 *
-	 * @return PlgFabrik_Element  Element plugin
+	 * @return AbstractElementPlugin  Element plugin
 	 *
 	 * @since    4.0
 	 */
@@ -575,7 +577,7 @@ class PluginManagerModel extends FabSiteModel
 	 * @param   int    $id   Plugin id
 	 * @param   string $type Plugin type
 	 *
-	 * @return PlgFabrik_Element|?  plugin
+	 * @return AbstractElementPlugin  plugin
 	 *
 	 * @since                    4.0
 	 */
@@ -602,8 +604,8 @@ class PluginManagerModel extends FabSiteModel
 	/**
 	 * not used
 	 *
-	 * @param   string $group         Name of plugin group to load
-	 * @param   array  $lists         List of default element lists
+	 * @param   string  $group        Name of plugin group to load
+	 * @param   array   $lists        List of default element lists
 	 * @param   array  &$elementModel List of default and plugin element lists
 	 *
 	 * @deprecated
@@ -619,9 +621,9 @@ class PluginManagerModel extends FabSiteModel
 	/**
 	 * Run form & element plugins - yeah!
 	 *
-	 * @param   string $method       To check and call - corresponds to stage of form processing
+	 * @param   string $method      To check and call - corresponds to stage of form processing
 	 * @param   object $parentModel Model calling the plugin form/list
-	 * @param   string $type         Plugin type to call form/list
+	 * @param   string $type        Plugin type to call form/list
 	 *
 	 * @return  array    of bools: false if error found and processed, otherwise true
 	 *

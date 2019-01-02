@@ -11,9 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Joomla\CMS\Router\Route;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\Html;
 
 /**
  * Plugin element to render facebook open graph comment widget
@@ -22,13 +23,14 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.facebookcomment
  * @since       3.0
  */
-
-class PlgFabrik_ElementFbcomment extends PlgFabrik_Element
+class PlgFabrik_ElementFbcomment extends AbstractElementPlugin
 {
 	/**
 	 * Does the element have a label
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	protected $hasLabel = false;
 
@@ -36,6 +38,8 @@ class PlgFabrik_ElementFbcomment extends PlgFabrik_Element
 	 * Db table field type
 	 *
 	 * @var  string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'INT(%s)';
 
@@ -43,26 +47,29 @@ class PlgFabrik_ElementFbcomment extends PlgFabrik_Element
 	 * Db table field size
 	 *
 	 * @var  string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldLength = '1';
 
 	/**
 	 * Draws the form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return  string  returns element html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$params = $this->getParams();
-		$displayData = new stdClass;
-		$displayData->num = $params->get('fbcomment_number_of_comments', 10);
-		$displayData->width = $params->get('fbcomment_width', 300);
+		$params              = $this->getParams();
+		$displayData         = new \stdClass;
+		$displayData->num    = $params->get('fbcomment_number_of_comments', 10);
+		$displayData->width  = $params->get('fbcomment_width', 300);
 		$displayData->colour = $params->get('fb_comment_scheme') == '' ? '' : ' colorscheme="dark" ';
-		$displayData->href = $params->get('fbcomment_href', '');
+		$displayData->href   = $params->get('fbcomment_href', '');
 
 		if (!isset($data->href) || empty($data->href))
 		{
@@ -70,26 +77,26 @@ class PlgFabrik_ElementFbcomment extends PlgFabrik_Element
 
 			if ($rowId != '')
 			{
-				$formModel = $this->getFormModel();
-				$formId = $formModel->getId();
-				$href = 'index.php?option=com_fabrik&view=form&formid=' . $formId . '&rowid=' . $rowId;
-				$href = JRoute::_($href);
+				$formModel         = $this->getFormModel();
+				$formId            = $formModel->getId();
+				$href              = 'index.php?option=com_fabrik&view=form&formid=' . $formId . '&rowid=' . $rowId;
+				$href              = Route::_($href);
 				$displayData->href = COM_FABRIK_LIVESITE_ROOT . $href;
 			}
 		}
 
 		if (!empty($displayData->href))
 		{
-			$w = new FabrikWorker;
+			$w                 = new Worker;
 			$displayData->href = $w->parseMessageForPlaceHolder($displayData->href, $data);
-			$locale = $params->get('fbcomment_locale', 'en_US');
+			$locale            = $params->get('fbcomment_locale', 'en_US');
 
 			if (empty($locale))
 			{
 				$locale = 'en_US';
 			}
 
-			$displayData->graphApi = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'), $locale);
+			$displayData->graphApi = Html::facebookGraphAPI($params->get('opengraph_applicationid'), $locale);
 		}
 
 		$layout = $this->getLayout('form');
@@ -100,14 +107,15 @@ class PlgFabrik_ElementFbcomment extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
-		$id = $this->getHTMLId($repeatCounter);
+		$id   = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
 		return array('FbComment', $id, $opts);

@@ -11,9 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
 use Joomla\String\StringHelper;
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * Plugin element to two lists - one to select from the other to select into
@@ -22,12 +24,14 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.picklist
  * @since       3.0
  */
-class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
+class PlgFabrik_ElementPicklist extends AbstractElementListPlugin
 {
 	/**
 	 * Does the element have sub elements
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	public $hasSubElements = false;
 
@@ -37,8 +41,9 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 	 * @param   int $id element ID number
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function setId($id)
 	{
 		parent::setId($id);
@@ -55,8 +60,9 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 	 * @param   int   $repeatCounter Repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$values   = $this->getSubOptionValues();
@@ -97,10 +103,10 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 			return implode(', ', $to);
 		}
 
-		FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist.css');
+		Html::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/picklist/picklist.css');
 
 		$layout                   = $this->getLayout('form');
-		$layoutData               = new stdClass;
+		$layoutData               = new \stdClass;
 		$layoutData->id           = $this->getHTMLId($repeatCounter);
 		$layoutData->errorCSS     = $this->elementError != '' ? ' elementErrorHighlight' : '';
 		$layoutData->from         = $from;
@@ -118,8 +124,9 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$id               = $this->getHTMLId($repeatCounter);
@@ -131,7 +138,7 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 
 		$opts->hovercolour   = $params->get('picklist-hovercolour', '#AFFFFD');
 		$opts->bghovercolour = $params->get('picklist-bghovercolour', '#FFFFDF');
-		JText::script('PLG_ELEMENT_PICKLIST_ENTER_VALUE_LABEL');
+		Text::script('PLG_ELEMENT_PICKLIST_ENTER_VALUE_LABEL');
 
 		return array('FbPicklist', $id, $opts);
 	}
@@ -144,8 +151,9 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 	 * @param   string $value FilterVal
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function prepareFilterVal($value)
 	{
 		$values = $this->getSubOptionValues();
@@ -172,8 +180,9 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 	 * @param   string $eval      How the value should be handled
 	 *
 	 * @return  array    (value condition)
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFilterValue($value, $condition, $eval)
 	{
 		$value  = $this->prepareFilterVal($value);
@@ -190,8 +199,9 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 	 * @param   int   $repeatCounter repeat group #
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		$data = (array) $data;

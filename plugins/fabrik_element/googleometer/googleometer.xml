@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_GOOGLEOMETER_DESCRIPTION</description>
 	<files>
 		<filename plugin="googleometer">googleometer.php</filename>
-		<filename>index.html</filename>
 		<filename>googleometer.js</filename>
 		<filename>googleometer-min.js</filename>
 		<folder>forms</folder>

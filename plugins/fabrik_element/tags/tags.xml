@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_TAGS_DESCRIPTION</description>
 	<files>
 		<filename plugin="tags">tags.php</filename>
-		<filename>index.html</filename>
 		<filename>tags.js</filename>
 		<filename>tags-min.js</filename>
 		<folder>forms</folder>

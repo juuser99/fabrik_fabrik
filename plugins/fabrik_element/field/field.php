@@ -11,11 +11,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\MediaHelper;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
-
-jimport('joomla.application.component.model');
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * Plugin element to render fields
@@ -24,24 +28,23 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik.element.field
  * @since       3.0
  */
-class PlgFabrik_ElementField extends PlgFabrik_Element
+class PlgFabrik_ElementField extends AbstractElementPlugin
 {
-
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string    $data    Elements data
+	 * @param   \stdClass $thisRow All the data in the lists current row
+	 * @param   array     $opts    Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        $data = FabrikWorker::JSONtoData($data, true);
+		$data   = Worker::JSONtoData($data, true);
 		$params = $this->getParams();
 
 		foreach ($data as &$d)
@@ -65,15 +68,17 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Format the string for use in list view, email data
 	 *
-	 * @param   mixed $d               data
-	 * @param   bool  $doNumberFormat  run numberFormat()
+	 * @param   mixed $d              data
+	 * @param   bool  $doNumberFormat run numberFormat()
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	protected function format(&$d, $doNumberFormat = true)
 	{
-		$params = $this->getParams();
-		$format = $params->get('text_format_string');
+		$params      = $this->getParams();
+		$format      = $params->get('text_format_string');
 		$formatBlank = $params->get('field_format_string_blank', true);
 
 		if ($doNumberFormat)
@@ -97,12 +102,14 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Prepares the element data for CSV export
 	 *
-	 * @param   string  $data      Element data
-	 * @param   object  &$thisRow  All the data in the lists current row
+	 * @param   string    $data    Element data
+	 * @param   \stdClass $thisRow All the data in the lists current row
 	 *
-	 * @return  string	Formatted CSV export value
+	 * @return  string    Formatted CSV export value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData_csv($data, &$thisRow)
+	public function renderListData_csv($data, \stdClass $thisRow)
 	{
 		$data = $this->format($data);
 
@@ -112,16 +119,18 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           To pre-populate element with
-	 * @param   int    $repeatCounter  Repeat group counter
+	 * @param   array $data          To pre-populate element with
+	 * @param   int   $repeatCounter Repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$element = $this->getElement();
-		$bits = $this->inputProperties($repeatCounter);
+		$bits    = $this->inputProperties($repeatCounter);
 		/* $$$ rob - not sure why we are setting $data to the form's data
 		 * but in table view when getting read only filter value from url filter this
 		 * _form_data was not set to no readonly value was returned
@@ -164,7 +173,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		{
 			if ($params->get('autocomplete', '0') === '3')
 			{
-				$bits['class'] .= ' fabrikGeocomplete';
+				$bits['class']        .= ' fabrikGeocomplete';
 				$bits['autocomplete'] = 'off';
 			}
 		}
@@ -190,10 +199,10 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			$bits['x-webkit-speech'] = 'x-webkit-speech';
 		}
 
-		$layout = $this->getLayout('form');
-		$layoutData = new stdClass;
+		$layout                 = $this->getLayout('form');
+		$layoutData             = new \stdClass;
 		$layoutData->attributes = $bits;
-		$layoutData->sizeClass = $params->get('bootstrap_class', '');
+		$layoutData->sizeClass  = $params->get('bootstrap_class', '');
 
 		return $layout->render($layoutData);
 	}
@@ -201,11 +210,13 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Determines the value for the element in the form view
 	 *
-	 * @param   array  $data           Form data
-	 * @param   int    $repeatCounter  When repeating joined groups we need to know what part of the array to access
-	 * @param   array  $opts           Options, 'raw' = 1/0 use raw value
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter When repeating joined groups we need to know what part of the array to access
+	 * @param   array $opts          Options, 'raw' = 1/0 use raw value
 	 *
-	 * @return  string	value
+	 * @return  string    value
+	 *
+	 * @since 4.0
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
@@ -222,10 +233,12 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Format guess link type
 	 *
-	 * @param   string  &$value         Original field value
-	 * @param   array   $data           Record data
+	 * @param   string  &$value Original field value
+	 * @param   array    $data  Record data
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function _guessLinkType(&$value, $data)
 	{
@@ -233,8 +246,8 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 		if ($params->get('guess_linktype') == '1')
 		{
-			$w = new FabrikWorker;
-			$opts = $this->linkOpts();
+			$w     = new Worker;
+			$opts  = $this->linkOpts();
 			$title = $params->get('link_title', '');
 			$attrs = $params->get('link_attributes', '');
 
@@ -256,12 +269,12 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 			if ((new MediaHelper)->isImage($value))
 			{
-				$alt = empty($title) ? '' : 'alt="' . strip_tags($w->parseMessageForPlaceHolder($title, $data)) . '"';
+				$alt   = empty($title) ? '' : 'alt="' . strip_tags($w->parseMessageForPlaceHolder($title, $data)) . '"';
 				$value = '<img src="' . $value . '" ' . $alt . ' ' . implode(' ', $attrs) . ' />';
 			}
 			else
 			{
-				if (FabrikWorker::isEmail($value) || StringHelper::stristr($value, 'http'))
+				if (Worker::isEmail($value) || StringHelper::stristr($value, 'http'))
 				{
 				}
 				elseif (StringHelper::stristr($value, 'www.'))
@@ -276,7 +289,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 				$label = FArrayHelper::getValue($opts, 'title', '') !== '' ? $opts['title'] : $value;
 
-				$value = FabrikHelperHTML::a($value, $label, $opts);
+				$value = Html::a($value, $label, $opts);
 			}
 		}
 	}
@@ -285,13 +298,15 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	 * Get the link options
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	protected function linkOpts()
 	{
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
-		$params = $this->getParams();
-		$target = $params->get('link_target_options', 'default');
-		$opts = array();
+		$fbConfig    = ComponentHelper::getParams('com_fabrik');
+		$params      = $this->getParams();
+		$target      = $params->get('link_target_options', 'default');
+		$opts        = array();
 		$opts['rel'] = $params->get('rel', '');
 
 		switch ($target)
@@ -302,7 +317,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			case 'default':
 				break;
 			case 'lightbox':
-				FabrikHelperHTML::slimbox();
+				Html::slimbox();
 				$opts['rel'] = 'lightbox[]';
 
 				if ($fbConfig->get('use_mediabox', false))
@@ -319,43 +334,45 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
 		$params = $this->getParams();
-		$id = $this->getHTMLId($repeatCounter);
-		$opts = $this->getElementJSOptions($repeatCounter);
+		$id     = $this->getHTMLId($repeatCounter);
+		$opts   = $this->getElementJSOptions($repeatCounter);
 
 		$inputMask = trim($params->get('text_input_mask', ''));
 
 		if (!empty($inputMask))
 		{
-			$opts->use_input_mask = true;
-			$opts->input_mask = $inputMask;
+			$opts->use_input_mask         = true;
+			$opts->input_mask             = $inputMask;
 			$opts->input_mask_definitions = $params->get('text_input_mask_definitions', '{}');
-			$opts->input_mask_autoclear = $params->get('text_input_mask_autoclear', '0') === '1';
+			$opts->input_mask_autoclear   = $params->get('text_input_mask_autoclear', '0') === '1';
 		}
 		else
 		{
 			$opts->use_input_mask = false;
-			$opts->input_mask = '';
+			$opts->input_mask     = '';
 		}
 
 		$opts->geocomplete = $params->get('autocomplete', '0') === '3';
 
-		$config = JComponentHelper::getParams('com_fabrik');
-		$apiKey = $config->get('google_api_key', '');
+		$config       = ComponentHelper::getParams('com_fabrik');
+		$apiKey       = $config->get('google_api_key', '');
 		$opts->mapKey = empty($apiKey) ? false : $apiKey;
 
 		if ($this->getParams()->get('autocomplete', '0') == '2')
 		{
-			$autoOpts = array();
-			$autoOpts['max'] = $this->getParams()->get('autocomplete_rows', '10');
+			$autoOpts                            = array();
+			$autoOpts['max']                     = $this->getParams()->get('autocomplete_rows', '10');
 			$autoOpts['storeMatchedResultsOnly'] = false;
-			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'field', $autoOpts);
+			Html::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'field', $autoOpts);
 		}
 
 		return array('FbField', $id, $opts);
@@ -366,19 +383,21 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	 * to ensure that the file is loaded only once
 	 *
 	 * @param   array   &$srcs   Scripts previously loaded
-	 * @param   string  $script  Script to load once class has loaded
+	 * @param   string   $script Script to load once class has loaded
 	 * @param   array   &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
 	 *
-	 * @return void|boolean
+	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
-		$key = FabrikHelperHTML::isDebug() ? 'element/field/field' : 'element/field/field-min';
-		$params = $this->getParams();
-		$inputMask = trim($params->get('text_input_mask', ''));
+		$key         = Html::isDebug() ? 'element/field/field' : 'element/field/field-min';
+		$params      = $this->getParams();
+		$inputMask   = trim($params->get('text_input_mask', ''));
 		$geoComplete = $params->get('autocomplete', '0') === '3';
 
-		$s = new stdClass;
+		$s = new \stdClass;
 
 		// Even though fab/element is now an AMD defined module we should still keep it in here
 		// otherwise (not sure of the reason) jQuery.mask is not defined in field.js
@@ -388,13 +407,13 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 		if (!empty($inputMask))
 		{
-			$folder = 'components/com_fabrik/libs/masked_input/';
+			$folder    = 'components/com_fabrik/libs/masked_input/';
 			$s->deps[] = $folder . 'jquery.maskedinput';
 		}
 
 		if ($geoComplete)
 		{
-			$folder = 'components/com_fabrik/libs/googlemaps/geocomplete/';
+			$folder    = 'components/com_fabrik/libs/googlemaps/geocomplete/';
 			$s->deps[] = $folder . 'jquery.geocomplete';
 		}
 
@@ -417,6 +436,8 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	 * Get database field description
 	 *
 	 * @return  string  db field type
+	 *
+	 * @since 4.0
 	 */
 	public function getFieldDescription()
 	{
@@ -437,7 +458,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 				$objType = "INT(" . $p->get('integer_length', 11) . ")";
 				break;
 			case 'decimal':
-				$total = (int) $p->get('integer_length', 11) + (int) $p->get('decimal_length', 2);
+				$total   = (int) $p->get('integer_length', 11) + (int) $p->get('decimal_length', 2);
 				$objType = "DECIMAL(" . $total . "," . $p->get('decimal_length', 2) . ")";
 				break;
 		}
@@ -446,41 +467,11 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	}
 
 	/**
-	 * Get Joomfish options
-	 *
-	 * @deprecated - not supporting joomfish
-	 *
-	 * @return  array	key=>value options
-	 */
-	public function getJoomfishOptions()
-	{
-		$params = $this->getParams();
-		$return = array();
-		$size = (int) $this->getElement()->width;
-		$maxLength = (int) $params->get('maxlength');
-
-		if ($size !== 0)
-		{
-			$return['length'] = $size;
-		}
-
-		if ($maxLength === 0)
-		{
-			$maxLength = $size;
-		}
-
-		if ($params->get('textarea-showmax') && $maxLength !== 0)
-		{
-			$return['maxlength'] = $maxLength;
-		}
-
-		return $return;
-	}
-
-	/**
 	 * Can the element plugin encrypt data
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canEncrypt()
 	{
@@ -490,10 +481,12 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Manipulates posted form data for insertion into database
 	 *
-	 * @param   mixed  $val   This elements posted form data
-	 * @param   array  $data  Posted form data
+	 * @param   mixed $val  This elements posted form data
+	 * @param   array $data Posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
@@ -517,9 +510,11 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Manipulates individual values posted form data for insertion into database
 	 *
-	 * @param   string  $val  This elements posted form data
+	 * @param   string $val This elements posted form data
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function _indStoreDatabaseFormat($val)
 	{
@@ -531,13 +526,13 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	 *
 	 * @since 3.0.4
 	 *
-	 * @return  string	css classes
+	 * @return  string    css classes
 	 */
 	public function getCellClass()
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$classes = parent::getCellClass();
-		$format = $params->get('text_format');
+		$format  = $params->get('text_format');
 
 		if ($format == 'decimal' || $format == 'integer')
 		{
@@ -577,7 +572,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		}
 
 		$listModel = $this->getListModel();
-		$row = $listModel->getRow($rowId, false);
+		$row       = $listModel->getRow($rowId, false);
 
 		if (empty($row))
 		{
@@ -586,7 +581,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		}
 
 		$elName = $this->getFullName(true, false);
-		$value = $row->$elName;
+		$value  = $row->$elName;
 
 		/*
 		require JPATH_SITE . '/components/com_fabrik/libs/qrcode/qrcode.php';
@@ -631,7 +626,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Get a link to this element which will call onAjax_renderQRCode().
 	 *
-	 * @param   array|object  $thisRow  Row data
+	 * @param   array|object $thisRow Row data
 	 *
 	 * @since 3.1
 	 *
@@ -645,8 +640,8 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		}
 
 		$formModel = $this->getFormModel();
-		$formId = $formModel->getId();
-		$rowId = $formModel->getRowId();
+		$formId    = $formModel->getId();
+		$rowId     = $formModel->getRowId();
 
 		if (empty($rowId))
 		{
@@ -684,13 +679,13 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		 */
 
 		$elementId = $this->getId();
-		$src = COM_FABRIK_LIVESITE
-		. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
-				. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+		$src       = COM_FABRIK_LIVESITE
+			. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
+			. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
-		$layout = $this->getLayout('qr');
-		$displayData = new stdClass;
-		$displayData->src = $src;
+		$layout            = $this->getLayout('qr');
+		$displayData       = new \stdClass;
+		$displayData->src  = $src;
 		$displayData->data = $thisRow;
 
 		return $layout->render($displayData);
@@ -699,11 +694,13 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 	/**
 	 * Turn form value into email formatted value
 	 *
-	 * @param   mixed  $value          Element value
-	 * @param   array  $data           Form data
-	 * @param   int    $repeatCounter  Group repeat counter
+	 * @param   mixed $value         Element value
+	 * @param   array $data          Form data
+	 * @param   int   $repeatCounter Group repeat counter
 	 *
 	 * @return  string  email formatted value
+	 *
+	 * @since 4.0
 	 */
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
@@ -716,6 +713,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		else
 		{
 			$value = $this->format($value);
+
 			return parent::getIndEmailValue($value, $data, $repeatCounter);
 		}
 	}

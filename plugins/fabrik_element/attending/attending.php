@@ -7,11 +7,10 @@
  */
 
 // Check to ensure this file is included in Joomla!
+use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+
 defined('_JEXEC') or die();
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 
 /**
  * Plugin element to allow user to attend events, join groups etc.
@@ -20,12 +19,14 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.attending
  * @since       3.0
  */
-class PlgFabrik_ElementAttending extends PlgFabrik_Element
+class PlgFabrik_ElementAttending extends AbstractElementPlugin
 {
 	/**
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'TINYINT(%s)';
 
@@ -33,6 +34,8 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 	 * Db table field size
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldSize = '1';
 
@@ -43,14 +46,15 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$id = $this->getHTMLId($repeatCounter);
 
-		$layout            = $this->getLayout('form');
-		$displayData              = new stdClass;
+		$layout                 = $this->getLayout('form');
+		$displayData            = new \stdClass;
 		$displayData->attendees = $this->getAttendees();
 		$displayData->id        = $id;
 
@@ -62,7 +66,9 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 	 *
 	 * @return mixed
 	 *
-	 * @throws Exception
+	 * @throws \Exception
+	 *
+	 * @since 4.0
 	 */
 	protected function getAttendees()
 	{
@@ -73,7 +79,7 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 		$formId    = $listModel->getFormModel()->getId();
 		$db        = $listModel->getDb();
 		$query     = $db->getQuery(true);
-		$rowId    = $input->get('row_id');
+		$rowId     = $input->get('row_id');
 
 		$query->select('*')->from('#__fabrik_attending')->where('list_id = ' . (int) $listId)
 			->where('form_id = ' . (int) $formId)
@@ -82,46 +88,12 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 
 		$attending = $db->setQuery($query)->loadObjectList();
 
-		foreach ($attending as &$attend)
+		foreach ($attending as $attend)
 		{
-			$attend->user = JFactory::getUser($attend->user_id);
+			$attend->user = Factory::getUser($attend->user_id);
 		}
 
 		return $attending;
-	}
-
-	/**
-	 * Main method to store a rating
-	 *
-	 * @param   int    $listid List id
-	 * @param   int    $formid Form id
-	 * @param   string $row_id Row reference
-	 * @param   int    $rating Rating
-	 *
-	 * @return  void
-	 */
-
-	private function doRating($listid, $formid, $row_id, $rating)
-	{
-		$this->createRatingTable();
-		$db        = FabrikWorker::getDbo(true);
-		$tzoffset  = $this->config->get('offset');
-		$date      = JFactory::getDate('now', $tzoffset);
-		$strDate   = $db->q($date->toSql());
-		$userid    = $this->user->get('id');
-		$elementid = (int) $this->getElement()->id;
-		$query     = $db->getQuery(true);
-		$formid    = (int) $formid;
-		$listid    = (int) $listid;
-		$rating    = (int) $rating;
-		$row_id    = $db->quote($row_id);
-		$db
-			->setQuery(
-				"INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
-		values ($userid, $listid, $formid, $row_id, $rating, $strDate, $elementid)
-			ON DUPLICATE KEY UPDATE date_created = $strDate, rating = $rating"
-			);
-		$db->execute();
 	}
 
 	/**
@@ -130,8 +102,9 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
 		$input  = $this->app->input;
@@ -145,7 +118,7 @@ class PlgFabrik_ElementAttending extends PlgFabrik_Element
 		$formid  = $input->getInt('formid');
 		$row_id  = $input->get('rowid', '', 'string');
 
-		$opts         = new stdClass;
+		$opts         = new \stdClass;
 		$opts->row_id = $row_id;
 		$opts->elid   = $this->getElement()->id;
 		$opts->userid = (int) $user->get('id');

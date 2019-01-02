@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_NOTES_DESCRIPTION</description>
 	<files>
 		<filename plugin="notes">notes.php</filename>
-		<filename>index.html</filename>
 		<filename>notes.js</filename>
 		<filename>notes-min.js</filename>
 		<folder>forms</folder>

@@ -10,7 +10,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 
 /**
  * Plugin element: js periodical will fire a JavaScript function at a definable interval
@@ -19,25 +20,26 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.jsperiodical
  * @since       3.0
  */
-
-class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
+class PlgFabrik_ElementJSPeriodical extends AbstractElementPlugin
 {
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string     $data    Elements data
+	 * @param   stdClass  &$thisRow All the data in the lists current row
+	 * @param   array      $opts    Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        $params = $this->getParams();
-		$format = $params->get('text_format_string');
+		$params       = $this->getParams();
+		$format       = $params->get('text_format_string');
 		$format_blank = $params->get('field_format_string_blank', true);
 
 		if ($format != '' && ($format_blank || $d != ''))
@@ -53,20 +55,21 @@ class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$layout = $this->getLayout('form');
-		$layoutData = new stdClass;
+		$layout                 = $this->getLayout('form');
+		$layoutData             = new \stdClass;
 		$layoutData->attributes = $this->inputProperties($repeatCounter);;
 		$layoutData->value = $this->getValue($data, $repeatCounter);;
 		$layoutData->isEditable = $this->isEditable();
-		$layoutData->hidden = $this->getElement()->hidden  == '1';
+		$layoutData->hidden     = $this->getElement()->hidden == '1';
 
 		return $layout->render($layoutData);
 	}
@@ -74,17 +77,18 @@ class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	public function elementJavascript($repeatCounter)
 	{
-		$params = $this->getParams();
-		$id = $this->getHTMLId($repeatCounter);
-		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts->code = $params->get('jsperiod_code');
+		$params       = $this->getParams();
+		$id           = $this->getHTMLId($repeatCounter);
+		$opts         = $this->getElementJSOptions($repeatCounter);
+		$opts->code   = $params->get('jsperiod_code');
 		$opts->period = $params->get('jsperiod_period');
 
 		return array('FbJSPeriodical', $id, $opts);
@@ -94,8 +98,9 @@ class PlgFabrik_ElementJSPeriodical extends PlgFabrik_Element
 	 * Get database field description
 	 *
 	 * @return  string  db field type
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFieldDescription()
 	{
 		$p = $this->getParams();

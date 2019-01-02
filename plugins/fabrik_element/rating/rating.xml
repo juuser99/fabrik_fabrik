@@ -25,7 +25,6 @@
 
 	<files>
 		<filename plugin="rating">rating.php</filename>
-		<filename>index.html</filename>
 		<filename>rating.js</filename>
 		<filename>rating-min.js</filename>
 		<filename>list-rating.js</filename>

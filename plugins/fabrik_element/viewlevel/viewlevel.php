@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
 /**
@@ -18,12 +20,14 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.viewlevel
  * @since       3.0.6
  */
-class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
+class PlgFabrik_ElementViewlevel extends AbstractElementListPlugin
 {
 	/**
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'INT(%s)';
 
@@ -31,6 +35,8 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	 * Db table field size
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldSize = '3';
 
@@ -38,22 +44,26 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	 * Array of id, label's queried from #__viewlevel
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	protected $allOpts = null;
 
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           To pre-populate element with
-	 * @param   int    $repeatCounter  Repeat group counter
+	 * @param   array $data          To pre-populate element with
+	 * @param   int   $repeatCounter Repeat group counter
 	 *
-	 * @return  string	Elements html
+	 * @return  string    Elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
 		$htmlName = $this->getHTMLName($repeatCounter);
-		$name = $this->getFullName(true, false);
-		$id = $this->getHTMLId($repeatCounter);
+		$name     = $this->getFullName(true, false);
+		$id       = $this->getHTMLId($repeatCounter);
 		$selected = $this->user->getAuthorisedViewLevels();
 		arsort($selected);
 		$selected = array_shift($selected);
@@ -65,19 +75,19 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 
 		if (!$this->isEditable())
 		{
-			$data = new stdClass;
+			$data = new \stdClass;
 
 			return $this->renderListData($selected[0], $data);
 		}
 
 		$options = array();
 
-		$layout = $this->getLayout('form');
-		$layoutData = new stdClass;
-		$layoutData->name = $htmlName;
+		$layout               = $this->getLayout('form');
+		$layoutData           = new \stdClass;
+		$layoutData->name     = $htmlName;
 		$layoutData->selected = $selected;
-		$layoutData->options = $options;
-		$layoutData->id = $id;
+		$layoutData->options  = $options;
+		$layoutData->id       = $id;
 
 		return $layout->render($layoutData);
 	}
@@ -85,13 +95,15 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
-		$id = $this->getHTMLId($repeatCounter);
+		$id   = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
 		return array('FbViewlevel', $id, $opts);
@@ -101,12 +113,14 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	 * Get all user groups (id/title)
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	private function allOpts()
 	{
 		if (!isset($this->allOpts))
 		{
-			$db = $this->_db;
+			$db    = $this->db;
 			$query = $db->getQuery(true);
 			$query->select('id, title');
 			$query->from($db->qn('#__viewlevels'));
@@ -120,15 +134,17 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	/**
 	 * Get sub option values
 	 *
-	 * @param   array  $data  Form data. If submitting a form, we want to use that form's data and not
+	 * @param   array $data   Form data. If submitting a form, we want to use that form's data and not
 	 *                        re-query the form Model for its data as with multiple plugins of the same type
 	 *                        this was getting the plugin params out of sync.
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	protected function getSubOptionValues($data = array())
 	{
-		$opts = $this->allOpts();
+		$opts   = $this->allOpts();
 		$return = array();
 
 		foreach ($opts as $opt)
@@ -142,15 +158,17 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 	/**
 	 * Get sub option labels
 	 *
-	 * @param   array  $data  Form data. If submitting a form, we want to use that form's data and not
+	 * @param   array $data   Form data. If submitting a form, we want to use that form's data and not
 	 *                        re-query the form Model for its data as with multiple plugins of the same type
 	 *                        this was getting the plugin params out of sync.
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	protected function getSubOptionLabels($data = array())
 	{
-		$opts = $this->allOpts();
+		$opts   = $this->allOpts();
 		$return = array();
 
 		foreach ($opts as $opt)

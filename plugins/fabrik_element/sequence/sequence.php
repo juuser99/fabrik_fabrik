@@ -11,7 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Plugin element to store the user's IP address
@@ -20,26 +24,28 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik.element.ip
  * @since       3.0
  */
-class PlgFabrik_ElementSequence extends PlgFabrik_Element
+class PlgFabrik_ElementSequence extends AbstractElementPlugin
 {
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$id = $this->getHTMLId($repeatCounter);
+		$name   = $this->getHTMLName($repeatCounter);
+		$id     = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
-		$value = $this->getValue($data, $repeatCounter);
+		$value  = $this->getValue($data, $repeatCounter);
 
-		$layoutData = new stdClass;
-		$layoutData->id = $id;
-		$layoutData->name = $name;
+		$layoutData        = new \stdClass;
+		$layoutData->id    = $id;
+		$layoutData->name  = $name;
 		$layoutData->value = $value;
 
 		if ($this->canView())
@@ -70,9 +76,11 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 	 * then insert the users data into the record to be stored
 	 *
 	 * @param   array  &$data          Data to store
-	 * @param   int    $repeatCounter  Repeat group index
+	 * @param   int     $repeatCounter Repeat group index
 	 *
 	 * @return  bool  If false, data should not be added.
+	 *
+	 * @since 4.0
 	 */
 	public function onStoreRow(&$data, $repeatCounter = 0)
 	{
@@ -85,16 +93,16 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 
 		if ($this->encryptMe())
 		{
-			$shortName = $element->name;
-			$listModel = $this->getListModel();
+			$shortName            = $element->name;
+			$listModel            = $this->getListModel();
 			$listModel->encrypt[] = $shortName;
 		}
 
 
-		$element = $this->getElement();
+		$element   = $this->getElement();
 		$formModel = $this->getFormModel();
-		$params = $this->getParams();
-		$method = $params->get('sequence_method', 'load');
+		$params    = $this->getParams();
+		$method    = $params->get('sequence_method', 'load');
 
 		if ($formModel->isNewRecord() && $method === 'submit')
 		{
@@ -105,8 +113,8 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 		}
 		else if ($method !== 'pk')
 		{
-			$name  = $this->getFullName(true, false);
-			$formModel = $this->getFormModel();
+			$name                 = $this->getFullName(true, false);
+			$formModel            = $this->getFormModel();
 			$data[$element->name] = FArrayHelper::getValue(
 				$formModel->formDataWithTableName, $name . '_raw',
 				FArrayHelper::getValue($data, $name, '')
@@ -116,14 +124,21 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 		return true;
 	}
 
+	/**
+	 * @param array $data
+	 *
+	 * @return int|string
+	 *
+	 * @since 4.0
+	 */
 	private function getSequence($data = array())
 	{
-		$params = $this->getParams();
-		$w = new FabrikWorker();
-		$position = $params->get('sequence_position', 'prefix');
-		$padding = $params->get('sequence_padding', '4');
-		$affix = $params->get('sequence_affix', '');
-		$affix = $w->parseMessageForPlaceHolder($affix, $data);
+		$params    = $this->getParams();
+		$w         = new Worker();
+		$position  = $params->get('sequence_position', 'prefix');
+		$padding   = $params->get('sequence_padding', '4');
+		$affix     = $params->get('sequence_affix', '');
+		$affix     = $w->parseMessageForPlaceHolder($affix, $data);
 		$tableName = $this->getlistModel()->getTable()->db_table_name;
 		$elementId = $this->getElement()->id;
 
@@ -134,7 +149,7 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 
 		if ($method !== 'pk')
 		{
-			$db    = JFactory::getDbo();
+			$db    = Factory::getDbo();
 			$query = $db->getQuery(true);
 			$query->select('sequence')
 				->from('#__fabrik_sequences')
@@ -205,9 +220,11 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 	/**
 	 * This really does get just the default value (as defined in the element's settings)
 	 *
-	 * @param   array  $data  form data
+	 * @param   array $data form data
 	 *
 	 * @return mixed
+	 *
+	 * @since 4.0
 	 */
 	public function getDefaultValue($data = array())
 	{
@@ -220,7 +237,7 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 
 				if ($formModel->failedValidation())
 				{
-					$name  = $this->getFullName(true, false);
+					$name          = $this->getFullName(true, false);
 					$this->default = FArrayHelper::getValue($data, $name . '_raw', FArrayHelper::getValue($data, $name, ''));
 				}
 				else
@@ -231,7 +248,7 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 					}
 					else
 					{
-						$name  = $this->getFullName(true, false);
+						$name          = $this->getFullName(true, false);
 						$this->default = FArrayHelper::getValue($data, $name . '_raw', FArrayHelper::getValue($data, $name, ''));
 					}
 				}
@@ -248,11 +265,13 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 	/**
 	 * Determines the value for the element in the form view
 	 *
-	 * @param   array  $data           form data
-	 * @param   int    $repeatCounter  when repeating joined groups we need to know what part of the array to access
-	 * @param   array  $opts           options
+	 * @param   array $data          form data
+	 * @param   int   $repeatCounter when repeating joined groups we need to know what part of the array to access
+	 * @param   array $opts          options
 	 *
-	 * @return  string	value
+	 * @return  string    value
+	 *
+	 * @since 4.0
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
@@ -287,7 +306,7 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 		if ($params->get('sequence_method', 'load') === 'pk')
 		{
 			$formModel = $this->getFormModel();
-			$rowid = ArrayHelper::getValue($formModel->formData, 'rowid', '');
+			$rowid     = ArrayHelper::getValue($formModel->formData, 'rowid', '');
 			if (!empty($rowid))
 			{
 				$this->getListModel()->storeCell(
@@ -299,17 +318,18 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 		}
 	}
 
-
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
-		$id = $this->getHTMLId($repeatCounter);
+		$id   = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
 		return array('FbSequence', $id, $opts);
@@ -319,10 +339,12 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 	 * Create the rating table if it doesn't exist.
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	private function createSequenceTable()
 	{
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$db
 			->setQuery(
 				"
@@ -336,5 +358,4 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 );");
 		$db->execute();
 	}
-
 }

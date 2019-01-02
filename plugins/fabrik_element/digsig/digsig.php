@@ -11,11 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
-
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 
 /**
  * Plugin element to render digital signature pad
@@ -24,13 +25,15 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.digsig
  * @since       3.0
  */
-class PlgFabrik_ElementDigsig extends PlgFabrik_Element
+class PlgFabrik_ElementDigsig extends AbstractElementPlugin
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the
 	 * element should be ignored from search all.
 	 *
 	 * @var bool  True, ignore in extended search all.
+	 *
+	 * @since 4.0
 	 */
 	protected $ignoreSearchAllDefault = true;
 
@@ -38,6 +41,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'TEXT';
 
@@ -48,8 +53,9 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * @param   int   $repeatCounter Repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
 		$name          = $this->getHTMLName($repeatCounter);
@@ -66,7 +72,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		}
 
 		$basePath   = COM_FABRIK_BASE . '/plugins/fabrik_element/digsig/layouts/';
-		$layoutData = new stdClass;
+		$layoutData = new \stdClass;
 		$input      = $this->app->input;
 		$format     = $input->get('format');
 
@@ -95,17 +101,17 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 					. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId
 					. '&amp;repeatcount=0&amp;pdf_secret=' . $pdfSecret;
 
-				$layout = new JLayoutFile('fabrik-element-digsig-details-pdf', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+				$layout = new FileLayout('fabrik-element-digsig-details-pdf', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 			}
 			else
 			{
-				$layout = new JLayoutFile('fabrik-element-digsig-details', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+				$layout = new FileLayout('fabrik-element-digsig-details', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 			}
 
 		}
 		else
 		{
-			$layout = new JLayoutFile('fabrik-element-digsig-form', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
+			$layout = new FileLayout('fabrik-element-digsig-form', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 		}
 
 		return $layout->render($layoutData);
@@ -114,18 +120,20 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string   $data     Elements data
-	 * @param   stdClass &$thisRow All the data in the lists current row
-	 * @param   array    $opts     Rendering options
+	 * @param   string    $data    Elements data
+	 * @param   \stdClass $thisRow All the data in the lists current row
+	 * @param   array     $opts    Rendering options
 	 *
 	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        if ($this->dataConsideredEmpty($data, 0))
+		if ($this->dataConsideredEmpty($data, 0))
 		{
 			return '';
 		}
@@ -144,6 +152,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * @throws Exception
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	private function toImage($rowId)
 	{
@@ -156,7 +166,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 			. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
 			. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
-		$layoutData         = new stdClass;
+		$layoutData         = new \stdClass;
 		$layoutData->width  = $params->get('digsig_list_width', '200');
 		$layoutData->height = $params->get('digsig_list_height', '75');;
 		$layoutData->src = $link;
@@ -173,6 +183,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * @param   int   $repeatCounter Group repeat counter
 	 *
 	 * @return  string  email formatted value
+	 *
+	 * @since 4.0
 	 */
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
@@ -185,6 +197,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * Save the signature to an image
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function onAjax_signature_to_image()
 	{
@@ -204,14 +218,14 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		{
 			if ($pdfSecretQS !== $params->get('digsig_pdf_secret', ''))
 			{
-				$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
+				$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
 				$this->app->redirect($url);
 				exit;
 			}
 		}
 		else if (!$this->canView())
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_PERMISSION'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -220,7 +234,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 
 		if (empty($rowId))
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -230,7 +244,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 
 		if (empty($row))
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -268,7 +282,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		}
 		else
 		{
-			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
+			$this->app->enqueueMessage(Text::_('PLG_ELEMENT_DIGSIG_NO_SUCH_FILE'));
 			$this->app->redirect($url);
 			exit;
 		}
@@ -281,8 +295,9 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * @param   array $data Posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		if ($val == '')
@@ -299,6 +314,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
@@ -329,20 +346,22 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * Get the class to manage the form element
 	 * to ensure that the file is loaded only once
 	 *
-	 * @param   array  &$srcs  Scripts previously loaded
-	 * @param   string $script Script to load once class has loaded
-	 * @param   array  &$shim  Dependant class names to load before loading the class - put in requirejs.config shim
+	 * @param   array  &$srcs   Scripts previously loaded
+	 * @param   string  $script Script to load once class has loaded
+	 * @param   array  &$shim   Dependant class names to load before loading the class - put in requirejs.config shim
 	 *
-	 * @return void
+	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
-		$key     = FabrikHelperHTML::isDebug() ? 'element/digsig/digsig' : 'element/digsig/digsig-min';
-		$s       = new stdClass;
+		$key     = Html::isDebug() ? 'element/digsig/digsig' : 'element/digsig/digsig-min';
+		$s       = new \stdClass;
 		$s->deps = array();
 
 		$folder           = 'element/digsig/libs/signature-pad/';
-		$digsigShim       = new stdClass;
+		$digsigShim       = new \stdClass;
 		$digsigShim->deps = array($folder . 'jquery.signaturepad');
 		$s->deps[]        = $folder . 'jquery.signaturepad';
 
@@ -354,7 +373,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 
 		$shim[$key] = $s;
 
-		FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/digsig/libs/signature-pad/jquery.signaturepad.css');
+		Html::stylesheet(COM_FABRIK_LIVESITE . 'plugins/fabrik_element/digsig/libs/signature-pad/jquery.signaturepad.css');
 
 		parent::formJavascriptClass($srcs, $script, $shim);
 
@@ -370,8 +389,9 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * @param   int   $repeatCounter Repeat group #
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function dataConsideredEmpty($data, $repeatCounter)
 	{
 		$data = (array) $data;
@@ -395,6 +415,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 	 * @param   int   $repeatCounter repeat group #
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function dataConsideredEmptyForValidation($data, $repeatCounter)
 	{

@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_DROPDOWN_DESCRIPTION</description>
 	<files>
 		<filename plugin="dropdown">dropdown.php</filename>
-		<filename>index.html</filename>
 		<filename>dropdown.js</filename>
 		<filename>dropdown-min.js</filename>
 		<folder>forms</folder>

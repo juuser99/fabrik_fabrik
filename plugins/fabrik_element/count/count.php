@@ -11,9 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * Plugin element to:
@@ -26,12 +26,14 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.count
  * @since       3.0
  */
-class PlgFabrik_ElementCount extends PlgFabrik_Element
+class PlgFabrik_ElementCount extends AbstractElementPlugin
 {
 	/**
 	 * Get group by query
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getGroupByQuery()
 	{
@@ -48,11 +50,13 @@ class PlgFabrik_ElementCount extends PlgFabrik_Element
 	 * @param   array  $opts        options
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
 		$dbTable = $this->actualTableName();
-		$db = FabrikWorker::getDbo();
+		$db = Worker::getDbo();
 
 		if ($this->app->input->get('c') != 'form')
 		{
@@ -72,6 +76,8 @@ class PlgFabrik_ElementCount extends PlgFabrik_Element
 	 * @param   string  $event     To trigger plugin on
 	 *
 	 * @return  bool can use or not
+	 *
+	 * @since 4.0
 	 */
 	public function canUse($location = null, $event = null)
 	{
@@ -85,6 +91,8 @@ class PlgFabrik_ElementCount extends PlgFabrik_Element
 	 * @param   int    $repeatCounter  repeat group counter
 	 *
 	 * @return  string	elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
@@ -97,6 +105,9 @@ class PlgFabrik_ElementCount extends PlgFabrik_Element
 	 * @param   int  $repeatCounter  Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{

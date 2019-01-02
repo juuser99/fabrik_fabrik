@@ -11,6 +11,7 @@
 define('_JEXEC', 1);
 
 use Joomla\String\StringHelper;
+use Joomla\CMS\Factory;
 
 $jpath = dirname(__FILE__);
 $jpath = str_replace('/plugins/fabrik_element/captcha', '', $jpath);
@@ -21,10 +22,10 @@ define('DS', DIRECTORY_SEPARATOR);
 
 require_once JPATH_BASE . '/includes/defines.php';
 require_once JPATH_BASE . '/includes/framework.php';
-$app = JFactory::getApplication('site');
+$app = Factory::getApplication('site');
 $app->initialise();
 $package = $app->getUserState('com_fabrik.package', 'fabrik');
-$session = JFactory::getSession();
+$session = $app->getSession();
 
 $code = $session->get('com_' . $package . '.element.captcha.security_code', false);
 

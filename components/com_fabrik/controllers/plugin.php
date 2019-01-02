@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 
@@ -130,7 +131,7 @@ class FabrikControllerPlugin extends JControllerLegacy
 		foreach ($rows as $row)
 		{
 			// Load in the plugin
-			/** @var PlgFabrik_Cron $plugin */
+			/** @var AbstractCronPlugin $plugin */
 			$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
 			$plugin->setId($row->id);
 			$params        = $plugin->getParams();

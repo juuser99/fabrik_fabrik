@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\String\StringHelper;
 
 /**
@@ -20,12 +22,14 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik.element.access
  * @since       3.0
  */
-class PlgFabrik_ElementAccess extends PlgFabrik_Element
+class PlgFabrik_ElementAccess extends AbstractElementPlugin
 {
 	/**
 	 * If the element 'Include in search all' option is set to 'default' then this states if the
 	 * element should be ignored from search all.
 	 * @var bool  True, ignore in extended search all.
+	 *
+	 * @since 4.0
 	 */
 	protected $ignoreSearchAllDefault = true;
 
@@ -36,8 +40,9 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 	 * @param   array  $data  posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
-
 	public function storeDatabaseFormat($val, $data)
 	{
 		// $$$ hugh - nope!
@@ -52,6 +57,8 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 	 * @param   int    $repeatCounter  repeat group counter
 	 *
 	 * @return  string	elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
@@ -74,13 +81,13 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 
 		if (!$this->isEditable())
 		{
-			$row = new stdClass;
+			$row = new \stdClass;
 
 			return $this->renderListData($arSelected[0], $row);
 		}
 
 		$layout = $this->getLayout('form');
-		$displayData = new stdClass;
+		$displayData = new \stdClass;
 		$displayData->id = $id;
 		$displayData->name = $name;
 		$displayData->options = $this->getOpts();
@@ -95,14 +102,15 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 	 * @param   bool  $allowAll  add an show all option
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
-
 	private function getOpts($allowAll = true)
 	{
-		$this->_db
+		$this->db
 			 ->setQuery(
 				'SELECT a.id AS value, a.title AS text' . ' FROM #__viewlevels AS a ORDER BY a.title ASC');
-		$options = $this->_db->loadObjectList();
+		$options = $this->db->loadObjectList();
 
 		// If all user groups is allowed, push it into the array.
 		if ($allowAll)
@@ -120,14 +128,16 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 	 * Shows the data formatted for the list view
 	 *
 	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   \stdClass  $thisRow  All the data in the lists current row
 	 * @param   array     $opts      Rendering options
 	 *
 	 * @return  string	formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
+        $profiler = Profiler::getInstance('Application');
         JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
         $options = $this->getOpts();
@@ -144,7 +154,7 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 			}
 		}
 
-		$layoutData = new stdClass;
+		$layoutData = new \stdClass;
 		$layoutData->text = $text;
 
 		return parent::renderListData($layoutData, $thisRow, $opts);
@@ -154,6 +164,8 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 	 * Get database field description
 	 *
 	 * @return  string  db field type
+	 *
+	 * @since 4.0
 	 */
 	public function getFieldDescription()
 	{
@@ -171,6 +183,8 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 	 * @param   int  $repeatCounter  Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{

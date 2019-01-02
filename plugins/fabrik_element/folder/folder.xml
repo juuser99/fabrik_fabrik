@@ -12,7 +12,6 @@
 	<description>PLG_ELEMENT_FOLDER_DESCRIPTION</description>
 	<files>
 		<filename plugin="folder">folder.php</filename>
-		<filename>index.html</filename>
 		<filename>folder.js</filename>
 		<filename>folder-min.js</filename>
 		<folder>forms</folder>

@@ -11,9 +11,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Worker;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 
 /**
  * Plugin element to render facebook open graph like button
@@ -23,12 +28,14 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @since       3.0
  */
 
-class PlgFabrik_ElementFblike extends PlgFabrik_Element
+class PlgFabrik_ElementFblike extends AbstractElementPlugin
 {
 	/**
 	 * Does the element have a label
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	protected $hasLabel = false;
 
@@ -36,6 +43,8 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	 * Db table field type
 	 *
 	 * @var  string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'INT(%s)';
 
@@ -43,6 +52,8 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	 * Db table field size
 	 *
 	 * @var  string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldLength = '1';
 
@@ -51,39 +62,43 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	 * use this var to set single notice
 	 *
 	 * @var  bool
+	 *
+	 * @since 4.0
 	 */
 	protected static $warned = false;
 
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
+	 * @param   string    $data    Elements data
+	 * @param   \stdClass $thisRow All the data in the lists current row
+	 * @param   array     $opts    Rendering options
 	 *
-	 * @return  string	formatted value
+	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        if ($this->app->input->get('format') === 'raw')
+		if ($this->app->input->get('format') === 'raw')
 		{
 			return $data;
 		}
 
-		$input = $this->app->input;
+		$input  = $this->app->input;
 		$params = $this->getParams();
-		$meta = array();
-		$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
+		$meta   = array();
+		$ex     = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
 
 		// $$$ rob no need to get other meta data as we are linking to the details which contains full meta info on what it is
 		// you are liking
-		$meta['og:url'] = $ex . $input->server->getString('SERVER_NAME') . $input->server->getString('REQUEST_URI');
+		$meta['og:url']       = $ex . $input->server->getString('SERVER_NAME') . $input->server->getString('REQUEST_URI');
 		$meta['og:site_name'] = $this->config->get('sitename');
-		$meta['fb:admins'] = $params->get('fblike_opengraph_applicationid');
-		$str = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
+		$meta['fb:admins']    = $params->get('fblike_opengraph_applicationid');
+		$str                  = Html::facebookGraphAPI($params->get('opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
 
 		// In list view we link to the detailed record not the list view itself
 		// means form or details view must be viewable by the user
@@ -106,32 +121,33 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to pre-populate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array $data          to pre-populate element with
+	 * @param   int   $repeatCounter repeat group counter
 	 *
-	 * @return  string	elements html
+	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
-
 	public function render($data, $repeatCounter = 0)
 	{
-		$params = $this->getParams();
-		$input = $this->app->input;
-		$meta = array();
+		$params    = $this->getParams();
+		$input     = $this->app->input;
+		$meta      = array();
 		$formModel = $this->getFormModel();
-		$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
-		$map = array(
-			'og:title' => 'fblike_title',
-			'og:type' => 'fblike_type',
-			'og:image' => 'fblike_image',
-			'og:description' => 'fblike_description',
+		$ex        = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
+		$map       = array(
+			'og:title'          => 'fblike_title',
+			'og:type'           => 'fblike_type',
+			'og:image'          => 'fblike_image',
+			'og:description'    => 'fblike_description',
 			'og:street-address' => 'fblike_street_address',
-			'og:locality' => 'fblike_locality',
-			'og:region' => 'fblike_region',
-			'og:postal-code' => 'fblike_postal_code',
-			'og:country-name' => 'fblike_country',
-			'og:email' => 'fblike_email',
-			'og:phone_number' => 'fblike_phone_number',
-			'og:fax_number' => 'fblike_fax_number'
+			'og:locality'       => 'fblike_locality',
+			'og:region'         => 'fblike_region',
+			'og:postal-code'    => 'fblike_postal_code',
+			'og:country-name'   => 'fblike_country',
+			'og:email'          => 'fblike_email',
+			'og:phone_number'   => 'fblike_phone_number',
+			'og:fax_number'     => 'fblike_fax_number'
 		);
 
 		foreach ($map as $k => $v)
@@ -145,7 +161,7 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 				if (is_object($el))
 				{
 					$name = $el->getFullName(true, false);
-					$v = FArrayHelper::getValue($data, $name);
+					$v    = FArrayHelper::getValue($data, $name);
 
 					if ($k == 'og:image')
 					{
@@ -170,18 +186,18 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 
 			if (count($loc) == 2)
 			{
-				$meta['og:latitude'] = $loc[0];
+				$meta['og:latitude']  = $loc[0];
 				$meta['og:longitude'] = $loc[1];
 			}
 		}
 
-		$meta['og:url'] = $ex . $input->server->getString('SERVER_NAME') . $input->server->getString('REQUEST_URI');
-		$meta['og:site_name'] = $this->config->get('sitename');
-		$meta['fb:app_id'] = $params->get('fblike_opengraph_applicationid');
-		$str = FabrikHelperHTML::facebookGraphAPI($params->get('fblike_opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
-		$url = $params->get('fblike_url');
-		$w = new FabrikWorker;
-		$url = $w->parseMessageForPlaceHolder($url, $data);
+		$meta['og:url']             = $ex . $input->server->getString('SERVER_NAME') . $input->server->getString('REQUEST_URI');
+		$meta['og:site_name']       = $this->config->get('sitename');
+		$meta['fb:app_id']          = $params->get('fblike_opengraph_applicationid');
+		$str                        = Html::facebookGraphAPI($params->get('fblike_opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
+		$url                        = $params->get('fblike_url');
+		$w                          = new Worker;
+		$url                        = $w->parseMessageForPlaceHolder($url, $data);
 		$this->getElement()->hidden = true;
 
 		return $str . $this->_render($url);
@@ -190,14 +206,16 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	/**
 	 * Render the button
 	 *
-	 * @param   string  $url  button url
+	 * @param   string $url button url
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	protected function _render($url)
 	{
 		$params = $this->getParams();
-		$input = $this->app->input;
+		$input  = $this->app->input;
 
 		if ($url !== '')
 		{
@@ -205,9 +223,9 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 			{
 				// $$$ rob doesn't work with sef urls as $url already contains site folder.
 				// $url = COM_FABRIK_LIVESITE.$url;
-				$base = JURI::base();
-				$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
-				$url = $ex . $input->server->getString('SERVER_NAME') . $url;
+				$base = Uri::base();
+				$ex   = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
+				$url  = $ex . $input->server->getString('SERVER_NAME') . $url;
 			}
 		}
 		else
@@ -215,16 +233,16 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 			$href = '';
 		}
 
-		$data = new stdClass;
-		$data->url = $url;
-		$data->layout = $params->get('fblike_layout', 'standard');
-		$data->showfaces = $params->get('fblike_showfaces', 0) == 1 ? 'true' : 'false';
+		$data               = new \stdClass;
+		$data->url          = $url;
+		$data->layout       = $params->get('fblike_layout', 'standard');
+		$data->showfaces    = $params->get('fblike_showfaces', 0) == 1 ? 'true' : 'false';
 		$data->includeShare = $params->get('fblike_include_share', 0) == 1 ? 'true' : 'false';
-		$data->width = $params->get('fblike_width', 300);
-		$data->action = $params->get('fblike_action', 'like');
-		$data->font = $params->get('fblike_font', 'arial');
-		$data->colorscheme = $params->get('fblike_colorscheme', 'light');
-		$jLayout = $this->getLayout('form');
+		$data->width        = $params->get('fblike_width', 300);
+		$data->action       = $params->get('fblike_action', 'like');
+		$data->font         = $params->get('fblike_font', 'arial');
+		$data->colorscheme  = $params->get('fblike_colorscheme', 'light');
+		$jLayout            = $this->getLayout('form');
 
 		return $jLayout->render($data);
 	}
@@ -232,16 +250,18 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  Repeat group counter
+	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
-		$id = $this->getHTMLId($repeatCounter);
-		$opts = $this->getElementJSOptions($repeatCounter);
+		$id           = $this->getHTMLId($repeatCounter);
+		$opts         = $this->getElementJSOptions($repeatCounter);
 		$opts->listid = $this->getListModel()->getId();
-		$opts->elid = $this->getElement()->id;
+		$opts->elid   = $this->getElement()->id;
 		$opts->row_id = $this->getFormModel()->getRowId();
 
 		return array('FbLike', $id, $opts);
@@ -251,18 +271,21 @@ class PlgFabrik_ElementFblike extends PlgFabrik_Element
 	 * Called via Facebook event subscription (useful for ordering)
 	 *
 	 * @return  null
+	 *
+	 * @since 4.0
 	 */
 	public function onAjax_rate()
 	{
 		$input = $this->app->input;
 		$this->loadMeForAjax();
 		$listId = $input->getInt('listid');
-		$list = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var ListModel $list */
+		$list = FabModel::getInstance(ListModel::class);
 		$list->setId($listId);
-		$rowId = $input->get('row_id');
+		$rowId     = $input->get('row_id');
 		$direction = $input->get('direction', '+');
-		$field = $this->getFullName(false, false, false);
-		$update = $field . ' = ' . $field . ' ' . $direction . ' 1';
+		$field     = $this->getFullName(false, false, false);
+		$update    = $field . ' = ' . $field . ' ' . $direction . ' 1';
 		$list->updateRows(array($rowId), $field, null, $update);
 	}
 }

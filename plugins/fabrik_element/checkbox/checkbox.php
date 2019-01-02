@@ -11,7 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Plugin element to render series of checkboxes
@@ -20,7 +23,7 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik.element.checkbox
  * @since       3.0
  */
-class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
+class PlgFabrik_ElementCheckbox extends AbstractElementListPlugin
 {
 	protected $inputType = 'checkbox';
 
@@ -31,6 +34,8 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 * @param   int $id element id
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setId($id)
 	{
@@ -51,6 +56,8 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 * @param   object $thisRow all the data in the tables current row
 	 *
 	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
 	public function renderRawListData($data, $thisRow)
 	{
@@ -75,6 +82,8 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 * @param   int $repeatCounter Repeat group counter
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	public function elementJavascript($repeatCounter)
 	{
@@ -88,7 +97,7 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->data       = (empty($values) && empty($labels)) ? array() : array_combine($values, $labels);
 		$opts->allowadd   = (bool) $params->get('allow_frontend_addtocheckbox', false);
-		JText::script('PLG_ELEMENT_CHECKBOX_ENTER_VALUE_LABEL');
+		Text::script('PLG_ELEMENT_CHECKBOX_ENTER_VALUE_LABEL');
 
 		return array('FbCheckBox', $id, $opts);
 	}
@@ -99,7 +108,7 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 *
 	 * @param   array &$data form data
 	 *
-	 * @return  array  form data
+	 * @since 4.0
 	 */
 	public function getEmptyDataValue(&$data)
 	{
@@ -123,6 +132,8 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 * @param   string $value filterVal
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function prepareFilterVal($value)
 	{
@@ -145,6 +156,8 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 * return the most appropriate filter option for the element.
 	 *
 	 * @return  string    default filter condition ('=', 'REGEXP' etc.)
+	 *
+	 * @since 4.0
 	 */
 	public function getDefaultFilterCondition()
 	{
@@ -158,6 +171,8 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 * @param   array $data posted form data
 	 *
 	 * @return  mixed
+	 *
+	 * @since 4.0
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
@@ -189,7 +204,7 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 					// produces valid JSON
 					$json_val = '["' . $val . '"]';
 
-					if (FabrikWorker::isJSON($json_val))
+					if (Worker::isJSON($json_val))
 					{
 						// Looks like we we have a valid JSON array, so return that
 						return $json_val;

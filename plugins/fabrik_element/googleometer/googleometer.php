@@ -11,9 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
-
-require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Plugin element to render a google o meter chart
@@ -22,12 +24,14 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  * @subpackage  Fabrik.element.googleometer
  * @since       3.0
  */
-class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
+class PlgFabrik_ElementGoogleometer extends AbstractElementPlugin
 {
 	/**
 	 * Db table field type
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldDesc = 'TINYINT(%s)';
 
@@ -35,6 +39,8 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	 * Db table field size
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $fieldSize = '1';
 
@@ -45,6 +51,8 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
@@ -64,6 +72,8 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	 * Get the data element's full name
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	private function getDataElementFullName()
 	{
@@ -76,13 +86,15 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	/**
 	 * Get the data element
 	 *
-	 * @return  PlgFabrik_Element
+	 * @return  AbstractElementPlugin
+	 *
+	 * @since 4.0
 	 */
 	private function getDataElement()
 	{
 		$params    = $this->getParams();
 		$elementId = (int) $params->get('googleometer_element');
-		$element   = FabrikWorker::getPluginManager()->getPlugIn('', 'element');
+		$element   = Worker::getPluginManager()->getPlugIn('', 'element');
 		$element->setId($elementId);
 
 		return $element;
@@ -92,6 +104,8 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	 * Get the min max rating range
 	 *
 	 * @return  object
+	 *
+	 * @since 4.0
 	 */
 	private function getRange()
 	{
@@ -112,32 +126,34 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	/**
 	 * Shows the data formatted for the list view
 	 *
-	 * @param   string   $data     Elements data
-	 * @param   stdClass &$thisRow All the data in the lists current row
-	 * @param   array    $opts     Rendering options
+	 * @param   string    $data    Elements data
+	 * @param   \stdClass $thisRow All the data in the lists current row
+	 * @param   array     $opts    Rendering options
 	 *
 	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass $thisRow, $opts = array())
 	{
 		static $range;
 		static $fullName;
 
-        $profiler = JProfiler::getInstance('Application');
-        JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-        if (!isset($range))
+		if (!isset($range))
 		{
 			$range    = $this->getRange();
 			$fullName = $this->getDataElementFullName() . '_raw';
 		}
 
 		$dataElement = $this->getDataElement();
-		$data = $thisRow->$fullName;
+		$data        = $thisRow->$fullName;
 
 		if ($dataElement->getGroupModel()->canRepeat())
 		{
-			$data = FabrikWorker::JSONtoData($data, true);
+			$data = Worker::JSONtoData($data, true);
 
 			foreach ($data as $i => &$d)
 			{
@@ -159,6 +175,8 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 	 * @param   object $range Min / Max range
 	 *
 	 * @return  string    formatted value
+	 *
+	 * @since 4.0
 	 */
 	protected function _renderListData($data, $range)
 	{
@@ -171,7 +189,7 @@ class PlgFabrik_ElementGoogleometer extends PlgFabrik_Element
 		$options['range']     = 'chds=' . $range->min . ',' . $range->max;
 
 		$layout              = $this->getLayout('chart');
-		$layoutData          = new stdClass;
+		$layoutData          = new \stdClass;
 		$layoutData->options = implode('&amp;', $options);
 
 		return $layout->render($layoutData);

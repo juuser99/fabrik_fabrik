@@ -15,7 +15,6 @@
 		<filename plugin="field">field.php</filename>
 		<filename>field.js</filename>
 		<filename>field-min.js</filename>
-		<filename>index.html</filename>
 		<folder>forms</folder>
 		<folder>language</folder>
 		<folder>layouts</folder>
