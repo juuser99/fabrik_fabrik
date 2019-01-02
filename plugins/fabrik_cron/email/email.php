@@ -11,10 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Joomla\Utilities\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use Fabrik\Helpers\Worker;
 
 /**
  * A cron task to email records to a give set of users
@@ -23,7 +24,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.email
  * @since       3.0
  */
-class PlgFabrik_Cronemail extends PlgFabrik_Cron
+class PlgFabrik_Cronemail extends AbstractCronPlugin
 {
 	/**
 	 * Check if the user can use the plugin
@@ -32,6 +33,8 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 	 * @param   string $event    To trigger plugin on
 	 *
 	 * @return  bool can use or not
+	 *
+	 * @since 4.0
 	 */
 	public function canUse($location = null, $event = null)
 	{
@@ -42,18 +45,19 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 	 * Do the plugin action
 	 *
 	 * @param   array &$data data
-	 * @param   object  &$listModel  List model
+	 * @param   ListModel  $listModel  List model
 	 * @return  int  number of records updated
+	 *
+	 * @since 4.0
 	 */
-	public function process(&$data, &$listModel)
+	public function process(&$data, ListModel $listModel)
 	{
-		jimport('joomla.mail.helper');
 		$params = $this->getParams();
 		$msg    = $params->get('message');
-		FabrikHelperHTML::runContentPlugins($msg, false);
+		Html::runContentPlugins($msg, false);
 		$to = explode(',', $params->get('to'));
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 		($params->get('cronemail_return', '') != '') ? $MailFrom = $params->get('cronemail_return') : $MailFrom = $this->app->get('mailfrom');
 		($params->get('cronemail_from', '') != '') ? $FromName = $params->get('cronemail_from') : $FromName = $this->app->get('fromname');
 		($params->get('cronemail_replyto', '') != '') ? $replyTo = $params->get('cronemail_replyto') : $replyTo = $this->app->get('replyto');
@@ -114,7 +118,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 							}
 						}
 
-						if (FabrikWorker::isEmail($thisTo))
+						if (Worker::isEmail($thisTo))
 						{
 							$thisMsg = $w->parseMessageForPlaceHolder($msg, $row);
 
@@ -132,7 +136,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 							}
 							else
 							{
-								$res = FabrikWorker::sendMail(
+								$res = Worker::sendMail(
 									$MailFrom,
 									$FromName,
 									$thisTo,
@@ -149,13 +153,13 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 								if (!$res)
 								{
 									//$this->log .= "\n failed sending to $thisTo";
-									FabrikWorker::log('plg.cron.email.information', 'Failed sending to: ' . $thisTo);
+									Worker::log('plg.cron.email.information', 'Failed sending to: ' . $thisTo);
 									$failedIds[] = $row['__pk_val'];
 								}
 								else
 								{
 									//$this->log .= "\n sent to $thisTo";
-									FabrikWorker::log('plg.cron.email.information', 'Sent to: ' . $thisTo);
+									Worker::log('plg.cron.email.information', 'Sent to: ' . $thisTo);
 									$sentIds[] = $row['__pk_val'];
 								}
 							}
@@ -168,7 +172,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 							}
 							else
 							{
-								FabrikWorker::log('plg.cron.email.information', 'Not an email address: ' . $thisTo);
+								Worker::log('plg.cron.email.information', 'Not an email address: ' . $thisTo);
 								$failedIds[] = $row['__pk_val'];
 							}
 						}
@@ -183,8 +187,8 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		if (!empty($sentIds) && trim($field) != '')
 		{
 			// Do any update found
-			/** @var FabrikFEModelList $listModel */
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			/** @var ListModel $listModel */
+			$listModel = FabModel::getInstance(ListModel::class);
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
 			$field = $params->get('cronemail-updatefield');
@@ -234,6 +238,12 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		return count($sentIds);
 	}
 
+	/**
+	 *
+	 * @return bool
+	 *
+	 * @since 4.0
+	 */
 	private function isTestMode()
 	{
 		return $this->app->isClient('administrator') && $this->getParams()->get('cronemail_test_mode', '0') === '1';

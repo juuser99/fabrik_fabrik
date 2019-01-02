@@ -11,10 +11,13 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\User\UserHelper;
+use Joomla\Component\Fabrik\Mail\PartHelper;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Joomla\String\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
 /**
  * A cron task to import gmail emails into a specified list
@@ -24,18 +27,19 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @since       3.0.7
  */
 
-class PlgFabrik_Crongmail extends PlgFabrik_Cron
+class PlgFabrik_Crongmail extends AbstractCronPlugin
 {
 	/**
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       Data
-	 * @param   JModel  &$listModel  List model
+	 * @param   ListModel  $listModel  List model
 	 *
 	 * @return  int  number of records updated
+	 *
+	 * @since 4.0
 	 */
-
-	public function process(&$data, &$listModel)
+	public function process(&$data, ListModel $listModel)
 	{
 		$params = $this->getParams();
 		$input = $this->app->input;
@@ -51,7 +55,7 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 		$inboxes = explode(',', $params->get('plugin-options.inboxes', 'INBOX'));
 
 		$deleteMail = false;
-		$p = new stdClass;
+		$p = new \stdClass;
 
 		$fromField = $params->get('plugin-options.from');
 		$titleField = $params->get('plugin-options.title');
@@ -68,8 +72,7 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 
 			if (!$mbox)
 			{
-				throw new RuntimeException(FText::_("PLG_CRON_GMAIL_ERROR_CONNECT") . imap_last_error());
-				continue;
+				throw new \RuntimeException(FText::_("PLG_CRON_GMAIL_ERROR_CONNECT") . imap_last_error());
 			}
 
 			$MC = imap_check($mbox);
@@ -113,17 +116,17 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 
 				$thisData[$fromField] = $overview->from;
 				$thisData[$titleField] = $this->getTitle($overview);
-				$thisData[$dateField] = JFactory::getDate($overview->date)->toSql();
+				$thisData[$dateField] = Factory::getDate($overview->date)->toSql();
 				$thisData['imageFound'] = false;
 
 				$thisData[$fromField] = (empty($matches)) ? $overview->from : "<a href=\"mailto:$matches[1]\">$overview->from</a>";
 
 				// Use server time for all incoming messages.
-				$date = JFactory::getDate();
+				$date = Factory::getDate();
 
 				$thisData['processed_date'] = $date->toSql();
 				$struct = imap_fetchstructure($mbox, $overview->msgno);
-				$parts = Create_Part_array($struct);
+				$parts = PartHelper::createPartArray($struct);
 
 				foreach ($parts as $part)
 				{
@@ -157,9 +160,9 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 						if ($attachmentName != '')
 						{
 							// Randomize file name
-							$ext = JFile::getExt($attachmentName);
-							$name = JFile::stripExt($attachmentName);
-							$name .= '-' . JUserHelper::genRandomPassword(5) . '.' . $ext;
+							$ext = File::getExt($attachmentName);
+							$name = File::stripExt($attachmentName);
+							$name .= '-' . UserHelper::genRandomPassword(5) . '.' . $ext;
 							$thisData['attachmentName'] = $name;
 							$thisData['imageFound'] = true;
 							$fileContent = imap_fetchbody($mbox, $overview->msgno, 2);
@@ -249,8 +252,9 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 	 * @param   string  $content  Mail content
 	 *
 	 * @return  string  content
+	 *
+	 * @since 4.0
 	 */
-
 	protected function removeReplyText($content)
 	{
 		// Try to remove reply text
@@ -289,8 +293,9 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 	 * @param   object  $overview  Mail overview
 	 *
 	 * @return  string  email subject
+	 *
+	 * @since 4.0
 	 */
-
 	private function getTitle($overview)
 	{
 		$title = $overview->subject;
@@ -302,92 +307,5 @@ class PlgFabrik_Crongmail extends PlgFabrik_Cron
 		}
 
 		return $title;
-	}
-}
-
-/**
- * Parse the email into its parts
- *
- * @param   object  $structure  Mail
- * @param   string  $prefix     Prefix?
- *
- * @return  array
- */
-
-function Create_Part_array($structure, $prefix = "")
-{
-	if (isset($structure->parts) && count($structure->parts) > 0)
-	{
-		// There some sub parts
-		foreach ($structure->parts as $count => $part)
-		{
-			Add_Part_To_array($part, $prefix . ($count + 1), $part_array);
-		}
-	}
-	else
-	{
-		// Email does not have a separate mime attachment for text
-		$part_array[] = array('part_number' => $prefix . '1', 'part_object' => $structure);
-	}
-
-	return $part_array;
-}
-
-/**
- * Sub function for Create_Part_array(). Only called by Create_Part_array() and itself.
- *
- * @param   object  $obj          Sub part of Mail object
- * @param   int     $partno       Part Number
- * @param   array   &$part_array  Array of parts
- *
- * @return  void
- */
-
-function Add_Part_To_array($obj, $partno, &$part_array)
-{
-	$part_array[] = array('part_number' => $partno, 'part_object' => $obj);
-
-	if ($obj->type == 2)
-	{
-		// Check to see if the part is an attached email message, as in the RFC-822 type
-		if (count($obj->parts) > 0)
-		{
-			// Check to see if the email has parts
-			foreach ($obj->parts as $count => $part)
-			{
-				// Iterate here again to compensate for the broken way that imap_fetchbody() handles attachments
-				if (count($part->parts) > 0)
-				{
-					foreach ($part->parts as $count2 => $part2)
-					{
-						Add_Part_To_array($part2, $partno . "." . ($count2 + 1), $part_array);
-					}
-				}
-				else
-				{
-					// Attached email does not have a separate mime attachment for text
-					$part_array[] = array('part_number' => $partno . '.' . ($count + 1), 'part_object' => $obj);
-				}
-			}
-		}
-		else
-		{
-			// Not sure if this is possible
-			$part_array[] = array('part_number' => $prefix . '.1', 'part_object' => $obj);
-		}
-	}
-	else
-	{
-		// If there are more sub-parts, expand them out.
-		if (isset($obj->parts) && is_array($obj->parts))
-		{
-			if (count($obj->parts) > 0)
-			{
-				foreach ($obj->parts as $count => $p)
-				{
-					Add_Part_To_array($p, $partno . "." . ($count + 1), $part_array);
-				}
-			}
-		}
 	}
 }

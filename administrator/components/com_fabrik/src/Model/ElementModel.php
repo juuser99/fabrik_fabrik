@@ -30,7 +30,6 @@ use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
 use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
-use Fabrik\Helpers\Html;
 
 /**
  * Admin Element Model

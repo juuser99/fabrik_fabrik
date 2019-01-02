@@ -1586,7 +1586,7 @@ EOD;
 	 * If not debugging will replace file names .js => -min.js
 	 *
 	 * @param   mixed  $file       String or array of files to load, relative path to root for local files
-	 *                             e.g. 'administrator/components/com_fabrik/models/fields/tables.js'
+	 *                             e.g. 'administrator/components/com_fabrik/src/Field/tables.js'
 	 * @param   string $onLoad     Optional js to run once the Js file has been loaded
 	 * @param   string $minSuffix  The minimised file suffix to use, replaces '.js'
 	 *

@@ -8,11 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Helpers\StringHelper as FStringHelper;
+use Fabrik\Helpers\Worker;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
 require_once JPATH_SITE . '/plugins/fabrik_cron/geocode/libs/gmaps2.php';
 
@@ -23,18 +26,18 @@ require_once JPATH_SITE . '/plugins/fabrik_cron/geocode/libs/gmaps2.php';
  * @subpackage  Fabrik.cron.geocode
  * @since       3.0
  */
-
-class PlgFabrik_CronGeocode extends PlgFabrik_Cron
+class PlgFabrik_CronGeocode extends AbstractCronPlugin
 {
 	/**
 	 * Check if the user can use the active element
 	 *
-	 * @param   string  $location  To trigger plugin on
-	 * @param   string  $event     To trigger plugin on
+	 * @param   string $location To trigger plugin on
+	 * @param   string $event    To trigger plugin on
 	 *
 	 * @return  bool can use or not
+	 *
+	 * @since 4.0
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -44,8 +47,9 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 	 * Whether cron should automagically load table data
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function requiresTableData()
 	{
 		return true;
@@ -54,73 +58,74 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 	/**
 	 * Do the plugin action
 	 *
-	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
+	 * @param   array   &$data      array data to process
+	 * @param   object  &$listModel plugin's list model
 	 *
 	 * @return  int  number of records run
+	 *
+	 * @since 4.0
 	 */
-
-	public function process(&$data, &$listModel)
+	public function process(&$data, ListModel $listModel)
 	{
 		$params = $this->getParams();
 
-		$db = $listModel->getDb();
+		$db    = $listModel->getDb();
 		$query = $db->getQuery(true);
 
 		// Grab the table model and find table name and PK
-		$table = $listModel->getTable();
-		$table_name = $table->db_table_name;
-		$primary_key = $table->db_primary_key;
-		$primary_key_element = FabrikString::shortColName($table->db_primary_key);
+		$table                    = $listModel->getTable();
+		$table_name               = $table->db_table_name;
+		$primary_key              = $table->db_primary_key;
+		$primary_key_element      = FStringHelper::shortColName($table->db_primary_key);
 		$primary_key_element_long = $table_name . '___' . $primary_key_element . '_raw';
 
-		$config = JComponentHelper::getParams('com_fabrik');
+		$config = ComponentHelper::getParams('com_fabrik');
 		$apiKey = $config->get('google_api_key', '');
 
 		//$connection = (int) $params->get('connection');
 
-		$geocode_batch_limit = (int) $params->get('geocode_batch_limit', '0');
-		$geocode_delay = (int) $params->get('geocode_delay', '0');
-		$geocode_is_empty = $params->get('geocode_is_empty');
-		$geocode_zoom_level = $params->get('geocode_zoom_level', '4');
-		$geocode_map_element_long = $params->get('geocode_map_element');
-		$geocode_map_element_long_raw = $geocode_map_element_long . '_raw';
-		$geocode_map_element = FabrikString::shortColName($geocode_map_element_long);
-		$geocode_lat_element_long = $params->get('geocode_lat_element');
-		$geocode_lat_element_long_raw = $geocode_lat_element_long . '_raw';
-		$geocode_lat_element = FabrikString::shortColName($geocode_lat_element_long);
-		$geocode_lon_element_long = $params->get('geocode_lon_element');
-		$geocode_lon_element_long_raw = $geocode_lon_element_long . '_raw';
-		$geocode_lon_element = FabrikString::shortColName($geocode_lon_element_long);
-		$geocode_addr1_element_long = $params->get('geocode_addr1_element');
-		$geocode_addr1_element = $geocode_addr1_element_long ? FabrikString::shortColName($geocode_addr1_element_long) : '';
-		$geocode_addr2_element_long = $params->get('geocode_addr2_element');
-		$geocode_addr2_element = $geocode_addr2_element_long ? FabrikString::shortColName($geocode_addr2_element_long) : '';
-		$geocode_city_element_long = $params->get('geocode_city_element');
-		$geocode_city_element = $geocode_city_element_long ? FabrikString::shortColName($geocode_city_element_long) : '';
-		$geocode_county_element_long = $params->get('geocode_county_element');
-		$geocode_county_element = $geocode_county_element_long ? FabrikString::shortColName($geocode_county_element_long) : '';
-		$geocode_municipality_element_long = $params->get('geocode_municipality_element');
-		$geocode_municipality_element = $geocode_municipality_element_long ? FabrikString::shortColName($geocode_municipality_element_long) : '';
-		$geocode_state_element_long = $params->get('geocode_state_element');
-		$geocode_state_element = $geocode_state_element_long ? FabrikString::shortColName($geocode_state_element_long) : '';
-		$geocode_zip_element_long = $params->get('geocode_zip_element');
-		$geocode_zip_element = $geocode_zip_element_long ? FabrikString::shortColName($geocode_zip_element_long) : '';
-		$geocode_country_element_long = $params->get('geocode_country_element');
-		$geocode_country_element = $geocode_country_element_long ? FabrikString::shortColName($geocode_country_element_long) : '';
+		$geocode_batch_limit                   = (int) $params->get('geocode_batch_limit', '0');
+		$geocode_delay                         = (int) $params->get('geocode_delay', '0');
+		$geocode_is_empty                      = $params->get('geocode_is_empty');
+		$geocode_zoom_level                    = $params->get('geocode_zoom_level', '4');
+		$geocode_map_element_long              = $params->get('geocode_map_element');
+		$geocode_map_element_long_raw          = $geocode_map_element_long . '_raw';
+		$geocode_map_element                   = FStringHelper::shortColName($geocode_map_element_long);
+		$geocode_lat_element_long              = $params->get('geocode_lat_element');
+		$geocode_lat_element_long_raw          = $geocode_lat_element_long . '_raw';
+		$geocode_lat_element                   = FStringHelper::shortColName($geocode_lat_element_long);
+		$geocode_lon_element_long              = $params->get('geocode_lon_element');
+		$geocode_lon_element_long_raw          = $geocode_lon_element_long . '_raw';
+		$geocode_lon_element                   = FStringHelper::shortColName($geocode_lon_element_long);
+		$geocode_addr1_element_long            = $params->get('geocode_addr1_element');
+		$geocode_addr1_element                 = $geocode_addr1_element_long ? FStringHelper::shortColName($geocode_addr1_element_long) : '';
+		$geocode_addr2_element_long            = $params->get('geocode_addr2_element');
+		$geocode_addr2_element                 = $geocode_addr2_element_long ? FStringHelper::shortColName($geocode_addr2_element_long) : '';
+		$geocode_city_element_long             = $params->get('geocode_city_element');
+		$geocode_city_element                  = $geocode_city_element_long ? FStringHelper::shortColName($geocode_city_element_long) : '';
+		$geocode_county_element_long           = $params->get('geocode_county_element');
+		$geocode_county_element                = $geocode_county_element_long ? FStringHelper::shortColName($geocode_county_element_long) : '';
+		$geocode_municipality_element_long     = $params->get('geocode_municipality_element');
+		$geocode_municipality_element          = $geocode_municipality_element_long ? FStringHelper::shortColName($geocode_municipality_element_long) : '';
+		$geocode_state_element_long            = $params->get('geocode_state_element');
+		$geocode_state_element                 = $geocode_state_element_long ? FStringHelper::shortColName($geocode_state_element_long) : '';
+		$geocode_zip_element_long              = $params->get('geocode_zip_element');
+		$geocode_zip_element                   = $geocode_zip_element_long ? FStringHelper::shortColName($geocode_zip_element_long) : '';
+		$geocode_country_element_long          = $params->get('geocode_country_element');
+		$geocode_country_element               = $geocode_country_element_long ? FStringHelper::shortColName($geocode_country_element_long) : '';
 		$geocode_normalize_street_element_long = $params->get('geocode_normalize_street_element');
-		$geocode_normalize_street_element = $geocode_normalize_street_element_long ? FabrikString::shortColName($geocode_normalize_street_element_long) : '';
-		$geocode_when = $params->get('geocode_when', '1');
-		$geocode_from = $params->get('geocode_from', '1');
-		$geocode_normalize_format = $params->get('geocode_normalize_format', 'long');
+		$geocode_normalize_street_element      = $geocode_normalize_street_element_long ? FStringHelper::shortColName($geocode_normalize_street_element_long) : '';
+		$geocode_when                          = $params->get('geocode_when', '1');
+		$geocode_from                          = $params->get('geocode_from', '1');
+		$geocode_normalize_format              = $params->get('geocode_normalize_format', 'long');
 
-		$config = JComponentHelper::getParams('com_fabrik');
+		$config     = ComponentHelper::getParams('com_fabrik');
 		$verifyPeer = (bool) $config->get('verify_peer', '1');
 
 		$gmap = new GeoCode($verifyPeer);
 
 		// Run through our table data
-		$total_encoded = 0;
+		$total_encoded  = 0;
 		$total_attempts = 0;
 
 		foreach ($data as $gkey => $group)
@@ -129,8 +134,8 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 			{
 				foreach ($group as $rkey => $row)
 				{
-					$lat = '';
-					$long = '';
+					$lat    = '';
+					$long   = '';
 					$fields = array();
 
 					/*
@@ -156,7 +161,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 					{
 						if ($geocode_batch_limit > 0 && $total_attempts >= $geocode_batch_limit)
 						{
-							FabrikWorker::log('plg.cron.geocode.information', 'reached batch limit');
+							Worker::log('plg.cron.geocode.information', 'reached batch limit');
 							break 2;
 						}
 
@@ -277,7 +282,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 								else
 								{
 									$logMsg = sprintf('Error (%s), id %s , no geocode result for: %s', $res['status'], $row->$primary_key_element_long, $full_addr);
-									FabrikWorker::log('plg.cron.geocode.information', $logMsg);
+									Worker::log('plg.cron.geocode.information', $logMsg);
 								}
 
 								if ($geocode_delay > 0)
@@ -287,7 +292,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 							}
 							else
 							{
-								FabrikWorker::log('plg.cron.geocode.information', 'empty address, id = ' . $row->$primary_key_element_long);
+								Worker::log('plg.cron.geocode.information', 'empty address, id = ' . $row->$primary_key_element_long);
 							}
 						}
 					}
@@ -298,8 +303,8 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 
 						if (!empty($geocode_map_element))
 						{
-							$lat = $row->$geocode_lat_element_long_raw;
-							$long = $row->$geocode_lon_element_long_raw;
+							$lat                          = $row->$geocode_lat_element_long_raw;
+							$long                         = $row->$geocode_lon_element_long_raw;
 							$fields[$geocode_map_element] = "($lat,$long):$geocode_zoom_level";
 						}
 
@@ -310,7 +315,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 					{
 						$total_attempts++;
 
-						$coords = FabrikString::mapStrToCoords($row->$geocode_map_element_long_raw);
+						$coords = FStringHelper::mapStrToCoords($row->$geocode_map_element_long_raw);
 
 						if (!empty($geocode_lat_element))
 						{
@@ -329,7 +334,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 					{
 						if ($geocode_batch_limit > 0 && $total_attempts >= $geocode_batch_limit)
 						{
-							FabrikWorker::log('plg.cron.geocode.information', 'reached batch limit');
+							Worker::log('plg.cron.geocode.information', 'reached batch limit');
 							break 2;
 						}
 
@@ -342,9 +347,9 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 									$long = $row->$geocode_lon_element_long_raw;
 									break;
 								case '5':
-									$coords = FabrikString::mapStrToCoords($row->$geocode_map_element_long_raw);
-									$lat = $coords->lat;
-									$long = $coords->long;
+									$coords = FStringHelper::mapStrToCoords($row->$geocode_map_element_long_raw);
+									$lat    = $coords->lat;
+									$long   = $coords->long;
 									break;
 							}
 
@@ -352,19 +357,19 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 							{
 								// OK!  Lets try and geocode it ...
 								$total_attempts++;
-								$res       = $gmap->getAddress($lat, $long, 'array', $apiKey);
+								$res = $gmap->getAddress($lat, $long, 'array', $apiKey);
 
 								if ($res['status'] == 'OK')
 								{
 									$types = array();
 
 									// pivot the address components by type
-									foreach($res['components'] as $component)
+									foreach ($res['components'] as $component)
 									{
 										foreach ($component->types as $type)
 										{
 											$types[$type]['short_name'] = $component->short_name;
-											$types[$type]['long_name'] = $component->long_name;
+											$types[$type]['long_name']  = $component->long_name;
 										}
 									}
 
@@ -442,8 +447,8 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 								}
 								else
 								{
-									$logMsg = sprintf('Error (%s), id %s , no geocode result for: %s', $res['status'], $row->$primary_key_element_long, $lat.",".$long);
-									FabrikWorker::log('plg.cron.geocode.information', $logMsg);
+									$logMsg = sprintf('Error (%s), id %s , no geocode result for: %s', $res['status'], $row->$primary_key_element_long, $lat . "," . $long);
+									Worker::log('plg.cron.geocode.information', $logMsg);
 								}
 
 								if ($geocode_delay > 0)
@@ -453,7 +458,7 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 							}
 							else
 							{
-								FabrikWorker::log('plg.cron.geocode.information', 'empty lat/lng, id = ' . $row->$primary_key_element_long);
+								Worker::log('plg.cron.geocode.information', 'empty lat/lng, id = ' . $row->$primary_key_element_long);
 							}
 						}
 					}
@@ -478,14 +483,14 @@ class PlgFabrik_CronGeocode extends PlgFabrik_Cron
 						}
 						catch (Exception $e)
 						{
-							FabrikWorker::log('plg.cron.geocode.error', 'update query error: ' . $e->getMessage());
+							Worker::log('plg.cron.geocode.error', 'update query error: ' . $e->getMessage());
 						}
 					}
 				}
 			}
 		}
 
-		FabrikWorker::log('plg.cron.geocode.information', 'Total encoded: '.$total_encoded);
+		Worker::log('plg.cron.geocode.information', 'Total encoded: ' . $total_encoded);
 
 		return $total_encoded;
 	}

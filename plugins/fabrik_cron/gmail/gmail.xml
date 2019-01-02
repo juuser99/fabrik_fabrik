@@ -12,6 +12,5 @@
 	<description>PLG_FABRIK_CRON_GMAIL_DESCRIPTION</description>
 	<files>
 		<filename plugin="gmail">gmail.php</filename>
-		<filename>index.html</filename>
 	</files>
 </extension>

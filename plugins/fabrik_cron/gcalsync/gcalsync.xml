@@ -13,7 +13,6 @@
 	<files>
 		<filename plugin="gcalsync">gcalsync.php</filename>
 		<folder>forms</folder>
-		<filename>index.html</filename>
 		<folder>language</folder>
 	</files>
 

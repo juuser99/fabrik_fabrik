@@ -9,10 +9,9 @@
  */
 
 // No direct access
-defined('_JEXEC') or die('Restricted access');
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * A cron task to email records to a give set of users
@@ -22,7 +21,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @since       3.0
  */
 
-class PlgFabrik_Cronnotification extends PlgFabrik_Cron
+class PlgFabrik_Cronnotification extends AbstractCronPlugin
 {
 	/**
 	 * Check if the user can use the active element

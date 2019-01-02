@@ -8,10 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\Plugin;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
+use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Administrator\Table\CronTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * Fabrik Plugin Cron Model
@@ -21,12 +26,14 @@ jimport('joomla.application.component.model');
  * @since       3.0
  */
 
-class PlgFabrik_Cron extends FabrikPlugin
+abstract class AbstractCronPlugin extends FabPlugin
 {
 	/**
 	 * Plugin item
 	 *
-	 * @var object
+	 * @var CronTable
+	 *
+	 * @since 4.0
 	 */
 	protected $row = null;
 
@@ -34,6 +41,8 @@ class PlgFabrik_Cron extends FabrikPlugin
 	 * Log
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $log = null;
 
@@ -42,22 +51,25 @@ class PlgFabrik_Cron extends FabrikPlugin
 	 * Allow plugin to stop rescheduling
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	public $reschedule = true;
 
 	/**
 	 * Get the db row
 	 *
-	 * @param   bool  $force  force reload
+	 * @param   bool $force force reload
 	 *
-	 * @return  object
+	 * @return  CronTable
+	 *
+	 * @since 4.0
 	 */
-	public function &getTable($force = false)
+	public function getTable($force = false)
 	{
 		if (!$this->row || $force)
 		{
-			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$row = FabTable::getInstance('Cron', 'FabrikTable');
+			$row = FabTable::getInstance(CronTable::class);
 			$row->load($this->id);
 			$this->row = $row;
 		}
@@ -69,6 +81,8 @@ class PlgFabrik_Cron extends FabrikPlugin
 	 * Whether cron should automagically load table data
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function requiresTableData()
 	{
@@ -79,6 +93,8 @@ class PlgFabrik_Cron extends FabrikPlugin
 	 * Get the log out put
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function getLog()
 	{
@@ -92,18 +108,22 @@ class PlgFabrik_Cron extends FabrikPlugin
 	 * then fabrik_cron=1 needs to be in the query string
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
+	 *
+	 * @throws \Exception
 	 */
 	public function queryStringActivated()
 	{
 		$params = $this->getParams();
-		
+
 		// Felixkat
-		$session = JFactory::getSession();
-		$fabrikCron = new stdClass();
-		$fabrikCron->dropData = $params->get('cron_importcsv_dropdata');
+		$session               = Factory::getApplication()->getSession();
+		$fabrikCron            = new \stdClass();
+		$fabrikCron->dropData  = $params->get('cron_importcsv_dropdata');
 		$fabrikCron->requireJS = $params->get('require_qs');
-		$secret = $params->get('require_qs_secret', '');
-		$fabrikCron->secret = $this->app->input->getString('fabrik_cron', '') === $secret;
+		$secret                = $params->get('require_qs_secret', '');
+		$fabrikCron->secret    = $this->app->input->getString('fabrik_cron', '') === $secret;
 		$session->set('fabrikCron', $fabrikCron);
 		// Felixkat
 
@@ -132,6 +152,8 @@ class PlgFabrik_Cron extends FabrikPlugin
 	 * until it has finished running, to prevent multiple copies running.
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function doRunGating()
 	{
@@ -143,9 +165,11 @@ class PlgFabrik_Cron extends FabrikPlugin
 	/**
 	 * Allow plugin to decide if it wants to be rescheduled
 	 *
-	 * @param   bool  $reschedule  Switch to turn off rescheduling if set to false
+	 * @param   bool $reschedule Switch to turn off rescheduling if set to false
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function shouldReschedule($reschedule = true)
 	{
@@ -160,13 +184,12 @@ class PlgFabrik_Cron extends FabrikPlugin
 	/**
 	 * Do the plugin action
 	 *
-	 * @param   array &$data data
-	 * @param   object  &$listModel  List model
+	 * @param   array &   $data      data
+	 * @param   ListModel $listModel List model
 	 *
 	 * @return  int  number of records updated
+	 *
+	 * @since 4.0
 	 */
-	public function process(&$data, &$listModel)
-	{
-		return 0;
-	}
+	abstract public function process(&$data, ListModel $listModel);
 }

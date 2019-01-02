@@ -11,9 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
-require_once COM_FABRIK_FRONTEND . '/models/importcsv.php';
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\Component\Fabrik\Site\Model\ImportCsvModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Cron Import CSV class
@@ -22,8 +25,7 @@ require_once COM_FABRIK_FRONTEND . '/models/importcsv.php';
  * @subpackage  Fabrik.cron.email
  * @since       3.0
  */
-
-class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
+class PlgFabrik_Cronimportcsv extends AbstractCronPlugin
 {
 	/**
 	 * Check if the user can use the active element
@@ -32,8 +34,9 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 * @param   string  $event     To trigger plugin on
 	 *
 	 * @return  bool can use or not
+	 *
+	 * @since 4.0
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -43,8 +46,9 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 * Whether cron should automagically load table data
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function requiresTableData()
 	{
 		/* We don't need cron to load $data for us */
@@ -60,12 +64,13 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 *
 	 * @return  int  listid  The id frabrik gives the list that hold information about files named $tablename
 	 * returns an empty() type if no table exists with the same name as $tablename.
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getListIdFromFileName($tableName)
 	{
 		// Get site's database
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__{package}_lists')->where('db_table_name = ' . $db->quote($tableName));
 		$db->setQuery($query);
@@ -78,12 +83,13 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 	 * Do the plugin action
 	 *
 	 * @param   array   &$data       array data to process
-	 * @param   object  &$listModel  plugin's list model
+	 * @param   ListModel  $listModel  plugin's list model
 	 *
 	 * @return  int  number of records run
+	 *
+	 * @since 4.0
 	 */
-
-	public function process(&$data, &$listModel)
+	public function process(&$data, ListModel $listModel)
 	{
 		$input = $this->app->input;
 		$params = $this->getParams();
@@ -128,7 +134,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 		// TODO: Need to also have a FILTER for CSV files ONLY.
 		$filter = "\.CSV$|\.csv$";
 		$exclude = array('done', '.svn', 'CVS');
-		$files = JFolder::files($d, $filter, true, true, $exclude);
+		$files = Folder::files($d, $filter, true, true, $exclude);
 
 		// The csv import class needs to know we are doing a cron import
 		$input->set('cron_csvimport', true);
@@ -142,8 +148,10 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 				break;
 			}
 
-			FabrikWorker::log('plg.cron.cronimportcsv.information', "Starting import: $fullCsvFile:  ");
-			$clsImportCSV = JModelLegacy::getInstance('Importcsv', 'FabrikFEModel');
+			Worker::log('plg.cron.cronimportcsv.information', "Starting import: $fullCsvFile:  ");
+
+			/** @var ImportCsvModel $clsImportCSV */
+			$clsImportCSV = FabModel::getInstance(ImportCsvModel::class);
 
 			if ($useTableName)
 			{
@@ -157,7 +165,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 
 			if (empty($listId))
 			{
-				FabrikWorker::log('plg.cron.cronimportcsv.warning', "List for $fullCsvFile does not exist");
+				Worker::log('plg.cron.cronimportcsv.warning', "List for $fullCsvFile does not exist");
 				continue;
 			}
 
@@ -170,7 +178,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 
 			// Get this->matchedHeading
 			$clsImportCSV->findExistingElements();
-			$msg = $clsImportCSV->makeTableFromCSV();
+			$msg = $clsImportCSV->insertData();
 
 			if ($this->app->isAdmin())
 			{
@@ -179,21 +187,21 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 
 			if ($deleteFile == '1')
 			{
-				JFile::delete($fullCsvFile);
+				File::delete($fullCsvFile);
 			}
 			elseif ($deleteFile == '2')
 			{
 				$new_csvfile = $fullCsvFile . '.' . time();
-				JFile::move($fullCsvFile, $new_csvfile);
+				File::move($fullCsvFile, $new_csvfile);
 			}
 			elseif ($deleteFile == '3')
 			{
 				$done_folder = dirname($fullCsvFile) . '/done';
 
-				if (JFolder::exists($done_folder))
+				if (Folder::exists($done_folder))
 				{
 					$new_csvfile = $done_folder . '/' . basename($fullCsvFile);
-					JFile::move($fullCsvFile, $new_csvfile);
+					File::move($fullCsvFile, $new_csvfile);
 				}
 				else
 				{
@@ -204,7 +212,7 @@ class PlgFabrik_Cronimportcsv extends PlgFabrik_Cron
 				}
 			}
 
-			FabrikWorker::log('plg.cron.cronimportcsv.information', $msg);
+			Worker::log('plg.cron.cronimportcsv.information', $msg);
 		}
 
 		// Leave the request array how we found it

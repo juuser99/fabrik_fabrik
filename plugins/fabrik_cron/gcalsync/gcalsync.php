@@ -12,8 +12,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Fabrik Cron Job:
@@ -23,18 +27,18 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
  * @subpackage  Fabrik.cron.gcalsync
  * @since       3.0
  */
-
-class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
+class PlgFabrik_CronGcalsync extends AbstractCronPlugin
 {
 	/**
 	 * Check if the user can use the plugin
 	 *
-	 * @param   string  $location  To trigger plugin on
-	 * @param   string  $event     To trigger plugin on
+	 * @param   string $location To trigger plugin on
+	 * @param   string $event    To trigger plugin on
 	 *
 	 * @return  bool can use or not
+	 *
+	 * @since 4.0
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -43,11 +47,12 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 	/**
 	 * Get a GCal short id from a long id
 	 *
-	 * @param   string  $long_id  Long id
+	 * @param   string $long_id Long id
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function _getGcalShortId($long_id)
 	{
 		$matches = array();
@@ -65,17 +70,18 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 	/**
 	 * Do the plugin action
 	 *
-	 * @param   array   &$data       Selected data
-	 * @param   object  &$listModel  List model
+	 * @param   array   & $data      Selected data
+	 * @param   ListModel $listModel List model
 	 *
 	 * @return number of records updated
+	 *
+	 * @since 4.0
 	 */
-
-	public function process(&$data, &$listModel)
+	public function process(&$data, ListModel $listModel)
 	{
-		$params = $this->getParams();
-		$gcal_url = $params->get('gcal_sync_gcal_url');
-		$matches = array();
+		$params    = $this->getParams();
+		$gcal_url  = $params->get('gcal_sync_gcal_url');
+		$matches   = array();
 		$listModel = $this->getModel();
 
 		/* This matches a standard GCal URL, found under the Google "Calender Details" tab, using the XML button.
@@ -86,13 +92,13 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 		if (preg_match('#feeds/(.*?)/(\w+-\w+|\w+)/(\w+)#', $gcal_url, $matches))
 		{
 			// Grab the bits of the URL we need for the Zend framework call
-			$gcal_user = $matches[1];
+			$gcal_user       = $matches[1];
 			$gcal_visibility = $matches[2];
 			$gcal_projection = $matches[3];
-			$gcal_email = urldecode($gcal_user);
+			$gcal_email      = urldecode($gcal_user);
 
 			// Grab the table model and find table name and PK
-			$table = $listModel->getTable();
+			$table      = $listModel->getTable();
 			$table_name = $table->db_table_name;
 
 			/**
@@ -109,7 +115,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 
 			/*
 			$mydata = array();
-			$db = FabrikWorker::getDbo();
+			$db = Worker::getDbo();
 			$query = $db->getQuery(true);
 			$query->select('*')->from($table_name);
 			$db->setQuery($query);
@@ -119,22 +125,22 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			/*
 			 * So as per above comment, now just use the $data we got given
 			 */
-			$db = FabrikWorker::getDbo();
+			$db     = Worker::getDbo();
 			$mydata = $data;
 
 			// Grab all the field names to use
-			$gcal_label_element_long = $params->get('gcal_sync_label_element');
-			$gcal_label_element = FabrikString::shortColName($gcal_label_element_long);
-			$gcal_desc_element_long = $params->get('gcal_sync_desc_element');
-			$gcal_desc_element = FabrikString::shortColName($gcal_desc_element_long);
+			$gcal_label_element_long      = $params->get('gcal_sync_label_element');
+			$gcal_label_element           = FStringHelper::shortColName($gcal_label_element_long);
+			$gcal_desc_element_long       = $params->get('gcal_sync_desc_element');
+			$gcal_desc_element            = FStringHelper::shortColName($gcal_desc_element_long);
 			$gcal_start_date_element_long = $params->get('gcal_sync_startdate_element');
-			$gcal_start_date_element = FabrikString::shortColName($gcal_start_date_element_long);
-			$gcal_end_date_element_long = $params->get('gcal_sync_enddate_element');
-			$gcal_end_date_element = FabrikString::shortColName($gcal_end_date_element_long);
-			$gcal_id_element_long = $params->get('gcal_sync_id_element');
-			$gcal_id_element = FabrikString::shortColName($gcal_id_element_long);
-			$gcal_userid_element_long = $params->get('gcal_sync_userid_element');
-			$gcal_userid_element = FabrikString::shortColName($gcal_userid_element_long);
+			$gcal_start_date_element      = FStringHelper::shortColName($gcal_start_date_element_long);
+			$gcal_end_date_element_long   = $params->get('gcal_sync_enddate_element');
+			$gcal_end_date_element        = FStringHelper::shortColName($gcal_end_date_element_long);
+			$gcal_id_element_long         = $params->get('gcal_sync_id_element');
+			$gcal_id_element              = FStringHelper::shortColName($gcal_id_element_long);
+			$gcal_userid_element_long     = $params->get('gcal_sync_userid_element');
+			$gcal_userid_element          = FStringHelper::shortColName($gcal_userid_element_long);
 
 			// Sanity check, make sure required elements have been specified
 			if (empty($gcal_label_element_long) || empty($gcal_start_date_element_long) || empty($gcal_end_date_element_long)
@@ -173,7 +179,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			}
 
 			require_once 'Zend/Loader.php';
-			Zend_Loader::loadClass('Zend_Gdata');
+			\Zend_Loader::loadClass('Zend_Gdata');
 			/*
 			require_once JPATH_SITE . '/libraries/Zend/Loader/Autoloader.php';echo 'found';
 			$autoloader = Zend_Loader_Autoloader::getInstance();
@@ -187,22 +193,22 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			 * Zend_Loader::loadClass('Zend_Gdata_AuthSub');
 			 * Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
 			 */
-			Zend_Loader::loadClass('Zend_Gdata_Calendar');
+			\Zend_Loader::loadClass('Zend_Gdata_Calendar');
 
 			// See if they want to sync to gcal, and provided a login
 			$gcal_sync_upload = $params->get('gcal_sync_upload_events', 'from');
 
 			if ($gcal_sync_upload == 'both' || $gcal_sync_upload == 'to')
 			{
-				Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
-				$email = $params->get('gcal_sync_login', '');
+				\Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
+				$email  = $params->get('gcal_sync_login', '');
 				$passwd = $params->get('gcal_sync_passwd', '');
 
 				try
 				{
-					$client = Zend_Gdata_ClientLogin::getHttpClient($email, $passwd, 'cl');
+					$client = \Zend_Gdata_ClientLogin::getHttpClient($email, $passwd, 'cl');
 				}
-				catch (Zend_Gdata_App_CaptchaRequiredException $cre)
+				catch (\Zend_Gdata_App_CaptchaRequiredException $cre)
 				{
 					/*
 					echo 'URL of CAPTCHA image: ' . $cre->getCaptchaUrl() . "\n";
@@ -212,18 +218,18 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 
 					return;
 				}
-				catch (Zend_Gdata_App_AuthException $ae)
+				catch (\Zend_Gdata_App_AuthException $ae)
 				{
 					$this->log .= 'Problem authenticating: ' . $ae->exception() . "\n";
 
 					return;
 				}
 
-				$gdataCal = new Zend_Gdata_Calendar($client);
+				$gdataCal = new \Zend_Gdata_Calendar($client);
 			}
 			else
 			{
-				$gdataCal = new Zend_Gdata_Calendar;
+				$gdataCal = new \Zend_Gdata_Calendar;
 			}
 
 			// Set up and execute the call to grab the feed from google
@@ -238,14 +244,14 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 
 			foreach ($eventFeed as $key => $event)
 			{
-				$short_id = $this->_getGcalShortId($event->id->text);
+				$short_id                  = $this->_getGcalShortId($event->id->text);
 				$gcal_event_ids[$short_id] = $eventFeed[$key];
 			}
 
 			/* Run through our table data, and build an array of our events indexed by the Google ID
 			 * (of course not all events may have a Google ID)
 			 */
-			$our_event_ids = array();
+			$our_event_ids  = array();
 			$our_upload_ids = array();
 
 			foreach ($mydata as $gkey => $group)
@@ -274,10 +280,10 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 				if (!array_key_exists($id, $our_event_ids))
 				{
 					// We don't have the ID, so add the event to our table
-					$row = array();
+					$row                           = array();
 					$row[$gcal_start_date_element] = strftime('%Y-%m-%d %H:%M:%S', strtotime($event->when[0]->startTime));
-					$row[$gcal_end_date_element] = strftime('%Y-%m-%d %H:%M:%S', strtotime($event->when[0]->endTime));
-					$row[$gcal_label_element] = $event->title->text;
+					$row[$gcal_end_date_element]   = strftime('%Y-%m-%d %H:%M:%S', strtotime($event->when[0]->endTime));
+					$row[$gcal_label_element]      = $event->title->text;
 
 					if ($gcal_desc_element)
 					{
@@ -298,7 +304,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 			// If upload syncing (from us to gcal) is enabled ...
 			if ($gcal_sync_upload == 'both' || $gcal_sync_upload == 'to')
 			{
-				$tz = new DateTimeZone($this->config->get('offset'));
+				$tz = new \DateTimeZone($this->config->get('offset'));
 
 				// Loop through the array we built earlier of events we have that aren't in gcal
 				foreach ($our_upload_ids as $id => $event)
@@ -324,7 +330,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					}
 
 					// Now start building the gcal event structure
-					$newEvent = $gdataCal->newEventEntry();
+					$newEvent        = $gdataCal->newEventEntry();
 					$newEvent->title = $gdataCal->newTitle($event->$gcal_label_element_long);
 
 					if ($gcal_desc_element_long)
@@ -339,7 +345,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					$when = $gdataCal->newWhen();
 
 					// Grab the start date, apply the tx offset, and format it for gcal
-					$start_date = JFactory::getDate($event->$gcal_start_date_element_long, $tz);
+					$start_date      = Factory::getDate($event->$gcal_start_date_element_long, $tz);
 					$when->startTime = $this->formatDate($start_date);
 
 					/* We have to provide an end date for gcal, so if we don't have one,
@@ -347,14 +353,14 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					 */
 					if ($event->$gcal_end_date_element == '0000-00-00 00:00:00')
 					{
-						$startstamp = strtotime($event->$gcal_start_date_element_long);
-						$endstamp = $startstamp + (60 * 60);
+						$startstamp                         = strtotime($event->$gcal_start_date_element_long);
+						$endstamp                           = $startstamp + (60 * 60);
 						$event->$gcal_end_date_element_long = strftime('%Y-%m-%d %H:%M:%S', $endstamp);
 					}
 
 					// Grab the end date, apply the tx offset, and format it for gcal
-					$end_date = JFactory::getDate($event->$gcal_end_date_element_long, $tz);
-					$when->endTime = $this->formatDate($end_date);
+					$end_date       = Factory::getDate($event->$gcal_end_date_element_long, $tz);
+					$when->endTime  = $this->formatDate($end_date);
 					$newEvent->when = array($when);
 
 					// Fire off the insertEvent to gcal, catch any errors
@@ -362,7 +368,7 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					{
 						$retEvent = $gdataCal->insertEvent($newEvent);
 					}
-					catch (Zend_Gdata_App_HttpException $he)
+					catch (\Zend_Gdata_App_HttpException $he)
 					{
 						// @TODO log this, and / or enqueue msg it if on backend
 						$errStr = 'Problem adding event: ' . $he->getRawResponseBody() . "\n";
@@ -373,8 +379,8 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 					 * and update our event record with the short version of the ID
 					 */
 					$gcal_id = $this->_getGcalShortId($retEvent->id->text);
-					$our_id = $event->__pk_val;
-					$query = $db->getQuery(true);
+					$our_id  = $event->__pk_val;
+					$query   = $db->getQuery(true);
 					$query->update($table_name)->set($gcal_id_element . ' = ' . $db->quote($gcal_id))->where($table->db_primary_key . ' = ' . $db->quote($our_id));
 					$db->setQuery($query);
 					$db->execute();
@@ -386,11 +392,13 @@ class PlgFabrik_CronGcalsync extends PlgFabrik_Cron
 	/**
 	 * Format date for google
 	 *
-	 * @param   JDate  $date  Date
+	 * @param   Date $date Date
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
-	protected function formatDate(JDate $date)
+	protected function formatDate(Date $date)
 	{
 		$tzOffset = $date->format('P');
 
