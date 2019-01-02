@@ -11,8 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Are Unique values Validation Rule
@@ -21,12 +23,14 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.areuniquevalues
  * @since       3.0
  */
-class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleAreUniqueValues extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'areuniquevalues';
 
@@ -37,11 +41,13 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
 		$input        = $this->app->input;
-		$elementModel = $this->elementModel;
+		$elementPlugin = $this->elementPlugin;
 
 		// Could be a dropdown with multivalues
 		if (is_array($data))
@@ -49,9 +55,9 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 			$data = implode('', $data);
 		}
 
-		$params     = $this->getParams();
-		$listModel  = $elementModel->getlistModel();
-		$table      = $listModel->getTable();
+		$params    = $this->getParams();
+		$listModel = $elementPlugin->getlistModel();
+		$table     = $listModel->getTable();
 
 		$otherField = $params->get('areuniquevalues-otherfield', '');
 
@@ -85,13 +91,13 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 		$lookupTable = $db->qn($table->db_table_name);
 		$data        = $db->q($data);
 		$query       = $db->getQuery(true);
-		$query->select('COUNT(*)')->from($lookupTable)->where($db->qn($elementModel->getFullName(false, false)) . ' = ' . $data);
+		$query->select('COUNT(*)')->from($lookupTable)->where($db->qn($elementPlugin->getFullName(false, false)) . ' = ' . $data);
 		$listModel->buildQueryJoin($query);
 
 		if (!empty($otherField))
 		{
 			// $$$ the array thing needs fixing, for now just grab 0
-			$formData = $elementModel->getForm()->formData;
+			$formData = $elementPlugin->getForm()->formData;
 			$v        = FArrayHelper::getValue($formData, $otherFullName . '_raw', FArrayHelper::getValue($formData, $otherFullName, ''));
 
 			if (is_array($v))
@@ -105,7 +111,7 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 		if (!empty($otherField2))
 		{
 			// $$$ the array thing needs fixing, for now just grab 0
-			$formData = $elementModel->getForm()->formData;
+			$formData = $elementPlugin->getForm()->formData;
 			$v        = FArrayHelper::getValue($formData, $otherFullName2 . '_raw', FArrayHelper::getValue($formData, $otherFullName2, ''));
 
 			if (is_array($v))
@@ -137,45 +143,50 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 	 * Gets the other element model to compare this plugins element data against
 	 *
 	 * @return    object element model
+	 *
+	 * @since 4.0
 	 */
 	private function getOtherElement($suffix = '')
 	{
 		$params     = $this->getParams();
 		$otherField = $params->get('areuniquevalues-otherfield' . $suffix);
 
-		return FabrikWorker::getPluginManager()->getElementPlugin($otherField);
+		return Worker::getPluginManager()->getElementPlugin($otherField);
 	}
 
 	/**
 	 * Gets the hover/alt text that appears over the validation rule icon in the form
 	 *
 	 * @return    string    label
+	 *
+	 * @since 4.0
 	 */
 	protected function getLabel()
 	{
-		$params            = $this->getParams();
-		$otherField        = $params->get('areuniquevalues-otherfield');
-		$otherField2        = $params->get('areuniquevalues-otherfield2');
-		$tipText           = $params->get('tip_text', '');
+		$params      = $this->getParams();
+		$otherField  = $params->get('areuniquevalues-otherfield');
+		$otherField2 = $params->get('areuniquevalues-otherfield2');
+		$tipText     = $params->get('tip_text', '');
 
 		if (empty($tipText) && ((int) $otherField !== 0 || (int) $otherField2 !== 0))
 		{
 			$labels = array();
 
-			if ((int)$otherField !== 0)
+			if ((int) $otherField !== 0)
 			{
 				$otherElementModel = $this->getOtherElement();
-				$labels[] = $otherElementModel->getElement()->label;
+				$labels[]          = $otherElementModel->getElement()->label;
 			}
 
-			if ((int)$otherField2 !== 0)
+			if ((int) $otherField2 !== 0)
 			{
 				$otherElementModel = $this->getOtherElement('2');
-				$labels[] = $otherElementModel->getElement()->label;
+				$labels[]          = $otherElementModel->getElement()->label;
 			}
 
-			$labels = implode(' ' . strtolower(JText::_('COM_FABRIK_AND')) . ' ', $labels);
-			return JText::sprintf('PLG_VALIDATIONRULE_AREUNIQUEVALUES_ADDITIONAL_LABEL', $labels);
+			$labels = implode(' ' . strtolower(Text::_('COM_FABRIK_AND')) . ' ', $labels);
+
+			return Text::sprintf('PLG_VALIDATIONRULE_AREUNIQUEVALUES_ADDITIONAL_LABEL', $labels);
 		}
 		else
 		{

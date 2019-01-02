@@ -11,8 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * Email Already Registered Validation Rule
@@ -21,22 +23,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.emailexists
  * @since       3.0
  */
-class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleEmailExists extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'emailexists';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
@@ -50,24 +56,24 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 			$data = $data[0];
 		}
 
-		$params = $this->getParams();
-		$elementModel = $this->elementModel;
-		$orNot = $params->get('emailexists_or_not', 'fail_if_exists');
-		$userField = $params->get('emailexists_user_field');
-		$userId = 0;
+		$params       = $this->getParams();
+		$elementPlugin = $this->elementPlugin;
+		$orNot        = $params->get('emailexists_or_not', 'fail_if_exists');
+		$userField    = $params->get('emailexists_user_field');
+		$userId       = 0;
 
 		if ((int) $userField !== 0)
 		{
-			$user_elementModel = FabrikWorker::getPluginManager()->getElementPlugin($userField);
-			$user_fullName = $user_elementModel->getFullName(true, false);
-			$userField = $user_elementModel->getFullName(false, false);
+			$user_elementPlugin = Worker::getPluginManager()->getElementPlugin($userField);
+			$user_fullName     = $user_elementPlugin->getFullName(true, false);
+			$userField         = $user_elementPlugin->getFullName(false, false);
 		}
 
 		if (!empty($userField))
 		{
 			// $$$ the array thing needs fixing, for now just grab 0
-			$formData = $elementModel->getForm()->formData;
-			$userId = FArrayHelper::getValue($formData, $user_fullName . '_raw', FArrayHelper::getValue($formData, $user_fullName, ''));
+			$formData = $elementPlugin->getForm()->formData;
+			$userId   = FArrayHelper::getValue($formData, $user_fullName . '_raw', FArrayHelper::getValue($formData, $user_fullName, ''));
 
 			if (is_array($userId))
 			{
@@ -75,8 +81,7 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 			}
 		}
 
-		jimport('joomla.user.helper');
-		$db = FabrikWorker::getDbo(true);
+		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__users')->where('email = ' . $db->quote($data));
 		$db->setQuery($query);
@@ -136,16 +141,18 @@ class PlgFabrik_ValidationruleEmailExists extends PlgFabrik_Validationrule
 	/**
 	 * Gets the hover/alt text that appears over the validation rule icon in the form
 	 *
-	 * @return	string	label
+	 * @return    string    label
+	 *
+	 * @since 4.0
 	 */
 	protected function getLabel()
 	{
 		$params = $this->getParams();
-		$cond = $params->get('emailexists_or_not');
+		$cond   = $params->get('emailexists_or_not');
 
 		if ($cond == 'fail_if_not_exists')
 		{
-			return FText::_('PLG_VALIDATIONRULE_EMAILEXISTS_LABEL_NOT');
+			return Text::_('PLG_VALIDATIONRULE_EMAILEXISTS_LABEL_NOT');
 		}
 		else
 		{

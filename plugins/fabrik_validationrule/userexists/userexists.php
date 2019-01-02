@@ -11,8 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\CMS\User\UserHelper;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * User Exists Validation Rule
@@ -21,32 +23,35 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.userexists
  * @since       3.0
  */
-class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleUserExists extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'userexists';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
-		$params = $this->getParams();
-		$elementModel = $this->elementModel;
+		$params        = $this->getParams();
+		$elementPlugin = $this->elementPlugin;
 
 		// As ornot is a radio button it gets json encoded/decoded as an object
-		$orNot = $params->get('userexists_or_not', 'fail_if_exists');
-		jimport('joomla.user.helper');
-		$result = JUserHelper::getUserId($data);
+		$orNot  = $params->get('userexists_or_not', 'fail_if_exists');
+		$result = UserHelper::getUserId($data);
 
 		if ($this->user->get('guest'))
 		{
@@ -79,20 +84,20 @@ class PlgFabrik_ValidationruleUserExists extends PlgFabrik_Validationrule
 			else
 			{
 				$userField = $params->get('userexists_user_field');
-				$userId = 0;
+				$userId    = 0;
 
 				if ((int) $userField !== 0)
 				{
-					$userElementModel = FabrikWorker::getPluginManager()->getElementPlugin($userField);
-					$userFullName = $userElementModel->getFullName(true, false);
-					$userField = $userElementModel->getFullName(false, false);
+					$userElementModel = Worker::getPluginManager()->getElementPlugin($userField);
+					$userFullName     = $userElementModel->getFullName(true, false);
+					$userField        = $userElementModel->getFullName(false, false);
 				}
 
 				if (!empty($userField))
 				{
 					// $$$ the array thing needs fixing, for now just grab 0
-					$formData = $elementModel->getForm()->formData;
-					$userId = FArrayHelper::getValue($formData, $userFullName . '_raw', FArrayHelper::getValue($formData, $userFullName, ''));
+					$formData = $elementPlugin->getForm()->formData;
+					$userId   = FArrayHelper::getValue($formData, $userFullName . '_raw', FArrayHelper::getValue($formData, $userFullName, ''));
 
 					if (is_array($userId))
 					{

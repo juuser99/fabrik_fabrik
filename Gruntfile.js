@@ -36,8 +36,8 @@ module.exports = function (grunt) {
 						'!/media/com_fabrik/js/**',
 						'./media/com_fabrik/js/lib/datejs/**/*.js',
 						'!./media/com_fabrik/js/lib/datejs/**/*-min.js',
-						'./administrator/components/com_fabrik/models/fields/*.js',
-						'!./administrator/components/com_fabrik/models/fields/*-min.js',
+						'./administrator/components/com_fabrik/src/Field/*.js',
+						'!./administrator/components/com_fabrik/src/Field/*-min.js',
 						'./administrator/components/com_fabrik/tmpl/**/*.js',
 						'!./administrator/components/com_fabrik/tmpl/**/*-min.js'
 					],

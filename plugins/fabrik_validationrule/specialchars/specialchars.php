@@ -11,8 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Special Characters Validation Rule
@@ -21,22 +20,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.specialchars
  * @since       3.0
  */
-class PlgFabrik_ValidationruleSpecialChars extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleSpecialChars extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'specialchars';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
@@ -46,7 +49,7 @@ class PlgFabrik_ValidationruleSpecialChars extends PlgFabrik_Validationrule
 			$data = implode('', $data);
 		}
 
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$doMatch = $params->get('specialchars-match');
 
 		if ($doMatch)
@@ -70,14 +73,16 @@ class PlgFabrik_ValidationruleSpecialChars extends PlgFabrik_Validationrule
 	 * Checks if the validation should replace the submitted element data
 	 * if so then the replaced data is returned otherwise original data returned
 	 *
-	 * @param   string  $data           Original data
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          Original data
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
-	 * @return  string	original or replaced data
+	 * @return  string    original or replaced data
+	 *
+	 * @since 4.0
 	 */
 	public function replace($data, $repeatCounter)
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$doMatch = $params->get('specialchars-match');
 
 		if (!$doMatch)

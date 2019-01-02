@@ -11,11 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
-
 // Require the Open Provider API
 require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.php';
+
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Domain name look up against open provider service
@@ -24,29 +23,33 @@ require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.
  * @subpackage  Fabrik.validationrule.openprovider
  * @since       3.0
  */
-class PlgFabrik_ValidationruleOpenprovider extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleOpenprovider extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'openprovider';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
-		$params = $this->getParams();
+		$params   = $this->getParams();
 		$username = $params->get('openprovider_username');
 		$password = $params->get('openprovider_password');
-		$data = strtolower($data);
+		$data     = strtolower($data);
 
 		// Strip www. from front
 		if (substr($data, 0, 4) == 'www.')
@@ -55,22 +58,22 @@ class PlgFabrik_ValidationruleOpenprovider extends PlgFabrik_Validationrule
 		}
 
 		list($domain, $extension) = explode('.', $data, 2);
-		$api = new OP_API('https://api.openprovider.eu');
-		$args = array(
+		$api     = new OP_API('https://api.openprovider.eu');
+		$args    = array(
 			'domains' => array(
 				array(
-					'name' => $domain,
+					'name'      => $domain,
 					'extension' => $extension
 				)
 			)
 		);
 		$request = new OP_Request;
 		$request->setCommand('checkDomainRequest')
-		->setAuth(array('username' => $username, 'password' => $password))
-		->setArgs($args);
+			->setAuth(array('username' => $username, 'password' => $password))
+			->setArgs($args);
 
 		$reply = $api->setDebug(0)->process($request);
-		$res = $reply->getValue();
+		$res   = $reply->getValue();
 
 		return $res[0]['status'] === 'active' ? false : true;
 	}

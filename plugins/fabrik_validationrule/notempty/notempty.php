@@ -11,8 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Not Empty Validation Rule
@@ -21,32 +20,36 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.notempty
  * @since       3.0
  */
-class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleNotempty extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'notempty';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
-		if (method_exists($this->elementModel, 'dataConsideredEmptyForValidation'))
+		if (method_exists($this->elementPlugin, 'dataConsideredEmptyForValidation'))
 		{
-			$ok = $this->elementModel->dataConsideredEmptyForValidation($data, $repeatCounter);
+			$ok = $this->elementPlugin->dataConsideredEmptyForValidation($data, $repeatCounter);
 		}
 		else
 		{
-			$ok = $this->elementModel->dataConsideredEmpty($data, $repeatCounter);
+			$ok = $this->elementPlugin->dataConsideredEmpty($data, $repeatCounter);
 		}
 
 		return !$ok;

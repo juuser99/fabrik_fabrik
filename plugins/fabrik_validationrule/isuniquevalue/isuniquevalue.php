@@ -11,10 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 use Joomla\Utilities\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Is Unique Value Validation Rule
@@ -23,12 +22,14 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isuniquevalue
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleIsUniqueValue extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'isuniquevalue';
 
@@ -39,11 +40,13 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
-		$input        = $this->app->input;
-		$elementModel = $this->elementModel;
+		$input         = $this->app->input;
+		$elementPlugin = $this->elementPlugin;
 
 		// Could be a drop-down with multi-values
 		if (is_array($data))
@@ -51,16 +54,16 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 			$data = implode('', $data);
 		}
 
-		$params      = $this->getParams();
-		$element     = $elementModel->getElement();
-		$listModel   = $elementModel->getlistModel();
-		$table       = $listModel->getTable();
-		$db          = $listModel->getDb();
-		$query       = $db->getQuery(true);
-		$cond        = $params->get('isuniquevalue-caseinsensitive') == 1 ? 'LIKE' : '=';
-		$secret      = $this->config->get('secret');
+		$params    = $this->getParams();
+		$element   = $elementPlugin->getElement();
+		$listModel = $elementPlugin->getlistModel();
+		$table     = $listModel->getTable();
+		$db        = $listModel->getDb();
+		$query     = $db->getQuery(true);
+		$cond      = $params->get('isuniquevalue-caseinsensitive') == 1 ? 'LIKE' : '=';
+		$secret    = $this->config->get('secret');
 
-		$groupModel = $elementModel->getGroup();
+		$groupModel = $elementPlugin->getGroup();
 
 		// if it's a join, get the joined table name
 		if ($groupModel->isJoin())
@@ -81,7 +84,7 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 			$lookupTable = $table->db_table_name;
 		}
 
-		if ($elementModel->encryptMe())
+		if ($elementPlugin->encryptMe())
 		{
 			$k = 'AES_DECRYPT(' . $element->name . ', ' . $db->q($secret) . ')';
 		}
@@ -101,13 +104,13 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 		{
 			// not a join, just use rowid and normal pk
 			$rowId = $input->get('rowid', '');
-			$pk = $table->db_primary_key;
+			$pk    = $table->db_primary_key;
 		}
 		else
 		{
 			// join, so get the join's PK and value as rowid
 			$joinModel = $groupModel->getJoinModel();
-			$pk = $joinModel->getForeignID();
+			$pk        = $joinModel->getForeignID();
 
 			if ($groupModel->canRepeat())
 			{
@@ -121,7 +124,7 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 				}
 
 				$rowids = Arrayhelper::getValue($this->formModel->formData, $pk, array());
-				$rowId = ArrayHelper::getValue($rowids, $repeatCounter, '');
+				$rowId  = ArrayHelper::getValue($rowids, $repeatCounter, '');
 			}
 			else
 			{
@@ -133,7 +136,7 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 
 		if (!empty($rowId))
 		{
-			$query->where(FabrikString::safeQuoteName($pk) . ' != ' . $db->q($rowId));
+			$query->where(FStringHelper::safeQuoteName($pk) . ' != ' . $db->q($rowId));
 		}
 
 		$db->setQuery($query);
@@ -149,21 +152,23 @@ class PlgFabrik_ValidationruleIsUniqueValue extends PlgFabrik_Validationrule
 	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	private function checkThisGroup($data, $repeatCounter)
 	{
-		$params = $this->getParams();
-		$elementModel = $this->elementModel;
-		$groupModel = $elementModel->getGroup();
+		$params        = $this->getParams();
+		$elementPlugin = $this->elementPlugin;
+		$groupModel    = $elementPlugin->getGroup();
 
 		if ($groupModel->canRepeat())
 		{
-			$fullName = $elementModel->getFullName(true, false);
+			$fullName    = $elementPlugin->getFullName(true, false);
 			$elementData = ArrayHelper::getValue($this->formModel->formData, $fullName, array());
 
 			foreach ($elementData as $k => $v)
 			{
-				if ($k === (int)$repeatCounter)
+				if ($k === (int) $repeatCounter)
 				{
 					continue;
 				}

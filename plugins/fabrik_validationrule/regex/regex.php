@@ -11,10 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Joomla\Registry\Registry;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Joomla\Registry\Registry;
 
 /**
  * Regular Expression Validation Rule
@@ -23,22 +22,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.regex
  * @since       3.0
  */
-class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleRegex extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'regex';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
@@ -48,15 +51,15 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 			$data = implode('', $data);
 		}
 
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$doMatch = $params->get('regex-match');
 
 		if ($doMatch)
 		{
 			$matches = array();
-			$v = $params->get('regex-expression');
-			$v = trim($v);
-			$found = empty($v) ? true : preg_match($v, $data, $matches);
+			$v       = $params->get('regex-expression');
+			$v       = trim($v);
+			$found   = empty($v) ? true : preg_match($v, $data, $matches);
 
 			return $found;
 		}
@@ -68,22 +71,24 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 * Checks if the validation should replace the submitted element data
 	 * if so then the replaced data is returned otherwise original data returned
 	 *
-	 * @param   string  $data           Original data
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          Original data
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
-	 * @return  string	original or replaced data
+	 * @return  string    original or replaced data
+	 *
+	 * @since 4.0
 	 */
 	public function replace($data, $repeatCounter)
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$doMatch = $params->get('regex-match');
 
 		if (!$doMatch)
 		{
-			$v = $params->get($this->pluginName . '-expression');
-			$v = trim($v);
+			$v       = $params->get($this->pluginName . '-expression');
+			$v       = trim($v);
 			$replace = $params->get('regex-replacestring');
-			$return = empty($v) ? $data : preg_replace($v, $replace, $data);
+			$return  = empty($v) ? $data : preg_replace($v, $replace, $data);
 
 			return $return;
 		}
@@ -100,10 +105,10 @@ class PlgFabrik_ValidationruleRegex extends PlgFabrik_Validationrule
 	 */
 	public function iconImage()
 	{
-		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
+		$plugin       = PluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
 		$globalParams = new Registry($plugin->params);
-		$default = $globalParams->get('icon', 'star');
-		$params = $this->getParams();
+		$default      = $globalParams->get('icon', 'star');
+		$params       = $this->getParams();
 
 		return $params->get('icon', $default);
 	}

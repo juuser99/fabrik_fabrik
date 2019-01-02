@@ -11,10 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Joomla\Registry\Registry;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Joomla\Registry\Registry;
+use Fabrik\Helpers\Worker;
 
 /**
  * PHP Validation Rule
@@ -23,22 +23,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.php
  * @since       3.0
  */
-class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationrulePhp extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'php';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter = 0)
 	{
@@ -48,7 +52,7 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 			$data = implode('', $data);
 		}
 
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$doMatch = $params->get('php-match');
 
 		if ($doMatch)
@@ -63,14 +67,16 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	 * Checks if the validation should replace the submitted element data
 	 * if so then the replaced data is returned otherwise original data returned
 	 *
-	 * @param   string  $data           Original data
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          Original data
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
-	 * @return  string	original or replaced data
+	 * @return  string    original or replaced data
+	 *
+	 * @since 4.0
 	 */
 	public function replace($data, $repeatCounter = 0)
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$doMatch = $params->get('php-match');
 
 		if (!$doMatch)
@@ -84,21 +90,22 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	/**
 	 * Run eval
 	 *
-	 * @param   string  $data  Original data
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          Original data
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
-	 * @return  string	Evaluated PHP function
+	 * @return  string    Evaluated PHP function
+	 *
+	 * @since 4.0
 	 */
-
 	private function _eval($data, $repeatCounter = 0)
 	{
-		$params = $this->getParams();
-		$elementModel = $this->elementModel;
-		$formModel = $elementModel->getFormModel();
-		$formData = $formModel->formData;
-		$w = new FabrikWorker;
-		$phpCode = $params->get('php-code');
-		$phpCode = $w->parseMessageForPlaceHolder($phpCode, $formData, true, true);
+		$params        = $this->getParams();
+		$elementPlugin = $this->elementPlugin;
+		$formModel     = $elementPlugin->getFormModel();
+		$formData      = $formModel->formData;
+		$w             = new Worker;
+		$phpCode       = $params->get('php-code');
+		$phpCode       = $w->parseMessageForPlaceHolder($phpCode, $formData, true, true);
 		/**
 		 * $$$ hugh - added trigger_error(""), which will "clear" any existing errors,
 		 * otherwise logEval will pick up and report notices and warnings generated
@@ -107,9 +114,9 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 		 * be empty.
 		 * $$$ hugh - moved the $trigger_error() into a helper func
 		 */
-		FabrikWorker::clearEval();
+		Worker::clearEval();
 		$return = @eval($phpCode);
-		FabrikWorker::logEval($return, 'Caught exception on php validation of ' . $elementModel->getFullName(true, false) . ': %s');
+		Worker::logEval($return, 'Caught exception on php validation of ' . $elementPlugin->getFullName(true, false) . ': %s');
 
 		return $return;
 	}
@@ -123,10 +130,10 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 	 */
 	public function iconImage()
 	{
-		$plugin = JPluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
+		$plugin       = PluginHelper::getPlugin('fabrik_validationrule', $this->pluginName);
 		$globalParams = new Registry($plugin->params);
-		$default = $globalParams->get('icon', 'star');
-		$params = $this->getParams();
+		$default      = $globalParams->get('icon', 'star');
+		$params       = $this->getParams();
 
 		return $params->get('icon', $default);
 	}

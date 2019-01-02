@@ -11,8 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Is Alpha Numeric Validation Rule
@@ -21,12 +20,14 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isalphanumeric
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsalphanumeric extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleIsalphanumeric extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'isalphanumeric';
 
@@ -37,6 +38,8 @@ class PlgFabrik_ValidationruleIsalphanumeric extends PlgFabrik_Validationrule
 	 * @param   int     $repeatCounter  Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{

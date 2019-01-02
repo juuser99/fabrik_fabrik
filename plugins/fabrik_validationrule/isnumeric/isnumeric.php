@@ -11,8 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin classes
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Is Numeric Validation Rule
@@ -21,22 +20,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isnumeric
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleIsNumeric extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'isnumeric';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
@@ -46,7 +49,7 @@ class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
 			$data = implode('', $data);
 		}
 
-		$params = $this->getParams();
+		$params      = $this->getParams();
 		$allow_empty = $params->get('isnumeric-allow_empty');
 
 		if ($allow_empty == '1' and empty($data))
@@ -54,7 +57,7 @@ class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
 			return true;
 		}
 
-		return is_numeric($this->elementModel->unNumberFormat($data));
+		return is_numeric($this->elementPlugin->unNumberFormat($data));
 	}
 
 	/**
@@ -62,11 +65,12 @@ class PlgFabrik_ValidationruleIsNumeric extends PlgFabrik_Validationrule
 	 * Default is false, can be overridden on per-validation basis (such as isnumeric)
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	protected function allowEmpty()
 	{
-		$params = $this->getParams();
+		$params      = $this->getParams();
 		$allow_empty = $params->get('isnumeric-allow_empty');
 
 		return $allow_empty == '1';

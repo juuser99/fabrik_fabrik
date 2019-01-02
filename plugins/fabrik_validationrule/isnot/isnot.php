@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Is Not Validation Rule
@@ -21,22 +21,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isnot
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleIsNot extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'isnot';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
@@ -46,8 +50,8 @@ class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
 		}
 
 		$params = $this->getParams();
-		$isNot = $params->get('isnot-isnot');
-		$isNot = explode('|', $isNot);
+		$isNot  = $params->get('isnot-isnot');
+		$isNot  = explode('|', $isNot);
 
 		foreach ($isNot as $i)
 		{
@@ -63,20 +67,22 @@ class PlgFabrik_ValidationruleIsNot extends PlgFabrik_Validationrule
 	/**
 	 * Gets the hover/alt text that appears over the validation rule icon in the form
 	 *
-	 * @return  string	label
+	 * @return  string    label
+	 *
+	 * @since 4.0
 	 */
 	protected function getLabel()
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$tipText = $params->get('tip_text', '');
 
 		if ($tipText !== '')
 		{
-			return FText::_($tipText);
+			return Text::_($tipText);
 		}
 
 		$isNot = $params->get('isnot-isnot');
 
-		return JText::sprintf('PLG_VALIDATIONRULE_ISNOT_LABEL', $isNot);
+		return Text::sprintf('PLG_VALIDATIONRULE_ISNOT_LABEL', $isNot);
 	}
 }

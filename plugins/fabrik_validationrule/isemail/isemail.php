@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Is Email Validation Rule
@@ -21,22 +21,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.isemail
  * @since       3.0
  */
-class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleIsEmail extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'isemail';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
@@ -50,8 +54,8 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 
 		// Decode as it can be posted via ajax
 		// (but first % encode any + characters, as urldecode() will turn + into space)
-		$email = urldecode(str_replace('+', '%2B', $email));
-		$params = $this->getParams();
+		$email       = urldecode(str_replace('+', '%2B', $email));
+		$params      = $this->getParams();
 		$allow_empty = $params->get('isemail-allow_empty');
 
 		if ($allow_empty == '1' and empty($email))
@@ -60,21 +64,21 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 		}
 
 		// $$$ hugh - let's try using new helper func instead of rolling our own.
-		if (FabrikWorker::isEmail($email))
+		if (Worker::isEmail($email))
 		{
 			if ($params->get('isemail-check_mx', '0') === '1')
 			{
 				list($user, $domain) = explode('@', $data);
-				if (!checkdnsrr($domain, 'MX')) {
+				if (!checkdnsrr($domain, 'MX'))
+				{
 					return false;
 				}
 			}
+
 			return true;
 		}
-		else
-		{
-			return false;
-		};
+
+		return false;
 	}
 
 	/**
@@ -82,10 +86,12 @@ class PlgFabrik_ValidationruleIsEmail extends PlgFabrik_Validationrule
 	 * Default is false, can be overridden on per-validation basis (such as isnumeric)
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	protected function allowEmpty()
 	{
-		$params = $this->getParams();
+		$params      = $this->getParams();
 		$allow_empty = $params->get('isemail-allow_empty');
 
 		return $allow_empty == '1';

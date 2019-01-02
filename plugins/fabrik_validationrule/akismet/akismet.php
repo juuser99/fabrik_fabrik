@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
+use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Akismet Validation Rule
@@ -21,22 +21,26 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @subpackage  Fabrik.validationrule.akismet
  * @since       3.0
  */
-class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
+class PlgFabrik_ValidationruleAkismet extends AbstractValidationRulePlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $pluginName = 'akismet';
 
 	/**
 	 * Validate the elements data against the rule
 	 *
-	 * @param   string  $data           To check
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param   string $data          To check
+	 * @param   int    $repeatCounter Repeat group counter
 	 *
 	 * @return  bool  true if validation passes, false if fails
+	 *
+	 * @since 4.0
 	 */
 	public function validate($data, $repeatCounter)
 	{
@@ -46,12 +50,12 @@ class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
 		{
 			$username = $this->user->get('username') != '' ? $this->user->get('username') : $this->_randomSring();
 			require_once JPATH_COMPONENT . '/plugins/validationrule/akismet/libs/akismet.class.php';
-			$akismet_comment = array('author' => $username, 'email' => $this->user->get('email'), 'website' => JURI::base(), 'body' => $data);
-			$akismet = new Akismet(JURI::base(), $params->get('akismet-key'), $akismet_comment);
+			$akismet_comment = array('author' => $username, 'email' => $this->user->get('email'), 'website' => Uri::base(), 'body' => $data);
+			$akismet         = new Akismet(Uri::base(), $params->get('akismet-key'), $akismet_comment);
 
 			if ($akismet->errorsExist())
 			{
-				throw new RuntimeException("Couldn't connected to Akismet server!");
+				throw new \RuntimeException("Couldn't connected to Akismet server!");
 			}
 			else
 			{
@@ -69,6 +73,8 @@ class PlgFabrik_ValidationruleAkismet extends PlgFabrik_Validationrule
 	 * Create a random string
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	protected function _randomSring()
 	{
