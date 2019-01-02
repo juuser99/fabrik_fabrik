@@ -991,7 +991,7 @@ class FormModel extends FabSiteModel
 			}
 
 			$db->setQuery($query);
-			$sql = (string)$query;
+			$sql = (string) $query;
 			$groups = $db->loadObjectList('group_id');
 			$this->_publishedformGroups = $this->mergeGroupsWithJoins($groups);
 		}
@@ -1074,13 +1074,15 @@ class FormModel extends FabSiteModel
 
 			foreach ($groupData as $id => $groupD)
 			{
+				/** @var GroupModel $thisGroup */
 				$thisGroup = clone ($groupModel);
 				$thisGroup->setId($id);
 				$thisGroup->setContext($this, $listModel);
 
 				// $$ rob 25/02/2011 this was doing a query per group - pointless as we bind $groupD to $row afterwards
 				// $row = $thisGroup->getGroup();
-				$row = $this->getTable(GroupTable::class);
+				$row = FabTable::getInstance(GroupTable::class);
+
 				$row->bind($groupD);
 				$thisGroup->setGroup($row);
 
@@ -1146,7 +1148,7 @@ class FormModel extends FabSiteModel
 	 * --->group
 	 * if run before then existing data returned
 	 *
-	 * @return  FabrikFEModelGroup[]  Group & element objects
+	 * @return  GroupModel[]  Group & element objects
 	 *
 	 * @since 4.0
 	 */
