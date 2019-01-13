@@ -78,7 +78,7 @@ foreach ($extensions as $extension)
 	if (Folder::exists($srcPath))
 	{
 		JLoader::registerNamespace(
-			sprintf('Fabrik\\Plugin\\%s\\%s', $pluginTypes[$extension->folder], ucfirst($extension->element)),
+			sprintf('Joomla\\Plugin\\%s\\%s', $pluginTypes[$extension->folder], ucfirst($extension->element)),
 			$srcPath,
 			false,
 			false,

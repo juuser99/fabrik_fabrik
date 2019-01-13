@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugin\FabrikForm\Rest\OAuth\FabrikOAuth;
+use Joomla\Plugin\FabrikForm\Rest\OAuth\FabrikOAuth;
 use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\Http\Response;
 use Joomla\Utilities\ArrayHelper;

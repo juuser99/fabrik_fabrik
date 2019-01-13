@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugin\FabrikForm\Subscriptions\Table\InvoiceTable;
-use Fabrik\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
+use Joomla\Plugin\FabrikForm\Subscriptions\Table\InvoiceTable;
+use Joomla\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filter\InputFilter;

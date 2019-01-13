@@ -12,8 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
-use Fabrik\Plugin\FabrikForm\Comment\Helper\JCommentsHelper;
-use Fabrik\Plugin\FabrikForm\Comment\Table\CommentTable;
+use Joomla\Plugin\FabrikForm\Comment\Helper\JCommentsHelper;
+use Joomla\Plugin\FabrikForm\Comment\Table\CommentTable;
 use Joomla\CMS\Editor\Editor;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;

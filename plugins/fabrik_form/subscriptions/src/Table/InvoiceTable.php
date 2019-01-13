@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikForm\Subscriptions\Table;
+namespace Joomla\Plugin\FabrikForm\Subscriptions\Table;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
