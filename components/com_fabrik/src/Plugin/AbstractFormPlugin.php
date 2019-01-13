@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\Plugin;
+namespace Fabrik\Component\Fabrik\Site\Plugin;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -16,9 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Profiler\Profiler;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
-use Joomla\Component\Fabrik\Administrator\Table\LogTable;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\LogTable;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\LayoutFile;

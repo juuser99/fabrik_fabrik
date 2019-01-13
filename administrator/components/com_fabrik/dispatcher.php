@@ -19,7 +19,7 @@ use Joomla\CMS\Dispatcher\ComponentDispatcher;
  */
 class FabrikDispatcher extends ComponentDispatcher
 {
-	public const NAMESPACE = 'Joomla\\Component\\Fabrik';
+	public const NAMESPACE = 'Fabrik\\Component\\Fabrik';
 	public const PREFIX_SITE = 'Site';
 	public const PREFIX_ADMIN = 'Administrator';
 

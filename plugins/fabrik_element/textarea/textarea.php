@@ -15,7 +15,7 @@ use Fabrik\Helpers\Html;
 use Joomla\CMS\Editor\Editor;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Profiler\Profiler;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;

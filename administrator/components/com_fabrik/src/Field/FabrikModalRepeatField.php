@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Field;
+namespace Fabrik\Component\Fabrik\Administrator\Field;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -20,7 +20,7 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
 
 /**
  * Display a json loaded window with a repeatable set of sub fields

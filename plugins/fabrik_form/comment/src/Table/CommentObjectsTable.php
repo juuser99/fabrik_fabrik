@@ -9,7 +9,7 @@
 
 namespace Fabrik\Plugin\FabrikForm\Comment\Table;
 
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\Database\DatabaseDriver;
 
 /**

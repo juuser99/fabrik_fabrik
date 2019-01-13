@@ -7,7 +7,7 @@
  * @since       4.0
  */
 
-namespace Joomla\Component\Fabrik\Site\CSV;
+namespace Fabrik\Component\Fabrik\Site\CSV;
 
 /**
  * This class will parse a csv file in either standard or MS Excel format.

@@ -9,11 +9,11 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
-use Joomla\Component\Fabrik\Administrator\Model\VisualizationsModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\VisualizationsModel;
 
 defined('_JEXEC') or die('Restricted access');
 

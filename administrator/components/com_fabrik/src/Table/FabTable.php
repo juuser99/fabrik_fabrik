@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Table;
+namespace Fabrik\Component\Fabrik\Administrator\Table;
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;

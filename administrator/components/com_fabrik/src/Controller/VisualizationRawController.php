@@ -9,15 +9,15 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
-use Joomla\Component\Fabrik\Administrator\Table\VisualizationTable;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\VisualizationTable;
 
 /**
  * Raw Visualization controller class.

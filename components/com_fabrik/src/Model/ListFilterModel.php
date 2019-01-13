@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\Model;
+namespace Fabrik\Component\Fabrik\Site\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -20,8 +20,8 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Profiler\Profiler;
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
-use Joomla\Component\Fabrik\Administrator\Table\ListTable;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 

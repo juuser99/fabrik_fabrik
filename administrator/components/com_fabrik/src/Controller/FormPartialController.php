@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -19,13 +19,13 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Joomla\Component\Fabrik\Administrator\Model\ContentTypeExportModel;
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
-use Joomla\Component\Fabrik\Administrator\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel as SiteListModel;
-use Joomla\Component\Fabrik\Site\Model\FormInlineEditModel;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\Model\FormSessionModel;
+use Fabrik\Component\Fabrik\Administrator\Model\ContentTypeExportModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
+use Fabrik\Component\Fabrik\Site\Model\FormInlineEditModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\FormSessionModel;
 /**
  * Form controller class.
  *

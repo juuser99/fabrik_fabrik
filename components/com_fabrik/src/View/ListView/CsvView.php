@@ -8,15 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\View\ListView;
+namespace Fabrik\Component\Fabrik\Site\View\ListView;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
-use Joomla\Component\Fabrik\Site\Model\CsvExportModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Site\Model\CsvExportModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * CSV Fabrik List view class

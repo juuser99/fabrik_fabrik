@@ -9,7 +9,7 @@
  * @since       3.0.9
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Field;
+namespace Fabrik\Component\Fabrik\Administrator\Field;
 
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;

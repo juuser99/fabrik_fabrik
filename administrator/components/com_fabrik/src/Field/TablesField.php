@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Field;
+namespace Fabrik\Component\Fabrik\Administrator\Field;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -21,7 +21,7 @@ use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Administrator\Helper\ElementHelper;
+use Fabrik\Component\Fabrik\Administrator\Helper\ElementHelper;
 
 FormHelper::loadFieldClass('list');
 

@@ -14,8 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 use Joomla\CMS\Filter\InputFilter;
-use Joomla\Component\Fabrik\Site\Model\FormSessionModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Component\Fabrik\Site\Model\FormSessionModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 

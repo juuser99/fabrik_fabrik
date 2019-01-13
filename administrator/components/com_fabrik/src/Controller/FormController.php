@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -21,15 +21,15 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Joomla\Component\Fabrik\Administrator\Model\ContentTypeExportModel;
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
-use Joomla\Component\Fabrik\Administrator\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Model\FormInlineEditModel;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel as ListSiteModel;
+use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Fabrik\Component\Fabrik\Administrator\Model\ContentTypeExportModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Model\FormInlineEditModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel as ListSiteModel;
 use Joomla\CMS\MVC\View\HtmlView;
-use Joomla\Component\Fabrik\Site\Model\FormSessionModel;
+use Fabrik\Component\Fabrik\Site\Model\FormSessionModel;
 
 /**
  * Form controller class.
@@ -395,7 +395,7 @@ class FormController extends AbstractFormController
 		{
 			$viewType = Factory::getDocument()->getType();
 			$model    = FabModel::getInstance(ListModel::class);
-			/** @var \Joomla\Component\Fabrik\Administrator\View\Form\HtmlView $view */
+			/** @var \Fabrik\Component\Fabrik\Administrator\View\Form\HtmlView $view */
 			$view = $this->getView($this->view_item, $viewType, \FabrikDispatcher::PREFIX_ADMIN);
 			$view->setModel($model, true);
 			$view->selectContentType('select_content_type');

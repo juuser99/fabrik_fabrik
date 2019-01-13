@@ -17,7 +17,7 @@ use Fabrik\Plugin\FabrikForm\Comment\Table\CommentObjectsTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Router\Route;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
 
 require_once JCOMMENTS_BASE . '/jcomments.subscription.php';
 require_once JCOMMENTS_BASE . '/jcomments.class.php';

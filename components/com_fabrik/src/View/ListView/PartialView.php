@@ -8,11 +8,11 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\View\ListView;
+namespace Fabrik\Component\Fabrik\Site\View\ListView;
 
 // No direct access
 use Joomla\CMS\Object\CMSObject;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
 
 defined('_JEXEC') or die('Restricted access');
 

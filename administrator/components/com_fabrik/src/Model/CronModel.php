@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -18,8 +18,8 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\Component\Fabrik\Administrator\Table\CronTable;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;

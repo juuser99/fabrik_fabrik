@@ -9,7 +9,7 @@
  * @since       4.0
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 
 use Joomla\CMS\Factory;

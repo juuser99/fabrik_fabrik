@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -26,9 +26,9 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
-use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 
@@ -490,7 +490,7 @@ class ElementModel extends FabAdminModel
 			else
 			{
 				/** @var FabrikFEModelList $joinListModel */
-				$joinListModel = FabModel::getInstance(\Joomla\Component\Fabrik\Site\Model\ListModel::class);
+				$joinListModel = FabModel::getInstance(\Fabrik\Component\Fabrik\Site\Model\ListModel::class);
 				$joinListModel->setId($joinTblId);
 				$joinEls = $joinListModel->getElements();
 

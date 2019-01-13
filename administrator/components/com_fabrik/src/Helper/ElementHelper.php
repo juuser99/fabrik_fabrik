@@ -9,7 +9,7 @@
  * @since       3.0
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Helper;
+namespace Fabrik\Component\Fabrik\Administrator\Helper;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

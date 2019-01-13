@@ -9,7 +9,7 @@
  */
 
 // No direct access
-use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 
 defined('_JEXEC') or die('Restricted access');
 

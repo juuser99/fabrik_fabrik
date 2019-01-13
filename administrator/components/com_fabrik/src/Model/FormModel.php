@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -19,10 +19,10 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
-use Joomla\Component\Fabrik\Administrator\Table\FabTable;
-use Joomla\Component\Fabrik\Administrator\Table\FormGroupTable;
-use Joomla\Component\Fabrik\Administrator\Table\FormTable;
-use Joomla\Component\Fabrik\Administrator\Table\ListTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FormGroupTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FormTable;
+use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -436,7 +436,7 @@ class FormModel extends FabAdminModel
 		$input  = $this->app->input;
 		$cid    = $input->get('cid', array(), 'array');
 		$formId = $cid[0];
-		$model  = FabModel::getInstance(\Joomla\Component\Fabrik\Site\Model\FormModel::class);
+		$model  = FabModel::getInstance(\Fabrik\Component\Fabrik\Site\Model\FormModel::class);
 		$model->setId($formId);
 		$form = $model->getForm();
 

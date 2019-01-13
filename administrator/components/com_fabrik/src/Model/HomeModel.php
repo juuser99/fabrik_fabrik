@@ -9,15 +9,15 @@
  * @since       4.0
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Table;
-use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

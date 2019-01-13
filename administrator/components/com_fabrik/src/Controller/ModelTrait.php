@@ -7,11 +7,11 @@
  * @since       4.0
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
 
 trait ModelTrait
 {
