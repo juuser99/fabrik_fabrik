@@ -19,7 +19,7 @@ use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Stripe payment gateway processor
@@ -1616,7 +1616,7 @@ class PlgFabrik_FormStripe extends AbstractFormPlugin
 		$formId      = $input->get('formid', '', 'string');
 		$renderOrder = $input->get('renderOrder', '', 'string');
 		/** @var FormModel $formModel */
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$params         = $formModel->getParams();
 		$params         = $this->setParams($params, $renderOrder);
@@ -1681,7 +1681,7 @@ class PlgFabrik_FormStripe extends AbstractFormPlugin
 		$couponCode  = $input->get('coupon', '', 'string');
 		$formId      = $input->get('formid', '', 'string');
 		$renderOrder = $input->get('renderOrder', '', 'string');
-		$formModel   = FabModel::getInstance(FormModel::class);
+		$formModel   = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$params                  = $formModel->getParams();
 		$params                  = $this->setParams($params, $renderOrder);
@@ -1751,7 +1751,7 @@ class PlgFabrik_FormStripe extends AbstractFormPlugin
 	{
 		$formId      = $this->app->input->get('formid', '', 'string');
 		$renderOrder = $this->app->input->get('renderOrder', '', 'string');
-		$formModel   = FabModel::getInstance(FormModel::class);
+		$formModel   = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$params = $formModel->getParams();
 		$params = $this->setParams($params, $renderOrder);

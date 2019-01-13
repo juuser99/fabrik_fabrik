@@ -27,7 +27,7 @@ use Mailgun\Messages;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 require_once JPATH_ROOT . '/plugins/fabrik_form/mailgun/vendor/autoload.php';
 
@@ -1167,7 +1167,7 @@ class PlgFabrik_FormMailgun extends AbstractFormPlugin
 	{
 		$formId      = $this->app->input->get('formid', '', 'string');
 		$renderOrder = $this->app->input->get('renderOrder', '', 'string');
-		$formModel   = FabModel::getInstance(FormModel::class);
+		$formModel   = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$listModel = $formModel->getListModel();
 		$params    = $formModel->getParams();

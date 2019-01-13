@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
 
 /**
@@ -26,7 +26,7 @@ use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ImportModel extends FabAdminModel
+class ImportModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -53,7 +53,7 @@ class ImportModel extends FabAdminModel
 	 * @param   string $prefix A prefix for the table class name. Optional.
 	 * @param   array  $config Configuration array for model. Optional.
 	 *
-	 * @return  FabTable    A database object
+	 * @return  FabrikTable    A database object
 	 *
 	 * @since 4.0
 	 */
@@ -64,7 +64,7 @@ class ImportModel extends FabAdminModel
 		if (!array_key_exists($sig, $this->tables))
 		{
 			$config['dbo']      = Worker::getDbo(true);
-			$this->tables[$sig] = FabTable::getInstance($type, $prefix, $config);
+			$this->tables[$sig] = FabrikTable::getInstance($type, $prefix, $config);
 		}
 
 		return $this->tables[$sig];

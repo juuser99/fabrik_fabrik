@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 
 /**
@@ -26,7 +26,7 @@ use Fabrik\Component\Fabrik\Site\Model\ListModel;
  * @since       3.0
  */
 
-abstract class AbstractCronPlugin extends FabPlugin
+abstract class AbstractCronPlugin extends FabrikPlugin
 {
 	/**
 	 * Plugin item
@@ -69,7 +69,7 @@ abstract class AbstractCronPlugin extends FabPlugin
 	{
 		if (!$this->row || $force)
 		{
-			$row = FabTable::getInstance(CronTable::class);
+			$row = FabrikTable::getInstance(CronTable::class);
 			$row->load($this->id);
 			$this->row = $row;
 		}

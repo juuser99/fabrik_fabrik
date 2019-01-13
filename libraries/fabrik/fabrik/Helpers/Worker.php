@@ -18,7 +18,7 @@ use DateTime;
 use Exception;
 use Joomla\CMS\Cache\Cache;
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use JAccess;
 use JCache;
 use JComponentHelper;
@@ -35,7 +35,7 @@ use JMail;
 use JMailHelper;
 use JModelLegacy;
 use Joomla\CMS\Application\CMSApplication;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Table\LogTable;
 use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
 use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
@@ -1750,7 +1750,7 @@ class Worker
 			$msg = json_encode($msg);
 		}
 
-		$log               = FabTable::getInstance(LogTable::class);
+		$log               = FabrikTable::getInstance(LogTable::class);
 		$log->message_type = $type;
 		$log->message      = $msg;
 		$log->store();
@@ -1788,7 +1788,7 @@ class Worker
 
 			if (!$loadJoomlaDb)
 			{
-				$cnModel  = FabModel::getInstance(ConnectionModel::class);
+				$cnModel  = FabrikModel::getInstance(ConnectionModel::class);
 				$cn       = $cnModel->getConnection($cnnId);
 				$host     = $cn->host;
 				$user     = $cn->user;
@@ -1893,7 +1893,7 @@ class Worker
 
 		if (!array_key_exists($connId, self::$connection))
 		{
-			$connectionModel = FabModel::getInstance(ConnectionModel::class);
+			$connectionModel = FabrikModel::getInstance(ConnectionModel::class);
 			$connectionModel->setId($connId);
 
 			if ($connId === -1)
@@ -1921,7 +1921,7 @@ class Worker
 	{
 		if (!self::$pluginManager)
 		{
-			self::$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+			self::$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		}
 
 		return self::$pluginManager;

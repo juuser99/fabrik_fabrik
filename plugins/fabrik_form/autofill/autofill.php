@@ -15,7 +15,7 @@ use Joomla\CMS\Language\Text;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Helpers\Worker;
 
 /**
@@ -122,14 +122,14 @@ class PlgFabrik_FormAutofill extends AbstractFormPlugin
 			$formId = $input->getInt('formid');
 			$input->set($element, $value, 'get');
 			/** @var FormModel $model */
-			$model = FabModel::getInstance(FormModel::class);
+			$model = FabrikModel::getInstance(FormModel::class);
 			$model->setId($formId);
 			$listModel = $model->getListModel();
 		}
 		else
 		{
 			/** @var ListModel $listModel */
-			$listModel = FabModel::getInstance(ListModel::class);
+			$listModel = FabrikModel::getInstance(ListModel::class);
 			$listModel->setId($input->getInt('table'));
 		}
 

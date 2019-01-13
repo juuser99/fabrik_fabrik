@@ -14,7 +14,7 @@ namespace Fabrik\Plugin\FabrikForm\Subscriptions\Table;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 
 /**
@@ -24,7 +24,7 @@ use Joomla\Database\DatabaseDriver;
  * @subpackage  Fabrik.form.subscriptions
  * @since       4.0
  */
-class SubscriptionTable extends FabTable
+class SubscriptionTable extends FabrikTable
 {
 	/**
 	 * Constructor

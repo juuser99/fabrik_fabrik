@@ -20,7 +20,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Profiler\Profiler;
 use Fabrik\Component\Fabrik\Administrator\Table\ConnectionTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
 use Fabrik\Component\Fabrik\Site\Model\JoinModel;
@@ -34,7 +34,7 @@ use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  *  Plugin element to render list of data looked up from a database table
@@ -475,7 +475,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 		{
 			// Db join in form not recording to db
 			/** @var JoinModel $joinModel */
-			$joinModel  = FabModel::getInstance(JoinModel::class);
+			$joinModel  = FabrikModel::getInstance(JoinModel::class);
 			$this->join = $joinModel->getJoinFromKey('element_id', $element->get('id'));
 
 			return $this->join;
@@ -503,7 +503,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 
 			$config        = array();
 			$config['dbo'] = Worker::getDbo(true);
-			$this->join    = FabTable::getInstance(JoinTable::class, '', $config);
+			$this->join    = FabrikTable::getInstance(JoinTable::class, '', $config);
 
 			if ($this->join->load(array('element_id' => $element->get('id'))))
 			{
@@ -569,7 +569,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 	/**
 	 * Get other joins that point to this element
 	 *
-	 * @param   FabTable $table Table
+	 * @param   FabrikTable $table Table
 	 *
 	 * @deprecated - don't think its used
 	 *
@@ -577,7 +577,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 	 *
 	 * @since      4.0
 	 */
-	public function getJoinsToThisKey(FabTable $table)
+	public function getJoinsToThisKey(FabrikTable $table)
 	{
 		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);
@@ -1327,7 +1327,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 	{
 		$params   = $this->getParams();
 		$id       = $params->get('join_conn_id');
-		$this->cn = FabModel::getInstance(ConnectionModel::class);
+		$this->cn = FabrikModel::getInstance(ConnectionModel::class);
 		$this->cn->setId($id);
 
 		return $this->cn->getConnection();
@@ -2022,7 +2022,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 		$db     = $this->getDb();
 
 		// Lets see if we can get the field type of the field we are joining to
-		$join = FabTable::getInstance(JoinTable::class);
+		$join = FabrikTable::getInstance(JoinTable::class);
 
 		if ((int) $this->id !== 0)
 		{
@@ -3399,7 +3399,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 	{
 		$element = $this->getElement();
 		/** @var JoinTable $join */
-		$join = FabTable::getInstance(JoinTable::class);
+		$join = FabrikTable::getInstance(JoinTable::class);
 
 		/* $$$ rob 08/05/2012 - toggling from dropdown to multiselect set the list_id to 1, so if you
 		 * reset to dropdown then this key would not load the existing join so a secondary join record

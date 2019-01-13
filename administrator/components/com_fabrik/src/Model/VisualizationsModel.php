@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\VisualizationTable;
 use Joomla\Database\DatabaseQuery;
 
@@ -28,7 +28,7 @@ use Joomla\Database\DatabaseQuery;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class VisualizationsModel extends FabListModel
+class VisualizationsModel extends FabrikListModel
 {
 	/**
 	 * Constructor.
@@ -111,7 +111,7 @@ class VisualizationsModel extends FabListModel
 	 * @param   string  $prefix  A prefix for the table class name. Optional.
 	 * @param   array   $config  Configuration array for model. Optional.
 	 *
-	 * @return  VisualizationTable|FabTable	A database object
+	 * @return  VisualizationTable|FabrikTable	A database object
 	 *
 	 * @since	4.0
 	 */
@@ -119,7 +119,7 @@ class VisualizationsModel extends FabListModel
 	{
 		$config['dbo'] = Worker::getDbo();
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**

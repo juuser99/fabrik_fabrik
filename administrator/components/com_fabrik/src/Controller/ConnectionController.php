@@ -17,7 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Session\Session;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\ConnectionModel as SiteConnectionModel;
 
 /**
@@ -57,7 +57,7 @@ class ConnectionController extends AbstractFormController
 		foreach ($cid as $id)
 		{
 			/** @var SiteConnectionModel $model */
-			$model = FabModel::getInstance(SiteConnectionModel::class);
+			$model = FabrikModel::getInstance(SiteConnectionModel::class);
 			$model->setId($id);
 
 			if ($model->testConnection() == false)

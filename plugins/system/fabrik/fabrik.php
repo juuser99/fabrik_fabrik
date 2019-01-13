@@ -17,7 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Table\Extension;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
@@ -439,12 +439,12 @@ class PlgSystemFabrik extends CMSPlugin
 		$memSafety = 0;
 
 		/** @var ListModel $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 
 		foreach ($ids as $id)
 		{
 			// Re-ini the list model (was using reset() but that was flaky)
-			$listModel = FabModel::getInstance(ListModel::class);
+			$listModel = FabrikModel::getInstance(ListModel::class);
 
 			// $$$ geros - http://fabrikar.com/forums/showthread.php?t=21134&page=2
 			$key = 'com_' . $package . '.list' . $id . '.filter.searchall';

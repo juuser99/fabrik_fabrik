@@ -23,7 +23,7 @@ use Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class CronTable extends FabTable
+class CronTable extends FabrikTable
 {
 	/**
 	 * Constructor

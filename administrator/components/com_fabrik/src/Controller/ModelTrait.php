@@ -11,7 +11,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 trait ModelTrait
 {
@@ -22,7 +22,7 @@ trait ModelTrait
 	 * @param string $prefix
 	 * @param array  $config
 	 *
-	 * @return FabModel
+	 * @return FabrikModel
 	 *
 	 * @since 4.0
 	 *
@@ -31,7 +31,7 @@ trait ModelTrait
 	public function getModel($modelClass = '', $prefix = '', $config = array())
 	{
 		if (class_exists($modelClass)) {
-			return FabModel::getInstance($modelClass, '', $config);
+			return FabrikModel::getInstance($modelClass, '', $config);
 		}
 
 		return parent::getModel($modelClass, $prefix, $config);

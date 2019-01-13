@@ -17,7 +17,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Fabrik\Component\Fabrik\Administrator\Table\ConnectionTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseFactory;
 
@@ -32,7 +32,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ConnectionModel extends FabSiteModel
+class ConnectionModel extends FabrikSiteModel
 {
 	/**
 	 * Current connection
@@ -177,7 +177,7 @@ class ConnectionModel extends FabSiteModel
 			}
 			else
 			{
-				$this->connection = FabTable::getInstance(ConnectionTable::class);
+				$this->connection = FabrikTable::getInstance(ConnectionTable::class);
 				$this->connection->load($this->id);
 			}
 
@@ -483,7 +483,7 @@ class ConnectionModel extends FabSiteModel
 		{
 			// $$$ rob connections are pooled for all packages - each package should use
 			// jos_fabrik_connections and not jos_{package}_connections
-			$row = FabTable::getInstance(ConnectionTable::class);
+			$row = FabrikTable::getInstance(ConnectionTable::class);
 			$row->load(array('default' => 1));
 			$this->decryptPw($row);
 			$this->defaultConnection = $row;

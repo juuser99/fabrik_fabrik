@@ -8,10 +8,10 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Component\Fabrik\Site\Plugin;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.model');
 
 use Fabrik\Helpers\LayoutFile;
 use Joomla\String\StringHelper;
@@ -23,7 +23,7 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class PlgFabrik_List extends FabrikPlugin
+class AbstractListPlugin extends FabrikPlugin
 {
 	/**
 	 * Button prefix

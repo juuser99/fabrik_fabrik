@@ -18,7 +18,7 @@ use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Plugin element to render facebook open graph like button
@@ -280,7 +280,7 @@ class PlgFabrik_ElementFblike extends AbstractElementPlugin
 		$this->loadMeForAjax();
 		$listId = $input->getInt('listid');
 		/** @var ListModel $list */
-		$list = FabModel::getInstance(ListModel::class);
+		$list = FabrikModel::getInstance(ListModel::class);
 		$list->setId($listId);
 		$rowId     = $input->get('row_id');
 		$direction = $input->get('direction', '+');

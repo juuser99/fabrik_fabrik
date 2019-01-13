@@ -19,7 +19,7 @@ use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Path;
 use Fabrik\Component\Fabrik\Administrator\Database\Mysqli\MysqliExporter;
 use Fabrik\Component\Fabrik\Administrator\Helper\ContentTypeHelper;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Database\Mysqli\MysqliImporter as BaseMysqliImporter;
@@ -33,7 +33,7 @@ use \Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ContentTypeExportModel extends FabAdminModel
+class ContentTypeExportModel extends FabrikAdminModel
 {
 	/**
 	 * Include paths for searching for Content type XML files
@@ -119,7 +119,7 @@ class ContentTypeExportModel extends FabAdminModel
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$listModel = ArrayHelper::getValue($config, 'listModel', FabModel::getInstance(ListModel::class));
+		$listModel = ArrayHelper::getValue($config, 'listModel', FabrikModel::getInstance(ListModel::class));
 
 		if (!is_a($listModel, 'FabrikAdminModelList'))
 		{
@@ -322,7 +322,7 @@ class ContentTypeExportModel extends FabAdminModel
 
 		if ($data['is_join'] === '1')
 		{
-			$join = FabTable::getInstance(JoinTable::class);
+			$join = FabrikTable::getInstance(JoinTable::class);
 			$join->load($data['join_id']);
 
 			foreach ($tableParams as $tableParam)
@@ -380,7 +380,7 @@ class ContentTypeExportModel extends FabAdminModel
 
 		if (is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
 		{
-			$join = FabTable::getInstance('Join', 'FabrikTable');
+			$join = FabrikTable::getInstance('Join', 'FabrikTable');
 			$join->load(array('element_id' => $data['id']));
 			$elementJoin = ContentTypeHelper::buildExportNode($this->doc, 'join', $join->getProperties(), array('id'));
 			$element->appendChild($elementJoin);

@@ -26,7 +26,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Profiler\Profiler;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
-use Fabrik\Component\Fabrik\Site\Plugin\FabPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\FabrikPlugin;
 use Joomla\String\StringHelper;
 
 /**
@@ -36,7 +36,7 @@ use Joomla\String\StringHelper;
  * @since    4.0
  */
 
-class PluginManagerModel extends FabSiteModel
+class PluginManagerModel extends FabrikSiteModel
 {
 	/**
 	 * plugins
@@ -205,7 +205,7 @@ class PluginManagerModel extends FabSiteModel
 	 *
 	 * @param   string $group Plugin group to load
 	 *
-	 * @return  FabPlugin[]    Plugins
+	 * @return  FabrikPlugin[]    Plugins
 	 *
 	 * @since    4.0
 	 */
@@ -280,7 +280,7 @@ class PluginManagerModel extends FabSiteModel
 	 * @param   string $className Plugin name e.g. fabrikfield
 	 * @param   string $group     Plugin type element/ form or list
 	 *
-	 * @return  FabPlugin    Plugin
+	 * @return  FabrikPlugin    Plugin
 	 *
 	 * @since    4.0
 	 */
@@ -305,7 +305,7 @@ class PluginManagerModel extends FabSiteModel
 	 *
 	 * @param   string $group Plugin group
 	 *
-	 * @return  FabPlugin[]    Plugins
+	 * @return  FabrikPlugin[]    Plugins
 	 *
 	 * @since    4.0
 	 */
@@ -331,7 +331,7 @@ class PluginManagerModel extends FabSiteModel
 	 * @throws \RuntimeException
 	 * @throws \Exception
 	 *
-	 * @return  FabPlugin Plugin object
+	 * @return  FabrikPlugin Plugin object
 	 *
 	 * @since    4.0
 	 */

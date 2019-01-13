@@ -19,7 +19,7 @@ use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Form record next/prev scroll plugin
@@ -259,7 +259,7 @@ class PlgFabrik_FormPaginate extends AbstractFormPlugin
 		$formId = $input->getInt('formid');
 		$rowId  = $input->get('rowid', '', 'string');
 		$mode   = $input->get('mode', 'details');
-		$model  = FabModel::getInstance(FormModel::class);
+		$model  = FabrikModel::getInstance(FormModel::class);
 		$model->setId($formId);
 		$this->setModel($model);
 		$model->rowId = $rowId;

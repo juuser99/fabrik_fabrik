@@ -18,7 +18,7 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\FormInlineEditModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\FormSessionModel;
@@ -67,7 +67,7 @@ class FormRawController extends AbstractFormController
 	 */
 	public function inlineedit()
 	{
-		$model = FabModel::getInstance(FormInlineEditModel::class);
+		$model = FabrikModel::getInstance(FormInlineEditModel::class);
 		$model->render();
 	}
 
@@ -106,7 +106,7 @@ class FormRawController extends AbstractFormController
 		$view = $this->getView($viewName, 'html');
 
 		/** @var FormModel $model */
-		if ($model = FabModel::getInstance(FormModel::class))
+		if ($model = FabrikModel::getInstance(FormModel::class))
 		{
 			$view->setModel($model, true);
 		}

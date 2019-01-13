@@ -23,7 +23,7 @@ use \Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class VisualizationTable extends FabTable
+class VisualizationTable extends FabrikTable
 {
 	/**
 	 * Constructor

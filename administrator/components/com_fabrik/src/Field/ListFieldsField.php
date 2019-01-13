@@ -24,7 +24,7 @@ use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Fabrik\Component\Fabrik\Administrator\Helper\ElementHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\GroupModel;
 use Joomla\Utilities\ArrayHelper;
@@ -381,7 +381,7 @@ class ListFieldsField extends ListField
 		$valField = $valueFormat == 'tableelement' ? 'name' : 'id';
 		$id       = $this->form->getValue('id');
 		/** @var GroupModel $groupModel */
-		$groupModel = FabModel::getInstance(GroupModel::class);
+		$groupModel = FabrikModel::getInstance(GroupModel::class);
 		$groupModel->setId($id);
 		$formModel = $groupModel->getFormModel();
 
@@ -498,7 +498,7 @@ class ListFieldsField extends ListField
 		$showRaw = Worker::toBoolean($this->getAttribute('raw', false), false);
 
 		/** @var GroupModel $groupModel */
-		$groupModel = FabModel::getInstance(GroupModel::class);
+		$groupModel = FabrikModel::getInstance(GroupModel::class);
 		$groupModel->setId($groupId);
 		$optsKey = $valueFormat == 'tableelement' ? 'name' : 'id';
 		$useStep = Worker::toBoolean($this->getAttribute('usestep', false), false);

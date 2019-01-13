@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 
 /**
@@ -60,7 +60,7 @@ class ListPdfController extends AbstractFormController
 		$cid = $input->getInt('listid', $cid);
 
 		// Grab the model and set its id
-		$model = FabModel::getInstance(ListModel::class);
+		$model = FabrikModel::getInstance(ListModel::class);
 		$model->setState('list.id', $cid);
 		$viewType = Factory::getDocument()->getType();
 

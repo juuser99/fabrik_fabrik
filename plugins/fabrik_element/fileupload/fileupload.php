@@ -22,7 +22,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Profiler\Profiler;
 use Joomla\CMS\Session\Session;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\LogTable;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
@@ -3649,7 +3649,7 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 		if ((int) $params->get('fu_download_log', 0))
 		{
 			$input              = $this->app->input;
-			$log                = FabTable::getInstance(LogTable::class);
+			$log                = FabrikTable::getInstance(LogTable::class);
 			$log->message_type  = 'fabrik.fileupload.download';
 			$msg                = new \stdClass;
 			$msg->file          = $filePath;
@@ -3761,7 +3761,7 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 		}
 
 		$repeatCounter = (int) $input->getInt('repeatCounter');
-		$join          = FabTable::getInstance('join', 'FabrikTable');
+		$join          = FabrikTable::getInstance('join', 'FabrikTable');
 		$join->load(array('element_id' => $input->getInt('element_id')));
 		$this->setId($input->getInt('element_id'));
 		$this->getElement();

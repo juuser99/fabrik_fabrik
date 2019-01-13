@@ -28,7 +28,7 @@ use Joomla\String\StringHelper;
  * @package  Fabrik
  * @since    4.0
  */
-abstract class AbstractValidationRulePlugin extends FabPlugin
+abstract class AbstractValidationRulePlugin extends FabrikPlugin
 {
 	/**
 	 * Plugin name

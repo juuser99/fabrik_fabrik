@@ -19,7 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
@@ -31,7 +31,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class CronModel extends FabAdminModel
+class CronModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -57,7 +57,7 @@ class CronModel extends FabAdminModel
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**

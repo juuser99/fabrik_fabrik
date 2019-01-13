@@ -24,7 +24,7 @@ use Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormTable extends FabTable
+class FormTable extends FabrikTable
 {
 	/**
 	 * @var string

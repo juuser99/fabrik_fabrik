@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\CsvExportModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 
@@ -42,8 +42,8 @@ class CsvView extends BaseHtmlView
 		$app      = Factory::getApplication();
 		$session  = $app->getSession();
 		$input    = $app->input;
-		$exporter = FabModel::getInstance(CsvExportModel::class);
-		$model    = FabModel::getInstance(ListModel::class);
+		$exporter = FabrikModel::getInstance(CsvExportModel::class);
+		$model    = FabrikModel::getInstance(ListModel::class);
 		$model->setId($input->getInt('listid'));
 		$model->setOutPutFormat('csv');
 		$exporter->model = $model;

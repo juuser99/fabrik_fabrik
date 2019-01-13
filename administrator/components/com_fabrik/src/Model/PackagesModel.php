@@ -19,7 +19,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Language\Text;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\PackageTable;
 use Joomla\Database\DatabaseQuery;
 
@@ -31,7 +31,7 @@ use Joomla\Database\DatabaseQuery;
  * @since       3.0
  */
 
-class PackagesModel extends FabListModel
+class PackagesModel extends FabrikListModel
 {
 	/**
 	 * Constructor.
@@ -123,7 +123,7 @@ class PackagesModel extends FabListModel
 	{
 		$config['dbo'] = Worker::getDbo();
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**

@@ -16,7 +16,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Session\Session;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
@@ -120,7 +120,7 @@ class ElementController extends AbstractFormController
 		$app   = Factory::getApplication();
 		$input = $app->input;
 		/** @var PluginManagerModel $pluginManager */
-		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		$model         = $pluginManager->getPlugIn('field', 'element');
 		$id            = $input->getInt('id');
 		$model->setId($id);
@@ -161,7 +161,7 @@ class ElementController extends AbstractFormController
 	{
 		Session::checkToken() or die('Invalid Token');
 		/** @var PluginManagerModel $pluginManager */
-		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		$app           = Factory::getApplication();
 		$input         = $app->input;
 		$model         = $pluginManager->getPlugIn('field', 'element');
@@ -221,7 +221,7 @@ class ElementController extends AbstractFormController
 		$jForm = $input->get('jform', array(), 'array');
 		$id    = (int) FArrayHelper::getValue($jForm, 'id', 0);
 		/** @var PluginManagerModel $pluginManager */
-		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		$className     = $input->post->get('plugin', 'field');
 		$elementModel  = $pluginManager->getPlugIn($className, 'element');
 		$elementModel->setId($id);

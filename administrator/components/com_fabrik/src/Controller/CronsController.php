@@ -18,10 +18,10 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Fabrik\Component\Fabrik\Administrator\Model\CronModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
 use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\LogTable;
 use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
@@ -122,11 +122,11 @@ class CronsController extends AbstractAdminController
 		$query->select('*')->from('#__{package}_cron')->where('id IN (' . $cid . ')');
 		$db->setQuery($query);
 		$rows           = $db->loadObjectList();
-		$adminListModel = FabModel::getInstance(ListModel::class);
-		$pluginManager  = FabModel::getInstance(PluginManagerModel::class);
-		$listModel      = FabModel::getInstance(SiteListModel::class);
+		$adminListModel = FabrikModel::getInstance(ListModel::class);
+		$pluginManager  = FabrikModel::getInstance(PluginManagerModel::class);
+		$listModel      = FabrikModel::getInstance(SiteListModel::class);
 		$c              = 0;
-		$this->log      = FabTable::getInstance(LogTable::class);
+		$this->log      = FabrikTable::getInstance(LogTable::class);
 
 		register_shutdown_function(array($this, 'shutdownHandler'));
 
@@ -139,7 +139,7 @@ class CronsController extends AbstractAdminController
 			$this->log->referring_url = '';
 			$this->log->message_type  = 'plg.cron.' . $row->plugin;
 			$plugin                   = $pluginManager->getPlugIn($row->plugin, 'cron');
-			$table                    = FabTable::getInstance(CronTable::class);
+			$table                    = FabrikTable::getInstance(CronTable::class);
 			$table->load($row->id);
 			$plugin->setRow($table);
 			$pluginParams       = $plugin->getParams();

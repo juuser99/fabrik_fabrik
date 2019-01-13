@@ -22,7 +22,7 @@ use Joomla\Database\DatabaseDriver;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class JoinTable extends FabTable
+class JoinTable extends FabrikTable
 {
 	public $params = '';
 

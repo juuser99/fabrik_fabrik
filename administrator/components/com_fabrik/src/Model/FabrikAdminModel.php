@@ -32,7 +32,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-abstract class FabAdminModel extends \Joomla\CMS\MVC\Model\AdminModel
+abstract class FabrikAdminModel extends \Joomla\CMS\MVC\Model\AdminModel
 {
 	use TableTrait;
 
@@ -103,7 +103,7 @@ abstract class FabAdminModel extends \Joomla\CMS\MVC\Model\AdminModel
 		$this->session       = ArrayHelper::getValue($config, 'session', Factory::getSession());
 		$this->db            = ArrayHelper::getValue($config, 'db', Factory::getDbo());
 		$this->pluginManager = ArrayHelper::getValue($config, 'pluginManager',
-			FabModel::getInstance(PluginManagerModel::class));
+			FabrikModel::getInstance(PluginManagerModel::class));
 
 		parent::__construct($config);
 	}

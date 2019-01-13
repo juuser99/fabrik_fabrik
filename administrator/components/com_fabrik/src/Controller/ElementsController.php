@@ -21,7 +21,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Fabrik\Component\Fabrik\Administrator\Model\ElementModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ElementsModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
@@ -76,7 +76,7 @@ class ElementsController extends AbstractAdminController
 	 * @param   string  $prefix  Model prefix
 	 * @param   array   $config  Model config
 	 *
-	 * @return  ElementModel|FabModel
+	 * @return  ElementModel|FabrikModel
 	 *
 	 * @since 4.0
 	 */

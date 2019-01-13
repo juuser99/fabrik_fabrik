@@ -29,9 +29,9 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Profiler\Profiler;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use Fabrik\Component\Fabrik\Administrator\Table\JsActionTable;
 use Fabrik\Component\Fabrik\Site\Model\ElementValidatorModel;
@@ -50,7 +50,7 @@ use Joomla\Utilities\ArrayHelper;
  * @package  Fabrik
  * @since    3.0
  */
-abstract class AbstractElementPlugin extends FabPlugin
+abstract class AbstractElementPlugin extends FabrikPlugin
 {
 	/**
 	 * Element id
@@ -407,7 +407,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 	{
 		parent::__construct($subject, $config);
 
-		$this->validator = FabModel::getInstance(ElementValidatorModel::class);
+		$this->validator = FabrikModel::getInstance(ElementValidatorModel::class);
 		$this->validator->setElementpLugin($this);
 		$this->access = new \stdClass;
 	}
@@ -493,7 +493,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 		if (!$this->element || $force)
 		{
 			/** @var ElementTable $row */
-			$row = FabTable::getInstance(ElementTable::class);
+			$row = FabrikTable::getInstance(ElementTable::class);
 			$row->load($this->id);
 			$this->element = $row;
 
@@ -524,7 +524,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 			if ((int) $element->parent_id !== 0)
 			{
 				/** @var ElementTable parent */
-				$this->parent = FabTable::getInstance(ElementTable::class);
+				$this->parent = FabrikTable::getInstance(ElementTable::class);
 				$this->parent->load($element->parent_id);
 			}
 			else
@@ -552,7 +552,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 	{
 		if (!$this->element)
 		{
-			$this->element = FabTable::getInstance(ElementTable::class);
+			$this->element = FabrikTable::getInstance(ElementTable::class);
 		}
 
 		if (is_object($row))
@@ -622,7 +622,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 		if (is_null($this->group) || $this->group->getId() != $groupId)
 		{
 			/** @var GroupModel $model */
-			$model = FabModel::getInstance(GroupModel::class);
+			$model = FabrikModel::getInstance(GroupModel::class);
 			$model->setId($groupId);
 			$model->getGroup();
 			$this->group = $model;
@@ -671,7 +671,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 			$listModel = $this->getListModel();
 			$table     = $listModel->getTable();
 			/** @var FormModel form */
-			$this->form = FabModel::getInstance(FormModel::class);
+			$this->form = FabrikModel::getInstance(FormModel::class);
 			$this->form->setId($table->form_id);
 			$this->form->getForm();
 		}
@@ -2286,7 +2286,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 	public function copyRow($id, $copyText = 'Copy of %s', $groupId = null, $name = null)
 	{
 		/** @var ElementTable $rule */
-		$rule = FabTable::getInstance(ElementTable::class);
+		$rule = FabrikTable::getInstance(ElementTable::class);
 
 		$rule->load((int) $id);
 		$rule->id    = null;
@@ -2303,7 +2303,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 		}
 
 		/** @var GroupModel $groupModel */
-		$groupModel = FabModel::getInstance(GroupModel::class);
+		$groupModel = FabrikModel::getInstance(GroupModel::class);
 		$groupModel->setId($groupId);
 		$groupListModel = $groupModel->getListModel();
 
@@ -2342,7 +2342,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 		if (is_a($this, 'PlgFabrik_ElementDatabasejoin'))
 		{
 			/** @var JoinTable $join */
-			$join = FabTable::getInstance(JoinTable::class);
+			$join = FabrikTable::getInstance(JoinTable::class);
 			$join->load(array('element_id' => $id));
 			$join->id         = null;
 			$join->element_id = $rule->id;
@@ -2360,7 +2360,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 		foreach ($actions as $id)
 		{
 			/** @var JsActionTable $jsCode */
-			$jsCode = FabTable::getInstance(JsActionTable::class);
+			$jsCode = FabrikTable::getInstance(JsActionTable::class);
 			$jsCode->load($id);
 			$jsCode->id         = 0;
 			$jsCode->element_id = $rule->id;
@@ -7450,7 +7450,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 	{
 		if (is_null($this->joinModel))
 		{
-			$this->joinModel = FabModel::getInstance(JoinModel::class);
+			$this->joinModel = FabrikModel::getInstance(JoinModel::class);
 
 			// $$$ rob ensure we load the join by asking for the parents id, but then ensure we set the element id back to this elements id
 			$this->joinModel->getJoinFromKey('element_id', $this->getParent()->id);
@@ -7492,7 +7492,7 @@ abstract class AbstractElementPlugin extends FabPlugin
 
 		foreach ($ids as $id)
 		{
-			$join = FabTable::getInstance('Join', 'FabrikTable');
+			$join = FabrikTable::getInstance('Join', 'FabrikTable');
 			$join->load($id);
 			$params = new Registry($join->params);
 
@@ -7617,11 +7617,11 @@ abstract class AbstractElementPlugin extends FabPlugin
 	protected function loadMeForAjax()
 	{
 		$input      = $this->app->input;
-		$this->form = FabModel::getInstance(FormModel::class);
+		$this->form = FabrikModel::getInstance(FormModel::class);
 		$formId     = $input->getInt('formid');
 		$this->form->setId($formId);
 		$this->setId($input->getInt('element_id'));
-		$this->list = FabModel::getInstance(ListModel::class);
+		$this->list = FabrikModel::getInstance(ListModel::class);
 		$this->list->loadFromFormId($formId);
 		$table          = $this->list->getTable(true);
 		$table->form_id = $formId;

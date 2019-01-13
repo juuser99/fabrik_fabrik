@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class ConnectionTable extends FabTable
+class ConnectionTable extends FabrikTable
 {
 	/**
 	 * @var int

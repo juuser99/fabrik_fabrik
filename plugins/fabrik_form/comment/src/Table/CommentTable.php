@@ -10,10 +10,10 @@
 namespace Fabrik\Plugin\FabrikForm\Comment\Table;
 
 
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 
-class CommentTable extends FabTable
+class CommentTable extends FabrikTable
 {
 	/**
 	 * Object constructor to set table and key fields.

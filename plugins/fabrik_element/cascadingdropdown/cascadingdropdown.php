@@ -23,7 +23,7 @@ use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Plugin element to render cascading drop-down
@@ -899,7 +899,7 @@ class PlgFabrik_ElementCascadingdropdown extends AbstractElementDatabaseJoinPlug
 		$orderBy = 'text';
 		$tables  = $this->getFormModel()->getLinkedFabrikLists($params->get('join_db_name'));
 		/** @var ListModel $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$val       = $params->get('cascadingdropdown_label_concat');
 
 		if (!empty($val) && $this->app->input->get('override_join_val_column_concat', '0') !== '1')

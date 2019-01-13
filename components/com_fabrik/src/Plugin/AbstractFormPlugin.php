@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Profiler\Profiler;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\LogTable;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Utilities\ArrayHelper;
@@ -32,7 +32,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
-abstract class AbstractFormPlugin extends FabPlugin
+abstract class AbstractFormPlugin extends FabrikPlugin
 {
 	/**
 	 * Formatted email data
@@ -691,7 +691,7 @@ abstract class AbstractFormPlugin extends FabPlugin
 	{
 		if ($this->log === null)
 		{
-			$this->log                = FabTable::getInstance(LogTable::class);
+			$this->log                = FabrikTable::getInstance(LogTable::class);
 			$this->log->referring_url = $this->app->input->server->getString('REQUEST_URI');
 		}
 		$this->log->message_type = $msgType;

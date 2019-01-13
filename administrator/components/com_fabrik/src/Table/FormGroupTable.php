@@ -22,7 +22,7 @@ use Joomla\Database\DatabaseDriver;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormGroupTable extends FabTable
+class FormGroupTable extends FabrikTable
 {
 	/**
 	 * Constructor

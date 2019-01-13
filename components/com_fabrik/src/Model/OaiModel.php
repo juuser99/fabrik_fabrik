@@ -17,7 +17,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
@@ -28,7 +28,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class OaiModel extends FabSiteModel
+class OaiModel extends FabrikSiteModel
 {
 	/**
 	 * Delimiter used in unique resource identifier
@@ -314,7 +314,7 @@ class OaiModel extends FabSiteModel
 		$rowId  = $record[1];
 
 		/** @var ListModel $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 		$formModel->setRowId($rowId);

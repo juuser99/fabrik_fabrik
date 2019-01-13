@@ -15,7 +15,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 
 /**
@@ -57,7 +57,7 @@ class EmailFormController extends AbstractAdminController
 
 		// Push a model into the view (may have been set in content plugin already)
 		/** @var FormModel $model */
-		if ($model = FabModel::getInstance(FormModel::class))
+		if ($model = FabrikModel::getInstance(FormModel::class))
 		{
 			$view->setModel($model, true);
 		}

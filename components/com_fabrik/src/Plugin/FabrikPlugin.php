@@ -26,7 +26,7 @@ use Joomla\CMS\Table\Extension;
 use Joomla\CMS\Table\Language;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\User;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\GroupModel;
@@ -46,7 +46,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabPlugin extends CMSPlugin
+class FabrikPlugin extends CMSPlugin
 {
 	/**
 	 * path to xml file
@@ -836,7 +836,7 @@ class FabPlugin extends CMSPlugin
 			if ($cid !== 0)
 			{
 				/** @var ConnectionModel $cnn */
-				$cnn = FabModel::getInstance(ConnectionModel::class);
+				$cnn = FabrikModel::getInstance(ConnectionModel::class);
 				$cnn->setId($cid);
 				$db = $cnn->getDb();
 				$db->setQuery("SHOW TABLES");
@@ -891,7 +891,7 @@ class FabPlugin extends CMSPlugin
 				// Show all db columns
 				$cid = $input->get('cid', -1);
 				/** @var ConnectionModel $cnn */
-				$cnn = FabModel::getInstance(ConnectionModel::class);
+				$cnn = FabrikModel::getInstance(ConnectionModel::class);
 				$cnn->setId($cid);
 				$db = $cnn->getDb();
 
@@ -942,7 +942,7 @@ class FabPlugin extends CMSPlugin
 				* $keyType 2 = tablename___elementname
 				*/
 				/** @var ListModel $model */
-				$model = FabModel::getInstance(ListModel::class);
+				$model = FabrikModel::getInstance(ListModel::class);
 				$model->setId($tid);
 				$table       = $model->getTable();
 				$db          = $model->getDb();

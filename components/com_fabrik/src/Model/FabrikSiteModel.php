@@ -29,7 +29,7 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @since       4.0
  */
-class FabSiteModel extends BaseDatabaseModel
+class FabrikSiteModel extends BaseDatabaseModel
 {
 	use TableTrait;
 

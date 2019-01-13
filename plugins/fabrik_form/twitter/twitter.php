@@ -18,7 +18,7 @@ use Joomla\CMS\Router\Route;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\String\StringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
@@ -95,7 +95,7 @@ class PlgFabrik_FormTwitter extends AbstractFormPlugin
 	 */
 	protected function buildModel($id)
 	{
-		$this->model = FabModel::getInstance(FormModel::class);
+		$this->model = FabrikModel::getInstance(FormModel::class);
 		$this->model->setId($id);
 		$form        = $this->model->getForm();
 		$row         = $this->getRow();
@@ -518,7 +518,7 @@ class PlgFabrik_FormTwitter extends AbstractFormPlugin
 
 		// Save the access token to the element params
 		/** @var FormModel $formModel */
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($input->getInt('formid'));
 		$row = $formModel->getForm();
 

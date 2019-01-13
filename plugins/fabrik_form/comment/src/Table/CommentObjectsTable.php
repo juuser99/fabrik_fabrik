@@ -9,7 +9,7 @@
 
 namespace Fabrik\Plugin\FabrikForm\Comment\Table;
 
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 
 /**
@@ -17,7 +17,7 @@ use Joomla\Database\DatabaseDriver;
  *
  * @since       4.0
  */
-class CommentObjectsTable extends FabTable
+class CommentObjectsTable extends FabrikTable
 {
 	/**
 	 * CommentTable constructor.

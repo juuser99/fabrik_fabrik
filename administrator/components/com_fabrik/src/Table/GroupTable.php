@@ -23,7 +23,7 @@ use Joomla\Database\DatabaseDriver;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class GroupTable extends FabTable
+class GroupTable extends FabrikTable
 {
 	/**
 	 * Join ID - not sure its used?

@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Fabrik\Component\Fabrik\Administrator\Model\ContentTypeImportModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\View\Form\HtmlView;
@@ -52,7 +52,7 @@ class ContentTypeController extends AbstractFormController
 		$view->setLayout($viewLayout);
 
 		/** @var FormModel  $formModel */
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->groups = $model->loadContentType($contentType)->preview();
 		$view->setModel($formModel, true);
 

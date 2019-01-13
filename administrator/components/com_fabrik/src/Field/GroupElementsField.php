@@ -19,7 +19,7 @@ use Joomla\CMS\Form\Field\GroupedlistField;
 use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 
 FormHelper::loadFieldClass('groupedlist');
@@ -66,7 +66,7 @@ class GroupElementsField extends GroupedlistField
 		$db->setQuery($query);
 		$formId = $db->loadResult();
 		/** @var FormModel $formModel */
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 
 		$rows                                 = array();

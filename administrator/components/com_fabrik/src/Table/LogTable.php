@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class LogTable extends FabTable
+class LogTable extends FabrikTable
 {
 	/**
 	 * Constructor

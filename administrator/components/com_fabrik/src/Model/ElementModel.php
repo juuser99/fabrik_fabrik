@@ -27,7 +27,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
@@ -39,7 +39,7 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class ElementModel extends FabAdminModel
+class ElementModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -105,7 +105,7 @@ class ElementModel extends FabAdminModel
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**
@@ -490,7 +490,7 @@ class ElementModel extends FabAdminModel
 			else
 			{
 				/** @var FabrikFEModelList $joinListModel */
-				$joinListModel = FabModel::getInstance(\Fabrik\Component\Fabrik\Site\Model\ListModel::class);
+				$joinListModel = FabrikModel::getInstance(\Fabrik\Component\Fabrik\Site\Model\ListModel::class);
 				$joinListModel->setId($joinTblId);
 				$joinEls = $joinListModel->getElements();
 

@@ -31,7 +31,7 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ElementValidatorModel extends FabSiteModel
+class ElementValidatorModel extends FabrikSiteModel
 {
 	/**
 	 * Validation objects associated with the element

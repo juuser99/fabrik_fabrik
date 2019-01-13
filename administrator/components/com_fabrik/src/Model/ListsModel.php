@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Utilities\ArrayHelper;
 
@@ -28,7 +28,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ListsModel extends FabListModel
+class ListsModel extends FabrikListModel
 {
 	/**
 	 * Constructor.

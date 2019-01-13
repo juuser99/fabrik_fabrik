@@ -14,7 +14,7 @@ namespace Fabrik\Component\Fabrik\Site\View\ListView;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\CsvExportModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 
@@ -41,10 +41,10 @@ class CsvView extends BaseView
 		$input = $this->app->input;
 
 		/** @var CsvExportModel $exporter */
-		$exporter = FabModel::getInstance(CsvExportModel::class);
+		$exporter = FabrikModel::getInstance(CsvExportModel::class);
 
 		/** @var ListModel $model */
-		$model = FabModel::getInstance(ListModel::class);
+		$model = FabrikModel::getInstance(ListModel::class);
 		$model->setId($input->getInt('listid'));
 
 		if (!parent::access($model))

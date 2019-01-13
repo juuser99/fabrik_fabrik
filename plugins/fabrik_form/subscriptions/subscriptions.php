@@ -18,13 +18,13 @@ use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Redirects the browser to subscriptions to perform payment
@@ -415,7 +415,7 @@ class PlgFabrik_FormSubscriptions extends AbstractFormPlugin
 		if ($subscriptionId !== 0)
 		{
 			// Updating a subscription - load the invoice
-			$invoice = FabTable::getInstance(InvoiceTable::class);
+			$invoice = FabrikTable::getInstance(InvoiceTable::class);
 			$invoice->load(array('subscr_id' => $sub->id));
 			$opts['invoice'] = $invoice->invoice_number;
 
@@ -542,7 +542,7 @@ class PlgFabrik_FormSubscriptions extends AbstractFormPlugin
 		$formId = $input->getInt('formid');
 		$rowId  = $input->getString('rowid', '', 'string');
 		/** @var FormModel $formModel */
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$params = $formModel->getParams();
 		$msg    = (array) $params->get('subscriptions_return_msg');
@@ -604,7 +604,7 @@ class PlgFabrik_FormSubscriptions extends AbstractFormPlugin
 
 		// Pretty sure they are added but double add
 		/** @var FormModel $formModel */
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$listModel = $formModel->getListModel();
 		$params    = $formModel->getParams();
@@ -957,7 +957,7 @@ class PlgFabrik_FormSubscriptions extends AbstractFormPlugin
 		$plan    = $this->getPlan();
 		$input   = $this->app->input;
 		/** @var SubscriptionTable $sub */
-		$sub = FabTable::getInstance(SubscriptionTable::class);
+		$sub = FabrikTable::getInstance(SubscriptionTable::class);
 
 		// Replace fields with db prefix
 		$billingCycle = $this->getBillingCycle();
@@ -999,7 +999,7 @@ class PlgFabrik_FormSubscriptions extends AbstractFormPlugin
 	{
 		$input = $this->app->input;
 		/** @var InvoiceTable $invoice */
-		$invoice                 = FabTable::getInstance(InvoiceTable::class);
+		$invoice                 = FabrikTable::getInstance(InvoiceTable::class);
 		$invoice->invoice_number = uniqid('', true);
 		$input->setVar('invoice_number', $invoice->invoice_number);
 

@@ -22,7 +22,7 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Uri\Uri;
 use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 use Fabrik\Component\Fabrik\Administrator\Model\ConnectionsModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel as AdminListModel;
 use Fabrik\Component\Fabrik\Administrator\View\ListView\HtmlView;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
@@ -109,7 +109,7 @@ class ListController extends AbstractFormController
 		$input = $this->input;
 		$cid   = $input->get('cid', array(0), 'array');
 		/** @var ListModel $model */
-		$model = FabModel::getInstance(ListModel::class);
+		$model = FabrikModel::getInstance(ListModel::class);
 
 		if (count($cid) > 0)
 		{
@@ -163,7 +163,7 @@ class ListController extends AbstractFormController
 			$cid = $input->getInt('listid', $cid);
 
 			// Grab the model and set its id
-			$model = FabModel::getInstance(ListModel::class);
+			$model = FabrikModel::getInstance(ListModel::class);
 			$model->setState('list.id', $cid);
 		}
 
@@ -210,7 +210,7 @@ class ListController extends AbstractFormController
 		$document = Factory::getDocument();
 		$input    = $this->input;
 		$cid      = $input->get('cid', array(0), 'array');
-		$model    = FabModel::getInstance(ListModel::class);
+		$model    = FabrikModel::getInstance(ListModel::class);
 		$model->setState('list.id', $cid[0]);
 		$formModel  = $model->getFormModel();
 		$viewType   = $document->getType();
@@ -236,7 +236,7 @@ class ListController extends AbstractFormController
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$input = $this->input;
-		$model = FabModel::getInstance(ListModel::class);
+		$model = FabrikModel::getInstance(ListModel::class);
 		$id    = $input->getInt('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
@@ -273,7 +273,7 @@ class ListController extends AbstractFormController
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$input = $this->input;
-		$model = FabModel::getInstance(ListModel::class);
+		$model = FabrikModel::getInstance(ListModel::class);
 		$id    = $input->get('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
@@ -296,7 +296,7 @@ class ListController extends AbstractFormController
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$input  = $this->input;
-		$model  = FabModel::getInstance(ListModel::class);
+		$model  = FabrikModel::getInstance(ListModel::class);
 		$listId = $input->getInt('listid');
 		$model->setId($listId);
 		$ids        = $input->get('ids', array(), 'array');
@@ -412,7 +412,7 @@ class ListController extends AbstractFormController
 		if ((int) $data['id'] === 0 && ArrayHelper::getValue($data, 'db_table_name', '') === '')
 		{
 			$viewType = Factory::getDocument()->getType();
-			$model    = FabModel::getInstance(AdminListModel::class);
+			$model    = FabrikModel::getInstance(AdminListModel::class);
 			/** @var HtmlView $view */
 			$view = $this->getView('listView', $viewType, '');
 			$view->setModel($model, true);

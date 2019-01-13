@@ -14,7 +14,7 @@ use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Helpers\Worker;
 
 /**
@@ -204,7 +204,7 @@ class PlgFabrik_FormLimit extends AbstractFormPlugin
 	{
 		$params    = $this->getParams();
 		$listId    = (int) $params->get('limit_table');
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$dbTable = $listModel->getTable()->db_table_name;
 		$db      = $listModel->getDb();

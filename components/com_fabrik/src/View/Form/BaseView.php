@@ -24,7 +24,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Profiler\Profiler;
 use Joomla\CMS\Router\Route;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\View\AbstractView;
 use Joomla\Registry\Registry;
@@ -332,7 +332,7 @@ class BaseView extends AbstractView
 	/**
 	 * Prepare the form table for use in the templates
 	 *
-	 * @return FabTable
+	 * @return FabrikTable
 	 *
 	 * @since 4.0
 	 */

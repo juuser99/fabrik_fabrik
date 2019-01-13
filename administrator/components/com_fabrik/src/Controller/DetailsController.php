@@ -18,7 +18,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 
 /**
@@ -50,7 +50,7 @@ class DetailsController extends AbstractFormController
 	{
 		$document = Factory::getDocument();
 		/** @var FormModel $model */
-		$model = FabModel::getInstance(FormModel::class);
+		$model = FabrikModel::getInstance(FormModel::class);
 		$app = Factory::getApplication();
 		$input = $app->input;
 		$input->set('view', 'details');

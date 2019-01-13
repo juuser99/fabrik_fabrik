@@ -14,7 +14,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 
 trait TableTrait
@@ -48,7 +48,7 @@ trait TableTrait
 
 		if (!array_key_exists($tableClass, $this->tables))
 		{
-			$this->tables[$tableClass] = FabTable::getInstance($tableClass, $prefix, $options);
+			$this->tables[$tableClass] = FabrikTable::getInstance($tableClass, $prefix, $options);
 		}
 
 		return $this->tables[$tableClass];
@@ -61,7 +61,7 @@ trait TableTrait
 	 * @param string $prefix
 	 * @param array  $config
 	 *
-	 * @return FabTable
+	 * @return FabrikTable
 	 *
 	 * @since 4.0
 	 */
@@ -70,7 +70,7 @@ trait TableTrait
 		$tableClass = "Joomla\\Component\\Fabrik\\Administrator\\Table\\".ucfirst($name)."Table";
 
 		if (class_exists($tableClass)) {
-			return FabTable::getInstance($tableClass, $prefix, $config);
+			return FabrikTable::getInstance($tableClass, $prefix, $config);
 		}
 
 		return parent::_createTable($name, $prefix, $config);

@@ -29,7 +29,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class HomeModel extends FabAdminModel
+class HomeModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -202,7 +202,7 @@ class HomeModel extends FabAdminModel
 		$db->execute();
 
 		echo "<li>Groups added to 'Contact Us' form</li>";
-		$listModel           = FabModel::getInstance(ListModel::class);
+		$listModel           = FabrikModel::getInstance(ListModel::class);
 		$list                = $this->getTable('List');
 		$list->label         = "Contact Us Data";
 		$list->introduction  = "This table stores the data submitted in the contact us form";
@@ -221,7 +221,7 @@ class HomeModel extends FabAdminModel
 		$list->store();
 		echo "<li>Table for 'Contact Us' created</li></div>";
 		$form->store();
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($form->id);
 		$formModel->form = $form;
 
@@ -268,7 +268,7 @@ class HomeModel extends FabAdminModel
 	public function dropData()
 	{
 		/** @var ConnectionModel $connModel */
-		$connModel = FabModel::getInstance(ConnectionModel::class);
+		$connModel = FabrikModel::getInstance(ConnectionModel::class);
 		$connModel->setId(null); // was $item->connection_id but this doesn't exist
 		$db    = Worker::getDbo(true);
 		$query = $db->getQuery(true);

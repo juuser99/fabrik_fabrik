@@ -18,7 +18,7 @@ use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Plugin element to render field with PHP calculated value
@@ -676,7 +676,7 @@ class PlgFabrik_ElementCalc extends AbstractElementPlugin
 		$this->loadMeForAjax();
 
 		/** @var ListModel $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$data   = $listModel->getData();
 		$return = new \stdClass;

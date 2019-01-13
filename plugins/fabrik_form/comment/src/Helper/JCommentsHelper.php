@@ -17,7 +17,7 @@ use Fabrik\Plugin\FabrikForm\Comment\Table\CommentObjectsTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Router\Route;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 
 require_once JCOMMENTS_BASE . '/jcomments.subscription.php';
 require_once JCOMMENTS_BASE . '/jcomments.class.php';
@@ -127,7 +127,7 @@ class jc_com_fabrik_1 extends JCommentsPlugin
 		$user      = Factory::getUser();
 		$info      = self::jcObjectInfo($objectId, $objectGroup, $language);
 		$jObjectId = isset($info->id) ? $info->id : null;
-		$row       = FabTable::getInstance(CommentObjectsTable::class);
+		$row       = FabrikTable::getInstance(CommentObjectsTable::class);
 		$data      = array(
 			'access'      => 1,
 			'userid'      => (int) $user->get('id'),

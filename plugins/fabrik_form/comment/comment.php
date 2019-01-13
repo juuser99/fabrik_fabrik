@@ -21,11 +21,11 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Fabrik\Helpers\Worker;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
@@ -582,7 +582,7 @@ class PlgFabrik_FormComment extends AbstractFormPlugin
 	private function setFormModel()
 	{
 		$input = $this->app->input;
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($input->getInt('formid'));
 		$this->model = $formModel;
 
@@ -598,7 +598,7 @@ class PlgFabrik_FormComment extends AbstractFormPlugin
 	{
 		$input = $this->app->input;
 		/** @var CommentTable $row */
-		$row = FabTable::getInstance(CommentTable::class);
+		$row = FabrikTable::getInstance(CommentTable::class);
 		$filter = InputFilter::getInstance();
 		$request = $filter->clean($_REQUEST, 'array');
 
@@ -680,7 +680,7 @@ class PlgFabrik_FormComment extends AbstractFormPlugin
 	 */
 	private function fixTable()
 	{
-		$table   = FabTable::getInstance(CommentTable::class);
+		$table   = FabrikTable::getInstance(CommentTable::class);
 		$columns = $table->getFields();
 
 		if (!array_key_exists('notify', $columns))
@@ -977,7 +977,7 @@ class PlgFabrik_FormComment extends AbstractFormPlugin
 		$commentId = $this->app->input->getInt('commentid');
 
 		// TableComment
-		$c = FabTable::getInstance(CommentTable::class);
+		$c = FabrikTable::getInstance(CommentTable::class);
 		$c->load($commentId);
 		echo "<a href=\"mailto:$c->email\">$c->email</a>";
 	}

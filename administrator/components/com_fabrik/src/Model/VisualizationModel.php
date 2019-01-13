@@ -20,7 +20,7 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormRule;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\VisualizationTable;
 use Joomla\Utilities\ArrayHelper;
 
@@ -31,7 +31,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class VisualizationModel extends FabAdminModel
+class VisualizationModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -49,7 +49,7 @@ class VisualizationModel extends FabAdminModel
 	 * @param   string $prefix A prefix for the table class name. Optional.
 	 * @param   array  $config Configuration array for model. Optional.
 	 *
-	 * @return  VisualizationTable|FabTable    A database object
+	 * @return  VisualizationTable|FabrikTable    A database object
 	 *
 	 * @since 4.0
 	 */
@@ -57,7 +57,7 @@ class VisualizationModel extends FabAdminModel
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**

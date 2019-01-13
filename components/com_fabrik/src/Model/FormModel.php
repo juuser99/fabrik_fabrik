@@ -30,8 +30,8 @@ use Joomla\CMS\Profiler\Profiler;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FormTable;
 use Fabrik\Component\Fabrik\Administrator\Table\GroupTable;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
@@ -47,7 +47,7 @@ use Fabrik\Helpers\Uploader;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormModel extends FabSiteModel
+class FormModel extends FabrikSiteModel
 {
 	/**
 	 * id
@@ -528,7 +528,7 @@ class FormModel extends FabSiteModel
 	/**
 	 * Get form table (alias to getTable())
 	 *
-	 * @return  FabTable  form table
+	 * @return  FabrikTable  form table
 	 *
 	 * @since   4.0
 	 */
@@ -1070,7 +1070,7 @@ class FormModel extends FabSiteModel
 		{
 			$this->groups = array();
 			$listModel = $this->getListModel();
-			$groupModel = FabModel::getInstance(GroupModel::class);
+			$groupModel = FabrikModel::getInstance(GroupModel::class);
 			$groupData = $this->getPublishedGroups();
 
 			foreach ($groupData as $id => $groupD)
@@ -1082,7 +1082,7 @@ class FormModel extends FabSiteModel
 
 				// $$ rob 25/02/2011 this was doing a query per group - pointless as we bind $groupD to $row afterwards
 				// $row = $thisGroup->getGroup();
-				$row = FabTable::getInstance(GroupTable::class);
+				$row = FabrikTable::getInstance(GroupTable::class);
 
 				$row->bind($groupD);
 				$thisGroup->setGroup($row);
@@ -1352,7 +1352,7 @@ class FormModel extends FabSiteModel
 		$form = $this->getForm();
 		$pluginManager = Worker::getPluginManager();
 
-		$sessionModel = FabModel::getInstance(FormSessionModel::class);
+		$sessionModel = FabrikModel::getInstance(FormSessionModel::class);
 		$sessionModel->setFormId($this->getId());
 		$sessionModel->setRowId($this->rowId);
 		/* $$$ rob rowId can be updated by jUser plugin so plugin can use check (for new/edit)
@@ -2157,7 +2157,7 @@ class FormModel extends FabSiteModel
 	{
 		if (!isset($this->listModel))
 		{
-			$this->listModel = FabModel::getInstance(ListModel::class);
+			$this->listModel = FabrikModel::getInstance(ListModel::class);
 			$item = $this->getForm();
 			$this->listModel->loadFromFormId($item->id);
 			$this->listModel->setFormModel($this);
@@ -2406,7 +2406,7 @@ class FormModel extends FabSiteModel
 			return true;
 		}
 
-		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		$pluginManager->getPlugInGroup('validationrule');
 
 		$post = $this->setFormData();
@@ -3842,7 +3842,7 @@ class FormModel extends FabSiteModel
 		}
 
 		$params = $this->getParams();
-		$this->sessionModel = FabModel::getInstance(FormSessionModel::class);
+		$this->sessionModel = FabrikModel::getInstance(FormSessionModel::class);
 		$this->sessionModel->setFormId($this->getId());
 		$this->sessionModel->setRowId($this->rowId);
 		$useCookie = (int) $params->get('multipage_save', 0) === 2 ? true : false;
@@ -4609,7 +4609,7 @@ class FormModel extends FabSiteModel
 		}
 
 		$listModel = $this->getListModel();
-		$referringTable = FabModel::getInstance(ListModel::class);
+		$referringTable = FabrikModel::getInstance(ListModel::class);
 
 		// $$$ rob - not sure that referring_table is anything other than the form's table id
 		// but for now just defaulting to that if no other variable found (e.g when links in sef urls)

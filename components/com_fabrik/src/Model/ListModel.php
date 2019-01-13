@@ -34,7 +34,7 @@ use Joomla\CMS\Service\Provider\Config;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseQuery;
@@ -51,7 +51,7 @@ use Fabrik\Helpers\Pagination;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class ListModel extends FabSiteModel
+class ListModel extends FabrikSiteModel
 {
 	/**
 	 * List id
@@ -686,7 +686,7 @@ class ListModel extends FabSiteModel
 		$id              = $input->getInt('listid', $usersConfig->get('listid'));
 		$this->packageId = (int) $input->getInt('packageId', $usersConfig->get('packageId'));
 		$this->setId($id);
-		$this->advancedSearch = FabModel::getInstance(ListAdvancedSearchModel::class);
+		$this->advancedSearch = FabrikModel::getInstance(ListAdvancedSearchModel::class);
 		$this->advancedSearch->setModel($this);
 		$this->access = new \stdClass;
 	}
@@ -1018,7 +1018,7 @@ class ListModel extends FabSiteModel
 	{
 		if (!isset($this->filterModel))
 		{
-			$this->filterModel = FabModel::getInstance(ListFilterModel::class);
+			$this->filterModel = FabrikModel::getInstance(ListFilterModel::class);
 			$this->filterModel->setListModel($this);
 		}
 
@@ -1982,7 +1982,7 @@ class ListModel extends FabSiteModel
 			return $this->recordCounts[$k];
 		}
 
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($element->list_id);
 		$db           = $listModel->getDb();
 		$elementModel = $listModel->getFormModel()->getElement($element->element_id, true);
@@ -2148,7 +2148,7 @@ class ListModel extends FabSiteModel
 
 		if (!array_key_exists($id, $this->facettables))
 		{
-			$this->facettables[$id] = FabModel::getInstance(ListModel::class);
+			$this->facettables[$id] = FabrikModel::getInstance(ListModel::class);
 			$this->facettables[$id]->setId($id);
 		}
 
@@ -5358,7 +5358,7 @@ class ListModel extends FabSiteModel
 	{
 		if (!isset($this->formModel))
 		{
-			$this->formModel = FabModel::getInstance(FormModel::class);
+			$this->formModel = FabrikModel::getInstance(FormModel::class);
 			$table           = $this->getTable();
 			$this->formModel->setId($table->form_id);
 			$this->formModel->getForm();
@@ -8127,7 +8127,7 @@ class ListModel extends FabSiteModel
 		$profiler = Profiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('cacheDoCalculations: start') : null;
 
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$formModel = $listModel->getFormModel();
 
@@ -9927,7 +9927,7 @@ class ListModel extends FabSiteModel
 	public static function columnData($listId, $col, $distinct = true, $opts = array())
 	{
 		/** @var ListModel $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$listModel->filters = FArrayHelper::getValue($opts, 'filters');
 		$table              = $listModel->getTable();

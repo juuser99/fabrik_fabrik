@@ -26,7 +26,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FabTable extends Table
+class FabrikTable extends Table
 {
 	/**
 	 * JSON encoded JFormField param options
@@ -42,7 +42,7 @@ class FabTable extends Table
 	 * @param string $prefix
 	 * @param array  $config
 	 *
-	 * @return FabTable
+	 * @return FabrikTable
 	 *
 	 * @since version
 	 */

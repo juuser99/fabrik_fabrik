@@ -18,7 +18,7 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseQuery;
 
 /**
@@ -28,7 +28,7 @@ use Joomla\Database\DatabaseQuery;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class CronsModel extends FabListModel
+class CronsModel extends FabrikListModel
 {
 	/**
 	 * Constructor.
@@ -119,7 +119,7 @@ class CronsModel extends FabListModel
 	{
 		$config['dbo'] = Worker::getDbo();
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**

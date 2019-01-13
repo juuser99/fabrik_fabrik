@@ -18,7 +18,7 @@ use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\Database\DatabaseDriver;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Update / insert a database record into any table
@@ -135,7 +135,7 @@ class PlgFabrik_FormUpsert extends AbstractFormPlugin
 			$params = $this->getParams();
 			$cid    = $params->get('connection_id');
 			/** @var ConnectionModel $connectionModel */
-			$connectionModel = FabModel::getInstance(ConnectionModel::class);
+			$connectionModel = FabrikModel::getInstance(ConnectionModel::class);
 			$connectionModel->setId($cid);
 			$this->upsert_db = $connectionModel->getDb();
 		}
@@ -259,7 +259,7 @@ class PlgFabrik_FormUpsert extends AbstractFormPlugin
 		$params = $this->getParams();
 		$listId = $params->get('table');
 		/** @var ListModel $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 
 		return $listModel->getTable()->db_table_name;
@@ -280,7 +280,7 @@ class PlgFabrik_FormUpsert extends AbstractFormPlugin
 	{
 		$params          = $this->getParams();
 		$cid             = $params->get('connection_id');
-		$connectionModel = FabModel::getInstance(ConnectionModel::class);
+		$connectionModel = FabrikModel::getInstance(ConnectionModel::class);
 		$connectionModel->setId($cid);
 		$db    = $connectionModel->getDb();
 		$query = $db->getQuery(true);

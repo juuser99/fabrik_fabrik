@@ -21,7 +21,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Redirects the browser to paypal to perform payment
@@ -176,7 +176,7 @@ class PlgFabrik_FormPaypal extends AbstractFormPlugin
 		// $$$ rob add in subscription variables
 		if ($this->isSubscription($params))
 		{
-			$subTable = FabModel::getInstance(ListModel::class);
+			$subTable = FabrikModel::getInstance(ListModel::class);
 			$subTable->setId((int) $params->get('paypal_subs_table'));
 
 			$idEl          = FStringHelper::safeColName($params->get('paypal_subs_id', ''));
@@ -559,7 +559,7 @@ class PlgFabrik_FormPaypal extends AbstractFormPlugin
 		$formId = $input->getInt('formid');
 		$rowId  = $input->getString('rowid', '', 'string');
 
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$params = $formModel->getParams();
 
@@ -621,7 +621,7 @@ class PlgFabrik_FormPaypal extends AbstractFormPlugin
 
 		// Pretty sure they are added but double add
 		/** @var FormModel $formModel */
-		$formModel = FabModel::getInstance(FormModel::class);
+		$formModel = FabrikModel::getInstance(FormModel::class);
 		$formModel->setId($formId);
 		$listModel = $formModel->getListModel();
 		$params    = $formModel->getParams();

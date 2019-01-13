@@ -14,7 +14,7 @@ namespace Fabrik\Component\Fabrik\Site\Model;
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -25,7 +25,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormInlineEditModel extends FabSiteModel
+class FormInlineEditModel extends FabrikSiteModel
 {
 	/**
 	 * @var FormModel
@@ -43,7 +43,7 @@ class FormInlineEditModel extends FabSiteModel
 	 */
 	public function render()
 	{
-		$this->formModel = FabModel::getInstance(FormModel::class);
+		$this->formModel = FabrikModel::getInstance(FormModel::class);
 		$input = $this->app->input;
 
 		// Need to render() with all element ids in case canEditRow plugins etc. use the row data.

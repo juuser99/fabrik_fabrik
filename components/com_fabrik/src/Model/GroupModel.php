@@ -19,7 +19,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Table\FormGroupTable;
 use Fabrik\Component\Fabrik\Administrator\Table\GroupTable;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
@@ -33,7 +33,7 @@ use Joomla\String\StringHelper;
  * @package  Fabrik
  * @since    3.0
  */
-class GroupModel extends FabSiteModel
+class GroupModel extends FabrikSiteModel
 {
 	/**
 	 * Element plugins
@@ -303,7 +303,7 @@ class GroupModel extends FabSiteModel
 		{
 			$formIds    = $this->getFormsIamIn();
 			$formId     = empty($formIds) ? 0 : $formIds[0];
-			$this->form = FabModel::getInstance(FormModel::class);
+			$this->form = FabrikModel::getInstance(FormModel::class);
 			$this->form->setId($formId);
 			$this->form->getForm();
 			$this->form->getListModel();
@@ -842,7 +842,7 @@ class GroupModel extends FabSiteModel
 
 		if (is_null($this->joinModel))
 		{
-			$this->joinModel = FabModel::getInstance(JoinModel::class);
+			$this->joinModel = FabrikModel::getInstance(JoinModel::class);
 			$this->joinModel->setId($group->join_id);
 			$js = $this->getListModel()->getJoins();
 

@@ -18,7 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\GroupModel;
 /**
@@ -43,7 +43,7 @@ class RawView extends BaseHtmlView
 	public function display($tpl = null)
 	{
 		/** @var FormModel $model */
-		$model = FabModel::getInstance(FormModel::class);
+		$model = FabrikModel::getInstance(FormModel::class);
 		$model->render();
 
 		if (!$this->canAccess())

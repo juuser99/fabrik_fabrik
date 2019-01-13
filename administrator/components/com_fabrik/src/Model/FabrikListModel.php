@@ -25,7 +25,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FabListModel extends ListModel
+class FabrikListModel extends ListModel
 {
 	use TableTrait;
 

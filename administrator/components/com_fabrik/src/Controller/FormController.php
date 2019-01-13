@@ -23,7 +23,7 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Uri\Uri;
 use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 use Fabrik\Component\Fabrik\Administrator\Model\ContentTypeExportModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Model\FormInlineEditModel;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
@@ -78,7 +78,7 @@ class FormController extends AbstractFormController
 	{
 		$document = Factory::getDocument();
 		$input    = $this->input;
-		$model    = FabModel::getInstance(FormModel::class);
+		$model    = FabrikModel::getInstance(FormModel::class);
 		$viewType = $document->getType();
 		// @todo refactor to j4
 		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
@@ -139,7 +139,7 @@ class FormController extends AbstractFormController
 		$view = $this->getView($viewName, $viewType, \FabrikDispatcher::PREFIX_SITE);
 
 		/** @var FormModel $model */
-		if ($model = FabModel::getInstance(FormModel::class))
+		if ($model = FabrikModel::getInstance(FormModel::class))
 		{
 			$view->setModel($model, true);
 		}
@@ -394,7 +394,7 @@ class FormController extends AbstractFormController
 		if ((int) $data['id'] === 0)
 		{
 			$viewType = Factory::getDocument()->getType();
-			$model    = FabModel::getInstance(ListModel::class);
+			$model    = FabrikModel::getInstance(ListModel::class);
 			/** @var \Fabrik\Component\Fabrik\Administrator\View\Form\HtmlView $view */
 			$view = $this->getView($this->view_item, $viewType, \FabrikDispatcher::PREFIX_ADMIN);
 			$view->setModel($model, true);

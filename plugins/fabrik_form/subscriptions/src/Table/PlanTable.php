@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikForm\Subscriptions\Table;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 
 /**
@@ -23,7 +23,7 @@ use Joomla\Database\DatabaseDriver;
  * @subpackage  Fabrik.form.subscriptions
  * @since       4.0
  */
-class PlanTable extends FabTable
+class PlanTable extends FabrikTable
 {
 	/**
 	 * Constructor

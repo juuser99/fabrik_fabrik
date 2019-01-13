@@ -15,7 +15,7 @@ namespace Fabrik\Component\Fabrik\Site\View\ListView;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\OaiModel;
 
 /**
@@ -53,7 +53,7 @@ class OaiView extends BaseView
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$this->oaiModel = FabModel::getInstance(OaiModel::class);
+		$this->oaiModel = FabrikModel::getInstance(OaiModel::class);
 	}
 
 	/**

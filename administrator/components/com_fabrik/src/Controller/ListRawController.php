@@ -18,7 +18,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use \Joomla\Registry\Registry;
@@ -62,7 +62,7 @@ class ListRawController extends AbstractFormController
 		$input = $app->input;
 		$conn  = $input->getInt('conn', 1);
 		/** @var ConnectionModel $oCnn */
-		$oCnn = FabModel::getInstance(ConnectionModel::class);
+		$oCnn = FabrikModel::getInstance(ConnectionModel::class);
 		$oCnn->setId($conn);
 		$oCnn->getConnection();
 		$db         = $oCnn->getDb();
@@ -104,7 +104,7 @@ class ListRawController extends AbstractFormController
 		$app   = Factory::getApplication();
 		$input = $app->input;
 		/** @var ListModel $model */
-		$model  = FabModel::getInstance(ListModel::class);
+		$model  = FabrikModel::getInstance(ListModel::class);
 		$listId = $input->getInt('listid');
 		$model->setId($listId);
 		$ids        = $input->get('ids', array(), 'array');
@@ -155,7 +155,7 @@ class ListRawController extends AbstractFormController
 
 			// Grab the model and set its id
 			/** @var ListModel $model */
-			$model = FabModel::getInstance(ListModel::class);
+			$model = FabrikModel::getInstance(ListModel::class);
 			$model->setState('list.id', $cid);
 		}
 
@@ -220,7 +220,7 @@ class ListRawController extends AbstractFormController
 		Session::checkToken() or die('Invalid Token');
 		$app   = Factory::getApplication();
 		$input = $app->input;
-		$model = FabModel::getInstance(ListModel::class);
+		$model = FabrikModel::getInstance(ListModel::class);
 		$id    = $input->getInt('listid');
 		$model->setId($id);
 		$input->set('cid', $id);
@@ -259,7 +259,7 @@ class ListRawController extends AbstractFormController
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$app   = Factory::getApplication();
-		$model = FabModel::getInstance(ListModel::class);
+		$model = FabrikModel::getInstance(ListModel::class);
 		$id    = $app->input->getInt('listid');
 		$model->setId($id);
 		$app->input->set('cid', $id);

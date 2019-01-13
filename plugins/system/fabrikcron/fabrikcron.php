@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\LogTable;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
@@ -197,7 +197,7 @@ class PlgSystemFabrikcron extends CMSPlugin
 
 		$now = $input->get('fabrikcron_run', false);
 
-		$this->log = FabTable::getInstance(LogTable::class);
+		$this->log = FabrikTable::getInstance(LogTable::class);
 
 		if (!$now)
 		{

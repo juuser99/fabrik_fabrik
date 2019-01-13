@@ -26,7 +26,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FormGroupTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FormTable;
 use Fabrik\Component\Fabrik\Administrator\Table\GroupTable;
@@ -48,7 +48,7 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ListModel extends FabAdminModel
+class ListModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -171,7 +171,7 @@ class ListModel extends FabAdminModel
 	public function getContentTypeForm($data = array(), $loadData = true)
 	{
 		/** @var ContentTypeImportModel $contentTypeModel */
-		$contentTypeModel = FabModel::getInstance(ContentTypeImportModel::class, '', array('listModel' => $this));
+		$contentTypeModel = FabrikModel::getInstance(ContentTypeImportModel::class, '', array('listModel' => $this));
 
 		return $contentTypeModel->getForm($data, $loadData);
 	}
@@ -360,7 +360,7 @@ class ListModel extends FabAdminModel
 	{
 		$item      = $this->getItem();
 		/** @var ConnectionModel $connModel */
-		$connModel = FabModel::getInstance(ConnectionModel::class);
+		$connModel = FabrikModel::getInstance(ConnectionModel::class);
 		$connModel->setId($item->connection_id);
 		$connModel->getConnection($item->connection_id);
 
@@ -575,7 +575,7 @@ class ListModel extends FabAdminModel
 		{
 			$config          = array();
 			$config['dbo']   = Worker::getDbo(true);
-			$this->formModel = FabModel::getInstance(FormModel::class, '', $config);
+			$this->formModel = FabrikModel::getInstance(FormModel::class, '', $config);
 
 			$this->formModel->setDbo($config['dbo']);
 
@@ -627,7 +627,7 @@ class ListModel extends FabAdminModel
 	{
 		if (is_null($this->feListModel))
 		{
-			$this->feListModel = FabModel::getInstance(SiteListModel::class);
+			$this->feListModel = FabrikModel::getInstance(SiteListModel::class);
 			$this->feListModel->setState('list.id', $this->getState('list.id'));
 		}
 
@@ -699,7 +699,7 @@ class ListModel extends FabAdminModel
 		$feModel = $this->getFEModel();
 
 		/** @var $contentTypeModel ContentTypeImportModel */
-		$contentTypeModel = FabModel::getInstance(ContentTypeImportModel::class, '', array('listModel' => $this));
+		$contentTypeModel = FabrikModel::getInstance(ContentTypeImportModel::class, '', array('listModel' => $this));
 		$contentType      = ArrayHelper::getValue($Form, 'contenttype', '');
 
 		if ($contentType !== '')
@@ -1131,7 +1131,7 @@ class ListModel extends FabAdminModel
 		$params          = $data['params'];
 		$aOldJoinsToKeep = array();
 		$joinsToIndex    = array();
-		$joinModel       = FabModel::getInstance(JoinModel::class);
+		$joinModel       = FabrikModel::getInstance(JoinModel::class);
 		$joinIds         = FArrayHelper::getValue($params, 'join_id', array());
 		$joinTypes       = FArrayHelper::getValue($params, 'join_type', array());
 		$joinTableFrom   = FArrayHelper::getValue($params, 'join_from_table', array());
@@ -1197,7 +1197,7 @@ class ListModel extends FabAdminModel
 					$join->store();
 
 					// Update group
-					$group = FabTable::getInstance(GroupTable::class);
+					$group = FabrikTable::getInstance(GroupTable::class);
 					$group->load($join->group_id);
 					$gparams                      = json_decode($group->params);
 					$gparams->repeat_group_button = $repeats[$i][0] == 1 ? 1 : 0;
@@ -1267,7 +1267,7 @@ class ListModel extends FabAdminModel
 		$groupData['label'] = $joinTable;
 		$groupId            = $this->createLinkedGroup($groupData, true, $isRepeat);
 
-		$join = FabTable::getInstance(JoinTable::class);
+		$join = FabrikTable::getInstance(JoinTable::class);
 		$join->set('id', null);
 		$join->set('list_id', $this->getState('list.id'));
 		$join->set('join_from_table', $joinTableFrom);
@@ -1333,7 +1333,7 @@ class ListModel extends FabAdminModel
 		}
 
 		$pluginManager = Worker::getPluginManager();
-		$groupTable    = FabTable::getInstance(GroupTable::class);
+		$groupTable    = FabrikTable::getInstance(GroupTable::class);
 		$groupTable->load($groupId);
 
 		// Here we're importing directly from the database schema
@@ -1346,7 +1346,7 @@ class ListModel extends FabAdminModel
 		{
 			// A fabrik table already exists - so we can copy the formatting of its elements
 			/** @var FabrikFEModelList $groupListModel */
-			$groupListModel = FabModel::getInstance(SiteListModel::class);
+			$groupListModel = FabrikModel::getInstance(SiteListModel::class);
 			$groupListModel->setId($id);
 			$groupListModel->getTable();
 			$groups       = $groupListModel->getFormGroupElementData();
@@ -1458,7 +1458,7 @@ class ListModel extends FabAdminModel
 			$type    = explode(" ", $type);
 			$type    = FArrayHelper::getValue($type, 0, '');
 			$type    = preg_replace("/\((.*)\)/i", '', $type);
-			$element = FabTable::getInstance(ElementTable::class);
+			$element = FabrikTable::getInstance(ElementTable::class);
 
 			if (array_key_exists($ordering, $elementTypes))
 			{
@@ -2233,7 +2233,7 @@ class ListModel extends FabAdminModel
 
 		// Delete groups
 		/** @var GroupModel $groupModel */
-		$groupModel = FabModel::getInstance(GroupModel::class);
+		$groupModel = FabrikModel::getInstance(GroupModel::class);
 		$groupModel->delete($groupIds, $deleteElements);
 
 		return $form;
@@ -2621,7 +2621,7 @@ class ListModel extends FabAdminModel
 
 		foreach ($arGroups as $group_id)
 		{
-			$group = FabTable::getInstance(GroupTable::class);
+			$group = FabrikTable::getInstance(GroupTable::class);
 			$group->load($group_id);
 
 			if ($group->is_join == '0')

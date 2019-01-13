@@ -20,7 +20,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
@@ -33,7 +33,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class ElementsModel extends FabListModel
+class ElementsModel extends FabrikListModel
 {
 	/**
 	 * Constructor.
@@ -277,7 +277,7 @@ class ElementsModel extends FabListModel
 	 * @param   string $prefix A prefix for the table class name. Optional.
 	 * @param   array  $config Configuration array for model. Optional.
 	 *
-	 * @return  ElementTable|FabTable    A database object
+	 * @return  ElementTable|FabrikTable    A database object
 	 *
 	 * @since   1.6
 	 */
@@ -285,7 +285,7 @@ class ElementsModel extends FabListModel
 	{
 		$config['dbo'] = Worker::getDbo();
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**

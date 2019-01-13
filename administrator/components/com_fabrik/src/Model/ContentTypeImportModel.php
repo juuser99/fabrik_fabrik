@@ -20,7 +20,7 @@ use Joomla\CMS\Filesystem\Path;
 use Fabrik\Component\Fabrik\Administrator\Database\Mysqli\MysqliImporter;
 use Fabrik\Component\Fabrik\Administrator\Helper\ContentTypeHelper;
 use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\GroupTable;
 use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
@@ -35,7 +35,7 @@ use \Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ContentTypeImportModel extends FabAdminModel
+class ContentTypeImportModel extends FabrikAdminModel
 {
 	/**
 	 * Include paths for searching for Content type XML files
@@ -130,7 +130,7 @@ class ContentTypeImportModel extends FabAdminModel
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$listModel = ArrayHelper::getValue($config, 'listModel', FabModel::getInstance(ListModel::class));
+		$listModel = ArrayHelper::getValue($config, 'listModel', FabrikModel::getInstance(ListModel::class));
 
 		if (!$listModel instanceof ListModel)
 		{
@@ -480,7 +480,7 @@ class ContentTypeImportModel extends FabAdminModel
 				$joinData['table_join'] = preg_replace('/(.*)_([0-9]*)_repeat/', $matches[1] . '_' . $new . '_repeat', $joinData['table_join']);
 			}
 
-			$joinTable = FabTable::getInstance(JoinTable::class);
+			$joinTable = FabrikTable::getInstance(JoinTable::class);
 			$joinTable->save($joinData);
 			$this->joinIds[] = $joinTable->get('id');
 		}
@@ -494,7 +494,7 @@ class ContentTypeImportModel extends FabAdminModel
 			$join->setAttribute('element_id', $newId);
 			$joinData           = ContentTypeHelper::domNodeAttributesToArray($join);
 			$joinData['params'] = json_encode(ContentTypeHelper::nodeParams($join));
-			$joinTable          = FabTable::getInstance('Join', 'FabrikTable');
+			$joinTable          = FabrikTable::getInstance('Join', 'FabrikTable');
 			$joinTable->save($joinData);
 			$this->joinIds[] = $joinTable->get('id');
 		}
@@ -533,7 +533,7 @@ class ContentTypeImportModel extends FabAdminModel
 
 		foreach ($this->joinIds as $joinId)
 		{
-			$joinTable = FabTable::getInstance(JoinTable::class);
+			$joinTable = FabrikTable::getInstance(JoinTable::class);
 			$joinTable->load($joinId);
 
 			if ((int) $joinTable->get('element_id') === 0)
@@ -563,7 +563,7 @@ class ContentTypeImportModel extends FabAdminModel
 		foreach ($this->elementIds as $elementId)
 		{
 			/** @var ElementTable $element */
-			$element = FabTable::getInstance(ElementTable::class);
+			$element = FabrikTable::getInstance(ElementTable::class);
 			$element->load($elementId);
 			$elementParams = new Registry($element->params);
 
@@ -638,8 +638,8 @@ class ContentTypeImportModel extends FabAdminModel
 			$groupData           = ContentTypeHelper::domNodeAttributesToArray($group, $groupData);
 			$groupData['params'] = ContentTypeHelper::nodeParams($group);
 			/** @var GroupModel $groupModel */
-			$groupModel          = FabModel::getInstance(GroupModel::class);
-			$groupTable          = FabTable::getInstance(GroupTable::class);
+			$groupModel          = FabrikModel::getInstance(GroupModel::class);
+			$groupTable          = FabrikTable::getInstance(GroupTable::class);
 			$groupTable->bind($groupData);
 			$groupModel->setGroup($groupTable);
 
@@ -723,7 +723,7 @@ class ContentTypeImportModel extends FabAdminModel
 			}
 
 			/** @var ContentTypeExportModel $exporter */
-			$exporter = FabModel::getInstance(ContentTypeExportModel::class,
+			$exporter = FabrikModel::getInstance(ContentTypeExportModel::class,
 				array('listModel' => $this->listModel));
 			$xml      = $exporter->createXMLFromArray($groupData, $elements);
 			$this->doc->loadXML($xml);

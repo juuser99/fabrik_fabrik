@@ -17,7 +17,7 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
 use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Site\Model\ImportCsvModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
 use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
@@ -70,7 +70,7 @@ class ImportController extends AbstractFormController
 		$pluginManager = Worker::getPluginManager();
 		$elementModel  = $pluginManager->getPlugIn('field', 'element');
 		/** @var ElementTable $element */
-		$element     = FabTable::getInstance(ElementTable::class);
+		$element     = FabrikTable::getInstance(ElementTable::class);
 		$newElements = $input->get('createElements', array(), 'array');
 
 		// @TODO use actual element plugin getDefaultProperties()

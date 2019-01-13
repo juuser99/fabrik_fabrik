@@ -18,7 +18,7 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FormGroupTable;
 use Fabrik\Component\Fabrik\Administrator\Table\GroupTable;
 use Joomla\Utilities\ArrayHelper;
@@ -33,7 +33,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class GroupModel extends FabAdminModel
+class GroupModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -59,7 +59,7 @@ class GroupModel extends FabAdminModel
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**
@@ -144,7 +144,7 @@ class GroupModel extends FabAdminModel
 	protected function checkRepeatAndPK($data)
 	{
 		/** @var FabrikFEModelGroup $groupModel */
-		$groupModel = FabModel::getInstance(SiteGroupModel::class);
+		$groupModel = FabrikModel::getInstance(SiteGroupModel::class);
 		$groupModel->setId($data['id']);
 		$listModel     = $groupModel->getListModel();
 		$pk            = FStrigHelper::safeColName($listModel->getPrimaryKey());
@@ -270,7 +270,7 @@ class GroupModel extends FabAdminModel
 	 */
 	protected function joinedGroupExists($id)
 	{
-		$item = FabTable::getInstance(GroupTable::class);
+		$item = FabrikTable::getInstance(GroupTable::class);
 		$item->load($id);
 
 		return $item->join_id == '' ? false : true;
@@ -295,7 +295,7 @@ class GroupModel extends FabAdminModel
 		$formId = (int) $data['form'];
 		$id     = (int) $data['id'];
 		/** @var FormGroupTable $item */
-		$item   = FabTable::getInstance(FormGroupTable::class);
+		$item   = FabrikTable::getInstance(FormGroupTable::class);
 		$item->load(array('form_id' => $formId, 'group_id' => $id));
 
 		if ($item->id == '')
@@ -325,11 +325,11 @@ class GroupModel extends FabAdminModel
 	private function checkFKIndex($data)
 	{
 		/** @var SiteGroupModel $groupModel */
-		$groupModel = FabModel::getInstance(SiteGroupModel::class);
+		$groupModel = FabrikModel::getInstance(SiteGroupModel::class);
 		$groupModel->setId($data['id']);
 		$listModel = $groupModel->getListModel();
 		/** @var GroupTable $item */
-		$item      = FabTable::getInstance(GroupTable::class);
+		$item      = FabrikTable::getInstance(GroupTable::class);
 		$item->load($data['id']);
 		$join = $this->getTable('join');
 		$join->load(array('id' => $item->join_id));
@@ -368,7 +368,7 @@ class GroupModel extends FabAdminModel
 	public function makeJoinedGroup(&$data)
 	{
 		/** @var SiteGroupModel $groupModel */
-		$groupModel = FabModel::getInstance(SiteGroupModel::class);
+		$groupModel = FabrikModel::getInstance(SiteGroupModel::class);
 		$groupModel->setId($data['id']);
 		$listModel          = $groupModel->getListModel();
 		$db                 = $listModel->getDb();
@@ -503,7 +503,7 @@ class GroupModel extends FabAdminModel
 		$db->setQuery($query);
 		$elementIds   = $db->loadColumn();
 		/** @var ElementModel $elementModel */
-		$elementModel = FabModel::getInstance(ElementModel::class);
+		$elementModel = FabrikModel::getInstance(ElementModel::class);
 		$return       = $return && $elementModel->delete($elementIds);
 
 		return $return;
@@ -561,7 +561,7 @@ class GroupModel extends FabAdminModel
 		$query->select('id')->from('#__{package}_elements')->where('group_id IN (' . implode(',', $pks) . ')');
 		$db->setQuery($query);
 		$elementIds   = $db->loadColumn();
-		$elementModel = FabModel::getInstance(ElementModel::class);
+		$elementModel = FabrikModel::getInstance(ElementModel::class);
 
 		return $elementModel->delete($elementIds);
 	}

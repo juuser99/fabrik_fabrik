@@ -26,7 +26,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ListTable extends FabTable
+class ListTable extends FabrikTable
 {
 	/**
 	 * Constructor

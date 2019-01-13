@@ -20,7 +20,7 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Display a json loaded window with a repeatable set of sub fields
@@ -95,7 +95,7 @@ class FabrikModalRepeatField extends FormField
 		}
 		else
 		{
-			$feModel = FabModel::getInstance($view, \FabrikDispatcher::PREFIX_SITE);
+			$feModel = FabrikModel::getInstance($view, \FabrikDispatcher::PREFIX_SITE);
 			$feModel->setId($id);
 		}
 

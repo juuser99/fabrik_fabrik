@@ -22,7 +22,7 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\CSV\CsvParser;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
@@ -35,7 +35,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ImportCsvModel extends FabModel
+class ImportCsvModel extends FabrikModel
 {
 	/**
 	 * Cleaned heading names
@@ -622,7 +622,7 @@ class ImportCsvModel extends FabModel
 		if (!isset($this->listModel))
 		{
 			/** @var ListModel listModel */
-			$this->listModel = FabModel::getInstance(ListModel::class);
+			$this->listModel = FabrikModel::getInstance(ListModel::class);
 			$this->listModel->setId($app->input->getInt('listid'));
 		}
 
@@ -642,7 +642,7 @@ class ImportCsvModel extends FabModel
 		$model->getFormGroupElementData();
 
 		/** @var PluginManagerModel $pluginManager */
-		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		$pluginManager->getPlugInGroup('list');
 		$formModel   = $model->getFormModel();
 		$tableParams = $model->getParams();

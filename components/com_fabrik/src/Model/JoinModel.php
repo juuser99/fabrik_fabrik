@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use \Joomla\Registry\Registry;
 
@@ -26,7 +26,7 @@ use \Joomla\Registry\Registry;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class JoinModel extends FabSiteModel
+class JoinModel extends FabrikSiteModel
 {
 	/**
 	 * Join table

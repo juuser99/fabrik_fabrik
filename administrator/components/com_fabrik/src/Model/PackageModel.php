@@ -22,7 +22,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Filesystem\Path;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\PackageTable;
 use Fabrik\Component\Fabrik\Administrator\Table\VisualizationTable;
 use Joomla\Utilities\ArrayHelper;
@@ -40,7 +40,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class PackageModel extends FabAdminModel
+class PackageModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -76,7 +76,7 @@ class PackageModel extends FabAdminModel
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**
@@ -556,7 +556,7 @@ class PackageModel extends FabAdminModel
 		$return[] = "}";
 
 		$lookups   = $this->getInstallItems($row);
-		$listModel = FabModel::getInstance(SiteListModel::class);
+		$listModel = FabrikModel::getInstance(SiteListModel::class);
 		$lists     = $lookups->list;
 		$db        = Worker::getDbo(true);
 		$query     = $db->getQuery(true);
@@ -893,7 +893,7 @@ class PackageModel extends FabAdminModel
 		}
 
 		// Create the sql to build the db tables that store the data.
-		$formModel = FabModel::getInstance(SiteFormModel::class);
+		$formModel = FabrikModel::getInstance(SiteFormModel::class);
 
 		$lookups = $this->getInstallItems($row);
 		$lids    = $lookups->list;
@@ -902,7 +902,7 @@ class PackageModel extends FabAdminModel
 
 		foreach ($lids as $lid)
 		{
-			$listModel = FabModel::getInstance(SiteListModel::class);
+			$listModel = FabrikModel::getInstance(SiteListModel::class);
 			$listModel->setId($lid);
 			$sql .= "\n\n" . $listModel->getCreateTableSQL(true);
 		}
@@ -923,7 +923,7 @@ class PackageModel extends FabAdminModel
 
 		if (isset($lookups->visualization))
 		{
-			$vrow = FabTable::getInstance(VisualizationTable::class);
+			$vrow = FabrikTable::getInstance(VisualizationTable::class);
 			$vrow->load($vid);
 			// @todo - convert to J4 if this feature goes back into production
 			$visModel = JModelLegacy::getInstance($vrow->plugin, 'fabrikModel');
@@ -932,7 +932,7 @@ class PackageModel extends FabAdminModel
 
 			foreach ($listModels as $lmodel)
 			{
-				$vrow = FabTable::getInstance(VisualizationTable::class);
+				$vrow = FabrikTable::getInstance(VisualizationTable::class);
 				$vrow->load($vid);
 				// @todo - convert to J4 if this feature goes back into production
 				$visModel = JModelLegacy::getInstance($vrow->plugin, 'fabrikModel');
@@ -970,9 +970,9 @@ class PackageModel extends FabAdminModel
 	protected function findPlugins($row)
 	{
 		/** @var SiteListModel $listModel */
-		$listModel = FabModel::getInstance(SiteListModel::class);
+		$listModel = FabrikModel::getInstance(SiteListModel::class);
 		/** @var SiteFormModel $formModel */
-		$formModel = FabModel::getInstance(SiteFormModel::class);
+		$formModel = FabrikModel::getInstance(SiteFormModel::class);
 		$lookups   = $this->getInstallItems($row);
 		$plugins   = array();
 

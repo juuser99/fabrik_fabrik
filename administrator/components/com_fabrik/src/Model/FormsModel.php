@@ -16,7 +16,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FormTable;
 use Joomla\Database\DatabaseQuery;
 
@@ -30,7 +30,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormsModel extends FabListModel
+class FormsModel extends FabrikListModel
 {
 	/**
 	 * FormsModel constructor.
@@ -125,7 +125,7 @@ class FormsModel extends FabListModel
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, '', $config);
+		return FabrikTable::getInstance($type, '', $config);
 	}
 
 	/**

@@ -12,7 +12,7 @@
 namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Model\VisualizationsModel;
 
 defined('_JEXEC') or die('Restricted access');
@@ -50,7 +50,7 @@ class VisualizationsController extends AbstractAdminController
 	 * @param   string  $name    model name
 	 * @param   string  $prefix  model prefix
 	 *
-	 * @return  VisualizationsModel|FabModel
+	 * @return  VisualizationsModel|FabrikModel
 	 *
 	 * @since 4.0
 	 */

@@ -15,7 +15,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Model;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
-class FabModel extends BaseDatabaseModel
+class FabrikModel extends BaseDatabaseModel
 {
 
 	/**

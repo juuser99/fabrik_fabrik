@@ -18,7 +18,7 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Fabrik\Component\Fabrik\Administrator\Table\ConnectionTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Component\Fabrik\Site\Model\ConnectionModel as SiteConnectionModel;
 
@@ -29,7 +29,7 @@ use Fabrik\Component\Fabrik\Site\Model\ConnectionModel as SiteConnectionModel;
  * @subpackage  Fabrik
  * @since       3.0
  */
-class ConnectionModel extends FabAdminModel
+class ConnectionModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -60,7 +60,7 @@ class ConnectionModel extends FabAdminModel
 		 */
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**
@@ -188,7 +188,7 @@ class ConnectionModel extends FabAdminModel
 	 */
 	public function save($data)
 	{
-		$model = FabModel::getInstance(SiteConnectionModel::class);
+		$model = FabrikModel::getInstance(SiteConnectionModel::class);
 		$model->setId($data['id']);
 		$crypt = Worker::getCrypt();
 

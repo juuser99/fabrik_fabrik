@@ -15,8 +15,8 @@ namespace Fabrik\Component\Fabrik\Administrator\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Model\FabModel;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\VisualizationTable;
 
 /**
@@ -59,9 +59,9 @@ class VisualizationRawController extends AbstractFormController
 		$app   = Factory::getApplication();
 		$input = $app->input;
 		$id    = $input->getInt('visualizationid');
-		$viz   = FabTable::getInstance(VisualizationTable::class);
+		$viz   = FabrikTable::getInstance(VisualizationTable::class);
 		$viz->load($id);
-		FabModel::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viz->plugin . '/models');
+		FabrikModel::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viz->plugin . '/models');
 		$model = $this->getModel($viz->plugin);
 		$model->setId($id);
 		$pluginTask = $input->get('plugintask', '', 'request');
@@ -91,8 +91,8 @@ class VisualizationRawController extends AbstractFormController
 			$controller->addViewPath(COM_FABRIK_FRONTEND . '/views');
 
 			// Add the model path
-			FabModel::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viz->plugin . '/models');
-			FabModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
+			FabrikModel::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viz->plugin . '/models');
+			FabrikModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 
 			$input->set('visualizationid', $id);
 			$controller->$task();

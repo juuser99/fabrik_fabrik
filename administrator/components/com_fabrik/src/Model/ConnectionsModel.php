@@ -20,7 +20,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use \Joomla\CMS\MVC\Model\ListModel as BaseListModel;
 use Fabrik\Component\Fabrik\Administrator\Table\ConnectionTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseQuery;
 
 /**
@@ -121,7 +121,7 @@ class ConnectionsModel extends BaseListModel
 	{
 		$config['dbo'] = Worker::getDbo();
 
-		return FabTable::getInstance($type, $prefix, $config);
+		return FabrikTable::getInstance($type, $prefix, $config);
 	}
 
 	/**

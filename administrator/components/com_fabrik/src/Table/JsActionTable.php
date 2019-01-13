@@ -22,7 +22,7 @@ use Joomla\Database\DatabaseDriver;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class JsActionTable extends FabTable
+class JsActionTable extends FabrikTable
 {
 	/**
 	 * JsActionTable constructor.

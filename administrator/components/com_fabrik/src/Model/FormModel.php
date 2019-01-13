@@ -19,7 +19,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FormGroupTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FormTable;
 use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
@@ -32,7 +32,7 @@ use Joomla\Utilities\ArrayHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FormModel extends FabAdminModel
+class FormModel extends FabrikAdminModel
 {
 	/**
 	 * The prefix to use with controller messages.
@@ -65,7 +65,7 @@ class FormModel extends FabAdminModel
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
-		return FabTable::getInstance($type, '', $config);
+		return FabrikTable::getInstance($type, '', $config);
 	}
 
 	/**
@@ -197,7 +197,7 @@ class FormModel extends FabAdminModel
 		$isNew  = (bool) $this->getState($this->getName() . '.new');
 
 		/** @var FabrikAdminModelList $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$item      = $listModel->loadFromFormId($formId);
 
 		$listModel->set('form.id', $formId);
@@ -267,7 +267,7 @@ class FormModel extends FabAdminModel
 		$createGroup            = $data['_createGroup'];
 		$recordInDatabase       = $data['record_in_database'];
 		$jForm                  = $this->app->input->get('jform', array(), 'array');
-		$this->contentTypeModel = FabModel::getInstance(ContentTypeImportModel::class, '', array('listModel' => $listModel));
+		$this->contentTypeModel = FabrikModel::getInstance(ContentTypeImportModel::class, '', array('listModel' => $listModel));
 		$groups                 = FArrayHelper::getValue($data, 'current_groups');
 		$contentType            = ArrayHelper::getValue($jForm, 'contenttype');
 
@@ -436,7 +436,7 @@ class FormModel extends FabAdminModel
 		$input  = $this->app->input;
 		$cid    = $input->get('cid', array(), 'array');
 		$formId = $cid[0];
-		$model  = FabModel::getInstance(\Fabrik\Component\Fabrik\Site\Model\FormModel::class);
+		$model  = FabrikModel::getInstance(\Fabrik\Component\Fabrik\Site\Model\FormModel::class);
 		$model->setId($formId);
 		$form = $model->getForm();
 
@@ -444,7 +444,7 @@ class FormModel extends FabAdminModel
 		if ($form->record_in_database == 1)
 		{
 			// There is a list view linked to the form so lets load it
-			$listModel = FabModel::getInstance(ListModel::class);
+			$listModel = FabrikModel::getInstance(ListModel::class);
 			$listModel->loadFromFormId($formId);
 			$listModel->setFormModel($model);
 			$dbExists = $listModel->databaseTableExists();
@@ -537,7 +537,7 @@ class FormModel extends FabAdminModel
 		{
 			foreach ($ids as $cid)
 			{
-				$item = FabTable::getInstance(FormGroupTable::class);
+				$item = FabrikTable::getInstance(FormGroupTable::class);
 				$item->load(array('form_id' => $cid));
 				$item->delete();
 			}
