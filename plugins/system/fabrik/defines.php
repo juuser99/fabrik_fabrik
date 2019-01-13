@@ -12,7 +12,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
