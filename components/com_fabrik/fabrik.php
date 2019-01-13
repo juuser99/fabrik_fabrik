@@ -11,26 +11,26 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.helper');
-jimport('joomla.filesystem.file');
-
+use Joomla\Component\Fabrik\Site\WebService\AbstractWebService;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\String\StringHelper;
 
 if (!defined('COM_FABRIK_FRONTEND'))
 {
-	throw new RuntimeException(JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
+	throw new \RuntimeException(Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
 }
-
-jimport('joomla.log.log');
 
 if (JDEBUG)
 {
 	// Add the logger.
-	JLog::addLogger(array('text_file' => 'fabrik.log.php'));
+	Log::addLogger(array('text_file' => 'fabrik.log.php'));
 }
 
-require_once JPATH_COMPONENT . '/controller.php';
-$app = JFactory::getApplication();
+/** @var CMSApplication $app */
+$app = Factory::getApplication();
 $app->set('jquery', true);
 $input = $app->input;
 
@@ -48,7 +48,7 @@ foreach ($docs as $d)
 		require_once JPATH_SITE . '/administrator/components/com_fabrik/classes/' . $d . 'document.php';
 
 		// Replace the document
-		$document = JFactory::getDocument();
+		$document = Factory::getDocument();
 		$docClass = 'JDocument' . StringHelper::strtoupper($d);
 		$document = new $docClass;
 	}
@@ -174,7 +174,7 @@ if ($input->get('yql') == 1)
 {
 	$opts = array('driver' => 'yql', 'endpoint' => 'https://query.yahooapis.com/v1/public/yql');
 
-	$service = FabrikWebService::getInstance($opts);
+	$service = AbstractWebService::getInstance($opts);
 	$query = "select * from upcoming.events where location='London'";
 	$program = $service->get($query, array(), 'event', null);
 }

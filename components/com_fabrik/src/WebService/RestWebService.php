@@ -8,26 +8,26 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\WebService;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.model');
 
 /**
  * REST web service
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    4.0
  */
-
-class FabrikWebServiceRest extends FabrikWebService
+class RestWebService extends AbstractWebService
 {
 	/**
 	 * Constructor
 	 *
-	 * @param   array  $options  ini state
+	 * @param   array $options ini state
+	 *
+	 * @since 4.0
 	 */
-
 	public function __construct($options)
 	{
 		$this->options = $options;
@@ -36,15 +36,17 @@ class FabrikWebServiceRest extends FabrikWebService
 	/**
 	 * Query the web service to get the data
 	 *
-	 * @param   string  $method      method to call at web service (soap only)
-	 * @param   array   $options     key value filters to send to web service to filter the data
-	 * @param   string  $startPoint  startPoint of actual data, if soap this is an xpath expression,
-	 * otherwise its a key.key2.key3 string to traverse the returned data to arrive at the data to map to the fabrik list
-	 * @param   string  $result      result method name - soap only, if not set then "$method . 'Result' will be used.
+	 * @param   string $method     method to call at web service (soap only)
+	 * @param   array  $options    key value filters to send to web service to filter the data
+	 * @param   string $startPoint startPoint of actual data, if soap this is an xpath expression,
+	 *                             otherwise its a key.key2.key3 string to traverse the returned data to arrive at the data to map to the fabrik list
+	 * @param   string $result     result method name - soap only, if not set then "$method . 'Result' will be used.
 	 *
-	 * @return	array	series of objects which can then be bound to the list using storeLocally()
+	 * @return    array    series of objects which can then be bound to the list using storeLocally()
+	 * @throws \Exception
+	 *
+	 * @since 4.0
 	 */
-
 	public function get($method, $options = array(), $startPoint = null, $result = null)
 	{
 		$url = $this->options['endpoint'];
@@ -69,9 +71,8 @@ class FabrikWebServiceRest extends FabrikWebService
 		if ($json === false)
 		{
 			$error = 'Fabrik webservice rest: CURL err: ' . curl_error($session);
-			throw new Exception($error, 500);
 
-			return array();
+			throw new \Exception($error, 500);
 		}
 		else
 		{
@@ -94,9 +95,7 @@ class FabrikWebServiceRest extends FabrikWebService
 			else
 			{
 				$error = (string) $json === '' ? 'Fabrik webservice rest: Returned data not parseable as JSON' : (string) $json;
-				throw new Exception($error, 500);
-
-				return array();
+				throw new \Exception($error, 500);
 			}
 		}
 	}

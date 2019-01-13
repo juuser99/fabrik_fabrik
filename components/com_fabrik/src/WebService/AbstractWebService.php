@@ -8,12 +8,18 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Joomla\Component\Fabrik\Site\WebService;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.model');
-
+use Fabrik\Helpers\Text;
+use Joomla\CMS\Factory;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Abstract web service class
@@ -22,32 +28,53 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik
  * @since       3.0.5
  */
-abstract class FabrikWebService
+abstract class AbstractWebService
 {
 	/**
-	 * FabrikWebService instances container.
+	 * AbstractWebService instances container.
 	 *
 	 * @since  3.0.5
 	 *
-	 * @var    array
+	 * @var    AbstractWebService[]
 	 */
-
 	protected static $instances = array();
+
+	/**
+	 * @var array
+	 * @since 4.0
+	 */
+	protected $options;
+
+	/**
+	 * Query the web service to get the data
+	 *
+	 * @param   string $method     method to call at web service (soap only)
+	 * @param   array  $options    key value filters to send to web service to filter the data
+	 * @param   string $startPoint startPoint of actual data, if soap this is an xpath expression,
+	 *                             otherwise its a key.key2.key3 string to traverse the returned data to arrive at the data to map to the fabrik list
+	 * @param   string $result     result method name - soap only, if not set then "$method . 'Result' will be used.
+	 *
+	 * @return    array    series of objects which can then be bound to the list using storeLocally()
+	 *
+	 * @since 4.0
+	 */
+	public abstract function get($method, $options = array(), $startPoint = null, $result = null);
 
 	/**
 	 * Get web service instance
 	 *
-	 * @param   array  $options  initial state options
+	 * @param   array $options initial state options
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 *
-	 * @return  FabrikWebService
+	 * @return  AbstractWebService
+	 *
+	 * @since 4.0
 	 */
-
 	public static function getInstance($options = array())
 	{
 		// Sanitize the database connector options.
-		$options['driver'] = (isset($options['driver'])) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $options['driver']) : 'soap';
+		$options['driver']   = (isset($options['driver'])) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $options['driver']) : 'soap';
 		$options['endpoint'] = (isset($options['endpoint'])) ? $options['endpoint'] : null;
 
 		// Get the options signature for the database connector.
@@ -57,38 +84,21 @@ abstract class FabrikWebService
 		if (empty(self::$instances[$signature]))
 		{
 			// Derive the class name from the driver.
-			$class = 'FabrikWebService' . StringHelper::ucfirst($options['driver']);
+			$class = sprintf('Joomla\\Component\\Fabrik\\Site\\WebService\\%sWebService', StringHelper::ucfirst($options['driver']));
 
-			// If the class doesn't exist, let's look for it and register it.
-			if (!class_exists($class))
-			{
-				// Derive the file path for the driver class.
-				$path = dirname(__FILE__) . '/webservice/' . $options['driver'] . '.php';
-
-				// If the file exists register the class with our class loader.
-				if (file_exists($path))
-				{
-					JLoader::register($class, $path);
-				}
-				// If it doesn't exist we are at an impasse so throw an exception.
-				else
-				{
-					throw new Exception(JText::sprintf('JLIB_DATABASE_ERROR_LOAD_DATABASE_DRIVER', $options['driver']));
-				}
-			}
 			// If the class still doesn't exist we have nothing left to do but throw an exception.  We did our best.
 			if (!class_exists($class))
 			{
-				throw new Exception(JText::sprintf('JLIB_DATABASE_ERROR_LOAD_DATABASE_DRIVER', $options['driver']));
+				throw new \Exception(Text::sprintf('JLIB_DATABASE_ERROR_LOAD_DATABASE_DRIVER', $options['driver']));
 			}
 			// Create our new FabrikWebService connector based on the options given.
 			try
 			{
 				$instance = new $class($options);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
-				throw new Exception(JText::sprintf('JLIB_DATABASE_ERROR_CONNECT_DATABASE', $e->getMessage()));
+				throw new \Exception(Text::sprintf('JLIB_DATABASE_ERROR_CONNECT_DATABASE', $e->getMessage()));
 			}
 
 			// Set the new connector to the global instances based on signature.
@@ -102,11 +112,12 @@ abstract class FabrikWebService
 	 * Set the map which defines which webservice fields are mapped to
 	 * which Fabrik fields
 	 *
-	 * @param   array  $map  service map
+	 * @param   array $map service map
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function setMap($map)
 	{
 		/* How to map the data from the web service to a Fabrik list:
@@ -132,16 +143,17 @@ abstract class FabrikWebService
 	/**
 	 * Map web service data to Fabrik fields
 	 *
-	 * @param   array   $datas  web service data
-	 * @param   string  $fk     foreign key
+	 * @param   array  $datas web service data
+	 * @param   string $fk    foreign key
 	 *
 	 * @return  array mapped data
+	 *
+	 * @since 4.0
 	 */
-
 	public function map($datas, $fk)
 	{
 		$return = array();
-		$w = new FabrikWorker;
+		$w      = new Worker;
 
 		foreach ($datas as $data)
 		{
@@ -149,7 +161,7 @@ abstract class FabrikWebService
 
 			foreach ($this->map as $map)
 			{
-				$to = $map['to'];
+				$to          = $map['to'];
 				$map['from'] = $w->parseMessageForPlaceHolder($map['from'], $data, false);
 
 				if (FArrayHelper::getValue($map, 'match', '') !== '')
@@ -184,37 +196,24 @@ abstract class FabrikWebService
 	}
 
 	/**
-	 * Query the web service to get the data
-	 *
-	 * @param   string  $method      method to call at web service (soap only)
-	 * @param   array   $options     key value filters to send to web service to filter the data
-	 * @param   string  $startPoint  startPoint of actual data, if soap this is an xpath expression,
-	 * otherwise its a key.key2.key3 string to traverse the returned data to arrive at the data to map to the fabrik list
-	 * @param   string  $result      result method name - soap only, if not set then "$method . 'Result' will be used.
-	 *
-	 * @return	array	series of objects which can then be bound to the list using storeLocally()
-	 */
-
-	public abstract function get($method, $options = array(), $startPoint = null, $result = null);
-
-	/**
 	 * Store the data obtained from get() in a list
 	 *
-	 * @param   object  $listModel  list model to store the data in
-	 * @param   array   $data       data obtained from get()
-	 * @param   string  $fk         foreign key to map records in $data to the list models data.
-	 * @param   bool    $update     should existing matched rows be updated or not?
+	 * @param   ListModel $listModel list model to store the data in
+	 * @param   array  $data      data obtained from get()
+	 * @param   string $fk        foreign key to map records in $data to the list models data.
+	 * @param   bool   $update    should existing matched rows be updated or not?
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
-	public function storeLocally($listModel, $data, $fk, $update)
+	public function storeLocally(ListModel $listModel, $data, $fk, $update)
 	{
-		$data = $this->map($data, $fk);
-		$item = $listModel->getTable();
+		$data      = $this->map($data, $fk);
+		$item      = $listModel->getTable();
 		$formModel = $listModel->getFormModel();
-		$db = $listModel->getDb();
-		$item = $listModel->getTable();
+		$db        = $listModel->getDb();
+		$item      = $listModel->getTable();
 
 		$query = $db->getQuery(true);
 		$query->select($item->db_primary_key . ' AS id, ' . $fk)->from($item->db_table_name);
@@ -222,16 +221,16 @@ abstract class FabrikWebService
 		$ids = $db->loadObjectList($fk);
 		$formModel->getGroupsHiarachy();
 		$this->updateCount = 0;
-		$this->addedCount = 0;
-		$primaryKey = FabrikString::shortColName($item->db_primary_key);
-		$primaryKey = str_replace("`", "", $primaryKey);
+		$this->addedCount  = 0;
+		$primaryKey        = FStringHelper::shortColName($item->db_primary_key);
+		$primaryKey        = str_replace("`", "", $primaryKey);
 
 		foreach ($data as $row)
 		{
 			foreach ($row as $k => $v)
 			{
 				$elementModel = $formModel->getElement($k, true);
-				$row[$k] = $elementModel->fromXMLFormat($v);
+				$row[$k]      = $elementModel->fromXMLFormat($v);
 			}
 
 			$pk = '';
@@ -266,12 +265,13 @@ abstract class FabrikWebService
 	/**
 	 * Parse the filter values into driver type
 	 *
-	 * @param   string  $val   value
-	 * @param   string  $type  type
+	 * @param   string $val  value
+	 * @param   string $type type
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFilterValue($val, $type)
 	{
 		switch ($type)
@@ -280,7 +280,7 @@ abstract class FabrikWebService
 				$val = (bool) $val;
 				break;
 			case 'date':
-				$d = JFactory::getDate($val);
+				$d   = Factory::getDate($val);
 				$val = $d->toISO8601();
 				break;
 			case 'text':
