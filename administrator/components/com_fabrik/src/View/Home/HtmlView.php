@@ -75,7 +75,7 @@ class HtmlView extends BaseHtmlView
 		$this->logs = $db->loadObjectList();
 		$this->feed = $this->get('RSSFeed');
 
-		\FabrikAdminHelper::addSubmenu('home');
+		FabrikAdminHelper::addSubmenu('home');
 
 		$this->sidebar = \JHtmlSidebar::render();
 
