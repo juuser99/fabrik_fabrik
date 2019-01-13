@@ -12,10 +12,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\CMS\Filesystem\Folder;
-use Joomla\CMS\Filesystem\File;
+use Fabrik\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
 
 // Could be that the sys plugin is installed but fabrik not
 if (!Folder::exists(JPATH_SITE . '/components/com_fabrik/'))
@@ -45,14 +46,44 @@ define("GROUPSPLITTER", "//..*..//");
 $app = Factory::getApplication();
 $input = $app->input;
 
-// Register the element class with the loader
-JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik/element.php');
-
 // Avoid errors during update, if plugin has been updated but component hasn't, use old helpers
 if (File::exists(COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php'))
 {
 	if (!($app->input->get('option', '') === 'com_installer' && $app->input->get('task', '') === 'update.update'))
 	{
 		require_once COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php';
+	}
+}
+
+// Register namespaces for plugins since J4 does not seem to do this natively (yet?)
+$pluginTypes = [
+	'fabrik_cron'           => 'FabrikCron',
+	'fabrik_element'        => 'FabrikElement',
+	'fabrik_form'           => 'FabrikForm',
+	'fabrik_list'           => 'FabrikList',
+	'fabrik_validationrule' => 'FabrikValidationRule',
+	'fabrik_visualization'  => 'FabrikVisualization',
+];
+
+$db    = Factory::getDbo();
+$query = $db->getQuery(true);
+$query->select($db->quoteName(array('element', 'folder')))
+	->from($db->quoteName('#__extensions'))
+	->where($db->quoteName('folder') . ' LIKE ' . $db->quote('fabrik_%'));
+$db->setQuery($query);
+$extensions = $db->loadObjectList();
+
+foreach ($extensions as $extension)
+{
+	$srcPath = sprintf('%s/%s/%s/src', JPATH_PLUGINS, $extension->folder, $extension->element);
+	if (Folder::exists($srcPath))
+	{
+		JLoader::registerNamespace(
+			sprintf('Fabrik\\Plugin\\%s\\%s', $pluginTypes[$extension->folder], ucfirst($extension->element)),
+			$srcPath,
+			false,
+			false,
+			'psr4'
+		);
 	}
 }
