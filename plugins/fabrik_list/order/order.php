@@ -11,8 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\StringHelper as FStringHelper;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * Allows drag and drop reordering of rows
@@ -21,12 +25,14 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.order
  * @since       3.0
  */
-class PlgFabrik_ListOrder extends PlgFabrik_List
+class PlgFabrik_ListOrder extends AbstractListPlugin
 {
 	/**
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getAclParam()
 	{
@@ -37,6 +43,8 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -47,48 +55,52 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	 * Get the src(s) for the list plugin js class
 	 *
 	 * @return  mixed  string or array
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClass_result()
 	{
-		$mediaFolder = FabrikHelperHTML::getMediaFolder();
-		$src = parent::loadJavascriptClass_result();
+		$mediaFolder    = Html::getMediaFolder();
+		$src            = parent::loadJavascriptClass_result();
 		$src['element'] = $mediaFolder . '/element.js';
+
 		return $src;
 	}
 
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
 		if (!$this->canUse())
 		{
-			return;
+			return false;
 		}
 
-		/** @var FabrikFEModelList $model */
-		$model = $this->getModel();
-		$params = $this->getParams();
-		$orderEl = $model->getFormModel()->getElement($params->get('order_element'), true);
-		$opts = $this->getElementJSOptions();
-		$orderElName = FabrikString::safeColNameToArrayKey(FArrayHelper::getValue($model->orderEls, 0, ''));
-		$opts->enabled = $orderElName == FabrikString::safeColNameToArrayKey($orderEl->getOrderByName()) ? true
+		$model                = $this->getModel();
+		$params               = $this->getParams();
+		$orderEl              = $model->getFormModel()->getElement($params->get('order_element'), true);
+		$opts                 = $this->getElementJSOptions();
+		$orderElName          = FStringHelper::safeColNameToArrayKey(FArrayHelper::getValue($model->orderEls, 0, ''));
+		$opts->enabled        = $orderElName == FStringHelper::safeColNameToArrayKey($orderEl->getOrderByName()) ? true
 			: false;
-		$opts->listid = $model->getId();
+		$opts->listid         = $model->getId();
 		$opts->orderElementId = $params->get('order_element');
-		$opts->handle = $params->get('order_element_as_handle', 1) == 1 ? '.' . $orderEl->getOrderByName() : false;
-		$opts->direction = $opts->enabled ? $model->orderDirs[0] : '';
-		$opts->transition = '';
-		$opts->duration = '';
-		$opts->constrain = '';
-		$opts->clone = '';
-		$opts->revert = '';
+		$opts->handle         = $params->get('order_element_as_handle', 1) == 1 ? '.' . $orderEl->getOrderByName() : false;
+		$opts->direction      = $opts->enabled ? $model->orderDirs[0] : '';
+		$opts->transition     = '';
+		$opts->duration       = '';
+		$opts->constrain      = '';
+		$opts->clone          = '';
+		$opts->revert         = '';
 
-		$opts = json_encode($opts);
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListOrder($opts)";
 
 		return true;
@@ -98,6 +110,8 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{
@@ -108,27 +122,29 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	 * Called via ajax when dragged row is dropped. Reorders records
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function onAjaxReorder()
 	{
 		// Get list model
-		/** @var FabrikFEModelList $model */
-		$model = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var ListModel $model */
+		$model = FabrikModel::getInstance(ListModel::class);
 		$input = $this->app->input;
 		$model->setId($input->getInt('listid'));
-		$db = $model->getDb();
+		$db        = $model->getDb();
 		$direction = $input->get('direction');
 
-		$orderEl = $model->getFormModel()->getElement($input->getInt('orderelid'), true);
-		$table = $model->getTable();
+		$orderEl   = $model->getFormModel()->getElement($input->getInt('orderelid'), true);
+		$table     = $model->getTable();
 		$origOrder = $input->get('origorder', array(), 'array');
-		$orderBy = $db->quoteName($orderEl->getElement()->name);
-		$order = $input->get('order', array(), 'array');
-		$dragged = $input->get('dragged');
+		$orderBy   = $db->quoteName($orderEl->getElement()->name);
+		$order     = $input->get('order', array(), 'array');
+		$dragged   = $input->get('dragged');
 
 		// Are we dragging up or down?
-		$origPos = array_search($dragged, $origOrder);
-		$newPos = array_search($dragged, $order);
+		$origPos       = array_search($dragged, $origOrder);
+		$newPos        = array_search($dragged, $order);
 		$dragDirection = $newPos > $origPos ? 'down' : 'up';
 
 		// Get the rows whose order has been altered
@@ -148,7 +164,7 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 
 		// Get the order for the last record in $result
 		$splitId = $dragDirection == 'up' ? array_shift($result) : array_pop($result);
-		$query = $db->getQuery(true);
+		$query   = $db->getQuery(true);
 		$query->select($orderBy)->from($table->db_table_name)->where($table->db_primary_key . ' = ' . $splitId);
 		$db->setQuery($query);
 		$o = (int) $db->loadResult();

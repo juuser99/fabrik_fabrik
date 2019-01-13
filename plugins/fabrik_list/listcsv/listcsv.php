@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Joomla\CMS\Filter\InputFilter;
+use Fabrik\Helpers\Worker;
 
 /**
  * Allow processing of CSV import / export on a per row basis
@@ -21,16 +22,19 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.listcsv
  * @since       3.0
  */
-
-class PlgFabrik_ListListcsv extends PlgFabrik_List
+class PlgFabrik_ListListcsv extends AbstractListPlugin
 {
-	/*
+	/**
 	 * for use by user code
+	 *
+	 * @since 4.0
 	 */
 	public $userClass = null;
 
-	/*
+	/**
 	 * for use by user code
+	 *
+	 * @since 4.0
 	 */
 	public $userData = null;
 
@@ -38,8 +42,9 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	 * determine if the table plugin is a button and can be activated only when rows are selected
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function canSelectRows()
 	{
 		return false;
@@ -48,11 +53,12 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	/**
 	 * Prep the button if needed
 	 *
-	 * @param   array  &$args  Arguments
+	 * @param   array  &$args Arguments
 	 *
-	 * @return  bool;
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function button(&$args)
 	{
 		parent::button($args);
@@ -64,14 +70,15 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	 * Called when we import a csv row
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
-
 	public function onImportCSVRow()
 	{
 		$params = $this->getParams();
-		$filter = JFilterInput::getInstance();
-		$file = $params->get('listcsv_import_php_file');
-		$file = $filter->clean($file, 'CMD');
+		$filter = InputFilter::getInstance();
+		$file   = $params->get('listcsv_import_php_file');
+		$file   = $filter->clean($file, 'CMD');
 
 		if ($file != -1 && $file != '')
 		{
@@ -84,7 +91,7 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 		if (!empty($code))
 		{
 			$ret = @eval($code);
-			FabrikWorker::logEval($ret, 'Caught exception on eval in onImportCSVRow : %s');
+			Worker::logEval($ret, 'Caught exception on eval in onImportCSVRow : %s');
 
 			if ($ret === false)
 			{
@@ -99,14 +106,15 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	 * Called after we import a csv row
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
-
 	public function onAfterImportCSVRow()
 	{
 		$params = $this->getParams();
-		$filter = JFilterInput::getInstance();
-		$file = $params->get('listcsv_after_import_php_file');
-		$file = $filter->clean($file, 'CMD');
+		$filter = InputFilter::getInstance();
+		$file   = $params->get('listcsv_after_import_php_file');
+		$file   = $filter->clean($file, 'CMD');
 
 		if ($file != -1 && $file != '')
 		{
@@ -119,7 +127,7 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 		if (!empty($code))
 		{
 			$ret = @eval($code);
-			FabrikWorker::logEval($ret, 'Caught exception on eval in onAfterImportCSVRow : %s');
+			Worker::logEval($ret, 'Caught exception on eval in onAfterImportCSVRow : %s');
 
 			if ($ret === false)
 			{
@@ -134,14 +142,15 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	 * Called when import is complete
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
-
 	public function onCompleteImportCSV()
 	{
 		$params = $this->getParams();
-		$filter = JFilterInput::getInstance();
-		$file = $params->get('listcsv_import_complete_php_file');
-		$file = $filter->clean($file, 'CMD');
+		$filter = InputFilter::getInstance();
+		$file   = $params->get('listcsv_import_complete_php_file');
+		$file   = $filter->clean($file, 'CMD');
 
 		if ($file != -1 && $file != '')
 		{
@@ -154,7 +163,7 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 		if (!empty($code))
 		{
 			$ret = @eval($code);
-			FabrikWorker::logEval($ret, 'Caught exception on eval in onCompleteImportCSV : %s');
+			Worker::logEval($ret, 'Caught exception on eval in onCompleteImportCSV : %s');
 
 			if ($ret === false)
 			{
@@ -169,14 +178,15 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	 * Called before import is started
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
-
 	public function onStartImportCSV()
 	{
 		$params = $this->getParams();
-		$filter = JFilterInput::getInstance();
-		$file = $params->get('listcsv_import_start_php_file');
-		$file = $filter->clean($file, 'CMD');
+		$filter = InputFilter::getInstance();
+		$file   = $params->get('listcsv_import_start_php_file');
+		$file   = $filter->clean($file, 'CMD');
 
 		if ($file != -1 && $file != '')
 		{
@@ -189,7 +199,7 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 		if (!empty($code))
 		{
 			$ret = @eval($code);
-			FabrikWorker::logEval($ret, 'Caught exception on eval in onStartImportCSV : %s');
+			Worker::logEval($ret, 'Caught exception on eval in onStartImportCSV : %s');
 
 			if ($ret === false)
 			{
@@ -207,15 +217,16 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	 * as an arg, so plugin must modify $listModel->cavExportRow
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
-
 	public function onExportCSVRow()
 	{
 		$listModel = $this->getModel();
-		$params = $this->getParams();
-		$filter = JFilterInput::getInstance();
-		$file = $params->get('listcsv_export_php_file');
-		$file = $filter->clean($file, 'CMD');
+		$params    = $this->getParams();
+		$filter    = InputFilter::getInstance();
+		$file      = $params->get('listcsv_export_php_file');
+		$file      = $filter->clean($file, 'CMD');
 
 		if ($file != -1 && $file != '')
 		{
@@ -227,7 +238,7 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 		if (!empty($code))
 		{
 			$ret = @eval($code);
-			FabrikWorker::logEval($ret, 'Caught exception on eval in onExportCSVRow : %s');
+			Worker::logEval($ret, 'Caught exception on eval in onExportCSVRow : %s');
 
 			if ($ret === false)
 			{
@@ -244,18 +255,17 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 	 * As PHP doesn't support pass by reference for func_get_args, can't pass heading array in
 	 * as an arg, so plugin musr modify $listModel->cavExportHeadings
 	 *
-	 * @param  array  $args  row data
-	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
-
 	public function onExportCSVHeadings()
 	{
 		$listModel = $this->getModel();
-		$params = $this->getParams();
-		$filter = JFilterInput::getInstance();
-		$file = $params->get('listcsv_export_headings_php_file');
-		$file = $filter->clean($file, 'CMD');
+		$params    = $this->getParams();
+		$filter    = InputFilter::getInstance();
+		$file      = $params->get('listcsv_export_headings_php_file');
+		$file      = $filter->clean($file, 'CMD');
 
 		if ($file != -1 && $file != '')
 		{
@@ -267,7 +277,7 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 		if (!empty($code))
 		{
 			$ret = @eval($code);
-			FabrikWorker::logEval($ret, 'Caught exception on eval in onExportCSVHeadings : %s');
+			Worker::logEval($ret, 'Caught exception on eval in onExportCSVHeadings : %s');
 
 			if ($ret === false)
 			{
@@ -277,5 +287,4 @@ class PlgFabrik_ListListcsv extends PlgFabrik_List
 
 		return true;
 	}
-
 }

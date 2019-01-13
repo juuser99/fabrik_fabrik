@@ -11,10 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Helpers\Html;
 use Joomla\Utilities\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Helpers\StringHelper as FStringHelper;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * Add a radius search option to the list filters
@@ -24,14 +26,16 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @since       3.2
  */
 
-class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
+class PlgFabrik_ListRadius_lookup extends AbstractListPlugin
 {
 	/**
 	 * Build the radius search HTML
 	 *
-	 * @param   array  &$args  Plugin args
+	 * @param   array  &$args Plugin args
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function onMakeFilters(&$args)
 	{
@@ -40,58 +44,61 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 			return;
 		}
 
-		$params = $this->getParams();
-		$model = $this->getModel();
+		$params      = $this->getParams();
+		$model       = $this->getModel();
 		$baseContext = $this->getSessionContext();
-		$listModel = new FabrikFEModelList();
+		$listModel   = new ListModel();
 		$listModel->setId($params->get('radius_lookup_list'));
 
-		$layoutData = array('renderOrder' => $this->renderOrder);
-		$layoutData['vals'] = $this->app->input->get('radius_lookup' . $this->renderOrder, array(), 'array');
-		$layoutData['lat'] = $this->app->getUserStateFromRequest($baseContext . 'lat' . $this->renderOrder, 'radius_search_lat' . $this->renderOrder);
-		$layoutData['lon'] = $this->app->getUserStateFromRequest($baseContext . 'lon' . $this->renderOrder, 'radius_search_lon' . $this->renderOrder);
-		$layoutData['data'] = $listModel->getData();
+		$layoutData                  = array('renderOrder' => $this->renderOrder);
+		$layoutData['vals']          = $this->app->input->get('radius_lookup' . $this->renderOrder, array(), 'array');
+		$layoutData['lat']           = $this->app->getUserStateFromRequest($baseContext . 'lat' . $this->renderOrder, 'radius_search_lat' . $this->renderOrder);
+		$layoutData['lon']           = $this->app->getUserStateFromRequest($baseContext . 'lon' . $this->renderOrder, 'radius_search_lon' . $this->renderOrder);
+		$layoutData['data']          = $listModel->getData();
 		$layoutData['distanceField'] = $params->get('distance_field');
-		$layoutData['nameField'] = $params->get('name_field');
+		$layoutData['nameField']     = $params->get('name_field');
 
 		$layout = $this->getLayout('filters');
 
 		$str = $layout->render($layoutData);
 
-		$f = new stdClass;
-		$f->label = $params->get('radius_label', 'Radius search');
-		$f->element = $str;
+		$f           = new \stdClass;
+		$f->label    = $params->get('radius_label', 'Radius search');
+		$f->element  = $str;
 		$f->required = '';
 
-		$mapElement = $this->getMapElement();
-		$mapName = $mapElement->getFullName(true, false);
+		$mapElement                   = $this->getMapElement();
+		$mapName                      = $mapElement->getFullName(true, false);
 		$model->viewfilters[$mapName] = $f;
 	}
 
 	/**
 	 * Build the sql query to filter the data
 	 *
-	 * @param   object  $params  plugin params
+	 * @param   object $params plugin params
 	 *
 	 * @return  string  query's where statement
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getQuery($params)
 	{
-		$input = $this->app->input;
+		$input   = $this->app->input;
 		$lookUps = $input->get('radius_lookup' . $this->renderOrder, array(), 'array');
-		$lookUps = array_filter($lookUps, function ($v) { return (string) $v === '1'; });
-		$ids = array_keys($lookUps);
-		$ids = ArrayHelper::toInteger($ids);
+		$lookUps = array_filter($lookUps, function ($v) {
+			return (string) $v === '1';
+		});
+		$ids     = array_keys($lookUps);
+		$ids     = ArrayHelper::toInteger($ids);
 
-		$listModel = new FabrikFEModelList();
+		$listModel = new ListModel();
 		$listModel->setId($params->get('radius_lookup_list'));
 		$listModel->setLimits(0, -1);
 		$key = $listModel->getPrimaryKey();
 		$listModel->setPluginQueryWhere('list.radius_lookup', $key . ' IN (' . implode(',', $ids) . ')');
-		$data = $listModel->getData();
+		$data          = $listModel->getData();
 		$distanceField = $params->get('distance_field') . '_raw';
-		$data = $listModel->getData();
+		$data          = $listModel->getData();
 
 		list($latitude, $longitude) = $this->getSearchLatLon();
 
@@ -104,13 +111,13 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 		// Need to unset for multiple radius searches to work
 		unset($this->mapElement);
 		$el = $this->getMapElement();
-		$el = FabrikString::safeColName($el->getFullName(false, false));
+		$el = FStringHelper::safeColName($el->getFullName(false, false));
 
 		// Crazy sql to get the lat/lon from google map element
 		$latField = "SUBSTRING_INDEX(TRIM(LEADING '(' FROM $el), ',', 1)";
 		$lonField = "SUBSTRING_INDEX(SUBSTRING_INDEX($el, ',', -1), ')', 1)";
-		$query = array();
-		$unit = $params->get('radius_lookup_unit', 'km');
+		$query    = array();
+		$unit     = $params->get('radius_lookup_unit', 'km');
 
 		foreach ($data as $group)
 		{
@@ -121,14 +128,14 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 				if ($unit == 'km')
 				{
 					$query[] = "((((acos(sin((" . $latitude . "*pi()/180)) * sin(($latField *pi()/180))+cos((" . $latitude
-					. "*pi()/180)) * cos(($latField *pi()/180)) * cos(((" . $longitude . "- $lonField)*pi()/180))))*180/pi())*60*1.1515*1.609344) <= "
-					. $v . ')';
+						. "*pi()/180)) * cos(($latField *pi()/180)) * cos(((" . $longitude . "- $lonField)*pi()/180))))*180/pi())*60*1.1515*1.609344) <= "
+						. $v . ')';
 				}
 				else
-					{
+				{
 					$query[] = "((((acos(sin((" . $latitude . "*pi()/180)) * sin(($latField *pi()/180))+cos((" . $latitude
-					. "*pi()/180)) * cos(($latField *pi()/180)) * cos(((" . $longitude . "- $lonField)*pi()/180))))*180/pi())*60*1.1515) <= " . $v . ')';
-					}
+						. "*pi()/180)) * cos(($latField *pi()/180)) * cos(((" . $longitude . "- $lonField)*pi()/180))))*180/pi())*60*1.1515) <= " . $v . ')';
+				}
 			}
 		}
 
@@ -144,13 +151,11 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	 *
 	 * @return  array
 	 */
-
 	protected function getSearchLatLon()
 	{
-		$app = JFactory::getApplication();
 		$baseContext = $this->getSessionContext();
-		$latitude = $app->getUserStateFromRequest($baseContext . 'lat' . $this->renderOrder, 'radius_search_lat' . $this->renderOrder);
-		$longitude = $app->getUserStateFromRequest($baseContext . 'lon' . $this->renderOrder, 'radius_search_lon' . $this->renderOrder);
+		$latitude    = $this->app->getUserStateFromRequest($baseContext . 'lat' . $this->renderOrder, 'radius_search_lat' . $this->renderOrder);
+		$longitude   = $this->app->getUserStateFromRequest($baseContext . 'lon' . $this->renderOrder, 'radius_search_lon' . $this->renderOrder);
 
 		return array($latitude, $longitude);
 	}
@@ -158,52 +163,51 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	/**
 	 * onFiltersGot method - run after the list has created filters
 	 *
-	 * @return bool currently ignored
+	 * @since 4.0
 	 */
-
 	public function onFiltersGot()
 	{
 		$params = $this->getParams();
 
-		/** @var FabrikFEModelList $model */
-		$model = $this->getModel();
-		$key = $this->onGetFilterKey();
-		$app = JFactory::getApplication();
-		$lookUps = $app->input->get('radius_lookup' . $this->renderOrder, array(), 'array');
-		$active = in_array('1', $lookUps);
+		$model   = $this->getModel();
+		$key     = $this->onGetFilterKey();
+		$lookUps = $this->app->input->get('radius_lookup' . $this->renderOrder, array(), 'array');
+		$active  = in_array('1', $lookUps);
 
 		if (!$active)
 		{
 			return;
 		}
 
-		$v = $this->getValue();
-		$query = $this->getQuery($params);
-		$key = 'rs_test___map';
-		$model->filters['elementid'][] = null;
-		$model->filters['value'][] = $v;
-		$model->filters['condition'][] = '=';
-		$model->filters['join'][] = 'AND';
-		$model->filters['no-filter-setup'][] = 0;
-		$model->filters['hidden'][] = 0;
-		$model->filters['key'][] = $key;
-		$model->filters['search_type'][] = 'normal';
-		$model->filters['match'][] = 0;
-		$model->filters['full_words_only'][] = 0;
-		$model->filters['eval'][] = 0;
-		$model->filters['required'][] = 0;
-		$model->filters['access'][] = 0;
+		$v                                       = $this->getValue();
+		$query                                   = $this->getQuery($params);
+		$key                                     = 'rs_test___map';
+		$model->filters['elementid'][]           = null;
+		$model->filters['value'][]               = $v;
+		$model->filters['condition'][]           = '=';
+		$model->filters['join'][]                = 'AND';
+		$model->filters['no-filter-setup'][]     = 0;
+		$model->filters['hidden'][]              = 0;
+		$model->filters['key'][]                 = $key;
+		$model->filters['search_type'][]         = 'normal';
+		$model->filters['match'][]               = 0;
+		$model->filters['full_words_only'][]     = 0;
+		$model->filters['eval'][]                = 0;
+		$model->filters['required'][]            = 0;
+		$model->filters['access'][]              = 0;
 		$model->filters['grouped_to_previous'][] = 0;
-		$model->filters['label'][] = $params->get('radius_label', 'Radius search');
-		$model->filters['sqlCond'][] = $query;
-		$model->filters['origvalue'][] = $v;
-		$model->filters['filter'][] = $v;
+		$model->filters['label'][]               = $params->get('radius_label', 'Radius search');
+		$model->filters['sqlCond'][]             = $query;
+		$model->filters['origvalue'][]           = $v;
+		$model->filters['filter'][]              = $v;
 	}
 
 	/**
 	 * Get radius search distance value
 	 *
-	 * @return number
+	 * @return array
+	 *
+	 * @since 4.0
 	 */
 	protected function getValue()
 	{
@@ -214,6 +218,8 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -225,12 +231,14 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	 * Don't get a cached version as 2 plugins may be set
 	 *
 	 * @return  object  Element model
+	 *
+	 * @since 4.0
 	 */
 	private function getMapElement()
 	{
-		$params = $this->getParams();
-		$model = $this->getModel();
-		$elements = $model->getElements('id');
+		$params           = $this->getParams();
+		$model            = $this->getModel();
+		$elements         = $model->getElements('id');
 		$this->mapElement = FArrayHelper::getValue($elements, $params->get('radius_lookup_mapelement'), false);
 
 		return $this->mapElement;
@@ -241,11 +249,13 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	 * should only be called once
 	 *
 	 * @return  string  Javascript class file
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClass()
 	{
-		$params = $this->getParams();
-		$opts = array();
+		$params            = $this->getParams();
+		$opts              = array();
 		$opts['container'] = 'radius_search_place_container';
 
 		// Increase z-index with advanced class
@@ -253,8 +263,8 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 
 		if ($params->get('myloc', 1) == 1)
 		{
-			$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
-			FabrikHelperHTML::script('media/com_fabrik/js/lib/geo-location/geo' . $ext);
+			$ext = Html::isDebug() ? '.js' : '-min.js';
+			Html::script('media/com_fabrik/js/lib/geo-location/geo' . $ext);
 		}
 
 		parent::loadJavascriptClass();
@@ -263,9 +273,11 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
@@ -278,7 +290,7 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 
 		$params = $this->getParams();
 		list($latitude, $longitude) = $this->getSearchLatLon();
-		$opts = $this->getElementJSOptions();
+		$opts              = $this->getElementJSOptions();
 		$containerOverride = FArrayHelper::getValue($args, 0, '');
 
 		if (strstr($containerOverride, 'visualization'))
@@ -286,13 +298,14 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 			$opts->ref = str_replace('visualization_', '', $containerOverride);
 		}
 
-		$opts->value = $this->getValue();
-		$opts->lat = $latitude;
-		$opts->lon = $longitude;
-		$opts->myloc = $params->get('myloc', 1) == 1 ? true : false;
+		$opts->value       = $this->getValue();
+		$opts->lat         = $latitude;
+		$opts->lon         = $longitude;
+		$opts->myloc       = $params->get('myloc', 1) == 1 ? true : false;
 		$opts->renderOrder = $this->renderOrder;
-		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListRadius_lookup($opts)";
+		$opts              = json_encode($opts);
+		$this->jsInstance  = "new FbListRadius_lookup($opts)";
+
 		return true;
 	}
 
@@ -300,6 +313,8 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{
@@ -312,6 +327,8 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	 * method, i.e. the Go button.  Implemented specifically for radius search plugin.
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function requireFilterSubmit()
 	{
@@ -323,6 +340,8 @@ class PlgFabrik_ListRadius_lookup extends PlgFabrik_List
 	 * method, i.e. the Go button.  Implemented specifically for radius search plugin.
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function requireFilterSubmit_result()
 	{

@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Execute PHP Code on any list event
@@ -21,15 +21,15 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.phpevents
  * @since       3.0
  */
-
-class PlgFabrik_ListPhp_Events extends PlgFabrik_List
+class PlgFabrik_ListPhp_Events extends AbstractListPlugin
 {
 	/**
 	 * onFiltersGot method - run after the list has created filters
 	 *
 	 * @return bool currently ignored
+	 *
+	 * @since 4.0
 	 */
-
 	public function onFiltersGot()
 	{
 		$params = $this->getParams();
@@ -40,11 +40,12 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * onStoreRequestData method - run when filter data is stored to the session
 	 *
-	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
+	 * @param array &$args Additional options passed into the method when the plugin is called
 	 *
 	 * @return bool currently ignored
+	 *
+	 * @since 4.0
 	 */
-
 	public function onStoreRequestData(&$args)
 	{
 		$params = $this->getParams();
@@ -55,9 +56,10 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * Called when the list HTML filters are loaded
 	 *
-	 * @return  void
+	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function onMakeFilters()
 	{
 		$params = $this->getParams();
@@ -68,11 +70,12 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * Do the plug-in action
 	 *
-	 * @param   array  $opts  Custom options
+	 * @param   array $opts Custom options
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function process($opts = array())
 	{
 		$params = $this->getParams();
@@ -84,8 +87,9 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * Run before the list loads its data
 	 *
 	 * @return bool currently ignored
+	 *
+	 * @since 4.0
 	 */
-
 	public function onPreLoadData(&$args)
 	{
 		$params = $this->getParams();
@@ -96,11 +100,12 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * onGetData method
 	 *
-	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
+	 * @param array  &$args Additional options passed into the method when the plugin is called
 	 *
 	 * @return bool currently ignored
+	 *
+	 * @since 4.0
 	 */
-
 	public function onLoadData(&$args)
 	{
 		$params = $this->getParams();
@@ -112,8 +117,9 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * Called when the model deletes rows
 	 *
 	 * @return  bool  false if fail
+	 *
+	 * @since 4.0
 	 */
-
 	public function onDeleteRows()
 	{
 		$params = $this->getParams();
@@ -125,8 +131,9 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * Called after the model has deleted rows
 	 *
 	 * @return  bool  false if fail
+	 *
+	 * @since 4.0
 	 */
-
 	public function onAfterDeleteRows()
 	{
 		$params = $this->getParams();
@@ -137,11 +144,12 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * Prep the button if needed
 	 *
-	 * @param   array  &$args  Arguments
+	 * @param   array  &$args Arguments
 	 *
-	 * @return  bool;
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function button(&$args)
 	{
 		parent::button($args);
@@ -153,8 +161,9 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * Build the HTML for the plug-in button
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function button_result()
 	{
 		return '';
@@ -164,12 +173,13 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * Determine if we use the plugin or not
 	 * both location and event criteria have to be match when form plug-in
 	 *
-	 * @param   string  $location  Location to trigger plugin on
-	 * @param   string  $event     Event to trigger plugin on
+	 * @param   string $location Location to trigger plugin on
+	 * @param   string $event    Event to trigger plugin on
 	 *
 	 * @return  bool  true if we should run the plugin otherwise false
+	 *
+	 * @since 4.0
 	 */
-
 	public function canUse($location = null, $event = null)
 	{
 		return true;
@@ -179,8 +189,9 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function canSelectRows()
 	{
 		return false;
@@ -189,11 +200,12 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		return true;
@@ -203,6 +215,8 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	 * On build query where
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function onBuildQueryWhere()
 	{
@@ -214,9 +228,11 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	/**
 	 * On build query where
 	 *
-	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
-
+	 * @param array  &$args Additional options passed into the method when the plugin is called
+	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function onGetPluginRowHeadings(&$args)
 	{
@@ -225,22 +241,22 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 		return $this->doEvaluate($params->get('list_phpevents_ongetpluginrowheadings'), $args);
 	}
 
-
 	/**
 	 * Evaluate supplied PHP
 	 *
-	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
+	 * @param array  & $args Additional options passed into the method when the plugin is called
 	 *
-	 * @param   string  $code  Php code
+	 * @param   string $code Php code
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	protected function doEvaluate($code, &$args = array())
 	{
 		$model = $this->getModel();
-		$w = new FabrikWorker;
-		$code = $w->parseMessageForPlaceHolder($code);
+		$w     = new Worker;
+		$code  = $w->parseMessageForPlaceHolder($code);
 
 		if ($code != '')
 		{

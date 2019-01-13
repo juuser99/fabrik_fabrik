@@ -379,6 +379,8 @@ class PlgFabrik_FormPHP extends AbstractFormPlugin
 	 * @param  array $args array containing element model being tested
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onElementCanView($args)
 	{

@@ -11,8 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 
 /**
  *  Add an action button to run PHP
@@ -22,22 +21,25 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @since       3.0
  */
 
-class PlgFabrik_ListJs extends PlgFabrik_List
+class PlgFabrik_ListJs extends AbstractListPlugin
 {
 	/**
 	 * Button prefix
 	 * @var  string
+	 *
+	 * @since 4.0
 	 */
 	protected $buttonPrefix = 'js';
 
 	/**
 	 * Prep the button if needed
 	 *
-	 * @param   array  &$args  Arguments
+	 * @param   array  &$args Arguments
 	 *
-	 * @return  bool;
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function button(&$args)
 	{
 		parent::button($args);
@@ -52,12 +54,11 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 	 *
 	 * @return   string  image
 	 */
-
 	protected function getImageName()
 	{
 		$img = parent::getImageName();
 
-		if (FabrikWorker::j3() && $img === 'php.png')
+		if ($img === 'php.png')
 		{
 			$img = 'lightning';
 		}
@@ -69,8 +70,9 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 	 * Get the button label
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function buttonLabel()
 	{
 		return $this->getParams()->get('button_label', parent::buttonLabel());
@@ -80,8 +82,9 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getAclParam()
 	{
 		return 'access';
@@ -91,8 +94,9 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function canSelectRows()
 	{
 		return true;
@@ -101,17 +105,18 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
 		$params = $this->getParams();
-		$opts = $this->getElementJSOptions();
-		$file = $params->get('js_file', '');
+		$opts   = $this->getElementJSOptions();
+		$file   = $params->get('js_file', '');
 
 		if ($file !== '' && $file !== '-1')
 		{
@@ -122,8 +127,8 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 			$opts->js_code = $params->get('js_code', '');
 		}
 
-		$opts->statusMsg = $params->get('msg', '');
-		$opts = json_encode($opts);
+		$opts->statusMsg  = $params->get('msg', '');
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListJs($opts)";
 
 		return true;
@@ -133,6 +138,8 @@ class PlgFabrik_ListJs extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{

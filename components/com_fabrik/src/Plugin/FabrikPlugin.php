@@ -13,6 +13,7 @@ namespace Fabrik\Component\Fabrik\Site\Plugin;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Model\FabrikSiteModel;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
@@ -28,7 +29,6 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\User;
 use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
-use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\GroupModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Database\DatabaseDriver;
@@ -44,7 +44,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
 class FabrikPlugin extends CMSPlugin
 {
@@ -105,7 +105,7 @@ class FabrikPlugin extends CMSPlugin
 	/**
 	 * Model
 	 *
-	 * @var FormModel
+	 * @var FabrikSiteModel
 	 *
 	 * @since 4.0
 	 */
@@ -224,13 +224,13 @@ class FabrikPlugin extends CMSPlugin
 	/**
 	 * Set model
 	 *
-	 * @param FormModel $model Plugin model
+	 * @param FabrikSiteModel $model Plugin model
 	 *
 	 * @return  void
 	 *
 	 * @since 4.0
 	 */
-	public function setModel(FormModel $model)
+	public function setModel(FabrikSiteModel $model)
 	{
 		$this->model = $model;
 	}
@@ -238,7 +238,7 @@ class FabrikPlugin extends CMSPlugin
 	/**
 	 * Get Model
 	 *
-	 * @return FormModel
+	 * @return FabrikSiteModel
 	 *
 	 * @since 4.0
 	 */

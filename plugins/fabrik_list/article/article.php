@@ -11,8 +11,10 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Joomla\CMS\Language\Text;
 
 /**
  * Add an action button to the list to enable update of content articles
@@ -21,21 +23,25 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.article
  * @since       3.0
  */
-class PlgFabrik_ListArticle extends PlgFabrik_List
+class PlgFabrik_ListArticle extends AbstractListPlugin
 {
 	/**
 	 * Button prefix
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $buttonPrefix = 'file';
 
 	/**
 	 * Prep the button if needed
 	 *
-	 * @param   array  &$args  Arguments
+	 * @param   array  &$args Arguments
 	 *
-	 * @return  bool;
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function button(&$args)
 	{
@@ -48,6 +54,8 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getAclParam()
 	{
@@ -58,6 +66,8 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -68,35 +78,39 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 * Get the button label
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function buttonLabel()
 	{
-		return FText::_('PLG_LIST_ARTICLE_UPDATE_ARTICLE');
+		return Text::_('PLG_LIST_ARTICLE_UPDATE_ARTICLE');
 	}
 
 	/**
 	 * Do the plug-in action
 	 *
-	 * @param   array  $opts  Custom options
+	 * @param   array $opts Custom options
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function process($opts = array())
 	{
-		/** @var FabrikFEModelList $model */
-		$model = $this->getModel();
-		$input = $this->app->input;
-		$ids = $input->get('ids', array(), 'array');
+		$model     = $this->getModel();
+		$input     = $this->app->input;
+		$ids       = $input->get('ids', array(), 'array');
 		$origRowId = $input->get('rowid');
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
+		/** @var PluginManagerModel $pluginManager */
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 
 		// Abstract version of the form article plugin
 		/** @var PlgFabrik_FormArticle $articlePlugin */
 		$articlePlugin = $pluginManager->getPlugin('article', 'form');
 
-		$formModel = $model->getFormModel();
+		$formModel  = $model->getFormModel();
 		$formParams = $formModel->getParams();
-		$plugins = $formParams->get('plugins');
+		$plugins    = $formParams->get('plugins');
 
 		foreach ($plugins as $c => $type)
 		{
@@ -125,30 +139,34 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	/**
 	 * Get the message generated in process()
 	 *
-	 * @param   int  $c  plugin render order
+	 * @param   int $c plugin render order
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function process_result($c)
 	{
 		$input = $this->app->input;
-		$ids = $input->get('ids', array(), 'array');
+		$ids   = $input->get('ids', array(), 'array');
 
-		return JText::sprintf('PLG_LIST_ARTICLES_UPDATED', count($ids));
+		return Text::sprintf('PLG_LIST_ARTICLES_UPDATED', count($ids));
 	}
 
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  array [0] => string table's form id to contain plugin
+	 * @param   array $args array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$opts = $this->getElementJSOptions();
-		$opts = json_encode($opts);
+		$opts             = $this->getElementJSOptions();
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListArticle($opts)";
 
 		return true;
@@ -158,6 +176,8 @@ class PlgFabrik_ListArticle extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{

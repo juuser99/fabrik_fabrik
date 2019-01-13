@@ -11,10 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Image;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Joomla\CMS\Filesystem\File;
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Language\Text;
 
 /**
  * Download list plugin
@@ -23,12 +25,14 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.download
  * @since       3.0
  */
-class PlgFabrik_ListDownload extends PlgFabrik_List
+class PlgFabrik_ListDownload extends AbstractListPlugin
 {
 	/**
 	 * Button prefix
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $buttonPrefix = 'download';
 
@@ -36,6 +40,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * Message
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $msg = null;
 
@@ -44,7 +50,9 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 *
 	 * @param   array &$args Arguments
 	 *
-	 * @return  bool;
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function button(&$args)
 	{
@@ -69,6 +77,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * Get the button label
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function buttonLabel()
 	{
@@ -79,6 +89,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getAclParam()
 	{
@@ -89,6 +101,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -99,6 +113,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * Can the plug-in use AJAX
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canAJAX()
 	{
@@ -111,6 +127,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * @param   array $opts Custom options
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function process($opts = array())
 	{
@@ -134,7 +152,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		}
 		elseif (empty($downloadFk) && empty($downloadFile) && empty($downloadTable))
 		{
-			return;
+			return false;
 		}
 		elseif (empty($downloadFk) && empty($downloadTable) && !empty($downloadFile))
 		{
@@ -161,7 +179,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 						{
 							$thisFile = JPATH_SITE . '/' . $tmpFile;
 
-							if (JFile::exists($thisFile))
+							if (File::exists($thisFile))
 							{
 								$fileList[] = $thisFile;
 							}
@@ -172,7 +190,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		}
 		else
 		{
-			$db = FabrikWorker::getDbo();
+			$db    = Worker::getDbo();
 			$query = $db->getQuery(true);
 			$query->select($db->qn($downloadFile))
 				->from($db->qn($downloadTable))
@@ -209,8 +227,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 			 */
 			$zipFile         = tempnam($this->config->get('tmp_path'), "zip");
 			$zipFileBasename = basename($zipFile);
-			$zip             = new ZipArchive;
-			$zipRes          = $zip->open($zipFile, ZipArchive::CREATE);
+			$zip             = new \ZipArchive;
+			$zipRes          = $zip->open($zipFile, \ZipArchive::CREATE);
 
 			if ($zipRes === true)
 			{
@@ -225,7 +243,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 					{
 						$tmpFile = '/tmp/' . $thisBaseName;
 						$oImage->resize($download_width, $download_height, $thisFile, $tmpFile);
-						$thisFile  = $tmpFile;
+						$thisFile   = $tmpFile;
 						$tmpFiles[] = $tmpFile;
 					}
 
@@ -237,13 +255,13 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 					}
 					else
 					{
-						$zipErr .= FText::_('ZipArchive add error: ' . $zipAdd);
+						$zipErr .= Text::_('ZipArchive add error: ' . $zipAdd);
 					}
 				}
 
 				if (!$zip->close())
 				{
-					$zipErr = FText::_('ZipArchive close error') . ($zip->status);
+					$zipErr = Text::_('ZipArchive close error') . ($zip->status);
 				}
 
 				if ($downloadResize)
@@ -258,7 +276,7 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 				{
 					foreach ($fileList as $tmpFile)
 					{
-						JFile::delete($tmpFile);
+						File::delete($tmpFile);
 					}
 				}
 
@@ -273,23 +291,23 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 						header('Content-Length: ' . filesize($zipFile));
 						header('Content-Disposition: attachment; filename="' . $zipFileBasename . '.zip"');
 						echo file_get_contents($zipFile);
-						JFile::delete($zipFile);
+						File::delete($zipFile);
 						exit;
 					}
 					else
 					{
-						$zipErr .= FText::_('PLG_FABRIK_LIST_DOWNLOAD_ZIP_EMPTY');
+						$zipErr .= Text::_('PLG_FABRIK_LIST_DOWNLOAD_ZIP_EMPTY');
 					}
 				}
 			}
 			else
 			{
-				$zipErr = FText::_('ZipArchive open error, cannot create file : ' . $zipFile . ' : ' . $zipRes);
+				$zipErr = Text::_('ZipArchive open error, cannot create file : ' . $zipFile . ' : ' . $zipRes);
 			}
 		}
 		else
 		{
-			$zipErr = FText::_("PLG_FABRIK_LIST_DOWNLOAD_ZIP_NO_FILES");
+			$zipErr = Text::_("PLG_FABRIK_LIST_DOWNLOAD_ZIP_NO_FILES");
 		}
 
 		if (empty($zipErr))
@@ -310,6 +328,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * @param   int $c Plugin render order
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function process_result($c)
 	{
@@ -322,6 +342,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
@@ -337,6 +359,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * Get filesystem storage class
 	 *
 	 * @return  object  Filesystem storage
+	 *
+	 * @since 4.0
 	 */
 	protected function getStorage()
 	{
@@ -357,6 +381,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * @param   string $key key
 	 *
 	 * @return    array    pdf file paths
+	 *
+	 * @since 4.0
 	 */
 	public function getPDFs($key = 'ids')
 	{
@@ -386,19 +412,19 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 				return false;
 			}
 
-			JFile::delete($p);
+			File::delete($p);
 			$p .= '.pdf';
 
-			$url        = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&view=details&formid=' . $formId . '&rowid=' . $rowId . '&format=pdf';
+			$url = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&view=details&formid=' . $formId . '&rowid=' . $rowId . '&format=pdf';
 
-			if (FabrikHelperHTML::isDebug())
+			if (Html::isDebug())
 			{
 				$url .= '&XDEBUG_SESSION_START=PHPSTORM';
 			}
 
 			$pdfContent = file_get_contents($url);
 
-			JFile::write($p, $pdfContent);
+			File::write($p, $pdfContent);
 
 			$pdfFiles[] = $p;
 		}
@@ -410,6 +436,8 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{

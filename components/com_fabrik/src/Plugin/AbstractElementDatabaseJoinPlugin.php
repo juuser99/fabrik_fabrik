@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -42,7 +43,7 @@ use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.databasejoin
- * @since      4.0
+ * @since       4.0
  */
 class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 {
@@ -3270,7 +3271,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 		$this->id = $this->app->input->getInt('element_id');
 		$this->loadMeForAjax();
 		$this->getElement(true);
-		$filter     = JFilterInput::getInstance();
+		$filter     = InputFilter::getInstance();
 		$request    = $filter->clean($_REQUEST, 'array');
 		$groupModel = $this->getGroupModel();
 

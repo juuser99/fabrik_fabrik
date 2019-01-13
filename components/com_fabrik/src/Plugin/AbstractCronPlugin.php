@@ -23,9 +23,8 @@ use Fabrik\Component\Fabrik\Site\Model\ListModel;
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-
 abstract class AbstractCronPlugin extends FabrikPlugin
 {
 	/**

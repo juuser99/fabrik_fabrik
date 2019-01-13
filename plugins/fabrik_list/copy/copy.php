@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Language\Text;
 
 /**
  * Add an action button to the list to copy rows
@@ -21,21 +22,25 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.copy
  * @since       3.0
  */
-class PlgFabrik_ListCopy extends PlgFabrik_List
+class PlgFabrik_ListCopy extends AbstractListPlugin
 {
 	/**
 	 * Button prefix
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $buttonPrefix = 'copy';
 
 	/**
 	 * Prep the button if needed
 	 *
-	 * @param   array  &$args  Arguments
+	 * @param   array  &$args Arguments
 	 *
-	 * @return  bool;
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function button(&$args)
 	{
@@ -48,6 +53,8 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	 * Get the button label
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function buttonLabel()
 	{
@@ -61,12 +68,11 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	 *
 	 * @return   string  image
 	 */
-
 	protected function getImageName()
 	{
 		$img = parent::getImageName();
 
-		if (FabrikWorker::j3() && $img === 'copy.png')
+		if ($img === 'copy.png')
 		{
 			$img = 'copy';
 		}
@@ -78,6 +84,8 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getAclParam()
 	{
@@ -88,6 +96,8 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -97,14 +107,16 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	/**
 	 * Do the plug-in action
 	 *
-	 * @param   array  $opts  Custom options
+	 * @param   array $opts Custom options
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function process($opts = array())
 	{
-		$model = $this->getModel();
-		$ids = $this->app->input->get('ids', array(), 'array');
+		$model     = $this->getModel();
+		$ids       = $this->app->input->get('ids', array(), 'array');
 		$formModel = $model->getFormModel();
 
 		return $model->copyRows($ids);
@@ -113,29 +125,33 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	/**
 	 * Get the message generated in process()
 	 *
-	 * @param   int  $c  plugin render order
+	 * @param   int $c plugin render order
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function process_result($c)
 	{
 		$ids = $this->app->input->get('ids', array(), 'array');
 
-		return JText::sprintf('PLG_LIST_ROWS_COPIED', count($ids));
+		return Text::sprintf('PLG_LIST_ROWS_COPIED', count($ids));
 	}
 
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$opts = $this->getElementJSOptions();
-		$opts = json_encode($opts);
+		$opts             = $this->getElementJSOptions();
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListCopy($opts)";
 
 		return true;
@@ -145,6 +161,8 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{

@@ -9,10 +9,13 @@
  */
 
 // No direct access
-defined('_JEXEC') or die('Restricted access');
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * Allows double-clicking in a cell to enable in-line editing
@@ -21,12 +24,14 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.inlineedit
  * @since       3.0
  */
-class PlgFabrik_ListInlineedit extends PlgFabrik_List
+class PlgFabrik_ListInlineedit extends AbstractListPlugin
 {
 	/**
 	 * Contains js file, elements to load and require js shim info
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	protected $elementJs = array();
 
@@ -34,6 +39,8 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getAclParam()
 	{
@@ -44,6 +51,8 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0-
 	 */
 	public function canSelectRows()
 	{
@@ -60,11 +69,11 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 */
 	public function requireJSShim_result()
 	{
-		$deps = new stdClass;
-		$deps->deps = array('fab/list-plugin');
+		$deps                                                      = new \stdClass;
+		$deps->deps                                                = array('fab/list-plugin');
 		$shim['list/' . $this->filterKey . '/' . $this->filterKey] = $deps;
-		$params = $this->getParams();
-		$shim = parent::requireJSShim_result();
+		$params                                                    = $this->getParams();
+		$shim                                                      = parent::requireJSShim_result();
 		list($srcs, $els, $addShim) = $this->loadElementJS($params);
 
 		foreach ($addShim as $key => $deps)
@@ -86,12 +95,15 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 * Get the src(s) for the list plugin js class
 	 *
 	 * @return  mixed  string or array
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClass_result()
 	{
-		$mediaFolder = FabrikHelperHTML::getMediaFolder();
-		$src = parent::loadJavascriptClass_result();
+		$mediaFolder    = Html::getMediaFolder();
+		$src            = parent::loadJavascriptClass_result();
 		$src['element'] = $mediaFolder . '/element.js';
+
 		return $src;
 	}
 
@@ -110,18 +122,19 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 		}
 
 		$params = $this->getParams();
-		$input = $this->app->input;
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		$input  = $this->app->input;
+		/** @var ListModel $listModel */
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($input->getInt('listid'));
 		$elements = $listModel->getElements('safecolname');
-		$pels = FabrikString::stripSpace($params->get('inline_editable_elements', ''));
+		$pels     = FStringHelper::stripSpace($params->get('inline_editable_elements', ''));
 
 		$use = json_decode($pels);
 
 		if (!is_object($use))
 		{
 			$aEls = trim($pels) == '' ? array() : explode(",", $pels);
-			$use = new stdClass;
+			$use  = new \stdClass;
 
 			foreach ($aEls as $e)
 			{
@@ -129,7 +142,7 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 			}
 		}
 
-		$els = array();
+		$els  = array();
 		$srcs = array();
 		$test = (array) $use;
 		$shim = array();
@@ -140,9 +153,9 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 			{
 				if (array_key_exists($key, $elements))
 				{
-					$trigger = $elements[$key];
-					$els[$key] = new stdClass;
-					$els[$key]->elid = $trigger->getId();
+					$trigger            = $elements[$key];
+					$els[$key]          = new \stdClass;
+					$els[$key]->elid    = $trigger->getId();
 					$els[$key]->plugins = array();
 
 					foreach ($fields as $field)
@@ -166,10 +179,10 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 				// Stop elements such as the password element from incorrectly updating themselves
 				if ($val->recordInDatabase(array()))
 				{
-					$key = FabrikString::safeColNameToArrayKey($key);
-					$els[$key] = new stdClass;
-					$els[$key]->elid = $val->getId();
-					$els[$key]->plugins = array();
+					$key                      = FStringHelper::safeColNameToArrayKey($key);
+					$els[$key]                = new \stdClass;
+					$els[$key]->elid          = $val->getId();
+					$els[$key]->plugins       = array();
 					$els[$key]->plugins[$key] = $val->getElement()->id;
 
 					// Load in all element js classes
@@ -186,26 +199,28 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$model = $this->getModel();
+		$model  = $this->getModel();
 		$params = $this->getParams();
 		list($srcs, $els, $shim) = $this->loadElementJS();
-		$opts = $this->getElementJSOptions();
-		$opts->elements = $els;
-		$opts->formid = $model->getFormModel()->getId();
+		$opts             = $this->getElementJSOptions();
+		$opts->elements   = $els;
+		$opts->formid     = $model->getFormModel()->getId();
 		$opts->focusClass = 'focusClass';
-		$opts->editEvent = $params->get('inline_edit_event', 'dblclick');
-		$opts->tabSave = $params->get('inline_tab_save', false);
+		$opts->editEvent  = $params->get('inline_edit_event', 'dblclick');
+		$opts->tabSave    = $params->get('inline_tab_save', false);
 		$opts->showCancel = $params->get('inline_show_cancel', true);
-		$opts->showSave = (bool) $params->get('inline_show_save', true);
-		$opts->loadFirst = (bool) $params->get('inline_load_first', false);
-		$opts = json_encode($opts);
+		$opts->showSave   = (bool) $params->get('inline_show_save', true);
+		$opts->loadFirst  = (bool) $params->get('inline_load_first', false);
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListInlineedit($opts)";
 
 		return true;
@@ -215,6 +230,8 @@ class PlgFabrik_ListInlineedit extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{

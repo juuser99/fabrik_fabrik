@@ -540,7 +540,7 @@ class FormModel extends FabrikSiteModel
 	/**
 	 * Checks if the params object has been created and if not creates and returns it
 	 *
-	 * @return  object  params
+	 * @return  Registry
 	 *
 	 * @since   4.0
 	 */

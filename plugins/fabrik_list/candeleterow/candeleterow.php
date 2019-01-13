@@ -11,10 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 use Joomla\Utilities\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Helpers\Worker;
 
 /**
  *  Determines if a row is deletable
@@ -23,16 +22,26 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @subpackage  Fabrik.list.candeleterow
  * @since       3.0
  */
-class PlgFabrik_ListCandeleterow extends PlgFabrik_List
+class PlgFabrik_ListCandeleterow extends AbstractListPlugin
 {
+	/**
+	 * @var array
+	 * @since 4.0
+	 */
 	protected $acl = array();
 
+	/**
+	 * @var null
+	 * @since 4.0
+	 */
 	protected $result = null;
 
 	/**
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -42,9 +51,11 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 	/**
 	 * Can the row be deleted
 	 *
-	 * @param   object  $row  Current row to test
+	 * @param   object $row Current row to test
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function onCanDelete($row)
 	{
@@ -55,6 +66,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 		if (is_null($row) || is_null($row[0]))
 		{
 			$this->result = true;
+
 			return true;
 		}
 
@@ -82,6 +94,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 			{
 				// probably a new form, so nope, no rowid, can't delete
 				$this->result = false;
+
 				return false;
 			}
 		}
@@ -92,6 +105,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 		if (array_key_exists($pkVal, $this->acl))
 		{
 			$this->result = $this->acl[$pkVal];
+
 			return $this->acl[$pkVal];
 		}
 
@@ -104,19 +118,19 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 		if (trim($field) == '' && trim($canDeleteRowEval) == '')
 		{
 			$this->acl[$pkVal] = true;
-			$this->result = true;
+			$this->result      = true;
 
 			return true;
 		}
 
 		if (!empty($canDeleteRowEval))
 		{
-			$w = new FabrikWorker;
-			$data = ArrayHelper::fromObject($data);
+			$w                = new Worker;
+			$data             = ArrayHelper::fromObject($data);
 			$canDeleteRowEval = $w->parseMessageForPlaceHolder($canDeleteRowEval, $data);
-			FabrikWorker::clearEval();
+			Worker::clearEval();
 			$canDeleteRowEval = @eval($canDeleteRowEval);
-			FabrikWorker::logEval($canDeleteRowEval, 'Caught exception on eval in can delete row : %s');
+			Worker::logEval($canDeleteRowEval, 'Caught exception on eval in can delete row : %s');
 			$this->acl[$pkVal] = $canDeleteRowEval;
 		}
 		else
@@ -127,7 +141,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 				$field .= '_raw';
 			}
 
-			$value = $params->get('candeleterow_value');
+			$value    = $params->get('candeleterow_value');
 			$operator = $params->get('operator', '=');
 
 			if (!isset($data->$field))
@@ -158,6 +172,8 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getAclParam()
 	{
@@ -170,6 +186,8 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 	 * @param   string $method Method
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function customProcessResult($method)
 	{

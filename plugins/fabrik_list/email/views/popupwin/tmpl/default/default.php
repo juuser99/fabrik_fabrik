@@ -61,7 +61,7 @@ $params = $this->params;
 				}
 
 				$attribs = 'class="fabrikinput inputbox input-medium" multiple="multiple" size="5"';
-				$empty   = new stdClass;
+				$empty   = new \stdClass;
 
 				if ($this->toType == 'table_picklist')
 				{ ?>

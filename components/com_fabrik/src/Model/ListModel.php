@@ -13,6 +13,7 @@ namespace Fabrik\Component\Fabrik\Site\Model;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\LayoutFile;
 use Fabrik\Helpers\Worker;
@@ -10014,7 +10015,7 @@ class ListModel extends FabrikSiteModel
 	 *
 	 * @param   string $plugin name
 	 *
-	 * @return  PlgFabrik_Element[]    matched element models
+	 * @return  AbstractElementPlugin[]    matched element models
 	 *
 	 * @sice 4.0
 	 */
@@ -10048,7 +10049,7 @@ class ListModel extends FabrikSiteModel
 	 * @param   bool  $showInTable   Show in table default true
 	 * @param   bool  $onlyPublished Return only published elements
 	 *
-	 * @return  PlgFabrik_Element[]    table element models
+	 * @return  AbstractElementPlugin[]    table element models
 	 *
 	 * @since 4.0
 	 */

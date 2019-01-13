@@ -13,15 +13,23 @@ namespace Fabrik\Component\Fabrik\Site\Plugin;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Helpers\Html;
 use Fabrik\Helpers\LayoutFile;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Language\Text;
 use Joomla\String\StringHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Fabrik Plugin From Model
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
+ *
+ * @method ListModel getModel
+ * @property ListModel $model
  */
 class AbstractListPlugin extends FabrikPlugin
 {
@@ -29,6 +37,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Button prefix
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $buttonPrefix = '';
 
@@ -36,6 +46,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * JavaScript code to ini js object
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $jsInstance = null;
 
@@ -43,6 +55,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getAclParam()
 	{
@@ -57,6 +71,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * @param   string $event    Event to trigger plugin on
 	 *
 	 * @return  bool  true if we should run the plugin otherwise false
+	 *
+	 * @since 4.0
 	 */
 	public function canUse($location = null, $event = null)
 	{
@@ -77,6 +93,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canSelectRows()
 	{
@@ -87,6 +105,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Can the plug-in use AJAX
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function canAJAX()
 	{
@@ -97,12 +117,14 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Get the button label
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function buttonLabel()
 	{
 		$s = StringHelper::strtoupper($this->buttonPrefix);
 
-		return FText::_('PLG_LIST_' . $s . '_' . $s);
+		return Text::_('PLG_LIST_' . $s . '_' . $s);
 	}
 
 	/**
@@ -127,40 +149,41 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Build the HTML for the plug-in button
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function button_result()
 	{
 		if ($this->canUse())
 		{
-			$p  = $this->onGetFilterKey_result();
-			$j3 = FabrikWorker::j3();
-			FabrikHelperHTML::addPath('plugins/fabrik_list/' . $p . '/images/', 'image', 'list');
-			$name = $this->_getButtonName();
-			$label = $this->buttonLabel();
-			$imageName = $this->getImageName();
-			$tmpl = $this->getModel()->getTmpl();
+			$p = $this->onGetFilterKey_result();
+			Html::addPath('plugins/fabrik_list/' . $p . '/images/', 'image', 'list');
+			$name       = $this->_getButtonName();
+			$label      = $this->buttonLabel();
+			$imageName  = $this->getImageName();
+			$tmpl       = $this->getModel()->getTmpl();
 			$properties = array();
 			$opts       = array(
 				'forceImage' => false
 			);
 
-			if (FabrikWorker::isImageExtension($imageName))
+			if (Worker::isImageExtension($imageName))
 			{
 				$opts['forceImage'] = true;
 			}
 
 
-			$img = FabrikHelperHTML::image($imageName, 'list', $tmpl, $properties, false, $opts);
+			$img  = Html::image($imageName, 'list', $tmpl, $properties, false, $opts);
 			$text = $this->buttonAction == 'dropdown' ? $label : '<span class="hidden">' . $label . '</span>';
 
-			if ($j3 && $this->buttonAction != 'dropdown')
+			if ($this->buttonAction != 'dropdown')
 			{
-				$layout = FabrikHelperHTML::getLayout('fabrik-button');
+				$layout     = Html::getLayout('fabrik-button');
 				$layoutData = (object) array(
-					'tag' => 'a',
+					'tag'        => 'a',
 					'attributes' => 'data-list="' . $this->context . '" title="' . $label . '"',
-					'class' => $name . ' listplugin btn-default',
-					'label' => $img . ' ' . $text
+					'class'      => $name . ' listplugin btn-default',
+					'label'      => $img . ' ' . $text
 				);
 
 				return $layout->render($layoutData);
@@ -191,11 +214,11 @@ class AbstractListPlugin extends FabrikPlugin
 	/**
 	 * Build an array of properties to ini the plugins JS objects
 	 *
-	 * @return  stdClass
+	 * @return  \stdClass
 	 */
 	public function getElementJSOptions()
 	{
-		$opts          = new stdClass;
+		$opts          = new \stdClass;
 		$model         = $this->getModel();
 		$opts->ref     = $model->getRenderContext();
 		$opts->name    = $this->_getButtonName();
@@ -211,10 +234,12 @@ class AbstractListPlugin extends FabrikPlugin
 	 * @param   array $args [0] => string table's form id to contain plugin
 	 *
 	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance($args)
 	{
-		JText::script('COM_FABRIK_PLEASE_SELECT_A_ROW');
+		Text::script('COM_FABRIK_PLEASE_SELECT_A_ROW');
 
 		return true;
 	}
@@ -222,9 +247,11 @@ class AbstractListPlugin extends FabrikPlugin
 	/**
 	 * onGetData method
 	 *
-	 * @param   &$args  Array  Additional options passed into the method when the plugin is called
+	 * @param array  &$args Additional options passed into the method when the plugin is called
 	 *
 	 * @return bool currently ignored
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadData(&$args)
 	{
@@ -235,6 +262,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * onFiltersGot method - run after the list has created filters
 	 *
 	 * @return bool currently ignored
+	 *
+	 * @since 4.0
 	 */
 	public function onFiltersGot()
 	{
@@ -242,27 +271,12 @@ class AbstractListPlugin extends FabrikPlugin
 	}
 
 	/**
-	 * Provide some default text that most table plugins will need
-	 * (this object will then be json encoded by the plugin and passed
-	 * to it's js class
-	 *
-	 * @depreciated since 3.0
-	 *
-	 * @return  object  language
-	 */
-	protected function _getLang()
-	{
-		$lang = new stdClass;
-
-		return $lang;
-	}
-
-	/**
 	 * Get the html name for the button
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function _getButtonName()
 	{
 		return $this->buttonPrefix . '-' . $this->renderOrder;
@@ -272,6 +286,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Preflight check to ensure that the list plugin should process
 	 *
 	 * @return    string|boolean
+	 *
+	 * @since 4.0
 	 */
 	public function process_preflightCheck()
 	{
@@ -292,6 +308,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * (Normal filter data is filtered on the element id, but here we use the plugin name)
 	 *
 	 * @return  string  key
+	 *
+	 * @since 4.0
 	 */
 	public function onGetFilterKey()
 	{
@@ -304,6 +322,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * Call onGetFilterKey() from plugin manager
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function onGetFilterKey_result()
 	{
@@ -320,6 +340,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * e.g radius search plugin stores its search values here
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getSessionContext()
 	{
@@ -331,6 +353,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * to the table view.
 	 *
 	 * @return  string  javascript to create instance. Instance name must be 'el'
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadJavascriptInstance_result()
 	{
@@ -344,7 +368,9 @@ class AbstractListPlugin extends FabrikPlugin
 	 *                       contains the current query:
 	 *                       $args[0]->query
 	 *
-	 * @return  void;
+	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function onQueryBuilt(&$args)
 	{
@@ -355,6 +381,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * should only be called once
 	 *
 	 * @return  string  javascript class file
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClass()
 	{
@@ -366,15 +394,17 @@ class AbstractListPlugin extends FabrikPlugin
 	 *
 	 * @return  mixed   array or null. If array then key is class name and value
 	 * is relative path to either compressed or uncompress js file.
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClass_result()
 	{
 		$this->onGetFilterKey();
-		$p = $this->onGetFilterKey_result();
-		$ext = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+		$p    = $this->onGetFilterKey_result();
+		$ext  = Html::isDebug() ? '.js' : '-min.js';
 		$file = 'plugins/fabrik_list/' . $p . '/' . $p . $ext;
 
-		if (JFile::exists(JPATH_SITE . '/' . $file))
+		if (File::exists(JPATH_SITE . '/' . $file))
 		{
 			return array('FbList' . ucfirst(($p)) => $file);
 		}
@@ -384,11 +414,24 @@ class AbstractListPlugin extends FabrikPlugin
 		}
 	}
 
+	/**
+	 *
+	 * @return bool
+	 *
+	 * @since 4.0
+	 */
 	public function loadJavascriptClassName()
 	{
 		return true;
 	}
 
+
+	/**
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
 	public function loadJavascriptClassName_result()
 	{
 		return '';
@@ -415,7 +458,7 @@ class AbstractListPlugin extends FabrikPlugin
 	 */
 	public function requireJSShim_result()
 	{
-		$deps                                                      = new stdClass;
+		$deps                                                      = new \stdClass;
 		$deps->deps                                                = array('fab/list-plugin');
 		$shim['list/' . $this->filterKey . '/' . $this->filterKey] = $deps;
 
@@ -428,6 +471,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * method, i.e. the Go button.  Implemented specifically for radius search plugin.
 	 *
 	 * @return  null
+	 *
+	 * @since 4.0
 	 */
 	public function requireFilterSubmit()
 	{
@@ -439,6 +484,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * method, i.e. the Go button.  Implemented specifically for radius search plugin.
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function requireFilterSubmit_result()
 	{
@@ -453,6 +500,8 @@ class AbstractListPlugin extends FabrikPlugin
 	 * @param   string $type form/details/list
 	 *
 	 * @return LayoutFile
+	 *
+	 * @since 4.0
 	 */
 	public function getLayout($type)
 	{

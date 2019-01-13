@@ -209,7 +209,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 				return FText::_('PLG_LIST_EMAIL_TO_TABLE_NO_DATA');
 			}
 
-			$empty   = new stdClass;
+			$empty   = new \stdClass;
 			$attribs = 'class="fabrikinput inputbox input-medium" multiple="multiple" size="5"';
 
 			if ($toType == 'table_picklist')

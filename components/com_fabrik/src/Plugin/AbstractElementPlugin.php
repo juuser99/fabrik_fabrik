@@ -48,7 +48,7 @@ use Joomla\Utilities\ArrayHelper;
  * Fabrik Element Model
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    4.0
  */
 abstract class AbstractElementPlugin extends FabrikPlugin
 {

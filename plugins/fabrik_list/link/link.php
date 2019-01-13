@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Joomla\CMS\Language\Text;
 
 /**
  *  Add an action button to run PHP
@@ -22,22 +23,35 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @since       3.0
  */
 
-class PlgFabrik_ListLink extends plgFabrik_List
+class PlgFabrik_ListLink extends AbstractListPlugin
 {
+	/**
+	 * @var string
+	 * @since 4.0
+	 */
 	protected $buttonPrefix = 'link';
 
+	/**
+	 * @var null
+	 * @since 4.0
+	 */
 	protected $msg = null;
 
+	/**
+	 * @var bool
+	 * @since 4.0
+	 */
 	protected $heading = false;
 
 	/**
 	 * Prep the button if needed
 	 *
-	 * @param   array  &$args  Arguments
+	 * @param   array  &$args Arguments
 	 *
-	 * @return  bool;
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function button(&$args)
 	{
 		if (is_array($args) && array_key_exists(0, $args))
@@ -61,7 +75,6 @@ class PlgFabrik_ListLink extends plgFabrik_List
 	 *
 	 * @return   string  image
 	 */
-
 	protected function getImageName()
 	{
 		$img = parent::getImageName();
@@ -73,8 +86,9 @@ class PlgFabrik_ListLink extends plgFabrik_List
 	 * Get the button label
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function buttonLabel()
 	{
 		return $this->getParams()->get('table_link_button_label', parent::buttonLabel());
@@ -84,6 +98,8 @@ class PlgFabrik_ListLink extends plgFabrik_List
 	 * Build the HTML for the plug-in button
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	public function button_result()
 	{
@@ -101,8 +117,9 @@ class PlgFabrik_ListLink extends plgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getAclParam()
 	{
 		return 'table_link_access';
@@ -112,8 +129,9 @@ class PlgFabrik_ListLink extends plgFabrik_List
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function canSelectRows()
 	{
 		return false;
@@ -122,21 +140,22 @@ class PlgFabrik_ListLink extends plgFabrik_List
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$opts = $this->getElementJSOptions();
-		$params = $this->getParams();
-		$opts->link = $params->get('table_link_link', '');
-		$opts->fabrikLink = $params->get('table_link_isfabrik', '0') === '1';
-		$opts->windowTitle = FText::_($params->get('table_link_fabrik_window_title', ''));
-		$opts = json_encode($opts);
-		$this->jsInstance = "new FbListLink($opts)";
+		$opts              = $this->getElementJSOptions();
+		$params            = $this->getParams();
+		$opts->link        = $params->get('table_link_link', '');
+		$opts->fabrikLink  = $params->get('table_link_isfabrik', '0') === '1';
+		$opts->windowTitle = Text::_($params->get('table_link_fabrik_window_title', ''));
+		$opts              = json_encode($opts);
+		$this->jsInstance  = "new FbListLink($opts)";
 
 		return true;
 	}
@@ -145,10 +164,11 @@ class PlgFabrik_ListLink extends plgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{
 		return 'FbListLink';
 	}
-
 }

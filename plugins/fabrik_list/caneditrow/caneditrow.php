@@ -11,10 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 use Joomla\Utilities\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
+use Fabrik\Helpers\Worker;
 
 /**
  *  Determines if a row is editable
@@ -24,18 +23,27 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
  * @since       3.0
  */
 
-class PlgFabrik_ListCaneditrow extends PlgFabrik_List
+class PlgFabrik_ListCaneditrow extends AbstractListPlugin
 {
+	/**
+	 * @var array
+	 * @since 4.0
+	 */
 	protected $acl = array();
 
+	/**
+	 * @var null
+	 * @since 4.0
+	 */
 	protected $result = null;
 
 	/**
 	 * Can the plug-in select list rows
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function canSelectRows()
 	{
 		return false;
@@ -44,22 +52,24 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 	/**
 	 * Can the row be edited
 	 *
-	 * @param   object  $row  Current row to test
+	 * @param   object $row Current row to test
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
-
 	public function onCanEdit($row)
 	{
-		$params = $this->getParams();
-        $model = $this->getModel();
-        $formModel = $model->getFormModel();
+		$params    = $this->getParams();
+		$model     = $this->getModel();
+		$formModel = $model->getFormModel();
 
 		// If $row is null, we were called from the list's canEdit() in a per-table rather than per-row context,
 		// and we don't have an opinion on per-table edit permissions, so just return true.
 		if (is_null($row) || is_null($row[0]))
 		{
 			$this->result = true;
+
 			return true;
 		}
 
@@ -69,18 +79,20 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 			if ($params->get('caneditrow_on_submit', '1') === '0')
 			{
 				$this->result = true;
+
 				return true;
 			}
 		}
 
 		if ($params->get('caneditrow_on_failed_validation', '1') === '0')
-        {
-            if ($formModel->failedValidation())
-            {
-            	$this->result = true;
-                return true;
-            }
-        }
+		{
+			if ($formModel->failedValidation())
+			{
+				$this->result = true;
+
+				return true;
+			}
+		}
 
 		if (is_array($row[0]))
 		{
@@ -98,6 +110,7 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		if (!isset($data->__pk_val) || empty($data->__pk_val))
 		{
 			$this->result = true;
+
 			return true;
 		}
 
@@ -107,6 +120,7 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		if (array_key_exists($data->__pk_val, $this->acl))
 		{
 			$this->result = $this->acl[$data->__pk_val];
+
 			return $this->acl[$data->__pk_val];
 		}
 
@@ -119,21 +133,21 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		if (trim($field) == '' && trim($caneditrow_eval) == '')
 		{
 			$this->acl[$data->__pk_val] = true;
-			$this->result = true;
+			$this->result               = true;
 
 			return true;
 		}
 
 		if (!empty($caneditrow_eval))
 		{
-			$w = new FabrikWorker;
-			$data = ArrayHelper::fromObject($data);
+			$w               = new Worker;
+			$data            = ArrayHelper::fromObject($data);
 			$caneditrow_eval = $w->parseMessageForPlaceHolder($caneditrow_eval, $data);
-			FabrikWorker::clearEval();
+			Worker::clearEval();
 			$caneditrow_eval = @eval($caneditrow_eval);
-			FabrikWorker::logEval($caneditrow_eval, 'Caught exception on eval in can edit row : %s');
+			Worker::logEval($caneditrow_eval, 'Caught exception on eval in can edit row : %s');
 			$this->acl[$data['__pk_val']] = $caneditrow_eval;
-			$this->result = $caneditrow_eval;
+			$this->result                 = $caneditrow_eval;
 
 			return $caneditrow_eval;
 		}
@@ -145,7 +159,7 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 				$field .= '_raw';
 			}
 
-			$value = $params->get('caneditrow_value');
+			$value    = $params->get('caneditrow_value');
 			$operator = $params->get('operator', '=');
 
 			if (is_object($data->$field))
@@ -165,7 +179,7 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 			}
 
 			$this->acl[$data->__pk_val] = $return;
-			$this->result = $return;
+			$this->result               = $return;
 
 			return $return;
 		}
@@ -175,8 +189,9 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 	 * Get the parameter name that defines the plugins acl access
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getAclParam()
 	{
 		return 'caneditrow_access';
@@ -185,17 +200,18 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 	/**
 	 * Return the javascript to create an instance of the class defined in formJavascriptClass
 	 *
-	 * @param   array  $args  Array [0] => string table's form id to contain plugin
+	 * @param   array $args Array [0] => string table's form id to contain plugin
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$opts = $this->getElementJSOptions();
-		$opts->acl = $this->acl;
-		$opts = json_encode($opts);
+		$opts             = $this->getElementJSOptions();
+		$opts->acl        = $this->acl;
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListCaneditrow($opts)";
 
 		return true;
@@ -205,6 +221,8 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 	 * Load the AMD module class name
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	public function loadJavascriptClassName_result()
 	{
@@ -217,6 +235,8 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 	 * @param   string $method Method
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	public function customProcessResult($method)
 	{
