@@ -9,17 +9,17 @@
  * @since       3.4.5
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Controller;
+namespace Joomla\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Model\ContentTypeImportModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
-use Fabrik\Component\Fabrik\Site\Model\FormModel;
-use Fabrik\Component\Fabrik\Site\View\Form\HtmlView;
+use Joomla\Component\Fabrik\Administrator\Model\ContentTypeImportModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Site\View\Form\HtmlView;
 
 /**
  * Content Type controller class.

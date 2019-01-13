@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Uri\Uri;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Akismet Validation Rule

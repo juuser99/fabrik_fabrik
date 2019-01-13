@@ -9,15 +9,15 @@
  * @since       1.6
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Model;
+namespace Joomla\Component\Fabrik\Administrator\Model;
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FormTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Administrator\Table\FormTable;
 use Joomla\Database\DatabaseQuery;
 
 // No direct access

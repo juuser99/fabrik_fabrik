@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Controller;
+namespace Joomla\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -17,9 +17,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Fabrik\Component\Fabrik\Administrator\Model\ElementModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FormModel;
-use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
+use Joomla\Component\Fabrik\Administrator\Model\ElementModel;
+use Joomla\Component\Fabrik\Administrator\Model\FormModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel;
 use Joomla\Component\Users\Administrator\Model\GroupModel;
 use Joomla\Utilities\ArrayHelper;
 

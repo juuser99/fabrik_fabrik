@@ -17,9 +17,9 @@ use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Profiler\Profiler;
-use Fabrik\Component\Fabrik\Site\Model\FormModel;
-use Fabrik\Component\Fabrik\Site\Model\ListModel;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\String\Normalise;
 use Joomla\String\StringHelper;
 use Mailgun\Mailgun;
@@ -27,7 +27,7 @@ use Mailgun\Messages;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
 
 require_once JPATH_ROOT . '/plugins/fabrik_form/mailgun/vendor/autoload.php';
 

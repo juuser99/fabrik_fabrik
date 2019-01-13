@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Site\Plugin;
+namespace Joomla\Component\Fabrik\Site\Plugin;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -29,16 +29,16 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Profiler\Profiler;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
-use Fabrik\Component\Fabrik\Administrator\Table\JsActionTable;
-use Fabrik\Component\Fabrik\Site\Model\ElementValidatorModel;
-use Fabrik\Component\Fabrik\Site\Model\FormModel;
-use Fabrik\Component\Fabrik\Site\Model\GroupModel;
-use Fabrik\Component\Fabrik\Site\Model\JoinModel;
-use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Administrator\Table\JoinTable;
+use Joomla\Component\Fabrik\Administrator\Table\JsActionTable;
+use Joomla\Component\Fabrik\Site\Model\ElementValidatorModel;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Site\Model\GroupModel;
+use Joomla\Component\Fabrik\Site\Model\JoinModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;

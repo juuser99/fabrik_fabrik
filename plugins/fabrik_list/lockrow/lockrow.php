@@ -12,7 +12,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 use Joomla\Utilities\ArrayHelper;
 
 class PlgFabrik_ListLockrow extends AbstractListPlugin

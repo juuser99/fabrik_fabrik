@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Field;
+namespace Joomla\Component\Fabrik\Administrator\Field;
 
 use Joomla\CMS\Form\FormField;
 

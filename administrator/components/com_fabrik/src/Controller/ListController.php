@@ -9,7 +9,7 @@
  * @since       4.0
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Controller;
+namespace Joomla\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -20,12 +20,12 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Uri\Uri;
-use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\ConnectionsModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Administrator\Model\ListModel as AdminListModel;
-use Fabrik\Component\Fabrik\Administrator\View\ListView\HtmlView;
-use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\ConnectionsModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel as AdminListModel;
+use Joomla\Component\Fabrik\Administrator\View\ListView\HtmlView;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;

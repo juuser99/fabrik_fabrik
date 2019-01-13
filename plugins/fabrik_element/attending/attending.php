@@ -8,7 +8,7 @@
 
 // Check to ensure this file is included in Joomla!
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 
 defined('_JEXEC') or die();
 

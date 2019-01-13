@@ -9,15 +9,15 @@
  * @since       1.6
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Model;
+namespace Joomla\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Administrator\Table\ListTable;
 
 /**
  * Fabrik Admin Import Model

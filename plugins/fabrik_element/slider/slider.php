@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Fabrik\Helpers\Worker;
 
 /**

@@ -9,12 +9,12 @@
  * @since       4.0
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Model;
+namespace Joomla\Component\Fabrik\Administrator\Model;
 
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 
 trait TableTrait

@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Site\Model;
+namespace Joomla\Component\Fabrik\Site\Model;
 
 // No direct access
 use Fabrik\Helpers\Worker;

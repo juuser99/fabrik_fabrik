@@ -11,9 +11,9 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 use Joomla\CMS\Language\Text;
 
 /**

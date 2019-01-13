@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Plugin\FabrikForm\Rest\OAuth\FabrikOAuth;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\Http\Response;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Worker;

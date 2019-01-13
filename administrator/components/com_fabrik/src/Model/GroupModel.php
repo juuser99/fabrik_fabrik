@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Model;
+namespace Joomla\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -18,11 +18,11 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FormGroupTable;
-use Fabrik\Component\Fabrik\Administrator\Table\GroupTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Administrator\Table\FormGroupTable;
+use Joomla\Component\Fabrik\Administrator\Table\GroupTable;
 use Joomla\Utilities\ArrayHelper;
-use Fabrik\Component\Fabrik\Site\Model\GroupModel as SiteGroupModel;
+use Joomla\Component\Fabrik\Site\Model\GroupModel as SiteGroupModel;
 use Fabrik\Helpers\StringHelper as FStrigHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 

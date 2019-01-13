@@ -9,7 +9,7 @@
  */
 
 // No direct access
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 defined('_JEXEC') or die('Restricted access');
 

@@ -9,7 +9,7 @@
  * @since       3.0.9
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Field;
+namespace Joomla\Component\Fabrik\Administrator\Field;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

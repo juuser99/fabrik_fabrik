@@ -9,7 +9,7 @@
  * @since       3.0
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\View\Connection;
+namespace Joomla\Component\Fabrik\Administrator\View\Connection;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -19,7 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\FormView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 
 /**
  * View to edit a connection.

@@ -8,12 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Site\Plugin;
+namespace Joomla\Component\Fabrik\Site\Plugin;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Model\FabrikSiteModel;
+use Joomla\Component\Fabrik\Site\Model\FabrikSiteModel;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
@@ -27,10 +27,10 @@ use Joomla\CMS\Table\Extension;
 use Joomla\CMS\Table\Language;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\User;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
-use Fabrik\Component\Fabrik\Site\Model\GroupModel;
-use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
+use Joomla\Component\Fabrik\Site\Model\GroupModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Filesystem\File;
 use Joomla\Registry\Registry;

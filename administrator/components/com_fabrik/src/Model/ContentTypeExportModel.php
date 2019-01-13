@@ -9,7 +9,7 @@
  * @since       3.4
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Model;
+namespace Joomla\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -17,11 +17,11 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Path;
-use Fabrik\Component\Fabrik\Administrator\Database\Mysqli\MysqliExporter;
-use Fabrik\Component\Fabrik\Administrator\Helper\ContentTypeHelper;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
-use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Administrator\Database\Mysqli\MysqliExporter;
+use Joomla\Component\Fabrik\Administrator\Helper\ContentTypeHelper;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Administrator\Table\JoinTable;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Database\Mysqli\MysqliImporter as BaseMysqliImporter;
 use Joomla\Utilities\ArrayHelper;
 use \Joomla\Registry\Registry;

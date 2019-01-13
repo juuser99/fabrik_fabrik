@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\View\Visualization;
+namespace Joomla\Component\Fabrik\Administrator\View\Visualization;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

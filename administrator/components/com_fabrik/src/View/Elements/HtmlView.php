@@ -9,7 +9,7 @@
  * @since       3.0
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\View\Elements;
+namespace Joomla\Component\Fabrik\Administrator\View\Elements;
 
 // No direct access
 use Fabrik\Helpers\Html;
@@ -18,7 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\ListView;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 
 defined('_JEXEC') or die('Restricted access');
 

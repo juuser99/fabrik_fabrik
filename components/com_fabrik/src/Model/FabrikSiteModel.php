@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Site\Model;
+namespace Joomla\Component\Fabrik\Site\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -19,13 +19,13 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Language;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\User\User;
-use Fabrik\Component\Fabrik\Administrator\Model\TableTrait;
+use Joomla\Component\Fabrik\Administrator\Model\TableTrait;
 use Joomla\Registry\Registry;
 use Joomla\Session\Session;
 use Joomla\Utilities\ArrayHelper;
 
 /**
- * @package     Fabrik\Component\Fabrik\Site\Model
+ * @package     Joomla\Component\Fabrik\Site\Model
  *
  * @since       4.0
  */

@@ -14,12 +14,12 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Stripe;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Fabrik\Component\Fabrik\Site\Model\FormModel;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Stripe payment gateway processor

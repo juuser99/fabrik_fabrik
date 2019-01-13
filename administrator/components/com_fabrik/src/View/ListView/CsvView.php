@@ -8,16 +8,16 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\View\ListView;
+namespace Joomla\Component\Fabrik\Administrator\View\ListView;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Site\Model\CsvExportModel;
-use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Site\Model\CsvExportModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * View to make ajax json object reporting csv file creation progress.

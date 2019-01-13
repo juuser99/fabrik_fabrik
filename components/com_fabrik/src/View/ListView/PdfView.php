@@ -7,7 +7,7 @@
  * @since       3.0.5
  */
 
-namespace Fabrik\Component\Fabrik\Site\View\ListView;
+namespace Joomla\Component\Fabrik\Site\View\ListView;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

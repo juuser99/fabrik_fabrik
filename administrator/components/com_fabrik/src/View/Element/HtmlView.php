@@ -8,15 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\View\Element;
+namespace Joomla\Component\Fabrik\Administrator\View\Element;
 
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\FormView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Fabrik\Component\Fabrik\Administrator\Model\ElementModel;
+use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Joomla\Component\Fabrik\Administrator\Model\ElementModel;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

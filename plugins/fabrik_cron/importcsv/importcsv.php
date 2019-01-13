@@ -13,9 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
-use Fabrik\Component\Fabrik\Site\Model\ImportCsvModel;
-use Fabrik\Component\Fabrik\Site\Model\ListModel;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Joomla\Component\Fabrik\Site\Model\ImportCsvModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Fabrik\Helpers\Worker;
 
 /**

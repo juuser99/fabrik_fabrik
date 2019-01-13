@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\Worker;
 

@@ -8,19 +8,19 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Controller;
+namespace Joomla\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
-use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Site\Model\ImportCsvModel;
-use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
-use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel;
+use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Site\Model\ImportCsvModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel as SiteListModel;
+use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 

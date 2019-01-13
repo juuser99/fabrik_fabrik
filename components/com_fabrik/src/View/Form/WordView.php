@@ -9,7 +9,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Site\View\Form;
+namespace Joomla\Component\Fabrik\Site\View\Form;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

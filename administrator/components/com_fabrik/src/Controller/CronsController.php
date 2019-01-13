@@ -9,7 +9,7 @@
  * @since       3.0
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Controller;
+namespace Joomla\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -17,14 +17,14 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
-use Fabrik\Component\Fabrik\Administrator\Model\CronModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
-use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
-use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Administrator\Table\LogTable;
-use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
-use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
+use Joomla\Component\Fabrik\Administrator\Model\CronModel;
+use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Joomla\Component\Fabrik\Administrator\Model\ListModel;
+use Joomla\Component\Fabrik\Administrator\Table\CronTable;
+use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Joomla\Component\Fabrik\Administrator\Table\LogTable;
+use Joomla\Component\Fabrik\Site\Model\PluginManagerModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel as SiteListModel;
 use Joomla\Utilities\ArrayHelper;
 
 /**

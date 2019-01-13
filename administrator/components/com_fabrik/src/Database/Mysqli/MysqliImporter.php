@@ -9,7 +9,7 @@
  * @since       3.3.5
  */
 
-namespace Fabrik\Component\Fabrik\Administrator\Database\Mysqli;
+namespace Joomla\Component\Fabrik\Administrator\Database\Mysqli;
 
 defined('JPATH_PLATFORM') or die;
 

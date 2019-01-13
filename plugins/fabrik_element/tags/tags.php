@@ -15,7 +15,7 @@ use Fabrik\Helpers\Html;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;

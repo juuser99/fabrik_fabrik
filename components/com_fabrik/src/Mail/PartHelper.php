@@ -1,16 +1,16 @@
 <?php
 /**
- * @package     Fabrik\Component\Fabrik\Mail
+ * @package     Joomla\Component\Fabrik\Mail
  * @subpackage
  *
  * @copyright   A copyright
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Fabrik\Component\Fabrik\Mail;
+namespace Joomla\Component\Fabrik\Mail;
 
 /**
- * @package     Fabrik\Component\Fabrik\Mail
+ * @package     Joomla\Component\Fabrik\Mail
  *
  * @since       4.0
  */

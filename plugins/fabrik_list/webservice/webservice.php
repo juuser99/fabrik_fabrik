@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
-use Fabrik\Component\Fabrik\Site\WebService\AbstractWebService;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Joomla\Component\Fabrik\Site\WebService\AbstractWebService;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Joomla\CMS\Language\Text;

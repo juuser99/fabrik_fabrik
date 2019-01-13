@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
-use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 

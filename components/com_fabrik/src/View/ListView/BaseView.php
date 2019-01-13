@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Component\Fabrik\Site\View\ListView;
+namespace Joomla\Component\Fabrik\Site\View\ListView;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -22,8 +22,8 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Profiler\Profiler;
 use Joomla\CMS\Router\Route;
-use Fabrik\Component\Fabrik\Site\Model\ListModel;
-use Fabrik\Component\Fabrik\Site\View\AbstractView;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\View\AbstractView;
 use Joomla\Registry\Registry;
 
 /**
