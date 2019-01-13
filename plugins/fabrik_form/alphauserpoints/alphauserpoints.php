@@ -11,8 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use Joomla\CMS\Filesystem\File;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Insert points into the Alpha User Points http://www.alphaplug.com component
@@ -21,26 +22,26 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.alphauserpoints
  * @since       3.0.7
  */
-
-class PlgFabrik_FormAlphaUserPoints extends PlgFabrik_Form
+class PlgFabrik_FormAlphaUserPoints extends AbstractFormPlugin
 {
 	/**
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function onAfterProcess()
 	{
-		$params = $this->getParams();
+		$params  = $this->getParams();
 		$api_AUP = JPATH_SITE . '/components/com_altauserpoints/helper.php';
 
-		if (JFile::exists($api_AUP))
+		if (File::exists($api_AUP))
 		{
-			$w = new FabrikWorker;
+			$w          = new Worker;
 			$this->data = $this->getProcessData();
 
 			if (!$this->shouldProcess('aup_conditon', null, $params))
@@ -73,7 +74,7 @@ class PlgFabrik_FormAlphaUserPoints extends PlgFabrik_Form
 				{
 					$randomPoints = $w->parseMessageForPlaceholder($randomPoints, $this->data, false);
 					$randomPoints = @eval($randomPoints);
-					FabrikWorker::logEval($randomPoints, 'Caught exception on eval in aup plugin : %s');
+					Worker::logEval($randomPoints, 'Caught exception on eval in aup plugin : %s');
 				}
 
 				$randomPoints = (float) $randomPoints;
@@ -91,7 +92,7 @@ class PlgFabrik_FormAlphaUserPoints extends PlgFabrik_Form
 
 			if (!$aup->checkRuleEnabled($aupPlugin, 0, $aupId))
 			{
-				throw new Exception('Alpha User Points plugin not published');
+				throw new \Exception('Alpha User Points plugin not published');
 			}
 
 			$aup->userpoints($aupPlugin, $aupId, $referralUserPoints, $keyReference, $dataReference, $randomPoints);

@@ -158,7 +158,7 @@ class PlgFabrik_ElementRating extends AbstractElementPlugin
 		}
 		else
 		{
-			$list   = $this->getlistModel()->getTable();
+			$list   = $this->getListModel()->getTable();
 			$listId = $list->id;
 			$formId = $list->form_id;
 			$d      = $this->getListModel()->getData();
@@ -357,7 +357,7 @@ class PlgFabrik_ElementRating extends AbstractElementPlugin
 
 		Html::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/rating/images/', 'image', 'form', false);
 
-		$listId = $this->getlistModel()->getTable()->id;
+		$listId = $this->getListModel()->getTable()->id;
 		$formId = $input->getInt('formid');
 		$rowId  = $this->getFormModel()->getRowId();
 
@@ -595,7 +595,7 @@ class PlgFabrik_ElementRating extends AbstractElementPlugin
 
 		$id        = $this->getHTMLId($repeatCounter);
 		$data      = $this->getFormModel()->data;
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$listId    = $listModel->getTable()->id;
 		$formId    = $listModel->getFormModel()->getId();
 		$rowId     = $input->get('rowid', '', 'string');
@@ -647,7 +647,7 @@ class PlgFabrik_ElementRating extends AbstractElementPlugin
 	{
 		$params              = $this->getParams();
 		$id                  = $this->getHTMLId();
-		$listModel           = $this->getlistModel();
+		$listModel           = $this->getListModel();
 		$list                = $listModel->getTable();
 		$opts                = new \stdClass;
 		$opts->listid        = $list->id;

@@ -48,7 +48,7 @@ class FabrikSubscriptionsIPN
 
 	public function payment_status_Completed($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -205,7 +205,7 @@ class FabrikSubscriptionsIPN
 				}
 			}
 		}
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->subscriptionids = $rows;
 		$msg = json_encode($msg);
 		$this->log('fabrik.ipn.expireOldSubs.end', $msg);
@@ -263,7 +263,7 @@ class FabrikSubscriptionsIPN
 
 	public function payment_status_Reversed($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -284,7 +284,7 @@ class FabrikSubscriptionsIPN
 
 	public function payment_status_Cancelled_Reversal($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -305,7 +305,7 @@ class FabrikSubscriptionsIPN
 
 	public function payment_status_Refunded($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -368,7 +368,7 @@ class FabrikSubscriptionsIPN
 
 	public function txn_type_web_accept($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -391,7 +391,7 @@ class FabrikSubscriptionsIPN
 
 	public function txn_type_subscr_signup($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -412,7 +412,7 @@ class FabrikSubscriptionsIPN
 
 	public function txn_type_subscr_cancel($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -448,7 +448,7 @@ class FabrikSubscriptionsIPN
 
 	public function txn_type_subscr_modify($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -469,7 +469,7 @@ class FabrikSubscriptionsIPN
 
 	public function txn_type_subscr_payment($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -496,7 +496,7 @@ class FabrikSubscriptionsIPN
 
 	public function txn_type_subscr_failed($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);
@@ -519,7 +519,7 @@ class FabrikSubscriptionsIPN
 
 	public function txn_type_subscr_eot($listModel, $request, &$set_list, &$err_msg)
 	{
-		$msg = new stdClass;
+		$msg = new \stdClass;
 		$msg->request = $request;
 		$msg->set_list = $set_list;
 		$msg = json_encode($msg);

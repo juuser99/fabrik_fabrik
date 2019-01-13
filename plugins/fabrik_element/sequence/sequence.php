@@ -139,7 +139,7 @@ class PlgFabrik_ElementSequence extends AbstractElementPlugin
 		$padding   = $params->get('sequence_padding', '4');
 		$affix     = $params->get('sequence_affix', '');
 		$affix     = $w->parseMessageForPlaceHolder($affix, $data);
-		$tableName = $this->getlistModel()->getTable()->db_table_name;
+		$tableName = $this->getListModel()->getTable()->db_table_name;
 		$elementId = $this->getElement()->id;
 
 		// create the table if it doesn't exist ... should get created on install, but ... eh ...

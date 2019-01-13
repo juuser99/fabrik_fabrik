@@ -34,6 +34,7 @@ use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 use Joomla\Component\Fabrik\Administrator\Table\FabTable;
 use Joomla\Component\Fabrik\Administrator\Table\FormTable;
 use Joomla\Component\Fabrik\Administrator\Table\GroupTable;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
@@ -176,7 +177,7 @@ class FormModel extends FabSiteModel
 	/**
 	 * Last current element found in hasElement()
 	 *
-	 * @var object
+	 * @var AbstractElementPlugin
 	 *
 	 * @since 4.0
 	 */
@@ -863,7 +864,7 @@ class FormModel extends FabSiteModel
 	 */
 	public function getJoinGroupIds($joins = null)
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 
 		if (is_null($joins))
 		{
@@ -4080,7 +4081,7 @@ class FormModel extends FabSiteModel
 	 * @param   bool    $checkInt    Check search name against element id
 	 * @param   bool    $checkShort  Check short element name
 	 *
-	 * @return  PlgFabrik_Element  ok: element model not ok: false
+	 * @return  AbstractElementPlugin  ok: element model not ok: false
 	 *
 	 * @since 4.0
 	 */

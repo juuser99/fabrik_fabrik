@@ -11,10 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\String\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 /**
  * Submit or update data to Salesforce.com
@@ -24,14 +24,15 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @since       3.0
  */
 
-class PlgFabrik_FormSalesforce extends PlgFabrik_Form
+class PlgFabrik_FormSalesforce extends AbstractFormPlugin
 {
 	/**
 	 * Build the Salesforce.com API client
 	 *
 	 * @return  SforcePartnerClient
+	 *
+	 * @since 4.0
 	 */
-
 	private function client()
 	{
 		// Get the path to the Toolkit, set in the options on install.
@@ -57,12 +58,14 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	 * @throws Exception
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function getBottomContent()
 	{
 		if (!class_exists('SoapClient'))
 		{
-			throw new Exception(FText::_('PLG_FORM_SALESFORCE_ERR_SOAP_NOT_INSTALLED'));
+			throw new \Exception(Text::_('PLG_FORM_SALESFORCE_ERR_SOAP_NOT_INSTALLED'));
 		}
 	}
 
@@ -70,39 +73,40 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
 		@ini_set("soap.wsdl_cache_enabled", "0");
 
-		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$client = $this->client();
-		$params = $this->getParams();
-		$userName = $params->get('salesforce_username');
-		$password = $params->get('salesforce_password');
-		$token = $params->get('salesforce_token');
+		$client    = $this->client();
+		$params    = $this->getParams();
+		$userName  = $params->get('salesforce_username');
+		$password  = $params->get('salesforce_password');
+		$token     = $params->get('salesforce_token');
 
 		if (empty($userName))
 		{
-			$config = JComponentHelper::getParams('com_fabrik');
+			$config   = ComponentHelper::getParams('com_fabrik');
 			$userName = $config->get('fabrik_salesforce_username', '');
 			$password = $config->get('fabrik_salesforce_password', '');
-			$token = $config->get('fabrik_salesforce_token', '');
+			$token    = $config->get('fabrik_salesforce_token', '');
 
 			if (empty($userName))
 			{
-				throw new Exception('No SalesForce credentials supplied!');
+				throw new \Exception('No SalesForce credentials supplied!');
 			}
 		}
 
 		$updateObject = $params->get('salesforce_updateobject', 'Lead');
-		$loginResult = $client->login($userName, $password . $token);
+		$loginResult  = $client->login($userName, $password . $token);
 
 		$givenObject = array($updateObject);
-		$fields = $client->describeSObjects($givenObject)->fields;
-		$submission = array();
+		$fields      = $client->describeSObjects($givenObject)->fields;
+		$submission  = array();
 
 		// Map the posted data into acceptable fields
 		foreach ($fields as $f)
@@ -133,7 +137,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 			}
 		}
 
-		$key = $formModel->getlistModel()->getPrimaryKey(true);
+		$key       = $formModel->getListModel()->getPrimaryKey(true);
 		$customKey = $params->get('salesforce_customid') . '__c';
 
 		if ($params->get('salesforce_allowupsert', 0))
@@ -142,10 +146,10 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 		}
 
 		$sObjects = array();
-		$sObject = new sObject;
+		$sObject  = new \sObject;
 
 		// Salesforce Table or object that you will perform the upsert on
-		$sObject->type = $updateObject;
+		$sObject->type   = $updateObject;
 		$sObject->fields = $submission;
 		array_push($sObjects, $sObject);
 
@@ -177,17 +181,17 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 				{
 					foreach ($result->errors as $error)
 					{
-						JError::raiseWarning(500, FText::_('SALESFORCE_ERR') . $error->message);
+						throw new \RuntimeException(Text::_('SALESFORCE_ERR') . $error->message);
 					}
 				}
 				else
 				{
-					JError::raiseWarning(500, FText::_('SALESFORCE_ERR') . $result->errors->message);
+					throw new \RuntimeException(Text::_('SALESFORCE_ERR') . $result->errors->message);
 				}
 			}
 			else
 			{
-				JError::raiseWarning(500, JText::sprintf(SALESFORCE_NOCREATE, $updateObject));
+				throw new \RuntimeException(Text::sprintf('SALESFORCE_NOCREATE', $updateObject));
 			}
 		}
 	}
@@ -195,13 +199,14 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	/**
 	 * Update or insert an object
 	 *
-	 * @param   object  $client    Salesforce client
-	 * @param   array   $sObjects  array of sObjects
-	 * @param   string  $key       External Id
+	 * @param   object $client   Salesforce client
+	 * @param   array  $sObjects array of sObjects
+	 * @param   string $key      External Id
 	 *
 	 * @return  mixed  UpsertResult or error
+	 *
+	 * @since 4.0
 	 */
-
 	protected function upsert($client, $sObjects, $key)
 	{
 		try
@@ -211,7 +216,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 
 			return $results;
 		}
-		catch (exception $e)
+		catch (\Exception $e)
 		{
 			/* This is reached if there is a major problem in the data or with
 			 * the salesforce.com connection. Normal data errors are caught by
@@ -224,12 +229,13 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 	/**
 	 * Insert an object
 	 *
-	 * @param   object  $client    Salesforce client
-	 * @param   array   $sObjects  array of sObjects
+	 * @param   object $client   Salesforce client
+	 * @param   array  $sObjects array of sObjects
 	 *
 	 * @return  mixed  UpsertResult or error
+	 *
+	 * @since 4.0
 	 */
-
 	protected function insert($client, $sObjects)
 	{
 		try
@@ -239,7 +245,7 @@ class PlgFabrik_FormSalesforce extends PlgFabrik_Form
 
 			return $results;
 		}
-		catch (exception $e)
+		catch (\Exception $e)
 		{
 			/* This is reached if there is a major problem in the data or with
 			 * the salesforce.com connection. Normal data errors are caught by

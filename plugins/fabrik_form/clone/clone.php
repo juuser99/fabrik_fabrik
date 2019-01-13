@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Copy a series of form records
@@ -21,13 +21,15 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.clone
  * @since       3.0
  */
-class PlgFabrik_FormClone extends PlgFabrik_Form
+class PlgFabrik_FormClone extends AbstractFormPlugin
 {
 	/**
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
@@ -38,31 +40,31 @@ class PlgFabrik_FormClone extends PlgFabrik_Form
 	 * Clone the record
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	private function _process()
 	{
-		$params = $this->getParams();
-
-		/** @var FabrikFEModelForm $formModel */
-		$formModel = $this->getModel();
-		$clone_times_field_id = $params->get('clone_times_field', '');
+		$params                 = $this->getParams();
+		$formModel              = $this->getModel();
+		$clone_times_field_id   = $params->get('clone_times_field', '');
 		$clone_batchid_field_id = $params->get('clone_batchid_field', '');
 
 		if ($clone_times_field_id != '')
 		{
-			$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($clone_times_field_id);
-			$element = $elementModel->getElement(true);
+			$elementModel = Worker::getPluginManager()->getElementPlugin($clone_times_field_id);
+			$element      = $elementModel->getElement(true);
 
 			if ($clone_batchid_field_id != '')
 			{
-				$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($clone_batchid_field_id);
-				$id_element = $elementModel->getElement(true);
-				$formModel->formData[$id_element->name] = $formModel->fullFormData['rowid'];
+				$elementModel                                    = Worker::getPluginManager()->getElementPlugin($clone_batchid_field_id);
+				$id_element                                      = $elementModel->getElement(true);
+				$formModel->formData[$id_element->name]          = $formModel->fullFormData['rowid'];
 				$formModel->formData[$id_element->name . '_raw'] = $formModel->fullFormData['rowid'];
-				$listModel = $formModel->getlistModel();
+				$listModel                                       = $formModel->getListModel();
 				$listModel->setFormModel($formModel);
-				$primaryKey = FabrikString::shortColName($listModel->getPrimaryKey());
-				$formModel->formData[$primaryKey] = $formModel->fullFormData['rowid'];
+				$primaryKey                                = FabrikString::shortColName($listModel->getPrimaryKey());
+				$formModel->formData[$primaryKey]          = $formModel->fullFormData['rowid'];
 				$formModel->formData[$primaryKey . '_raw'] = $formModel->fullFormData['rowid'];
 				$listModel->storeRow($formModel->formData, $formModel->fullFormData['rowid']);
 			}
@@ -71,7 +73,7 @@ class PlgFabrik_FormClone extends PlgFabrik_Form
 
 			if (is_numeric($clone_times))
 			{
-				$clone_times = (int) $clone_times;
+				$clone_times                 = (int) $clone_times;
 				$formModel->formData['Copy'] = 1;
 
 				for ($x = 1; $x < $clone_times; $x++)
@@ -83,6 +85,6 @@ class PlgFabrik_FormClone extends PlgFabrik_Form
 			}
 		}
 
-		throw new RuntimeException("Couldn't find a valid number of times to clone!");
+		throw new \RuntimeException("Couldn't find a valid number of times to clone!");
 	}
 }

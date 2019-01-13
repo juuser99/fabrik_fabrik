@@ -746,7 +746,7 @@ class PlgFabrik_ElementUser extends AbstractElementDatabaseJoinPlugin
 	 */
 	public function getFilter($counter = 0, $normal = true, $container = '')
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$formModel = $listModel->getFormModel();
 		$elName2   = $this->getFullName(false, false);
 

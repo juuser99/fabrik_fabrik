@@ -15,11 +15,13 @@ use Fabrik\Helpers\Pdf;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Text;
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Document\Document;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\Profiler\Profiler;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\String\Normalise;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 /**
  * Send email upon form submission
@@ -28,12 +30,14 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.email
  * @since       3.0
  */
-class PlgFabrik_FormEmail extends PlgFabrik_Form
+class PlgFabrik_FormEmail extends AbstractFormPlugin
 {
 	/**
 	 * Attachment files
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	protected $attachments = array();
 
@@ -41,6 +45,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * Attachment files to delete after use
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	protected $deleteAttachments = array();
 
@@ -49,27 +55,18 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * This is basically the fileupload elements
 	 *
 	 * @var array
+	 *
+	 * @since 4.0
 	 */
 	protected $dontEmailKeys = null;
-
-	/**
-	 * MOVED TO PLUGIN.PHP SHOULDPROCESS()
-	 * determines if a condition has been set and decides if condition is matched
-	 *
-	 * @param object $params
-	 *
-	 * @return  bool true if you should send the email, false stops sending of email
-	 */
-
-	/*function shouldSend(&$params)
-	{
-	}*/
 
 	/**
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
 	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
@@ -77,12 +74,10 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		JDEBUG ? $profiler->mark("email: start: onAfterProcess") : null;
 		$params = $this->getParams();
 		$input  = $this->app->input;
-		jimport('joomla.mail.helper');
-		$w = new Worker;
+		$w      = new Worker;
 
-		/** @var \FabrikFEModelForm $formModel */
 		$formModel     = $this->getModel();
-		$emailTemplate = \JPath::clean(JPATH_SITE . '/plugins/fabrik_form/email/tmpl/' . $params->get('email_template', ''));
+		$emailTemplate = Path::clean(JPATH_SITE . '/plugins/fabrik_form/email/tmpl/' . $params->get('email_template', ''));
 
 		$this->data = $this->getProcessData();
 
@@ -119,9 +114,9 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		$messageTemplate = '';
 
-		if (\JFile::exists($emailTemplate))
+		if (File::exists($emailTemplate))
 		{
-			$messageTemplate = \JFile::getExt($emailTemplate) == 'php' ?
+			$messageTemplate = File::getExt($emailTemplate) == 'php' ?
 				$this->_getPHPTemplateEmail($emailTemplate)
 				: $this->_getTemplateEmail($emailTemplate);
 
@@ -272,7 +267,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$attachType     = $params->get('email_attach_type', '');
 		$attachFileName = $this->config->get('tmp_path') . '/' . uniqid() . '.' . $attachType;
 
-		$query   = $this->_db->getQuery(true);
+		$query   = $this->db->getQuery(true);
 		$emailTo = array_map('trim', $emailTo);
 
 		// Add any assigned groups to the to list
@@ -283,14 +278,14 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		// Remove blank email addresses
 		$emailTo   = array_filter($emailTo);
-		$dbEmailTo = array_map(array($this->_db, 'quote'), $emailTo);
+		$dbEmailTo = array_map(array($this->db, 'quote'), $emailTo);
 
 		// Get an array of user ids from the email to array
 		if (!empty($dbEmailTo))
 		{
 			$query->select('id, email')->from('#__users')->where('email IN (' . implode(',', $dbEmailTo) . ')');
-			$this->_db->setQuery($query);
-			$userIds = $this->_db->loadObjectList('email');
+			$this->db->setQuery($query);
+			$userIds = $this->db->loadObjectList('email');
 		}
 		else
 		{
@@ -318,13 +313,13 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 				$this->data['emailto'] = $email;
 
 				$userId      = array_key_exists($email, $userIds) ? $userIds[$email]->id : 0;
-				$thisUser    = \JFactory::getUser($userId);
+				$thisUser    = Factory::getUser($userId);
 				$thisMessage = $w->parseMessageForPlaceholder($message, $this->data, true, false, $thisUser);
 				$thisSubject = strip_tags($w->parseMessageForPlaceholder($subject, $this->data, true, false, $thisUser));
 
 				if (!empty($attachType))
 				{
-					if (\JFile::write($attachFileName, $thisMessage))
+					if (File::write($attachFileName, $thisMessage))
 					{
 						$thisAttachments[] = $attachFileName;
 					}
@@ -338,7 +333,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 				{
 					$this->pdfAttachment($thisAttachments);
 				}
-				catch (Exception $e)
+				catch (\Exception $e)
 				{
 					$this->app->enqueueMessage($e->getMessage(), 'error');
 				}
@@ -351,7 +346,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 				foreach ($thisAttachments as $aKey => $attachFile)
 				{
-					if (!\JFile::exists($attachFile))
+					if (!File::exists($attachFile))
 					{
 						unset($thisAttachments[$aKey]);
 					}
@@ -385,9 +380,9 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 					$this->app->enqueueMessage(Text::sprintf('PLG_FORM_EMAIL_DID_NOT_SEND_EMAIL', $email), 'notice');
 				}
 
-				if (\JFile::exists($attachFileName))
+				if (File::exists($attachFileName))
 				{
-					\JFile::delete($attachFileName);
+					File::delete($attachFileName);
 				}
 			}
 			else
@@ -398,9 +393,9 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		foreach ($this->deleteAttachments as $attachment)
 		{
-			if (\JFile::exists($attachment))
+			if (File::exists($attachment))
 			{
-				\JFile::delete($attachment);
+				File::delete($attachment);
 			}
 		}
 
@@ -415,6 +410,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * Check to see if there is an "update field" specified, and if it is already non-zero
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	protected function alreadySent()
 	{
@@ -441,6 +438,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * @throws  RuntimeException
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function pdfAttachment(&$thisAttachments)
 	{
@@ -451,7 +450,6 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			return;
 		}
 
-		/** @var FabrikFEModelForm $model */
 		$model = $this->getModel();
 		$model->setRowId($this->data['rowid']);
 
@@ -461,7 +459,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		 */
 
 		// Set up document properties.
-		$lang       = \JFactory::getLanguage();
+		$lang       = Factory::getLanguage();
 		$attributes = array(
 			'charset'   => 'utf-8',
 			'lineend'   => 'unix',
@@ -471,12 +469,12 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		);
 
 		// Get a PDF document and set the title.
-		$document = \JFactory::getDocument();
-		$pdfDoc   = \JDocument::getInstance('pdf', $attributes);
+		$document = Factory::getDocument();
+		$pdfDoc   = Document::getInstance('pdf', $attributes);
 		$pdfDoc->setTitle($document->getTitle());
 
 		// assign it to the factory
-		\JFactory::$document = $pdfDoc;
+		Factory::$document = $pdfDoc;
 
 		$input = $this->app->input;
 
@@ -555,7 +553,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 			// Store the file in the tmp folder so it can be attached
 			$layout             = $model->getLayout('form.fabrik-pdf-title');
-			$displayData        = new stdClass;
+			$displayData        = new \stdClass;
 			$displayData->doc   = $document;
 			$displayData->model = $model;
 			$fileName           = $layout->render($displayData);
@@ -563,13 +561,13 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 			$pdf = Pdf::renderPdf($html, $size, $orientation);
 
-			if (\JFile::write($file, $pdf))
+			if (File::write($file, $pdf))
 			{
 				$thisAttachments[] = $file;
 			}
 			else
 			{
-				throw new RuntimeException('Could not write PDF file to tmp folder');
+				throw new \RuntimeException('Could not write PDF file to tmp folder');
 			}
 		}
 		catch (Exception $e)
@@ -590,7 +588,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		}
 
 		// Swap the documents back.
-		\JFactory::$document = $document;
+		Factory::$document = $document;
 	}
 
 	/**
@@ -599,6 +597,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * @param   string $tmpl Path to template
 	 *
 	 * @return string email message
+	 *
+	 * @since 4.0
 	 */
 	protected function _getPHPTemplateEmail($tmpl)
 	{
@@ -623,13 +623,14 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * Add attachments to the email
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function addAttachments()
 	{
 		$params = $this->getParams();
 		$data   = $this->getProcessData();
 
-		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$groups    = $formModel->getGroupsHiarachy();
 
@@ -707,6 +708,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * Get an array of keys we don't want to email to the user
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	protected function getDontEmailKeys()
 	{
@@ -729,6 +732,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * @param   string $emailTemplate path to template
 	 *
 	 * @return  string    email message
+	 *
+	 * @since 4.0
 	 */
 	protected function _getTemplateEmail($emailTemplate)
 	{
@@ -739,6 +744,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 	 * Default email handling routine, called if no email template specified
 	 *
 	 * @return  string  email message
+	 *
+	 * @since 4.0
 	 */
 	protected function _getTextEmail()
 	{
@@ -746,7 +753,6 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$ignore  = $this->getDontEmailKeys();
 		$message = '';
 
-		/** @var FabrikFEModelForm $formModel */
 		$formModel   = $this->getModel();
 		$groupModels = $formModel->getGroupsHiarachy();
 
@@ -796,12 +802,12 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 					$message .= $label;
 
 					if (
-							strlen($label) != 0
-							&&
-							StringHelper::strpos(
-								$label, ':',
-								StringHelper::strlen($label) - 1
-							) === false
+						strlen($label) != 0
+						&&
+						StringHelper::strpos(
+							$label, ':',
+							StringHelper::strlen($label) - 1
+						) === false
 					)
 					{
 						$message .= ':';
@@ -820,6 +826,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 	/**
 	 * Update row
+	 *
+	 * @since 4.0
 	 */
 	private function updateRow()
 	{
@@ -832,5 +840,4 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 			$this->getModel()->getListModel()->updateRow($rowid, $updateField, '1');
 		}
 	}
-
 }

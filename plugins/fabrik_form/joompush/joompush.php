@@ -11,9 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
-
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Send an JoomPush notification
@@ -22,20 +25,23 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.joompush
  * @since       3.0
  */
-class PlgFabrik_FormJoompush extends PlgFabrik_Form
+class PlgFabrik_FormJoompush extends AbstractFormPlugin
 {
 	/**
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
-		if (JComponentHelper::getComponent('com_joompush', true)->enabled)
+		if (ComponentHelper::getComponent('com_joompush', true)->enabled)
 		{
 			require_once JPATH_ROOT . '/components/com_joompush/helpers/jpush.php';
 			require_once JPATH_ROOT . '/components/com_joompush/helpers/joompush.php';
+
 			return $this->process();
 		}
 
@@ -45,14 +51,16 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 	/**
 	 * Send JoomPush notification
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	protected function process()
 	{
-		$formModel = $this->getModel();
-		$params = $this->getParams();
+		$formModel  = $this->getModel();
+		$params     = $this->getParams();
 		$this->data = $this->getProcessData();
-		$data = $formModel->formData;
+		$data       = $formModel->formData;
 
 		if (!$this->shouldProcess('joompush_conditon', $data, $params))
 		{
@@ -63,17 +71,17 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 		$userId            = $this->getFieldValue('joompush_user', $formModel->formDataWithTableName);
 		$userId            = is_array($userId) ? $userId[0] : $userId;
 		$gid               = $params->get('joompush_group', '');
-		$pushMsg           = new stdClass;
+		$pushMsg           = new \stdClass;
 		$pushMsg->template = $this->getTemplate();
 		$jPush             = new JoompushHelpersJpush;
 		$jPushSite         = new JoompushHelpersJoompushsite;
-		$subscribersData   = new stdClass();
+		$subscribersData   = new \stdClass();
 
 		if (!empty($gid))
 		{
-			$pushMsg->gid               = $gid;
-			$pushMsg->code              = $this->getTrackCode();
-			$result = $jPush::jtopicPush($pushMsg);
+			$pushMsg->gid  = $gid;
+			$pushMsg->code = $this->getTrackCode();
+			$result        = $jPush::jtopicPush($pushMsg);
 
 			if ($result)
 			{
@@ -92,12 +100,12 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 
 		if (!empty($userId))
 		{
-			$subscriberKeys = $this->getSubscriberKeys($userId);
+			$subscriberKeys       = $this->getSubscriberKeys($userId);
 			$subscribersData->key = $subscriberKeys;
 
 			foreach ($subscriberKeys as $key)
 			{
-				$pushMsg->key = array($key);
+				$pushMsg->key  = array($key);
 				$pushMsg->code = $key;
 
 				$result = $jPush::jpush($pushMsg);
@@ -125,13 +133,16 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 	/**
 	 * Default email handling routine, called if no email template specified
 	 *
-	 * @return	string	email message
+	 * @return    string    email message
+	 *
+	 * @since 4.0
 	 */
 	protected function getMessage()
 	{
 		$params = $this->getParams();
-		$msg    = JText::_($params->get('joompush_message', ''));
-		$w = new FabrikWorker;
+		$msg    = Text::_($params->get('joompush_message', ''));
+		$w      = new Worker;
+
 		return $w->parseMessageForPlaceHolder($msg, $this->data);
 	}
 
@@ -139,13 +150,16 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 	/**
 	 * Default email handling routine, called if no email template specified
 	 *
-	 * @return	string	email message
+	 * @return    string    email message
+	 *
+	 * @since 4.0
 	 */
 	protected function getTitle()
 	{
 		$params = $this->getParams();
-		$msg    = JText::_($params->get('joompush_title', ''));
-		$w = new FabrikWorker;
+		$msg    = Text::_($params->get('joompush_title', ''));
+		$w      = new Worker;
+
 		return $w->parseMessageForPlaceHolder($msg, $this->data);
 	}
 
@@ -158,13 +172,14 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 	 */
 	protected function getAdminGroupId()
 	{
-		$db = JFactory::getDBO();
+		$db    = Factory::getDBO();
 		$query = $db->getQuery(true);
 		$query
 			->select('id')
 			->from($db->quoteName('#__joompush_subscriber_groups'))
 			->where($db->quoteName('is_default') . ' = 2');
 		$db->setQuery($query);
+
 		return $db->loadResult();
 	}
 
@@ -183,25 +198,35 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 	/**
 	 * Get an array of subscriber keys from JoomPush
 	 *
-	 * @param  integer  $userId
+	 * @param  integer $userId
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	protected function getSubscriberKeys($userId)
 	{
-		$db = JFactory::getDbo();
+		$db    = Factory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select($db->quoteName('key'))
 			->from($db->quoteName('#__joompush_subscribers'))
-			->where('user_id = ' . (int)$userId)
+			->where('user_id = ' . (int) $userId)
 			->where('state = 1');
 		$db->setQuery($query);
+
 		return $db->loadColumn();
 	}
 
+	/**
+	 * @param $templateId
+	 *
+	 * @return \stdClass
+	 *
+	 * @since 4.0
+	 */
 	protected function getJPTemplate($templateId)
 	{
-		$db = JFactory::getDbo();
+		$db    = Factory::getDbo();
 		$query = $db->getQuery(true);
 		$query
 			->select(
@@ -215,18 +240,21 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 				)
 			)
 			->from($db->quoteName('#__joompush_notification_templates'))
-			->where('id = ' . (int)$templateId);
+			->where('id = ' . (int) $templateId);
 		$db->setQuery($query);
+
 		return $db->loadObject();
 	}
 
 	/**
 	 * Get a template, either from our params, or a JoomPush
+	 *
+	 * @since 4.0
 	 */
 	protected function getTemplate()
 	{
-		$params = $this->getParams();
-		$formModel = $this->getModel();
+		$params        = $this->getParams();
+		$formModel     = $this->getModel();
 		$useJPTemplate = $params->get('joompush_use_jp_template', '0') === '1';
 
 		if ($useJPTemplate)
@@ -243,9 +271,9 @@ class PlgFabrik_FormJoompush extends PlgFabrik_Form
 				$url   = 'index.php?option=com_' . $this->package . '&view=details&formid=' . $formModel->get('id') . '&rowid=' . $rowid;
 			}
 
-			$template          = new stdClass;
+			$template          = new \stdClass;
 			$template->icon    = $params->get('joompush_notification_icon');
-			$template->url     = JRoute::_($url);
+			$template->url     = Route::_($url);
 			$template->title   = $this->getTitle();
 			$template->message = $this->getMessage();
 		}

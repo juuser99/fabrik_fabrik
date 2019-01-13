@@ -11,10 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\Utilities\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use Fabrik\Helpers\Worker;
 
 /**
  * Creates a J2Store add to cart button
@@ -23,12 +24,14 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.j2store
  * @since       3.0
  */
-class PlgFabrik_FormJ2Store extends PlgFabrik_Form
+class PlgFabrik_FormJ2Store extends AbstractFormPlugin
 {
 	/**
 	 * Plugin name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $name = 'j2store';
 
@@ -36,6 +39,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * Have we loaded the list js code
 	 *
 	 * @var  bool
+	 *
+	 * @since 4.0
 	 */
 	protected static $listJs = null;
 
@@ -46,10 +51,12 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * @param   int   $repeatCounter repeat group counter
 	 *
 	 * @return  string    elements html
+	 *
+	 * @since 4.0
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$layoutData       = new stdClass;
+		$layoutData       = new \stdClass;
 		$name             = $this->getHTMLName($repeatCounter);
 		$id               = $this->getHTMLId($repeatCounter);
 		$layoutData->id   = $id;
@@ -63,6 +70,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * Process the plugin, called when form is submitted
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
@@ -157,6 +166,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * @param int   $productId Product id
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	private function storeVariant($data, $productId)
 	{
@@ -164,7 +175,7 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 		$table->load(array('product_id' => $productId));
 
 		$data['product_id'] = $productId;
-		$data['is_master'] = 1;
+		$data['is_master']  = 1;
 
 		return $table->save($data);
 	}
@@ -176,10 +187,12 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * @param int   $productId
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	private function storeFiles($placeholderData, $productId)
 	{
-		$w      = new FabrikWorker;
+		$w      = new Worker;
 		$params = $this->getParams();
 
 		// Map Fabrik repeat data into rows ready for insertion into the database.
@@ -219,7 +232,7 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 		}
 
 		// Remove records that no longer exist
-		$db    = $this->_db;
+		$db    = $this->db;
 		$query = $db->getQuery(true);
 		$query->delete('#__j2store_productfiles')->where('product_id = ' . $db->q($productId))
 			->where('j2store_productfile_id NOT IN (' . implode(',', $keep) . ')');
@@ -263,7 +276,7 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	private function appendProperty(&$data, $propName, $placeholderData)
 	{
 		$params          = $this->getParams();
-		$w               = new FabrikWorker;
+		$w               = new Worker;
 		$key             = 'j2store_' . $propName;
 		$data[$propName] = trim($w->parseMessageForPlaceHolder($params->get($key), $placeholderData));
 	}
@@ -272,6 +285,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * Get the component and list unique identifier
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	private function j2StoreSource()
 	{
@@ -282,10 +297,12 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * Sets up any end html (after form close tag)
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function getEndContent()
 	{
-		if ($this->app->isAdmin()  || !$this->showCartButtons())
+		if ($this->app->isAdmin() || !$this->showCartButtons())
 		{
 			return;
 		}
@@ -305,6 +322,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * Get any html that needs to be written after the form close tag
 	 *
 	 * @return    string    html
+	 *
+	 * @since 4.0
 	 */
 	public function getEndContent_result()
 	{
@@ -318,6 +337,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * @param   array &$groups List data for deletion
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onDeleteRowsForm(&$groups)
 	{
@@ -354,15 +375,17 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * @param array $opts
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function onLoadListData($opts)
 	{
-		if ($this->app->isAdmin()  || !$this->showCartButtons())
+		if ($this->app->isAdmin() || !$this->showCartButtons())
 		{
 			return;
 		}
 
-		$lang = JFactory::getLanguage();
+		$lang = Factory::getLanguage();
 		$lang->load('com_j2store', JPATH_SITE . '/administrator', null, false, true);
 		$data = $opts[0]->data;
 
@@ -383,7 +406,7 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 				}
 				else
 				{
-					$row->j2store = FText::_('PLG_FORM_J2STORE_PRODUCT_NOT_FOUND', $source, $id);
+					$row->j2store = Text::_('PLG_FORM_J2STORE_PRODUCT_NOT_FOUND', $source, $id);
 				}
 			}
 		}
@@ -395,6 +418,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * Add the list JS code.
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	private function listJs()
 	{
@@ -404,11 +429,11 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 			self::$listJs = true;
 
 			// Includes the ajax add to cart js.
-			require_once (JPATH_ADMINISTRATOR.'/components/com_j2store/helpers/strapper.php');
+			require_once(JPATH_ADMINISTRATOR . '/components/com_j2store/helpers/strapper.php');
 			J2StoreStrapper::addJs();
 
 			// Watch quantity input and update add to cart button data.
-			$doc = JFactory::getDocument();
+			$doc = Factory::getDocument();
 			$doc->addScriptDeclaration('jQuery(document).ready(function ($) {
 			$(document).on(\'change\', \'input[name=product_qty]\', function () {
 				var productId = $(this).data(\'product_id\'),
@@ -432,6 +457,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * @param array $args
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function onGetPluginRowHeadings($args)
 	{
@@ -453,6 +480,8 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 	 * @param   string $event    Event to trigger plugin on
 	 *
 	 * @return  bool  true if we should run the plugin otherwise false
+	 *
+	 * @since 4.0
 	 */
 	public function showCartButtons($location = null, $event = null)
 	{
@@ -461,5 +490,4 @@ class PlgFabrik_FormJ2Store extends PlgFabrik_Form
 
 		return in_array($params->get('j2store_access', '1'), $groups);
 	}
-
 }

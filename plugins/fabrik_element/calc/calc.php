@@ -310,7 +310,7 @@ class PlgFabrik_ElementCalc extends AbstractElementPlugin
 		{
 			$element        = $this->getElement();
 			$cal            = $params->get('calc_calculation', '');
-			$listModel      = $this->getlistModel();
+			$listModel      = $this->getListModel();
 			$formModel      = $this->getFormModel();
 			$data           = ArrayHelper::fromObject($row);
 			$data['rowid']  = $data['__pk_val'];
@@ -648,10 +648,10 @@ class PlgFabrik_ElementCalc extends AbstractElementPlugin
 	{
 		$params             = $this->getParams();
 		$id                 = $this->getHTMLId();
-		$list               = $this->getlistModel()->getTable();
+		$list               = $this->getListModel()->getTable();
 		$opts               = new \stdClass;
 		$opts->listid       = $list->id;
-		$opts->listRef      = 'list_' . $this->getlistModel()->getRenderContext();
+		$opts->listRef      = 'list_' . $this->getListModel()->getRenderContext();
 		$opts->formid       = $this->getFormModel()->getId();
 		$opts->elid         = $this->getElement()->id;
 		$opts->doListUpdate = $params->get('calc_on_save_only', '1') == '0' && $params->get('calc_ajax', '0') == '1';

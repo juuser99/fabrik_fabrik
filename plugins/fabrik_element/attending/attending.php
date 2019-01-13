@@ -114,7 +114,7 @@ class PlgFabrik_ElementAttending extends AbstractElementPlugin
 		$id      = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
 		$data    = $this->getFormModel()->data;
-		$listid  = $this->getlistModel()->getTable()->id;
+		$listid  = $this->getListModel()->getTable()->id;
 		$formid  = $input->getInt('formid');
 		$row_id  = $input->get('rowid', '', 'string');
 

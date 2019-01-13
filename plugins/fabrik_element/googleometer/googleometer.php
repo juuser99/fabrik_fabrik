@@ -109,7 +109,7 @@ class PlgFabrik_ElementGoogleometer extends AbstractElementPlugin
 	 */
 	private function getRange()
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$db        = $listModel->getDb();
 		$element   = $this->getDataElement();
 		$table     = $element->getTableName();

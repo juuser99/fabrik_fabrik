@@ -1006,7 +1006,7 @@ class AbstractElementListPlugin extends AbstractElementPlugin
 	 */
 	protected function inJDb()
 	{
-		return $this->getlistModel()->inJDb();
+		return $this->getListModel()->inJDb();
 	}
 
 	/**

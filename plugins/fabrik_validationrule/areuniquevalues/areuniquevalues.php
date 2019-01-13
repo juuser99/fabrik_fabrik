@@ -56,7 +56,7 @@ class PlgFabrik_ValidationruleAreUniqueValues extends AbstractValidationRulePlug
 		}
 
 		$params    = $this->getParams();
-		$listModel = $elementPlugin->getlistModel();
+		$listModel = $elementPlugin->getListModel();
 		$table     = $listModel->getTable();
 
 		$otherField = $params->get('areuniquevalues-otherfield', '');

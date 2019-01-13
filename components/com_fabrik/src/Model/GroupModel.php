@@ -306,7 +306,7 @@ class GroupModel extends FabSiteModel
 			$this->form = FabModel::getInstance(FormModel::class);
 			$this->form->setId($formId);
 			$this->form->getForm();
-			$this->form->getlistModel();
+			$this->form->getListModel();
 		}
 
 		return $this->form;
@@ -423,7 +423,7 @@ class GroupModel extends FabSiteModel
 	 *
 	 * since 120/10/2011 - can override with elementid request data (used in inline edit to limit which elements are shown)
 	 *
-	 * @return  \PlgFabrik_Element[]    published element objects
+	 * @return  AbstractElementPlugin[]    published element objects
 	 *
 	 * @since 4.0
 	 */

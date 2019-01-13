@@ -11,11 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Plugin\FabrikForm\Rest\OAuth\FabrikOAuth;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Joomla\Http\Response;
 use Joomla\Utilities\ArrayHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
-require_once JPATH_ROOT . '/plugins/fabrik_form/rest/fabrikOAuth.php';
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Submit or update data to a REST service
@@ -24,10 +25,12 @@ require_once JPATH_ROOT . '/plugins/fabrik_form/rest/fabrikOAuth.php';
  * @subpackage  Fabrik.form.rest
  * @since       3.0
  */
-class PlgFabrik_FormRest extends PlgFabrik_Form
+class PlgFabrik_FormRest extends AbstractFormPlugin
 {
 	/**
-	 * @var FabrikOauth
+	 * @var FabrikOAuth
+	 *
+	 * @since 4.0
 	 */
 	private $client;
 
@@ -35,12 +38,15 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * Constructor
 	 *
 	 * @param   object &$subject The object to observe
-	 * @param   array  $config   An array that holds the plugin configuration
+	 * @param   array   $config  An array that holds the plugin configuration
+	 *
+	 * @since 4.0
 	 */
 	public function __construct(&$subject, $config = array())
 	{
 		parent::__construct($subject, $config);
-		$this->oAuth = new FabrikOauth();
+
+		$this->client = new FabrikOauth($this->app);
 	}
 
 	/**
@@ -48,10 +54,11 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * or PUT to update existing records
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function requestMethod()
 	{
-		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$method    = $formModel->isNewRecord() ? 'POST' : 'PUT';
 		$fkData    = $this->fkData();
@@ -69,12 +76,13 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * Get the foreign keys value.
 	 *
 	 * @return  mixed string|int
+	 *
+	 * @since 4.0
 	 */
 	protected function fkData()
 	{
 		if (!isset($this->fkData))
 		{
-			/** @var FabrikFEModelForm $formModel */
 			$formModel    = $this->getModel();
 			$params       = $this->getParams();
 			$this->fkData = array();
@@ -114,6 +122,8 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * Get the foreign key element
 	 *
 	 * @return  object  Fabrik element
+	 *
+	 * @since 4.0
 	 */
 	protected function fkElement()
 	{
@@ -130,6 +140,8 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * row's id.
 	 *
 	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onBeforeStore()
 	{
@@ -145,6 +157,8 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * If we don't need to update the records fk then we should run process() as we now have access to the row's id.
 	 *
 	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
@@ -158,13 +172,15 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * Process rest call
 	 *
 	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	protected function process()
 	{
 		$formModel = $this->getModel();
 		$params    = $this->getParams();
 		$fkElement = $this->fkElement();
-		$w         = new FabrikWorker;
+		$w         = new Worker;
 
 		// POST new records, PUT existing records
 		$method = $this->requestMethod();
@@ -179,8 +195,8 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 		$xmlParent = $params->get('xml_parent', '');
 		$xmlParent = $w->parseMessageForPlaceholder($xmlParent);
 		$dataMap   = $params->get('put_include_list', '');
-		$include  = $w->parseMessageForPlaceholder($dataMap, $formModel->formData, true);
-		$data   = $this->buildOutput($include, $xmlParent, $headers);
+		$include   = $w->parseMessageForPlaceholder($dataMap, $formModel->formData, true);
+		$data      = $this->buildOutput($include, $xmlParent, $headers);
 
 		if ($params->get('oauth_consumer_key', '') === '')
 		{
@@ -191,7 +207,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 			$output = $this->processOAuth($endpoint, $data);
 		}
 
-		$jsonOutPut = FabrikWorker::isJSON($output) ? true : false;
+		$jsonOutPut = Worker::isJSON($output) ? true : false;
 
 		// Set FK value in Fabrik form data
 		if ($this->shouldUpdateFk())
@@ -209,58 +225,62 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 			$formModel->updateFormData($fkElementKey, $fkVal, true, true);
 		}
 
-		$url = $this->app->input->get('fabrik_referrer', '', 'string');
+		$url     = $this->app->input->get('fabrik_referrer', '', 'string');
 		$context = $formModel->getRedirectContext();
-		$url = $this->session->get($context . 'url', array($url));
-		$url = array_shift($url);
+		$url     = $this->session->get($context . 'url', array($url));
+		$url     = array_shift($url);
 		$this->app->redirect($url);
 	}
 
 	/**
 	 * Process OAuth request
-	 * @param   string  $endpoint  URL end point
-	 * @param   string  $data      Querystring variables
 	 *
-	 * @return  JHttpResponse
+	 * @param   string $endpoint URL end point
+	 * @param   string $data     Querystring variables
+	 *
+	 * @return  Response
+	 *
+	 * @since 4.0
 	 */
 	private function processOAuth($endpoint, $data)
 	{
 		parse_str($data, $d);
 		$this->getOAuthStore();
-		//$this->oAuth->setOption('sendheaders', false);
+		//$this->client->setOption('sendheaders', false);
 		$method = $this->requestMethod();
 
 		//$key  = JFactory::getSession()->get('key', null, 'oauth_token');
-		$token = $this->oAuth->authenticate();
+		$token = $this->client->authenticate();
 
 		$parameters = array(
 			'oauth_token' => $token['key']
 		);
 
-		return $this->oAuth->oauthRequest($endpoint, $method, $parameters, $d);
+		return $this->client->oauthRequest($endpoint, $method, $parameters, $d);
 	}
 
 	/**
 	 * Process rest call via CURL
+	 *
 	 * @param $endpoint
 	 *
 	 * @return bool|void
+	 *
+	 * @since 4.0
 	 */
 	private function processCurl($endpoint, $data)
 	{
 		if (!function_exists('curl_init'))
 		{
-			throw new RuntimeException('CURL NOT INSTALLED', 500);
-
-			return;
+			throw new \RuntimeException('CURL NOT INSTALLED', 500);
 		}
 
 		// Set up CURL object
-		$chandle   = curl_init();
+		$chandle = curl_init();
 
 		// Request headers
 		$headers = array();
-		$method    = $this->requestMethod();
+		$method  = $this->requestMethod();
 
 		$curlOpts = $this->buildCurlOpts($method, $headers, $endpoint, $data);
 
@@ -285,6 +305,8 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * Should the REST call update the fabrik row's fk value after it has posted to the service.
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	protected function shouldUpdateFk()
 	{
@@ -297,24 +319,25 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	/**
 	 * Create the data structure containing the data to send
 	 *
-	 * @param   string $include   list of fields to include
-	 * @param   xml    $xmlParent Parent node if rendering as xml (ignored if include is json and prob something i want
-	 *                            to deprecate)
-	 * @param   array  &$headers  Headers
+	 * @param   string  $include   list of fields to include
+	 * @param   string  $xmlParent Parent node if rendering as xml (ignored if include is json and prob something i want
+	 *                             to deprecate)
+	 * @param   array  &$headers   Headers
 	 *
 	 * @return mixed
+	 *
+	 * @since 4.0
 	 */
 	private function buildOutput($include, $xmlParent, &$headers)
 	{
 		$postData = array();
 
-		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$w         = new FabrikWorker;
+		$w         = new Worker;
 		$fkElement = $this->fkElement();
 		$fkData    = $this->fkData();
 
-		if (FabrikWorker::isJSON($include))
+		if (Worker::isJSON($include))
 		{
 			$include = json_decode($include);
 			$keys    = $include->put_key;
@@ -331,7 +354,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 				}
 				else
 				{
-					$v = FabrikString::safeColNameToArrayKey($v);
+					$v = FStringHelper::safeColNameToArrayKey($v);
 					$v = $w->parseMessageForPlaceHolder('{' . $v . '}', $formModel->formData, true);
 				}
 
@@ -399,7 +422,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 
 		if ($postAsXML)
 		{
-			$xml     = new SimpleXMLElement('<' . $xmlParent . '></' . $xmlParent . '>');
+			$xml     = new \SimpleXMLElement('<' . $xmlParent . '></' . $xmlParent . '>');
 			$headers = array('Content-Type: application/xml', 'Accept: application/xml');
 
 			foreach ($postData as $k => $v)
@@ -420,12 +443,14 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	/**
 	 * Create the CURL options when sending
 	 *
-	 * @param   string $method   POST/PUT
-	 * @param   array  &$headers Headers
-	 * @param   string $endpoint URL to post/put to
-	 * @param   string $output   URL Encoded querystring
+	 * @param   string  $method   POST/PUT
+	 * @param   array  &$headers  Headers
+	 * @param   string  $endpoint URL to post/put to
+	 * @param   string  $output   URL Encoded querystring
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	private function buildCurlOpts($method, &$headers, $endpoint, $output)
 	{
@@ -462,16 +487,18 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	/**
 	 * Handle any error generated
 	 *
-	 * @param   mixed  &$output CURL request result - may be a json string
-	 * @param   object $chandle CURL object
+	 * @param   mixed  &$output  CURL request result - may be a json string
+	 * @param   object  $chandle CURL object
 	 *
 	 * @return boolean
+	 *
+	 * @since 4.0
 	 */
 	private function handleError(&$output, $chandle)
 	{
 		$formModel = $this->getModel();
 
-		if (FabrikWorker::isJSON($output))
+		if (Worker::isJSON($output))
 		{
 			$output = json_decode($output);
 
@@ -527,20 +554,22 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * Get the OAuth store
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function getOAuthStore()
 	{
 		$params = $this->getParams();
 
-		$this->oAuth->setOption('accessTokenURL', $params->get('access_token_uri'));
-		$this->oAuth->setOption('authoriseURL', $params->get('authorize_uri'));
-		$this->oAuth->setOption('requestTokenURL', $params->get('request_token_uri'));
-		//$this->oAuth->setOption('callback', true);
-		$this->oAuth->setOption('callback', (string) JUri::getInstance());
-		$this->oAuth->setOption('authenticateURL', 'https://www.linkedin.com/uas/oauth/authenticate');
-		$this->oAuth->setOption('consumer_key', $params->get('oauth_consumer_key'));
-		$this->oAuth->setOption('consumer_secret', $params->get('oauth_consumer_secret'));
-		$this->oAuth->setOption('sendheaders', true);
+		$this->client->setOption('accessTokenURL', $params->get('access_token_uri'));
+		$this->client->setOption('authoriseURL', $params->get('authorize_uri'));
+		$this->client->setOption('requestTokenURL', $params->get('request_token_uri'));
+		//$this->client->setOption('callback', true);
+		$this->client->setOption('callback', (string) JUri::getInstance());
+		$this->client->setOption('authenticateURL', 'https://www.linkedin.com/uas/oauth/authenticate');
+		$this->client->setOption('consumer_key', $params->get('oauth_consumer_key'));
+		$this->client->setOption('consumer_secret', $params->get('oauth_consumer_secret'));
+		$this->client->setOption('sendheaders', true);
 
 		//  Init the OAuthStore
 		/*	$options = array(
@@ -551,12 +580,12 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	/**
 	 * Run once the form's data has been loaded
 	 *
-	 * @return    bool
+	 * @since 4.0
 	 */
 	public function onLoad()
 	{
 		$params = $this->getParams();
-		$url   = $params->get('get');
+		$url    = $params->get('get');
 
 		if ($params->get('oauth_consumer_key', '') === '' || is_null($url))
 		{
@@ -564,14 +593,14 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 		}
 
 		$this->getOAuthStore();
-		$this->oAuth->authenticate();
-		$token = $this->oAuth->getToken();
+		$this->client->authenticate();
+		$token = $this->client->getToken();
 
 		$parameters = array(
 			'oauth_token' => $token['key']
 		);
 
-		$response = $this->oAuth->oauthRequest($url, 'GET', $parameters);
+		$response = $this->client->oauthRequest($url, 'GET', $parameters);
 
 		if (in_array((int) $response->code, array(200, 201)))
 		{
@@ -588,15 +617,17 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 	 * @param   array                    $data         Data returned from CURL request
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function updateFormModelData($params, $responseBody, $data)
 	{
-		$w         = new FabrikWorker;
+		$w         = new Worker;
 		$dataMap   = $params->get('put_include_list', '');
 		$include   = $w->parseMessageForPlaceholder($dataMap, $responseBody, true);
 		$formModel = $this->getModel();
 
-		if (FabrikWorker::isJSON($include))
+		if (Worker::isJSON($include))
 		{
 			$include = json_decode($include);
 
@@ -608,7 +639,7 @@ class PlgFabrik_FormRest extends PlgFabrik_Form
 			{
 				$key        = $keys[$i];
 				$default    = $defaults[$i];
-				$localKey   = FabrikString::safeColNameToArrayKey($values[$i]);
+				$localKey   = FStringHelper::safeColNameToArrayKey($values[$i]);
 				$remoteData = FArrayHelper::getNestedValue($data, $key, $default, true);
 
 				if (!is_null($remoteData))

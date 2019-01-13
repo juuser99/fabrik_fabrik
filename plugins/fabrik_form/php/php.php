@@ -11,8 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\Component\Fabrik\Site\Model\GroupModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Worker;
 
 /**
  * Run some php when the form is submitted
@@ -21,16 +25,18 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.php
  * @since       3.0
  */
-class PlgFabrik_FormPHP extends PlgFabrik_Form
+class PlgFabrik_FormPHP extends AbstractFormPlugin
 {
 	/**
 	 * canEditGroup, called when canEdit called in group model
 	 *
-	 * @param   FabrikFEModelGroup  $groupModel  Group model
+	 * @param   GroupModel $groupModel Group model
 	 *
-	 * @return  void
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-	public function onCanEditGroup($groupModel)
+	public function onCanEditGroup(GroupModel $groupModel)
 	{
 		$params = $this->getParams();
 
@@ -53,12 +59,14 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Sets up HTML to be injected into the form's bottom
 	 *
-	 * @return void
+	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function getBottomContent()
 	{
 		$this->html = '';
-		$params = $this->getParams();
+		$params     = $this->getParams();
 
 		if ($params->get('only_process_curl') == 'getBottomContent')
 		{
@@ -76,7 +84,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Get any html that needs to be written after the form close tag
 	 *
-	 * @return	string	html
+	 * @return    string    html
+	 *
+	 * @since 4.0
 	 */
 	public function getTopContent_result()
 	{
@@ -87,11 +97,13 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Store the html to insert at the top of the form
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function getTopContent()
 	{
 		$this->html = '';
-		$params = $this->getParams();
+		$params     = $this->getParams();
 
 		if ($params->get('only_process_curl') == 'getTopContent')
 		{
@@ -109,7 +121,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Get any html that needs to be written after the form close tag
 	 *
-	 * @return	string	html
+	 * @return    string    html
+	 *
+	 * @since 4.0
 	 */
 	public function getEndContent_result()
 	{
@@ -119,12 +133,14 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Sets up any end html (after form close tag)
 	 *
-	 * @return  void
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function getEndContent()
 	{
 		$this->html = '';
-		$params = $this->getParams();
+		$params     = $this->getParams();
 
 		if ($params->get('only_process_curl') == 'getEndContent')
 		{
@@ -142,7 +158,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run right at the beginning of the form processing
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onBeforeProcess()
 	{
@@ -164,6 +182,8 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * and if so store the form data in the session.
 	 *
 	 * @return  bool  should the form model continue to save
+	 *
+	 * @since 4.0
 	 */
 	public function onBeforeStore()
 	{
@@ -183,7 +203,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run before list calculations are applied
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onBeforeCalculations()
 	{
@@ -203,9 +225,11 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run from list model when deleting rows
 	 *
-	 * @param   array  &$groups  List data for deletion
+	 * @param   array  &$groups List data for deletion
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onDeleteRowsForm(&$groups)
 	{
@@ -225,9 +249,11 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run from list model when deleting rows
 	 *
-	 * @param   array  &$groups  List data for deletion
+	 * @param   array  &$groups List data for deletion
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterDeleteRowsForm(&$groups)
 	{
@@ -248,7 +274,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
@@ -271,7 +299,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Run when the form is loaded - after its data has been created
 	 * data found in $formModel->data
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onLoad()
 	{
@@ -289,7 +319,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Run when the form is loaded - before its data has been created
 	 * data found in $formModel->data
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onBeforeLoad()
 	{
@@ -306,9 +338,11 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run for each element's canUse.  Return false to make an element read only
 	 *
-	 * @param  array  $args  array containing element model being tested
+	 * @param  array $args array containing element model being tested
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onElementCanUse($args)
 	{
@@ -321,11 +355,11 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 				return false;
 			}
 
-			$formModel = $this->getModel();
+			$formModel    = $this->getModel();
 			$elementModel = FArrayHelper::getValue($args, 0, false);
 			if ($elementModel)
 			{
-				$w          = new FabrikWorker;
+				$w          = new Worker;
 				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
 				$php_result = eval($code);
 
@@ -342,7 +376,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run for each element's canView.  Return false to deny view access
 	 *
-	 * @param  array  $args  array containing element model being tested
+	 * @param  array $args array containing element model being tested
 	 *
 	 * @return  bool
 	 */
@@ -357,11 +391,11 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 				return false;
 			}
 
-			$formModel = $this->getModel();
+			$formModel    = $this->getModel();
 			$elementModel = FArrayHelper::getValue($args, 0, false);
 			if ($elementModel)
 			{
-				$w          = new FabrikWorker;
+				$w          = new Worker;
 				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
 				$php_result = eval($code);
 
@@ -379,7 +413,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Run during form rendering, when all the form's JS is assembled and ready
 	 * data found in $formModel->data
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onJSReady()
 	{
@@ -397,7 +433,9 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Run during form rendering, when all the form's JS is assembled and ready
 	 * data found in $formModel->data
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onJSOpts(&$opts)
 	{
@@ -415,6 +453,8 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Process the plugin, called when form is submitted
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onError()
 	{
@@ -432,6 +472,8 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Process the plugin, called when form is submitted
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onSavePage()
 	{
@@ -449,6 +491,8 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	 * Require PHP file if specified
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	private function _requirePHP()
 	{
@@ -457,12 +501,12 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 		if ($params->get('form_php_file') != -1)
 		{
 			$require_once = $params->get('form_php_require_once', '0') == '1';
-			$php_file = JFilterInput::getInstance()->clean($params->get('form_php_file'), 'CMD');
-			$php_file = JPATH_ROOT . '/plugins/fabrik_form/php/scripts/' . $php_file;
+			$php_file     = InputFilter::getInstance()->clean($params->get('form_php_file'), 'CMD');
+			$php_file     = JPATH_ROOT . '/plugins/fabrik_form/php/scripts/' . $php_file;
 
-			if (!JFile::exists($php_file))
+			if (!File::exists($php_file))
 			{
-				throw new RuntimeException('Missing PHP form plugin file');
+				throw new \RuntimeException('Missing PHP form plugin file');
 			}
 
 			$php_result = $require_once ? require_once $php_file : require $php_file;
@@ -480,12 +524,12 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	/**
 	 * Run plugins php code/script
 	 *
-	 * @param   FabrikFEModelGroup  &$groupModel  Group model
-	 * @param   array               $data         List rows when deleteing record(s)
+	 * @param   GroupModel|null $groupModel Group model
+	 * @param   array           $data       List rows when deleteing record(s)
 	 *
 	 * @return bool false if error running php code
 	 */
-	private function _runPHP($groupModel = null, $data = null)
+	private function _runPHP(GroupModel $groupModel = null, $data = null)
 	{
 		$params = $this->getParams();
 
@@ -501,7 +545,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
-		$method = $params->get('only_process_curl');
+		$method    = $params->get('only_process_curl');
 		/*
 		 *  $$$ rob this is poor when submitting the form the data is stored in formData, when editing its stored in _data -
 		 *  as this method can run on render or on submit we have to do a little check to see which one we should use.
@@ -520,7 +564,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			$this->html = $formModel->data;
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		if ($params->get('form_php_file') == -1)
 		{
@@ -535,7 +579,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 				 */
 				ob_start();
 				$php_result = eval($code);
-				$output = ob_get_contents();
+				$output     = ob_get_contents();
 				ob_end_clean();
 
 				if (!empty($output))
@@ -549,6 +593,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 						return $php_result;
 					}
 				}
+
 				// Didn't get a viable response from either OB or result, so just return empty string
 				return '';
 			}
@@ -584,12 +629,12 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 				$fabrikFormDataWithTableName = $formModel->formDataWithtableName;
 			}
 
-			$php_file = JFilterInput::getInstance()->clean($params->get('form_php_file'), 'CMD');
+			$php_file = InputFilter::getInstance()->clean($params->get('form_php_file'), 'CMD');
 			$php_file = JPATH_ROOT . '/plugins/fabrik_form/php/scripts/' . $php_file;
 
-			if (!JFile::exists($php_file))
+			if (!File::exists($php_file))
 			{
-				throw new RuntimeException('Missing PHP form plugin file');
+				throw new \RuntimeException('Missing PHP form plugin file');
 			}
 
 			// If it's a form load method, needs to be handled this way
@@ -604,7 +649,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 				 */
 				ob_start();
 				$php_result = $require_once ? require_once $php_file : require $php_file;
-				$output = ob_get_contents();
+				$output     = ob_get_contents();
 				ob_end_clean();
 
 				if (!empty($output))

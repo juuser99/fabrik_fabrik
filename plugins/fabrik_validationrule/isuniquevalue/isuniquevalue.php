@@ -56,7 +56,7 @@ class PlgFabrik_ValidationruleIsUniqueValue extends AbstractValidationRulePlugin
 
 		$params    = $this->getParams();
 		$element   = $elementPlugin->getElement();
-		$listModel = $elementPlugin->getlistModel();
+		$listModel = $elementPlugin->getListModel();
 		$table     = $listModel->getTable();
 		$db        = $listModel->getDb();
 		$query     = $db->getQuery(true);

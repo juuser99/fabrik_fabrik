@@ -332,7 +332,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 	 */
 	public function getFilter($counter = 0, $normal = true, $container = '')
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$elName    = $this->getFullName(true, false);
 		$elName    = FStringHelper::safeColName($elName);
 		$v         = 'fabrik___filter[list_' . $listModel->getRenderContext() . '][value]';

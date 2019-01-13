@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Filesystem\File;
+
 class plgFabrik_formJ2StoreInstallerScript
 {
 	/**
@@ -19,18 +21,26 @@ class plgFabrik_formJ2StoreInstallerScript
 	 * @param   object  $parent  installer object
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	public function install($parent)
 	{
 		$src = JPATH_PLUGINS . '/fabrik_form/j2store/content_types/products.xml';
 		$dest = JPATH_ADMINISTRATOR . '/components/com_fabrik/models/content_types/producst.xml';
-		JFile::copy($src, $dest);
+		File::copy($src, $dest);
 	}
 
+	/**
+	 * @param $parent
+	 *
+	 *
+	 * @since 4.0
+	 */
 	public function upgrade($parent)
 	{
 		$src = JPATH_PLUGINS . '/fabrik_form/j2store/content_types/products.xml';
 		$dest = JPATH_ADMINISTRATOR . '/components/com_fabrik/models/content_types/producst.xml';
-		JFile::copy($src, $dest);
+		File::copy($src, $dest);
 	}
 }

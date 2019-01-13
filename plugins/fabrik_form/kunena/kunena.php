@@ -11,8 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Creates a thread in kunena forum
@@ -21,25 +23,25 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.kunena
  * @since       3.0
  */
-class PlgFabrik_FormKunena extends PlgFabrik_Form
+class PlgFabrik_FormKunena extends AbstractFormPlugin
 {
 	/**
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function onAfterProcess()
 	{
-		$params = $this->getParams();
-		$app = $this->app;
+		$params    = $this->getParams();
+		$app       = $this->app;
 		$formModel = $this->getModel();
-		$input = $app->input;
-		jimport('joomla.filesystem.file');
-		$define = COM_FABRIK_BASE . 'libraries/kunena/bootstrap.php';
+		$input     = $app->input;
+		$define    = COM_FABRIK_BASE . 'libraries/kunena/bootstrap.php';
 
-		if (JFile::exists($define))
+		if (File::exists($define))
 		{
 			// Kunenea 3.x
 			require_once $define;
@@ -49,14 +51,14 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		{
 			$define = COM_FABRIK_BASE . 'components/com_kunena/lib/kunena.defines.php';
 
-			if (JFile::exists($define))
+			if (File::exists($define))
 			{
 				require_once $define;
 				$this->post2x();
 			}
 			else
 			{
-				throw new RuntimeException('could not find the Kunena component', 404);
+				throw new \RuntimeException('could not find the Kunena component', 404);
 			}
 		}
 	}
@@ -65,14 +67,16 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 	 * Post to Kunena 2.x
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	protected function post2x()
 	{
-		$params = $this->getParams();
-		$app = $this->app;
+		$params    = $this->getParams();
+		$app       = $this->app;
 		$formModel = $this->getModel();
-		$input = $app->input;
-		$w = new FabrikWorker;
+		$input     = $app->input;
+		$w         = new Worker;
 
 		$catid = $params->get('kunena_category', 0);
 
@@ -86,7 +90,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 			require_once $file;
 		}
 
-		if (JFile::exists(KUNENA_PATH_FUNCS . '/post.php'))
+		if (File::exists(KUNENA_PATH_FUNCS . '/post.php'))
 		{
 			$postfile = KUNENA_PATH_FUNCS . '/post.php';
 		}
@@ -100,7 +104,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		// Added action in request
 		$input->set('action', $action);
 		$input->set('catid', $catid);
-		$msg = $w->parseMessageForPlaceHolder($params->get('kunena_content'), $formModel->fullFormData);
+		$msg     = $w->parseMessageForPlaceHolder($params->get('kunena_content'), $formModel->fullFormData);
 		$subject = $params->get('kunena_title');
 		$input->set('message', $msg);
 		$subject = $w->parseMessageForPlaceHolder($subject, $formModel->fullFormData);
@@ -124,27 +128,28 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 	 * Post to Kunena 3.x
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	protected function post3x()
 	{
 		// Load front end language file as well
 		$lang = $this->lang;
 		$lang->load('com_kunena', JPATH_SITE . '/components/com_kunena');
 
-		$params = $this->getParams();
-		$app = $this->app;
+		$params    = $this->getParams();
+		$app       = $this->app;
 		$formModel = $this->getModel();
-		$input = $app->input;
+		$input     = $app->input;
 
 		$user = $this->user;
-		$now = $this->date;
-		$w = new FabrikWorker;
+		$now  = $this->date;
+		$w    = new Worker;
 
 		$catid = $params->get('kunena_category', 0);
 
 		// Added action in request
-		$msg = $w->parseMessageForPlaceHolder($params->get('kunena_content'), $formModel->fullFormData);
+		$msg     = $w->parseMessageForPlaceHolder($params->get('kunena_content'), $formModel->fullFormData);
 		$subject = $params->get('kunena_title');
 		$subject = $w->parseMessageForPlaceHolder($subject, $formModel->fullFormData);
 
@@ -152,13 +157,13 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		$origId = $input->get('id');
 		$input->set('id', 0);
 
-		$topic = new KunenaForumTopic;
-		$topic->category_id = $catid;
-		$topic->subject = $subject;
-		$topic->first_post_time = $topic->last_post_time = $now->toUnix();
-		$topic->first_post_userid = $topic->last_post_userid = $user->get('id');
+		$topic                     = new KunenaForumTopic;
+		$topic->category_id        = $catid;
+		$topic->subject            = $subject;
+		$topic->first_post_time    = $topic->last_post_time = $now->toUnix();
+		$topic->first_post_userid  = $topic->last_post_userid = $user->get('id');
 		$topic->first_post_message = $topic->last_post_message = $msg;
-		$topic->posts = 1;
+		$topic->posts              = 1;
 
 		if ($topic->save())
 		{
@@ -175,7 +180,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 
 			if (!$message->save())
 			{
-				$app->enqueueMessage(FText::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_MESSAGE') . ': ' . $message->getError(), 'error');
+				$app->enqueueMessage(Text::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_MESSAGE') . ': ' . $message->getError(), 'error');
 			}
 
 			if ($params->get('kunena_notify', '0') === '1')
@@ -185,7 +190,7 @@ class PlgFabrik_FormKunena extends PlgFabrik_Form
 		}
 		else
 		{
-			$app->enqueueMessage(FText::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_TOPIC') . ': ' . $topic->getError(), 'error');
+			$app->enqueueMessage(Text::_('PLG_FORM_KUNENA_ERR_DIDNT_SAVE_TOPIC') . ': ' . $topic->getError(), 'error');
 		}
 
 		$input->set('id', $origId);

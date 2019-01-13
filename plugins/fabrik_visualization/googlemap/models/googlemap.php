@@ -250,7 +250,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$params = $this->getParams();
 		$lines = array();
 		$polyElements = (array) $params->get('fb_gm_polyline_element');
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 		$c = 0;
 
 		foreach ($listModels as $listModel)
@@ -378,7 +378,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 
 		foreach ($listIds as $listId)
 		{
-			$listModel = $this->getlistModel($listId);
+			$listModel = $this->getListModel($listId);
 
 			$template = FArrayHelper::getValue($templates, $c, '');
 			/**

@@ -189,7 +189,7 @@ class PlgFabrik_ElementPassword extends AbstractElementPlugin
 		}
 
 		$input    = $this->app->input;
-		$k        = $this->getlistModel()->getPrimaryKey(true);
+		$k        = $this->getListModel()->getPrimaryKey(true);
 		$element  = $this->getElement();
 		$origName = $element->name;
 

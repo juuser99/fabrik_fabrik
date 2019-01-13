@@ -11,8 +11,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use Fabrik\Helpers\Html;
+use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Joomla\Database\DatabaseDriver;
+use Fabrik\Helpers\Worker;
+use Fabrik\Helpers\StringHelper as FStringHelper;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
 
 /**
  * Update / insert a database record into any table
@@ -21,12 +27,14 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.upsert
  * @since       3.0.7
  */
-class PlgFabrik_FormUpsert extends PlgFabrik_Form
+class PlgFabrik_FormUpsert extends AbstractFormPlugin
 {
 	/**
 	 * Database driver
 	 *
-	 * @var JDatabaseDriver
+	 * @var DatabaseDriver
+	 *
+	 * @since 4.0
 	 */
 	protected $upsertDb = null;
 
@@ -34,15 +42,17 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	 * process the plugin, called after form is submitted
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
-		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$params    = $this->getParams();
+		$w         = new Worker;
 		$formModel = $this->getModel();
 		// @FIXME to use selected connection
-		$upsertDb = $this->getDb();
-		$query = $upsertDb->getQuery(true);
+		$upsertDb   = $this->getDb();
+		$query      = $upsertDb->getQuery(true);
 		$this->data = $this->getProcessData();
 
 		if (!$this->shouldProcess('upsert_conditon', null, $params))
@@ -51,20 +61,20 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 		}
 
 		$table = $this->getTableName();
-		$pk = FabrikString::safeColName($params->get('primary_key'));
+		$pk    = FStringHelper::safeColName($params->get('primary_key'));
 
 		$rowId = $params->get('row_value', '');
 
 		// Used for updating previously added records. Need previous pk val to ensure new records are still created.
 		$origData = $formModel->getOrigData();
-		$origData = FArrayHelper::getValue($origData, 0, new stdClass);
+		$origData = FArrayHelper::getValue($origData, 0, new \stdClass);
 
 		if (isset($origData->__pk_val))
 		{
 			$this->data['origid'] = $origData->__pk_val;
 		}
 
-		$rowId = $w->parseMessageForPlaceholder($rowId, $this->data, false);
+		$rowId           = $w->parseMessageForPlaceholder($rowId, $this->data, false);
 		$upsertRowExists = $this->upsertRowExists($table, $pk, $rowId);
 
 		/**
@@ -114,15 +124,18 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	/**
 	 * Get db
 	 *
-	 * @return JDatabaseDriver
+	 * @return DatabaseDriver
+	 *
+	 * @since 4.0
 	 */
 	protected function getDb()
 	{
 		if (!isset($this->upsert_db))
 		{
 			$params = $this->getParams();
-			$cid = $params->get('connection_id');
-			$connectionModel = JModelLegacy::getInstance('connection', 'FabrikFEModel');
+			$cid    = $params->get('connection_id');
+			/** @var ConnectionModel $connectionModel */
+			$connectionModel = FabModel::getInstance(ConnectionModel::class);
 			$connectionModel->setId($cid);
 			$this->upsert_db = $connectionModel->getDb();
 		}
@@ -133,19 +146,19 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	/**
 	 * Get fields to update/insert
 	 *
-	 * @param   bool  $upsertRowExists
+	 * @param   bool $upsertRowExists
 	 *
 	 * @return  array
+	 *
+	 * @since 4.0
 	 */
 	protected function upsertData($upsertRowExists = false)
 	{
-		$params = $this->getParams();
-		$w = new FabrikWorker;
-		$upsertDb = $this->getDb();
-		$upsert = json_decode($params->get('upsert_fields'));
-		$fields = array();
-
-		/** @var FabrikFEModelForm $formModel */
+		$params    = $this->getParams();
+		$w         = new Worker;
+		$upsertDb  = $this->getDb();
+		$upsert    = json_decode($params->get('upsert_fields'));
+		$fields    = array();
 		$formModel = $this->getModel();
 
 		if ($formModel->isNewRecord() || !$upsertRowExists)
@@ -155,8 +168,8 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 				$row_value = $params->get('row_value', '');
 				if ($row_value == '{origid}')
 				{
-					$fk = FabrikString::safeColName($params->get('primary_key'));
-					$rowId = $formModel->getInsertId();
+					$fk       = FStringHelper::safeColName($params->get('primary_key'));
+					$rowId    = $formModel->getInsertId();
 					$fields[] = $fk . ' = ' . $upsertDb->q($rowId);
 				}
 			}
@@ -164,15 +177,15 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 
 		for ($i = 0; $i < count($upsert->upsert_key); $i++)
 		{
-			$k = FabrikString::shortColName($upsert->upsert_key[$i]);
+			$k = FStringHelper::shortColName($upsert->upsert_key[$i]);
 			$k = $upsertDb->qn($k);
 			$v = $upsert->upsert_value[$i];
 			$v = $w->parseMessageForPlaceholder($v, $this->data);
 
 			if ($upsert->upsert_eval_value[$i] === '1')
 			{
-				$res = FabrikHelperHTML::isDebug() ? eval($v) : @eval($v);
-				FabrikWorker::logEval($res, 'Eval exception : upsert : ' . $v . ' : %s');
+				$res = Html::isDebug() ? eval($v) : @eval($v);
+				Worker::logEval($res, 'Eval exception : upsert : ' . $v . ' : %s');
 
 				// if the eval'ed code returned false, skip this
 				if ($res === false)
@@ -238,12 +251,15 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 	 * Get the table name to insert / update to
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
 	protected function getTableName()
 	{
 		$params = $this->getParams();
 		$listId = $params->get('table');
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var ListModel $listModel */
+		$listModel = FabModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 
 		return $listModel->getTable()->db_table_name;
@@ -251,22 +267,26 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 
 	/**
 	 * See if row exists on upsert table
-	 * @param   string  $table  Table name
-	 * @param   string  $field
-	 * @param   string  $value
+	 *
+	 * @param   string $table Table name
+	 * @param   string $field
+	 * @param   string $value
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
 	protected function upsertRowExists($table, $field, $value)
 	{
-		$params = $this->getParams();
-		$cid = $params->get('connection_id');
-		$connectionModel = JModelLegacy::getInstance('connection', 'FabrikFEModel');
+		$params          = $this->getParams();
+		$cid             = $params->get('connection_id');
+		$connectionModel = FabModel::getInstance(ConnectionModel::class);
 		$connectionModel->setId($cid);
-		$db = $connectionModel->getDb();
+		$db    = $connectionModel->getDb();
 		$query = $db->getQuery(true);
 		$query->select('COUNT(*) AS total')->from($table)->where($field . ' = ' . $db->q($value));
 		$db->setQuery($query);
+
 		return (int) $db->loadResult() > 0;
 	}
 }

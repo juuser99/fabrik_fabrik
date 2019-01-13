@@ -11,10 +11,13 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Text;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\Component\Fabrik\Site\Model\FormSessionModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\String\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+use Fabrik\Helpers\Worker;
 
 /**
  * After submission, shows a page where the user can confirm the data they are posting
@@ -23,7 +26,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.confirmation
  * @since       3.0
  */
-class PlgFabrik_FormConfirmation extends PlgFabrik_Form
+class PlgFabrik_FormConfirmation extends AbstractFormPlugin
 {
 	protected $runAway = false;
 
@@ -31,9 +34,11 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	 * If true then the plugin is stating that any subsequent plugin in the same group
 	 * should not be run.
 	 *
-	 * @param   string  $method  Current plug-in call method e.g. onBeforeStore
+	 * @param   string $method Current plug-in call method e.g. onBeforeStore
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function runAway($method)
 	{
@@ -49,7 +54,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	 * Remove session flags which state that the form should be loaded
 	 * from the session
 	 *
-	 * @param   int  $id  form id
+	 * @param   int $id form id
 	 *
 	 * @since   2.0.4
 	 *
@@ -66,13 +71,14 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	 * and if so store the form data in the session.
 	 *
 	 * @return  bool  should the form model continue to save
+	 *
+	 * @since 4.0
 	 */
 	public function onBeforeStore()
 	{
-		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$params = $this->getParams();
-		$input = $this->app->input;
+		$params    = $this->getParams();
+		$input     = $this->app->input;
 
 		if ($input->getInt('fabrik_ignorevalidation') === 1 || $input->getInt('fabrik_ajax') === 1)
 		{
@@ -81,7 +87,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 		}
 
 		$this->runAway = false;
-		$this->data = $formModel->formData;
+		$this->data    = $formModel->formData;
 
 		if (!$this->shouldProcess('confirmation_condition', null, $params))
 		{
@@ -110,7 +116,8 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 		$form = $formModel->getForm();
 
 		// Save the posted form data to the form session, for retrieval later
-		$sessionModel = JModelLegacy::getInstance('Formsession', 'FabrikFEModel');
+		/** @var FormSessionModel $sessionModel */
+		$sessionModel = FabModel::getInstance(FormSessionModel::class);
 		$sessionModel->setFormId($formModel->getId());
 		$rowId = $input->get('rowid', 0);
 		$sessionModel->setRowId($rowId);
@@ -122,8 +129,8 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 		$session->set('com_' . $this->package . '.form.' . $formModel->getId() . '.session.hash', $sessionModel->getHash());
 
 		// Set an error so we can reshow the same form for confirmation purposes
-		$formModel->errors['confirmation_required'] = array(FText::_('PLG_FORM_CONFIRMATION_PLEASE_CONFIRM_YOUR_DETAILS'));
-		$form->error = FText::_('PLG_FORM_CONFIRMATION_PLEASE_CONFIRM_YOUR_DETAILS');
+		$formModel->errors['confirmation_required'] = array(Text::_('PLG_FORM_CONFIRMATION_PLEASE_CONFIRM_YOUR_DETAILS'));
+		$form->error                                = Text::_('PLG_FORM_CONFIRMATION_PLEASE_CONFIRM_YOUR_DETAILS');
 		$formModel->setEditable(false);
 
 		// Clear out unwanted buttons
@@ -159,9 +166,11 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	/**
 	 * Run for each element's canUse.  Return false to make an element read only
 	 *
-	 * @param  array  $args  array containing element model being tested
+	 * @param  array $args array containing element model being tested
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
 	public function onElementCanUse($args)
 	{
@@ -178,11 +187,13 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	 * Sets up HTML to be injected into the form's bottom (fnar fnar)
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function getBottomContent()
 	{
 		$formModel = $this->getModel();
-		$input = $this->app->input;
+		$input     = $this->app->input;
 
 		// If we have already processed the form
 		$this->html = '';
@@ -194,8 +205,8 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 			// Unset this flag
 			$input->set('fabrik_confirmation', 2);
 
-			$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
-			$post = $safeHtmlFilter->clean($_POST, 'array');
+			$safeHtmlFilter = InputFilter::getInstance(null, null, 1, 1);
+			$post           = $safeHtmlFilter->clean($_POST, 'array');
 
 			/**
 			 * load in the posted values as hidden fields so that if we
@@ -225,7 +236,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 					{
 						foreach ($val as $val2)
 						{
-							if (!FabrikWorker::isReserved($key))
+							if (!Worker::isReserved($key))
 							{
 								if (!strstr($key, '[]'))
 								{
@@ -239,7 +250,7 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 					}
 					else
 					{
-						if (!FabrikWorker::isReserved($key))
+						if (!Worker::isReserved($key))
 						{
 							// $fields[] = '<input type="hidden" name="'.str_replace('_raw','',$key).'" value="'.urlencode($val).'" />';
 							// $fields[] = '<input type="hidden" name="'.$key.'" value="'.urlencode($val).'" />';
@@ -254,11 +265,11 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 			$fields[] = '<input type="hidden" name="fabrik_confirmation" value="2" />';
 
 			// Add in a button to allow you to go back to the form and edit your data
-			$fields[] = "<input type=\"button\" id=\"fabrik_redoconfirmation\" class=\"button btn\" value=\"" . FText::_('PLG_FORM_CONFIRMATION_RE_EDIT')
+			$fields[] = "<input type=\"button\" id=\"fabrik_redoconfirmation\" class=\"button btn\" value=\"" . Text::_('PLG_FORM_CONFIRMATION_RE_EDIT')
 				. "\" />";
 
 			// Unset the task otherwise we will submit the form to be processed.
-			FabrikHelperHTML::addScriptDeclaration("
+			Html::addScriptDeclaration("
 				window.addEvent('fabrik.loaded', function() {
 						jQuery('#fabrik_redoconfirmation').on('click', function(e) {
 							var form = jQuery(e.target).closest('form');
@@ -279,9 +290,11 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	/**
 	 * Inject custom html into the bottom of the form
 	 *
-	 * @param   int  $c  Plugin counter
+	 * @param   int $c Plugin counter
 	 *
 	 * @return  string  html
+	 *
+	 * @since 4.0
 	 */
 	public function getBottomContent_result($c)
 	{
@@ -292,6 +305,8 @@ class PlgFabrik_FormConfirmation extends PlgFabrik_Form
 	 * Does the plugin use session.on
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function usesSession()
 	{

@@ -11,6 +11,13 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Joomla\Component\Fabrik\Administrator\Model\FabModel;
+use Fabrik\Helpers\Worker;
+
 /**
  * other records in the table to auto fill in the rest of the form with that records data
  *
@@ -23,9 +30,6 @@ defined('_JEXEC') or die('Restricted access');
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
-
 /**
  * Allows you to observe an element, and when it its blurred asks if you want to lookup related data to fill
  * into additional fields
@@ -34,29 +38,31 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.autofill
  * @since       3.0
  */
-class PlgFabrik_FormAutofill extends PlgFabrik_Form
+class PlgFabrik_FormAutofill extends AbstractFormPlugin
 {
 	/**
 	 * Need to do this rather than on onLoad as otherwise in chrome form.js addevents is fired
 	 * before autocomplete class ini'd so then the autocomplete class never sets itself up
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterJSLoad()
 	{
-		$params        = $this->getParams();
-		$formModel     = $this->getModel();
-		$input         = $this->app->input;
-		$rowId         = $input->get('rowid', '', 'string');
-		$opts          = new stdClass;
-		$opts->observe = str_replace('.', '___', $params->get('autofill_field_name'));
-		$opts->trigger = str_replace('.', '___', $params->get('autofill_trigger'));
-		$opts->formid  = $formModel->getId();
-		$opts->map     = $params->get('autofill_map');
-		$opts->cnn     = $params->get('autofill_cnn');
-		$opts->table   = $params->get('autofill_table', '');
+		$params             = $this->getParams();
+		$formModel          = $this->getModel();
+		$input              = $this->app->input;
+		$rowId              = $input->get('rowid', '', 'string');
+		$opts               = new \stdClass;
+		$opts->observe      = str_replace('.', '___', $params->get('autofill_field_name'));
+		$opts->trigger      = str_replace('.', '___', $params->get('autofill_trigger'));
+		$opts->formid       = $formModel->getId();
+		$opts->map          = $params->get('autofill_map');
+		$opts->cnn          = $params->get('autofill_cnn');
+		$opts->table        = $params->get('autofill_table', '');
 		$opts->showNotFound = $params->get('autofill_show_not_found', '0') === '1';
-		$opts->notFoundMsg = $params->get('autofill_not_found_msg', '');
+		$opts->notFoundMsg  = $params->get('autofill_not_found_msg', '');
 
 		$opts->editOrig              = $params->get('autofill_edit_orig', 0) == 0 ? false : true;
 		$opts->confirm               = (bool) $params->get('autofill_confirm', true);
@@ -80,9 +86,9 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 		}
 
 		$opts = json_encode($opts);
-		JText::script('PLG_FORM_AUTOFILL_DO_UPDATE');
-		JText::script('PLG_FORM_AUTOFILL_SEARCHING');
-		JText::script('PLG_FORM_AUTOFILL_NORECORDS_FOUND');
+		Text::script('PLG_FORM_AUTOFILL_DO_UPDATE');
+		Text::script('PLG_FORM_AUTOFILL_SEARCHING');
+		Text::script('PLG_FORM_AUTOFILL_NORECORDS_FOUND');
 
 		if (!isset($formModel->formPluginJS))
 		{
@@ -97,6 +103,8 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 	 * Called via ajax to get the first match record
 	 *
 	 * @return    string    json object of record data
+	 *
+	 * @since 4.0
 	 */
 	public function onajax_getAutoFill()
 	{
@@ -113,15 +121,15 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 			// No connection selected so query current forms' table data
 			$formId = $input->getInt('formid');
 			$input->set($element, $value, 'get');
-			/** @var FabrikFEModelForm $model */
-			$model = JModelLegacy::getInstance('form', 'FabrikFEModel');
+			/** @var FormModel $model */
+			$model = FabModel::getInstance(FormModel::class);
 			$model->setId($formId);
-			$listModel = $model->getlistModel();
+			$listModel = $model->getListModel();
 		}
 		else
 		{
-			/** @var FabrikFEModelList $listModel */
-			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+			/** @var ListModel $listModel */
+			$listModel = FabModel::getInstance(ListModel::class);
 			$listModel->setId($input->getInt('table'));
 		}
 
@@ -163,7 +171,7 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 
 			if (!empty($map))
 			{
-				$newData = new stdClass;
+				$newData = new \stdClass;
 				/*
 				 * need __pk_val if 'edit original row'
 				 */
@@ -196,12 +204,14 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 	/**
 	 * Fill the response with the lookup data
 	 *
-	 * @param   object $data     Lookup List - Row data
+	 * @param   object  $data    Lookup List - Row data
 	 * @param   object &$newData Data to fill the form with
-	 * @param   string $from     Key to search for in $data - may be either element full name, or placeholders
-	 * @param   string $to       Form's field to insert data into
+	 * @param   string  $from    Key to search for in $data - may be either element full name, or placeholders
+	 * @param   string  $to      Form's field to insert data into
 	 *
 	 * @return  null
+	 *
+	 * @since 4.0
 	 */
 	protected function fillField($data, &$newData, $from, $to)
 	{
@@ -223,7 +233,7 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 
 		if (!$matched)
 		{
-			$w               = new FabrikWorker;
+			$w               = new Worker;
 			$newData->$toRaw = $newData->$to = $w->parseMessageForPlaceHolder($from, $data);
 		}
 		else

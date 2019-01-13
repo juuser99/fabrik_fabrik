@@ -214,7 +214,7 @@ class BaseView extends AbstractView
 
 		$this->isMultiPage = $model->isMultiPage();
 		list($this->plugintop, $this->pluginbottom, $this->pluginend) = $model->getFormPluginHTML();
-		$listModel = $model->getlistModel();
+		$listModel = $model->getListModel();
 
 		if (!$this->canAccess())
 		{
@@ -841,7 +841,7 @@ class BaseView extends AbstractView
 		$fbConfig             = ComponentHelper::getParams('com_fabrik');
 		$form                 = $model->getForm();
 		$params               = $model->getParams();
-		$listModel            = $model->getlistModel();
+		$listModel            = $model->getListModel();
 		$table                = $listModel->getTable();
 		$opts                 = new \stdClass;
 		$opts->admin          = $this->app->isAdmin();

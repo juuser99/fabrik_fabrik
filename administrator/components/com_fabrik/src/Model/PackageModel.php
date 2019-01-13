@@ -928,7 +928,7 @@ class PackageModel extends FabAdminModel
 			// @todo - convert to J4 if this feature goes back into production
 			$visModel = JModelLegacy::getInstance($vrow->plugin, 'fabrikModel');
 			$visModel->setId($vid);
-			$listModels = $visModel->getlistModels();
+			$listModels = $visModel->getListModels();
 
 			foreach ($listModels as $lmodel)
 			{
@@ -937,7 +937,7 @@ class PackageModel extends FabAdminModel
 				// @todo - convert to J4 if this feature goes back into production
 				$visModel = JModelLegacy::getInstance($vrow->plugin, 'fabrikModel');
 				$visModel->setId($vid);
-				$listModels = $visModel->getlistModels();
+				$listModels = $visModel->getListModels();
 
 				foreach ($listModels as $lmodel)
 				{

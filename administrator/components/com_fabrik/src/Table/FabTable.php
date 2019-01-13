@@ -12,6 +12,7 @@ namespace Joomla\Component\Fabrik\Administrator\Table;
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugin\FabrikForm\Comment\Table\CommentObjectsTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
 
@@ -63,9 +64,8 @@ class FabTable extends Table
 		 *
 		 * $$$ hugh - neither does the comments table ...
 		 *
-		 * @todo - add JCommentsTableObjects table back from fabrik_form plugin once it's namespaced
 		 */
-		if (in_array($tableClass, array(FormGroupTable::class)))
+		if (in_array($tableClass, array(FormGroupTable::class, CommentObjectsTable::class)))
 		{
 			unset($instance->params);
 		}

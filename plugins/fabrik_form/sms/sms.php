@@ -12,10 +12,11 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\StringHelper;
-
-// Require the abstract plugin class
-require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
-
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Helpers\Worker;
 
 /**
  * Send an SMS
@@ -24,13 +25,15 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.sms
  * @since       3.0
  */
-class PlgFabrik_FormSMS extends PlgFabrik_Form
+class PlgFabrik_FormSMS extends AbstractFormPlugin
 {
 	/**
 	 * Run right at the end of the form processing
 	 * form needs to be set to record in database for this to hook to be called
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	public function onAfterProcess()
 	{
@@ -40,41 +43,43 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 	/**
 	 * Send SMS
 	 *
-	 * @return	bool
+	 * @return    bool
+	 *
+	 * @since 4.0
 	 */
 	protected function process()
 	{
 		$formModel = $this->getModel();
-		$params = $this->getParams();
-		$data = $formModel->formData;
+		$params    = $this->getParams();
+		$data      = $formModel->formData;
 
 		if (!$this->shouldProcess('sms_conditon', $data, $params))
 		{
 			return true;
 		}
 
-		$w = new FabrikWorker;
-		$opts = array();
+		$w        = new Worker;
+		$opts     = array();
 		$userName = $params->get('sms-username');
 		$password = $params->get('sms-password');
-		$from = $params->get('sms-from');
-		$to = $params->get('sms-to');
-		$toEval = $params->get('sms-to-eval');
+		$from     = $params->get('sms-from');
+		$to       = $params->get('sms-to');
+		$toEval   = $params->get('sms-to-eval');
 
 		if (!empty($toEval))
 		{
 			$toEval = $w->parseMessageForPlaceholder($toEval, $data, false);
 			$toEval = @eval($toEval);
-			FabrikWorker::logEval($toEval, 'Caught exception on eval in email emailto : %s');
+			Worker::logEval($toEval, 'Caught exception on eval in email emailto : %s');
 
 			if (!is_array($toEval))
 			{
 				$toEval = empty($toEval) ? array() : explode(',', $toEval);
 			}
 
-			$to     = empty($to) ? array() : explode(',', $to);
-			$to     = array_merge($to, $toEval);
-			$to     = implode(',', $to);
+			$to = empty($to) ? array() : explode(',', $to);
+			$to = array_merge($to, $toEval);
+			$to = implode(',', $to);
 		}
 
 		if (empty($to))
@@ -84,8 +89,8 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 
 		$opts['sms-username'] = $w->parseMessageForPlaceHolder($userName, $data);
 		$opts['sms-password'] = $w->parseMessageForPlaceHolder($password, $data);
-		$opts['sms-from'] = $w->parseMessageForPlaceHolder($from, $data);
-		$opts['sms-to'] = $w->parseMessageForPlaceHolder($to, $data);
+		$opts['sms-from']     = $w->parseMessageForPlaceHolder($from, $data);
+		$opts['sms-to']       = $w->parseMessageForPlaceHolder($to, $data);
 
 
 		$message = $this->getMessage();
@@ -98,18 +103,20 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 	 * Get specific SMS gateway instance
 	 *
 	 * @return  object  gateway
+	 *
+	 * @since 4.0
 	 */
 	private function getInstance()
 	{
 		if (!isset($this->gateway))
 		{
-			$params = $this->getParams();
+			$params  = $this->getParams();
 			$gateway = $params->get('sms-gateway', 'kapow.php');
-			$input = new JFilterInput;
+			$input   = new InputFilter();
 			$gateway = $input->clean($gateway, 'CMD');
-            require_once JPATH_ROOT . '/libraries/fabrik/fabrik/Helpers/sms_gateways/' . StringHelper::strtolower($gateway);
-			$gateway = ucfirst(JFile::stripExt($gateway));
-			$this->gateway = new $gateway;
+			require_once JPATH_ROOT . '/libraries/fabrik/fabrik/Helpers/sms_gateways/' . StringHelper::strtolower($gateway);
+			$gateway               = ucfirst(File::stripExt($gateway));
+			$this->gateway         = new $gateway;
 			$this->gateway->params = $params;
 		}
 
@@ -119,18 +126,21 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 	/**
 	 * Default email handling routine, called if no email template specified
 	 *
-	 * @return	string	email message
+	 * @return    string    email message
+	 *
+	 * @since 4.0
 	 */
 	protected function getMessage()
 	{
-		$params = $this->getParams();
-		$msg    = $params->get('sms_message', '');
+		$params    = $this->getParams();
+		$msg       = $params->get('sms_message', '');
 		$formModel = $this->getModel();
-		$data = $formModel->formData;
+		$data      = $formModel->formData;
 
 		if ($msg !== '')
 		{
-			$w = new FabrikWorker;
+			$w = new Worker;
+
 			return $w->parseMessageForPlaceHolder($msg, $data);
 		}
 		else
@@ -141,11 +151,13 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 
 	/**
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
 	protected function defaultMessage()
 	{
-		$formModel = $this->getModel();
-		$data = $formModel->formData;
+		$formModel           = $this->getModel();
+		$data                = $formModel->formData;
 		$arDontEmailThesKeys = array();
 
 		// Remove raw file upload data from the email
@@ -155,7 +167,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 		}
 
 		$message = '';
-		$groups = $formModel->getGroupsHiarachy();
+		$groups  = $formModel->getGroupsHiarachy();
 
 		foreach ($groups as $groupModel)
 		{
@@ -163,12 +175,12 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 
 			foreach ($elementModels as $elementModel)
 			{
-				$element = $elementModel->getElement();
+				$element        = $elementModel->getElement();
 				$element->label = strip_tags($element->label);
 
 				if (!array_key_exists($element->name, $data))
 				{
-					$elName = $element->getFullName();
+					$elName = $elementModel->getFullName();
 				}
 				else
 				{
@@ -181,7 +193,7 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 				{
 					if (array_key_exists($elName, $data))
 					{
-						$val = stripslashes($data[$elName]);
+						$val    = stripslashes($data[$elName]);
 						$params = $elementModel->getParams();
 
 						if (method_exists($elementModel, 'getEmailValue'))
@@ -196,14 +208,14 @@ class PlgFabrik_FormSMS extends PlgFabrik_Form
 							}
 						}
 
-						$val = FabrikString::rtrimword($val, '<br />');
+						$val     = StringHelper::rtrimword($val, '<br />');
 						$message .= $element->label . ': ' . $val . "\r\n";
 					}
 				}
 			}
 		}
 
-		$message = FText::_('PLG_FORM_SMS_FROM') . $this->config->get('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
+		$message = Text::_('PLG_FORM_SMS_FROM') . $this->config->get('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
 
 		return $message;
 	}

@@ -156,7 +156,7 @@ class FabrikFEModelVisualization extends FabModel
 	 *
 	 * @return FabrikFEModelList[] List models
 	 */
-	public function getlistModels()
+	public function getListModels()
 	{
 		if (!isset($this->tables))
 		{
@@ -184,9 +184,9 @@ class FabrikFEModelVisualization extends FabModel
 	 *
 	 * @return  FabrikFEModelList	fabrik list model
 	 */
-	protected function &getlistModel($id)
+	protected function &getListModel($id)
 	{
-		$lists = $this->getlistModels();
+		$lists = $this->getListModels();
 
 		return $lists[$id];
 	}
@@ -212,7 +212,7 @@ class FabrikFEModelVisualization extends FabModel
 		$name = StringHelper::strtolower(str_replace('fabrikModel', '', get_class($this)));
 		$filters = array();
 		$showFilters = $params->get($name . '_show_filters', array());
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 		$js = array();
 		$i = 0;
 
@@ -246,7 +246,7 @@ class FabrikFEModelVisualization extends FabModel
 	public function buildQueryWhere()
 	{
 		$filters = array();
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $listModel)
 		{
@@ -283,7 +283,7 @@ class FabrikFEModelVisualization extends FabModel
 	public function getAdvancedSearchLink()
 	{
 		$links = array();
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $listModel)
 		{
@@ -410,7 +410,7 @@ class FabrikFEModelVisualization extends FabModel
 	 */
 	protected function getRequireFilterMsg()
 	{
-		$listModels = $this->getlistModels();
+		$listModels = $this->getListModels();
 
 		foreach ($listModels as $model)
 		{

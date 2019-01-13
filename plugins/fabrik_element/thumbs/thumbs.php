@@ -94,7 +94,7 @@ class PlgFabrik_ElementThumbs extends AbstractElementPlugin
 		$params    = $this->getParams();
 		$imagePath = COM_FABRIK_LIVESITE . 'plugins/fabrik_element/thumbs/images/';
 		$data      = Worker::JSONtoData($data, true);
-		$listId    = $this->getlistModel()->getTable()->id;
+		$listId    = $this->getListModel()->getTable()->id;
 		$formModel = $this->getFormModel();
 		$formId    = $formModel->getId();
 
@@ -141,7 +141,7 @@ class PlgFabrik_ElementThumbs extends AbstractElementPlugin
 	 */
 	private function _renderListData($data, $thisRow)
 	{
-		$list   = $this->getlistModel()->getTable();
+		$list   = $this->getListModel()->getTable();
 		$listId = isset($this->listid) ? $this->listid : $list->id;
 		$formId = isset($this->formid) ? $this->formid : $list->form_id;
 		$rowId  = isset($thisRow->__pk_val) ? $thisRow->__pk_val : $thisRow->id;
@@ -534,13 +534,13 @@ class PlgFabrik_ElementThumbs extends AbstractElementPlugin
 		{
 			$db
 				->setQuery(
-					"UPDATE " . $db->quoteName($this->getlistModel()->getTable()->db_table_name) . "
+					"UPDATE " . $db->quoteName($this->getListModel()->getTable()->db_table_name) . "
 	                    SET " . $db->quoteName($this->getElement()->name) . " = ((SELECT COUNT(thumb) FROM #__{package}_thumbs WHERE listid = " . (int) $listId
 					. " AND formid = " . (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
 					. " AND thumb = 'up') - (SELECT COUNT(thumb) FROM #__{package}_thumbs WHERE listid = " . (int) $listId . " AND formid = "
 					. (int) $formId . " AND row_id = " . $db->q($rowId) . " AND element_id = " . (int) $elementId
 					. " AND thumb = 'down'))
-	                    WHERE " . $this->getlistModel()->getPrimaryKey() . " = " . $db->q($rowId) . "
+	                    WHERE " . $this->getListModel()->getPrimaryKey() . " = " . $db->q($rowId) . "
 	                        LIMIT 1");
 
 			try
@@ -579,7 +579,7 @@ class PlgFabrik_ElementThumbs extends AbstractElementPlugin
 		}
 
 		$id        = $this->getHTMLId($repeatCounter);
-		$listId    = $this->getlistModel()->getTable()->id;
+		$listId    = $this->getListModel()->getTable()->id;
 		$formModel = $this->getFormModel();
 		$formId    = $formModel->getId();
 		$rowId     = $formModel->getRowId();
@@ -610,7 +610,7 @@ class PlgFabrik_ElementThumbs extends AbstractElementPlugin
 	{
 		$params       = $this->getParams();
 		$id           = $this->getHTMLId();
-		$list         = $this->getlistModel()->getTable();
+		$list         = $this->getListModel()->getTable();
 		$formId       = $list->form_id;
 		$listMyThumbs = array();
 		$idFromCookie = null;

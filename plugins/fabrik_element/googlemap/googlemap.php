@@ -481,7 +481,7 @@ class PlgFabrik_ElementGooglemap extends AbstractElementPlugin
 	 */
 	protected function _getFieldId($which_field, $repeatCounter = 0)
 	{
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$params    = $this->getParams();
 		$field     = $params->get($which_field, false);
 
@@ -915,7 +915,7 @@ class PlgFabrik_ElementGooglemap extends AbstractElementPlugin
 	{
 		$dbtable    = $this->actualTableName();
 		$db         = Worker::getDbo();
-		$listModel  = $this->getlistModel();
+		$listModel  = $this->getListModel();
 		$table      = $listModel->getTable();
 		$fullElName = FArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->element->name);
 		$dbtable    = $db->qn($dbtable);

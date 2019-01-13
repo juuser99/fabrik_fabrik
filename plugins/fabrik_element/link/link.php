@@ -64,7 +64,7 @@ class PlgFabrik_ElementLink extends AbstractElementPlugin
 		$profiler = Profiler::getInstance('Application');
 		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
-		$listModel  = $this->getlistModel();
+		$listModel  = $this->getListModel();
 		$params     = $this->getParams();
 		$target     = $params->get('link_target', '');
 		$smart_link = $params->get('link_smart_link', false);
@@ -117,7 +117,7 @@ class PlgFabrik_ElementLink extends AbstractElementPlugin
 			$data = Worker::JSONtoData($data, true);
 		}
 
-		$listModel = $this->getlistModel();
+		$listModel = $this->getListModel();
 		$params    = $this->getParams();
 
 		if (is_array($data))
@@ -410,7 +410,7 @@ class PlgFabrik_ElementLink extends AbstractElementPlugin
 	 */
 	public function elementJavascript($repeatCounter)
 	{
-		$listModel  = $this->getlistModel();
+		$listModel  = $this->getListModel();
 		$params     = $this->getParams();
 		$target     = $params->get('link_target', '');
 		$smart_link = $params->get('link_smart_link', false);
