@@ -7,17 +7,19 @@
  * @since       4.0.0
  */
 
+namespace Fabrik\Component\Fabrik\Administrator\Dispatcher;
+
 defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Dispatcher\ComponentDispatcher;
 
 /**
- * ComponentDispatcher class for com_fabrik
+ * ComponentDispatcher class for com_cpanel
  *
  * @since  4.0.0
  */
-class FabrikDispatcher extends ComponentDispatcher
+class Dispatcher extends ComponentDispatcher
 {
 	public const NAMESPACE = 'Fabrik\\Component\\Fabrik';
 	public const PREFIX_SITE = 'Site';
