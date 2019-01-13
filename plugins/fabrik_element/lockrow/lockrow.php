@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Factory;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\Worker;
 

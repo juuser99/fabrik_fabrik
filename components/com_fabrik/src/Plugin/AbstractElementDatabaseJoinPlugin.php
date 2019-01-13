@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\Plugin;
+namespace Fabrik\Component\Fabrik\Site\Plugin;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -20,13 +20,13 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Profiler\Profiler;
-use Joomla\Component\Fabrik\Administrator\Table\ConnectionTable;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
-use Joomla\Component\Fabrik\Administrator\Table\JoinTable;
-use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
-use Joomla\Component\Fabrik\Site\Model\JoinModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Component\Fabrik\Administrator\Table\ConnectionTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
+use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
+use Fabrik\Component\Fabrik\Site\Model\JoinModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Registry\Registry;
@@ -35,7 +35,7 @@ use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  *  Plugin element to render list of data looked up from a database table

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field">
 		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-colourpicker">
 
 			<field type="helplink"
@@ -15,7 +15,7 @@
 	</fields>
 	
 	<fields name="params">
-		<fieldset label="PLG_ELEMENT_COLOURPICKER_SWATCH_LABEL" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-colourpicker-swatch">
+		<fieldset label="PLG_ELEMENT_COLOURPICKER_SWATCH_LABEL" addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-colourpicker-swatch">
 		
 			<field type="helplink"
 				url="PLG_ELEMENT_COLOURPICKER_HELP_SERVER" />

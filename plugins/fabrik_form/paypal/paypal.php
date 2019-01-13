@@ -14,14 +14,14 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Redirects the browser to paypal to perform payment

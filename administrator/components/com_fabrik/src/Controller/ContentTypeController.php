@@ -9,17 +9,18 @@
  * @since       3.4.5
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
 use Joomla\CMS\Factory;
-use Joomla\Component\Fabrik\Administrator\Model\ContentTypeImportModel;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
-use Joomla\Component\Fabrik\Administrator\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\View\Form\HtmlView;
+use Fabrik\Component\Fabrik\Administrator\Model\ContentTypeImportModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\View\Form\HtmlView;
 
 /**
  * Content Type controller class.
@@ -48,7 +49,7 @@ class ContentTypeController extends AbstractFormController
 		$viewLayout = $this->input->get('layout', 'default');
 
 		/** @var HtmlView $view */
-		$view = $this->getView('Form', $viewType, \FabrikDispatcher::PREFIX_SITE);
+		$view = $this->getView('Form', $viewType, Dispatcher::PREFIX_SITE);
 		$view->setLayout($viewLayout);
 
 		/** @var FormModel  $formModel */

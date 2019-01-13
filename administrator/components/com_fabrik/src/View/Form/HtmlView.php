@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\View\Form;
+namespace Fabrik\Component\Fabrik\Administrator\View\Form;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -20,8 +20,8 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\FormView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Joomla\Component\Fabrik\Administrator\Model\FormModel;
+use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Fabrik\Component\Fabrik\Administrator\Model\FormModel;
 
 /**
  * View to edit a form.

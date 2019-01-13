@@ -8,22 +8,22 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Plugin\FabrikForm\Comment\Helper;
+namespace Fabrik\Plugin\FabrikForm\Comment\Helper;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Plugin\FabrikForm\Comment\Table\CommentObjectsTable;
+use Fabrik\Plugin\FabrikForm\Comment\Table\CommentObjectsTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Router\Route;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 
 require_once JCOMMENTS_BASE . '/jcomments.subscription.php';
 require_once JCOMMENTS_BASE . '/jcomments.class.php';
 
 /**
- * @package     Joomla\Plugin\FabrikForm\Comment\Helper
+ * @package     Fabrik\Plugin\FabrikForm\Comment\Helper
  *
  * @since       4.0
  */

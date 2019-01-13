@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Field;
+namespace Fabrik\Component\Fabrik\Administrator\Field;
 
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Filesystem\Folder;

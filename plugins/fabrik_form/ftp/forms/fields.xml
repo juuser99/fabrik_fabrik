@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form>
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="params">
 		<fieldset name="plg-form-ftp" label="PLG_FORM_FTP_CONNECTION">
 			<field name="ftp_host"
 				type="text"

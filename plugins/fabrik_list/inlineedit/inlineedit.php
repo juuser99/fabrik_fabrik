@@ -9,9 +9,9 @@
  */
 
 // No direct access
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 

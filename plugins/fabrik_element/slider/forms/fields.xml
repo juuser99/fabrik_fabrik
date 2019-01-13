@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field">
 		<fieldset name="plg-element-slider" label="COM_FABRIK_DEFAULT">
 
 			<field type="helplink"
@@ -23,7 +23,7 @@
 
 		</fieldset>
 	</fields>
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="params">
 
 		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-slider-params">
 

@@ -9,7 +9,7 @@
  */
 
 // No direct access
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
 
 defined('_JEXEC') or die('Restricted access');
 

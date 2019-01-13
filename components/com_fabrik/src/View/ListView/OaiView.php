@@ -9,14 +9,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\View\ListView;
+namespace Fabrik\Component\Fabrik\Site\View\ListView;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
-use Joomla\Component\Fabrik\Site\Model\OaiModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\OaiModel;
 
 /**
  * Open Archive Initiative List Records View

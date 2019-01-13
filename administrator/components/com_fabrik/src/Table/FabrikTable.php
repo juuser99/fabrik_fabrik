@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Table;
+namespace Fabrik\Component\Fabrik\Administrator\Table;
 
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Worker;
@@ -64,7 +64,7 @@ class FabrikTable extends Table
 		 * $$$ hugh - neither does the comments table ...
 		 *
 		 */
-		if (in_array($tableClass, array(FormGroupTable::class, 'Joomla\Plugin\FabrikForm\Comment\Table\CommentObjectsTable')))
+		if (in_array($tableClass, array(FormGroupTable::class, 'Fabrik\Plugin\FabrikForm\Comment\Table\CommentObjectsTable')))
 		{
 			unset($instance->params);
 		}

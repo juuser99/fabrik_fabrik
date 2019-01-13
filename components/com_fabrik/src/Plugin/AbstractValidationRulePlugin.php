@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\Plugin;
+namespace Fabrik\Component\Fabrik\Site\Plugin;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

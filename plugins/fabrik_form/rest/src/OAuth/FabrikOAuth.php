@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Plugin\FabrikForm\Rest\OAuth;
+namespace Fabrik\Plugin\FabrikForm\Rest\OAuth;
 
 use Joomla\Application\AbstractWebApplication;
 use Joomla\CMS\Http\Http;

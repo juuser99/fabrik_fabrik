@@ -7,7 +7,7 @@
 	</layout>
 	<fields name="request">
 		<fieldset name="request"
-				addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
+				addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field">
 	
 				<field name="formid" 
 					type="formlist"
@@ -18,7 +18,7 @@
 		</fieldset>
 	</fields>
 	
-	<fields name="params" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
+	<fields name="params" addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field">
 		<fieldset name="params" label="COM_FABRIK_OPTIONS">
 				
 			<field name="rowid" 

@@ -15,7 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;

@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
 use Joomla\Database\DatabaseQuery;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 

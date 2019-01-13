@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -18,9 +18,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
-use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use \Joomla\Registry\Registry;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 

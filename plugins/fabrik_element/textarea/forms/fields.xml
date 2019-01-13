@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields>
-		<fieldset label="COM_FABRIK_OPTIONS" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-textarea">
+		<fieldset label="COM_FABRIK_OPTIONS" addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-textarea">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_TEXTAREA_HELP_SERVER" />

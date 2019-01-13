@@ -8,11 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Field;
+namespace Fabrik\Component\Fabrik\Administrator\Field;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
@@ -20,7 +21,7 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Display a json loaded window with a repeatable set of sub fields
@@ -95,7 +96,7 @@ class FabrikModalRepeatField extends FormField
 		}
 		else
 		{
-			$feModel = FabrikModel::getInstance($view, \FabrikDispatcher::PREFIX_SITE);
+			$feModel = FabrikModel::getInstance($view, Dispatcher::PREFIX_SITE);
 			$feModel->setId($id);
 		}
 

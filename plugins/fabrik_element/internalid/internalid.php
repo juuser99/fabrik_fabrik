@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 
 /**
  * Plugin element to render internal id

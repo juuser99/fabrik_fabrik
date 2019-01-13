@@ -27,7 +27,7 @@
 	</fields>
 
 	<fields name="params">
-		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-time-params" label="PLG_ELEMENT_TIME_FORMATTING">
+		<fieldset addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-time-params" label="PLG_ELEMENT_TIME_FORMATTING">
 
 		<field type="helplink"
 				url="PLG_ELEMENT_TIME_HELP_SERVER" />

@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 // Require the Open Provider API
 require_once JPATH_SITE . '/plugins/fabrik_validationrule/openprovider/libs/api.php';
 
-use Joomla\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractValidationRulePlugin;
 
 /**
  * Domain name look up against open provider service

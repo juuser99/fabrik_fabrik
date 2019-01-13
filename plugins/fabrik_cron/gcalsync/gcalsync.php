@@ -14,8 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 

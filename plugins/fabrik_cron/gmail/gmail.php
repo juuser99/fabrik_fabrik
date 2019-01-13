@@ -14,9 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Component\Fabrik\Mail\PartHelper;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Component\Fabrik\Mail\PartHelper;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Joomla\String\StringHelper;
 
 /**

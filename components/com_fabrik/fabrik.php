@@ -11,7 +11,9 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Component\Fabrik\Site\WebService\AbstractWebService;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Fabrik\Component\Fabrik\Site\WebService\AbstractWebService;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -34,32 +36,6 @@ $app = Factory::getApplication();
 $app->set('jquery', true);
 $input = $app->input;
 
-/**
- * Test for YQL & XML document type
- * use the format request value to check for document type
- */
-$docs = array("yql", "xml");
-
-foreach ($docs as $d)
-{
-	if ($input->getCmd("type") == $d)
-	{
-		// Get the class
-		require_once JPATH_SITE . '/administrator/components/com_fabrik/classes/' . $d . 'document.php';
-
-		// Replace the document
-		$document = Factory::getDocument();
-		$docClass = 'JDocument' . StringHelper::strtoupper($d);
-		$document = new $docClass;
-	}
-}
-
-JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
-
-// $$$ rob if you want to you can override any fabrik model by copying it from
-// models/ to models/adaptors the copied file will overwrite (NOT extend) the original
-JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models/adaptors');
-
 $controllerName = $input->getCmd('view');
 
 // Check for a plugin controller
@@ -81,7 +57,7 @@ if (StringHelper::strpos($cName, '.') != false)
 
 	$path = JPATH_SITE . '/plugins/fabrik_' . $type . '/' . $name . '/controllers/' . $name . '.php';
 
-	if (JFile::exists($path))
+	if (File::exists($path))
 	{
 		require_once $path;
 		$isPlugin = true;
@@ -115,7 +91,7 @@ else
 
 	$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
 
-	if (JFile::exists($path))
+	if (File::exists($path))
 	{
 		require_once $path;
 	}
@@ -137,7 +113,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 	$className = 'FabrikController' . StringHelper::ucfirst($controller);
 	$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
 
-	if (JFile::exists($path))
+	if (File::exists($path))
 	{
 		require_once $path;
 
@@ -148,7 +124,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 	}
 	else
 	{
-		$controller = JControllerLegacy::getInstance('Fabrik');
+		$controller = BaseController::getInstance('Fabrik');
 	}
 }
 else

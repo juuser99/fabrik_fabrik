@@ -8,15 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\Plugin;
+namespace Fabrik\Component\Fabrik\Site\Plugin;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Joomla\Component\Fabrik\Administrator\Table\CronTable;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
 
 /**
  * Fabrik Plugin Cron Model

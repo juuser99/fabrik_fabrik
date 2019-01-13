@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -22,15 +22,15 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Filesystem\Path;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
-use Joomla\Component\Fabrik\Administrator\Table\PackageTable;
-use Joomla\Component\Fabrik\Administrator\Table\VisualizationTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Administrator\Table\PackageTable;
+use Fabrik\Component\Fabrik\Administrator\Table\VisualizationTable;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Joomla\CMS\Version;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
-use Joomla\Component\Fabrik\Site\Model\ListModel as SiteListModel;
-use Joomla\Component\Fabrik\Site\Model\FormModel as SiteFormModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel as SiteFormModel;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**

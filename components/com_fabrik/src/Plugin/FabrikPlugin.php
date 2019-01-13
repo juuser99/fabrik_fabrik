@@ -8,12 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\Plugin;
+namespace Fabrik\Component\Fabrik\Site\Plugin;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Component\Fabrik\Site\Model\FabrikSiteModel;
+use Fabrik\Component\Fabrik\Site\Model\FabrikSiteModel;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
@@ -27,10 +27,10 @@ use Joomla\CMS\Table\Extension;
 use Joomla\CMS\Table\Language;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\User;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
-use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
-use Joomla\Component\Fabrik\Site\Model\GroupModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
+use Fabrik\Component\Fabrik\Site\Model\GroupModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Filesystem\File;
 use Joomla\Registry\Registry;
@@ -299,7 +299,7 @@ class FabrikPlugin extends CMSPlugin
 
 		$firstField = reset($fieldsets);
 
-		return 'tab-' . $firstField->name . '-' . $repeatCounter;
+		return 'tab-' . $firstField->name . ($repeatCounter ? '-' . $repeatCounter : '');
 	}
 
 	/**
@@ -497,7 +497,8 @@ class FabrikPlugin extends CMSPlugin
 				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . '-' . $repeatCounter . '">';
 			}
 			*/
-			$tabName = 'tab-' . $fieldset->name . '-' . $repeatCounter;
+			$tabName = 'tab-' . $fieldset->name . ($repeatCounter ? '-' . $repeatCounter : '');
+
 			$str[] = HtmlHelper::_('bootstrap.addTab', $tabSetName, $tabName, Text::_($fieldset->label));
 
 			$class = 'form-horizontal ';

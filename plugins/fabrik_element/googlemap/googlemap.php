@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Profiler\Profiler;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
 use Joomla\Uri\Uri;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Googlemap;

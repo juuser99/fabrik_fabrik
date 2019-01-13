@@ -54,7 +54,8 @@ if (File::exists(COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php'))
 	}
 }
 
-// Register namespaces for plugins since J4 does not seem to do this natively (yet?)
+// Register namespaces for plugins; J4 supports namespaced plugins as of alpha 6 but let's keep it here for now
+// @todo convert Fabrik plugins to officially supported namespaces?
 $pluginTypes = [
 	'fabrik_cron'           => 'FabrikCron',
 	'fabrik_element'        => 'FabrikElement',
@@ -78,7 +79,7 @@ foreach ($extensions as $extension)
 	if (Folder::exists($srcPath))
 	{
 		JLoader::registerNamespace(
-			sprintf('Joomla\\Plugin\\%s\\%s', $pluginTypes[$extension->folder], ucfirst($extension->element)),
+			sprintf('Fabrik\\Plugin\\%s\\%s', $pluginTypes[$extension->folder], ucfirst($extension->element)),
 			$srcPath,
 			false,
 			false,

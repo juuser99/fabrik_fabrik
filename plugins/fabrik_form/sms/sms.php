@@ -15,7 +15,7 @@ use Fabrik\Helpers\StringHelper;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Fabrik\Helpers\Worker;
 
 /**

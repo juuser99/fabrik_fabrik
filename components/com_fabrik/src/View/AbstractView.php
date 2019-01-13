@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\View;
+namespace Fabrik\Component\Fabrik\Site\View;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -24,7 +24,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\MVC\View\HtmlView;
 
 /**
- * @package     Joomla\Component\Fabrik\Site\View
+ * @package     Fabrik\Component\Fabrik\Site\View
  *
  * @since       4.0
  */

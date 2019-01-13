@@ -15,7 +15,7 @@ use DrewM\MailChimp\MailChimp;
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Fabrik\Helpers\Worker;
 
 require_once JPATH_ROOT . '/plugins/fabrik_form/mailchimp/vendor/autoload.php';

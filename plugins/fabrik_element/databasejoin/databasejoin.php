@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementDatabaseJoinPlugin;
 /**
  *  Plugin element to render list of data looked up from a database table
  *  Can render as checkboxes, radio buttons, select lists, multi select lists and auto-complete

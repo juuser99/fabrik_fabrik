@@ -9,31 +9,35 @@
  * @since       1.6
  */
 
+namespace Fabrik\Component\Fabrik\Administrator\Field;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php';
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Form\Field\ListField;
+use Joomla\CMS\Form\FormHelper;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
-jimport('joomla.html.html');
-jimport('joomla.form.formfield');
-jimport('joomla.form.helper');
-JFormHelper::loadFieldClass('list');
+FormHelper::loadFieldClass('list');
 
 /**
  * Renders a list related forms that a db join element can be populated from
  *
  * @package     Joomla
  * @subpackage  Form
- * @since       1.6
+ * @since       4.0
  */
-
-class JFormFieldPopupforms extends JFormFieldList
+class PopupFormsField extends ListField
 {
 	/**
 	 * Element name
 	 *
 	 * @access	protected
 	 * @var		string
+	 *
+	 * @since 4.0
 	 */
 	protected $name = 'Connections';
 
@@ -41,14 +45,15 @@ class JFormFieldPopupforms extends JFormFieldList
 	 * Method to get the field options.
 	 *
 	 * @return  array  The field option objects.
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getOptions()
 	{
 		// Initialize variables.
 		$options = array();
 
-		$db = FabrikWorker::getDbo(true);
+		$db = Worker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('f.id AS value, f.label AS text, l.id AS listid')->from('#__{package}_forms AS f')
 			->join('LEFT', '#__{package}_lists As l ON f.id = l.form_id')
@@ -60,7 +65,7 @@ class JFormFieldPopupforms extends JFormFieldList
 
 		if (empty($options))
 		{
-			$options[] = JHTML::_('select.option', '', FText::_('COM_FABRIK_NO_POPUP_FORMS_AVAILABLE'));
+			$options[] = HTMLHelper::_('select.option', '', Text::_('COM_FABRIK_NO_POPUP_FORMS_AVAILABLE'));
 		}
 
 		return $options;

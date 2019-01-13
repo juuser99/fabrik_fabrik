@@ -9,7 +9,7 @@
  * @since       1.6
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Controller;
+namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -18,10 +18,10 @@ use Fabrik\Helpers\Worker;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
-use Joomla\Component\Fabrik\Site\Model\FormInlineEditModel;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\Model\FormSessionModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\FormInlineEditModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\FormSessionModel;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**

@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Administrator\View\Packages;
+namespace Fabrik\Component\Fabrik\Administrator\View\Packages;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\ListView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
 
 /**
  * View class for a list of packages.

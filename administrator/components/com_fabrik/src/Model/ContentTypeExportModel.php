@@ -9,7 +9,7 @@
  * @since       3.4
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -17,11 +17,11 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Path;
-use Joomla\Component\Fabrik\Administrator\Database\Mysqli\MysqliExporter;
-use Joomla\Component\Fabrik\Administrator\Helper\ContentTypeHelper;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
-use Joomla\Component\Fabrik\Administrator\Table\JoinTable;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Administrator\Database\Mysqli\MysqliExporter;
+use Fabrik\Component\Fabrik\Administrator\Helper\ContentTypeHelper;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Database\Mysqli\MysqliImporter as BaseMysqliImporter;
 use Joomla\Utilities\ArrayHelper;
 use \Joomla\Registry\Registry;
@@ -121,7 +121,7 @@ class ContentTypeExportModel extends FabrikAdminModel
 		parent::__construct($config);
 		$listModel = ArrayHelper::getValue($config, 'listModel', FabrikModel::getInstance(ListModel::class));
 
-		if (!is_a($listModel, 'FabrikAdminModelList'))
+		if (!is_a($listModel, ListModel::class))
 		{
 			throw new \UnexpectedValueException('Content Type Constructor requires an Admin List Model');
 		}

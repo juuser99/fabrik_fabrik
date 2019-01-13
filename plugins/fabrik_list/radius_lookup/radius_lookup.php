@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Component\Fabrik\Site\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 use Fabrik\Helpers\Html;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;

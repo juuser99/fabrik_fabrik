@@ -9,9 +9,10 @@
  * @since       4.0
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 
+use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
@@ -33,7 +34,7 @@ class FabrikModel extends BaseDatabaseModel
 	public static function getInstance($modelClass, $prefix = '', $config = array())
 	{
 		if (!class_exists($modelClass)) {
-			if (\FabrikDispatcher::PREFIX_SITE !== $prefix && \FabrikDispatcher::PREFIX_ADMIN !== $prefix)
+			if (Dispatcher::PREFIX_SITE !== $prefix && Dispatcher::PREFIX_ADMIN !== $prefix)
 			{
 				// Try Native Joomla
 				return parent::getInstance($modelClass, $prefix, $config);
@@ -41,9 +42,9 @@ class FabrikModel extends BaseDatabaseModel
 
 			// Let's see if one of our models exist in case we are dynamically requesting the model
 			$modelString = "%s\\%s\\Model\\%sModel";
-			$modelClass  = (\FabrikDispatcher::PREFIX_SITE === $prefix) ?
-				sprintf($modelString, \FabrikDispatcher::NAMESPACE, \FabrikDispatcher::PREFIX_SITE, ucfirst($modelClass)) :
-				sprintf($modelString, \FabrikDispatcher::NAMESPACE, \FabrikDispatcher::PREFIX_ADMIN, ucfirst($modelClass));
+				$modelClass  = (Dispatcher::PREFIX_SITE === $prefix) ?
+				sprintf($modelString, Dispatcher::NAMESPACE, Dispatcher::PREFIX_SITE, ucfirst($modelClass)) :
+				sprintf($modelString, Dispatcher::NAMESPACE, Dispatcher::PREFIX_ADMIN, ucfirst($modelClass));
 
 			if (!class_exists($modelClass)) {
 				// This is our own code's fault if we get to this point

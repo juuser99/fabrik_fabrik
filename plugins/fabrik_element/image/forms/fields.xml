@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields name="params">
-		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-image">
+		<fieldset addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-image">
 		
 			<field type="helplink"
 				url="PLG_ELEMENT_IMAGE_HELP_SERVER" />

@@ -18,7 +18,7 @@
 	</files>
 	<config>
 		<fields name="params">
-			<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="advanced">
+			<fieldset addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="advanced">
 
 				<field name="layout" type="list" default="menu" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC">
 					<option value="menu">menu</option>

@@ -1,16 +1,16 @@
 <?php
 /**
- * @package     Joomla\Plugin\FabrikForm\Comment\Table
+ * @package     Fabrik\Plugin\FabrikForm\Comment\Table
  * @subpackage
  *
  * @copyright   A copyright
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Joomla\Plugin\FabrikForm\Comment\Table;
+namespace Fabrik\Plugin\FabrikForm\Comment\Table;
 
 
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Database\DatabaseDriver;
 
 class CommentTable extends FabrikTable

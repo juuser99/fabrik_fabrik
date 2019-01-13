@@ -28,7 +28,7 @@
 
 	<fields name="params">
 		<fieldset
-			addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
+			addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field"
 			name="plg-element-note-params"
 			label="COM_FABRIK_OPTIONS">
 

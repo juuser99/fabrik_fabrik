@@ -16,7 +16,7 @@
 	</files>
 	<config>
 		<fields name="params">
-			<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="advanced">
+			<fieldset addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="advanced">
 				<field default="0" description="" label="Select Instance" name="id" type="visualizationlist"/>
 			</fieldset>
 		</fields>

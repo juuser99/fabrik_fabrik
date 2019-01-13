@@ -12,8 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
-use Joomla\Plugin\FabrikForm\Comment\Helper\JCommentsHelper;
-use Joomla\Plugin\FabrikForm\Comment\Table\CommentTable;
+use Fabrik\Plugin\FabrikForm\Comment\Helper\JCommentsHelper;
+use Fabrik\Plugin\FabrikForm\Comment\Table\CommentTable;
 use Joomla\CMS\Editor\Editor;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
@@ -21,11 +21,11 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Fabrik\Helpers\Worker;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**

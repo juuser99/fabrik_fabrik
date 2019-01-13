@@ -11,20 +11,20 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Plugin\FabrikForm\Subscriptions\Table\InvoiceTable;
-use Joomla\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
+use Fabrik\Plugin\FabrikForm\Subscriptions\Table\InvoiceTable;
+use Fabrik\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractFormPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
-use Joomla\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 /**
  * Redirects the browser to subscriptions to perform payment

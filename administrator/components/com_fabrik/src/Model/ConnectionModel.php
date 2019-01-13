@@ -9,7 +9,7 @@
  * @since       3.0
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -17,10 +17,10 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\Component\Fabrik\Administrator\Table\ConnectionTable;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Administrator\Table\ConnectionTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Joomla\Utilities\ArrayHelper;
-use Joomla\Component\Fabrik\Site\Model\ConnectionModel as SiteConnectionModel;
+use Fabrik\Component\Fabrik\Site\Model\ConnectionModel as SiteConnectionModel;
 
 /**
  * Admin Connection Model

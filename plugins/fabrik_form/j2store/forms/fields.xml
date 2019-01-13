@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field"
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field"
 	        name="params">
 
 		<fieldset name="plg-j2store-extra"

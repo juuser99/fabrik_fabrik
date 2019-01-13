@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="params">
 		<fieldset label="Gmail" name="plg-cron-gmail">
 			
 			<field description="PLG_CRON_GMAIL_LABEL_DESC" label="PLG_CRON_GMAIL_EMAIL_LABEL" name="email" type="text"/>

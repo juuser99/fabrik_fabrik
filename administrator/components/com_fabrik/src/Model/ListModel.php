@@ -9,7 +9,7 @@
  * @since       4.0
  */
 
-namespace Joomla\Component\Fabrik\Administrator\Model;
+namespace Fabrik\Component\Fabrik\Administrator\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -24,18 +24,18 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
-use Joomla\Component\Fabrik\Administrator\Table\ElementTable;
-use Joomla\Component\Fabrik\Administrator\Table\FabrikTable;
-use Joomla\Component\Fabrik\Administrator\Table\FormGroupTable;
-use Joomla\Component\Fabrik\Administrator\Table\FormTable;
-use Joomla\Component\Fabrik\Administrator\Table\GroupTable;
-use Joomla\Component\Fabrik\Administrator\Table\JoinTable;
-use Joomla\Component\Fabrik\Administrator\Table\ListTable;
-use Joomla\Component\Fabrik\Site\Model\ConnectionModel;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
-use Joomla\Component\Fabrik\Site\Model\JoinModel;
-use Joomla\Component\Fabrik\Site\Model\ListModel as SiteListModel;
+use Fabrik\Component\Fabrik\Administrator\Helper\FabrikAdminHelper;
+use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FormGroupTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FormTable;
+use Fabrik\Component\Fabrik\Administrator\Table\GroupTable;
+use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
+use Fabrik\Component\Fabrik\Administrator\Table\ListTable;
+use Fabrik\Component\Fabrik\Site\Model\ConnectionModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\JoinModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
 use Joomla\Component\Users\Administrator\Model\GroupModel;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;

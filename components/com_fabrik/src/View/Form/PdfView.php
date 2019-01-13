@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\View\Form;
+namespace Fabrik\Component\Fabrik\Site\View\Form;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Document\PdfDocument;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
 
 /**
  * PDF Form view class

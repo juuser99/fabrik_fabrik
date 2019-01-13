@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
     <fields>
-        <fieldset label="COM_FABRIK_DEFAULT" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-lockrow">
+        <fieldset label="COM_FABRIK_DEFAULT" addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-lockrow">
 
             <field type="helplink"
                    url="PLG_ELEMENT_LOCKROW_HELP_SERVER" />
@@ -17,7 +17,7 @@
 
     <fields name="params">
 
-        <fieldset label="COM_FABRIK_OPTIONS" addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-lockrow-extra">
+        <fieldset label="COM_FABRIK_OPTIONS" addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-lockrow-extra">
 
             <field name="lockrow_ttl"
                    type="text"

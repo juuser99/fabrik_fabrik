@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Component\Fabrik\Site\Plugin\AbstractListPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 
 /**
  *  Add an action button to run PHP

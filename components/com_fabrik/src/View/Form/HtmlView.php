@@ -8,14 +8,14 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Joomla\Component\Fabrik\Site\View\Form;
+namespace Fabrik\Component\Fabrik\Site\View\Form;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Router\Route;
-use Joomla\Component\Fabrik\Site\Model\FormModel;
+use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Joomla\Utilities\ArrayHelper;
 
 /**

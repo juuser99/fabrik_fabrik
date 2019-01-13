@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 

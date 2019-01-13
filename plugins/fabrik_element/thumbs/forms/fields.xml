@@ -2,7 +2,7 @@
 <form>
 	<fields name="params">
 	
-		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-thumbs">
+		<fieldset addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-thumbs">
 	
 			<field type="helplink"
 				url="PLG_ELEMENT_THUMBS_HELP_SERVER" />

@@ -6,14 +6,14 @@
 		</message>
 	</layout>
 	<fields name="request">
-		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="request">
+		<fieldset addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="request">
 	
 				<field description="COM_FABRIK_FIELD_FORM_DESC" label="COM_FABRIK_FIELD_FORM_LABEL" name="formid" type="formlist"/>
 				
 			</fieldset>
 	</fields>
 	
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="params">
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="params">
 
 		<fieldset label="COM_FABRIK_OPTIONS" name="params">
 

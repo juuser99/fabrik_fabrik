@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
-	<fields addfieldprefix="Joomla\Component\Fabrik\Administrator\Field">
-		<fieldset addfieldprefix="Joomla\Component\Fabrik\Administrator\Field" name="plg-element-calc" label="COM_FABRIK_OPTIONS">
+	<fields addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field">
+		<fieldset addfieldprefix="Fabrik\Component\Fabrik\Administrator\Field" name="plg-element-calc" label="COM_FABRIK_OPTIONS">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_CALC_HELP_SERVER" />

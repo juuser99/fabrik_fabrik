@@ -9,8 +9,8 @@
  */
 
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\Component\Fabrik\Site\Model\ListModel;
-use Joomla\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 use Fabrik\Helpers\Worker;
 
