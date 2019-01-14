@@ -22,7 +22,7 @@
 		
 		<field name="plugin"
 			type="pluginlist"
-			class="inputbox elementtype"
+			class="custom-select inputbox elementtype"
 			label="COM_FABRIK_SELECT_DO"
 			plugin="fabrik_form"
 			repeat="true"

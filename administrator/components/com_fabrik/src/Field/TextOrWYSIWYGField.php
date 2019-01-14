@@ -72,7 +72,7 @@ class TextOrWYSIWYGField extends TextField
 			// Initialize some field attributes.
 			$size      = $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
 			$maxLength = $this->element['maxlength'] ? ' maxlength="' . (int) $this->element['maxlength'] . '"' : '';
-			$class     = $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
+			$class     = ' class="form-control' . ($this->element['class'] ? ' '.(string) $this->element['class'] : '') . '"';
 			$readonly  = ((string) $this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
 			$disabled  = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 			$required  = $this->required ? ' required="required" aria-required="true"' : '';

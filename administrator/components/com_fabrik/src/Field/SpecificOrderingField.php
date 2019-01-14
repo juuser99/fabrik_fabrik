@@ -88,7 +88,7 @@ class SpecificOrderingField extends ListField
 		{
 			// Get the field options.
 			$options  = (array) $this->getOptions();
-			$ordering = HTMLHelper::_('select.genericlist', $options, $this->name, 'class="inputbox" size="1"', 'value', 'text', $this->value);
+			$ordering = HTMLHelper::_('select.genericlist', $options, $this->name, 'class="inputbox custom-select" size="1"', 'value', 'text', $this->value);
 		}
 		else
 		{
