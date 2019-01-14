@@ -303,7 +303,7 @@ class FabrikPlugin extends CMSPlugin
 	}
 
 	/**
-	 * Create bootstrap horizontal tab headings from fieldset labels
+	 * Create uitab horizontal tab headings from fieldset labels
 	 * Used for rendering viz plugin options
 	 *
 	 * @param   Form $form          Plugin form
@@ -324,7 +324,7 @@ class FabrikPlugin extends CMSPlugin
 
 		$active = $this->getFirstTabName($form, $repeatCounter);
 
-		return HTMLHelper::_('bootstrap.startTabSet', $name, array('active' => $active));
+		return HTMLHelper::_('uitab.startTabSet', $name, array('active' => $active));
 	}
 
 	/**
@@ -499,7 +499,7 @@ class FabrikPlugin extends CMSPlugin
 			*/
 			$tabName = 'tab-' . $fieldset->name . ($repeatCounter ? '-' . $repeatCounter : '');
 
-			$str[] = HtmlHelper::_('bootstrap.addTab', $tabSetName, $tabName, Text::_($fieldset->label));
+			$str[] = HtmlHelper::_('uitab.addTab', $tabSetName, $tabName, Text::_($fieldset->label));
 
 			$class = 'form-horizontal ';
 			$class .= $type . 'Settings page-' . $this->_name;
@@ -588,7 +588,7 @@ class FabrikPlugin extends CMSPlugin
 				$str[] = '</div>';
 			}
 			*/
-			$str[] = HtmlHelper::_('bootstrap.endTab');
+			$str[] = HtmlHelper::_('uitab.endTab');
 
 			$c++;
 		}
@@ -599,7 +599,7 @@ class FabrikPlugin extends CMSPlugin
 			$str[] = '</div>';
 		}
 		*/
-		$str[] = HtmlHelper::_('bootstrap.endTabSet');
+		$str[] = HtmlHelper::_('uitab.endTabSet');
 
 		if (!empty($repeatScript))
 		{
