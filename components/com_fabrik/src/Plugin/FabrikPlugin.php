@@ -470,14 +470,7 @@ class FabrikPlugin extends CMSPlugin
 			}
 		}
 
-		/*
-		if ($mode === 'nav-tabs')
-		{
-			$this->renderFromNavTabHeadings($form, $str, $repeatCounter);
-			$str[] = '<div class="tab-content">';
-		}
-		*/
-		$str[] = $this->renderFromNavTabHeadings($form, $tabSetName, $repeatCounter);
+		$str[] = $tabSet = $this->renderFromNavTabHeadings($form, $tabSetName, $repeatCounter);
 
 		$c         = 0;
 		$fieldsets = $form->getFieldsets();
@@ -490,16 +483,12 @@ class FabrikPlugin extends CMSPlugin
 		// Filer the forms fieldsets for those starting with the correct $searchName prefix
 		foreach ($fieldsets as $fieldset)
 		{
-			/*
-			if ($mode === 'nav-tabs')
-			{
-				$tabClass = $c === 0 ? ' active' : '';
-				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . '-' . $repeatCounter . '">';
-			}
-			*/
 			$tabName = 'tab-' . $fieldset->name . ($repeatCounter ? '-' . $repeatCounter : '');
 
-			$str[] = HtmlHelper::_('uitab.addTab', $tabSetName, $tabName, Text::_($fieldset->label));
+			if ($tabSet)
+			{
+				$str[] = HtmlHelper::_('uitab.addTab', $tabSetName, $tabName, Text::_($fieldset->label));
+			}
 
 			$class = 'form-horizontal ';
 			$class .= $type . 'Settings page-' . $this->_name;
@@ -582,24 +571,18 @@ class FabrikPlugin extends CMSPlugin
 
 			$str[] = '</fieldset>';
 
-			/*
-			if ($mode === 'nav-tabs')
+			if ($tabSet)
 			{
-				$str[] = '</div>';
+				$str[] = HtmlHelper::_('uitab.endTab');
 			}
-			*/
-			$str[] = HtmlHelper::_('uitab.endTab');
 
 			$c++;
 		}
 
-		/*
-		if ($mode === 'nav-tabs')
+		if ($tabSet)
 		{
-			$str[] = '</div>';
+			$str[] = HtmlHelper::_('uitab.endTabSet');
 		}
-		*/
-		$str[] = HtmlHelper::_('uitab.endTabSet');
 
 		if (!empty($repeatScript))
 		{
