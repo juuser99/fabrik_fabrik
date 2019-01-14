@@ -53,37 +53,3 @@ if (File::exists(COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php'))
 		require_once COM_FABRIK_FRONTEND . '/helpers/legacy/aliases.php';
 	}
 }
-
-// Register namespaces for plugins; J4 supports namespaced plugins as of alpha 6 but let's keep it here for now
-// @todo convert Fabrik plugins to officially supported namespaces?
-$pluginTypes = [
-	'fabrik_cron'           => 'FabrikCron',
-	'fabrik_element'        => 'FabrikElement',
-	'fabrik_form'           => 'FabrikForm',
-	'fabrik_list'           => 'FabrikList',
-	'fabrik_validationrule' => 'FabrikValidationRule',
-	'fabrik_visualization'  => 'FabrikVisualization',
-];
-
-$db    = Factory::getDbo();
-$query = $db->getQuery(true);
-$query->select($db->quoteName(array('element', 'folder')))
-	->from($db->quoteName('#__extensions'))
-	->where($db->quoteName('folder') . ' LIKE ' . $db->quote('fabrik_%'));
-$db->setQuery($query);
-$extensions = $db->loadObjectList();
-
-foreach ($extensions as $extension)
-{
-	$srcPath = sprintf('%s/%s/%s/src', JPATH_PLUGINS, $extension->folder, $extension->element);
-	if (Folder::exists($srcPath))
-	{
-		JLoader::registerNamespace(
-			sprintf('Fabrik\\Plugin\\%s\\%s', $pluginTypes[$extension->folder], ucfirst($extension->element)),
-			$srcPath,
-			false,
-			false,
-			'psr4'
-		);
-	}
-}

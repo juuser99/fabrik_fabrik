@@ -10,6 +10,7 @@
 	<version>3.8.1</version>
 	<help url="PLG_FORM_COMMENT_HELP_SERVER"/>
 	<description>PLG_FORM_COMMENT_DESCRIPTION</description>
+	<namespace path="src">Fabrik\Plugin\FabrikForm\Comment</namespace>
 	<install>
 		<sql>
 			<file charset="utf8" driver="mysql">sql/install.mysql.uft8.sql</file>
@@ -36,6 +37,7 @@
 		<folder>images</folder>
 		<folder>language</folder>
 		<folder>layouts</folder>
+		<folder>src</folder>
 		<folder>sql</folder>
 	</files>
 </extension>

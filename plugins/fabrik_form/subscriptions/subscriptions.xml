@@ -10,15 +10,15 @@
 	<version>3.8.1</version>
 	<help url="PLG_FORM_SUBSCRIPTIONS_HELP_SERVER"/>
 	<description>PLG_FORM_SUBSCRIPTIONS_DESCRIPTION</description>
-
+	<namespace path="src">Fabrik\Plugin\FabrikForm\Subscriptions</namespace>
 	<files>
 		<filename plugin="subscriptions">subscriptions.php</filename>
 		<filename>index.html</filename>
 		<folder>forms</folder>
 		<folder>language</folder>
 		<folder>scripts</folder>
+		<folder>src</folder>
 		<folder>sql</folder>
-		<folder>tables</folder>
 	</files>
 
 </extension>
