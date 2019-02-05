@@ -12,8 +12,7 @@
 	<description>PLG_LIST_PHP_DESCRIPTION</description>
 	<files>
 		<filename plugin="php">php.php</filename>
-		<filename>index.html</filename>
-		<filename>php.js</filename>
+        <filename>php.js</filename>
 		<filename>php-min.js</filename>
 		<folder>forms</folder>
 		<folder>language</folder>

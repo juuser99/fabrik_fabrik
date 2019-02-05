@@ -12,8 +12,7 @@
 	<description>PLG_VALIDATIONRULE_EMAILEXISTS_DESCRIPTION</description>
 	<files>
 		<filename plugin="emailexists">emailexists.php</filename>
-		<filename>index.html</filename>
-		<folder>forms</folder>
+        <folder>forms</folder>
 		<folder>language</folder>
 	</files>
 

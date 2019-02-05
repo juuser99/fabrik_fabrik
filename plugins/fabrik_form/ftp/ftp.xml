@@ -12,8 +12,7 @@
 	<description>PLG_FORM_FTP_DESCRIPTION</description>
 	<files>
 		<filename plugin="ftp">ftp.php</filename>
-		<filename>index.html</filename>
-		<folder>tmpl</folder>
+        <folder>tmpl</folder>
 		<folder>language</folder>
 	</files>
 </extension>

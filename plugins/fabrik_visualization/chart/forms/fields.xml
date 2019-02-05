@@ -78,7 +78,7 @@
 
 		<fieldset name="rest"
 		          label="COM_FABRIK_OPTIONS">
-			<field directory="/plugins/fabrik_visualization/chart/views/chart/tmpl/"
+			<field directory="/plugins/fabrik_visualization/chart/tmpl/"
 			       label="PLG_VISUALIZATION_CHART_TEMPLATE_LABEL"
 			       name="chart_layout"
 			       type="fabrikfolderlist"/>

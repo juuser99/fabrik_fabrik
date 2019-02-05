@@ -9,19 +9,17 @@
  */
 
 // No direct access
-defined('_JEXEC') or die('Restricted access');
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractVisualizationPlugin;
 
-// Require the abstract plugin class (this is here to allow for the create of the plugin)
-require_once COM_FABRIK_FRONTEND . '/models/visualization.php';
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * Google chart viz
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.chart
- * @since       3.0
+ * @since       4.0
  */
-
-class PlgFabrik_VisualizationChart extends FabrikPlugin
+class PlgFabrik_VisualizationChart extends AbstractVisualizationPlugin
 {
 }

@@ -12,8 +12,7 @@
 	<description>PLG_LIST_RADIUS_LOOKUP_DESCRIPTION</description>
 	<files>
 		<filename plugin="radius_lookup">radius_lookup.php</filename>
-		<filename>index.html</filename>
-		<filename>radius_lookup.js</filename>
+        <filename>radius_lookup.js</filename>
 		<filename>radius_lookup-min.js</filename>
 		<folder>language</folder>
 		<folder>forms</folder>

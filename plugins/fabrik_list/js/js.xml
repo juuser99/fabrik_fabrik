@@ -12,8 +12,7 @@
 	<description>PLG_LIST_JS_DESCRIPTION</description>
 	<files>
 		<filename plugin="js">js.php</filename>
-		<filename>index.html</filename>
-		<filename>js.js</filename>
+        <filename>js.js</filename>
 		<filename>js-min.js</filename>
 		<folder>forms</folder>
 		<folder>language</folder>

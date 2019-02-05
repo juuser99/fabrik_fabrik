@@ -10,15 +10,14 @@
 	<version>3.8.1</version>
 	<help url="PLG_VISUALIZATION_GOOGLEMAP_HELP_SERVER"/>
 	<description>PLG_VISUALIZATION_GOOGLEMAP_DESCRIPTION</description>
+	<namespace path="src">Fabrik\Plugin\FabrikVisualization\GoogleMap</namespace>
 	<files>
 		<filename plugin="googlemap">googlemap.php</filename>
 		<filename>googlemap.js</filename>
 		<filename>googlemap-min.js</filename>
-		<filename>index.html</filename>
-		<folder>controllers</folder>
 		<folder>forms</folder>
 		<folder>language</folder>
-		<folder>models</folder>
-		<folder>views</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
 	</files>
 </extension>

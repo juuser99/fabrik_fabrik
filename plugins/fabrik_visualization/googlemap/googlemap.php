@@ -11,16 +11,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-// Require the abstract plugin class (this is here to allow for the create of the plugin)
-require_once COM_FABRIK_FRONTEND . '/models/visualization.php';
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractVisualizationPlugin;
 
 /**
  * Fabrik GoogleMap Plug-in
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.googlemap
- * @since       3.0
+ * @since       4.0
  */
-class PlgFabrik_VisualizationGooglemap extends FabrikPlugin
+class PlgFabrik_VisualizationGooglemap extends AbstractVisualizationPlugin
 {
 }

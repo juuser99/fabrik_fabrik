@@ -869,7 +869,7 @@ class PlgContentFabrik extends CMSPlugin
 				$controller = new FabrikControllerPackage;
 				break;
 			default:
-				$controller = new FabrikController;
+				$controller = new AbstractSiteController;
 				break;
 		}
 

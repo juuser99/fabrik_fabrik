@@ -14,8 +14,7 @@
 		<filename plugin="canviewrow">canviewrow.php</filename>
 		<filename>canviewrow.js</filename>
 		<filename>canviewrow-min.js</filename>
-		<filename>index.html</filename>
-		<folder>forms</folder>
+        <folder>forms</folder>
 		<folder>language</folder>
 	</files>
 </extension>

@@ -12,8 +12,7 @@
 	<help url="PLG_LIST_WEBSERVICE_HELP_SERVER"/>
 	<files>
 		<filename plugin="webservice">webservice.php</filename>
-		<filename>index.html</filename>
-		<filename>webservice.js</filename>
+        <filename>webservice.js</filename>
 		<filename>webservice-min.js</filename>
 		<folder>forms</folder>
 		<folder>language</folder>

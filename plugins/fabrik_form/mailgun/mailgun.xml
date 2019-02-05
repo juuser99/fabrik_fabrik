@@ -12,8 +12,7 @@
 	<description>PLG_FORM_MAILGUN_DESCRIPTION</description>
 	<files>
 		<filename plugin="mailgun">mailgun.php</filename>
-		<filename>index.html</filename>
-		<folder>forms</folder>
+        <folder>forms</folder>
 		<folder>tmpl</folder>
 		<folder>language</folder>
 	</files>

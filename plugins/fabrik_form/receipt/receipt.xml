@@ -12,8 +12,7 @@
 	<description>PLG_FORM_RECEIPT_DESCRIPTION</description>
 	<files>
 		<filename plugin="receipt">receipt.php</filename>
-		<filename>index.html</filename>
-		<folder>forms</folder>
+        <folder>forms</folder>
 		<folder>language</folder>
 		<folder>layouts</folder>
 	</files>

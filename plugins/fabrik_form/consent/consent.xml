@@ -26,7 +26,6 @@
 		<folder>sql</folder>
 		<filename>consent.js</filename>
 		<filename>consent-min.js</filename>
-		<filename>index.html</filename>
-	</files>
+        </files>
 
 </extension>

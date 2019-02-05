@@ -64,7 +64,7 @@ else
 	$controller = '';
 }
 
-$classname = 'FabrikController' . StringHelper::ucfirst($controller);
+$classname = 'AbstractSiteController' . StringHelper::ucfirst($controller);
 
 $config = array();
 $config['base_path'] = JPATH_SITE . '/components/com_fabrik/';
@@ -79,7 +79,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 {
 	$controller = explode('.', $input->getCmd('task'));
 	$controller = array_shift($controller);
-	$classname = 'FabrikController' . StringHelper::ucfirst($controller);
+	$classname = 'AbstractSiteController' . StringHelper::ucfirst($controller);
 	$path = JPATH_SITE . '/components/com_fabrik/controllers/' . $controller . '.php';
 
 	if (JFile::exists($path))
@@ -99,7 +99,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 }
 else
 {
-	$classname = 'FabrikController' . StringHelper::ucfirst($controller);
+	$classname = 'AbstractSiteController' . StringHelper::ucfirst($controller);
 	$controller = new $classname($config);
 	$task = $input->getCmd('task');
 }

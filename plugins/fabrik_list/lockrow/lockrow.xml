@@ -12,8 +12,7 @@
 	<description>PLG_LIST_LOCKROW_DESCRIPTION</description>
 	<files>
 		<filename plugin="lockrow">lockrow.php</filename>
-		<filename>index.html</filename>
-		<folder>language</folder>
+        <folder>language</folder>
 		<folder>forms</folder>
 	</files>
 </extension>

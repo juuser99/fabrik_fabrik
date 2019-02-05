@@ -11,8 +11,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-// Require the abstract plugin class (this is here to allow for the create of the plugin)
-require_once COM_FABRIK_FRONTEND . '/models/visualization.php';
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractVisualizationPlugin;
 
 /**
  * Approvals viz Plug-in
@@ -22,6 +21,6 @@ require_once COM_FABRIK_FRONTEND . '/models/visualization.php';
  * @since       3.0.6
  */
 
-class PlgFabrik_VisualizationApprovals extends FabrikPlugin
+class PlgFabrik_VisualizationApprovals extends AbstractVisualizationPlugin
 {
 }

@@ -10,15 +10,14 @@
 	<version>3.8.1</version>
 	<help url="PLG_VISUALIZATION_CHART_HELP_SERVER"/>
 	<description>PLG_VISUALIZATION_CHART_DESCRIPTION</description>
+	<namespace path="src">Fabrik\Plugin\FabrikVisualization\Chart</namespace>
 	<files>
 		<filename plugin="chart">chart.js</filename>
 		<filename>chart.php</filename>
 		<filename>chart-min.js</filename>
-		<filename>index.html</filename>
-		<folder>controllers</folder>
 		<folder>forms</folder>
-		<folder>models</folder>
 		<folder>language</folder>
-		<folder>views</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
 	</files>
 </extension>

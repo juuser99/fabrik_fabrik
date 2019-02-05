@@ -110,7 +110,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 {
 	$controllerTask = explode('.', $input->getCmd('task'));
 	$controller = array_shift($controllerTask);
-	$className = 'FabrikController' . StringHelper::ucfirst($controller);
+	$className = 'AbstractSiteController' . StringHelper::ucfirst($controller);
 	$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
 
 	if (File::exists($path))
@@ -129,7 +129,7 @@ if (strpos($input->getCmd('task'), '.') !== false)
 }
 else
 {
-	$className = 'FabrikController' . StringHelper::ucfirst($controller);
+	$className = 'AbstractSiteController' . StringHelper::ucfirst($controller);
 	$controller = new $className;
 	$task = $input->getCmd('task');
 }

@@ -10,16 +10,15 @@
 	<version>3.8.1</version>
 	<help url="PLG_VISUALIZATION_FUSIONCHARTS_HELP_SERVER"/>
 	<description>PLG_VISUALIZATION_FUSIONCHARTS_DESCRIPTION</description>
+	<namespace path="src">Fabrik\Plugin\FabrikVisualization\FusionChart</namespace>
 	<files>
 		<filename plugin="fusionchart">fusionchart.php</filename>
 		<filename>fusionchart.js</filename>
 		<filename>fusionchart-min.js</filename>
-		<filename>index.html</filename>
-		<folder>controllers</folder>
 		<folder>forms</folder>
 		<folder>language</folder>
 		<folder>libs</folder>
-		<folder>models</folder>
-		<folder>views</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
 	</files>
 </extension>
