@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Media\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 use Joomla\CMS\Component\ComponentHelper;
 
 /**
@@ -23,7 +23,7 @@ use Joomla\CMS\Component\ComponentHelper;
  * @subpackage  Fabrik.visualization.media
  * @since       4.0
  */
-class MediaController extends AbstractVisualizationController
+class MediaController extends VisualizationController
 {
 	/**
 	 * Get Playlist

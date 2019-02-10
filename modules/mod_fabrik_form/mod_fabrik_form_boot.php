@@ -9,36 +9,35 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.filesystem.file');
+use Fabrik\Component\Fabrik\Site\Controller\DetailsController;
+use Fabrik\Component\Fabrik\Site\Controller\FormController;
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 // Load front end language file as well
-$lang = JFactory::getLanguage();
+/** @var CMSApplication $app */
+$app  = Factory::getApplication();
+$lang = $app->getLanguage();
 $lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
 
 if (!defined('COM_FABRIK_FRONTEND'))
 {
-	JError::raiseError(400, JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
+	throw new \Exception(Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
 }
 
-$app = JFactory::getApplication();
 $input = $app->input;
 
 $origLayout = $input->get('layout');
-$origView = $input->get('view');
-$origAjax = $input->get('ajax');
+$origView   = $input->get('view');
+$origAjax   = $input->get('ajax');
 $origFormid = $input->getInt('formid');
 
-FabrikHelperHTML::framework();
-
-// $$$rob looks like including the view does something to the layout variable
-require_once COM_FABRIK_FRONTEND . '/views/form/view.html.php';
-require_once COM_FABRIK_FRONTEND . '/views/package/view.html.php';
-require_once COM_FABRIK_FRONTEND . '/views/list/view.html.php';
+Html::framework();
 
 $input->set('layout', $origLayout);
-
-JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
 $formId = (int) $params->get('formid');
 
@@ -48,19 +47,20 @@ if (empty($formId))
 }
 
 $readonly = $params->get('readonly', '0');
-if ($readonly == 1) {
-	require_once COM_FABRIK_FRONTEND . '/controllers/details.php';
-	$controller = new FabrikControllerDetails;
+if ($readonly == 1)
+{
+	$controller = new DetailsController();
 	$input->set('view', 'details');
-} else {
-	require_once COM_FABRIK_FRONTEND . '/controllers/form.php';
-	$controller = new FabrikControllerForm;
+}
+else
+{
+	$controller = new FormController();
 	$input->set('view', 'form');
 }
 
-$layout = $params->get('template', 'default');
-$usersConfig = JComponentHelper::getParams('com_fabrik');
-$rowid = (string) $params->get('row_id', '');
+$layout      = $params->get('template', 'default');
+$usersConfig = ComponentHelper::getParams('com_fabrik');
+$rowid       = (string) $params->get('row_id', '');
 $usersConfig->set('rowid', $rowid);
 
 $usekey = $params->get('usekey', '');
@@ -71,7 +71,7 @@ if (!empty($usekey))
 }
 
 $moduleclass_sfx = $params->get('moduleclass_sfx', '');
-$moduleAjax = $params->get('formmodule_useajax', true);
+$moduleAjax      = $params->get('formmodule_useajax', true);
 
 
 /* $$$rob for table views in category blog layouts when no layout specified in {} the blog layout

@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Timeline\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 
 /**
  * Fabrik Time line Viz Controller
@@ -22,7 +22,7 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
  * @subpackage  Fabrik.visualization.timeline
  * @since       4.0
  */
-class TimelineController extends AbstractVisualizationController
+class TimelineController extends VisualizationController
 {
 	/**
 	 * Get a series of timeline events

@@ -14,7 +14,7 @@ namespace Fabrik\Plugin\FabrikVisualization\FullCalendar\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Plugin\FabrikVisualization\FullCalendar\Model\FullCalendarModel;
@@ -28,7 +28,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik.visualization.calendar
  * @since       4.0
  */
-class FullCalendarController extends AbstractVisualizationController
+class FullCalendarController extends VisualizationController
 {
 	/**
 	 * Delete an event

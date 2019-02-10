@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Slideshow\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 
 /**
  * Slideshow viz Controller
@@ -23,6 +23,6 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
  * @subpackage  Fabrik.visualization.slideshow
  * @since       4.0
  */
-class FabrikControllerVisualizationslideshow extends AbstractVisualizationController
+class FabrikControllerVisualizationslideshow extends VisualizationController
 {
 }

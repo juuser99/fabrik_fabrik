@@ -9,6 +9,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Controller\DetailsController;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Pdf;
 use Joomla\CMS\Document\Document;
@@ -578,10 +579,6 @@ class PlgFabrik_FormMailgun extends AbstractFormPlugin
 
 		try
 		{
-			// Require files and set up DOM pdf
-			//require_once JPATH_SITE . '/components/com_fabrik/helpers/pdf.php';
-			require_once JPATH_SITE . '/components/com_fabrik/controllers/details.php';
-
 			// if DOMPDF isn't installed, this will throw an exception which we should catch
 			$domPdf = Pdf::iniDomPdf(true);
 
@@ -589,7 +586,7 @@ class PlgFabrik_FormMailgun extends AbstractFormPlugin
 			$orientation = $params->get('pdf_orientation', 'portrait');
 			$domPdf->set_paper($size, $orientation);
 
-			$controller = new FabrikControllerDetails;
+			$controller = new DetailsController();
 			/**
 			 * $$$ hugh - stuff our model in there, with already formatted data, so it doesn't get rendered
 			 * all over again by the view, with unformatted data.  Should probably use a setModel() method

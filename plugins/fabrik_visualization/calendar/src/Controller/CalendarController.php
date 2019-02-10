@@ -14,7 +14,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Calendar\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Plugin\FabrikVisualization\Calendar\Model\CalendarModel;
@@ -28,7 +28,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik.visualization.calendar
  * @since       4.0
  */
-class CalendarController extends AbstractVisualizationController
+class CalendarController extends VisualizationController
 {
 	/**
 	 * Delete an event

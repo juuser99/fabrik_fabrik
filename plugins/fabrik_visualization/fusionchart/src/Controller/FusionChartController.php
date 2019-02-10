@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\FusionChart\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 
 /**
  * Fusion chart viz Controller
@@ -22,6 +22,6 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
  * @subpackage  Fabrik.visualization.fusionchart
  * @since       4.0
  */
-class FusionChartController extends AbstractVisualizationController
+class FusionChartController extends VisualizationController
 {
 }

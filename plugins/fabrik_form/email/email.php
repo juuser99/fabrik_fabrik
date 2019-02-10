@@ -9,6 +9,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Controller\DetailsController;
 use Fabrik\Helpers\ArrayHelper;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Pdf;
@@ -498,9 +499,6 @@ class PlgFabrik_FormEmail extends AbstractFormPlugin
 
 		try
 		{
-			// Require files and set up DOM pdf
-			require_once JPATH_SITE . '/components/com_fabrik/controllers/details.php';
-
 			// if selected PDF engine isn't installed, this will throw an exception which we should catch
 			Worker::canPdf(true);
 
@@ -512,7 +510,7 @@ class PlgFabrik_FormEmail extends AbstractFormPlugin
 			 * submitted data.  "One of these days" we need to have a serious look at normalizing the data formats,
 			 * so submitted data is in the same format (once processed) as data read from the database.
 			 */
-			$controller               = new FabrikControllerDetails;
+			$controller               = new DetailsController();
 			$model->data              = null;
 			$controller->_model       = $model;
 			$controller->_model->data = $model->getData();

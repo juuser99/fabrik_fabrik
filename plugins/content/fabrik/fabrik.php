@@ -11,6 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Controller\AbstractSiteController;
+use Fabrik\Component\Fabrik\Site\Controller\DetailsController;
+use Fabrik\Component\Fabrik\Site\Controller\ListController;
+use Fabrik\Component\Fabrik\Site\Controller\PackageController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\FormController;
 use Fabrik\Helpers\ArrayHelper;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
@@ -841,13 +847,13 @@ class PlgContentFabrik extends CMSPlugin
 		switch ($viewName)
 		{
 			case 'visualization':
-				$controller = new FabrikControllerVisualization;
+				$controller = new VisualizationController();
 				break;
 			case 'form':
-				$controller = new FabrikControllerForm;
+				$controller = new FormController();
 				break;
 			case 'details':
-				$controller = new FabrikControllerDetails;
+				$controller = new DetailsController();
 				break;
 			case 'list':
 				// $$$ hugh - had to add [$id] for cases where we have multiple plugins with different tableids
@@ -855,21 +861,21 @@ class PlgContentFabrik extends CMSPlugin
 				{
 					if (!array_key_exists($id, $this->controllers['list']))
 					{
-						$this->controllers['list'][$id] = new FabrikControllerList;
+						$this->controllers['list'][$id] = new ListController();
 					}
 				}
 				else
 				{
-					$this->controllers['list'][$id] = new FabrikControllerList;
+					$this->controllers['list'][$id] = new ListController();
 				}
 
 				$controller = $this->controllers['list'][$id];
 				break;
 			case 'package':
-				$controller = new FabrikControllerPackage;
+				$controller = new PackageController();
 				break;
 			default:
-				$controller = new AbstractSiteController;
+				$controller = new AbstractSiteController();
 				break;
 		}
 

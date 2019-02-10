@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Approvals\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 
 /**
  * Approvals viz Controller
@@ -22,6 +22,6 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
  * @subpackage  Fabrik.visualization.approvals
  * @since       4.0
  */
-class ApprovalsController extends AbstractVisualizationController
+class ApprovalsController extends VisualizationController
 {
 }

@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Chart\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 
 /**
  * Google Chart Viz Controller
@@ -22,6 +22,6 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
  * @subpackage  Fabrik.visualization.chart
  * @since       4.0
  */
-class ChartController extends AbstractVisualizationController
+class ChartController extends VisualizationController
 {
 }

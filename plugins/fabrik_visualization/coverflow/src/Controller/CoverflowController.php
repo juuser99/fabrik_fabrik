@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Coverflow\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 
 /**
  * Fabrik Coverflow Viz Controller
@@ -22,6 +22,6 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
  * @subpackage  Fabrik.visualization.coverflow
  * @since       4.0
  */
-class CoverflowController extends AbstractVisualizationController
+class CoverflowController extends VisualizationController
 {
 }

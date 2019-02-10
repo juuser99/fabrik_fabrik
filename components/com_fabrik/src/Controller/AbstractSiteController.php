@@ -13,6 +13,7 @@ namespace Fabrik\Component\Fabrik\Site\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Controller\ModelTrait;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Document\Document;
 use Joomla\CMS\Factory;
@@ -25,6 +26,8 @@ use Joomla\Utilities\ArrayHelper;
 
 class AbstractSiteController extends BaseController
 {
+	use ModelTrait;
+
 	/**
 	 * @var User
 	 *

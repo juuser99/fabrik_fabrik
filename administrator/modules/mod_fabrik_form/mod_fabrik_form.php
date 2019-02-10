@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Fabrik\Component\Fabrik\Site\Controller\FormController;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.filesystem.file');
@@ -49,7 +51,7 @@ $origView = $input->get('view');
 
 $input->set('formid', $formId);
 $input->set('view', 'form');
-$controller = new FabrikControllerForm;
+$controller = new FormController();
 
 /*
  * For table views in category blog layouts when no layout specified in {} the blog layout

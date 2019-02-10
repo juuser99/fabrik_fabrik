@@ -13,7 +13,7 @@ namespace Fabrik\Plugin\FabrikVisualization\Nvd3Chart\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
+use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 
 /**
  * nvd3_chart chart viz Controller
@@ -22,6 +22,6 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractVisualizationController;
  * @subpackage  Fabrik.visualization.nvd3_chart
  * @since       4.0
  */
-class Nvd3ChartController extends AbstractVisualizationController
+class Nvd3ChartController extends VisualizationController
 {
 }

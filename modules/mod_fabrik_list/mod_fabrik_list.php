@@ -11,32 +11,26 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Helpers\ArrayHelper;
+use Fabrik\Component\Fabrik\Site\Controller\ListController;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\Utilities\ArrayHelper;
 
 if (!defined('COM_FABRIK_FRONTEND'))
 {
-	JError::raiseError(400, JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
+	throw new \Exception(Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
 }
 
-jimport('joomla.filesystem.file');
-jimport('joomla.application.component.model');
-jimport('joomla.application.component.helper');
-JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
-JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-JModelLegacy::addIncludePath(COM_FABRIK_BASE . '/administrator/components/com_fabrik/tables');
-
-require_once COM_FABRIK_FRONTEND . '/controller.php';
-require_once COM_FABRIK_FRONTEND . '/controllers/list.php';
-require_once COM_FABRIK_FRONTEND . '/views/list/view.html.php';
-require_once COM_FABRIK_FRONTEND . '/views/package/view.html.php';
-require_once COM_FABRIK_FRONTEND . '/controllers/package.php';
-require_once COM_FABRIK_FRONTEND . '/views/form/view.html.php';
-
 // Load front end language file as well
-$lang = JFactory::getLanguage();
+/** @var CMSApplication $app */
+$app  = Factory::getApplication();
+$lang = $app->getLanguage();
 $lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
 
-$app = JFactory::getApplication();
 $input = $app->input;
 
 // Clear out other filters (e.g. content/module previously rendered which used the same list but different filter)
@@ -45,36 +39,36 @@ if ($params->get('clearfilters'))
 	$input->set('clearfilters', 1);
 }
 
-$document = JFactory::getDocument();
+$document = $app->getDocument();
 
 // Ensure the package is set to fabrik
 $prevUserState = $app->getUserState('com_fabrik.package');
 $app->setUserState('com_fabrik.package', 'fabrik');
 
-FabrikHelperHTML::framework();
+Html::framework();
 
 // $$$rob looks like including the view does something to the layout variable
 $origLayout = $input->get('layout');
 $origItemId = $input->get('itemId');
 
-$listId = (int) $params->get('list_id', 1);
-$useajax = (int) $params->get('useajax', 0);
-$random	= (int) $params->get('radomizerecords', 0);
-$limit = (int) $params->get('limit', 0);
+$listId           = (int) $params->get('list_id', 1);
+$useajax          = (int) $params->get('useajax', 0);
+$random           = (int) $params->get('radomizerecords', 0);
+$limit            = (int) $params->get('limit', 0);
 $origResetfilters = $input->get('resetfilters');
-$resetFilters = (int) $params->get('resetfilters', 0);
+$resetFilters     = (int) $params->get('resetfilters', 0);
 $input->set('resetfilters', $resetFilters);
 $showTitle = $params->get('show-title', '');
-$layout	= $params->get('fabriklayout', '');
+$layout    = $params->get('fabriklayout', '');
 $input->set('layout', $layout);
 
 $moduleclass_sfx = $params->get('moduleclass_sfx', '');
-$listId	= intval($params->get('list_id', 0));
-$listels = json_decode($params->get('list_elements'));
+$listId          = intval($params->get('list_id', 0));
+$listels         = json_decode($params->get('list_elements'));
 
 if ($listId === 0)
 {
-	JError::raiseError(500, 'no list specified');
+	throw new \Exception('no list specified');
 }
 
 if (isset($listels->show_in_list))
@@ -82,15 +76,16 @@ if (isset($listels->show_in_list))
 	$input->set('fabrik_show_in_list', $listels->show_in_list);
 }
 
-$viewName = 'list';
-$viewType = $document->getType();
-$controller = new FabrikControllerList;
+$viewName   = 'list';
+$viewType   = $document->getType();
+$controller = new ListController();
 
 // Set the default view name from the Request
 $view = clone($controller->getView($viewName, $viewType));
 
 // Push a model into the view
-$model = $controller->getModel($viewName, 'FabrikFEModel');
+/** @var ListModel $model */
+$model = $controller->getModel(ListModel::class);
 $model->setId($listId);
 $model->setRenderContext($module->id);
 
@@ -128,8 +123,8 @@ if ($showTitle !== '')
 	$listParams->set('show-title', $showTitle);
 }
 
-$ordering = JArrayHelper::fromObject(json_decode($params->get('ordering')));
-$orderBy = (array) $ordering['order_by'];
+$ordering = \Joomla\Utilities\ArrayHelper::fromObject(json_decode($params->get('ordering')));
+$orderBy  = (array) $ordering['order_by'];
 $orderDir = (array) $ordering['order_dir'];
 
 if (!empty($orderBy))
@@ -138,60 +133,56 @@ if (!empty($orderBy))
 	foreach ($orderBy as $k => $v)
 	{
 		$context = 'com_fabrik.list' . $model->getRenderContext() . '.order.' . $v;
-		JFactory::getSession()->set($context, $orderDir[$k]);
+		Factory::getSession()->set($context, $orderDir[$k]);
 	}
 
-	$model->getTable()->order_by = json_encode($orderBy);
+	$model->getTable()->order_by  = json_encode($orderBy);
 	$model->getTable()->order_dir = json_encode($orderDir);
 }
 
 // Set up prefilters - will overwrite ones defined in the list!
 
-$prefilters = JArrayHelper::fromObject(json_decode($params->get('prefilters')));
+$prefilters = ArrayHelper::fromObject(json_decode($params->get('prefilters')));
 $conditions = (array) $prefilters['filter-conditions'];
 
 if (!empty($conditions))
 {
-    if ($listParams->get('menu_module_prefilters_override', true))
-    {
-        // override the list's filters with module's
-        $listParams->set('filter-join', $prefilters['filter-join']);
-        $listParams->set('filter-fields', $prefilters['filter-fields']);
-        $listParams->set('filter-conditions', $prefilters['filter-conditions']);
-        $listParams->set('filter-value', $prefilters['filter-value']);
-        $listParams->set('filter-access', $prefilters['filter-access']);
-        $listParams->set('filter-eval', $prefilters['filter-eval']);
-        $listParams->set('filter-grouped', ArrayHelper::array_fill(0, count($prefilters['filter-join']), 0));
-    }
-    else
-    {
-        // merge module filters into list's
-        $listFields = (array) $listParams->get('filter-fields');
-        $listConditions = (array) $listParams->get('filter-conditions');
-        $listValue = (array) $listParams->get('filter-value');
-        $listAccess = (array) $listParams->get('filter-access');
-        $listEval = (array) $listParams->get('filter-eval');
-        $listJoins = (array) $listParams->get('filter-join');
-        $listGrouped = (array) $listParams->get('filter-grouped');
-        $listJoins[0] = 'AND';
+	if ($listParams->get('menu_module_prefilters_override', true))
+	{
+		// override the list's filters with module's
+		$listParams->set('filter-join', $prefilters['filter-join']);
+		$listParams->set('filter-fields', $prefilters['filter-fields']);
+		$listParams->set('filter-conditions', $prefilters['filter-conditions']);
+		$listParams->set('filter-value', $prefilters['filter-value']);
+		$listParams->set('filter-access', $prefilters['filter-access']);
+		$listParams->set('filter-eval', $prefilters['filter-eval']);
+		$listParams->set('filter-grouped', FArrayHelper::array_fill(0, count($prefilters['filter-join']), 0));
+	}
+	else
+	{
+		// merge module filters into list's
+		$listFields     = (array) $listParams->get('filter-fields');
+		$listConditions = (array) $listParams->get('filter-conditions');
+		$listValue      = (array) $listParams->get('filter-value');
+		$listAccess     = (array) $listParams->get('filter-access');
+		$listEval       = (array) $listParams->get('filter-eval');
+		$listJoins      = (array) $listParams->get('filter-join');
+		$listGrouped    = (array) $listParams->get('filter-grouped');
+		$listJoins[0]   = 'AND';
 
-        $listParams->set('filter-join', array_merge($listJoins, $prefilters['filter-join']));
-        $listParams->set('filter-fields', array_merge($listFields, $prefilters['filter-fields']));
-        $listParams->set('filter-conditions', array_merge($listConditions, $prefilters['filter-conditions']));
-        $listParams->set('filter-value', array_merge($listValue, $prefilters['filter-value']));
-        $listParams->set('filter-access', array_merge($listAccess, $prefilters['filter-access']));
-        $listParams->set('filter-eval', array_merge($listEval, $prefilters['filter-eval']));
-        $listParams->set('filter-grouped', array_merge($listGrouped, FArrayHelper::array_fill(0, count($prefilters['filter-join']), '0')));
-    }
+		$listParams->set('filter-join', array_merge($listJoins, $prefilters['filter-join']));
+		$listParams->set('filter-fields', array_merge($listFields, $prefilters['filter-fields']));
+		$listParams->set('filter-conditions', array_merge($listConditions, $prefilters['filter-conditions']));
+		$listParams->set('filter-value', array_merge($listValue, $prefilters['filter-value']));
+		$listParams->set('filter-access', array_merge($listAccess, $prefilters['filter-access']));
+		$listParams->set('filter-eval', array_merge($listEval, $prefilters['filter-eval']));
+		$listParams->set('filter-grouped', array_merge($listGrouped, FArrayHelper::array_fill(0, count($prefilters['filter-join']), '0')));
+	}
 
 }
 
 $model->randomRecords = $random;
-
-if (!JError::isError($model))
-{
-	$view->setModel($model, true);
-}
+$view->setModel($model, true);
 
 $view->isMambot = true;
 
