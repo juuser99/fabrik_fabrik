@@ -67,7 +67,7 @@ trait TableTrait
 	 */
 	protected function _createTable($name, $prefix = 'Table', $config = array())
 	{
-		$tableClass = "Joomla\\Component\\Fabrik\\Administrator\\Table\\".ucfirst($name)."Table";
+		$tableClass = "Fabrik\\Component\\Fabrik\\Administrator\\Table\\".ucfirst($name)."Table";
 
 		if (class_exists($tableClass)) {
 			return FabrikTable::getInstance($tableClass, $prefix, $config);
