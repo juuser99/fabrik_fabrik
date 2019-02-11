@@ -39,7 +39,6 @@ class RawView extends BaseHtmlView
 	 *
 	 * @since 4.0
 	 */
-
 	public function display($tpl = null)
 	{
 		$app = Factory::getApplication();

@@ -414,8 +414,8 @@ class HtmlView extends BaseHtmlView
 		// For new records, check the create permission.
 		if ($canDo->get('core.create'))
 		{
-			ToolbarHelper::apply('form.doSave', 'JTOOLBAR_SAVE');
-			ToolbarHelper::cancel('form.cancel', 'JTOOLBAR_CANCEL');
+			ToolbarHelper::apply('list.doSave', 'JTOOLBAR_SAVE');
+			ToolbarHelper::cancel('list.cancel', 'JTOOLBAR_CANCEL');
 		}
 	}
 }
