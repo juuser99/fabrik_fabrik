@@ -973,7 +973,7 @@ class FormModel extends FabrikSiteModel
 	{
 		$db = Worker::getDbo(true);
 
-		if (!isset($this->_publishedformGroups) || empty($this->_publishedformGroups))
+		if (empty($this->_publishedformGroups))
 		{
 			$params = $this->getParams();
 			$query = $db->getQuery(true);

@@ -62,7 +62,7 @@ class ListModel extends FabrikAdminModel
 	/**
 	 * Front end form model
 	 *
-	 * @var object model
+	 * @var FormModel model
 	 *
 	 * @since 4.0
 	 */
@@ -71,7 +71,7 @@ class ListModel extends FabrikAdminModel
 	/**
 	 * Front end list model
 	 *
-	 * @var object
+	 * @var SiteListModel
 	 *
 	 * @since 4.0
 	 */
@@ -681,7 +681,7 @@ class ListModel extends FabrikAdminModel
 	{
 		$this->populateState();
 		$input = $this->app->input;
-		$Form = $input->get('Form', array(), 'array');
+		$form = $input->get('jform', array(), 'array');
 		$date  = Factory::getDate();
 		$row   = $this->getTable();
 
@@ -700,7 +700,7 @@ class ListModel extends FabrikAdminModel
 
 		/** @var $contentTypeModel ContentTypeImportModel */
 		$contentTypeModel = FabrikModel::getInstance(ContentTypeImportModel::class, '', array('listModel' => $this));
-		$contentType      = ArrayHelper::getValue($Form, 'contenttype', '');
+		$contentType      = ArrayHelper::getValue($form, 'contenttype', '');
 
 		if ($contentType !== '')
 		{
@@ -902,7 +902,7 @@ class ListModel extends FabrikAdminModel
 
 		$db = Worker::getDbo();
 		$table = $this->getTable();
-		$cn = $feModel->getConnection();
+		$cn = Worker::getConnection();
 		$c = $cn->getConnection();
 		$dbName = $c->database;
 
@@ -1328,8 +1328,8 @@ class ListModel extends FabrikAdminModel
 
 		if ($tableName === '')
 		{
-			$Form     = $input->get('Form', array(), 'array');
-			$tableName = FArrayHelper::getValue($Form, 'db_table_name');
+			$form     = $input->get('jform', array(), 'array');
+			$tableName = FArrayHelper::getValue($form, 'db_table_name');
 		}
 
 		$pluginManager = Worker::getPluginManager();
@@ -1899,8 +1899,8 @@ class ListModel extends FabrikAdminModel
 		}
 
 		$fabrikDatabase = $feModel->getDb();
-		$Form          = $input->get('Form', array(), 'array');
-		$tableName      = ($Form['db_table_name'] != '') ? $Form['db_table_name'] : $Form['_database_name'];
+		$form          = $input->get('jform', array(), 'array');
+		$tableName      = ($form['db_table_name'] != '') ? $form['db_table_name'] : $form['_database_name'];
 		$tableName      = preg_replace('#[^0-9a-zA-Z_]#', '_', $tableName);
 		$aPriKey        = $feModel->getPrimaryKeyAndExtra($tableName);
 
@@ -1958,8 +1958,8 @@ class ListModel extends FabrikAdminModel
 		$db        = $this->getFEModel()->getDb();
 		$input     = $this->app->input;
 		$type      = $autoIncrement != true ? $type : 'INT(6)';
-		$Form     = $input->get('Form', array(), 'array');
-		$tableName = ($Form['db_table_name'] != '') ? $Form['db_table_name'] : $Form['_database_name'];
+		$form     = $input->get('jform', array(), 'array');
+		$tableName = ($form['db_table_name'] != '') ? $form['db_table_name'] : $form['_database_name'];
 		$tableName = preg_replace('#[^0-9a-zA-Z_]#', '_', $tableName);
 		$tableName = FStringHelper::safeColName($tableName);
 		$fieldName = FStringHelper::shortColName($fieldName);
@@ -2000,8 +2000,8 @@ class ListModel extends FabrikAdminModel
 	{
 		$db        = $this->getFEModel()->getDb();
 		$input     = $this->app->input;
-		$Form     = $input->get('Form', array(), 'array');
-		$tableName = FStringHelper::safeColName($Form['db_table_name']);
+		$form     = $input->get('jform', array(), 'array');
+		$tableName = FStringHelper::safeColName($form['db_table_name']);
 		$sql       = 'ALTER TABLE ' . $tableName . ' CHANGE ' . FStringHelper::safeColName($aPriKey['colname']) . ' '
 			. FStringHelper::safeColName($aPriKey['colname']) . ' ' . $aPriKey['type'] . ' NOT NULL';
 
@@ -2032,8 +2032,8 @@ class ListModel extends FabrikAdminModel
 	protected function updateKey($fieldName, $autoIncrement, $type = "INT(11)")
 	{
 		$input     = $this->app->input;
-		$Form     = $input->get('Form', array(), 'array');
-		$tableName = FStringHelper::safeColName($Form['db_table_name']);
+		$form     = $input->get('jform', array(), 'array');
+		$tableName = FStringHelper::safeColName($form['db_table_name']);
 		$db        = $this->getFEModel()->getDb();
 
 		if (strstr($fieldName, '.'))
@@ -2076,9 +2076,9 @@ class ListModel extends FabrikAdminModel
 		PluginHelper::importPlugin('content');
 
 		$input       = $this->app->input;
-		$Form       = $input->get('Form', array(), 'array');
-		$deleteDepth = $Form['recordsDeleteDepth'];
-		$drop        = $Form['dropTablesFromDB'];
+		$form       = $input->get('jform', array(), 'array');
+		$deleteDepth = $form['recordsDeleteDepth'];
+		$drop        = $form['dropTablesFromDB'];
 
 		$feModel        = $this->getFEModel();
 		$fabrikDatabase = $feModel->getDb();
@@ -2409,12 +2409,12 @@ class ListModel extends FabrikAdminModel
 
 		$sql   = 'CREATE TABLE IF NOT EXISTS ' . $db->qn($dbTableName) . ' (';
 		$input = $this->app->input;
-		$Form = $input->get('Form', array(), 'array');
+		$form = $input->get('jform', array(), 'array');
 
-		if ($Form['id'] == 0 && array_key_exists('current_groups', $Form))
+		if ($form['id'] == 0 && array_key_exists('current_groups', $form))
 		{
 			// Saving a new form
-			$groupIds = $Form['current_groups'];
+			$groupIds = $form['current_groups'];
 		}
 		else
 		{
@@ -2600,8 +2600,8 @@ class ListModel extends FabrikAdminModel
 		$sqlAdd         = array();
 
 		// $$$ hugh - looks like this is now an array in Form
-		$Form    = $input->get('Form', array(), 'array');
-		$arGroups = FArrayHelper::getValue($Form, 'current_groups', array(), 'array');
+		$form    = $input->get('jform', array(), 'array');
+		$arGroups = FArrayHelper::getValue($form, 'current_groups', array(), 'array');
 
 		if (empty($arGroups))
 		{
