@@ -34,8 +34,7 @@
 			/>
 
 			<field name="published"
-			       type="radio"
-			       class="switcher"
+			       type="list"
 			       default="1"
 			       label="JSTATUS"
 			       description="JFIELD_PUBLISHED_DESC"
@@ -250,8 +249,7 @@
 				<option value="1">JYES</option>
 			</field>
 			<field name="labels_above"
-			       type="radio"
-			       class="switcher"
+			       type="list"
 			       default="-1"
 			       label="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_LABEL"
 			       description="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_DESC">
@@ -262,8 +260,7 @@
 			</field>
 
 			<field name="labels_above_details"
-			       type="radio"
-			       class="switcher"
+			       type="list"
 			       default="-1"
 			       label="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_DETAILS_LABEL"
 			       description="COM_FABRIK_FIELD_GROUP_LABELS_ABOVE_DETAILS_DESC">

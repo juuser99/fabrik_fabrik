@@ -158,8 +158,7 @@
 	<fieldset name="publishing-details">
 
 		<field name="published"
-		       type="radio"
-		       class="switcher"
+		       type="list"
 		       default="1"
 		       label="JSTATUS"
 		       description="JFIELD_PUBLISHED_DESC"
@@ -1439,8 +1438,7 @@
 			</field>
 
 			<field name="enable_single_sorting"
-			       type="radio"
-			       class="switcher"
+			       type="list"
 			       default="default"
 			       label="COM_FABRIK_FIELD_ENABLE_SINGLE_ORDERING_LABEL"
 			       description="COM_FABRIK_FIELD_ENABLE_SINGLE_ORDERING_DESC"

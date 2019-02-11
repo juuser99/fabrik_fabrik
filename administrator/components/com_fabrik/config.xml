@@ -431,7 +431,6 @@
 		<field name="advanced_behavior"
 			type="list"
 			default="0"
-			class="switcher"
 			label="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_GLOBAL_LABEL"
 			description="COM_FABRIK_DROPDOWN_JQUERY_CHOSEN_GLOBAL_DESC" >
 				<option value="0">JNO</option>

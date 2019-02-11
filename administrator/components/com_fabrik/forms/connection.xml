@@ -53,8 +53,7 @@
 			size="30"/>
 
 		<field name="published"
-			type="radio"
-			class="switcher"
+			type="list"
 			default="0"
 			label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC"

@@ -59,7 +59,6 @@
 
 		<field name="published"
 			type="list"
-			class="switcher"
 			default="1"
 			label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC"
