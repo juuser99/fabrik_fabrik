@@ -583,7 +583,7 @@ class PluginManagerModel extends FabrikSiteModel
 	 */
 	public function getPluginFromId($id, $type = 'Element')
 	{
-		$el = $this->getTable($type, 'FabrikTable');
+		$el = $this->getTable($type);
 		$el->load($id);
 		$o = $this->loadPlugIn($el->plugin, $type);
 		$o->setId($id);
