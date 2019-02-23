@@ -14,10 +14,13 @@ namespace Fabrik\Component\Fabrik\Site\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Controller\ModelTrait;
+use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Document\Document;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\MVC\Factory\MVCFactory;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseDriver;
@@ -77,17 +80,20 @@ class AbstractSiteController extends BaseController
 	protected $app;
 
 	/**
-	 * Constructor
+	 * AbstractSiteController constructor.
 	 *
-	 * @param   array $config A named configuration array for object construction.
-	 *
-	 * @since 4.0
+	 * @param array                    $config
+	 * @param MVCFactoryInterface|null $factory
+	 * @param null                     $app
+	 * @param null                     $input
 	 *
 	 * @throws \Exception
+	 *
+	 * @since 4.0
 	 */
-	public function __construct($config = array())
+	public function __construct($config = array(), MVCFactoryInterface $factory = null, $app = null, $input = null)
 	{
-		$this->app     = ArrayHelper::getValue($config, 'app', Factory::getApplication());
+		$this->app     = ArrayHelper::getValue($config, 'app', $app ?? Factory::getApplication());
 		$this->user    = ArrayHelper::getValue($config, 'user', Factory::getUser());
 		$this->package = $this->app->getUserState('com_fabrik.package', 'fabrik');
 		$this->session = ArrayHelper::getValue($config, 'session', $this->app->getSession());
@@ -95,6 +101,25 @@ class AbstractSiteController extends BaseController
 		$this->db      = ArrayHelper::getValue($config, 'db', Factory::getContainer()->get('DatabaseDriver'));
 		$this->config  = ArrayHelper::getValue($config, 'config', $this->app->getConfig());
 
-		parent::__construct($config);
+		parent::__construct($config, $factory, $this->app, $input);
+	}
+
+	/**
+	 * Create a Fabrik controller for Fabrik module and plugin use
+	 *
+	 * @param $controllerClass
+	 *
+	 * @return AbstractSiteController
+	 *
+	 * @since 4.0
+	 *
+	 * @throws \Exception
+	 */
+	public static function createController($controllerClass): AbstractSiteController
+	{
+		$factory    = new MVCFactory(Dispatcher::NAMESPACE);
+		$controller = new $controllerClass(array(), $factory);
+
+		return $controller;
 	}
 }

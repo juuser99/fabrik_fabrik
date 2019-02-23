@@ -9,6 +9,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Site\Controller\AbstractSiteController;
 use Fabrik\Component\Fabrik\Site\Controller\DetailsController;
 use Fabrik\Component\Fabrik\Site\Controller\FormController;
 use Fabrik\Helpers\Html;
@@ -20,6 +21,7 @@ use Joomla\CMS\Language\Text;
 // Load front end language file as well
 /** @var CMSApplication $app */
 $app  = Factory::getApplication();
+
 $lang = $app->getLanguage();
 $lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
 
@@ -49,12 +51,12 @@ if (empty($formId))
 $readonly = $params->get('readonly', '0');
 if ($readonly == 1)
 {
-	$controller = new DetailsController();
+	$controller = AbstractSiteController::createController(DetailsController::class);
 	$input->set('view', 'details');
 }
 else
 {
-	$controller = new FormController();
+	$controller = AbstractSiteController::createController(FormController::class);
 	$input->set('view', 'form');
 }
 
