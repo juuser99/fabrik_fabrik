@@ -91,7 +91,7 @@ $listDirn  = $this->state->get('list.direction');
                         <td>
                             <?php echo $item->id; ?>
                         </td>
-                        <td><?php echo HTMLHelper::_('searchtools.id', $i, $item->id); ?></td>
+                        <td><?php echo HTMLHelper::_('grid.id', $i, $item->id); ?></td>
                         <td>
                             <?php if ($item->checked_out) : ?>
                                 <?php echo HTMLHelper::_('jsearchtools.checkedout', $i, $item->editor, $item->checked_out_time, 'lists.', $canCheckin); ?>
@@ -133,7 +133,7 @@ $listDirn  = $this->state->get('list.direction');
                             </a>
                         </td>
                         <td class="center">
-                            <?php echo HTMLHelper::_('jsearchtools.published', $item->published, $i, 'lists.', $canChange);?>
+                            <?php echo HTMLHelper::_('jgrid.published', $item->published, $i, 'lists.', $canChange);?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
