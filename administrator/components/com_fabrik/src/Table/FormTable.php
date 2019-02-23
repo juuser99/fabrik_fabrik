@@ -66,7 +66,7 @@ class FormTable extends FabrikTable
 	 */
 	public function bind($src, $ignore = array())
 	{
-		$src = array($src);
+		$src = (array) $src;
 		if (isset($src['params']) && is_array($src['params']))
 		{
 			$registry = new Registry;
