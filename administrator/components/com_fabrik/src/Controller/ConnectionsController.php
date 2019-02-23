@@ -66,18 +66,18 @@ class ConnectionsController extends AbstractAdminController
 	}
 
 	/**
-	 * Proxy for getModel.
+	 * @param string $name
+	 * @param string $prefix
+	 * @param array  $config
 	 *
-	 * @param   string  $name    model name
-	 * @param   string  $prefix  model prefix
+	 * @return ConnectionModel
 	 *
-	 * @since	1.6
-	 *
-	 * @return  ConnectionModel
+	 * @since version
 	 */
-	public function getModel($name = ConnectionModel::class, $prefix = '')
+	public function getModel($name = ConnectionModel::class, $prefix = '',  $config = array('ignore_request' => true))
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		/** @var ConnectionModel $model */
+		$model = parent::getModel($name, $prefix, $config);
 
 		return $model;
 	}

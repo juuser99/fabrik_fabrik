@@ -20,7 +20,7 @@ use Joomla\CMS\Router\Route;
 use Fabrik\Component\Fabrik\Administrator\Model\ElementModel;
 use Fabrik\Component\Fabrik\Administrator\Model\FormModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
-use Joomla\Component\Users\Administrator\Model\GroupModel;
+use Fabrik\Component\Fabrik\Administrator\Model\GroupModel;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -71,6 +71,7 @@ class ListsController extends AbstractAdminController
 		{
 			// Make sure the item ids are integers
 			$cid     = ArrayHelper::toInteger($cid);
+			/** @var FormModel $model */
 			$model   = $this->getModel(FormModel::class);
 			$formIds = $model->swapListToFormIds($cid);
 
@@ -83,6 +84,7 @@ class ListsController extends AbstractAdminController
 			else
 			{
 				// Publish the groups
+				/** @var GroupModel $groupModel */
 				$groupModel = $this->getModel(GroupModel::class);
 
 				if (is_object($groupModel))
@@ -98,6 +100,7 @@ class ListsController extends AbstractAdminController
 						else
 						{
 							// Publish the elements
+							/** @var ElementModel $elementModel */
 							$elementModel = $this->getModel(ElementModel::class);
 							$elementIds   = $elementModel->swapGroupToElementIds($groupIds);
 
@@ -136,5 +139,25 @@ class ListsController extends AbstractAdminController
 		// Used to load in the confirm form fields
 		$view->setModel($this->getModel(ListModel::class));
 		$view->display();
+	}
+
+
+	/**
+	 * Proxy for getModel.
+	 *
+	 * @param   string  $name    The model name. Optional.
+	 * @param   string  $prefix  The class prefix. Optional.
+	 * @param   array   $config  The array of possible config values. Optional.
+	 *
+	 * @return  ListModel
+	 *
+	 * @since   1.6
+	 */
+	public function getModel($name = ListModel::class, $prefix = '',  $config = array('ignore_request' => true))
+	{
+		/** @var ListModel $model */
+		$model = parent::getModel($name, $prefix, $config);
+
+		return $model;
 	}
 }

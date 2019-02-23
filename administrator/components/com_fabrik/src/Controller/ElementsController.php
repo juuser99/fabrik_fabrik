@@ -21,7 +21,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Fabrik\Component\Fabrik\Administrator\Model\ElementModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ElementsModel;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
@@ -76,15 +75,13 @@ class ElementsController extends AbstractAdminController
 	 * @param   string  $prefix  Model prefix
 	 * @param   array   $config  Model config
 	 *
-	 * @return  ElementModel|FabrikModel
+	 * @return  ElementModel
 	 *
 	 * @since 4.0
 	 */
-	public function getModel($name = ElementModel::class, $prefix = '', $config = array())
+	public function getModel($name = ElementModel::class, $prefix = '',  $config = array('ignore_request' => true))
 	{
-		$config = array();
-		$config['ignore_request'] = true;
-
+		/** @var ElementModel $model */
 		$model = parent::getModel($name, $prefix, $config);
 
 		return $model;

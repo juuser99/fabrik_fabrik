@@ -12,10 +12,9 @@
 namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Administrator\Model\GroupsModel;
-
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Component\Fabrik\Administrator\Model\GroupModel;
 
 /**
  * Groups list controller class.
@@ -45,18 +44,18 @@ class GroupsController extends AbstractAdminController
 	protected $view_item = 'groups';
 
 	/**
-	 * Proxy for getModel.
+	 * @param string $name
+	 * @param string $prefix
+	 * @param array  $config
 	 *
-	 * @param   string  $name    model name
-	 * @param   string  $prefix  model prefix
-	 *
-	 * @return  GroupsModel|FabrikModel
+	 * @return GroupModel
 	 *
 	 * @since 4.0
 	 */
-	public function getModel($name = GroupsModel::class, $prefix = '')
+	public function getModel($name = GroupModel::class, $prefix = '',  $config = array('ignore_request' => true))
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		/** @var GroupModel $model */
+		$model = parent::getModel($name, $prefix, $config);
 
 		return $model;
 	}

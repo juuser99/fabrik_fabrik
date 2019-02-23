@@ -14,6 +14,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Controller;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Model\PackageModel;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -187,5 +188,22 @@ class PackagesController extends AbstractAdminController
 		}
 
 		return $items;
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $prefix
+	 * @param array  $config
+	 *
+	 * @return PackageModel
+	 *
+	 * @since version
+	 */
+	public function getModel($name = PackageModel::class, $prefix = '',  $config = array('ignore_request' => true))
+	{
+		/** @var PackageModel $model */
+		$model = parent::getModel($name, $prefix, $config);
+
+		return $model;
 	}
 }

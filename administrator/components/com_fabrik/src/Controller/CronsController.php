@@ -72,9 +72,10 @@ class CronsController extends AbstractAdminController
 	 *
 	 * @since 4.0
 	 */
-	public function getModel($name = CronModel::class, $prefix = '', $config = array())
+	public function getModel($name = CronModel::class, $prefix = '',  $config = array('ignore_request' => true))
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		/** @var CronModel $model */
+		$model = parent::getModel($name, $prefix, $config);
 
 		return $model;
 	}

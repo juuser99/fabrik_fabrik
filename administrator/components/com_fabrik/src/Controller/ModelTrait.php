@@ -16,24 +16,28 @@ use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 trait ModelTrait
 {
 	/**
-	 * Try a clean approach first then fall back to native Joomla
+	 * Try Joomla Factory first then fall back to manually creating
 	 *
-	 * @param string $modelClass
+	 * @param string $name
 	 * @param string $prefix
 	 * @param array  $config
 	 *
-	 * @return FabrikModel
+	 * @return FabrikModel|bool
 	 *
 	 * @since 4.0
 	 *
 	 * @throws \Exception
 	 */
-	public function getModel($modelClass = '', $prefix = '', $config = array())
+	protected function createModel($name, $prefix = '', $config = array())
 	{
-		if (class_exists($modelClass)) {
-			return FabrikModel::getInstance($modelClass, '', $config);
+		if ($factoryModel = parent::createModel($name, $prefix, $config)) {
+			return $factoryModel;
 		}
 
-		return parent::getModel($modelClass, $prefix, $config);
+		if (class_exists($name)) {
+			return FabrikModel::getInstance($name, '', $config);
+		}
+
+		return false;
 	}
 }

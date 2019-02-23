@@ -26,7 +26,7 @@ class FabrikModel extends BaseDatabaseModel
 	 * @param string $prefix
 	 * @param array  $config
 	 *
-	 * @return BaseDatabaseModel
+	 * @return FabrikModel|BaseDatabaseModel
 	 * @throws \Exception
 	 *
 	 * @since 4.0

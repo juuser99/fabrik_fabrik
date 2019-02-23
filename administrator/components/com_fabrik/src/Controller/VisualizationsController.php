@@ -12,10 +12,9 @@
 namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 // No direct access
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
-use Fabrik\Component\Fabrik\Administrator\Model\VisualizationsModel;
-
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Component\Fabrik\Administrator\Model\VisualizationModel;
 
 /**
  * Visualization list controller class.
@@ -45,18 +44,18 @@ class VisualizationsController extends AbstractAdminController
 	protected $view_item = 'visualizations';
 
 	/**
-	 * Proxy for getModel.
+	 * @param string $name
+	 * @param string $prefix
+	 * @param array  $config
 	 *
-	 * @param   string  $name    model name
-	 * @param   string  $prefix  model prefix
-	 *
-	 * @return  VisualizationsModel|FabrikModel
+	 * @return VisualizationModel
 	 *
 	 * @since 4.0
 	 */
-	public function getModel($name = VisualizationsModel::class, $prefix = '')
+	public function getModel($name = VisualizationModel::class, $prefix = '',  $config = array('ignore_request' => true))
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		/** @var VisualizationModel $model */
+		$model = parent::getModel($name, $prefix, $config);
 
 		return $model;
 	}

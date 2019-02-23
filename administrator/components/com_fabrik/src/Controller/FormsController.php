@@ -56,9 +56,10 @@ class FormsController extends AbstractAdminController
 	 *
 	 * @return  FormModel
 	 */
-	public function getModel($name = FormModel::class, $prefix = '', $config = array())
+	public function getModel($name = FormModel::class, $prefix = '',  $config = array('ignore_request' => true))
 	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+		/** @var FormModel $model */
+		$model = parent::getModel($name, $prefix, $config);
 
 		return $model;
 	}
