@@ -138,7 +138,8 @@ class SwapListField extends ListField
 		$query->order(FStringHelper::safeColName('text'));
 		$db->setQuery($query);
 		$groups = $db->loadObjectList();
-		$list   = HTMLHelper::_('select.genericlist', $groups, 'jform[groups]', 'class="inputbox input-xxlarge" size="10" value', 'text', null,
+
+		$list   = HTMLHelper::_('select.genericlist', $groups, 'jform[groups]', 'class="form-control inputbox input-xxlarge" size="10"', 'value', 'text', null,
 			$this->id . '-from');
 
 		return array($groups, $list);
@@ -163,8 +164,7 @@ class SwapListField extends ListField
 		$query->order('fg.ordering');
 		$db->setQuery($query);
 		$currentGroups = $db->loadObjectList();
-		$style         = Worker::j3() ? '' : 'style="width:100%;"';
-		$attribs       = 'class="inputbox input-xxlarge" multiple="multiple" ' . $style . ' size="10" ';
+		$attribs       = 'class="form-control inputbox input-xxlarge" multiple="multiple" size="10" ';
 		$list          = HTMLHelper::_('select.genericlist', $currentGroups, $this->name, $attribs, 'value', 'text', '/', $this->id);
 
 		return array($currentGroups, $list);
