@@ -655,12 +655,12 @@ class PlgSystemFabrik extends CMSPlugin
 	 * Check the product key and if it exists create an update site entry
 	 * Update server XML manifest generated from update/premium.php
 	 *
-	 * @param string    $option
-	 * @param Extension $data
+	 * @param string $option
+	 * @param Table  $data
 	 *
 	 * @since 4.0
 	 */
-	function onExtensionAfterSave($option, Extension $data)
+	function onExtensionAfterSave($option, Table $data)
 	{
 		if ($option !== 'com_config.component')
 		{
