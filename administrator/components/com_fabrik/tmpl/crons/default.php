@@ -17,7 +17,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Layout\LayoutHelper;
 
-require_once JPATH_COMPONENT . '/helpers/adminhtml.php';
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 HTMLHelper::_('behavior.tooltip');
 HTMLHelper::_('script', 'system/multiselect.js', false, true);
