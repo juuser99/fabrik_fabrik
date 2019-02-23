@@ -21,7 +21,7 @@ use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
-use Joomla\Component\Site\Fabrik\Date\FabDate;
+use Fabrik\Component\Fabrik\Site\Date\FabDate;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;

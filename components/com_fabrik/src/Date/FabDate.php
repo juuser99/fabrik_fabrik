@@ -7,7 +7,7 @@
  * @since       4.0
  */
 
-namespace Joomla\Component\Site\Fabrik\Date;
+namespace Fabrik\Component\Fabrik\Site\Date;
 
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
