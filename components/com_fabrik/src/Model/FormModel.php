@@ -4862,7 +4862,7 @@ class FormModel extends FabrikSiteModel
 		else
 		{
 			// In plugin & SEF URLs
-			if ((int) $router->getMode() === (int) JROUTER_MODE_SEF)
+			if ($this->app->getConfig()->get('sef'))
 			{
 				// $$$ rob if embedding a form in a form, then the embedded form's url will contain
 				// the id of the main form - not sure if its an issue for now
