@@ -21,7 +21,7 @@ use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementListPlugin;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractElementPlugin;
-use Fabrik\Component\Fabrik\Site\Date\FabDate;
+use Fabrik\Component\Fabrik\Site\Date\FabrikDate;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\Worker;
@@ -111,7 +111,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 
 		if (strstr($f, '%'))
 		{
-			$f = FabDate::strftimeFormatToDateFormat($f);
+			$f = FabrikDate::strftimeFormatToDateFormat($f);
 		}
 
 		foreach ($data as $d)
@@ -290,7 +290,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 
 		if (strstr($format, '%'))
 		{
-			$format = FabDate::strftimeFormatToDateFormat($format);
+			$format = FabrikDate::strftimeFormatToDateFormat($format);
 		}
 
 		$timeFormat = $params->get('date_time_format', 'H:i');
@@ -866,7 +866,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 		$opts->firstDay      = intval($params->get('date_firstday'));
 		$opts->ifFormat      = $params->get('date_form_format', $params->get('date_table_format', 'Y-m-d'));
 		$opts->timeFormat    = 24;
-		$opts->ifFormat      = FabDate::dateFormatToStrftimeFormat($opts->ifFormat);
+		$opts->ifFormat      = FabrikDate::dateFormatToStrftimeFormat($opts->ifFormat);
 		$opts->dateAllowFunc = $params->get('date_allow_func');
 
 		return $opts;
@@ -1174,7 +1174,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 	 */
 	protected function formatContainsTime($format)
 	{
-		$format = FabDate::dateFormatToStrftimeFormat($format);
+		$format = FabrikDate::dateFormatToStrftimeFormat($format);
 
 		$times = array('%H', '%I', '%l', '%M', '%p', '%P', '%r', '%R', '%S', '%T', '%X', '%z', '%Z');
 
@@ -1494,7 +1494,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 
 	/**
 	 * Get the list filter for the element
-	 * Note: uses FabDate as if date element first to be found in advanced search, and advanced search run on another
+	 * Note: uses FabrikDate as if date element first to be found in advanced search, and advanced search run on another
 	 * element the list model in getAdvancedSearchElementList() builds the first filter (this element) with the data
 	 * from the first search which was throwing '"500 - DateTime::__construct() ' errors
 	 *
@@ -1739,7 +1739,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 			}
 			else
 			{
-				$d = new FabDate($o->text);
+				$d = new FabrikDate($o->text);
 				if (!$storeAsLocal)
 				{
 					$d->setTimeZone($timeZone);
@@ -1795,7 +1795,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 
 		if ($default !== '')
 		{
-			$d       = new FabDate($default);
+			$d       = new FabrikDate($default);
 			$default = $d->format($format);
 		}
 
@@ -1837,9 +1837,9 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 		}
 		else
 		{
-			$d          = new FabDate($default[0]);
+			$d          = new FabrikDate($default[0]);
 			$default[0] = $d->format($format);
-			$d          = new FabDate($default[1]);
+			$d          = new FabrikDate($default[1]);
 			$default[1] = $d->format($format);
 		}
 
@@ -2116,7 +2116,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 	/**
 	 * Add days to a date
 	 *
-	 * @param   mixed   $date The initial time for the FabDate object
+	 * @param   mixed   $date The initial time for the FabrikDate object
 	 * @param   integer $add  Number of days to add (negative to remove days)
 	 *
 	 * @return  string    MySQL formatted date
@@ -2354,7 +2354,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 					/* $$$ hugh - testing horrible hack for different languages, initially for andorapro's site
 					 * Problem is, he has multiple language versions of the site, and needs to filter tables
 					 * by "%Y %B" dropdown (i.e. "2010 November") in multiple languages.
-					 * FabDate automagically uses the selected language when we render the date
+					 * FabrikDate automagically uses the selected language when we render the date
 					 * but when we get to this point, month names are still localized, i.e. in French or German
 					 * which MySQL won't grok (until 5.1.12)
 					 * So we need to translate them back again, *sigh*
@@ -2664,7 +2664,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 		$opts                          = new \stdClass;
 		$opts->calendarSetup           = $this->_CalendarJSOpts($id);
 		$opts->calendarSetup->ifFormat = $params->get('date_table_format', 'Y-m-d');
-		$opts->calendarSetup->ifFormat = FabDate::dateFormatToStrftimeFormat($opts->calendarSetup->ifFormat);
+		$opts->calendarSetup->ifFormat = FabrikDate::dateFormatToStrftimeFormat($opts->calendarSetup->ifFormat);
 		$opts->type                    = $type;
 		$opts->ids                     = $type == 'field' ? array($id) : array($id, $id2);
 		$opts->buttons                 = $type == 'field' ? array($id . '_cal_img') : array($id . '_cal_img', $id2 . '_cal_img');

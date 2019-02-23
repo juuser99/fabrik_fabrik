@@ -20,7 +20,7 @@ use Joomla\String\StringHelper;
  * @package  Fabrik
  * @since    4.0
  */
-class FabDate extends Date
+class FabrikDate extends Date
 {
 	/**
 	 * GMT Date
