@@ -9,38 +9,38 @@
  */
 
 // No direct access
-use Fabrik\Component\Fabrik\Site\Controller\FormController;
-
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.filesystem.file');
-$app = JFactory::getApplication();
+use Fabrik\Component\Fabrik\Site\Controller\AbstractSiteController;
+use Fabrik\Component\Fabrik\Site\Controller\FormController;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Component\ComponentHelper;
+
+/** @var CMSApplication $app */
+$app = Factory::getApplication();
 $input = $app->input;
 
 // Load front end language file as well
-$lang = JFactory::getLanguage();
+$lang = $app->getLanguage();
 $lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
 
 if (!defined('COM_FABRIK_FRONTEND'))
 {
-	throw new RuntimeException(FText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
+	throw new \RuntimeException(FText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
 }
 
-FabrikHelperHTML::framework();
-require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/controllers/form.php';
+Html::framework();
 
 // $$$rob looks like including the view does something to the layout variable
 $origLayout = $input->get('layout');
-require_once COM_FABRIK_FRONTEND . '/views/form/view.html.php';
 $input->set('layout', $origLayout);
-
-JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-JModelLegacy::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
 $formId	= (int) $params->get('formid', 1);
 $rowid = (int) $params->get('row_id', 0);
 $layout = $params->get('template', '');
-$usersConfig = JComponentHelper::getParams('com_fabrik');
+$usersConfig = ComponentHelper::getParams('com_fabrik');
 $usersConfig->set('rowid', $rowid);
 
 $moduleclass_sfx = $params->get('moduleclass_sfx', '');
@@ -51,7 +51,7 @@ $origView = $input->get('view');
 
 $input->set('formid', $formId);
 $input->set('view', 'form');
-$controller = new FormController();
+$controller = AbstractSiteController::createController(FormController::class);
 
 /*
  * For table views in category blog layouts when no layout specified in {} the blog layout
