@@ -319,7 +319,7 @@ class BaseView extends AbstractView
 		$opts->groupByOpts->isGrouped      = (bool) $this->isGrouped;
 		$opts->groupByOpts->collapseOthers = (bool) $params->get('group_by_collapse_others', false);
 		$opts->groupByOpts->startCollapsed = (bool) $input->get('start_collapsed', $params->get('group_by_start_collapsed', false));
-		$opts->groupByOpts->bootstrap      = Worker::j3();
+		$opts->groupByOpts->bootstrap      = true;
 
 		// If table data starts as empty then we need the html from the row
 		// template otherwise we can't add a row to the table

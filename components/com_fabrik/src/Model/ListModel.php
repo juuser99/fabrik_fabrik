@@ -11339,9 +11339,9 @@ class ListModel extends FabrikSiteModel
 				}
 			}
 
-			if ($this->tmpl == '' || (!Worker::j3() && $this->tmpl === 'bootstrap'))
+			if (empty($this->tmpl))
 			{
-				$this->tmpl = Worker::j3() ? 'bootstrap' : 'default';
+				$this->tmpl = 'bootstrap';
 			}
 
 			if ($this->app->scope !== 'mod_fabrik_list')
@@ -11360,7 +11360,7 @@ class ListModel extends FabrikSiteModel
 
 			// Migration test
 			$modFolder       = JPATH_SITE . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $this->tmpl;
-			$componentFolder = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $this->tmpl;
+			$componentFolder = JPATH_SITE . '/components/com_fabrik/tmpl/list/' . $this->tmpl;
 
 			if (!Folder::exists($componentFolder) && !Folder::exists($modFolder))
 			{

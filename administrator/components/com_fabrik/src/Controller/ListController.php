@@ -15,6 +15,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
@@ -168,7 +169,9 @@ class ListController extends AbstractFormController
 			$model->setState('list.id', $cid);
 		}
 
-		$viewType = Factory::getDocument()->getType();
+		/** @var CMSApplication $app */
+		$app = Factory::getApplication();
+		$viewType = $app->getDocument()->getType();
 
 		// Use the front end renderer to show the table
 		$viewLayout = $input->getWord('layout', 'default');
