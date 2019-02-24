@@ -52,6 +52,13 @@ class BaseView extends AbstractView
 	public $isMambot = null;
 
 	/**
+	 * @var string
+	 *
+	 * @since 4.0
+	 */
+	protected $_name = 'list';
+
+	/**
 	 * Build CSV export options and JS code
 	 *
 	 * @param $opts
