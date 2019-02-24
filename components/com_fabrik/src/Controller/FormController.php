@@ -234,6 +234,7 @@ class FormController extends AbstractSiteController
 		$profiler = Profiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('controller process: start') : null;
 
+		/** @var CMSApplication $app */
 		$app   = Factory::getApplication();
 		$input = $app->input;
 
@@ -242,8 +243,7 @@ class FormController extends AbstractSiteController
 			error_reporting(error_reporting() ^ (E_WARNING | E_NOTICE));
 		}
 
-		$viewName = $input->get('view', 'form');
-		$view     = $this->getView($viewName, Factory::getDocument()->getType());
+		$view = $this->getView('form', $app->getDocument()->getType());
 
 		/** @var FormModel $model */
 		if ($model = $this->getModel(FormModel::class))
