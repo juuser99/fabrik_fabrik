@@ -514,7 +514,7 @@
 				label="PLG_VISUALIZATION_GOOGLEMAP_HEIGHT_LABEL" />
 
 			<field
-				directory="/plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/"
+				directory="/plugins/fabrik_visualization/googlemap/tmpl/googlemap/"
 				label="template"
 				name="fb_gm_layout"
 				type="fabrikfolderlist" />

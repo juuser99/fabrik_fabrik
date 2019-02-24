@@ -35,7 +35,7 @@
 			</field>
 				
 			<field name="listlayout" type="fabrikfolderlist"
-				directory="/components/com_fabrik/views/list/tmpl/"
+				directory="/components/com_fabrik/tmpl/list/"
 				label="Template" 
 				descrption="The table template to use" />
 				

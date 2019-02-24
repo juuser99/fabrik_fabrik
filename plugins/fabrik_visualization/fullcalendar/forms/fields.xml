@@ -102,7 +102,7 @@
 			
 			<field name="fullcalendar_layout"
 				type="fabrikfolderlist"
-				directory="plugins/fabrik_visualization/fullcalendar/views/fullcalendar/tmpl/"
+				directory="plugins/fabrik_visualization/fullcalendar/tmpl/fullcalendar/"
 				default="bootstrap"
 				label="PLG_VISUALIZATION_FULLCALENDAR_TEMPLATE_LABEL" />
 				

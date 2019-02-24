@@ -115,7 +115,7 @@
 
 			<field name="fusion_gantt_chart_layout"
 				type="fabrikfolderlist"
-				directory="plugins/fabrik_visualization/fusion_gantt_chart/views/fusion_gantt_chart/tmpl/"
+				directory="plugins/fabrik_visualization/fusion_gantt_chart/tmpl/fusion_gantt_chart/"
 				label="PLG_VISUALIZATION_GANNT_TEMPLATE_LABEL" />
 
 			<field name="fusion_gannt_chart_monthdisplay"

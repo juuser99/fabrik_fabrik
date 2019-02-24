@@ -85,7 +85,7 @@
 			
 			<field name="timeline_layout"
 				type="fabriktemplate"
-				directory="/plugins/fabrik_visualization/timeline/views/timeline/"
+				directory="/plugins/fabrik_visualization/timeline/tmpl/timeline/"
 				label="PLG_VIZ_TIMELINE_TEMPLATE_LABEL" />
 				
 			<field name="timeline_date_format"

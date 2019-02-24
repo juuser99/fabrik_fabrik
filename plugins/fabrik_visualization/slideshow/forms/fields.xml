@@ -5,7 +5,7 @@
 		
 			<field name="slideshow_viz_layout"
 				type="fabrikfolderlist"
-				directory="/plugins/fabrik_visualization/slideshow/views/slideshow/tmpl"
+				directory="/plugins/fabrik_visualization/slideshow/tmpl/slideshow"
 				label="PLG_VISUALIZATION_SLIDESHOW_TEMPLATE_LABEL"
 			/>
 			

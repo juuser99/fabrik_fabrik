@@ -40,7 +40,7 @@
 
 			<field name="fabriklayout" type="fabrikfolderlist"
 				description="COM_FABRIK_FIELD_FORM_TEMPLATE_DESC"
-				directory="/components/com_fabrik/views/details/tmpl/"
+				directory="/components/com_fabrik/tmpl/details/"
 				label="COM_FABRIK_FIELD_FORM_TEMPLATE_LABEL" />
 
 		</fieldset>
