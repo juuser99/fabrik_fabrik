@@ -1126,7 +1126,6 @@ class ListModel extends FabrikSiteModel
 		$profiler   = Profiler::getInstance('Application');
 		$traceModel = ini_get('mysql.trace_mode');
 		$fabrikDb   = $this->getDb();
-		$this->setBigSelects();
 		$query = $this->buildQuery();
 
 		// $$$ rob - if merging joined data then we don't want to limit
@@ -7829,7 +7828,6 @@ class ListModel extends FabrikSiteModel
 								$noRepeatFields[] = $key;
 								$lastKey          = $key;
 								$val              = $elementModel->storeDatabaseFormat($data[$postKey], $data);
-								$elementModel->updateRowId($rowId);
 
 								if (isset($formModel->formData) && array_key_exists('fabrik_copy_from_table', $formModel->formData))
 								{
@@ -9787,7 +9785,6 @@ class ListModel extends FabrikSiteModel
 		if ($mode == 'table')
 		{
 			$query = $this->buildQuery();
-			$this->setBigSelects();
 			$fabrikDb->setQuery($query, $this->limitStart, $this->limitLength);
 			$data = $fabrikDb->loadObjectList();
 		}

@@ -3517,12 +3517,6 @@ class FormModel extends FabrikSiteModel
 
 					if (!empty($useKey) || $this->rowId !== '')
 					{
-						// $$$ hugh - once we have a few join elements, our select statements are
-						// getting big enough to hit default select length max in MySQL.
-						$listModel->setBigSelects();
-
-						// Otherwise lets get the table record
-
 						/**
 						 * $$$ hugh - 11/14/2015 - ran into issue with the order by from a list being added to the form query, when
 						 * rendering a form with a content plugin in a list intro.  And I don't think we ever need to
