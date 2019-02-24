@@ -2364,7 +2364,7 @@ class ListModel extends FabrikSiteModel
 		}
 
 		$paths = array(
-			COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $this->getTmpl() . '/layouts/element/' . $elementModel->getFullName(true, false)
+			COM_FABRIK_FRONTEND . '/tmpl/list/' . $this->getTmpl() . '/layouts/element/' . $elementModel->getFullName(true, false)
 		);
 
 		if ($isIcon === true)
@@ -11425,7 +11425,6 @@ class ListModel extends FabrikSiteModel
 	public function getListCss()
 	{
 		$tmpl        = $this->getTmpl();
-		$jTmplFolder = 'tmpl';
 
 		// Check for a form template file (code moved from view)
 		if ($tmpl != '')
@@ -11442,7 +11441,7 @@ class ListModel extends FabrikSiteModel
 
 			if (!Html::stylesheetFromPath($overRide))
 			{
-				Html::stylesheetFromPath('components/com_fabrik/views/list/' . $jTmplFolder . '/' . $tmpl . '/template_css.php' . $qs);
+				Html::stylesheetFromPath('components/com_fabrik/tmpl/list/' . '/' . $tmpl . '/template_css.php' . $qs);
 			}
 			/* $$$ hugh - as per Skype conversation with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
 			 * custom.css - for backward compatibility with existing 2.x custom.css
@@ -11450,7 +11449,7 @@ class ListModel extends FabrikSiteModel
 			*/
 			if (!Html::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom.css' . $qs))
 			{
-				Html::stylesheetFromPath('components/com_fabrik/views/list/' . $jTmplFolder . '/' . $tmpl . '/custom.css');
+				Html::stylesheetFromPath('components/com_fabrik/tmpl/list/' . $tmpl . '/custom.css');
 			}
 
 			if (!Html::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl . '/custom_css.php' . $qs))
@@ -12431,8 +12430,8 @@ class ListModel extends FabrikSiteModel
 	 */
 	public function getLayout($name, $paths = array(), $options = array())
 	{
-		$paths[] = COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $this->getTmpl() . '/layouts';
-		$paths[] = COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $this->getTmpl() . '/layouts/list_' . $this->getId();
+		$paths[] = COM_FABRIK_FRONTEND . '/tmpl/list/' . $this->getTmpl() . '/layouts';
+		$paths[] = COM_FABRIK_FRONTEND . '/tmpl/list/' . $this->getTmpl() . '/layouts/list_' . $this->getId();
 		$paths[] = JPATH_THEMES . '/' . Factory::getApplication()->getTemplate() . '/html/layouts/com_fabrik/list_' . $this->getId();
 		$layout  = Html::getLayout($name, $paths, $options);
 

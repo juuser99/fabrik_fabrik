@@ -47,7 +47,7 @@ class FabrikViewCsv extends FabrikView
 			throw new RuntimeException('Naughty naughty!', 400);
 		}
 
-		$this->addTemplatePath(JPATH_SITE . '/components/com_fabrik/views/csv/tmpl');
+		$this->addTemplatePath(JPATH_SITE . '/components/com_fabrik/tmpl/csv');
 
 		return parent::display($tpl);
 	}

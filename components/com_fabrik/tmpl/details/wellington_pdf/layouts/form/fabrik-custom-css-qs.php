@@ -10,7 +10,7 @@
  */
 defined('JPATH_BASE') or die;
 $d = $displayData;
-$path = 'components/com_fabrik/views/' . $d->view . '/' . $d->jTmplFolder . '/' . $d->tmpl . '/custom_css.php' . $d->qs;
+$path = 'components/com_fabrik/tmpl/' . $d->view . '/' . $d->tmpl . '/custom_css.php' . $d->qs;
 $path .= '&amp;color=00FF00';
 echo $path;
 

@@ -702,7 +702,7 @@ class FormModel extends FabrikSiteModel
 			// Test it exists - otherwise revert to baseTmpl tmpl
 			$folder = $this->isEditable() ? 'form' : 'details';
 
-			if (!Folder::exists(JPATH_SITE . '/components/com_fabrik/views/' . $folder . '/' . $jTmplFolder . '/' . $tmpl))
+			if (!Folder::exists(JPATH_SITE . '/components/com_fabrik/tmpl/' . $folder . '/' . $jTmplFolder . '/' . $tmpl))
 			{
 				$tmpl = $baseTmpl;
 			}
@@ -725,7 +725,6 @@ class FormModel extends FabrikSiteModel
 	public function getFormCss()
 	{
 		$input = $this->app->input;
-		$jTmplFolder = 'tmpl';
 		$tmpl = $this->getTmpl();
 		$v = $this->isEditable() ? 'form' : 'details';
 
@@ -755,7 +754,7 @@ class FormModel extends FabrikSiteModel
 
 			if (!Html::stylesheetFromPath($tmplPath))
 			{
-				Html::stylesheetFromPath('components/com_fabrik/views/' . $view . '/' . $jTmplFolder . '/' . $tmpl . '/template_css.php' . $qs);
+				Html::stylesheetFromPath('components/com_fabrik/tmpl/' . $view . '/' . $tmpl . '/template_css.php' . $qs);
 			}
 
 			/* $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
@@ -765,7 +764,7 @@ class FormModel extends FabrikSiteModel
 
 			if (!Html::stylesheetFromPath('templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom.css' . $qs))
 			{
-				Html::stylesheetFromPath('components/com_fabrik/views/' . $view . '/' . $jTmplFolder . '/' . $tmpl . '/custom.css' . $qs);
+				Html::stylesheetFromPath('components/com_fabrik/tmpl/' . $view . '/' . $tmpl . '/custom.css' . $qs);
 			}
 
 			$path = 'templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/custom_css.php' . $qs;
@@ -776,7 +775,7 @@ class FormModel extends FabrikSiteModel
 				$displayData->view        = $view;
 				$displayData->tmpl        = $tmpl;
 				$displayData->qs          = $qs;
-				$displayData->jTmplFolder = $jTmplFolder;
+				$displayData->jTmplFolder = '';
 				$displayData->formModel   = $this;
 				$layout = $this->getLayout('form.fabrik-custom-css-qs');
 				$path = $layout->render($displayData);
@@ -5792,7 +5791,7 @@ class FormModel extends FabrikSiteModel
 	public function getLayout($name, $paths = array(), $options = array())
 	{
 		$view = $this->isEditable() ? 'form' : 'details';
-		$paths[] = COM_FABRIK_FRONTEND . '/views/'. $view . '/tmpl/' . $this->getTmpl() . '/layouts';
+		$paths[] = COM_FABRIK_FRONTEND . '/tmpl/' . $view . '/' . $this->getTmpl() . '/layouts';
 		$layout  = Html::getLayout($name, $paths, $options);
 
 		return $layout;

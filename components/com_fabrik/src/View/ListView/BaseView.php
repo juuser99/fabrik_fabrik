@@ -218,11 +218,11 @@ class BaseView extends AbstractView
 		$model->getListCss();
 
 		// Check for a custom js file and include it if it exists
-		$aJsPath = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $tmpl . '/javascript.js';
+		$aJsPath = JPATH_SITE . '/components/com_fabrik/tmpl/list/' . $tmpl . '/javascript.js';
 
 		if (File::exists($aJsPath))
 		{
-			$src['CustomJs'] = 'components/com_fabrik/views/list/tmpl/' . $tmpl . '/javascript.js';
+			$src['CustomJs'] = 'components/com_fabrik/tmpl/list/' . $tmpl . '/javascript.js';
 		}
 
 		$origRows   = $this->rows;

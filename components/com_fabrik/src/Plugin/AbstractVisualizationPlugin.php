@@ -8,7 +8,7 @@
 
 namespace Fabrik\Component\Fabrik\Site\Plugin;
 
-abstract class AbstractVisualizationPlugin
+abstract class AbstractVisualizationPlugin extends FabrikPlugin
 {
 
 }

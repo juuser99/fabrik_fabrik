@@ -129,13 +129,13 @@ class HtmlView extends BaseView
 
 		Html::iniRequireJs($model->getShim());
 		Html::script($srcs, $js);
-		Html::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl . '/template.css');
+		Html::stylesheetFromPath('plugins/fabrik_visualization/googlemap/tmpl/googlemap/' . $tpl . '/template.css');
 
 		// Check and add a general fabrik custom css file overrides template css and generic table css
 		Html::stylesheetFromPath('media/com_fabrik/css/custom.css');
 
 		// Check and add a specific viz template css file overrides template css generic table css and generic custom css
-		Html::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tpl . '/custom.css');
+		Html::stylesheetFromPath('plugins/fabrik_visualization/googlemap/tmpl/googlemap/' . $tpl . '/custom.css');
 		$this->filters         = $model->getFilters();
 		$this->showFilters     = $model->showFilters();
 		$this->filterFormURL   = $model->getFilterFormURL();

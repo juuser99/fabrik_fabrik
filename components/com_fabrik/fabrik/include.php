@@ -157,19 +157,6 @@ class FabrikAutoloader
 			}
 		}
 		*/
-
-		if ($class !== 'FabrikView')
-		{
-			return;
-		}
-
-		$path = JPATH_SITE . '/components/com_fabrik/views/FabrikView.php';
-
-		if (file_exists($path))
-		{
-			require_once $path;
-		}
-
 	}
 
 	private function appName($class)

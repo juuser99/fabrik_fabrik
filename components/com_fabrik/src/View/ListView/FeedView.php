@@ -168,7 +168,7 @@ class FeedView extends BaseView
 
 		if (file_exists($cssPath))
 		{
-			$this->doc->addStyleSheet(COM_FABRIK_LIVESITE . 'components/com_fabrik/views/list/tmpl/' . $tmpl . '/feed.css');
+			$this->doc->addStyleSheet(COM_FABRIK_LIVESITE . 'components/com_fabrik/tmpl/list/' . $tmpl . '/feed.css');
 		}
 
 		$view = $model->canEdit() ? 'form' : 'details';

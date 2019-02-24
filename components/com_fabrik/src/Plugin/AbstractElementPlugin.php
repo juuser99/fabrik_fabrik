@@ -1917,8 +1917,8 @@ abstract class AbstractElementPlugin extends FabrikPlugin
 		$pluginPath = COM_FABRIK_BASE . '/plugins/fabrik_element/' . $this->getPluginName() . '/layouts';
 		// Custom per template layouts
 		$view       = $this->getFormModel()->isEditable() ? 'form' : 'details';
-		$tmplPath   = COM_FABRIK_FRONTEND . '/views/' . $view . '/tmpl/' . $this->getFormModel()->getTmpl() . '/layouts/element/';
-		$tmplElPath = COM_FABRIK_FRONTEND . '/views/' . $view . '/tmpl/' . $this->getFormModel()->getTmpl() . '/layouts/element/' . $this->getFullName(true, false);
+		$tmplPath   = COM_FABRIK_FRONTEND . '/tmpl/' . $view . '/' . $this->getFormModel()->getTmpl() . '/layouts/element/';
+		$tmplElPath = COM_FABRIK_FRONTEND . '/tmpl/' . $view . '/' . $this->getFormModel()->getTmpl() . '/layouts/element/' . $this->getFullName(true, false);
 		// Custom per theme layouts
 		$perThemePath   = JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts/com_fabrik/element';
 		$perElementPath = JPATH_THEMES . '/' . $this->app->getTemplate() . '/html/layouts/com_fabrik/element/' . $this->getFullName(true, false);
@@ -8208,8 +8208,8 @@ abstract class AbstractElementPlugin extends FabrikPlugin
 
 		// Custom per template layout
 		$view = $this->getFormModel()->isEditable() ? 'form' : 'details';
-		$layout->addIncludePaths(COM_FABRIK_FRONTEND . '/views/' . $view . '/tmpl/' . $this->getFormModel()->getTmpl() . '/layouts/element/');
-		$layout->addIncludePaths(COM_FABRIK_FRONTEND . '/views/' . $view . '/tmpl/' . $this->getFormModel()->getTmpl() . '/layouts/element/' . $this->getFullName(true, false));
+		$layout->addIncludePaths(COM_FABRIK_FRONTEND . '/tmpl/' . $view . '/' . $this->getFormModel()->getTmpl() . '/layouts/element/');
+		$layout->addIncludePaths(COM_FABRIK_FRONTEND . '/tmpl/' . $view . '/' . $this->getFormModel()->getTmpl() . '/layouts/element/' . $this->getFullName(true, false));
 
 		return $layout;
 	}
