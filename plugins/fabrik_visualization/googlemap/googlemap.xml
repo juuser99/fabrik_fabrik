@@ -10,7 +10,7 @@
 	<version>3.8.1</version>
 	<help url="PLG_VISUALIZATION_GOOGLEMAP_HELP_SERVER"/>
 	<description>PLG_VISUALIZATION_GOOGLEMAP_DESCRIPTION</description>
-	<namespace path="src">Fabrik\Plugin\FabrikVisualization\GoogleMap</namespace>
+	<namespace path="src">Fabrik\Plugin\FabrikVisualization\Googlemap</namespace>
 	<files>
 		<filename plugin="googlemap">googlemap.php</filename>
 		<filename>googlemap.js</filename>

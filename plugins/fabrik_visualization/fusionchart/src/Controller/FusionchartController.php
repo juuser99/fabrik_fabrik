@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\FusionChart\Controller;
+namespace Fabrik\Plugin\FabrikVisualization\Fusionchart\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -22,6 +22,6 @@ use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
  * @subpackage  Fabrik.visualization.fusionchart
  * @since       4.0
  */
-class FusionChartController extends VisualizationController
+class FusionchartController extends VisualizationController
 {
 }

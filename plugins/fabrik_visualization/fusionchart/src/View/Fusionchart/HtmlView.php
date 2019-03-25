@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\FusionChart\View\FusionChart;
+namespace Fabrik\Plugin\FabrikVisualization\Fusionchart\View\Fusionchart;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

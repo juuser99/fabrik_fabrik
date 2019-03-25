@@ -10,13 +10,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\GoogleMap\View\GoogleMap;
+namespace Fabrik\Plugin\FabrikVisualization\Googlemap\View\Googlemap;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Text;
-use Fabrik\Plugin\FabrikVisualization\GoogleMap\Model\GoogleMapModel;
+use Fabrik\Plugin\FabrikVisualization\Googlemap\Model\GooglemapModel;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\View\HtmlView as BaseView;
@@ -45,7 +45,7 @@ class JsonView extends BaseView
 		$app         = Factory::getApplication();
 		$input       = $app->input;
 		$usersConfig = ComponentHelper::getParams('com_fabrik');
-		/** @var GoogleMapModel $model */
+		/** @var GooglemapModel $model */
 		$model       = $this->getModel();
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
 		$this->row = $model->getVisualization();

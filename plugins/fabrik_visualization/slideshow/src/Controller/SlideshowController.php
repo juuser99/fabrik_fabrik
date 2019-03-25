@@ -23,6 +23,6 @@ use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
  * @subpackage  Fabrik.visualization.slideshow
  * @since       4.0
  */
-class FabrikControllerVisualizationslideshow extends VisualizationController
+class SlideshowController extends VisualizationController
 {
 }

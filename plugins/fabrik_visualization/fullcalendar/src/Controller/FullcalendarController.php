@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\FullCalendar\Controller;
+namespace Fabrik\Plugin\FabrikVisualization\Fullcalendar\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -17,7 +17,7 @@ use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\Controller\VisualizationController;
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
-use Fabrik\Plugin\FabrikVisualization\FullCalendar\Model\FullCalendarModel;
+use Fabrik\Plugin\FabrikVisualization\Fullcalendar\Model\FullcalendarModel;
 use Joomla\CMS\Component\ComponentHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
 
@@ -28,7 +28,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik.visualization.calendar
  * @since       4.0
  */
-class FullCalendarController extends VisualizationController
+class FullcalendarController extends VisualizationController
 {
 	/**
 	 * Delete an event
@@ -55,7 +55,7 @@ class FullCalendarController extends VisualizationController
 	{
 		$input  = $this->input;
 		$config = ComponentHelper::getParams('com_fabrik');
-		$model  = FabrikModel::getInstance(FullCalendarModel::class);
+		$model  = FabrikModel::getInstance(FullcalendarModel::class);
 		$id     = $input->getInt('visualizationid', $config->get('visualizationid', 0));
 		$model->setId($id);
 		echo $model->getEvents();
@@ -97,7 +97,7 @@ class FullCalendarController extends VisualizationController
 		$input       = $this->input;
 		$listId      = $input->getInt('listid');
 		$usersConfig = ComponentHelper::getParams('com_fabrik');
-		$model       = FabrikModel::getInstance(FullCalendarModel::class);
+		$model       = FabrikModel::getInstance(FullcalendarModel::class);
 		$id          = $input->getInt('visualizationid', $usersConfig->get('visualizationid', 0));
 		$model->setId($id);
 		$model->setupEvents();

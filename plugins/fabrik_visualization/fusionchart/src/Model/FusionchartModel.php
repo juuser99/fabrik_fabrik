@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\FusionChart\Controller;
+namespace Fabrik\Plugin\FabrikVisualization\Fusionchart\Controller;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
  * @subpackage  Fabrik.visualization.fusionchart
  * @since       4.0
  */
-class FusionChartModel extends AbstractVisualizationModel
+class FusionchartModel extends AbstractVisualizationModel
 {
 	/**
 	 * @var \FusionCharts

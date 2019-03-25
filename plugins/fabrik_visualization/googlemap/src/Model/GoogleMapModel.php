@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\GoogleMap\Model;
+namespace Fabrik\Plugin\FabrikVisualization\Googlemap\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik.visualization.googlemap
  * @since       4.0
  */
-class GoogleMapModel extends AbstractVisualizationModel
+class GooglemapModel extends AbstractVisualizationModel
 {
 	/**
 	 * Out put text

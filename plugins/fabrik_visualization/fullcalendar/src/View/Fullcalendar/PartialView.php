@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\FullCalendar\View\FullCalendar;
+namespace Fabrik\Plugin\FabrikVisualization\Fullcalendar\View\Fullcalendar;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');

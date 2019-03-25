@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\FullCalendar\Model;
+namespace Fabrik\Plugin\FabrikVisualization\Fullcalendar\Model;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik.visualization.calendar
  * @since       4.0
  */
-class FullCalendarModel extends AbstractVisualizationModel
+class FullcalendarModel extends AbstractVisualizationModel
 {
 	/**
 	 * Array of Fabrik lists containing events

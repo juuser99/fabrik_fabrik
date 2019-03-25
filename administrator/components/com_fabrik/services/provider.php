@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die;
 
+use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
 use Joomla\CMS\Extension\ComponentInterface;
 use Joomla\CMS\Extension\MVCComponent;
@@ -36,8 +37,8 @@ return new class implements ServiceProviderInterface
 	 */
 	public function register(Container $container)
 	{
-		$container->registerServiceProvider(new MVCFactory('\\Fabrik\\Component\\Fabrik'));
-		$container->registerServiceProvider(new ComponentDispatcherFactory('\\Fabrik\\Component\\Fabrik'));
+		$container->registerServiceProvider(new MVCFactory(Dispatcher::NAMESPACE));
+		$container->registerServiceProvider(new ComponentDispatcherFactory(Dispatcher::NAMESPACE));
 
 		$container->set(
 			ComponentInterface::class,

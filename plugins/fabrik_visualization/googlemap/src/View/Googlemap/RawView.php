@@ -1,49 +1,52 @@
 <?php
 /**
- * Fabrik Calendar Raw View
+ * Fabrik Google Map Raw View
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.calendar
+ * @subpackage  Fabrik.visualization.googlemap
  * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikVisualization\FullCalendar\View\FullCalendar;
+namespace Fabrik\Plugin\FabrikVisualization\Googlemap\View\Googlemap;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Plugin\FabrikVisualization\Googlemap\Model\GooglemapModel;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseView;
 
 /**
- * Fabrik Calendar Raw View
+ * Fabrik Google Map Raw View
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.visualization.calendar
- * @since       4.0
+ * @subpackage  Fabrik.visualization.googlemap
+ * @since       3.0
  */
+
 class RawView extends BaseView
 {
 	/**
 	 * Display the view
 	 *
-	 * @param   string $tmpl Template
+	 * @param   string $tmpl template
 	 *
-	 * @return  void
+	 * @return void
 	 *
 	 * @since 4.0
 	 */
 	public function display($tmpl = null)
 	{
-		$model        = $this->getModel();
-		$app          = Factory::getApplication();
-		$input        = $app->input;
-		$listid       = $input->get('listid', '');
-		$eventListKey = $input->get('eventListKey', '');
-		$usersConfig  = ComponentHelper::getParams('com_fabrik');
+		$app         = Factory::getApplication();
+		$input       = $app->input;
+		$usersConfig = ComponentHelper::getParams('com_fabrik');
+		/** @var GooglemapModel $model */
+		$model       = $this->getModel();
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
+		$this->row = $model->getVisualization();
 
 		if (!$model->canView())
 		{
@@ -52,6 +55,6 @@ class RawView extends BaseView
 			return false;
 		}
 
-		echo $model->getEvents($listid, $eventListKey);
+		echo $model->getJSIcons();
 	}
 }
