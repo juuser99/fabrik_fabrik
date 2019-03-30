@@ -10,7 +10,7 @@
 namespace Fabrik\Component\Fabrik\Administrator\Controller;
 
 
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Fabrik\Helpers\Worker;
 use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 
 trait ModelTrait
@@ -30,6 +30,13 @@ trait ModelTrait
 	 */
 	protected function createModel($name, $prefix = '', $config = array())
 	{
+		/*
+		 * Use true so that we always use the Joomla db when in admin.
+		 * otherwise if alt cnn set to default that is loaded and the fabrik tables are not found
+		 */
+		$db = Worker::getDbo(true);
+		$config['dbo'] = $db;
+
 		if ($factoryModel = parent::createModel($name, $prefix, $config)) {
 			return $factoryModel;
 		}
