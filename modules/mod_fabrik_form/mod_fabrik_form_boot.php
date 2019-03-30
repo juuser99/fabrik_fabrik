@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Site\Controller\DetailsController;
 use Fabrik\Component\Fabrik\Site\Controller\FormController;
-use Fabrik\Component\Fabrik\Site\Helper\ControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerHelper;
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
@@ -63,7 +63,7 @@ if (!empty($usekey))
 	$inputVars['usekey'] = $usekey;
 }
 
-$controllerHelper = new ControllerHelper();
+$controllerHelper = new PluginControllerHelper();
 $controllerHelper->setPropertyVars(['isMambot' => true]);
 
 if ($readonly == 1)

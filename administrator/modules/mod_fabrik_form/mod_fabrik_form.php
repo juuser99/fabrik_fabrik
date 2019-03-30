@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Site\Controller\FormController;
-use Fabrik\Component\Fabrik\Site\Helper\ControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerHelper;
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
@@ -59,7 +59,7 @@ if ($layout !== '')
 	$inputVars['layout'] = $layout;
 }
 
-(new ControllerHelper())
+(new PluginControllerHelper())
 	->setInputVars($inputVars)
 	->setPropertyVars(
 		[

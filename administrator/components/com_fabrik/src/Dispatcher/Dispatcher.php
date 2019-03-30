@@ -11,6 +11,12 @@ namespace Fabrik\Component\Fabrik\Administrator\Dispatcher;
 
 defined('_JEXEC') or die;
 
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Dispatcher\ComponentDispatcher;
 
@@ -35,6 +41,25 @@ class Dispatcher extends ComponentDispatcher
 	protected $namespace = self::NAMESPACE;
 
 	/**
+	 * @since 4.0
+	 */
+	public function dispatch()
+	{
+		// Test if the system plugin is installed and published
+		if (!defined('COM_FABRIK_FRONTEND'))
+		{
+			throw new \RuntimeException(Text::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'), 400);
+		}
+
+		HTMLHelper::stylesheet('administrator/components/com_fabrik/tmpl/headings.css');
+
+		$this->checkElementIsPublished();
+		$this->loadFabrikFramework();
+
+		parent::dispatch();
+	}
+
+	/**
 	 * Get a controller from the component with a "hack" for J4 lack of support for formatted controllers
 	 *
 	 * @param   string $name   Controller name
@@ -45,42 +70,16 @@ class Dispatcher extends ComponentDispatcher
 	 *
 	 * @since   4.0.0
 	 */
-	public function getController(string $name, string $client = '', array $config = array()): BaseController
+	public function getController(string $controllerName, string $client = '', array $config = array()): BaseController
 	{
-		$format     = $this->input->get('format');
-		$controller = $this->input->get('controller');
-
-		if (!empty($controller) && 'raw' === $format)
-		{
-			$classController    = ucfirst($controller);
-			$format             = ucfirst($format);
-			$controllerString   = "%s\\%s\\Controller\\%s%sController";
-			$backendController  = sprintf(
-				$controllerString,
-				$this->namespace,
-				self::PREFIX_SITE,
-				$classController,
-				$format
-			);
-
-			$frontendController = sprintf(
-				$controllerString,
-				$this->namespace,
-				self::PREFIX_ADMIN,
-				$classController,
-				$format
-			);
-
-			if (!class_exists($backendController) && !class_exists($frontendController))
-			{
-				// Fallback to the standard controller
-				return parent::getController($name, $client, $config);
-			}
-
-			$controller .= 'Raw';
-			$name       .= 'Raw';
-			$this->input->set('controller', $controller);
+		if (PluginControllerParser::isFabrikPlugin($controllerName)) {
+			return (new PluginControllerHelper())->getController($controllerName, $config);
 		}
+
+		$client = PluginControllerParser::getControllerClient($controllerName, $client ? $client : self::PREFIX_ADMIN);
+		$name   = PluginControllerParser::getControllerName($this->input, $controllerName);
+
+		$this->input->set('controller', $name);
 
 		return parent::getController($name, $client, $config);
 	}
@@ -97,5 +96,36 @@ class Dispatcher extends ComponentDispatcher
 		parent::loadLanguage();
 
 		$this->app->getLanguage()->load($this->option, JPATH_ROOT.'/components/com_fabrik', null, false, true);
+	}
+
+
+	/**
+	 * Test that they've published some element plugins!
+	 *
+	 * @since 4.0
+	 */
+	private function checkElementIsPublished()
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select('COUNT(extension_id)')->from('#__extensions')
+			->where('enabled = 1 AND folder = ' . $db->q('fabrik_element'));
+		$db->setQuery($query);
+
+		if ((int)$db->loadResult() === 0)
+		{
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_PUBLISH_AT_LEAST_ONE_ELEMENT_PLUGIN'), 'notice');
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	private function loadFabrikFramework()
+	{
+		if ($this->app->input->get('format', 'html') === 'html')
+		{
+			Html::framework();
+		}
 	}
 }

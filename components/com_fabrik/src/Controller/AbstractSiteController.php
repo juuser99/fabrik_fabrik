@@ -131,7 +131,6 @@ class AbstractSiteController extends BaseController
 	 *
 	 * @return  null
 	 * @since 4.0
-	 *
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{

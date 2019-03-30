@@ -15,7 +15,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Factory\MVCFactory;
 
-class ControllerHelper
+class PluginControllerHelper
 {
 	/**
 	 * @var string
@@ -60,6 +60,34 @@ class ControllerHelper
 	private $originalApp;
 
 	/**
+	 * @param string $controllerName
+	 * @param array  $config
+	 *
+	 * @return AbstractSiteController
+	 *
+	 * @throws \Exception
+	 * @since 4.0
+	 */
+	public static function getController(string $controllerName, array $config = []): AbstractSiteController
+	{
+		$app     = Factory::getApplication();
+		$plugin  = ucfirst(PluginControllerParser::getFabrikPluginName($controllerName));
+		$name    = PluginControllerParser::getControllerName($app->input, $controllerName);
+		$factory = new MVCFactory(PluginControllerParser::getNamespace($controllerName));
+
+		/** @var AbstractSiteController $controller */
+		$controller = $factory->createController(
+			$name,
+			$plugin,
+			PluginControllerParser::getControllerConfig($controllerName, $config),
+			$app,
+			$app->input
+		);
+
+		return $controller;
+	}
+
+	/**
 	 * @param array $inputVars Set these in the application's Input
 	 *
 	 * @return $this
@@ -101,11 +129,11 @@ class ControllerHelper
 	{
 		// Parse controller class into parts for Joomla to generate
 		preg_match('/Fabrik\\\\(.*?)\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller$/', $controllerClass, $matches);
-		$namespace    = sprintf('Fabrik\\%s\%s', $matches[1], $matches[2]);
-		$this->name   = $matches[3];
-		$this->prefix = $matches[4];
+		$namespace     = sprintf('Fabrik\\%s\%s', $matches[1], $matches[2]);
+		$this->name    = $matches[3];
+		$this->prefix  = $matches[4];
+		$this->factory = new MVCFactory($namespace);
 
-		$this->factory     = new MVCFactory($namespace);
 		$this->originalApp = Factory::getApplication();
 		$this->app         = $this->getApplication();
 
@@ -114,7 +142,7 @@ class ControllerHelper
 
 		try
 		{
-			$controller = $this->getController();
+			$controller = $this->createController();
 			array_walk($this->propertyVars, function ($value, $key) use ($controller) {
 				$controller->$key = $value;
 			});
@@ -127,29 +155,6 @@ class ControllerHelper
 		}
 
 		Factory::$application = $this->originalApp;
-	}
-
-	/**
-	 * There is likely a better J4-ish way to do this but we need to basically isolate the fabrik plugin from the given
-	 * component loaded or Joomla behaves funky now with it's autoloading everything.
-	 *
-	 * @return AbstractSiteController
-	 *
-	 * @since 4.0
-	 * @throws \Exception
-	 */
-	private function getController(): AbstractSiteController
-	{
-		/** @var AbstractSiteController $controller */
-		$controller = $this->factory->createController(
-			$this->name,
-			$this->prefix,
-			['base_path' => sprintf('%s/%s', JPATH_SITE, 'com_fabrik')],
-			$this->app,
-			$this->app->input
-		);
-
-		return $controller;
 	}
 
 	/**
@@ -176,5 +181,25 @@ class ControllerHelper
 		$app->setSession($this->originalApp->getSession());
 
 		return $app;
+	}
+
+	/**
+	 * @return AbstractSiteController
+	 *
+	 * @throws \Exception
+	 * @since version
+	 */
+	private function createController(): AbstractSiteController
+	{
+		/** @var AbstractSiteController $controller */
+		$controller = $this->factory->createController(
+			$this->name,
+			$this->prefix,
+			PluginControllerParser::getControllerConfig($this->name, []),
+			$this->app,
+			$this->app->input
+		);
+
+		return $controller;
 	}
 }
