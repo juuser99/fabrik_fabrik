@@ -210,7 +210,7 @@ class PlgSystemFabrik extends CMSPlugin
 		/** @var CMSApplication $app */
 		$app     = Factory::getApplication();
 		$session = $app->getSession();
-		$doc     = Factory::getDocument();
+		$doc     = $app->getDocument();
 
 		$key = md5($app->input->server->get('REQUEST_URI', '', 'string'));
 
