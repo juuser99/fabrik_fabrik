@@ -88,13 +88,16 @@ class ControllerHelper
 	}
 
 	/**
+	 * J4 seems to do a lot of stuff based on the Input vars (views, dispatchers, etc) so we have to isolate
+	 *
 	 * @param string $controllerClass
+	 * @param string $task
 	 *
 	 *
 	 * @throws \Exception
 	 * @since 4.0
 	 */
-	public function dispatchController(string $controllerClass): void
+	public function dispatchController(string $controllerClass, string $task = 'display'): void
 	{
 		// Parse controller class into parts for Joomla to generate
 		preg_match('/Fabrik\\\\(.*?)\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller$/', $controllerClass, $matches);
@@ -106,7 +109,7 @@ class ControllerHelper
 		$this->originalApp = Factory::getApplication();
 		$this->app         = $this->getApplication();
 
-		// set the FabrikApplication as the application for Factory to be used by the plugin's view
+		// set the FabrikApplication as the application for Factory to be used by the plugin or module's view
 		Factory::$application = $this->app;
 
 		try
@@ -115,11 +118,11 @@ class ControllerHelper
 			array_walk($this->propertyVars, function ($value, $key) use ($controller) {
 				$controller->$key = $value;
 			});
-			$controller->display();
+			$controller->execute($task);
 		}
 		catch (\Exception $exception)
 		{
-			// Don't let the visualization kill the loading of the entire page
+			// Don't let the modules or plugins kill the loading of the entire page
 			echo $exception->getMessage();
 		}
 
