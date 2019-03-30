@@ -14,12 +14,10 @@ namespace Fabrik\Component\Fabrik\Site\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Controller\ModelTrait;
-use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Document\Document;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
-use Joomla\CMS\MVC\Factory\MVCFactory;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\User\User;
@@ -105,21 +103,15 @@ class AbstractSiteController extends BaseController
 	}
 
 	/**
-	 * Create a Fabrik controller for Fabrik module and plugin use
-	 *
-	 * @param $controllerClass
-	 *
-	 * @return AbstractSiteController
+	 * @return string
 	 *
 	 * @since 4.0
-	 *
-	 * @throws \Exception
 	 */
-	public static function createController($controllerClass): AbstractSiteController
+	protected function getViewNameFromController()
 	{
-		$factory    = new MVCFactory(Dispatcher::NAMESPACE);
-		$controller = new $controllerClass(array(), $factory);
+		preg_match('/Fabrik\\\\Plugin\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller/', get_class($this), $matches);
+		$viewName = $matches[2];
 
-		return $controller;
+		return $viewName;
 	}
 }

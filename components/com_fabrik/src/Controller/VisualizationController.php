@@ -53,7 +53,7 @@ class VisualizationController extends AbstractSiteController
 	public function display($cachable = false, $urlparams = array())
 	{
 		$input    = $this->input;
-		$viewName = strtolower(str_replace('Controller', '', get_class($this)));
+		$viewName = $this->getViewNameFromController();
 
 		if ($viewName == '')
 		{
@@ -63,6 +63,8 @@ class VisualizationController extends AbstractSiteController
 			 */
 			$viewName = $this->getViewName();
 		}
+
+		$this->addViewPath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/src/View');
 
 		$viewType = $this->doc->getType();
 
@@ -88,24 +90,29 @@ class VisualizationController extends AbstractSiteController
 		{
 			$view->setModel($model, true);
 		}
-		// Display the view
-		$view->error = $this->getError();
 
-		// F3 cache with raw view gives error
-		if (!Worker::useCache())
+		try
 		{
-			$view->display();
+			// F3 cache with raw view gives error
+			if (!Worker::useCache())
+			{
+				$view->display();
+			}
+			else
+			{
+				// Build unique cache id on url, post and user id
+				$user    = Factory::getUser();
+				$uri     = Uri::getInstance();
+				$uri     = $uri->toString(array('path', 'query'));
+				$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
+				$cache   = Factory::getCache('com_fabrik', 'view');
+				$cache->get($view, 'display', $cacheId);
+				Html::addToSessionCacheIds($cacheId);
+			}
 		}
-		else
+		catch (\RuntimeException $exception)
 		{
-			// Build unique cache id on url, post and user id
-			$user    = Factory::getUser();
-			$uri     = Uri::getInstance();
-			$uri     = $uri->toString(array('path', 'query'));
-			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
-			$cache   = Factory::getCache('com_fabrik', 'view');
-			$cache->get($view, 'display', $cacheId);
-			Html::addToSessionCacheIds($cacheId);
+			echo 'ERROR: '.$exception->getMessage();
 		}
 
 		return $this;
@@ -127,8 +134,10 @@ class VisualizationController extends AbstractSiteController
 	 */
 	public function getView($name = '', $type = '', $prefix = '', $config = array())
 	{
-		$viewName = str_replace('Controller', '', get_class($this));
-		$viewName = $viewName == '' ? $this->getViewName() : $name;
+		$viewName = $this->getViewNameFromController();
+		$viewName = $viewName === '' ? $this->getViewName() : $name;
+
+		$config['base_path'] = JPATH_PLUGINS.'/plugins/fabrik_visualization/'.strtolower($viewName);
 
 		return parent::getView($viewName, $type, $prefix, $config);
 	}
@@ -146,8 +155,8 @@ class VisualizationController extends AbstractSiteController
 		$viz = FabrikTable::getInstance(VisualizationTable::class);
 		$viz->load($this->input->getInt('id'));
 		$viewName = $viz->plugin;
-		$this->addViewPath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/src/View');
 
 		return $viewName;
 	}
+
 }

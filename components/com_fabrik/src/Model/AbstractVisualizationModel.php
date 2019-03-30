@@ -163,7 +163,7 @@ class AbstractVisualizationModel extends FabrikSiteModel
 
 			// Needed to load the language file!
 			$pluginManager = Worker::getPluginManager();
-			$pluginManager->getPlugIn($this->_row->plugin, 'visualization');
+			$pluginManager->getPlugIn($this->row->plugin, 'visualization');
 		}
 
 		return $this->row;

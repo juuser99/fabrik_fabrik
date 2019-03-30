@@ -11,15 +11,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Fabrik\Component\Fabrik\Site\Controller\AbstractSiteController;
 use Fabrik\Component\Fabrik\Site\Controller\FormController;
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Factory;
+use Fabrik\Component\Fabrik\Site\Helper\ControllerHelper;
 use Fabrik\Helpers\Html;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 
 /** @var CMSApplication $app */
-$app = Factory::getApplication();
+$app   = Factory::getApplication();
 $input = $app->input;
 
 // Load front end language file as well
@@ -37,21 +37,18 @@ Html::framework();
 $origLayout = $input->get('layout');
 $input->set('layout', $origLayout);
 
-$formId	= (int) $params->get('formid', 1);
-$rowid = (int) $params->get('row_id', 0);
-$layout = $params->get('template', '');
+$formId      = (int) $params->get('formid', 1);
+$rowid       = (int) $params->get('row_id', 0);
+$layout      = $params->get('template', '');
 $usersConfig = ComponentHelper::getParams('com_fabrik');
 $usersConfig->set('rowid', $rowid);
-
-$moduleclass_sfx = $params->get('moduleclass_sfx', '');
-
 $moduleAjax = $params->get('formmodule_useajax', true);
 
-$origView = $input->get('view');
-
-$input->set('formid', $formId);
-$input->set('view', 'form');
-$controller = AbstractSiteController::createController(FormController::class);
+$inputVars = [
+	'formid' => $formId,
+	'view'   => 'form',
+	'ajax'   => $moduleAjax
+];
 
 /*
  * For table views in category blog layouts when no layout specified in {} the blog layout
@@ -59,21 +56,15 @@ $controller = AbstractSiteController::createController(FormController::class);
  */
 if ($layout !== '')
 {
-	$input->set('layout', $layout);
+	$inputVars['layout'] = $layout;
 }
 
-// Display the view
-$controller->isMambot = true;
-$controller->set('cacheId', 'admin_module');
-$origFormid = $input->getInt('formid');
-$ajax = $input->get('ajax');
-$input->set('formid', $params->get('formid'));
-
-$input->set('ajax', $moduleAjax);
-echo $controller->view();
-
-// Reset the layout and view etc for when the component needs them
-$input->set('formid', $origFormid);
-$input->set('ajax', $ajax);
-$input->set('layout', $origLayout);
-$input->set('view', $origView);
+(new ControllerHelper())
+	->setInputVars($inputVars)
+	->setPropertyVars(
+		[
+			'isMambot' => true,
+			'cacheId'  => 'admin_module'
+		]
+	)
+	->dispatchController(FormController::class);
