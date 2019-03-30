@@ -400,6 +400,7 @@ class GooglemapModel extends AbstractVisualizationModel
 		$limitMessage      = $params->get('fb_gm_markermax_message');
 		$groupedIcons      = array();
 		$lc                = 0;
+		$k         = 0;
 
 		foreach ($listIds as $listId)
 		{
@@ -438,7 +439,6 @@ class GooglemapModel extends AbstractVisualizationModel
 				)
 			);
 			$this->txt = array();
-			$k         = 0;
 
 			foreach ($data as $groupKey => $group)
 			{
