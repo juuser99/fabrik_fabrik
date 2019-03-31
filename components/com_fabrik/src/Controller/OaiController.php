@@ -8,12 +8,15 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Component\Fabrik\Site\Controller;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use \Joomla\Utilities\ArrayHelper;
-
-jimport('joomla.application.component.controller');
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Fabrik\Component\Fabrik\Site\Model\OaiModel;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Fabrik Open Archive Initiative Controller
@@ -21,32 +24,38 @@ jimport('joomla.application.component.controller');
  * @static
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.4
+ * @since       4.0
  */
-class FabrikControllerOai extends JControllerLegacy
+class OaiController extends AbstractSiteController
 {
+	/**
+	 * @var OaiModel
+	 * @since 4.0
+	 */
+	private $model;
+
 	/**
 	 * Display the view
 	 *
-	 * @param   boolean $cachable  If true, the view output will be cached - NOTE not actually used to control
+	 * @param boolean $cachable    If true, the view output will be cached - NOTE not actually used to control
 	 *                             caching!!!
-	 * @param   array   $urlparams An array of safe url parameters and their variable types, for valid values see
+	 * @param array   $urlparams   An array of safe url parameters and their variable types, for valid values see
 	 *                             {@link JFilterInput::clean()}.
 	 *
-	 * @throws Exception
-	 * @return  JController|void  A JController object to support chaining.
+	 * @return  $this  A JController object to support chaining.
+	 *
+	 * @throws \Exception
+	 * @since 4.0
 	 */
-
 	public function display($cachable = false, $urlparams = array())
 	{
-		$doc = JFactory::getDocument();
+		$doc = $this->app->getDocument();
 		$doc->setMimeEncoding('application/xml');
-		$this->app   = JFactory::getApplication();
 		$this->input = $this->app->input;
 		$verb        = strtolower($this->input->get('verb'));
 
-		/** @var FabrikFEModelOai $model */
-		$this->model = $model = $this->getModel('oai', 'FabrikFEModel');
+		/** @var OaiModel $model */
+		$this->model = $model = $this->getModel(OaiModel::class);
 
 		switch ($verb)
 		{
@@ -77,7 +86,7 @@ class FabrikControllerOai extends JControllerLegacy
 
 			default:
 				echo $this->model->generateError(array('code' => 'badVerb',
-						'msg' => 'Value of the verb argument is not a legal OAI-PMH verb, the
+				                                       'msg'  => 'Value of the verb argument is not a legal OAI-PMH verb, the
 						verb argument is missing, or the verb argument is repeated.'));
 				break;
 		}
@@ -87,16 +96,18 @@ class FabrikControllerOai extends JControllerLegacy
 
 	/**
 	 * Get record
+	 *
+	 * @since 4.0
 	 */
 	private function getRecord()
 	{
-		$identifier = $this->input->getString('identifier', '');
+		$identifier     = $this->input->getString('identifier', '');
 		$metaDataPrefix = $this->input->getString('metadataPrefix', '');
 
 		if ($identifier === '' || !$this->model->checkIdentifier($identifier))
 		{
 			echo $this->model->generateError(array('code' => 'idDoesNotExist',
-					'msg' => 'Get Record: No matching identifier'));
+			                                       'msg'  => 'Get Record: No matching identifier'));
 
 			return;
 		}
@@ -104,7 +115,7 @@ class FabrikControllerOai extends JControllerLegacy
 		if (!$this->model->supportMetaDataPrefix($metaDataPrefix))
 		{
 			echo $this->model->generateError(array('code' => 'cannotDisseminateFormat',
-					'msg' => 'Cant use the prefix: ' . $metaDataPrefix));
+			                                       'msg'  => 'Cant use the prefix: ' . $metaDataPrefix));
 
 			return;
 		}
@@ -112,22 +123,24 @@ class FabrikControllerOai extends JControllerLegacy
 		$url = 'index.php?option=com_fabrik&view=details&format=oai';
 		list($listId, $rowId) = $this->model->getListRowIdFromIdentifier($identifier);
 
-		/** @var FabrikFEModelList $listModel */
-		$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
+		/** @var ListModel $listModel */
+		$listModel = FabrikModel::getInstance(ListModel::class);
 		$listModel->setId($listId);
 		$formId = $listModel->getFormModel()->getId();
-		$url .= '&formid=' . $formId . '&rowid=' . $rowId;
+		$url    .= '&formid=' . $formId . '&rowid=' . $rowId;
 		$this->app->redirect($url);
 	}
 
 	/**
 	 * List records
 	 * http://localhost:81/fabrik31x/public_html/index.php?option=com_fabrik&controller=oai&format=oai&verb=ListRecords&set=testdata
+	 *
+	 * @since 4.0
 	 */
 	private function listRecords()
 	{
 		$url    = 'index.php?option=com_fabrik&view=list&format=oai';
-		$set = $this->input->get('set');
+		$set    = $this->input->get('set');
 		$listId = (int) $this->model->listIdFromSetName($set);
 
 		if ($listId === 0)
@@ -165,6 +178,8 @@ class FabrikControllerOai extends JControllerLegacy
 
 	/**
 	 * List sets
+	 *
+	 * @since 4.0
 	 */
 	protected function listSets()
 	{
@@ -174,12 +189,13 @@ class FabrikControllerOai extends JControllerLegacy
 
 	/**
 	 * List Meta data formats.
+	 *
+	 * @since 4.0
 	 */
 	protected function listMetaDataFormats()
 	{
 		$identifier = $this->input->getString('identifier');
-		$xml = $this->model->listMetaDataFormats($identifier);
+		$xml        = $this->model->listMetaDataFormats($identifier);
 		echo $xml->saveXML();
 	}
-
 }
