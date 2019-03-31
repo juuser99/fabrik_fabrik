@@ -151,4 +151,32 @@ class PluginControllerParser
 	{
 		return explode('.', $controllerName)[0];
 	}
+
+	/**
+	 * @param string $controllerClass
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
+	public static function getPluginFromControllerClass(string $controllerClass): string
+	{
+		preg_match('/Fabrik\\\\Plugin\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller/', $controllerClass, $matches);
+
+		return $matches[2];
+	}
+
+	/**
+	 * @param string $controllerClass
+	 *
+	 * @return false|int
+	 *
+	 * @since 4.0
+	 */
+	public static function isPluginController(string $controllerClass)
+	{
+		return !empty(
+			preg_match('/Fabrik\\\\Plugin\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller/', $controllerClass)
+		);
+	}
 }

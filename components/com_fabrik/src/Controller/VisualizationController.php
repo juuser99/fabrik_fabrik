@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
 use Fabrik\Component\Fabrik\Administrator\Table\VisualizationTable;
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\StringHelper as FStringHelper;
@@ -53,7 +54,7 @@ class VisualizationController extends AbstractSiteController
 	public function display($cachable = false, $urlparams = array())
 	{
 		$input    = $this->input;
-		$viewName = $this->getViewNameFromController();
+		$viewName = PluginControllerParser::getPluginFromControllerClass(get_class($this));
 
 		if ($viewName == '')
 		{
@@ -139,7 +140,7 @@ class VisualizationController extends AbstractSiteController
 
 		$config['base_path'] = JPATH_PLUGINS.'/plugins/fabrik_visualization/'.strtolower($viewName);
 
-		return parent::getView($viewName, $type, $prefix, $config);
+		return parent::getView($viewName, $type, $viewName, $config);
 	}
 
 	/**

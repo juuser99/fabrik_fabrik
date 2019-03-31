@@ -14,6 +14,7 @@ namespace Fabrik\Component\Fabrik\Site\Controller;
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Controller\ModelTrait;
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
@@ -195,15 +196,31 @@ class AbstractSiteController extends BaseController
 	}
 
 	/**
-	 * @return string
+	 * Plugin controller's use /Fabrik/Plugin namespace but view namespaces are generated with the Application's name
+	 * which is either Site or Administrator by default which will create a namespace like
+	 * /Fabrik/Plugin/FabrikList/Administrator/Email/Controller/EmailController which is bad. So we have to pass in
+	 * the plugin as the $prefix so that the namespace is generated correctly.
 	 *
+	 * @param string $name
+	 * @param string $prefix
+	 * @param string $type
+	 * @param array  $config
+	 *
+	 * @return \Joomla\CMS\MVC\View\AbstractView|null
+	 *
+	 * @throws \Exception
 	 * @since 4.0
 	 */
-	protected function getViewNameFromController()
+	protected function createView($name, $prefix = '', $type = '', $config = array())
 	{
-		preg_match('/Fabrik\\\\Plugin\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller/', get_class($this), $matches);
-		$viewName = $matches[2];
+		$controllerClass = get_class($this);
 
-		return $viewName;
+		if (PluginControllerParser::isPluginController($controllerClass)) {
+			$prefix = PluginControllerParser::getPluginFromControllerClass($controllerClass);
+
+			return parent::createView($name, $prefix, $type, $config);
+		}
+
+		return parent::createView($name, $prefix, $type, $config);
 	}
 }
