@@ -14,6 +14,7 @@ use Fabrik\Component\Fabrik\Site\Controller\AbstractSiteController;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Factory\MVCFactory;
+use Joomla\String\StringHelper;
 
 class PluginControllerHelper
 {
@@ -71,7 +72,7 @@ class PluginControllerHelper
 	public static function getController(string $controllerName, array $config = []): AbstractSiteController
 	{
 		$app     = Factory::getApplication();
-		$plugin  = ucfirst(PluginControllerParser::getFabrikPluginName($controllerName));
+		$plugin  = StringHelper::ucfirst(PluginControllerParser::getFabrikPluginName($controllerName));
 		$name    = PluginControllerParser::getControllerName($app->input, $controllerName);
 		$factory = new MVCFactory(PluginControllerParser::getNamespace($controllerName));
 

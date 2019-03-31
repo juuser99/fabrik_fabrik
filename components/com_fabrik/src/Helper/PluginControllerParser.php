@@ -33,8 +33,8 @@ class PluginControllerParser
 		// @todo - refactor these to views
 		if ($format)
 		{
-			$plugin             = ucfirst(self::getFabrikPluginName($controllerName));
-			$testControllerName = ucfirst($plugin) . ucfirst($format);
+			$plugin             = StringHelper::ucfirst(self::getFabrikPluginName($controllerName));
+			$testControllerName = StringHelper::ucfirst($plugin) . StringHelper::ucfirst($format);
 			$testClassName      = sprintf(
 				'%s\%s\Controller\%sController',
 				self::getNamespace($controllerName),
@@ -44,7 +44,7 @@ class PluginControllerParser
 
 			if (class_exists($testClassName))
 			{
-				$controllerName .= ucfirst($format);
+				$controllerName .= StringHelper::ucfirst($format);
 			}
 		}
 
@@ -94,7 +94,7 @@ class PluginControllerParser
 	 */
 	public static function getNamespace(string $controllerName): string
 	{
-		$type = ucfirst(self::getFabrikPluginType($controllerName));
+		$type = StringHelper::ucfirst(self::getFabrikPluginType($controllerName));
 
 		return sprintf('\\Fabrik\\Plugin\\Fabrik%s', $type);
 	}
@@ -113,7 +113,7 @@ class PluginControllerParser
 			return $defaultClient;
 		}
 
-		return ucfirst(self::getFabrikPluginName($controllerName));
+		return StringHelper::ucfirst(self::getFabrikPluginName($controllerName));
 	}
 
 	/**
