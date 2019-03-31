@@ -223,4 +223,16 @@ class AbstractSiteController extends BaseController
 
 		return parent::createView($name, $prefix, $type, $config);
 	}
+
+	protected function getError()
+	{
+		@trigger_error(
+			sprintf(
+				'%1$s::getError() is deprecated and no longer used.',
+				self::class
+			),
+			E_USER_DEPRECATED
+		);
+
+	}
 }
