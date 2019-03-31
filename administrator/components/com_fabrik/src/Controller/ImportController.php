@@ -18,7 +18,7 @@ use Joomla\CMS\Factory;
 use Fabrik\Component\Fabrik\Administrator\Model\ListModel;
 use Fabrik\Component\Fabrik\Administrator\Table\ElementTable;
 use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
-use Fabrik\Component\Fabrik\Site\Model\ImportCsvModel;
+use Fabrik\Component\Fabrik\Site\Model\CsvImportModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel as SiteListModel;
 use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
 use Joomla\String\StringHelper;
@@ -166,8 +166,8 @@ class ImportController extends AbstractFormController
 		$input   = $app->input;
 		$jform   = $input->get('jform', null, 'array');
 
-		/** @var ImportCsvModel $model */
-		$model  = $this->getModel(ImportCsvModel::class);
+		/** @var CsvImportModel $model */
+		$model  = $this->getModel(CsvImportModel::class);
 		$listId = (int) $input->getInt('fabrik_list', $input->get('listid'));
 
 		if ($listId === 0)
@@ -258,7 +258,7 @@ class ImportController extends AbstractFormController
 	{
 		$viewType = Factory::getDocument()->getType();
 		$view     = $this->getView('import', $viewType);
-		$this->getModel(ImportCsvModel::class)->clearSession();
+		$this->getModel(CsvImportModel::class)->clearSession();
 
 		if ($model = $this->getModel())
 		{
@@ -281,8 +281,8 @@ class ImportController extends AbstractFormController
 	 */
 	public function doimport()
 	{
-		/** @var ImportCsvModel $model */
-		$model = $this->getModel(ImportCsvModel::class);
+		/** @var CsvImportModel $model */
+		$model = $this->getModel(CsvImportModel::class);
 		$app   = Factory::getApplication();
 		$input = $app->input;
 

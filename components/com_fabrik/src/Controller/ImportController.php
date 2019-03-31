@@ -8,49 +8,51 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// No direct access
-defined('_JEXEC') or die('Restricted access');
+namespace Fabrik\Component\Fabrik\Site\Controller;
 
-jimport('joomla.application.component.controller');
+// No direct access
+use Fabrik\Component\Fabrik\Site\Model\CsvImportModel;
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * Fabrik Import Controller
  *
  * @package  Fabrik
- * @since    3.0
+ * @since    4.0
  */
-class FabrikControllerImport extends JControllerLegacy
+class ImportController extends AbstractSiteController
 {
 	/**
 	 * Display the view
 	 *
-	 * @param   boolean $cachable  If true, the view output will be cached - NOTE not actually used to control
+	 * @param boolean $cachable    If true, the view output will be cached - NOTE not actually used to control
 	 *                             caching!!!
-	 * @param   array   $urlparams An array of safe url parameters and their variable types, for valid values see
+	 * @param array   $urlparams   An array of safe url parameters and their variable types, for valid values see
 	 *                             {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController  A JController object to support chaining.
+	 * @since 4.0
 	 */
-
 	public function display($cachable = false, $urlparams = array())
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
-		$this->getModel('Importcsv', 'FabrikFEModel')->clearSession();
+		$input = $this->app->input;
+		/** @var CsvImportModel $csvImportModel */
+		$csvImportModel = $this->getModel(CsvImportModel::class);
+		$csvImportModel->clearSession();
 		$this->listid = $input->getInt('listid', 0);
-		$listModel    = $this->getModel('list', 'FabrikFEModel');
+		/** @var ListModel $listModel */
+		$listModel = $this->getModel(ListModel::class);
 		$listModel->setId($this->listid);
 		$this->table = $listModel->getTable();
-		$document    = JFactory::getDocument();
+		$document    = $this->app->getDocument();
 		$viewName    = $input->get('view', 'form');
 		$viewType    = $document->getType();
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
-		/** @var FabrikFEModelImportcsv $model */
-		$model = $this->getModel('Importcsv', 'FabrikFEModel');
-		$view->setModel($model, true);
+		$view->setModel($csvImportModel, true);
 		$view->display();
 	}
 
@@ -59,27 +61,28 @@ class FabrikControllerImport extends JControllerLegacy
 	 * Unlike back end import if there are unmatched headings we bail out
 	 *
 	 * @return null
+	 *
+	 * @since 4.0
 	 */
 	public function doimport()
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
-		/** @var FabrikFEModelImportcsv $model */
-		$model     = $this->getModel('Importcsv', 'FabrikFEModel');
+		/** @var CsvImportModel $model */
+		$model     = $this->getModel(CsvImportModel::class);
 		$listModel = $model->getListModel();
 
 		if (!$listModel->canCSVImport())
 		{
-			throw new RuntimeException('Naughty naughty!', 400);
+			throw new \RuntimeException('Naughty naughty!', 400);
 		}
 
-		$menus	= $app->getMenu();
+		$menus  = $this->app->getMenu();
 		$itemId = $input->getInt('Itemid', '');
 
 		if (!empty($itemId))
 		{
-			$menus = $app->getMenu();
+			$menus = $this->app->getMenu();
 			$menus->setActive($itemId);
 		}
 
@@ -91,7 +94,7 @@ class FabrikControllerImport extends JControllerLegacy
 		}
 
 		$id       = $listModel->getId();
-		$document = JFactory::getDocument();
+		$document = $this->app->getDocument();
 		$viewName = $input->get('view', 'form');
 		$viewType = $document->getType();
 
@@ -102,7 +105,7 @@ class FabrikControllerImport extends JControllerLegacy
 		if (!empty($model->newHeadings))
 		{
 			// As opposed to admin you can't alter table structure with a CSV import from the front end
-			$app->enqueueMessage($model->makeError(), 'notice');
+			$this->app->enqueueMessage($model->makeError(), 'notice');
 			$this->setRedirect('index.php?option=com_fabrik&view=import&filetype=csv&listid=' . $id . '&Itemid=' . $itemId);
 		}
 		else

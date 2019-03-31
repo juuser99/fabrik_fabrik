@@ -11,13 +11,19 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$url = JRoute::_('index.php');
-JHtml::_('behavior.tooltip');
-FabrikHelperHTML::formvalidation();
-$action = JRoute::_('index.php?option=com_fabrik');
-$app = JFactory::getApplication();
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\HTML\HTMLHelper;
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+$url = Route::_('index.php');
+HTMLHelper::_('behavior.tooltip');
+Html::formvalidation();
+$action = Route::_('index.php?option=com_fabrik');
+$app = Factory::getApplication();
 $listId = $app->input->getInt('listid');
-$itemId   = FabrikWorker::itemId();
+$itemId = Worker::itemId();
 
 ?>
 <form enctype="multipart/form-data" action="<?php echo $action ?>" method="post" name="adminForm" id="fabrik-form" class="form-validate">
@@ -29,7 +35,7 @@ $itemId   = FabrikWorker::itemId();
     <?php
     endif;
     ?>
-	<h2><?php echo JText::sprintf('COM_FABRIK_CSV_IMPORT_HEADING', $this->listName); ?></h2>
+	<h2><?php echo Text::sprintf('COM_FABRIK_CSV_IMPORT_HEADING', $this->listName); ?></h2>
 	<?php foreach ($this->fieldsets as $fieldset) :
 	?>
 	<fieldset>
@@ -49,9 +55,9 @@ $itemId   = FabrikWorker::itemId();
 	<?php endforeach;?>
 
 	<input type="hidden" name="task" value="import.doimport" />
-  	<?php echo JHTML::_('form.token');
-	echo JHTML::_('behavior.keepalive'); ?>
-	<input type="submit" class="btn btn-primary" value="<?php echo FText::_('COM_FABRIK_IMPORT_CSV')?>" />
+  	<?php echo HTMLHelper::_('form.token');
+	echo HTMLHelper::_('behavior.keepalive'); ?>
+	<input type="submit" class="btn btn-primary" value="<?php echo Text::_('COM_FABRIK_IMPORT_CSV')?>" />
 </form>
 
 <script type="text/javascript">

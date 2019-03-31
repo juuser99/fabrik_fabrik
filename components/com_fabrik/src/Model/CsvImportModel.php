@@ -22,7 +22,6 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
-use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Component\Fabrik\Site\CSV\CsvParser;
 use Joomla\String\StringHelper;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
@@ -35,7 +34,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class ImportCsvModel extends FabrikModel
+class CsvImportModel extends FabrikSiteModel
 {
 	/**
 	 * Cleaned heading names
@@ -241,7 +240,6 @@ class ImportCsvModel extends FabrikModel
 				$errmsg = Text::_('COM_FABRIK_IMPORT_CSV_NO_FILE_SELECTED');
 			}
 		} else {
-    		jimport('joomla.filesystem.file');
             $allowedlist = Worker::getMenuOrRequestVar('csv_import_extensions','',false,'menu');
             $allowed = empty($allowedlist) ? array('txt','csv','tsv') : explode(',',$allowedlist);
             $ext = File::getExt($userFile['userfile']['name']);
