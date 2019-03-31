@@ -8,13 +8,18 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Component\Fabrik\Site\Controller;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
-
+use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 
 
 /**
@@ -23,14 +28,16 @@ use Fabrik\Helpers\Worker;
  * @static
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.7
+ * @since       4.0
  */
-class FabrikControllerCron extends JControllerLegacy
+class CronController extends AbstractSiteController
 {
 	/**
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
 	 *
 	 * @var  int
+	 *
+	 * @since 4.0
 	 */
 	public $cacheId = 0;
 
@@ -38,20 +45,24 @@ class FabrikControllerCron extends JControllerLegacy
 	 * View name
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $viewName = null;
 
 	/**
 	 * Display the view
 	 *
-	 * @param   boolean          $cachable   If true, the view output will be cached - NOTE not actually used to control caching!!!
-	 * @param   array|boolean    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+	 * @param boolean       $cachable  If true, the view output will be cached - NOTE not actually used to control caching!!!
+	 * @param array|boolean $urlparams An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController  A JController object to support chaining.
+	 * @return  $this  A JController object to support chaining.
+	 *
+	 * @since 4.0
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
-		$document = JFactory::getDocument();
+		$document = $this->app->getDocument();
 		$viewName = $this->getViewName();
 		$viewType = $document->getType();
 
@@ -66,8 +77,8 @@ class FabrikControllerCron extends JControllerLegacy
 		// Display the view
 		$view->error = $this->getError();
 
-		$input = JFactory::getApplication()->input;
-		$task = $input->getCmd('task');
+		$input = Factory::getApplication()->input;
+		$task  = $input->getCmd('task');
 
 		if (!strstr($task, '.'))
 		{
@@ -89,12 +100,12 @@ class FabrikControllerCron extends JControllerLegacy
 			$post = $input->get('post');
 
 			// Build unique cache id on url, post and user id
-			$user = JFactory::getUser();
+			$user = Factory::getUser();
 
-			$uri = JURI::getInstance();
-			$uri = $uri->toString(array('path', 'query'));
+			$uri     = Uri::getInstance();
+			$uri     = $uri->toString(array('path', 'query'));
 			$cacheId = serialize(array($uri, $post, $user->get('id'), get_class($view), 'display', $this->cacheId));
-			$cache = JFactory::getCache('com_fabrik', 'view');
+			$cache   = Factory::getCache('com_fabrik', 'view');
 			$cache->get($view, 'display', $cacheId);
 			Html::addToSessionCacheIds($cacheId);
 		}
@@ -104,19 +115,19 @@ class FabrikControllerCron extends JControllerLegacy
 	 * If loading via id then we want to get the view name and add the plugin view and model paths
 	 *
 	 * @return   string  view name
+	 *
+	 * @since 4.0
 	 */
 	protected function getViewName()
 	{
 		if (!isset($this->viewName))
 		{
-			$app = JFactory::getApplication();
+			$app   = Factory::getApplication();
 			$input = $app->input;
-			$item = FabTable::getInstance('Cron', 'FabrikTable');
+			/** @var CronTable $item */
+			$item  = FabrikTable::getInstance(CronTable::class);
 			$item->load($input->getInt('id'));
 			$this->viewName = $item->plugin;
-			$this->addViewPath(JPATH_SITE . '/plugins/fabrik_cron/' . $this->viewName . '/views');
-			$this->addModelPath(JPATH_SITE . '/plugins/fabrik_cron/' . $this->viewName . '/models');
-			JModelLegacy::addIncludePath(JPATH_SITE . '/plugins/fabrik_cron/' . $this->viewName . '/models');
 		}
 
 		return $this->viewName;
@@ -127,17 +138,21 @@ class FabrikControllerCron extends JControllerLegacy
 	 *
 	 * Method to get a reference to the current view and load it if necessary.
 	 *
-	 * @param   string  $name    The view name. Optional, defaults to the controller name.
-	 * @param   string  $type    The view type. Optional.
-	 * @param   string  $prefix  The class prefix. Optional.
-	 * @param   array   $config  Configuration array for view. Optional.
+	 * @param string $name   The view name. Optional, defaults to the controller name.
+	 * @param string $type   The view type. Optional.
+	 * @param string $prefix The class prefix. Optional.
+	 * @param array  $config Configuration array for view. Optional.
 	 *
 	 * @return  object  Reference to the view or an error.
+	 *
+	 * @since 4.0
 	 */
 	public function getView($name = '', $type = '', $prefix = '', $config = array())
 	{
-		$viewName = str_replace('FabrikControllerCron', '', get_class($this));
-		$viewName = $viewName == '' ? $this->getViewName() : $name;
+		$viewName = PluginControllerParser::getPluginFromControllerClass(get_class($this));
+		$viewName = $viewName === '' ? $this->getViewName() : $name;
+
+		$config['base_path'] = JPATH_PLUGINS . '/plugins/fabrik_cron/' . strtolower($viewName);
 
 		return parent::getView($viewName, $type, $prefix, $config);
 	}

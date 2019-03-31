@@ -8,19 +8,30 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Component\Fabrik\Site\View\ListView;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Fabrik\Component\Fabrik\Administrator\Model\CronModel;
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
+use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
+use Fabrik\Component\Fabrik\Site\View\AbstractView;
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 /**
  * Cron view class
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0.6
+ * @since       4.0
  */
-class FabrikViewCron extends FabrikView
+class HtmlView extends AbstractView
 {
 	/**
 	 * Display
@@ -28,26 +39,31 @@ class FabrikViewCron extends FabrikView
 	 * @param   string $tmpl Template
 	 *
 	 * @return  void
+	 *              
+	 * @since 4.0
 	 */
-
-	public function display($tmpl = 'default')
+	public function display($tmpl = null)
 	{
-		$srcs  = FabrikHelperHTML::framework();
+		// Not sure this is even used because it has code for visualizations
+		die('is this used?');
+
+		/*
+		$srcs  = Html::framework();
 		$input = $this->app->input;
-		FabrikHelperHTML::script($srcs);
+		Html::script($srcs);
 		$model       = $this->getModel();
-		$usersConfig = JComponentHelper::getParams('com_fabrik');
+		$usersConfig = ComponentHelper::getParams('com_fabrik');
 		$model->setId($input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0))));
 		$visualization = $model->getVisualization();
 		$pluginParams  = $model->getPluginParams();
 
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikModel');
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		$plugin        = $pluginManager->getPlugIn($visualization->plugin, 'visualization');
 		$plugin->_row  = $visualization;
 
 		if ($visualization->published == 0)
 		{
-			$this->app->enqueueMessage(FText::_('COM_FABRIK_SORRY_THIS_VISUALIZATION_IS_UNPUBLISHED'), 'warning');
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_SORRY_THIS_VISUALIZATION_IS_UNPUBLISHED'), 'warning');
 
 			return '';
 		}
@@ -65,12 +81,13 @@ class FabrikViewCron extends FabrikView
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/visualization/' . $plugin->_name . '/' . $tmpl);
 		$ab_css_file = JPATH_SITE . '/plugins/fabrik_visualization/' . $plugin->_name . '/tmpl/' . $tmpl . '/template.css';
 
-		if (JFile::exists($ab_css_file))
+		if (File::exists($ab_css_file))
 		{
-			JHTML::stylesheet('template.css', 'plugins/fabrik_visualization/' . $plugin->_name . '/tmpl/' . $tmpl . '/', true);
+			HTMLHelper::stylesheet('template.css', 'plugins/fabrik_visualization/' . $plugin->_name . '/tmpl/' . $tmpl . '/', true);
 		}
 
 		echo parent::display();
+		*/
 	}
 
 	/**
