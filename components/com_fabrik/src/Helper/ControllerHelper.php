@@ -8,15 +8,16 @@
 
 namespace Fabrik\Component\Fabrik\Site\Helper;
 
-
+use Fabrik\Component\Fabrik\Administrator\Dispatcher\Dispatcher;
 use Fabrik\Component\Fabrik\Site\Application\FabrikApplication;
 use Fabrik\Component\Fabrik\Site\Controller\AbstractSiteController;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Factory\MVCFactory;
 use Joomla\String\StringHelper;
 
-class PluginControllerHelper
+class ControllerHelper
 {
 	/**
 	 * @var string
@@ -58,7 +59,7 @@ class PluginControllerHelper
 	 * @var CMSApplication
 	 * @since 4.0
 	 */
-	private $originalApp;
+	private $nativeApp;
 
 	/**
 	 * @param string $controllerName
@@ -69,7 +70,7 @@ class PluginControllerHelper
 	 * @throws \Exception
 	 * @since 4.0
 	 */
-	public static function getController(string $controllerName, array $config = []): AbstractSiteController
+	public static function getPluginController(string $controllerName, array $config = []): AbstractSiteController
 	{
 		$app     = Factory::getApplication();
 		$plugin  = StringHelper::ucfirst(PluginControllerParser::getFabrikPluginName($controllerName));
@@ -130,13 +131,20 @@ class PluginControllerHelper
 	{
 		// Parse controller class into parts for Joomla to generate
 		preg_match('/Fabrik\\\\(.*?)\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller$/', $controllerClass, $matches);
-		$namespace     = sprintf('Fabrik\\%s\%s', $matches[1], $matches[2]);
-		$this->name    = $matches[3];
-		$this->prefix  = $matches[4];
-		$this->factory = new MVCFactory($namespace);
 
-		$this->originalApp = Factory::getApplication();
-		$this->app         = $this->getApplication();
+		if ('Component' === $matches[1])
+		{
+			$this->createFactory(Dispatcher::NAMESPACE, $matches[4], $matches[3]);
+
+		}
+		elseif ('Plugin' === $matches[1])
+		{
+			$namespace = sprintf('Fabrik\\%s\%s', $matches[1], $matches[2]);
+			$this->createFactory($namespace, $matches[3], $matches[4]);
+		}
+
+		$this->nativeApp = Factory::getApplication();
+		$this->app       = $this->getApplication('Plugin' === $matches[1]);
 
 		// set the FabrikApplication as the application for Factory to be used by the plugin or module's view
 		Factory::$application = $this->app;
@@ -144,9 +152,11 @@ class PluginControllerHelper
 		try
 		{
 			$controller = $this->createController();
+
 			array_walk($this->propertyVars, function ($value, $key) use ($controller) {
 				$controller->$key = $value;
 			});
+
 			$controller->execute($task);
 		}
 		catch (\Exception $exception)
@@ -155,18 +165,20 @@ class PluginControllerHelper
 			echo $exception->getMessage();
 		}
 
-		Factory::$application = $this->originalApp;
+		Factory::$application = $this->nativeApp;
 	}
 
 	/**
-	 * @return FabrikApplication
+	 * @param bool $isPlugin
+	 *
+	 * @return FabrikApplication|SiteApplication
 	 *
 	 * @since 4.0
 	 */
-	private function getApplication(): FabrikApplication
+	private function getApplication(bool $isPlugin): CMSApplication
 	{
 		$container = Factory::getContainer();
-		$input     = clone $this->originalApp->input;
+		$input     = clone $this->nativeApp->input;
 		$input->set('option', 'com_fabrik');
 		$input->set('tmpl', null);
 		$input->set('layout', null);
@@ -174,12 +186,15 @@ class PluginControllerHelper
 			$input->set($key, $value);
 		});
 
-		$app = new FabrikApplication($this->name, $input, $container->get('config'), null, $container);
-		$app->setDispatcher($this->originalApp->getDispatcher());
-		$app->loadIdentity($this->originalApp->getIdentity());
-		$app->loadDocument(clone $this->originalApp->getDocument());
-		$app->loadLanguage($this->originalApp->getLanguage());
-		$app->setSession($this->originalApp->getSession());
+		$app = ($isPlugin) ?
+			new FabrikApplication($this->name, $input, $container->get('config'), null, $container) :
+			new SiteApplication($input, $container->get('config'), null, $container);
+
+		$app->setDispatcher($this->nativeApp->getDispatcher());
+		$app->loadIdentity($this->nativeApp->getIdentity());
+		$app->loadDocument(clone $this->nativeApp->getDocument());
+		$app->loadLanguage($this->nativeApp->getLanguage());
+		$app->setSession($this->nativeApp->getSession());
 
 		return $app;
 	}
@@ -202,5 +217,20 @@ class PluginControllerHelper
 		);
 
 		return $controller;
+	}
+
+	/**
+	 * @param string $namespace
+	 * @param string $name
+	 * @param string $prefix
+	 *
+	 *
+	 * @since 4.0
+	 */
+	private function createFactory(string $namespace, string $name, string $prefix): void
+	{
+		$this->name    = $name;
+		$this->prefix  = $prefix;
+		$this->factory = new MVCFactory($namespace);
 	}
 }

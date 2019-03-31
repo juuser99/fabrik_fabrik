@@ -135,7 +135,7 @@ class VisualizationController extends AbstractSiteController
 	 */
 	public function getView($name = '', $type = '', $prefix = '', $config = array())
 	{
-		$viewName = $this->getViewNameFromController();
+		$viewName = PluginControllerParser::getPluginFromControllerClass(get_class($this));
 		$viewName = $viewName === '' ? $this->getViewName() : $name;
 
 		$config['base_path'] = JPATH_PLUGINS.'/plugins/fabrik_visualization/'.strtolower($viewName);

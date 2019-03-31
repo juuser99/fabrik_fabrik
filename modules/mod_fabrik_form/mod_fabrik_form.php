@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 $prevUserState = $app->getUserState('com_fabrik.package');
 $app->setUserState('com_fabrik.package', 'fabrik');
 
-require JPATH_SITE . '/modules/mod_fabrik_form/mod_fabrik_form_boot.php';
+require __DIR__.'/mod_fabrik_form_boot.php';
 
 // Set the package back to what it was before rendering the module
 $app->setUserState('com_fabrik.package', $prevUserState);

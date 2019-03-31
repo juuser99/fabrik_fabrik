@@ -11,7 +11,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Dispatcher;
 
 defined('_JEXEC') or die;
 
-use Fabrik\Component\Fabrik\Site\Helper\PluginControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\ControllerHelper;
 use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Factory;
@@ -62,7 +62,7 @@ class Dispatcher extends ComponentDispatcher
 	/**
 	 * Get a controller from the component with a "hack" for J4 lack of support for formatted controllers
 	 *
-	 * @param   string $name   Controller name
+	 * @param   string $controllerName   Controller name
 	 * @param   string $client Optional client (like Administrator, Site etc.)
 	 * @param   array  $config Optional controller config
 	 *
@@ -73,7 +73,7 @@ class Dispatcher extends ComponentDispatcher
 	public function getController(string $controllerName, string $client = '', array $config = array()): BaseController
 	{
 		if (PluginControllerParser::isFabrikPlugin($controllerName)) {
-			return (new PluginControllerHelper())->getController($controllerName, $config);
+			return ControllerHelper::getPluginController($controllerName, $config);
 		}
 
 		$client = PluginControllerParser::getControllerClient($controllerName, $client ? $client : self::PREFIX_ADMIN);

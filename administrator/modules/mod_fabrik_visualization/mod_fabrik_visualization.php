@@ -12,7 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Site\Controller\ControllerFactory;
-use Fabrik\Component\Fabrik\Site\Helper\PluginControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\ControllerHelper;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
@@ -52,7 +52,7 @@ $db->setQuery($query);
 $name = str_replace('_', '', ucwords($db->loadResult(), '_'));
 
 $controllerClass = sprintf('Fabrik\\Plugin\\FabrikVisualization\\%s\\Controller\\%sController', $name, $name);
-(new PluginControllerHelper())
+(new ControllerHelper())
 	->setInputVars(
 		[
 			'view'            => $viewName,
