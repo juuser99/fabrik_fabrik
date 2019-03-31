@@ -15,7 +15,6 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
-use Fabrik\Plugin\FabrikList\Email\Model\EmailModel;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -42,11 +41,11 @@ class HtmlView extends BaseView
 	public function display($tmpl = null)
 	{
 		$w      = new Worker();
-		$params = $this->getParams();
 		/** @var CMSApplication $app */
 		$app = Factory::getApplication();
-		/** @var EmailModel $model */
+		/** @var \PlgFabrik_ListEmail $model */
 		$model       = $this->getModel();
+		$params      = $model->getParams();
 		$input       = $app->input;
 		$renderOrder = $input->getInt('renderOrder');
 
