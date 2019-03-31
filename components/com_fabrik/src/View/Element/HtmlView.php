@@ -8,10 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Component\Fabrik\Site\View\Element;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Fabrik\Component\Fabrik\Site\View\AbstractView;
 
 /**
  * Fabrik Front End Element View
@@ -20,12 +22,14 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik
  * @since       3.0
  */
-class FabrikViewElement extends FabrikView
+class HtmlView extends AbstractView
 {
 	/**
 	 * Element id (not used?)
 	 *
 	 * @var int
+	 *
+	 * @since 4.0
 	 */
 	protected $id = null;
 
@@ -37,6 +41,8 @@ class FabrikViewElement extends FabrikView
 	 * @deprecated ?
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function setId($id)
 	{
@@ -49,6 +55,8 @@ class FabrikViewElement extends FabrikView
 	 * @param   string  $tpl  Template
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{

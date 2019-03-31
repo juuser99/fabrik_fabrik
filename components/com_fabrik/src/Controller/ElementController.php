@@ -8,24 +8,29 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Component\Fabrik\Site\Controller;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.controller');
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
+use Joomla\CMS\Factory;
 
 /**
  * Fabrik Element Controller
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       1.5
+ * @since       4.0
  */
-class FabrikControllerElement extends JControllerLegacy
+class ElementController extends AbstractSiteController
 {
 	/**
 	 * Is the view rendered from the J content plugin
 	 *
 	 * @var  bool
+	 *
+	 * @since 4.0
 	 */
 	public $isMambot = false;
 
@@ -33,6 +38,8 @@ class FabrikControllerElement extends JControllerLegacy
 	 * Should the element be rendered as readonly
 	 *
 	 * @var  string
+	 *
+	 * @since 4.0
 	 */
 	public $mode = false;
 
@@ -40,6 +47,8 @@ class FabrikControllerElement extends JControllerLegacy
 	 * Id used from content plugin when caching turned on to ensure correct element rendered
 	 *
 	 * @var  int
+	 *
+	 * @since 4.0
 	 */
 	public $cacheId = 0;
 
@@ -47,17 +56,20 @@ class FabrikControllerElement extends JControllerLegacy
 	 * Display the view
 	 *
 	 * @return  null
+	 *
+	 * @since 4.0
 	 */
 	public function display()
 	{
-		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$input = $app->input;
+		$app      = $this->app;
+		$document = $app->getDocument();
+
+		$input    = $app->input;
 		$viewName = $input->get('view', 'element', 'cmd');
 		$viewType = $document->getType();
 
 		// Set the default view name from the Request
-		$view = &$this->getView($viewName, $viewType);
+		$view = $this->getView($viewName, $viewType);
 
 		// $$$ rob 04/06/2011 don't assign a model to the element as its only a plugin
 
@@ -74,16 +86,18 @@ class FabrikControllerElement extends JControllerLegacy
 	 * used in inline edit table plugin
 	 *
 	 * @return  null
+	 *
+	 * @since 4.0
 	 */
 	public function save()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$listModel = $this->getModel('list', 'FabrikFEModel');
+		$app       = Factory::getApplication();
+		$input     = $app->input;
+		$listModel = $this->getModel(ListModel::class);
 		$listModel->setId($input->getInt('listid'));
 		$rowId = $input->get('rowid');
-		$key = $input->get('element');
-		$key = array_pop(explode('___', $key));
+		$key   = $input->get('element');
+		$key   = array_pop(explode('___', $key));
 		$value = $input->get('value');
 		$listModel->storeCell($rowId, $key, $value);
 		$this->mode = 'readonly';

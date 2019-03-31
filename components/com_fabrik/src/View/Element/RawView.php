@@ -11,21 +11,25 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
+use Fabrik\Component\Fabrik\Site\Model\PluginManagerModel;
+use Fabrik\Component\Fabrik\Site\View\AbstractView;
 
 /**
  * Single element raw view
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-class FabrikViewElement extends FabrikView
+class RawView extends AbstractView
 {
 	/**
 	 * Element id (not used?)
 	 *
 	 * @var int
+	 *
+	 * @since 4.0
 	 */
 	protected $id = null;
 
@@ -33,17 +37,21 @@ class FabrikViewElement extends FabrikView
 	 * Is mambot (not used?)
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	public $isMambot = null;
 
 	/**
 	 * Set id
 	 *
-	 * @param   int  $id  Element id
+	 * @param int $id Element id
+	 *
+	 * @return  void
 	 *
 	 * @deprecated ?
 	 *
-	 * @return  void
+	 * @since      4.0
 	 */
 	public function setId($id)
 	{
@@ -53,15 +61,18 @@ class FabrikViewElement extends FabrikView
 	/**
 	 * Display the template
 	 *
-	 * @param   string  $tpl  Template
+	 * @param string $tpl Template
 	 *
 	 * @return void
+	 *
+	 * @since 4.0
 	 */
 	public function display($tpl = null)
 	{
 		$input = $this->app->input;
-		$pluginManager = JModelLegacy::getInstance('Pluginmanager', 'FabrikFEModel');
-		$ids = $input->get('plugin', array(), 'array');
+		/** @var PluginManagerModel $pluginManager */
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
+		$ids           = $input->get('plugin', array(), 'array');
 
 		foreach ($ids as $id)
 		{
