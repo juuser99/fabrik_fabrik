@@ -6,10 +6,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Component\Fabrik\Site\View\Visualization;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Fabrik\Component\Fabrik\Site\View\AbstractView;
 
 /**
  * Raw Viz view class
@@ -18,7 +20,7 @@ jimport('joomla.application.component.view');
  * @subpackage  Fabrik
  * @since       3.0.6
  */
-class FabrikViewVisualization extends FabrikView
+class RawView extends AbstractView
 {
 	/**
 	 * Display
@@ -26,8 +28,10 @@ class FabrikViewVisualization extends FabrikView
 	 * @param   string  $tmpl  Template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-	public function display($tmpl = 'default')
+	public function display($tmpl = null)
 	{
 	}
 }
