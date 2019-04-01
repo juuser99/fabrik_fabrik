@@ -9,6 +9,7 @@
  */
 
 // No direct access
+use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 
 defined('_JEXEC') or die('Restricted access');
@@ -41,12 +42,12 @@ class PlgFabrik_Cronnotification extends AbstractCronPlugin
 	 * Do the plugin action
 	 *
 	 * @param   array  &$data  Record data
-	 * @param   object  &$listModel  List model
+	 * @param   object  $listModel  List model
 	 *
 	 * @return number of records updated
 	 */
 
-	public function process(&$data, &$listModel)
+	public function process(&$data, ListModel $listModel)
 	{
 		$db = FabrikWorker::getDbo();
 		$query = $db->getQuery(true);

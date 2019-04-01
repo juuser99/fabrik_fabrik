@@ -8,20 +8,22 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugin\FabrikCron\Notification\View\Notification;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
+use Fabrik\Component\Fabrik\Site\View\AbstractView;
+use Fabrik\Plugin\FabrikCron\Notification\Model\NotificationModel;
 
 /**
  * The cron notification view, shows a list of the user's current notifications
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.notification
- * @since       3.0
+ * @since       4.0
  */
-
-class FabrikViewNotification extends JViewLegacy
+class HtmlView extends AbstractView
 {
 	/**
 	 * Still a wip access the view of subscribed notifications with url:
@@ -29,23 +31,31 @@ class FabrikViewNotification extends JViewLegacy
 	 *
 	 * deletion not routing right yet
 	 *
-	 * @param   string  $tpl  Template
+	 * @param string $tpl Template
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
-	public function display($tpl = 'default')
+	public function display($tpl = null)
 	{
+		/** @var NotificationModel $model */
 		$model = $this->getModel();
 		$model->loadLang();
 		$this->rows = $model->getUserNotifications();
-		$this->id = $model->getId();
-		$j3 = FabrikWorker::j3();
-		$viewName = $this->getName();
-		$tpl = $j3 ? 'bootstrap' : 'default';
-		$tmplpath = JPATH_ROOT . '/plugins/fabrik_cron/notification/views/notification/tmpl/' . $tpl;
+		$this->id   = $model->getId();
+
+		$tmplpath = JPATH_ROOT . '/plugins/fabrik_cron/notification/tmpl/notification/bootstrap';
 		$this->_setPath('template', $tmplpath);
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_cron/notification/views/notification/tmpl/' . $tpl . '/template.css');
+
+		if (null === $tpl)
+		{
+			$tpl = 'bootstrap';
+		}
+
+		// Doesn't exist?
+		//Html::stylesheetFromPath('plugins/fabrik_cron/notification/tmpl/notification/' . $tpl . '/template.css');
+
 		echo parent::display();
 	}
 }
