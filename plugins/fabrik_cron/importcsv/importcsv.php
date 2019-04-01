@@ -11,9 +11,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
-use Fabrik\Component\Fabrik\Site\Model\ImportCsvModel;
+use Fabrik\Component\Fabrik\Site\Model\CsvImportModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
 use Fabrik\Helpers\Worker;
@@ -150,8 +151,8 @@ class PlgFabrik_Cronimportcsv extends AbstractCronPlugin
 
 			Worker::log('plg.cron.cronimportcsv.information', "Starting import: $fullCsvFile:  ");
 
-			/** @var ImportCsvModel $clsImportCSV */
-			$clsImportCSV = FabModel::getInstance(ImportCsvModel::class);
+			/** @var CsvImportModel $clsImportCSV */
+			$clsImportCSV = FabrikModel::getInstance(CsvImportModel::class);
 
 			if ($useTableName)
 			{

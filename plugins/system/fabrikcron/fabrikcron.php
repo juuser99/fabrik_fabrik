@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -241,9 +242,9 @@ class PlgSystemFabrikcron extends CMSPlugin
 		$this->log->message = '';
 
 		/** @var PluginManagerModel $pluginManager */
-		$pluginManager = FabModel::getInstance(PluginManagerModel::class);
+		$pluginManager = FabrikModel::getInstance(PluginManagerModel::class);
 		/** @var ListModel $listModel */
-		$listModel = FabModel::getInstance(ListModel::class);
+		$listModel = FabrikModel::getInstance(ListModel::class);
 
 		foreach ($rows as $row)
 		{

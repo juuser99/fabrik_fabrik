@@ -11,14 +11,14 @@
 namespace Fabrik\Component\Fabrik\Site\Controller;
 
 // No direct access
+defined('_JEXEC') or die('Restricted access');
+
 use Fabrik\Component\Fabrik\Site\Model\FormModel;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Model\PackageModel;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
-
-defined('_JEXEC') or die('Restricted access');
 
 /**
  * Fabrik package controller

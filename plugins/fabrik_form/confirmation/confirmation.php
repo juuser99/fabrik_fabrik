@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Text;
 use Joomla\CMS\Filter\InputFilter;
@@ -117,7 +118,7 @@ class PlgFabrik_FormConfirmation extends AbstractFormPlugin
 
 		// Save the posted form data to the form session, for retrieval later
 		/** @var FormSessionModel $sessionModel */
-		$sessionModel = FabModel::getInstance(FormSessionModel::class);
+		$sessionModel = FabrikModel::getInstance(FormSessionModel::class);
 		$sessionModel->setFormId($formModel->getId());
 		$rowId = $input->get('rowid', 0);
 		$sessionModel->setRowId($rowId);

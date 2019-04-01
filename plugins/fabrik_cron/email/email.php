@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Model\FabrikModel;
 use Fabrik\Helpers\Html;
 use Fabrik\Component\Fabrik\Site\Model\ListModel;
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractCronPlugin;
@@ -188,7 +189,7 @@ class PlgFabrik_Cronemail extends AbstractCronPlugin
 		{
 			// Do any update found
 			/** @var ListModel $listModel */
-			$listModel = FabModel::getInstance(ListModel::class);
+			$listModel = FabrikModel::getInstance(ListModel::class);
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
 			$field = $params->get('cronemail-updatefield');

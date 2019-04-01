@@ -1343,7 +1343,7 @@ class AbstractElementDatabaseJoinPlugin extends AbstractElementListPlugin
 		 * }
 		 * else
 		 * {
-		 * $this->cn = FabModel::getInstance(ConnectionModel::class);
+		 * $this->cn = FabrikModel::getInstance(ConnectionModel::class);
 		 * $this->cn->setId($id);
 		 * }
 		 *
