@@ -11,5 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/plugins/fabrik_element/fileupload/models/video.php';
-$render = new VideoRenderModel;
+use Fabrik\Plugin\FabrikElement\Fileupload\Renderer\VideoRenderer;
+
+return new VideoRenderer();

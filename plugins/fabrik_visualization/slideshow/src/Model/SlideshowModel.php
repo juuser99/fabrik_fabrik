@@ -339,7 +339,7 @@ class SlideshowModel extends AbstractVisualizationModel
 		if ($params->get('slideshow_viz_thumbnails', false))
 		{
 			$slideElement = $this->getSlideElement();
-			$pic_opts['thumbnail'] = $slideElement->getStorage()->_getThumb(str_replace(COM_FABRIK_LIVESITE, '', $pic_opts['href']));
+			$pic_opts['thumbnail'] = $slideElement->getStorage()->getThumb(str_replace(COM_FABRIK_LIVESITE, '', $pic_opts['href']));
 		}
 	}
 

@@ -8,32 +8,39 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Adaptor;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Filesystem\Path;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 use Joomla\String\StringHelper;
-
-require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Server File System Storage adaptor for Fabrik file upload element
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-
-class Filesystemstorage extends FabrikStorageAdaptor
+class FilesystemAdaptor extends AbstractStorageAdaptor
 {
 	/**
 	 * Does a file exist
 	 *
-	 * @param   string  $filepath     File path to test
-	 * @param   bool    $prependRoot  also test with root prepended
+	 * @param string $filepath    File path to test
+	 * @param bool   $prependRoot also test with root prepended
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function exists($filepath, $prependRoot = true)
 	{
 		if (empty($filepath) || $filepath == '\\')
@@ -41,16 +48,16 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			return false;
 		}
 
-		if (JFile::exists($filepath))
+		if (File::exists($filepath))
 		{
-		    return true;
+			return true;
 		}
 
 		if ($prependRoot)
 		{
-			$filepath = COM_FABRIK_BASE . '/' . FabrikString::ltrimword($filepath, COM_FABRIK_BASE . '/');
+			$filepath = COM_FABRIK_BASE . '/' . FStringHelper::ltrimword($filepath, COM_FABRIK_BASE . '/');
 
-			return JFile::exists($filepath);
+			return File::exists($filepath);
 		}
 
 		return false;
@@ -59,24 +66,26 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Does a folder exist
 	 *
-	 * @param   string  $path  folder path to test
+	 * @param string $path folder path to test
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function folderExists($path)
 	{
-		return JFolder::exists($path);
+		return Folder::exists($path);
 	}
 
 	/**
 	 * Create empty index.html for security
 	 *
-	 * @param   string  $path  path to folder
+	 * @param string $path path to folder
 	 *
 	 * @return bool success
+	 *
+	 * @since 4.0
 	 */
-
 	public function createIndexFile($path)
 	{
 		// Don't write a index.html in root
@@ -89,9 +98,9 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 		if (!$this->exists($index_file))
 		{
-			$content = FText::_('PLG_ELEMENT_FILEUPLOAD_INDEX_FILE_CONTENT');
+			$content = Text::_('PLG_ELEMENT_FILEUPLOAD_INDEX_FILE_CONTENT');
 
-			return JFile::write($index_file, $content);
+			return File::write($index_file, $content);
 		}
 
 		return true;
@@ -100,15 +109,16 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Create a folder
 	 *
-	 * @param   string   $path  Folder path
-	 * @param   bitmask  $mode  Permissions
+	 * @param string  $path Folder path
+	 * @param bitmask $mode Permissions
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function createFolder($path, $mode = 0755)
 	{
-		if (JFolder::create($path, $mode))
+		if (Folder::create($path, $mode))
 		{
 			return $this->createIndexFile($path);
 		}
@@ -119,12 +129,13 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Make recursive folders
 	 *
-	 * @param   string   $folderPath  Path to folder - e.g. /images/stories
-	 * @param   bitmask  $mode        Permissions
+	 * @param string  $folderPath Path to folder - e.g. /images/stories
+	 * @param bitmask $mode       Permissions
 	 *
 	 * @return  mixed JError|void
+	 *
+	 * @since 4.0
 	 */
-
 	public function makeRecursiveFolders($folderPath, $mode = 0755)
 	{
 		static $nested = 0;
@@ -146,7 +157,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 			if ($this->makeRecursiveFolders($parent, $mode) !== true)
 			{
-				// JFolder::create throws an error
+				// Folder::create throws an error
 				$nested--;
 
 				return false;
@@ -156,7 +167,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			$nested--;
 		}
 
-		if (JFolder::exists($folderPath))
+		if (Folder::exists($folderPath))
 		{
 			return true;
 		}
@@ -167,25 +178,27 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Clean the file path
 	 *
-	 * @param   string  $path  path to clean
+	 * @param string $path path to clean
 	 *
 	 * @return  string  cleaned path
+	 *
+	 * @since 4.0
 	 */
-
 	public function clean($path)
 	{
-		return JPath::clean($path);
+		return Path::clean($path);
 	}
 
 	/**
 	 * Clean a file name
 	 *
-	 * @param   string  $filename       file name to clean
-	 * @param   int     $repeatCounter  repeat group counter
+	 * @param string $filename      file name to clean
+	 * @param int    $repeatCounter repeat group counter
 	 *
 	 * @return  string  cleaned name
+	 *
+	 * @since 4.0
 	 */
-
 	public function cleanName($filename, $repeatCounter)
 	{
 		$params = $this->getParams();
@@ -204,25 +217,26 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Delete a file
 	 *
-	 * @param   string  $filepath  file to delete
-	 * @param   bool    $prependRoot  also test with root prepended
+	 * @param string $filepath    file to delete
+	 * @param bool   $prependRoot also test with root prepended
 	 *
-	 * @return  void
+	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function delete($filepath, $prependRoot = true)
 	{
-		if (JFile::exists($filepath))
+		if (File::exists($filepath))
 		{
-			return JFile::delete($filepath);
+			return File::delete($filepath);
 		}
 		else
 		{
 			if ($prependRoot)
 			{
-				$filepath = COM_FABRIK_BASE . '/' . FabrikString::ltrimword($filepath, COM_FABRIK_BASE . '/');
+				$filepath = COM_FABRIK_BASE . '/' . FStringHelper::ltrimword($filepath, COM_FABRIK_BASE . '/');
 
-				return JFile::delete($filepath);
+				return File::delete($filepath);
 			}
 
 			return false;
@@ -232,20 +246,21 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Moves an uploaded file to a destination folder
 	 *
-	 * @param   string  $tmpFile   The name of the php (temporary) uploaded file
-	 * @param   string  $filepath  The path (including filename) to move the uploaded file to
+	 * @param string $tmpFile  The name of the php (temporary) uploaded file
+	 * @param string $filepath The path (including filename) to move the uploaded file to
 	 *
 	 * @return  boolean True on success
+	 *
+	 * @since 4.0
 	 */
-
 	public function upload($tmpFile, $filepath)
 	{
 		$this->uploadedFilePath = $filepath;
 
-		$params = $this->getParams();
+		$params      = $this->getParams();
 		$allowUnsafe = $params->get('allow_unsafe', '0') === '1';
 
-		if (JFile::upload($tmpFile, $filepath, false, $allowUnsafe))
+		if (File::upload($tmpFile, $filepath, false, $allowUnsafe))
 		{
 			return $this->createIndexFile(dirname($filepath));
 		}
@@ -256,38 +271,41 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Set a file's permissions
 	 *
-	 * @param   string  $filepath  file to set permissions for
+	 * @param string $filepath file to set permissions for
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function setPermissions($filepath)
 	{
-		return JPath::setPermissions($filepath);
+		return Path::setPermissions($filepath);
 	}
 
 	/**
 	 * Write a file
 	 *
-	 * @param   string  $file    file name
-	 * @param   string  $buffer  the buffer to write
+	 * @param string $file   file name
+	 * @param string $buffer the buffer to write
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function write($file, $buffer)
 	{
-		return JFile::write($file, $buffer);
+		return File::write($file, $buffer);
 	}
 
 	/**
 	 * Read a file
 	 *
-	 * @param   string  $filepath  file path
+	 * @param string $filepath file path
 	 *
 	 * @return  mixed  Returns file contents or boolean False if failed
+	 *
+	 * @since 4.0
 	 */
-
 	public function read($filepath)
 	{
 		return file_get_contents($filepath);
@@ -296,12 +314,13 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Stream a file
 	 *
-	 * @param   string  $filepath  file path
-	 * @param   int     $chunkSize  chunk size
+	 * @param string $filepath  file path
+	 * @param int    $chunkSize chunk size
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function stream($filepath, $chunkSize = 1024 * 1024)
 	{
 		$buffer = '';
@@ -328,16 +347,17 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the file's URL
 	 *
-	 * @param   string  $file  file path
+	 * @param string $file file path
 	 *
 	 * @return  string  URL
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFileUrl($file)
 	{
 		$livesite = COM_FABRIK_LIVESITE;
 		$livesite = rtrim($livesite, '/\\');
-		$file = StringHelper::ltrim($file, '/\\');
+		$file     = StringHelper::ltrim($file, '/\\');
 
 		return str_replace("\\", "/", $livesite . '/' . $file);
 	}
@@ -345,53 +365,55 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the thumbnail URL for the file given
 	 *
-	 * @param   string  $file  url
+	 * @param string $file url
 	 *
 	 * @return string thumbnail url
+	 *
+	 * @since 4.0
 	 */
-
-	public function _getThumb($file)
+	public function getThumb($file)
 	{
-		return $this->_getSmallerFile($file, 'thumb');
+		return $this->getSmallerFile($file, 'thumb');
 	}
 
 	/**
 	 * Get the path (relative to site root?) to the smaller file
 	 *
-	 * @param   string  $file  large file path
-	 * @param   string  $type  type (thumb or crop)
+	 * @param string $file large file path
+	 * @param string $type type (thumb or crop)
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
-	protected function _getSmallerFile($file, $type)
+	protected function getSmallerFile($file, $type)
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w      = new Worker();
 
 		// $$$ rob wasn't working when getting thumb path on upload
-		$ulDir = JPath::clean($params->get('ul_directory'));
+		$ulDir = Path::clean($params->get('ul_directory'));
 		$ulDir = str_replace("\\", "/", $ulDir);
 
 		// If we're deleting a file, See http://fabrikar.com/forums/showthread.php?t=31715
 		$file = str_replace("\\", "/", $file);
 
 		// Replace things like $my->id may barf on other stuff
-		$afile = str_replace(JURI::root(), '', $file);
-		$afile = StringHelper::ltrim($afile, "/");
-		$ulDir = StringHelper::ltrim($ulDir, "/");
-		$ulDir = StringHelper::rtrim($ulDir, "/");
+		$afile     = str_replace(Uri::root(), '', $file);
+		$afile     = StringHelper::ltrim($afile, "/");
+		$ulDir     = StringHelper::ltrim($ulDir, "/");
+		$ulDir     = StringHelper::rtrim($ulDir, "/");
 		$ulDirbits = explode('/', $ulDir);
-		$filebits = explode('/', $afile);
+		$filebits  = explode('/', $afile);
 
-		$match = array();
+		$match   = array();
 		$replace = array();
 
 		for ($i = 0; $i < count($filebits); $i++)
 		{
 			if (array_key_exists($i, $ulDirbits) && $filebits[$i] != $ulDirbits[$i])
 			{
-				$match[] = $ulDirbits[$i];
+				$match[]   = $ulDirbits[$i];
 				$replace[] = $filebits[$i];
 			}
 		}
@@ -399,15 +421,15 @@ class Filesystemstorage extends FabrikStorageAdaptor
 		$ulDir = str_replace($match, $replace, $ulDir);
 
 		// $$$ rob wasn't working when getting thumb path on upload
-		$typeDir = $type == 'thumb' ? $params->get('thumb_dir') : $params->get('fileupload_crop_dir');
+		$typeDir  = $type == 'thumb' ? $params->get('thumb_dir') : $params->get('fileupload_crop_dir');
 		$thumbdir = str_replace($match, $replace, $typeDir);
-		$ulDir = $w->parseMessageForPlaceHolder($ulDir);
+		$ulDir    = $w->parseMessageForPlaceHolder($ulDir);
 		$thumbdir = $w->parseMessageForPlaceHolder($thumbdir);
-		$file = str_replace($ulDir, $thumbdir, $file);
-		$file = $w->parseMessageForPlaceHolder($file);
-		$f = basename($file);
-		$dir = dirname($file);
-		$ext = JFile::getExt($f);
+		$file     = str_replace($ulDir, $thumbdir, $file);
+		$file     = $w->parseMessageForPlaceHolder($file);
+		$f        = basename($file);
+		$dir      = dirname($file);
+		$ext      = File::getExt($f);
 
 		// Remove extension
 		$fclean = str_replace('.' . $ext, '', $f);
@@ -428,26 +450,28 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the cropped file name
 	 *
-	 * @param   string  $file  large file name
+	 * @param string $file large file name
 	 *
 	 * @return  string  cropped file name
+	 *
+	 * @since 4.0
 	 */
-
-	public function _getCropped($file)
+	public function getCropped($file)
 	{
-		return $this->_getSmallerFile($file, 'crop');
+		return $this->getSmallerFile($file, 'crop');
 	}
 
 	/**
 	 * Convert a full url into a full server path
 	 *
-	 * @param   string  $url  URL
-	 *
-	 * @see /plugins/fabrik_element/fileupload/storageAdaptor#urlToPath($url)
+	 * @param string $url URL
 	 *
 	 * @return string  path
+	 *
+	 * @see   /plugins/fabrik_element/fileupload/storageAdaptor#urlToPath($url)
+	 *
+	 * @since 4.0
 	 */
-
 	public function urlToPath($url)
 	{
 		return str_replace(COM_FABRIK_LIVESITE, COM_FABRIK_BASE, $url);
@@ -456,11 +480,12 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Do a final transform on the path name
 	 *
-	 * @param   string  &$filepath  path to parse
+	 * @param string  &$filepath path to parse
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function finalFilePathParse(&$filepath)
 	{
 		/* $$$ hugh - oops!  Double Plus Ungood if JPATH_SITE is just /,
@@ -474,14 +499,15 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Get file info using getid3
 	 *
-	 * @param   string  $filepath  file path
+	 * @param string $filepath file path
 	 *
 	 * @return mixed array|false
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFileInfo($filepath)
 	{
-	    $filepath = $this->getFullPath($filepath);
+		$filepath = $this->getFullPath($filepath);
 
 		if ($this->exists($filepath))
 		{
@@ -494,9 +520,9 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			}
 
 			require_once COM_FABRIK_FRONTEND . '/libs/phpmimetypeclass/class.mime.php';
-			$mime = new MIMETypes;
-			$thisFileInfo['filesize'] = filesize($filepath);
-			$thisFileInfo['filename'] = basename($filepath);
+			$mime                      = new \MIMETypes;
+			$thisFileInfo['filesize']  = filesize($filepath);
+			$thisFileInfo['filename']  = basename($filepath);
 			$thisFileInfo['mime_type'] = $mime->getMimeType($filepath);
 
 			return $thisFileInfo;
@@ -510,11 +536,12 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the complete folder path, including the server root
 	 *
-	 * @param   string  $filepath  The file path
+	 * @param string $filepath The file path
 	 *
 	 * @return  string   The cleaned full file path
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFullPath($filepath)
 	{
 		if (!(preg_match('#^' . preg_quote(COM_FABRIK_BASE, '#') . '#', $filepath)))
@@ -522,7 +549,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			$filepath = COM_FABRIK_BASE . '/' . $filepath;
 		}
 
-		$filepath = JPath::clean($filepath);
+		$filepath = Path::clean($filepath);
 
 		return $filepath;
 	}
@@ -530,15 +557,17 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Check for snooping
 	 *
-	 * @param   string   $folder   The file path
+	 * @param string $folder The file path
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function checkPath($folder)
 	{
 		if ($this->appendServerPath())
 		{
-			JPath::check($folder);
+			Path::check($folder);
 		}
 	}
 

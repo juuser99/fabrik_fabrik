@@ -3142,7 +3142,7 @@ EOT;
 	 *
 	 * @param   string  $spanSize  numeric span size
 	 *
-	 * @return  void
+	 * @return  string
 	 */
 	public static function getGridSpan($size, $viewport = 'medium')
 	{

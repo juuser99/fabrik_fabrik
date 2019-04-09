@@ -8,61 +8,71 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Renderer;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Text;
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Factory;
+use Joomla\Input\Input;
+use Joomla\Registry\Registry;
 
 /**
  * Fileupload adaptor to render uploaded videos
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @since       3.0
+ * @since       4.0
  */
-class VideoRenderModel extends FabModel
+class VideoRenderer implements RendererInterface
 {
 	/**
 	 * Render output
 	 *
 	 * @var  string
+	 *             
+	 * @since 4.0
 	 */
 	public $output = '';
 
 	/**
-	 * Render Video in the list view
+	 * @param \PlgFabrik_ElementFileupload $plugin
+	 * @param Registry                     $params
+	 * @param string                       $file
+	 * @param \stdClass|null               $thisRow
 	 *
-	 * @param   object  &$model   Element model
-	 * @param   object  &$params  Element params
-	 * @param   string  $file     Row data for this element
-	 * @param   object  $thisRow  All row's data
 	 *
-	 * @return  void
+	 * @since 4.0
 	 */
-	public function renderListData(&$model, &$params, $file, $thisRow)
+	public function renderListData(\PlgFabrik_ElementFileupload $plugin, Registry $params, string $file, ?\stdClass $thisRow = null): void
 	{
-		$this->render($model, $params, $file);
+		$this->render($plugin, $params, $file);
 	}
 
 	/**
-	 * Render Video in the form view
+	 * @param \PlgFabrik_ElementFileupload $plugin
+	 * @param Registry                     $params
+	 * @param string                       $file
+	 * @param \stdClass|null               $thisRow
 	 *
-	 * @param   object  &$model   Element model
-	 * @param   object  &$params  Element params
-	 * @param   string  $file     Row data for this element
 	 *
-	 * @return  void
+	 * @since 4.0
 	 */
-	public function render(&$model, &$params, $file)
+	public function render(\PlgFabrik_ElementFileupload $plugin, Registry $params, string $file, ?\stdClass $thisRow = null): void
 	{
-		$getID3 = FabrikWorker::getID3Instance();
+		$getID3 = Worker::getID3Instance();
 
 		if ($getID3 === false)
 		{
-			$this->output = FText::_('COM_FABRIK_LIBRARY_NOT_INSTALLED');
+			$this->output = Text::_('COM_FABRIK_LIBRARY_NOT_INSTALLED');
 
 			return;
 		}
 
-		$src = $model->getStorage()->getFileUrl($file);
+		$src = $plugin->getStorage()->getFileUrl($file);
 
 		// Analyse file and store returned data in $ThisFileInfo
 		$relPath = JPATH_SITE . $file;
@@ -93,7 +103,7 @@ class VideoRenderModel extends FabModel
 			}
 		}
 
-		$displayData = new stdClass;
+		$displayData = new \stdClass;
 		$displayData->width = $w;
 		$displayData->height = $h;
 		$displayData->src = $src;
@@ -101,10 +111,10 @@ class VideoRenderModel extends FabModel
 		switch ($thisFileInfo['fileformat'])
 		{
 			case 'asf':
-				$layout = $model->getLayout('video-asf');
+				$layout = $plugin->getLayout('video-asf');
 				break;
 			default:
-				$layout = $model->getLayout('video');
+				$layout = $plugin->getLayout('video');
 				break;
 		}
 
@@ -112,18 +122,18 @@ class VideoRenderModel extends FabModel
 	}
 
 	/**
-	 * Build Carousel HTML
+	 * @param string                            $id
+	 * @param array                             $data
+	 * @param \PlgFabrik_ElementFileupload|null $plugin
+	 * @param Registry|null                     $params
+	 * @param array|null                        $thisRow
 	 *
-	 * @param   string  $id       Widget HTML id
-	 * @param   array   $data     Images to add to the carousel
-	 * @param   object  $model    Element model
-	 * @param   object  $params   Element params
-	 * @param   object  $thisRow  All rows data
+	 * @return string
 	 *
-	 * @return  string  HTML
+	 * @throws \Exception
+	 * @since 4.0
 	 */
-
-	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
+	public function renderCarousel($id = 'carousel', $data = array(), ?\PlgFabrik_ElementFileupload $plugin = null, ?Registry $params = null, ?array $thisRow = null): string
 	{
 		$rendered = '';
 		$id .= '_video_carousel';
@@ -133,7 +143,9 @@ class VideoRenderModel extends FabModel
 			$rendered = '
 			<div id="' . $id . '"></div>
 			';
-			$input = $this->pp->input;
+
+			/** @var Input $input */
+			$input = Factory::getApplication()->input;
 
 			if ($input->get('format') != 'raw')
 			{
@@ -156,21 +168,10 @@ class VideoRenderModel extends FabModel
 				$js .= ']
 				});
 				';
-				FabrikHelperHTML::script('plugins/fabrik_element/fileupload/lib/jwplayer/jwplayer.js', $js);
+				Html::script('plugins/fabrik_element/fileupload/lib/jwplayer/jwplayer.js', $js);
 			}
 		}
 
 		return $rendered;
-	}
-
-	/**
-	 * Get thumb
-	 *
-	 * @param   string  $video_file  Video SRC
-	 *
-	 * @return  void
-	 */
-	private function getThumb($video_file)
-	{
 	}
 }

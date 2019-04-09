@@ -8,12 +8,17 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Adaptor;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Path;
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
-
-require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Amazon s3 Storage adaptor for Fabrik file upload element
@@ -23,12 +28,14 @@ require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
  * @since       3.0
  */
 
-class Amazons3storage extends FabrikStorageAdaptor
+class AmazonS3Adaptor extends AbstractStorageAdaptor
 {
 	/**
 	 * Are we using SSL to store/retrieve files
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	protected $ssl = false;
 
@@ -37,20 +44,30 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 * Must have trailing slash
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $domain = 's3.amazonaws.com/';
 
 	/**
+	 * @var \S3
+	 * @since 4.0
+	 */
+	protected $s3;
+
+	/**
 	 * Constructor
 	 *
-	 * @param   Registry  &$params  options
+	 * @param Registry $params options
+	 *
+	 * @since 4.0
 	 */
-
-	public function __construct(&$params)
+	public function __construct(Registry $params)
 	{
 		require_once COM_FABRIK_FRONTEND . '/libs/amazons3/S3.php';
-		$this->ssl = $params->get('fileupload_ssl', false);
-		$this->s3 = new S3($params->get('fileupload_aws_accesskey'), $params->get('fileupload_aws_secretkey'), $this->ssl);
+		$this->ssl    = $params->get('fileupload_ssl', false);
+		$this->s3     = new \S3($params->get('fileupload_aws_accesskey'), $params->get('fileupload_aws_secretkey'), $this->ssl);
+
 		parent::__construct($params);
 	}
 
@@ -58,12 +75,13 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 * Get the bucket name
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getBucketName()
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w      = new Worker();
 
 		return $w->parseMessageForPlaceHolder($params->get('fileupload_aws_bucketname', 'robclayburnsfabrik'));
 	}
@@ -72,8 +90,9 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 * Get upload location
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getLocation()
 	{
 		$loc = $this->params->get('fileupload_aws_location');
@@ -84,12 +103,13 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Does a file exist
 	 *
-	 * @param   string  $filepath     path to test for
-	 * @param   bool    $prependRoot  ignored in this adaptor
+	 * @param string $filepath    path to test for
+	 * @param bool   $prependRoot ignored in this adaptor
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function exists($filepath, $prependRoot = true)
 	{
 		if (!$this->bucketExists())
@@ -97,9 +117,9 @@ class Amazons3storage extends FabrikStorageAdaptor
 			return false;
 		}
 
-		$re = '/^' . preg_quote(COM_FABRIK_BASE) . '/';
+		$re       = '/^' . preg_quote(COM_FABRIK_BASE) . '/';
 		$filepath = preg_replace($re, '', $filepath);
-		$bucket = $this->getBucketName();
+		$bucket   = $this->getBucketName();
 		$filepath = str_replace("%20", " ", $filepath);
 		$filepath = $this->urlToPath($filepath);
 		$response = $this->s3->getObject($bucket, $filepath);
@@ -110,18 +130,19 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Convert a full url into a full server path
 	 *
-	 * @param   string  $url  URL
-	 *
-	 * @see /plugins/fabrik_element/fileupload/storageAdaptor#urlToPath($url)
+	 * @param string $url URL
 	 *
 	 * @return string  path
+	 *
+	 * @see   /plugins/fabrik_element/fileupload/storageAdaptor#urlToPath($url)
+	 *
+	 * @since 4.0
 	 */
-
 	public function urlToPath($url)
 	{
 		$prefix = $this->ssl ? 'https://' : 'http://';
 		$bucket = $this->getBucketName();
-		$url = $this->removePrependedURL($url);
+		$url    = $this->removePrependedURL($url);
 
 		if (strstr($url, $prefix))
 		{
@@ -136,16 +157,17 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Remove the full server path from the filepath
 	 *
-	 * @param   string  $filepath  file path
+	 * @param string $filepath file path
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	private function removePrependedURL($filepath)
 	{
 		if (substr($filepath, 0, StringHelper::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
 		{
-			$filepath = Fabrikstring::ltrimword($filepath, COM_FABRIK_BASE);
+			$filepath = FStringHelper::ltrimword($filepath, COM_FABRIK_BASE);
 		}
 
 		return $filepath;
@@ -155,11 +177,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 * Does the bucket exist
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	private function bucketExists()
 	{
-		$bucket = $this->getBucketName();
+		$bucket  = $this->getBucketName();
 		$buckets = $this->s3->listBuckets();
 
 		if (!is_array($buckets))
@@ -178,17 +201,18 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Upload the file
 	 *
-	 * @param   string  $tmpFile   tmp file location
-	 * @param   string  $filepath  final upload location
+	 * @param string $tmpFile  tmp file location
+	 * @param string $filepath final upload location
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function upload($tmpFile, $filepath)
 	{
 		$filepath = str_replace("\\", '/', $filepath);
-		$bucket = $this->getBucketName();
-		$acl = $this->getAcl();
+		$bucket   = $this->getBucketName();
+		$acl      = $this->getAcl();
 
 		if (!$this->bucketExists())
 		{
@@ -214,11 +238,10 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * When creating file paths, do we need to append them with JPATH_SITE
 	 *
+	 * @return  bool
 	 * @since  3.0.6.2
 	 *
-	 * @return  bool
 	 */
-
 	public function appendServerPath()
 	{
 		$params = $this->getParams();
@@ -230,8 +253,9 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 * Build the base url for the files
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
-
 	private function getS3BaseURL()
 	{
 		$prefix = $this->ssl ? 'https://' : 'http://';
@@ -243,17 +267,18 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Write a file
 	 *
-	 * @param   string  $file    file name
-	 * @param   string  $buffer  the buffer to write
+	 * @param string $file   file name
+	 * @param string $buffer the buffer to write
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function write($file, $buffer)
 	{
-		$file = $this->urlToPath($file);
-		$file = str_replace("%20", " ", $file);
-		$file = str_replace("\\", '/', $file);
+		$file   = $this->urlToPath($file);
+		$file   = str_replace("%20", " ", $file);
+		$file   = str_replace("\\", '/', $file);
 		$bucket = $this->getBucketName();
 
 		if ($this->s3->putObject($buffer, $bucket, $file, S3::ACL_PUBLIC_READ))
@@ -269,17 +294,18 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Read a file
 	 *
-	 * @param   string  $filepath  file path
+	 * @param string $filepath file path
 	 *
 	 * @return  mixed  Returns file contents or boolean False if failed
+	 *
+	 * @since 4.0
 	 */
-
 	public function read($filepath)
 	{
-		$file = $this->urlToPath($filepath);
-		$file = str_replace("%20", " ", $file);
-		$file = str_replace("\\", '/', $file);
-		$bucket = $this->getBucketName();
+		$file     = $this->urlToPath($filepath);
+		$file     = str_replace("%20", " ", $file);
+		$file     = str_replace("\\", '/', $file);
+		$bucket   = $this->getBucketName();
 		$s3object = $this->s3->getObject($bucket, $file);
 
 		if ($s3object === false)
@@ -295,15 +321,17 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 *
 	 * NOT IMPLEMENTED - use amazons3sdk adapter if you need streaming
 	 *
-	 * @param   string  $filepath  file path
-	 * @param  int  $chunkSize
+	 * @param string $filepath file path
+	 * @param int    $chunkSize
+	 *
+	 * @since 4.0
 	 */
-
 	public function stream($filepath, $chunkSize = 1024 * 1024)
 	{
 		echo $this->read($filepath);
 		ob_flush();
 		flush();
+
 		return true;
 	}
 
@@ -311,24 +339,25 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 * Get the S3 Acl setting
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getAcl()
 	{
 		$params = $this->getParams();
-		$acl = $params->get('fileupload_amazon_acl', 2);
+		$acl    = $params->get('fileupload_amazon_acl', 2);
 
 		switch ($acl)
 		{
 			case 1:
-				$acl = S3::ACL_PRIVATE;
+				$acl = \S3::ACL_PRIVATE;
 				break;
 			case 2:
 			default:
-				$acl = S3::ACL_PUBLIC_READ;
+				$acl = \S3::ACL_PUBLIC_READ;
 				break;
 			case 3:
-				$acl = S3::ACL_PUBLIC_READ_WRITE;
+				$acl = \S3::ACL_PUBLIC_READ_WRITE;
 				break;
 		}
 
@@ -338,11 +367,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Does a folder exist - not applicable for S3 storage
 	 *
-	 * @param   string  $folder  folder to test
+	 * @param string $folder folder to test
 	 *
 	 * @return  true
+	 *
+	 * @since 4.0
 	 */
-
 	public function folderExists($folder)
 	{
 		return true;
@@ -351,12 +381,13 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Create a folder - not applicable for S3 storage
 	 *
-	 * @param   string   $path  Folder path
-	 * @param   bitmask  $mode  Permissions
+	 * @param string  $path Folder path
+	 * @param bitmask $mode Permissions
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function createFolder($path, $mode = 0755)
 	{
 		return true;
@@ -365,11 +396,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Clean a path
 	 *
-	 * @param   string  $path  path to clear
+	 * @param string $path path to clear
 	 *
 	 * @return  string  cleaned path
+	 *
+	 * @since 4.0
 	 */
-
 	public function clean($path)
 	{
 		$prefix = $this->ssl ? 'https://' : 'http://';
@@ -378,12 +410,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 		{
 			// If we are cleaning up a full url then check that fabrik hasn't unwittingly prepended the JPATH_SITE to the start of the url
 			$path = $this->removePrependedURL($path);
-			$part = Fabrikstring::ltrimword($path, $prefix);
-			$path = $prefix . JPath::clean($part);
+			$part = FStringHelper::ltrimword($path, $prefix);
+			$path = $prefix . Path::clean($part);
 		}
 		else
 		{
-			$path = JPath::clean($path);
+			$path = Path::clean($path);
 		}
 
 		$path = str_replace("\\", '/', $path);
@@ -394,12 +426,13 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Clean a file name
 	 *
-	 * @param   string  $filename       File name to clean
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param string $filename      File name to clean
+	 * @param int    $repeatCounter Repeat group counter
 	 *
 	 * @return  string  cleaned name
+	 *
+	 * @since 4.0
 	 */
-
 	public function cleanName($filename, $repeatCounter)
 	{
 		$this->randomizeName($filename);
@@ -410,12 +443,13 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Delete a file
 	 *
-	 * @param   string  $filepath  File to delete
-	 * @param   bool    $prependRoot  also test with root prepended
+	 * @param string $filepath    File to delete
+	 * @param bool   $prependRoot also test with root prepended
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function delete($filepath, $prependRoot = true)
 	{
 		$filepath = $this->urlToPath($filepath);
@@ -425,11 +459,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Set a file's permissions
 	 *
-	 * @param   string  $filepath  file to set permissions for
+	 * @param string $filepath file to set permissions for
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function setPermissions($filepath)
 	{
 		// Not applicable
@@ -438,11 +473,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Get the file's URL
 	 *
-	 * @param   string  $file  file path
+	 * @param string $file file path
 	 *
 	 * @return  string  URL
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFileUrl($file)
 	{
 		return $file;
@@ -451,15 +487,16 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Get the thumbnail file for the file given
 	 *
-	 * @param   string  $file  file path
+	 * @param string $file file path
 	 *
-	 * @return  string	thumbnail
+	 * @return  string    thumbnail
+	 *
+	 * @since 4.0
 	 */
-
-	public function _getThumb($file)
+	public function getThumb($file)
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w      = new Worker;
 
 		$ulDir = COM_FABRIK_BASE . $params->get('ul_directory');
 		$ulDir = $this->clean($ulDir);
@@ -471,13 +508,13 @@ class Amazons3storage extends FabrikStorageAdaptor
 		$file = $w->parseMessageForPlaceHolder($file);
 		$file = str_replace($ulDir, $thumbdir, $file);
 
-		$f = basename($file);
+		$f   = basename($file);
 		$dir = dirname($file);
 
 		// Jaanus added: create also thumb suffix as for filesystemstorage
-		$ext = JFile::getExt($f);
-		$fclean = JFile::stripExt($f);
-		$file = $dir . '/' . $params->get('thumb_prefix') . $fclean . $params->get('thumb_suffix') . '.' . $ext;
+		$ext    = File::getExt($f);
+		$fclean = File::stripExt($f);
+		$file   = $dir . '/' . $params->get('thumb_prefix') . $fclean . $params->get('thumb_suffix') . '.' . $ext;
 
 		return $file;
 	}
@@ -485,15 +522,16 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Get the cropped file for the file given
 	 *
-	 * @param   string  $file  main image file path
+	 * @param string $file main image file path
 	 *
 	 * @return  string  cropped image
+	 *
+	 * @since 4.0
 	 */
-
-	public function _getCropped($file)
+	public function getCropped($file)
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w      = new Worker;
 
 		$ulDir = COM_FABRIK_BASE . $params->get('ul_directory');
 		$ulDir = $this->clean($ulDir);
@@ -505,8 +543,8 @@ class Amazons3storage extends FabrikStorageAdaptor
 		$file = $w->parseMessageForPlaceHolder($file);
 		$file = str_replace($ulDir, $thumbdir, $file);
 
-		$f = basename($file);
-		$dir = dirname($file);
+		$f    = basename($file);
+		$dir  = dirname($file);
 		$file = $dir . '/' . $f;
 
 		return $file;
@@ -515,11 +553,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Convert a full server path into a full url
 	 *
-	 * @param   string  $path  server path
+	 * @param string $path server path
 	 *
 	 * @return  string  url
+	 *
+	 * @since 4.0
 	 */
-
 	public function pathToURL($path)
 	{
 		return $path;
@@ -528,12 +567,13 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Make a nested folder structure - not applicable for S3 storaga
 	 *
-	 * @param   string  $folderPath  path to folder - e.g. /images/stories
-	 * @param   int     $mode        folder permissions
+	 * @param string $folderPath path to folder - e.g. /images/stories
+	 * @param int    $mode       folder permissions
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function makeRecursiveFolders($folderPath, $mode = 0755)
 	{
 		return;
@@ -542,11 +582,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Get file info
 	 *
-	 * @param   string  $filepath  path
+	 * @param string $filepath path
 	 *
-	 * @return	array
+	 * @return    array
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFileInfo($filepath)
 	{
 		$bucket = $this->getBucketName();
@@ -565,11 +606,12 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Get the complete folder path, including the server root
 	 *
-	 * @param   string  $filepath  the file path
+	 * @param string $filepath the file path
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFullPath($filepath)
 	{
 		$filepath = $this->urlToPath($filepath);
@@ -583,24 +625,25 @@ class Amazons3storage extends FabrikStorageAdaptor
 	 * Allows storage model to modify pathname just before it is rendered.  For instance,
 	 * if using Amazon S3 with 'Authenticated URL' option.
 	 *
-	 * @param   string  $filepath  path to file
+	 * @param string $filepath path to file
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function preRenderPath($filepath)
 	{
 		$params = $this->getParams();
 
 		if ($lifetime = (int) $params->get('fileupload_amazon_auth_url', 0))
 		{
-			$file = $this->urlToPath($filepath);
-			$file = str_replace("%20", " ", $file);
-			$file = str_replace("\\", '/', $file);
+			$file   = $this->urlToPath($filepath);
+			$file   = str_replace("%20", " ", $file);
+			$file   = str_replace("\\", '/', $file);
 			$bucket = trim($this->getBucketName());
 			//$hostbucket = !$this->ssl;
 			$hostbucket = false;
-			$filepath = $this->s3->getAuthenticatedURL($bucket, $file, $lifetime, $hostbucket, $this->ssl);
+			$filepath   = $this->s3->getAuthenticatedURL($bucket, $file, $lifetime, $hostbucket, $this->ssl);
 		}
 
 		return $filepath;
@@ -609,9 +652,11 @@ class Amazons3storage extends FabrikStorageAdaptor
 	/**
 	 * Check for snooping
 	 *
-	 * @param   string   $folder   The file path
+	 * @param string $folder The file path
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function checkPath($folder)
 	{

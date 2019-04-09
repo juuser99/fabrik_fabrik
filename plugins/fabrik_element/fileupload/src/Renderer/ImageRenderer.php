@@ -8,22 +8,31 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Renderer;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
+use Joomla\Registry\Registry;
+use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 
 /**
  * Fileupload adaptor to render uploaded images
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @since       3.0
+ * @since       4.0
  */
-class ImageRenderModel
+class ImageRenderer implements RendererInterface
 {
 	/**
 	 * Render output
 	 *
 	 * @var  string
+	 *
+	 * @since 4.0
 	 */
 	public $output = '';
 
@@ -31,51 +40,49 @@ class ImageRenderModel
 	 * In list view
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	protected $inTableView = false;
 
 	/**
-	 * Render list data
+	 * @param \PlgFabrik_ElementFileupload $plugin
+	 * @param Registry                     $params
+	 * @param string                       $file
+	 * @param \stdClass|null               $thisRow
 	 *
-	 * @param   object &$model  Element model
-	 * @param   object &$params Element params
-	 * @param   string $file    Row data for this element
-	 * @param   object $thisRow All rows data
 	 *
-	 * @return  void
+	 * @since 4.0
 	 */
-
-	public function renderListData(&$model, &$params, $file, $thisRow)
+	public function renderListData(\PlgFabrik_ElementFileupload $plugin, Registry $params, string $file, ?\stdClass $thisRow = null): void
 	{
 		$this->inTableView = true;
-		$this->render($model, $params, $file, $thisRow);
+		$this->render($plugin, $params, $file, $thisRow);
 	}
 
 	/**
-	 * Render uploaded image
+	 * @param \PlgFabrik_ElementFileupload $plugin
+	 * @param Registry                     $params
+	 * @param string                       $file
+	 * @param \stdClass|null               $thisRow
 	 *
-	 * @param   object &$model  Element model
-	 * @param   object &$params Element params
-	 * @param   string $file    Row data for this element
-	 * @param   object $thisRow All row's data
 	 *
-	 * @return  void
+	 * @since 4.0
 	 */
-
-	public function render(&$model, &$params, $file, $thisRow = null)
+	public function render(\PlgFabrik_ElementFileupload $plugin, Registry $params, string $file, ?\stdClass $thisRow = null): void
 	{
 		/*
 		 * $$$ hugh - added this hack to let people use elementname__title as a title element
 		 * for the image, to show in the lightbox popup.
 		 * So we have to work out if we're being called from a table or form
 		 */
-		$formModel = $model->getFormModel();
-		$listModel = $model->getListModel();
+		$formModel = $plugin->getFormModel();
+		$listModel = $plugin->getListModel();
 		$title     = basename($file);
 
 		if ($params->get('fu_title_element') == '')
 		{
-			$title_name = $model->getFullName(true, false) . '__title';
+			$title_name = $plugin->getFullName(true, false) . '__title';
 		}
 		else
 		{
@@ -100,10 +107,10 @@ class ImageRenderModel
 			}
 		}
 
-		$bits  = FabrikWorker::JSONtoData($title, true);
-		$title = FArrayHelper::getValue($bits, $model->_repeatGroupCounter, $title);
+		$bits  = Worker::JSONtoData($title, true);
+		$title = FArrayHelper::getValue($bits, $plugin->getRepeatGroupCounter(), $title);
 		$title = htmlspecialchars(strip_tags($title, ENT_NOQUOTES));
-		$file  = $model->getStorage()->getFileUrl($file);
+		$file  = $plugin->getStorage()->getFileUrl($file);
 
 		$fullSize = $file;
 
@@ -111,35 +118,35 @@ class ImageRenderModel
 		{
 			if ($params->get('fileupload_crop'))
 			{
-				$file = $model->getStorage()->_getCropped($fullSize);
+				$file = $plugin->getStorage()->getCropped($fullSize);
 			}
 			else
 			{
-				$file = $model->getStorage()->_getThumb($file);
+				$file = $plugin->getStorage()->getThumb($file);
 			}
 		}
 
 		list($width, $height) = $this->imageDimensions($params);
 
-		$file = $model->storage->preRenderPath($file);
+		$file = $plugin->getStorage()->preRenderPath($file);
 
-		$n = $this->inTableView ? '' : $model->getElement()->name;
+		$n = $this->inTableView ? '' : $plugin->getElement()->name;
 
 		if ($params->get('restrict_lightbox', 1) == 0)
 		{
 			$n = '';
 		}
 
-		$layout                     = $model->getLayout('image');
-		$displayData                = new stdClass;
-		$displayData->lightboxAttrs = FabrikHelperHTML::getLightboxAttributes($title, $n);
-		$displayData->fullSize      = $model->storage->preRenderPath($fullSize);
+		$layout                     = $plugin->getLayout('image');
+		$displayData                = new \stdClass;
+		$displayData->lightboxAttrs = Html::getLightboxAttributes($title, $n);
+		$displayData->fullSize      = $plugin->getStorage()->preRenderPath($fullSize);
 		$displayData->file          = $file;
 		$displayData->makeLink      = $params->get('make_link', true)
 			&& !$this->fullImageInRecord($params)
 			&& $listModel->getOutPutFormat() !== 'feed';
 		$displayData->title         = $title;
-		$displayData->isJoin        = $model->isJoin();
+		$displayData->isJoin        = $plugin->isJoin();
 		$displayData->width         = $width;
 		$displayData->showImage     = $params->get('fu_show_image');
 		$displayData->inListView    = $this->inTableView;
@@ -153,13 +160,13 @@ class ImageRenderModel
 	/**
 	 * Get the image width / height
 	 *
-	 * @param   JParameter $params Params
-	 *
-	 * @since   3.1rc2
+	 * @param Registry $params Params
 	 *
 	 * @return  array ($width, $height)
+	 * @since   3.1rc2
+	 *
 	 */
-	private function imageDimensions($params)
+	private function imageDimensions(Registry $params)
 	{
 		$width  = $params->get('fu_main_max_width');
 		$height = $params->get('fu_main_max_height');
@@ -184,11 +191,13 @@ class ImageRenderModel
 	/**
 	 * When in form or detailed view, do we want to show the full image or thumbnail/link?
 	 *
-	 * @param   object &$params params
+	 * @param Registry $params params
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-	private function fullImageInRecord(&$params)
+	private function fullImageInRecord(Registry $params)
 	{
 		if ($this->inTableView)
 		{
@@ -204,21 +213,21 @@ class ImageRenderModel
 	}
 
 	/**
-	 * Build Carousel HTML
+	 * @param string                            $id
+	 * @param array                             $data
+	 * @param \PlgFabrik_ElementFileupload|null $plugin
+	 * @param Registry|null                     $params
+	 * @param array|null                        $thisRow
 	 *
-	 * @param   string $id      Widget HTML id
-	 * @param   array  $data    Images to add to the carousel
-	 * @param   object $model   Element model
-	 * @param   object $params  Element params
-	 * @param   object $thisRow All rows data
+	 * @return string
 	 *
-	 * @return  string  HTML
+	 * @since 4.0
 	 */
-	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
+	public function renderCarousel($id = 'carousel', $data = array(), ?\PlgFabrik_ElementFileupload $plugin = null, ?Registry $params = null, ?array $thisRow = null): string
 	{
-		$id .= '_carousel';
-		$layout         = $model->getLayout('carousel');
-		$layoutData     = new stdClass;
+		$id             .= '_carousel';
+		$layout         = $plugin->getLayout('carousel');
+		$layoutData     = new \stdClass;
 		$layoutData->id = $id;
 		list($layoutData->width, $layoutData->height) = $this->imageDimensions($params);
 
@@ -229,8 +238,8 @@ class ImageRenderModel
 
 			foreach ($data as $img)
 			{
-				$model->_repeatGroupCounter = $i++;
-				$this->renderListData($model, $params, $img, $thisRow);
+				$plugin->setRepeatGroupCounter($i++);
+				$this->renderListData($plugin, $params, $img, $thisRow);
 				$imgs[] = $this->output;
 			}
 

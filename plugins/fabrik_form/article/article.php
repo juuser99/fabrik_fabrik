@@ -509,10 +509,10 @@ class PlgFabrik_FormArticle extends AbstractFormPlugin
 			switch ($size)
 			{
 				case 'cropped':
-					$file = $storage->_getCropped($file);
+					$file = $storage->getCropped($file);
 					break;
 				case 'thumb':
-					$file = $storage->_getThumb($file);
+					$file = $storage->getThumb($file);
 					break;
 			}
 

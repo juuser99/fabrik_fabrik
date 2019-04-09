@@ -10,6 +10,7 @@
 	<version>3.8.1</version>
 	<help url="PLG_ELEMENT_FILEUPLOAD_HELP_SERVER"/>
 	<description>PLG_ELEMENT_FILEUPLOAD_DESCRIPTION</description>
+	<namespace path="src">Fabrik\Plugin\FabrikElement\Fileupload</namespace>
 	<files>
 		<filename plugin="fileupload">fileupload.php</filename>
 		<filename>adaptor.php</filename>
@@ -21,7 +22,7 @@
 		<folder>language</folder>
 		<folder>layouts</folder>
 		<folder>lib</folder>
-		<folder>models</folder>
+		<folder>src</folder>
 	</files>
 
 </extension>

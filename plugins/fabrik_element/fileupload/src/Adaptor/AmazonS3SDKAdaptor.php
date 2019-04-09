@@ -8,26 +8,36 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Adaptor;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
-
+use Aws\S3\S3Client;
+use Fabrik\Helpers\Html;
+use Fabrik\Helpers\Worker;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Path;
+use Joomla\Registry\Registry;
+use Joomla\String\StringHelper;
+use Fabrik\Helpers\StringHelper as FStringHelper;
 
 /**
  * Amazon s3 Storage adaptor for Fabrik file upload element
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @since       3.0
+ * @since       4.0
  */
-
-class Amazons3sdkstorage extends FabrikStorageAdaptor
+class AmazonS3SDKAdaptor extends AbstractStorageAdaptor
 {
 	/**
 	 * Are we using SSL to store/retrieve files
 	 *
 	 * @var bool
+	 *
+	 * @since 4.0
 	 */
 	protected $ssl = false;
 
@@ -36,25 +46,33 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Must have trailing slash
 	 *
 	 * @var string
+	 *
+	 * @since 4.0
 	 */
 	protected $domain = 's3.amazonaws.com/';
 
 	/**
+	 * @var S3Client
+	 * @since 4.0
+	 */
+	protected $s3;
+
+	/**
 	 * Constructor
 	 *
-	 * @param   Registry  &$params  options
+	 * @param Registry $params options
+	 *
+	 * @since 4.0
 	 */
-
-	public function __construct(&$params)
+	public function __construct(Registry $params)
 	{
-		$this->params = $params;
-		$this->ssl = $params->get('fileupload_ssl', false);
+		$this->ssl    = $params->get('fileupload_ssl', false);
 
-		$this->s3 = new Aws\S3\S3Client([
-			'region'  => $this->getLocation(),
-			'version' => 'latest',
+		$this->s3 = new S3Client([
+			'region'      => $this->getLocation(),
+			'version'     => 'latest',
 			'credentials' => [
-				'key' => $params->get('fileupload_aws_accesskey'),
+				'key'    => $params->get('fileupload_aws_accesskey'),
 				'secret' => $params->get('fileupload_aws_secretkey')
 			]
 		]);
@@ -66,12 +84,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Get the bucket name
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getBucketName()
 	{
 		$params = $this->getParams();
-		$w = new FabrikWorker;
+		$w      = new Worker();
 
 		return $w->parseMessageForPlaceHolder($params->get('fileupload_aws_bucketname', 'robclayburnsfabrik'));
 	}
@@ -80,8 +99,9 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Get upload location
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getLocation()
 	{
 		$loc = $this->params->get('fileupload_aws_location');
@@ -92,12 +112,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Does a file exist
 	 *
-	 * @param   string  $filepath     path to test for
-	 * @param   bool    $prependRoot  ignored in this adaptor
+	 * @param string $filepath    path to test for
+	 * @param bool   $prependRoot ignored in this adaptor
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function exists($filepath, $prependRoot = true)
 	{
 		static $exists = array();
@@ -111,12 +132,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 					$this->urlToKey($filepath)
 				);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
-				if (FabrikHelperHTML::isDebug())
+				if (Html::isDebug())
 				{
-					JFactory::getApplication()->enqueueMessage('S3 exists: ' . $e->getMessage());
+					Factory::getApplication()->enqueueMessage('S3 exists: ' . $e->getMessage());
 				}
+
 				return false;
 			}
 		}
@@ -127,18 +149,19 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Convert a full url into a full server path
 	 *
-	 * @param   string  $url  URL
-	 *
-	 * @see /plugins/fabrik_element/fileupload/storageAdaptor#urlToPath($url)
+	 * @param string $url URL
 	 *
 	 * @return string  path
+	 *
+	 * @see   /plugins/fabrik_element/fileupload/storageAdaptor#urlToPath($url)
+	 *
+	 * @since 4.0
 	 */
-
 	public function urlToPath($url)
 	{
 		$prefix = $this->ssl ? 'https://' : 'http://';
 		$bucket = $this->getBucketName();
-		$url = $this->removePrependedURL($url);
+		$url    = $this->removePrependedURL($url);
 
 		if (strstr($url, $prefix))
 		{
@@ -153,29 +176,33 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Convert url to key
 	 *
-	 * @param   string  $url  URL
+	 * @param string $url URL
 	 *
 	 * @return string  path
+	 *
+	 * @since 4.0
 	 */
 	private function urlToKey($url)
 	{
 		$url = urldecode($this->urlToPath($url));
+
 		return $url;
 	}
 
 	/**
 	 * Remove the full server path from the filepath
 	 *
-	 * @param   string  $filepath  file path
+	 * @param string $filepath file path
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	private function removePrependedURL($filepath)
 	{
-		if (substr($filepath, 0, JString::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
+		if (substr($filepath, 0, StringHelper::strlen(COM_FABRIK_BASE)) == COM_FABRIK_BASE)
 		{
-			$filepath = Fabrikstring::ltrimword($filepath, COM_FABRIK_BASE);
+			$filepath = FStringHelper::ltrimword($filepath, COM_FABRIK_BASE);
 		}
 
 		return $filepath;
@@ -185,8 +212,9 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Does the bucket exist
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	private function bucketExists()
 	{
 		return $this->s3->doesBucketExist($this->getBucketName());
@@ -195,12 +223,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Upload the file
 	 *
-	 * @param   string  $tmpFile   tmp file location
-	 * @param   string  $filepath  final upload location
+	 * @param string $tmpFile  tmp file location
+	 * @param string $filepath final upload location
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function upload($tmpFile, $filepath)
 	{
 		$filepath = str_replace("\\", '/', $filepath);
@@ -211,34 +240,35 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 			try
 			{
 				$this->s3->createBucket([
-					'Bucket' => $this->getBucketName(),
-					'ACL' => $this->getAcl(),
+					'Bucket'                    => $this->getBucketName(),
+					'ACL'                       => $this->getAcl(),
 					'CreateBucketConfiguration' => [
 						'LocationConstraint' => $this->getLocation()
 					]
 				]);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
-				if (FabrikHelperHTML::isDebug())
+				if (Html::isDebug())
 				{
-					JFactory::getApplication()->enqueueMessage('S3 upload createBucket: ' . $e->getMessage());
+					Factory::getApplication()->enqueueMessage('S3 upload createBucket: ' . $e->getMessage());
 				}
+
 				return false;
 			}
 		}
 
 		// $$$ rob avoid urls like http://bucket.s3.amazonaws.com//home/users/path/to/file/Chrysanthemum.jpg
-		$filepath = JString::ltrim($filepath, '/');
+		$filepath = StringHelper::ltrim($filepath, '/');
 
 		// Move the file
 		try
 		{
 			$s3Params = [
-				'SourceFile' => $tmpFile,
-				'Bucket' => $this->getBucketName(),
-				'Key' => $this->urlToKey($filepath),
-				'ACL' => $this->getAcl(),
+				'SourceFile'  => $tmpFile,
+				'Bucket'      => $this->getBucketName(),
+				'Key'         => $this->urlToKey($filepath),
+				'ACL'         => $this->getAcl(),
 				'ContentType' => $mimeType
 			];
 
@@ -249,12 +279,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 
 			$this->s3->putObject($s3Params);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
-			if (FabrikHelperHTML::isDebug())
+			if (Html::isDebug())
 			{
-				JFactory::getApplication()->enqueueMessage('S3 upload putObject: ' . $e->getMessage());
+				Factory::getApplication()->enqueueMessage('S3 upload putObject: ' . $e->getMessage());
 			}
+
 			return false;
 		}
 
@@ -266,11 +297,10 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * When creating file paths, do we need to append them with JPATH_SITE
 	 *
+	 * @return  bool
 	 * @since  3.0.6.2
 	 *
-	 * @return  bool
 	 */
-
 	public function appendServerPath()
 	{
 		$params = $this->getParams();
@@ -282,8 +312,9 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Build the base url for the files
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
-
 	private function getS3BaseURL()
 	{
 		$prefix = $this->ssl ? 'https://' : 'http://';
@@ -295,21 +326,22 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Write a file
 	 *
-	 * @param   string  $file    file name
-	 * @param   string  $buffer  the buffer to write
+	 * @param string $file   file name
+	 * @param string $buffer the buffer to write
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function write($file, $buffer)
 	{
 		try
 		{
 			$s3Params = [
-				'Body' => $buffer,
+				'Body'   => $buffer,
 				'Bucket' => $this->getBucketName(),
-				'Key' => $this->urlToKey($file),
-				'ACL' => $this->getAcl()
+				'Key'    => $this->urlToKey($file),
+				'ACL'    => $this->getAcl()
 			];
 
 			if ($this->isEncrypted())
@@ -319,12 +351,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 
 			$this->s3->putObject($s3Params);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
-			if (FabrikHelperHTML::isDebug())
+			if (Html::isDebug())
 			{
-				JFactory::getApplication()->enqueueMessage('S3 write: ' . $e->getMessage());
+				Factory::getApplication()->enqueueMessage('S3 write: ' . $e->getMessage());
 			}
+
 			return false;
 		}
 	}
@@ -332,26 +365,28 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Read a file
 	 *
-	 * @param   string  $filepath  file path
+	 * @param string $filepath file path
 	 *
 	 * @return  mixed  Returns file contents or boolean False if failed
+	 *
+	 * @since 4.0
 	 */
-
 	public function read($filepath)
 	{
 		try
 		{
 			$s3Info = $this->s3->getObject([
 				'Bucket' => $this->getBucketName(),
-				'Key' => $this->urlToKey($filepath)
+				'Key'    => $this->urlToKey($filepath)
 			]);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
-			if (FabrikHelperHTML::isDebug())
+			if (Html::isDebug())
 			{
-				JFactory::getApplication()->enqueueMessage('S3 upload read: ' . $e->getMessage());
+				Factory::getApplication()->enqueueMessage('S3 upload read: ' . $e->getMessage());
 			}
+
 			return false;
 		}
 
@@ -363,12 +398,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Read a file
 	 *
-	 * @param   string  $filepath  file path
-	 * @param   int     $chunkSize  chunk size
+	 * @param string $filepath  file path
+	 * @param int    $chunkSize chunk size
 	 *
 	 * @return  bool  returns false if error
+	 *
+	 * @since 4.0
 	 */
-
 	public function stream($filepath, $chunkSize = 1024 * 1024)
 	{
 		/**
@@ -382,8 +418,10 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		$path = 's3://' . $this->getBucketName() . '/' . $this->urlToKey($filepath);
 
 		// now just fopen/fread as if it was a local file
-		if ($stream = fopen($path, 'r')) {
-			while (!feof($stream)) {
+		if ($stream = fopen($path, 'r'))
+		{
+			while (!feof($stream))
+			{
 				echo fread($stream, $chunkSize);
 				ob_flush();
 				flush();
@@ -404,12 +442,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Get the S3 Acl setting
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function getAcl()
 	{
 		$params = $this->getParams();
-		$acl = $params->get('fileupload_amazon_acl', 2);
+		$acl    = $params->get('fileupload_amazon_acl', 2);
 
 		switch ($acl)
 		{
@@ -432,22 +471,25 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Get the S3 Acl setting
 	 *
 	 * @return string
+	 *
+	 * @since 4.0
 	 */
-
 	protected function isEncrypted()
 	{
 		$params = $this->getParams();
+
 		return $params->get('fileupload_aws_encrypt', '0') === '1';
 	}
 
 	/**
 	 * Does a folder exist - not applicable for S3 storage
 	 *
-	 * @param   string  $folder  folder to test
+	 * @param string $folder folder to test
 	 *
 	 * @return  true
+	 *
+	 * @since 4.0
 	 */
-
 	public function folderExists($folder)
 	{
 		return true;
@@ -456,12 +498,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Create a folder - not applicable for S3 storage
 	 *
-	 * @param   string   $path  Folder path
-	 * @param   bitmask  $mode  Permissions
+	 * @param string  $path Folder path
+	 * @param bitmask $mode Permissions
 	 *
 	 * @return  bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function createFolder($path, $mode = 0755)
 	{
 		return true;
@@ -470,11 +513,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Clean a path
 	 *
-	 * @param   string  $path  path to clear
+	 * @param string $path path to clear
 	 *
 	 * @return  string  cleaned path
+	 *
+	 * @since 4.0
 	 */
-
 	public function clean($path)
 	{
 		$prefix = $this->ssl ? 'https://' : 'http://';
@@ -483,12 +527,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		{
 			// If we are cleaning up a full url then check that fabrik hasn't unwittingly prepended the JPATH_SITE to the start of the url
 			$path = $this->removePrependedURL($path);
-			$part = Fabrikstring::ltrimword($path, $prefix);
-			$path = $prefix . JPath::clean($part);
+			$part = FStringHelper::ltrimword($path, $prefix);
+			$path = $prefix . Path::clean($part);
 		}
 		else
 		{
-			$path = empty($path) ? '' : JPath::clean($path);
+			$path = empty($path) ? '' : Path::clean($path);
 		}
 
 		$path = str_replace("\\", '/', $path);
@@ -500,12 +544,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Clean a file name
 	 *
-	 * @param   string  $filename       File name to clean
-	 * @param   int     $repeatCounter  Repeat group counter
+	 * @param string $filename      File name to clean
+	 * @param int    $repeatCounter Repeat group counter
 	 *
 	 * @return  string  cleaned name
+	 *
+	 * @since 4.0
 	 */
-
 	public function cleanName($filename, $repeatCounter)
 	{
 		$this->randomizeName($filename);
@@ -516,12 +561,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Delete a file
 	 *
-	 * @param   string  $filepath  File to delete
-	 * @param   bool    $prependRoot  also test with root prepended
+	 * @param string $filepath    File to delete
+	 * @param bool   $prependRoot also test with root prepended
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function delete($filepath, $prependRoot = true)
 	{
 		$filepath = $this->urlToPath($filepath);
@@ -534,12 +580,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 				]
 			);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
-			if (FabrikHelperHTML::isDebug())
+			if (Html::isDebug())
 			{
-				JFactory::getApplication()->enqueueMessage('S3 delete: ' . $e->getMessage());
+				Factory::getApplication()->enqueueMessage('S3 delete: ' . $e->getMessage());
 			}
+
 			return false;
 		}
 	}
@@ -547,11 +594,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Set a file's permissions
 	 *
-	 * @param   string  $filepath  file to set permissions for
+	 * @param string $filepath file to set permissions for
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function setPermissions($filepath)
 	{
 		// Not applicable
@@ -560,11 +608,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the file's URL
 	 *
-	 * @param   string  $file  file path
+	 * @param string $file file path
 	 *
 	 * @return  string  URL
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFileUrl($file)
 	{
 		return $file;
@@ -573,14 +622,15 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the thumbnail file for the file given
 	 *
-	 * @param   string  $file  file path
+	 * @param string $file file path
 	 *
-	 * @return  string	thumbnail
+	 * @return  string    thumbnail
+	 *
+	 * @since 4.0
 	 */
-
-	public function _getThumb($file)
+	public function getThumb($file)
 	{
-		$params = $this->getParams();
+		$params   = $this->getParams();
 		$origFile = $file;
 
 		if ($params->get('make_thumbnail', '0') === '0')
@@ -588,13 +638,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 			return '';
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$ulDir = '/' . ltrim($params->get('ul_directory'), '/\\');
 
 		if ($this->appendServerPath())
 		{
-			$ulDir = rtrim(COM_FABRIK_BASE. '/\\') . $ulDir;
+			$ulDir = rtrim(COM_FABRIK_BASE . '/\\') . $ulDir;
 		}
 
 		$ulDir = $this->clean($ulDir);
@@ -610,19 +660,19 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		$thumbdir = $this->clean($thumbdir);
 		$thumbdir = $w->parseMessageForPlaceHolder($thumbdir);
 
-		$ulDir = rtrim($ulDir, '/\\') . '/';
+		$ulDir    = rtrim($ulDir, '/\\') . '/';
 		$thumbdir = rtrim($thumbdir, '/\\') . '/';
 
 		$file = $w->parseMessageForPlaceHolder($file);
 		$file = str_replace($ulDir, $thumbdir, $file);
 
-		$f = basename($file);
+		$f   = basename($file);
 		$dir = dirname($file);
 
 		// Jaanus added: create also thumb suffix as for filesystemstorage
-		$ext = JFile::getExt($f);
-		$fclean = JFile::stripExt($f);
-		$file = $dir . '/' . $params->get('thumb_prefix') . $fclean . $params->get('thumb_suffix') . '.' . $ext;
+		$ext    = File::getExt($f);
+		$fclean = File::stripExt($f);
+		$file   = $dir . '/' . $params->get('thumb_prefix') . $fclean . $params->get('thumb_suffix') . '.' . $ext;
 
 		if ($origFile === $file)
 		{
@@ -636,14 +686,15 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the cropped file for the file given
 	 *
-	 * @param   string  $file  main image file path
+	 * @param string $file main image file path
 	 *
 	 * @return  string  cropped image
+	 *
+	 * @since 4.0
 	 */
-
-	public function _getCropped($file)
+	public function getCropped($file)
 	{
-		$params = $this->getParams();
+		$params   = $this->getParams();
 		$origFile = $file;
 
 		if ($params->get('fileupload_crop', '0') === '0')
@@ -651,7 +702,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 			return '';
 		}
 
-		$w = new FabrikWorker;
+		$w = new Worker;
 
 		$ulDir = COM_FABRIK_BASE . $params->get('ul_directory');
 		$ulDir = $this->clean($ulDir);
@@ -663,8 +714,8 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 		$file = $w->parseMessageForPlaceHolder($file);
 		$file = str_replace($ulDir, $thumbdir, $file);
 
-		$f = basename($file);
-		$dir = dirname($file);
+		$f    = basename($file);
+		$dir  = dirname($file);
 		$file = $dir . '/' . $f;
 
 		if ($origFile === $file)
@@ -678,11 +729,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Convert a full server path into a full url
 	 *
-	 * @param   string  $path  server path
+	 * @param string $path server path
 	 *
 	 * @return  string  url
+	 *
+	 * @since 4.0
 	 */
-
 	public function pathToURL($path)
 	{
 		return $path;
@@ -691,12 +743,13 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Make a nested folder structure - not applicable for S3 storaga
 	 *
-	 * @param   string  $folderPath  path to folder - e.g. /images/stories
-	 * @param   int     $mode        folder permissions
+	 * @param string $folderPath path to folder - e.g. /images/stories
+	 * @param int    $mode       folder permissions
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
-
 	public function makeRecursiveFolders($folderPath, $mode = 0755)
 	{
 		return;
@@ -705,11 +758,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Get file info
 	 *
-	 * @param   string  $filepath  path
+	 * @param string $filepath path
 	 *
-	 * @return	array|bool
+	 * @return    array|bool
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFileInfo($filepath)
 	{
 		try
@@ -719,21 +773,22 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 				'Key'    => $this->urlToKey($filepath)
 			]);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
-			if (FabrikHelperHTML::isDebug())
+			if (Html::isDebug())
 			{
-				JFactory::getApplication()->enqueueMessage('S3 getFileInfo: ' . $e->getMessage());
+				Factory::getApplication()->enqueueMessage('S3 getFileInfo: ' . $e->getMessage());
 			}
+
 			return false;
 		}
 
 		$s3Info = $s3Info->toArray();
 
 		$thisFileInfo = array(
-			'filesize' => $s3Info['@metadata']['headers']['content-length'],
+			'filesize'  => $s3Info['@metadata']['headers']['content-length'],
 			'mime_type' => $s3Info['@metadata']['headers']['content-type'],
-			'filename' => basename($filepath)
+			'filename'  => basename($filepath)
 		);
 
 		return $thisFileInfo;
@@ -742,11 +797,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Get the complete folder path, including the server root
 	 *
-	 * @param   string  $filepath  the file path
+	 * @param string $filepath the file path
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function getFullPath($filepath)
 	{
 		$filepath = $this->urlToPath($filepath);
@@ -760,11 +816,12 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	 * Allows storage model to modify pathname just before it is rendered.  For instance,
 	 * if using Amazon S3 with 'Authenticated URL' option.
 	 *
-	 * @param   string  $filepath  path to file
+	 * @param string $filepath path to file
 	 *
 	 * @return  string
+	 *
+	 * @since 4.0
 	 */
-
 	public function preRenderPath($filepath)
 	{
 		if (empty($filepath))
@@ -782,19 +839,20 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 				try
 				{
 					$cmd                  = $this->s3->getCommand('GetObject', [
-						'Bucket' => $this->getBucketName(),
-						'Key'    => $this->urlToKey($filepath),
+						'Bucket'               => $this->getBucketName(),
+						'Key'                  => $this->urlToKey($filepath),
 						'ResponseCacheControl' => "no-cache"
 					]);
 					$request              = $this->s3->createPresignedRequest($cmd, '+' . $lifetime . ' seconds');
 					$presigned[$filepath] = (string) $request->getUri();
 				}
-				catch (Exception $e)
+				catch (\Exception $e)
 				{
-					if (FabrikHelperHTML::isDebug())
+					if (Html::isDebug())
 					{
-						JFactory::getApplication()->enqueueMessage('S3 preRenderPath: ' . $e->getMessage());
+						Factory::getApplication()->enqueueMessage('S3 preRenderPath: ' . $e->getMessage());
 					}
+
 					return false;
 				}
 			}
@@ -807,9 +865,11 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	/**
 	 * Check for snooping
 	 *
-	 * @param   string   $folder   The file path
+	 * @param string $folder The file path
 	 *
 	 * @return  void
+	 *
+	 * @since 4.0
 	 */
 	public function checkPath($folder)
 	{

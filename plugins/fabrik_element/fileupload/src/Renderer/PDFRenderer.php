@@ -8,9 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Renderer;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Filesystem\File;
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
 /**
@@ -18,14 +22,16 @@ use Joomla\String\StringHelper;
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @since       3.0
+ * @since       4.0
  */
-class PdfRenderModel
+class PDFRenderer implements RendererInterface
 {
 	/**
 	 * Render output
 	 *
 	 * @var  string
+	 *             
+	 * @since 4.0
 	 */
 	public $output = '';
 
@@ -33,6 +39,8 @@ class PdfRenderModel
 	 * File extension for PDF thumbnails
 	 *
 	 * @var  string
+	 *             
+	 * @since 4.0
 	 */
 	protected $pdf_thumb_type = 'png';
 
@@ -40,20 +48,23 @@ class PdfRenderModel
 	 * Is the element in a list view
 	 *
 	 * @var  bool
+	 *           
+	 * @since 4.0
 	 */
 	protected $inTableView = false;
 
 	/**
 	 * When in form or detailed view, do we want to show the full image or thumbnail/link?
 	 *
-	 * @param   object &$model  Element model
-	 * @param   object &$params Element params
+	 * @param   \PlgFabrik_ElementFileupload  $plugin  Element model
+	 * @param   Registry $params Element params
 	 * @param   string $file    Element's data
 	 *
 	 * @return bool
+	 *
+	 * @since 4.0
 	 */
-
-	private function getThumbnail(&$model, &$params, $file)
+	private function getThumbnail(\PlgFabrik_ElementFileupload $plugin, Registry $params, string $file)
 	{
 		if ($this->inTableView || ($params->get('make_thumbnail') == '1' && $params->get('fu_show_image') == 1))
 		{
@@ -63,8 +74,8 @@ class PdfRenderModel
 			}
 			else
 			{
-				$thumb_url      = $model->getStorage()->_getThumb($file);
-				$thumb_file     = $model->getStorage()->urlToPath($thumb_url);
+				$thumb_url      = $plugin->getStorage()->getThumb($file);
+				$thumb_file     = $plugin->getStorage()->urlToPath($thumb_url);
 				$thumb_url_info = pathinfo($thumb_url);
 
 				if (StringHelper::strtolower($thumb_url_info['extension'] == 'pdf'))
@@ -74,7 +85,7 @@ class PdfRenderModel
 					$thumb_file      = $thumb_file_info['dirname'] . '/' . $thumb_file_info['filename'] . '.' . $this->pdf_thumb_type;
 				}
 
-				if ($model->getStorage()->exists($thumb_file))
+				if ($plugin->getStorage()->exists($thumb_file))
 				{
 					return $thumb_url;
 				}
@@ -83,7 +94,7 @@ class PdfRenderModel
 					// If file specific thumb doesn't exist, try the generic per-type image in media folder
 					$thumb_file = COM_FABRIK_BASE . 'media/com_fabrik/images/pdf.png';
 
-					if (JFile::exists($thumb_file))
+					if (File::exists($thumb_file))
 					{
 						//return thumb_url
 						return COM_FABRIK_LIVESITE . 'media/com_fabrik/images/pdf.png';
@@ -101,37 +112,33 @@ class PdfRenderModel
 	}
 
 	/**
-	 * Render PDF in the list view
+	 * @param \PlgFabrik_ElementFileupload $plugin
+	 * @param Registry                     $params
+	 * @param string                       $file
+	 * @param \stdClass|null               $thisRow
 	 *
-	 * @param   object &$model  Element model
-	 * @param   object &$params Element params
-	 * @param   string $file    Row data for this element
-	 * @param   object $thisRow All row's data
 	 *
-	 * @return  void
+	 * @since 4.0
 	 */
-
-	public function renderListData(&$model, &$params, $file, $thisRow)
+	public function renderListData(\PlgFabrik_ElementFileupload $plugin, Registry $params, string $file, ?\stdClass $thisRow = null): void
 	{
 		$this->inTableView = true;
-		$this->render($model, $params, $file);
+		$this->render($plugin, $params, $file);
 	}
 
 	/**
-	 * Render PDF in the form view
+	 * @param \PlgFabrik_ElementFileupload $plugin
+	 * @param Registry                     $params
+	 * @param string                       $file
+	 * @param \stdClass|null               $thisRow
 	 *
-	 * @param   object &$model  Element model
-	 * @param   object &$params Element params
-	 * @param   string $file    Row data for this element
 	 *
-	 * @return  void
+	 * @since 4.0
 	 */
-
-	public function render(&$model, &$params, $file)
+	public function render(\PlgFabrik_ElementFileupload $plugin, Registry $params, string $file, ?\stdClass $thisRow = null): void
 	{
-		jimport('joomla.filesystem.file');
-		$layout      = $model->getLayout('pdf');
-		$displayData = new stdClass;
+		$layout      = $plugin->getLayout('pdf');
+		$displayData = new \stdClass;
 		$filename    = basename($file);
 		$filename    = strip_tags($filename);
 
@@ -144,27 +151,26 @@ class PdfRenderModel
 		}
 
 		$file                  = str_replace("\\", "/", $file);
-		$file                  = $model->storage->preRenderPath($file);
+		$file                  = $plugin->getStorage()->preRenderPath($file);
 		$displayData->file     = $file;
 		$displayData->filename = $filename;
-		$displayData->thumb    = $this->getThumbnail($model, $params, $file);
+		$displayData->thumb    = $this->getThumbnail($plugin, $params, $file);
 
 		$this->output = $layout->render($displayData);
 	}
 
 	/**
-	 * Build Carousel HTML
+	 * @param string                            $id
+	 * @param array                             $data
+	 * @param \PlgFabrik_ElementFileupload|null $plugin
+	 * @param Registry|null                     $params
+	 * @param array|null                        $thisRow
 	 *
-	 * @param   string $id      Widget HTML id
-	 * @param   array  $data    Images to add to the carousel
-	 * @param   object $model   Element model
-	 * @param   object $params  Element params
-	 * @param   object $thisRow All rows data
+	 * @return string
 	 *
-	 * @return  string  HTML
+	 * @since 4.0
 	 */
-
-	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
+	public function renderCarousel($id = 'carousel', $data = array(), ?\PlgFabrik_ElementFileupload $plugin = null, ?Registry $params = null, ?array $thisRow = null): string
 	{
 		$rendered = '';
 

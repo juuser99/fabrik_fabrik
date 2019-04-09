@@ -11,5 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/plugins/fabrik_element/fileupload/models/pdf.php';
-$render = new PdfRenderModel;
+use Fabrik\Plugin\FabrikElement\Fileupload\Renderer\PDFRenderer;
+
+return new PDFRenderer();

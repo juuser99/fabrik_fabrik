@@ -11,5 +11,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE . '/plugins/fabrik_element/fileupload/models/audio.php';
-$render = new AudioRenderModel;
+use Fabrik\Plugin\FabrikElement\Fileupload\Renderer\AudioRenderer;
+
+return new AudioRenderer();
