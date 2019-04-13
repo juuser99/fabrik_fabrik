@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Component\Fabrik\Site\Plugin\AbstractListPlugin;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Image;
+use Fabrik\Plugin\FabrikElement\Fileupload\Storage\Adaptor\FilesystemStorageAdaptor;
 use Joomla\CMS\Filesystem\File;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Language\Text;
@@ -366,10 +367,8 @@ class PlgFabrik_ListDownload extends AbstractListPlugin
 	{
 		if (!isset($this->storage))
 		{
-			$params      = $this->getParams();
-			$storageType = 'filesystemstorage';
-			require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptors/' . $storageType . '.php';
-			$this->storage = new $storageType($params);
+			$params        = $this->getParams();
+			$this->storage = new FilesystemStorageAdaptor($params);
 		}
 
 		return $this->storage;
@@ -389,7 +388,6 @@ class PlgFabrik_ListDownload extends AbstractListPlugin
 		$pdfFiles = array();
 		$input    = $this->app->input;
 
-		/** @var FabrikFEModelList $model */
 		$model     = $this->getModel();
 		$formModel = $model->getFormModel();
 		$formId    = $formModel->getId();

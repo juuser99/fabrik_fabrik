@@ -8,12 +8,13 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikElement\Fileupload\Adaptor;
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Storage\Adaptor;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugin\FabrikElement\Fileupload\Storage\AbstractStorageAdaptor;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Filesystem\Path;
@@ -29,8 +30,19 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class FilesystemAdaptor extends AbstractStorageAdaptor
+class FilesystemStorageAdaptor extends AbstractStorageAdaptor
 {
+	/**
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
+	public static function getAlias(): string
+	{
+		return 'filesystemstorage';
+	}
+
 	/**
 	 * Does a file exist
 	 *

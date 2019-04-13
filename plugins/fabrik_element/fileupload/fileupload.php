@@ -12,8 +12,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
-use Fabrik\Plugin\FabrikElement\Fileupload\Adaptor\AbstractStorageAdaptor;
+use Fabrik\Plugin\FabrikElement\Fileupload\Adaptor\StorageAdaptorFactory;
 use Fabrik\Plugin\FabrikElement\Fileupload\Renderer\RendererInterface;
+use Fabrik\Plugin\FabrikElement\Fileupload\Storage\AbstractStorageAdaptor;
+use Fabrik\Plugin\FabrikElement\Fileupload\Storage\Exception\StorageAdaptorNotFoundException;
 use Joomla\CMS\Client\ClientHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filesystem\File;
@@ -2125,7 +2127,7 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 
 		if (!Uploader::canUpload($file, $err, $params))
 		{
-			$this->setError($file['name'] . ': ' . Text::_($err));
+			//$this->setError($file['name'] . ': ' . Text::_($err));
 		}
 
 		if ($storage->exists($filePath))
@@ -2222,7 +2224,7 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 
 		if ($make_thumbnail)
 		{
-			$thumbPath = $storage->clean(JPATH_SITE . '/' . $params->get('thumb_dir') . '/' . $myFileDir . '/', false);
+			$thumbPath = $storage->clean(JPATH_SITE . '/' . $params->get('thumb_dir') . '/' . $myFileDir . '/');
 			$w         = new Worker;
 			$formModel = $this->getFormModel();
 			$thumbPath = $w->parseMessageForRepeats($thumbPath, $formModel->formData, $this, $repeatGroupCounter);
@@ -2257,9 +2259,11 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 	/**
 	 * Get the file storage object amazon s3/filesystem
 	 *
-	 * @return object
+	 * @return AbstractStorageAdaptor
 	 *
 	 * @since 4.0
+	 *
+	 * @throws StorageAdaptorNotFoundException
 	 */
 	public function getStorage()
 	{
@@ -2267,9 +2271,7 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 		{
 			$params      = $this->getParams();
 			$storageType = InputFilter::getInstance()->clean($params->get('fileupload_storage_type', 'filesystemstorage'), 'CMD');
-			require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptors/' . $storageType . '.php';
-			$storageClass  = StringHelper::ucfirst($storageType);
-			$this->storage = new $storageClass($params);
+			$this->storage = (new StorageAdaptorFactory())->getStorageAdaptor($storageType, $params);
 		}
 
 		return $this->storage;

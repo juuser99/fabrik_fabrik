@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikElement\Fileupload\Adaptor;
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Storage;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -53,6 +53,15 @@ abstract class AbstractStorageAdaptor
 	{
 		$this->params = $params;
 	}
+
+	/**
+	 * Return the value stored in fileupload_storage_type
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
+	abstract public static function getAlias(): string;
 
 	/**
 	 * Does a file exist
@@ -128,8 +137,19 @@ abstract class AbstractStorageAdaptor
 	 * @param string $path Path to clean
 	 *
 	 * @return  string  cleaned path
+	 *
+	 * @since 4.0
 	 */
 	abstract public function clean($path);
+
+	/**
+	 * @param $file
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
+	abstract public function getFileUrl($file);
 
 	/**
 	 * Clean a file name
@@ -199,6 +219,26 @@ abstract class AbstractStorageAdaptor
 	 * @since 4.0
 	 */
 	abstract public function checkPath($folder);
+
+	/**
+	 * @param $file
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
+	abstract public function getThumb($file);
+
+	/**
+	 * Get the cropped file for the file given
+	 *
+	 * @param string $file main image file path
+	 *
+	 * @return  string  cropped image
+	 *
+	 * @since 4.0
+	 */
+	abstract public function getCropped($file);
 
 	/**
 	 * Return the directory separator - can't use DIRECTORY_SEPARATOR by default, as s3 uses /

@@ -8,7 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikElement\Fileupload\Adaptor;
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Storage\Adaptor;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 use Aws\S3\S3Client;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
+use Fabrik\Plugin\FabrikElement\Fileupload\Storage\AbstractStorageAdaptor;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Path;
@@ -30,7 +31,7 @@ use Fabrik\Helpers\StringHelper as FStringHelper;
  * @subpackage  Fabrik
  * @since       4.0
  */
-class AmazonS3SDKAdaptor extends AbstractStorageAdaptor
+class AmazonS3SdkStorageAdaptor extends AbstractStorageAdaptor
 {
 	/**
 	 * Are we using SSL to store/retrieve files
@@ -78,6 +79,17 @@ class AmazonS3SDKAdaptor extends AbstractStorageAdaptor
 		]);
 
 		parent::__construct($params);
+	}
+
+	/**
+	 *
+	 * @return string
+	 *
+	 * @since 4.0
+	 */
+	public static function getAlias(): string
+	{
+		return 'amazons3sdkstorage';
 	}
 
 	/**
