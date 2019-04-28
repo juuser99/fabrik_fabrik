@@ -241,7 +241,7 @@ class ControllerHelper
 		$controller = $this->factory->createController(
 			$this->name,
 			$this->prefix,
-			PluginControllerParser::getControllerConfig($this->name, []),
+			PluginControllerParser::isFabrikPlugin($this->name) ? PluginControllerParser::getControllerConfig($this->name, []) : [],
 			$this->app,
 			$this->app->input
 		);

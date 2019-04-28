@@ -48,12 +48,6 @@ class PluginControllerParser
 			}
 		}
 
-		// Special handling of plugin controllers
-		if (self::isFabrikPlugin($controllerName))
-		{
-			$controllerName = self::getFabrikPluginName($controllerName);
-		}
-
 		return $controllerName;
 	}
 
@@ -67,19 +61,16 @@ class PluginControllerParser
 	 */
 	public static function getControllerConfig(string $controllerName, array $config): array
 	{
-		if (self::isFabrikPlugin($controllerName))
-		{
-			$path = sprintf(
-				'%s/plugins/fabrik_%s/%s',
-				JPATH_SITE,
-				self::getFabrikPluginType($controllerName),
-				self::getFabrikPluginName($controllerName)
-			);
+		$path = sprintf(
+			'%s/plugins/fabrik_%s/%s',
+			JPATH_SITE,
+			self::getFabrikPluginType($controllerName),
+			self::getFabrikPluginName($controllerName)
+		);
 
-			if (Folder::exists($path))
-			{
-				$config['base_path'] = $path;
-			}
+		if (Folder::exists($path))
+		{
+			$config['base_path'] = $path;
 		}
 
 		return $config;

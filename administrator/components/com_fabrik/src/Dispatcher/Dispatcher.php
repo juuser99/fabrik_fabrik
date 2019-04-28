@@ -12,6 +12,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Dispatcher;
 defined('_JEXEC') or die;
 
 use Fabrik\Component\Fabrik\Site\Helper\ControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\FormattedControllerHelper;
 use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
 use Fabrik\Helpers\Html;
 use Joomla\CMS\Factory;
@@ -76,9 +77,7 @@ class Dispatcher extends ComponentDispatcher
 			return ControllerHelper::getPluginController($controllerName, $config);
 		}
 
-		$client = PluginControllerParser::getControllerClient($controllerName, $client ? $client : self::PREFIX_ADMIN);
-		$name   = PluginControllerParser::getControllerName($this->input, $controllerName);
-
+		$name = FormattedControllerHelper::getControllerName($this->app, $controllerName);
 		$this->input->set('controller', $name);
 
 		return parent::getController($name, $client, $config);

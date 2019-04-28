@@ -11,6 +11,9 @@ namespace Fabrik\Component\Fabrik\Site\Dispatcher;
 
 defined('_JEXEC') or die;
 
+use Fabrik\Component\Fabrik\Site\Helper\ControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\FormattedControllerHelper;
+use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
 use Fabrik\Component\Fabrik\Site\WebService\AbstractWebService;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -52,50 +55,22 @@ class Dispatcher extends ComponentDispatcher
 	/**
 	 * Get a controller from the component with a "hack" for J4 lack of support for formatted controllers
 	 *
-	 * @param string $name   Controller name
-	 * @param string $client Optional client (like Administrator, Site etc.)
-	 * @param array  $config Optional controller config
+	 * @param   string $controllerName   Controller name
+	 * @param   string $client Optional client (like Administrator, Site etc.)
+	 * @param   array  $config Optional controller config
 	 *
 	 * @return  BaseController
 	 *
 	 * @since   4.0.0
 	 */
-	public function getController(string $name, string $client = '', array $config = array()): BaseController
+	public function getController(string $controllerName, string $client = '', array $config = array()): BaseController
 	{
-		$format     = $this->input->get('format');
-		$controller = $this->input->get('controller');
-
-		if (!empty($controller) && 'raw' === $format)
-		{
-			$classController   = ucfirst($controller);
-			$format            = ucfirst($format);
-			$controllerString  = "%s\\%s\\Controller\\%s%sController";
-			$backendController = sprintf(
-				$controllerString,
-				$this->namespace,
-				self::PREFIX_SITE,
-				$classController,
-				$format
-			);
-
-			$frontendController = sprintf(
-				$controllerString,
-				$this->namespace,
-				self::PREFIX_ADMIN,
-				$classController,
-				$format
-			);
-
-			if (!class_exists($backendController) && !class_exists($frontendController))
-			{
-				// Fallback to the standard controller
-				return parent::getController($name, $client, $config);
-			}
-
-			$controller .= 'Raw';
-			$name       .= 'Raw';
-			$this->input->set('controller', $controller);
+		if (PluginControllerParser::isFabrikPlugin($controllerName)) {
+			return ControllerHelper::getPluginController($controllerName, $config);
 		}
+
+		$name = FormattedControllerHelper::getControllerName($this->app, $controllerName);
+		$this->input->set('controller', $name);
 
 		return parent::getController($name, $client, $config);
 	}
