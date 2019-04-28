@@ -62,6 +62,9 @@ media/*
 media/com_fabrik/uploads/
 node_modules/*
 plugins/*
+!plugins/content/
+plugins/content/*
+!plugins/content/fabrik
 !plugins/system/
 plugins/system/*
 !plugins/system/fabrik
