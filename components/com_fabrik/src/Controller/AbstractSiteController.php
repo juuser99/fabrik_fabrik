@@ -131,6 +131,7 @@ class AbstractSiteController extends BaseController
 		parent::__construct($config, $factory, $this->app, $input);
 	}
 
+
 	/**
 	 * Display the view
 	 *
@@ -200,6 +201,30 @@ class AbstractSiteController extends BaseController
 		{
 			return $view->display();
 		}
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $prefix
+	 * @param array  $config
+	 *
+	 * @return bool|\Joomla\CMS\MVC\Model\BaseDatabaseModel|void
+	 *
+	 * @since 4.0
+	 */
+	public function getModel($name = '', $prefix = '', $config = array())
+	{
+		// Use the default model if called from within a plugin; feels hacky and should probably be refactored
+		if ($this->contentPluginModel && (
+				!$name ||
+				$this->contentPluginModel->getName() === $name ||
+				get_class($this->contentPluginModel) === $name
+			))
+		{
+			return $this->contentPluginModel;
+		}
+
+		return parent::getModel($name, $prefix, $config);
 	}
 
 	/**
