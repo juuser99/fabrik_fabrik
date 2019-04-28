@@ -79,7 +79,7 @@ class PlgSystemFabrik extends CMSPlugin
 		parent::__construct($subject, $config);
 
 		// Could be component was uninstalled but not the plugin
-		if (!File::exists(JPATH_SITE . '/components/com_fabrik/fabrik.php'))
+		if (!File::exists(JPATH_SITE . '/components/com_fabrik/src/Dispatcher/Dispatcher.php'))
 		{
 			return;
 		}

@@ -118,16 +118,14 @@ class ControllerHelper
 	}
 
 	/**
-	 * J4 seems to do a lot of stuff based on the Input vars (views, dispatchers, etc) so we have to isolate
-	 *
 	 * @param string $controllerClass
-	 * @param string $task
 	 *
+	 * @return AbstractSiteController
 	 *
 	 * @throws \Exception
 	 * @since 4.0
 	 */
-	public function dispatchController(string $controllerClass, string $task = 'display'): void
+	public function getIsolatedController(string $controllerClass): AbstractSiteController
 	{
 		// Parse controller class into parts for Joomla to generate
 		preg_match('/Fabrik\\\\(.*?)\\\\(.*?)\\\\(.*?)\\\\Controller\\\\(.*?)Controller$/', $controllerClass, $matches);
@@ -149,13 +147,30 @@ class ControllerHelper
 		// set the FabrikApplication as the application for Factory to be used by the plugin or module's view
 		Factory::$application = $this->app;
 
+		$controller = $this->createController();
+
+		array_walk($this->propertyVars, function ($value, $key) use ($controller) {
+			$controller->$key = $value;
+		});
+
+		return $controller;
+	}
+
+	/**
+	 * J4 seems to do a lot of stuff based on the Input vars (views, dispatchers, etc) so we have to isolate
+	 *
+	 * @param string $controllerClass
+	 * @param string $task
+	 *
+	 *
+	 * @throws \Exception
+	 * @since 4.0
+	 */
+	public function dispatchController(string $controllerClass, string $task = 'display'): void
+	{
 		try
 		{
-			$controller = $this->createController();
-
-			array_walk($this->propertyVars, function ($value, $key) use ($controller) {
-				$controller->$key = $value;
-			});
+			$controller = $this->getIsolatedController($controllerClass);
 
 			$controller->execute($task);
 		}
@@ -165,7 +180,22 @@ class ControllerHelper
 			echo $exception->getMessage();
 		}
 
+		$this->restoreFactoryApplication();
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public function restoreFactoryApplication()
+	{
+		if (!$this->nativeApp) {
+			return;
+		}
+
+		// Reset the application
 		Factory::$application = $this->nativeApp;
+
+		$this->nativeApp = null;
 	}
 
 	/**

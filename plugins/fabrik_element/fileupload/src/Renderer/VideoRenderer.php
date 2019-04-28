@@ -27,7 +27,7 @@ use Joomla\Registry\Registry;
  * @subpackage  Fabrik.element.fileupload
  * @since       4.0
  */
-class VideoRenderer implements RendererInterface
+class VideoRenderer extends AbstractRenderer
 {
 	/**
 	 * Render output

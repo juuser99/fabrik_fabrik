@@ -9,6 +9,7 @@
 	<authorUrl>www.fabrikar.com</authorUrl>
 	<version>3.8.1</version>
 	<description>PLG_FABRIK_DESCRIPTION</description>
+	<namespace path="src">Fabrik\Plugin\Content\Fabrik</namespace>
 	<files>
 		<filename plugin="fabrik">fabrik.php</filename>
 		<folder>language</folder>

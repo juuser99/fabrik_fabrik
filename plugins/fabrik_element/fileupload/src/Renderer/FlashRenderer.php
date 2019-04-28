@@ -26,7 +26,7 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.element.fileupload
  * @since       4.0
  */
-class FlashRenderer implements RendererInterface
+class FlashRenderer extends AbstractRenderer
 {
 	/**
 	 * Render output

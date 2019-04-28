@@ -205,6 +205,7 @@ class FormController extends AbstractSiteController
 			$uri     = $uri->toString(array('path', 'query'));
 			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache   = Factory::getCache('com_' . $package, 'view');
+
 			ob_start();
 			$cache->get($view, 'display', $cacheId);
 			Html::addToSessionCacheIds($cacheId);

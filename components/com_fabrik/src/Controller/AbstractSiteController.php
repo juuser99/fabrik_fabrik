@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Controller\ModelTrait;
 use Fabrik\Component\Fabrik\Site\Helper\PluginControllerParser;
+use Fabrik\Component\Fabrik\Site\Model\FabrikSiteModel;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Application\CMSApplication;
@@ -98,6 +99,12 @@ class AbstractSiteController extends BaseController
 	 * @since 4.0
 	 */
 	protected $app;
+
+	/**
+	 * @var FabrikSiteModel
+	 * @since 4.0
+	 */
+	protected $contentPluginModel;
 
 	/**
 	 * AbstractSiteController constructor.
@@ -193,6 +200,26 @@ class AbstractSiteController extends BaseController
 		{
 			return $view->display();
 		}
+	}
+
+	/**
+	 * @return null|FabrikSiteModel
+	 *
+	 * @since 4.0
+	 */
+	public function getContentPluginModel(): ?FabrikSiteModel
+	{
+		return $this->contentPluginModel;
+	}
+
+	/**
+	 * @param FabrikSiteModel $model
+	 *
+	 * @since 4.0
+	 */
+	public function setContentPluginModel(FabrikSiteModel $model): void
+	{
+		$this->contentPluginModel = $model;
 	}
 
 	/**
