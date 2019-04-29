@@ -24,7 +24,7 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik.element.fileupload
  * @since       4.0
  */
-class FileRenderer extends AbstractRenderer
+class FileRenderer  implements RendererInterface
 {
 	/**
 	 * Render output

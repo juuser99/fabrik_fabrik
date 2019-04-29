@@ -25,7 +25,7 @@ use Fabrik\Helpers\ArrayHelper as FArrayHelper;
  * @subpackage  Fabrik.element.fileupload
  * @since       4.0
  */
-class ImageRenderer extends AbstractRenderer
+class ImageRenderer  implements RendererInterface
 {
 	/**
 	 * Render output
