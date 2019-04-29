@@ -17,9 +17,11 @@ use Fabrik\Component\Fabrik\Administrator\Table\FormSessionTable;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Crypt\Key;
+use Joomla\CMS\Crypt\Cipher\CryptoCipher;
 
 /**
  * Fabrik Form Session Model
@@ -219,7 +221,7 @@ class FormSessionModel extends FabrikSiteModel
 	 * @todo - migrate to J4.0
 	 * Create the crypt class object
 	 *
-	 * @return  JSimpleCrypt
+	 * @return  Crypt
 	 *
 	 * @since 4.0
 	 */
@@ -231,14 +233,11 @@ class FormSessionModel extends FabrikSiteModel
 		 */
 		if (!isset($this->crypt))
 		{
-			jimport('joomla.utilities.simplecrypt');
-			jimport('joomla.utilities.utility');
-
 			// Create the encryption key, apply extra hardening using the user agent string
 
 			$key = ApplicationHelper::getHash($this->app->input->server->get('HTTP_USER_AGENT'));
-			$key = new Key('simple', $key, $key);
-			$this->crypt = new JCrypt(new JCryptCipherSimple, $key);
+			$key = new Key('crypto', $key, $key);
+			$this->crypt = new Crypt(new CryptoCipher(), $key);
 		}
 
 		return $this->crypt;
