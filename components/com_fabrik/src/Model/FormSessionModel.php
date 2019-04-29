@@ -11,14 +11,15 @@
 namespace Fabrik\Component\Fabrik\Site\Model;
 
 // No direct access
+defined('_JEXEC') or die('Restricted access');
+
+use Fabrik\Component\Fabrik\Administrator\Table\FormSessionTable;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Crypt\Key;
-
-defined('_JEXEC') or die('Restricted access');
 
 /**
  * Fabrik Form Session Model
@@ -266,7 +267,7 @@ class FormSessionModel extends FabrikSiteModel
 	 */
 	public function load()
 	{
-		$row = $this->getTable('Formsession', 'FabrikTable');
+		$row = $this->getTable(FormSessionTable::class);
 		$row->data = '';
 		$hash = '';
 
@@ -358,7 +359,7 @@ class FormSessionModel extends FabrikSiteModel
 		// $$$ hugh - need to clear the 'session.on'.  If we're zapping the stored
 		// session form data, doesn't matter who or what set 'session.on' ... it ain't there any more.
 		$this->session->clear('com_' . $this->package . '.form.' . $this->getFormId() . '.session.on');
-		$row = $this->getTable('Formsession', 'FabrikTable');
+		$row = $this->getTable(FormSessionTable::class);
 		$hash = '';
 
 		if ((int) $this->user->get('id') !== 0)

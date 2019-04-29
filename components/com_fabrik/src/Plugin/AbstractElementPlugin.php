@@ -7492,7 +7492,7 @@ abstract class AbstractElementPlugin extends FabrikPlugin
 
 		foreach ($ids as $id)
 		{
-			$join = FabrikTable::getInstance('Join', 'FabrikTable');
+			$join = FabrikTable::getInstance(JoinTable::class);
 			$join->load($id);
 			$params = new Registry($join->params);
 

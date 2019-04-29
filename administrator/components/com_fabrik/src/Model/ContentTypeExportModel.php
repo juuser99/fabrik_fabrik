@@ -380,7 +380,7 @@ class ContentTypeExportModel extends FabrikAdminModel
 
 		if (is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
 		{
-			$join = FabrikTable::getInstance('Join', 'FabrikTable');
+			$join = FabrikTable::getInstance(JoinTable::class);
 			$join->load(array('element_id' => $data['id']));
 			$elementJoin = ContentTypeHelper::buildExportNode($this->doc, 'join', $join->getProperties(), array('id'));
 			$element->appendChild($elementJoin);

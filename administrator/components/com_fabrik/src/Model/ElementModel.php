@@ -14,6 +14,7 @@ namespace Fabrik\Component\Fabrik\Administrator\Model;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use Fabrik\Helpers\Worker;
 use Fabrik\Helpers\ArrayHelper as FArrayHelper;
 use Fabrik\Helpers\StringHelper as FStringHelper;
@@ -897,7 +898,7 @@ class ElementModel extends FabrikAdminModel
 				$rowCopy->store();
 
 				// Copy join records
-				$join = $this->getTable('join');
+				$join = $this->getTable(JoinTable::class);
 
 				if ($join->load(array('element_id' => $origElid)))
 				{
@@ -1196,7 +1197,7 @@ class ElementModel extends FabrikAdminModel
 		$cid   = $input->get('cid', array(), 'array');
 		$cid   = ArrayHelper::toInteger($cid);
 		$names = $input->get('name', array(), 'array');
-		$rule  = $this->getTable('element');
+		$rule  = $this->getTable(ElementTable::class);
 
 		foreach ($cid as $id => $groupid)
 		{
@@ -1247,7 +1248,6 @@ class ElementModel extends FabrikAdminModel
 		$tableName  = $this->getRepeatElementTableName($elementModel, $row);
 
 		// Create db table!
-		$formModel = $elementModel->getForm();
 		$db        = $listModel->getDb();
 		$desc      = $elementModel->getFieldDescription();
 		$name      = $db->qn($row->name);
@@ -1278,7 +1278,7 @@ class ElementModel extends FabrikAdminModel
 
 		$data = array('list_id' => $listModel->getTable()->id, 'element_id' => $row->id, 'join_from_table' => $joinFromTable,
 			'table_join' => $tableName, 'table_key' => $row->name, 'table_join_key' => 'parent_id', 'join_type' => 'left');
-		$join = $this->getTable('join');
+		$join = $this->getTable(JoinTable::class);
 		$join->load(array('element_id' => $data['element_id']));
 		$opts           = new \stdClass;
 		$opts->type     = 'repeatElement';

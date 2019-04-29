@@ -11,6 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Plugin\FabrikForm\Subscriptions\Table\InvoiceTable;
+use Fabrik\Plugin\FabrikForm\Subscriptions\Table\PlanTable;
+use Fabrik\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
+
 JTable::addIncludePath(JPATH_SITE . '/plugins/fabrik_form/subscriptions/tables');
 
 /**
@@ -196,7 +201,7 @@ class FabrikSubscriptionsIPN
 			// User can have up to one active subscription - if there's more we're going to expire the older ones
 			for ($i = 1; $i < count($rows); $i++)
 			{
-				$sub = JTable::getInstance('Subscription', 'FabrikTable');
+				$sub = FabrikTable::getInstance(SubscriptionTable::class);
 				$subid = (int) $rows[$i]->id;
 				if ($subid !== 0)
 				{
@@ -565,7 +570,7 @@ class FabrikSubscriptionsIPN
 		{
 			return false;
 		}
-		$sub = JTable::getInstance('Subscription', 'FabrikTable');
+		$sub = FabrikTable::getInstance(SubscriptionTable::class);
 		$sub->load($subid);
 		return $sub;
 	}
@@ -580,7 +585,7 @@ class FabrikSubscriptionsIPN
 
 	private function getInvoice($inv)
 	{
-		$row = JTable::getInstance('Invoice', 'FabrikTable');
+		$row = FabrikTable::getInstance(InvoiceTable::class);
 		$row->load($inv);
 		return $row;
 	}
@@ -671,8 +676,8 @@ class FabrikSubscriptionsIPN
 
 		return;
 		$mail = JFactory::getMailer();
-		$plan = JTable::getInstance('Plan', 'FabrikTable');
-		$newPlan = JTable::getInstance('Plan', 'FabrikTable');
+		$plan = FabrikTable::getInstance(PlanTable::class);
+		$newPlan = FabrikTable::getInstance(PlanTable::class);
 		$plan->load((int) $sub->plan);
 		$this->log('fabrik.ipn. fallback', ' getting fallback sub plan :  ' . (int) $sub->plan . ' = ' . (int) $plan->fall_back_plan);
 		$fallback = false;

@@ -1,5 +1,8 @@
 <?php
 // Check to ensure this file is included in Joomla!
+use Fabrik\Component\Fabrik\Administrator\Table\FabrikTable;
+use Fabrik\Plugin\FabrikForm\Subscriptions\Table\SubscriptionTable;
+
 defined('_JEXEC') or die();
 
 error_reporting(E_ALL);
@@ -161,7 +164,7 @@ ORDER BY s.lastpay_date
 	$rows = $db->loadObjectList();
 //var_dump($db->getQuery(), $rows);exit;
 	$now = JFactory::getDate()->toSql();
-	$sub = FabTable::getInstance('Subscription', 'FabrikTable');
+	$sub = FabrikTable::getInstance(SubscriptionTable::class);
 	foreach ($rows as $row) {
 		$sub->load($row->subid);
 		$sub->status = 'Expired';

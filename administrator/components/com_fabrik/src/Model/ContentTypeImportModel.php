@@ -494,7 +494,7 @@ class ContentTypeImportModel extends FabrikAdminModel
 			$join->setAttribute('element_id', $newId);
 			$joinData           = ContentTypeHelper::domNodeAttributesToArray($join);
 			$joinData['params'] = json_encode(ContentTypeHelper::nodeParams($join));
-			$joinTable          = FabrikTable::getInstance('Join', 'FabrikTable');
+			$joinTable          = FabrikTable::getInstance(JoinTable::class);
 			$joinTable->save($joinData);
 			$this->joinIds[] = $joinTable->get('id');
 		}

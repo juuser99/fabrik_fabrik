@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use Fabrik\Helpers\Html;
 use Fabrik\Plugin\FabrikElement\Fileupload\Adaptor\StorageAdaptorFactory;
 use Fabrik\Plugin\FabrikElement\Fileupload\Renderer\RendererInterface;
@@ -3766,7 +3767,7 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 		}
 
 		$repeatCounter = (int) $input->getInt('repeatCounter');
-		$join          = FabrikTable::getInstance('join', 'FabrikTable');
+		$join          = FabrikTable::getInstance(JoinTable::class);
 		$join->load(array('element_id' => $input->getInt('element_id')));
 		$this->setId($input->getInt('element_id'));
 		$this->getElement();

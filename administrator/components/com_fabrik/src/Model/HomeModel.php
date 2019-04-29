@@ -11,6 +11,7 @@
 
 namespace Fabrik\Component\Fabrik\Administrator\Model;
 
+use Fabrik\Component\Fabrik\Administrator\Table\CronTable;
 use Fabrik\Helpers\StringHelper;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Language\Text;
@@ -51,7 +52,7 @@ class HomeModel extends FabrikAdminModel
 	 *
 	 * @since 4.0
 	 */
-	public function getTable($type = 'Cron', $prefix = 'FabrikTable', $config = array())
+	public function getTable($type = CronTable::class, $prefix = '', $config = array())
 	{
 		$config['dbo'] = Worker::getDbo(true);
 
