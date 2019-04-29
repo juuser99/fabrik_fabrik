@@ -12,7 +12,7 @@
  */
 defined('JPATH_BASE') or die;
 $d = $displayData;
-$path = 'components/com_fabrik/views/list/' . $d->jTmplFolder . '/' . $d->tmpl . '/custom_css.php' . $d->qs;
+$path = 'components/com_fabrik/tmpl/list/' . $d->tmpl . '/custom_css.php' . $d->qs;
 
 echo $path;
 

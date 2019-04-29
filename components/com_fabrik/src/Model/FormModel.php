@@ -665,7 +665,6 @@ class FormModel extends FabrikSiteModel
 			$item        = $this->getForm();
 			$tmpl        = '';
 			$default     = 'bootstrap';
-			$jTmplFolder = 'tmpl';
 			$document    = Factory::getDocument();
 
 			if ($document->getType() === 'pdf')
@@ -702,7 +701,7 @@ class FormModel extends FabrikSiteModel
 			// Test it exists - otherwise revert to baseTmpl tmpl
 			$folder = $this->isEditable() ? 'form' : 'details';
 
-			if (!Folder::exists(JPATH_SITE . '/components/com_fabrik/tmpl/' . $folder . '/' . $jTmplFolder . '/' . $tmpl))
+			if (!Folder::exists(JPATH_SITE . '/components/com_fabrik/tmpl/' . $folder . '/' . $tmpl))
 			{
 				$tmpl = $baseTmpl;
 			}
@@ -775,7 +774,6 @@ class FormModel extends FabrikSiteModel
 				$displayData->view        = $view;
 				$displayData->tmpl        = $tmpl;
 				$displayData->qs          = $qs;
-				$displayData->jTmplFolder = '';
 				$displayData->formModel   = $this;
 				$layout = $this->getLayout('form.fabrik-custom-css-qs');
 				$path = $layout->render($displayData);
