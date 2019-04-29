@@ -6,13 +6,11 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace Fabrik\Plugin\FabrikElement\Fileupload\Adaptor;
+namespace Fabrik\Plugin\FabrikElement\Fileupload\Storage;
 
 
-use Fabrik\Plugin\FabrikElement\Fileupload\Storage\AbstractStorageAdaptor;
 use Fabrik\Plugin\FabrikElement\Fileupload\Storage\Exception\StorageAdaptorNotFoundException;
 use Joomla\CMS\Filesystem\Folder;
-use Joomla\Filesystem\File;
 use Joomla\Registry\Registry;
 
 class StorageAdaptorFactory
@@ -30,15 +28,14 @@ class StorageAdaptorFactory
 	 */
 	public function __construct()
 	{
-		$adaptors = Folder::files(__DIR__.'/Adaptor');
-
-		foreach ($adaptors as $adaptor) {
+		$foundAdaptors = Folder::files(__DIR__.'/Adaptor');
+		foreach ($foundAdaptors as $adaptor) {
 			$info = pathinfo($adaptor);
 
 			/** @var AbstractStorageAdaptor $class */
 			$class = sprintf('Fabrik\\Plugin\\FabrikElement\\Fileupload\\Storage\\Adaptor\\%s', $info['filename']);
 
-			$adaptors[$class::getAlias()] = $class;
+			$this->adaptors[$class::getAlias()] = $class;
 		}
 	}
 
