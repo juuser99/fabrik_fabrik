@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Component\Fabrik\Administrator\Table\JoinTable;
 use Fabrik\Helpers\Html;
-use Fabrik\Plugin\FabrikElement\Fileupload\Adaptor\StorageAdaptorFactory;
+use Fabrik\Plugin\FabrikElement\Fileupload\Storage\StorageAdaptorFactory;
 use Fabrik\Plugin\FabrikElement\Fileupload\Renderer\RendererInterface;
 use Fabrik\Plugin\FabrikElement\Fileupload\Storage\AbstractStorageAdaptor;
 use Fabrik\Plugin\FabrikElement\Fileupload\Storage\Exception\StorageAdaptorNotFoundException;
