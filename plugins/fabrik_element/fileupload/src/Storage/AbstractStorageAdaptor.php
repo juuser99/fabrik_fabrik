@@ -46,10 +46,10 @@ abstract class AbstractStorageAdaptor
 	/**
 	 * AbstractStorageAdaptor constructor.
 	 *
-	 * @param \Joomla\CMS\HTML\Registry $params
+	 * @param Registry $params
 	 * @since 4.0
 	 */
-	public function __construct(\Joomla\CMS\HTML\Registry $params)
+	public function __construct(Registry $params)
 	{
 		$this->params = $params;
 	}
