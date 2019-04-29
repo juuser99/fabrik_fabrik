@@ -49,6 +49,24 @@ class ElementTable extends FabrikTable
 	public $name = '';
 
 	/**
+	 * @var string
+	 * @since 4.0
+	 */
+	public $default = '';
+
+	/**
+	 * @var bool
+	 * @since 4.0
+	 */
+	public $hidden = 0;
+
+	/**
+	 * @var int
+	 * @since 4.0
+	 */
+	public $eval = 0;
+
+	/**
 	 * Construct
 	 *
 	 * @param   DatabaseDriver  $db  database object
