@@ -143,9 +143,9 @@ class PlgContentFabrik extends CMSPlugin
 		$parameterParser->parse($match, $parameterBag);
 
 		$usersConfig = ComponentHelper::getParams('com_fabrik');
-		$usersConfig->set('rowid', 0);
+		$usersConfig->set('rowid', '');
 
-		if ($rowId = $parameterBag->getRow())
+		if ($rowId = $parameterBag->getRowId())
 		{
 			$usersConfig->set('rowid', $rowId);
 

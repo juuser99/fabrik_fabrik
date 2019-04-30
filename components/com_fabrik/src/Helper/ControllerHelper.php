@@ -178,7 +178,9 @@ class ControllerHelper
 		{
 			// Don't let the modules or plugins kill the loading of the entire page
 			echo (JDEBUG) ? $exception->getMessage() : 'Fabrik encountered an error.';
-		} catch (\Error $exception) {
+		}
+		catch (\Error $exception)
+		{
 			echo (JDEBUG) ? $exception->getMessage() : 'Fabrik encountered an error.';
 		}
 

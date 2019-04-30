@@ -90,7 +90,7 @@ class ParameterParser
 						}
 					}
 
-					$bag->setRowId((int) $row);
+					$bag->setRowId((string) $row);
 
 					break;
 				case 'element':

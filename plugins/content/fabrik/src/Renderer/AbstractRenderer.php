@@ -178,10 +178,13 @@ abstract class AbstractRenderer implements RendererInterface
 		{
 			$content = $this->renderContent($controller, $model, $view);
 		}
-		catch (\Exception $e)
+		catch (\Exception $exception)
 		{
-			$content = 'Fabrik encountered an error.';
-			$this->app->getLogger()->error($e->getMessage(), ['exception' => $e]);
+			$content = (JDEBUG) ? $exception->getMessage() : 'Fabrik encountered an error.';
+		}
+		catch (\Error $exception)
+		{
+			$content = (JDEBUG) ? $exception->getMessage() : 'Fabrik encountered an error.';
 		}
 
 		// Restore Factory::$application in case plugins were using the app/input from the isolated controller
@@ -195,10 +198,7 @@ abstract class AbstractRenderer implements RendererInterface
 	 */
 	protected function setUnusedParameters()
 	{
-		if (!$unused = $this->bag->getUnused())
-		{
-			return;
-		}
+		$unused = $this->bag->getUnused();
 
 		// Ensure &gt; conditions set in {fabrik} are converted to >
 		foreach ($unused as &$v)

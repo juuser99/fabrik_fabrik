@@ -31,10 +31,10 @@ class ParameterBag
 	private $layout = 'default';
 
 	/**
-	 * @var null|\stdClass
+	 * @var string|null
 	 * @since 4.0
 	 */
-	private $row;
+	private $rowId;
 
 	/**
 	 * @var null|string
@@ -89,12 +89,6 @@ class ParameterBag
 	 * @since 4.0
 	 */
 	private $ajax = true;
-
-	/**
-	 * @var int|null
-	 * @since 4.0
-	 */
-	private $rowId;
 
 	/**
 	 * @var array
@@ -178,26 +172,6 @@ class ParameterBag
 	public function setLayout(string $layout): void
 	{
 		$this->layout = $layout;
-	}
-
-	/**
-	 * @return \stdClass|null
-	 *
-	 * @since 4.0
-	 */
-	public function getRow(): ?\stdClass
-	{
-		return $this->row;
-	}
-
-	/**
-	 * @param \stdClass|null $row
-	 *
-	 * @since 4.0
-	 */
-	public function setRow(?\stdClass $row): void
-	{
-		$this->row = $row;
 	}
 
 	/**
@@ -381,21 +355,21 @@ class ParameterBag
 	}
 
 	/**
-	 * @return int|null
+	 * @return string|null
 	 *
 	 * @since 4.0
 	 */
-	public function getRowId(): ?int
+	public function getRowId(): ?string
 	{
 		return $this->rowId;
 	}
 
 	/**
-	 * @param int $rowId
+	 * @param string $rowId
 	 *
 	 * @since 4.0
 	 */
-	public function setRowId(int $rowId): void
+	public function setRowId(string $rowId): void
 	{
 		$this->rowId = $rowId;
 	}
