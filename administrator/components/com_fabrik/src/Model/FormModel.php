@@ -196,7 +196,7 @@ class FormModel extends FabrikAdminModel
 		$formId = (int) $this->getState($this->getName() . '.id');
 		$isNew  = (bool) $this->getState($this->getName() . '.new');
 
-		/** @var FabrikAdminModelList $listModel */
+		/** @var ListModel $listModel */
 		$listModel = FabrikModel::getInstance(ListModel::class);
 		$item      = $listModel->loadFromFormId($formId);
 
@@ -235,6 +235,7 @@ class FormModel extends FabrikAdminModel
 			$item->set('created_by', $data['created_by']);
 			$item->set('access', 1);
 			$item->set('params', $listModel->getDefaultParams());
+			$item->check();
 			$item->store();
 
 			$this->contentTypeModel->finalise($item);

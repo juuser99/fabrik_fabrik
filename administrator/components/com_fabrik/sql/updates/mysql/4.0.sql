@@ -17,6 +17,9 @@ UPDATE `#__fabrik_elements` SET `modified` = '0000-00-00 00:00:00' WHERE `modifi
 ALTER TABLE `#__fabrik_elements` MODIFY COLUMN `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE `#__fabrik_elements` MODIFY COLUMN `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE `#__fabrik_elements` MODIFY COLUMN `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE `#__fabrik_elements` MODIFY COLUMN `default` TEXT;
+ALTER TABLE `#__fabrik_elements` MODIFY COLUMN `hidden` int(1) NOT NULL DEFAULT 0;
+ALTER TABLE `#__fabrik_elements` MODIFY COLUMN `eval` int(1) NOT NULL DEFAULT 0;
 
 UPDATE `#__fabrik_forms` SET `checked_out_time` = '0000-00-00 00:00:00' WHERE `checked_out_time` = '';
 UPDATE `#__fabrik_forms` SET `created` = '0000-00-00 00:00:00' WHERE `created` = '';
@@ -46,6 +49,12 @@ ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `created` datetime NOT NULL DEFAULT 
 ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `publish_up` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `publish_down` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `introduction` TEXT;
+ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `rows_per_page` int(5);
+ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `template` varchar (255) NOT NULL default '';
+ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `order_by` varchar (255) NOT NULL default '';
+ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `filter_action` varchar (30) NOT NULL default '';
+ALTER TABLE `#__fabrik_lists` MODIFY COLUMN `group_by` varchar (255) NOT NULL default '';
 
 UPDATE `#__fabrik_packages` SET `checked_out_time` = '0000-00-00 00:00:00' WHERE `checked_out_time` = '';
 UPDATE `#__fabrik_packages` SET `created` = '0000-00-00 00:00:00' WHERE `created` = '';
