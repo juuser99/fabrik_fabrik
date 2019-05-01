@@ -1197,7 +1197,7 @@ class PlgFabrik_FormJUser extends AbstractFormPlugin
 	 */
 	protected function raiseError(&$err, $field, $msg)
 	{
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$this->app->enqueueMessage($msg, 'notice');
 		}

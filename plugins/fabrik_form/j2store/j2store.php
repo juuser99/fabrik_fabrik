@@ -302,7 +302,7 @@ class PlgFabrik_FormJ2Store extends AbstractFormPlugin
 	 */
 	public function getEndContent()
 	{
-		if ($this->app->isAdmin() || !$this->showCartButtons())
+		if ($this->app->isClient('administrator') || !$this->showCartButtons())
 		{
 			return;
 		}
@@ -380,7 +380,7 @@ class PlgFabrik_FormJ2Store extends AbstractFormPlugin
 	 */
 	public function onLoadListData($opts)
 	{
-		if ($this->app->isAdmin() || !$this->showCartButtons())
+		if ($this->app->isClient('administrator') || !$this->showCartButtons())
 		{
 			return;
 		}
@@ -462,7 +462,7 @@ class PlgFabrik_FormJ2Store extends AbstractFormPlugin
 	 */
 	public function onGetPluginRowHeadings($args)
 	{
-		if ($this->app->isAdmin() || !$this->showCartButtons())
+		if ($this->app->isClient('administrator') || !$this->showCartButtons())
 		{
 			return;
 		}

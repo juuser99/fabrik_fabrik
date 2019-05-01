@@ -508,7 +508,7 @@ class PlgFabrik_ElementFileupload extends AbstractElementPlugin
 		$opts->useWIP           = (bool) $params->get('upload_use_wip', '0') == '1';
 		$opts->page_url         = COM_FABRIK_LIVESITE;
 		$opts->ajaxToken        = Session::getFormToken();
-		$opts->isAdmin          = (bool) $this->app->isAdmin();
+		$opts->isAdmin          = (bool) $this->app->isClient('administrator');
 		$opts->iconDelete       = Html::icon("icon-delete", '', '', true);
 		$opts->spanNames        = array();
 

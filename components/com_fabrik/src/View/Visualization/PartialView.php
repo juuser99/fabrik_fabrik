@@ -78,7 +78,7 @@ class PartialView extends AbstractView
 		$this->plugin = $plugin;
 		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->getName() . '/tmpl/' . $tmpl);
 
-		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
+		$root = $this->app->isClient('administrator') ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/visualization/' . $plugin->getName() . '/' . $tmpl);
 		$ab_css_file = JPATH_SITE . '/plugins/fabrik_visualization/' . $plugin->getName() . '/tmpl/' . $tmpl . '/template.css';
 

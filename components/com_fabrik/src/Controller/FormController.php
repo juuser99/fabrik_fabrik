@@ -158,7 +158,7 @@ class FormController extends AbstractSiteController
 			$app   = Factory::getApplication();
 			$input = $app->input;
 
-			if ($app->isAdmin())
+			if ($app->isClient('administrator'))
 			{
 				$url = 'index.php?option=com_fabrik&task=details.view&formid=' . $input->getInt('formid') . '&rowid=' . $input->get('rowid', '', 'string');
 			}

@@ -208,7 +208,7 @@ class PlgFabrik_FormArticle extends AbstractFormPlugin
 
 		Table::addIncludePath(COM_FABRIK_BASE . 'administrator/components/com_content/tables');
 
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			BaseDatabaseModel::addIncludePath(COM_FABRIK_BASE . 'administrator/components/com_content/models');
 			$articleModel = BaseDatabaseModel::getInstance('Article', 'ContentModel');
@@ -889,7 +889,7 @@ class PlgFabrik_FormArticle extends AbstractFormPlugin
 	 */
 	protected function _getContentTemplate($contentTemplate)
 	{
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$db    = $this->db;
 			$query = $db->getQuery(true);
@@ -957,7 +957,7 @@ class PlgFabrik_FormArticle extends AbstractFormPlugin
 	 */
 	protected function raiseError(&$err, $field, $msg)
 	{
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$this->app->enqueueMessage($msg, 'notice');
 		}

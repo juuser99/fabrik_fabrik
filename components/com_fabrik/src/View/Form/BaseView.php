@@ -308,7 +308,7 @@ class BaseView extends AbstractView
 		}
 		if (!$model->canPublish())
 		{
-			if (!$this->app->isAdmin())
+			if (!$this->app->isClient('administrator'))
 			{
 				echo Text::_('COM_FABRIK_FORM_NOT_PUBLISHED');
 
@@ -382,7 +382,7 @@ class BaseView extends AbstractView
 		$model           = $this->getModel();
 		$folder          = $model->isEditable() ? 'form' : 'details';
 		$this->addTemplatePath($this->_basePath . '/' . $folder . '/' . $tmpl);
-		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
+		$root = $this->app->isClient('administrator') ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $folder . '/' . $tmpl);
 	}
 
@@ -468,7 +468,7 @@ class BaseView extends AbstractView
 		$input = $this->app->input;
 		$title = '';
 
-		if (!$this->app->isAdmin())
+		if (!$this->app->isClient('administrator'))
 		{
 			$menus = $this->app->getMenu();
 			$menu  = $menus->getActive();
@@ -580,7 +580,7 @@ class BaseView extends AbstractView
 		{
 			if (Worker::canPdf(false))
 			{
-				if ($this->app->isAdmin())
+				if ($this->app->isClient('administrator'))
 				{
 					$this->pdfURL = 'index.php?option=com_' . $this->package . '&task=details.view&format=pdf&formid=' . $model->getId() . '&rowid=' . $model->getRowId();
 				}
@@ -844,7 +844,7 @@ class BaseView extends AbstractView
 		$listModel            = $model->getListModel();
 		$table                = $listModel->getTable();
 		$opts                 = new \stdClass;
-		$opts->admin          = $this->app->isAdmin();
+		$opts->admin          = $this->app->isClient('administrator');
 		$opts->ajax           = $model->isAjax();
 		$opts->ajaxValidation = (bool) $params->get('ajax_validations');
 		$opts->lang           = Worker::getMultiLangURLCode();

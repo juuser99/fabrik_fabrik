@@ -233,7 +233,7 @@ class BaseView extends AbstractView
 		$this->_row       = new \stdClass;
 		$script           = array();
 		$params           = $model->getParams();
-		$opts->admin      = $this->app->isAdmin();
+		$opts->admin      = $this->app->isClient('administrator');
 		$opts->ajax       = $ajax;
 		$opts->ajax_links = $ajaxLinks;
 
@@ -443,7 +443,7 @@ class BaseView extends AbstractView
 		$this->_basePath = COM_FABRIK_FRONTEND . '/tmpl';
 		$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/' . $tmpl);
 
-		$root = $this->app->isAdmin() ? JPATH_ADMINISTRATOR : JPATH_SITE;
+		$root = $this->app->isClient('administrator') ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$this->addTemplatePath($root . '/templates/' . $this->app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
 		$item = $model->getTable();
 		$data = $model->render();
@@ -585,7 +585,7 @@ class BaseView extends AbstractView
 			}
 		}
 
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			// Admin always uses com_fabrik option
 			$this->pdfLink = Route::_('index.php?option=com_fabrik&task=list.view&listid=' . $item->id . '&format=pdf&tmpl=component');
@@ -642,7 +642,7 @@ class BaseView extends AbstractView
 		$this->getManagementJS($this->rows);
 
 		// Get dropdown list of other tables for quick nav in admin
-		$this->tablePicker = $params->get('show-table-picker', $input->get('list-picker', true)) && $this->app->isAdmin() && $this->app->input->get('format') !== 'pdf' ? Html::tableList($this->table->id) : '';
+		$this->tablePicker = $params->get('show-table-picker', $input->get('list-picker', true)) && $this->app->isClient('administrator') && $this->app->input->get('format') !== 'pdf' ? Html::tableList($this->table->id) : '';
 
 		$this->buttons();
 		$this->pluginTopButtons = $model->getPluginTopButtons();
@@ -1014,7 +1014,7 @@ class BaseView extends AbstractView
 		$packageId            = $model->packageId;
 		$this->hiddenFields[] = '<input type="hidden" name="packageId" value="' . $packageId . '" />';
 
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$this->hiddenFields[] = '<input type="hidden" name="task" value="list.view" />';
 		}
@@ -1076,7 +1076,7 @@ class BaseView extends AbstractView
 	{
 		$url = '';
 
-		if (!$this->app->isAdmin() && !$this->isMambot)
+		if (!$this->app->isClient('administrator') && !$this->isMambot)
 		{
 			$model = $this->getModel();
 			$id    = $model->getId();

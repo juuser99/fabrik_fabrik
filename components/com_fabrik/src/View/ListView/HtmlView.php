@@ -50,7 +50,7 @@ class HtmlView extends BaseView
 			$this->setCanonicalLink();
 			$this->tabs = $model->loadTabs();
 
-			if (!$this->app->isAdmin() && isset($this->params))
+			if (!$this->app->isClient('administrator') && isset($this->params))
 			{
 				/** @var CMSObject $state */
 				$state = $model->getState();
@@ -140,7 +140,7 @@ class HtmlView extends BaseView
 	 */
 	public function setCanonicalLink()
 	{
-		if (!$this->app->isAdmin() && !$this->isMambot)
+		if (!$this->app->isClient('administrator') && !$this->isMambot)
 		{
 			$url = $this->getCanonicalLink();
 

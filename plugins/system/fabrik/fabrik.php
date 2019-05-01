@@ -538,7 +538,7 @@ class PlgSystemFabrik extends CMSPlugin
 				{
 					$pkval = $oData->__pk_val;
 
-					if ($app->isAdmin() || $params->get('search_link_type') === 'form')
+					if ($app->isClient('administrator') || $params->get('search_link_type') === 'form')
 					{
 						$href = $oData->fabrik_edit_url;
 					}

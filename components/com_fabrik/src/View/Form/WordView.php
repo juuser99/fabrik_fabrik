@@ -42,7 +42,7 @@ class WordView extends BaseView
 		{
 			$this->output();
 
-			if (!$this->app->isAdmin())
+			if (!$this->app->isClient('administrator'))
 			{
 				$this->state  = $this->get('State');
 				$model        = $this->getModel();

@@ -182,7 +182,7 @@ class PlgSystemFabrikcron extends CMSPlugin
 		$config = $this->app->getConfig();
 		$input  = $this->app->input;
 
-		if ($this->app->isAdmin() || $input->get('option') == 'com_acymailing')
+		if ($this->app->isClient('administrator') || $input->get('option') == 'com_acymailing')
 		{
 			return;
 		}

@@ -181,7 +181,7 @@ class PlgFabrik_Cronimportcsv extends AbstractCronPlugin
 			$clsImportCSV->findExistingElements();
 			$msg = $clsImportCSV->insertData();
 
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				$this->app->enqueueMessage($msg);
 			}
@@ -206,7 +206,7 @@ class PlgFabrik_Cronimportcsv extends AbstractCronPlugin
 				}
 				else
 				{
-					if ($this->app->isAdmin())
+					if ($this->app->isClient('administrator'))
 					{
 						$this->app->enqueueMessage("Move file requested, but can't find 'done' folder: $done_folder");
 					}

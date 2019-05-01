@@ -886,9 +886,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     if (typeOf(el) === 'array') {
                         if (typeOf(document.id(el[1])) === 'null') {
                             fconsole('Fabrik form::addElements: Cannot add element "' + el[1] +
-                                '" because it does not exist in HTML.');
+                                '" because it d oes not exist in HTML.');
                             return;
                         }
+                        console.log(el);
                         var oEl = new window[el[0]](el[1], el[2]);
                         added.push(this.addElement(oEl, el[1], gid));
                     }

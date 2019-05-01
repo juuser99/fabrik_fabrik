@@ -256,7 +256,7 @@ class PlgFabrik_FormFtp extends AbstractFormPlugin
 	 */
 	protected function _getContentTemplate($contentTemplate)
 	{
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$db    = $this->db;
 			$query = $db->getQuery(true);

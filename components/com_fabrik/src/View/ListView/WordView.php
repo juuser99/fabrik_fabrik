@@ -39,7 +39,7 @@ class WordView extends BaseView
 	{
 		if (parent::display($tpl) !== false)
 		{
-			if (!$this->app->isAdmin())
+			if (!$this->app->isClient('administrator'))
 			{
 				$state        = $this->get('State');
 				$this->params = $state->get('params');

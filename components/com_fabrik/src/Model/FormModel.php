@@ -4787,7 +4787,7 @@ class FormModel extends FabrikSiteModel
 		$option = $this->app->input->get('option');
 		$router = $this->app->getRouter();
 
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$action = filter_var(ArrayHelper::getValue($_SERVER, 'REQUEST_URI', 'index.php'), FILTER_SANITIZE_URL);
 			$action = $this->stripElementsFromUrl($action);

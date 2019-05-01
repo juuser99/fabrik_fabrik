@@ -202,7 +202,7 @@ abstract class AbstractValidationRulePlugin extends FabrikPlugin
 		$params = $this->getParams();
 		$in = $params->get('validate_in', 'both');
 
-		$admin = $this->app->isAdmin();
+		$admin = $this->app->isClient('administrator');
 
 		if ($in === 'both')
 		{

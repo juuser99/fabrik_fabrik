@@ -43,7 +43,7 @@ class HtmlView extends BaseView
 			$this->setCanonicalLink();
 			$this->output();
 
-			if (!$this->app->isAdmin())
+			if (!$this->app->isClient('administrator'))
 			{
 				$this->state  = $this->get('State');
 				$model        = $this->getModel();
@@ -83,7 +83,7 @@ class HtmlView extends BaseView
 	{
 		$url = '';
 
-		if (!$this->app->isAdmin() && !$this->isMambot)
+		if (!$this->app->isClient('administrator') && !$this->isMambot)
 		{
 			/** @var FormModel $model */
 			$model  = $this->getModel();
@@ -108,7 +108,7 @@ class HtmlView extends BaseView
 	 */
 	public function setCanonicalLink()
 	{
-		if (!$this->app->isAdmin() && !$this->isMambot)
+		if (!$this->app->isClient('administrator') && !$this->isMambot)
 		{
 			$url = $this->getCanonicalLink();
 

@@ -55,7 +55,7 @@ class PartialView extends BaseView
 			$model      = $this->getModel();
 			$this->tabs = $model->loadTabs();
 
-			if (!$this->app->isAdmin() && isset($this->params))
+			if (!$this->app->isClient('administrator') && isset($this->params))
 			{
 				/** @var CMSObject $state */
 				$state       = $model->getState();

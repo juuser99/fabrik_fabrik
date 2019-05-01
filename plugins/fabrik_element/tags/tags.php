@@ -596,7 +596,7 @@ class PlgFabrik_ElementTags extends AbstractElementDatabaseJoinPlugin
 		$listModel = $this->getListModel();
 		$listId    = $listModel->getId();
 
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$url = 'index.php?option=com_fabrik&task=list.view&listid=' . $listId . '&limitstart' . $listId . '=0';
 		}

@@ -1104,7 +1104,7 @@ class PlgFabrik_ElementDate extends AbstractElementListPlugin
 		// in some corner cases, date will be db name quoted, like in CSV export after an advanced search!
 		$value = trim($value, "'");
 
-		//if ($input->get('task') == 'form.process' || ($app->isAdmin() && $input->get('task') == 'process'))
+		//if ($input->get('task') == 'form.process' || ($app->isClient('administrator') && $input->get('task') == 'process'))
 		if (Worker::inFormProcess())
 		{
 			// Don't mess with posted value - can cause double offsets - instead do in _indStoareDBFormat();

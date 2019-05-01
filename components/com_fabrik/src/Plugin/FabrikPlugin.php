@@ -707,13 +707,13 @@ class FabrikPlugin extends CMSPlugin
 		switch ($location)
 		{
 			case 'front':
-				if (!$this->app->isAdmin())
+				if (!$this->app->isClient('administrator'))
 				{
 					$ok = true;
 				}
 				break;
 			case 'back':
-				if ($this->app->isAdmin())
+				if ($this->app->isClient('administrator'))
 				{
 					$ok = true;
 				}

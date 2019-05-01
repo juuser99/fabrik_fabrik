@@ -92,7 +92,7 @@ class PlgFabrik_FormRedirect extends AbstractFormPlugin
 			$next_rowid = '&rowid=' . $navIds->next;
 			$itemId     = Worker::itemId();
 
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				$url = 'index.php?option=com_' . $this->package . '&task=form.view&formid=' . $form->id;
 			}
@@ -123,7 +123,7 @@ class PlgFabrik_FormRedirect extends AbstractFormPlugin
 		else
 		{
 			// Redirect not working in admin.
-			if (!$this->app->isAdmin())
+			if (!$this->app->isClient('administrator'))
 			{
 				$sshowsystemmsg[$this->renderOrder] = false;
 				$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
@@ -314,7 +314,7 @@ class PlgFabrik_FormRedirect extends AbstractFormPlugin
 			$queryvars['isMambot'] = 'isMambot=1';
 		}
 
-		if ($this->app->isAdmin() && substr($jumpPage, 0, 10) === 'index.php?')
+		if ($this->app->isClient('administrator') && substr($jumpPage, 0, 10) === 'index.php?')
 		{
 			$jumpPage = preg_replace('/&view=(\w+)/', '&task=$1.view', $jumpPage);
 			$jumpPage = preg_replace('/&Itemid=(\d*)/', '', $jumpPage);
