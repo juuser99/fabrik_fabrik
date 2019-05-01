@@ -226,7 +226,7 @@ class ControllerHelper
 
 		$app->setDispatcher($this->nativeApp->getDispatcher());
 		$app->loadIdentity($this->nativeApp->getIdentity());
-		$app->loadDocument(clone $this->nativeApp->getDocument());
+		$app->loadDocument($this->nativeApp->getDocument());
 		$app->loadLanguage($this->nativeApp->getLanguage());
 		$app->setSession($this->nativeApp->getSession());
 
