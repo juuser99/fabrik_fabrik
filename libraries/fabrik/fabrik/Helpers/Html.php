@@ -879,16 +879,18 @@ EOD;
 			return;
 		}
 		$document = JFactory::getDocument();
-		$tag      = JFactory::getLanguage()->getTag();
+		//$tag      = JFactory::getLanguage()->getTag();
 		$attribs  = array('title' => JText::_('JLIB_HTML_BEHAVIOR_GREEN'), 'media' => 'all');
-		JHtml::_('stylesheet', 'system/calendar-jos.css', array('version' => 'auto', 'relative' => true), $attribs);
-		JHtml::_('script', $tag . '/calendar.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('script', $tag . '/calendar-setup.js', array('version' => 'auto', 'relative' => true));
+		$mediaFolder = self::getMediaFolder();
+		JHtml::_('script', $mediaFolder.'/calendar.js', array('version' => 'auto', 'relative' => false), $attribs);
+		JHtml::_('script', $mediaFolder.'/calendar-setup.js', array('version' => 'auto', 'relative' => false), $attribs);
+		JHtml::_('stylesheet',  'media/com_fabrik/css/calendar.css', array('version' => 'auto', 'relative' => false));
 		$translation = static::calendartranslation();
 		if ($translation)
 		{
 			$document->addScriptDeclaration($translation);
 		}
+
 		static::$loaded[__METHOD__] = true;
 	}
 
