@@ -11906,6 +11906,11 @@ class FabrikFEModelList extends JModelForm
 		{
 			$scripts[$scriptKey] = 'components/com_fabrik/js/list_' . $this->getId() . '.js';
 		}
+		
+		if (JFile::exists(COM_FABRIK_FRONTEND . '/js/list_all.js'))
+		{
+			$scripts[$scriptKey] = 'components/com_fabrik/js/list_all.js';
+		}
 	}
 
 	/**
